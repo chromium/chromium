@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <string>
 
+#include "base/barrier_closure.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -910,6 +912,27 @@ bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {
           FeatureToBit(
               WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated)) !=
          0;
+}
+
+void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
+    Entry& bfcache_entry,
+    base::OnceClosure done_callback) {
+  // Disable JS eviction in renderers and defer the navigation commit until
+  // we've received confirmation that eviction is disabled from renderers.
+  auto cb = base::BarrierClosure(
+      bfcache_entry.render_view_hosts.size(),
+      base::BindOnce(
+          [](base::TimeTicks ipc_start_time, base::OnceClosure cb) {
+            std::move(cb).Run();
+            base::UmaHistogramTimes(
+                "BackForwardCache.Restore.DisableEvictionDelay",
+                base::TimeTicks::Now() - ipc_start_time);
+          },
+          base::TimeTicks::Now(), std::move(done_callback)));
+
+  for (auto* rvh : bfcache_entry.render_view_hosts) {
+    rvh->PrepareToLeaveBackForwardCache(cb);
+  }
 }
 
 bool BackForwardCache::DisabledReason::operator<(

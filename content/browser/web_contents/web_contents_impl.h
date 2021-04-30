@@ -101,6 +101,9 @@ class InterfaceProvider;
 }  // namespace service_manager
 
 namespace content {
+namespace {
+class JavaScriptDialogDismissNotifier;
+}
 enum class PictureInPictureResult;
 class AgentSchedulingGroupHost;
 class BrowserPluginEmbedder;
@@ -108,7 +111,6 @@ class BrowserPluginGuest;
 class DisplayCutoutHostImpl;
 class FindRequestManager;
 class JavaScriptDialogManager;
-class JavaScriptDialogNavigationDeferrer;
 class MediaWebContentsObserver;
 class NFCHost;
 class Portal;
@@ -870,6 +872,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldTransferNavigation(bool is_main_frame_navigation) override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
       NavigationHandle* navigation_handle) override;
+  std::vector<std::unique_ptr<CommitDeferringCondition>>
+  CreateDeferringConditionsForNavigationCommit(
+      NavigationHandle& navigation_handle) override;
   std::unique_ptr<NavigationUIData> GetNavigationUIData(
       NavigationHandle* navigation_handle) override;
   void OnServiceWorkerAccessed(NavigationHandle* navigation,
@@ -1214,9 +1219,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                const GURL& scope,
                                AllowServiceWorkerResult allowed);
 
-  JavaScriptDialogNavigationDeferrer* GetJavaScriptDialogNavigationDeferrer() {
-    return javascript_dialog_navigation_deferrer_.get();
+  bool JavaScriptDialogDefersNavigations() {
+    return javascript_dialog_dismiss_notifier_.get();
   }
+
+  void NotifyOnJavaScriptDialogDismiss(base::OnceClosure callback);
 
   float page_scale_factor() { return page_scale_factor_; }
 
@@ -2128,10 +2135,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   ui::NativeTheme::PreferredContrast preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
 
-  // Prevents navigations in this contents while a javascript modal dialog is
-  // showing.
-  std::unique_ptr<JavaScriptDialogNavigationDeferrer>
-      javascript_dialog_navigation_deferrer_;
+  // Tracks clients who want to be notified when a JavaScript dialog is
+  // dismissed.
+  std::unique_ptr<JavaScriptDialogDismissNotifier>
+      javascript_dialog_dismiss_notifier_;
 
   // The max number of loaded frames that have been seen in this WebContents.
   // This number is reset with each main frame navigation.

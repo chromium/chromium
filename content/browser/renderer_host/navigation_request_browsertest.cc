@@ -39,6 +39,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_commit_deferring_condition.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1984,6 +1985,162 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorPageNetworkError) {
                                             ->GetSiteURL());
     }
   }
+}
+
+class MockCommitDeferringConditionInstaller : public WebContentsObserver {
+ public:
+  MockCommitDeferringConditionInstaller(
+      WebContents* web_contents,
+      std::unique_ptr<MockCommitDeferringCondition> condition)
+      : WebContentsObserver(web_contents), condition_(std::move(condition)) {}
+  ~MockCommitDeferringConditionInstaller() override = default;
+
+  void DidStartNavigation(NavigationHandle* handle) override {
+    static_cast<NavigationRequest*>(handle)
+        ->RegisterCommitDeferringConditionForTesting(std::move(condition_));
+  }
+
+  std::unique_ptr<MockCommitDeferringCondition> condition_;
+};
+
+class ReadyToCommitObserver : public WebContentsObserver {
+ public:
+  explicit ReadyToCommitObserver(WebContents* web_contents) {
+    WebContentsObserver::Observe(web_contents);
+  }
+
+  bool ReadyToCommitNavigationWasCalled() const {
+    return ready_to_commit_navigation_called_;
+  }
+
+ protected:
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    ready_to_commit_navigation_called_ = true;
+  }
+
+  bool ready_to_commit_navigation_called_ = false;
+};
+
+// Ensure that adding a deferring condition that's already satisfied when
+// checked (i.e. can return synchronously) doesn't block commit.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       SynchronouslyCompleteCommitDeferringCondition) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+  WebContents* web_contents = shell()->web_contents();
+  ReadyToCommitObserver observer(web_contents);
+
+  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/true);
+  MockCommitDeferringConditionInstaller installer(web_contents,
+                                                  condition.PassToDelegate());
+
+  shell()->LoadURL(simple_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+
+  // Ready to commit should be reached synchronously after a response.
+  EXPECT_TRUE(condition.WasInvoked());
+  EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
+  EXPECT_TRUE(manager.GetNavigationHandle()->IsWaitingToCommit());
+
+  manager.WaitForNavigationFinished();
+}
+
+// Ensure asynchronously deferring conditions block the navigation when it's
+// ready to commit.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       AsyncCommitDeferringCondition) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+  WebContents* web_contents = shell()->web_contents();
+
+  MockCommitDeferringConditionWrapper condition1(/*is_ready_to_commit=*/false);
+  MockCommitDeferringConditionInstaller installer1(web_contents,
+                                                   condition1.PassToDelegate());
+
+  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
+  MockCommitDeferringConditionInstaller installer2(web_contents,
+                                                   condition2.PassToDelegate());
+
+  ReadyToCommitObserver observer(web_contents);
+
+  shell()->LoadURL(simple_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(manager.GetNavigationHandle());
+
+  // The navigation should not have proceeded through to ReadyToCommit because
+  // the first condition is deferring it. The second condition should not be
+  // checked until the first is resolved.
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_FALSE(observer.ReadyToCommitNavigationWasCalled());
+  EXPECT_TRUE(condition1.WasInvoked());
+  EXPECT_FALSE(condition2.WasInvoked());
+
+  // Resume from the first condition. This should now block on the second
+  // condition.
+  condition1.CallResumeClosure();
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_FALSE(observer.ReadyToCommitNavigationWasCalled());
+  EXPECT_TRUE(condition2.WasInvoked());
+
+  // Resuming from the second condition should now resume the navigaiton. This
+  // should call ReadyToCommit and commit the navigation.
+  condition2.CallResumeClosure();
+  EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
+  EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
+  manager.WaitForNavigationFinished();
+}
+
+// Ensure a navigation can be cancelled while an asynchronously deferring
+// condition is blocking commit.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       CancelWhileCommitDeferred) {
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+  WebContents* web_contents = shell()->web_contents();
+
+  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
+  MockCommitDeferringConditionInstaller installer(web_contents,
+                                                  condition.PassToDelegate());
+
+  // We'll cancel the navigation while the first condition is deferred so this
+  // is added only to make sure it's never invoked.
+  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
+  MockCommitDeferringConditionInstaller installer2(web_contents,
+                                                   condition2.PassToDelegate());
+
+  shell()->LoadURL(simple_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+  manager.ResumeNavigation();
+
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(manager.GetNavigationHandle());
+
+  // The navigation should have passed all checks but is now deferred from
+  // committing by |condition|.
+  EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
+  EXPECT_TRUE(condition.WasInvoked());
+
+  // While the commit is deferred, cancel the navigation. This should delete
+  // the navigation request.
+  EXPECT_FALSE(condition.IsDestroyed());
+  web_contents->Stop();
+  manager.WaitForNavigationFinished();
+  EXPECT_EQ(manager.GetNavigationHandle(), nullptr);
+  EXPECT_TRUE(condition.IsDestroyed());
+  EXPECT_TRUE(condition2.IsDestroyed());
+
+  // Call resume on |condition|, as could happen when e.g. the renderer
+  // responds after the navigation is stopped. Make sure we don't crash.
+  condition.CallResumeClosure();
+
+  EXPECT_FALSE(condition2.WasInvoked());
 }
 
 // Tests the case where a browser-initiated navigation to a normal webpage is

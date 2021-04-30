@@ -519,8 +519,13 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     response_headers_ =
         base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
   }
+
   response_headers_->SetHeader("Content-Type", contents_mime_type_);
   PrepareCompleteCallbackOnRequest();
+  request_->set_ready_to_commit_callback_for_testing(
+      base::BindOnce(&NavigationSimulatorImpl::ReadyToCommitComplete,
+                     weak_factory_.GetWeakPtr()));
+
   if (frame_tree_node_->navigation_request()) {
     NavigationRequest* request = frame_tree_node_->navigation_request();
     if (early_hints_preload_link_header_received_) {
@@ -548,17 +553,19 @@ void NavigationSimulatorImpl::ReadyToCommit() {
                      weak_factory_.GetWeakPtr());
   if (NeedsThrottleChecks()) {
     MaybeWaitForThrottleChecksComplete(std::move(complete_closure));
+    MaybeWaitForReadyToCommitCheckComplete();
     if (state_ == READY_TO_COMMIT) {
       // `NavigationRequest::OnWillProcessResponseProcessed()` invokes the
-      // completion callback before synchronously dispatching
-      // `ReadyToCommitNavigation()` to observers. Once the throttle checks are
-      // complete, ensure that `ReadyToCommitNavigation()` has been called as
-      // expected.
+      // completion callback but the commit may be deferred before dispatching
+      // `ReadyToCommitNavigation()` to observers so we have to wait on that
+      // too. Once these checks are complete, ensure that
+      // `ReadyToCommitNavigation()` has been called as expected.
       CHECK_EQ(1, num_ready_to_commit_called_);
     }
     return;
   }
   std::move(complete_closure).Run();
+  ReadyToCommitComplete();
 }
 
 void NavigationSimulatorImpl::WillProcessResponseComplete() {
@@ -576,6 +583,13 @@ void NavigationSimulatorImpl::WillProcessResponseComplete() {
   // commit the navigation.
   render_frame_host_ =
       static_cast<TestRenderFrameHost*>(request_->GetRenderFrameHost());
+}
+
+void NavigationSimulatorImpl::ReadyToCommitComplete() {
+  // If the commit was deferred, this completes from a RunLoop wait so exit it
+  // now.
+  if (wait_closure_)
+    std::move(wait_closure_).Run();
   state_ = READY_TO_COMMIT;
 }
 
@@ -1232,6 +1246,16 @@ void NavigationSimulatorImpl::MaybeWaitForThrottleChecksComplete(
   throttle_checks_complete_closure_ = std::move(complete_closure);
   if (auto_advance_)
     Wait();
+}
+
+void NavigationSimulatorImpl::MaybeWaitForReadyToCommitCheckComplete() {
+  if (state_ >= READY_TO_COMMIT || !auto_advance_)
+    return;
+
+  CHECK(!wait_closure_);
+  base::RunLoop run_loop;
+  wait_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
 }
 
 void NavigationSimulatorImpl::Wait() {

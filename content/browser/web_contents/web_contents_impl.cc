@@ -98,7 +98,7 @@
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/browser/web_contents/javascript_dialog_navigation_deferrer.h"
+#include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 #include "content/browser/web_package/save_as_web_bundle_job.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -301,6 +301,28 @@ class CloseDialogCallbackWrapper
   ~CloseDialogCallbackWrapper() = default;
 
   CloseCallback callback_;
+};
+
+// This is a small helper class created while a JavaScript dialog is showing
+// and destroyed when it's dismissed. Clients can register callbacks to receive
+// a notification when the dialog is dismissed.
+class JavaScriptDialogDismissNotifier {
+ public:
+  JavaScriptDialogDismissNotifier() = default;
+  ~JavaScriptDialogDismissNotifier() {
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run();
+    }
+  }
+
+  void NotifyOnDismiss(base::OnceClosure callback) {
+    callbacks_.push_back(std::move(callback));
+  }
+
+ private:
+  std::vector<base::OnceClosure> callbacks_;
+
+  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogDismissNotifier);
 };
 
 bool FrameCompareDepth(RenderFrameHostImpl* a, RenderFrameHostImpl* b) {
@@ -6458,8 +6480,8 @@ void WebContentsImpl::RunJavaScriptDialog(
     dialog_manager_ = delegate_->GetJavaScriptDialogManager(this);
 
   // While a JS message dialog is showing, defer commits in this WebContents.
-  javascript_dialog_navigation_deferrer_ =
-      std::make_unique<JavaScriptDialogNavigationDeferrer>();
+  javascript_dialog_dismiss_notifier_ =
+      std::make_unique<JavaScriptDialogDismissNotifier>();
 
   // Suppress JavaScript dialogs when requested.
   bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
@@ -6528,6 +6550,12 @@ void WebContentsImpl::RunJavaScriptDialog(
   }
 }
 
+void WebContentsImpl::NotifyOnJavaScriptDialogDismiss(
+    base::OnceClosure callback) {
+  DCHECK(javascript_dialog_dismiss_notifier_);
+  javascript_dialog_dismiss_notifier_->NotifyOnDismiss(std::move(callback));
+}
+
 void WebContentsImpl::RunBeforeUnloadConfirm(
     RenderFrameHostImpl* render_frame_host,
     bool is_reload,
@@ -6564,8 +6592,8 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   // While a JS beforeunload dialog is showing, defer commits in this
   // WebContents.
-  javascript_dialog_navigation_deferrer_ =
-      std::make_unique<JavaScriptDialogNavigationDeferrer>();
+  javascript_dialog_dismiss_notifier_ =
+      std::make_unique<JavaScriptDialogDismissNotifier>();
 
   bool should_suppress = !render_frame_host->IsCurrent() ||
                          (delegate_ && delegate_->ShouldSuppressDialogs(this));
@@ -7049,19 +7077,17 @@ WebContentsImpl::CreateThrottlesForNavigation(
   auto throttles = GetContentClient()->browser()->CreateThrottlesForNavigation(
       navigation_handle);
 
-  // This is not a normal place to be adding a throttle. However, in the case
-  // javascript dialogs, related logic is present in the web_contents/ layer,
-  // and the purpose of the throttle is to ensure that navigation commits are
-  // deferred for the entire WebContents. Most throttles are either added by
-  // the embederrer outside of content/, or are per-frame and added by
-  // NavigationThrottleRunner.
-  std::unique_ptr<content::NavigationThrottle> dialog_throttle =
-      JavaScriptDialogNavigationThrottle::MaybeCreateThrottleFor(
-          navigation_handle);
-  if (dialog_throttle)
-    throttles.push_back(std::move(dialog_throttle));
-
   return throttles;
+}
+
+std::vector<std::unique_ptr<CommitDeferringCondition>>
+WebContentsImpl::CreateDeferringConditionsForNavigationCommit(
+    NavigationHandle& navigation_handle) {
+  std::vector<std::unique_ptr<CommitDeferringCondition>> conditions;
+  if (auto condition = JavaScriptDialogCommitDeferringCondition::MaybeCreate(
+          static_cast<NavigationRequest&>(navigation_handle)))
+    conditions.push_back(std::move(condition));
+  return conditions;
 }
 
 std::unique_ptr<NavigationUIData> WebContentsImpl::GetNavigationUIData(
@@ -7764,7 +7790,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
   last_dialog_suppressed_ = dialog_was_suppressed;
   fullscreen_block.RunAndReset();
 
-  javascript_dialog_navigation_deferrer_.reset();
+  javascript_dialog_dismiss_notifier_.reset();
 
   if (is_showing_before_unload_dialog_ && !success) {
     // It is possible for the current RenderFrameHost to have changed in the

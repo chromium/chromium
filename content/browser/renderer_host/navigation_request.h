@@ -22,6 +22,7 @@
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/prerender/prerender_host.h"
+#include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -103,6 +104,7 @@ class CONTENT_EXPORT NavigationRequest
     : public NavigationHandle,
       public NavigationURLLoaderDelegate,
       public NavigationThrottleRunner::Delegate,
+      public CommitDeferringConditionRunner::Delegate,
       private RenderProcessHostObserver,
       private network::mojom::CookieAccessObserver {
  public:
@@ -356,6 +358,9 @@ class CONTENT_EXPORT NavigationRequest
   bool WasEarlyHintsPreloadLinkHeaderReceived() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
 
+  void RegisterCommitDeferringConditionForTesting(
+      std::unique_ptr<CommitDeferringCondition> condition);
+
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
   void BeginNavigation();
@@ -606,6 +611,10 @@ class CONTENT_EXPORT NavigationRequest
   void set_complete_callback_for_testing(
       ThrottleChecksFinishedCallback callback) {
     complete_callback_for_testing_ = std::move(callback);
+  }
+
+  void set_ready_to_commit_callback_for_testing(base::OnceClosure callback) {
+    ready_to_commit_callback_for_testing_ = std::move(callback);
   }
 
   // Sets the READY_TO_COMMIT -> DID_COMMIT timeout. Resets the timeout to the
@@ -952,6 +961,12 @@ class CONTENT_EXPORT NavigationRequest
   void OnFailureChecksComplete(NavigationThrottle::ThrottleCheckResult result);
   void OnWillProcessResponseChecksComplete(
       NavigationThrottle::ThrottleCheckResult result);
+
+  // Similar to the NavigationThrottle checks above but this is called from
+  // CommitDeferringConditionRunner rather than NavigationThrottles and is
+  // invoked after all throttle checks and commit checks have completed and the
+  // navigation can proceed to commit.
+  void OnCommitDeferringConditionChecksComplete() override;
 
   // Called either by OnFailureChecksComplete() or OnRequestFailed() directly.
   // |error_page_content| contains the content of the error page (i.e. flattened
@@ -1458,6 +1473,13 @@ class CONTENT_EXPORT NavigationRequest
   // responsible for notifying them about the various navigation events.
   std::unique_ptr<NavigationThrottleRunner> throttle_runner_;
 
+  // Once the navigation has passed all throttle checks the navigation will
+  // commit. However, we may need to defer the commit until certain conditions
+  // are met. CommitDeferringConditionRunner is responsible for deferring a
+  // commit if needed and resuming it, by calling
+  // OnCommitDeferringConditionChecksComplete, once all checks passed.
+  std::unique_ptr<CommitDeferringConditionRunner> commit_deferrer_;
+
   // Indicates whether the navigation changed which NavigationEntry is current.
   bool subframe_entry_committed_ = false;
 
@@ -1528,6 +1550,10 @@ class CONTENT_EXPORT NavigationRequest
   // skipped, and only the test callback is being performed.
   // TODO(clamy): Revisit the unit test architecture.
   ThrottleChecksFinishedCallback complete_callback_for_testing_;
+
+  // Test-only callback. Called when we're ready to call CommitNavigation.
+  // Unlike above, this is informational only; it does not affect the request.
+  base::OnceClosure ready_to_commit_callback_for_testing_;
 
   // The instance to process the Web Bundle that's bound to this request.
   // Used to navigate to the main resource URL of the Web Bundle, and

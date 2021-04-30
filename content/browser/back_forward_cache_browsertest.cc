@@ -4301,11 +4301,14 @@ IN_PROC_BROWSER_TEST_F(
   // web_contents()->GetController().GoBack();
   TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
   web_contents()->GetController().GoBack();
-  EXPECT_TRUE(navigation_manager_back.WaitForRequestStart());
+  EXPECT_TRUE(navigation_manager_back.WaitForResponse());
 
-  // Start sending the image response upon restoring the page. Since we are
-  // already in the process of restoring, we are not evicting the page even
-  // though the network request exceeds the bytes limit.
+  // Before we try to commit the navigation, BFCache will defer to wait
+  // asynchronously for renderers to reply that they've unfrozen. Finish the
+  // image response in that time.
+  navigation_manager_back.ResumeNavigation();
+  ASSERT_FALSE(navigation_manager_back.GetNavigationHandle()->HasCommitted());
+
   image_response.Send(net::HTTP_OK, "image/png");
   std::string body(kMaxBufferedBytesPerRequest + 1, '*');
   image_response.Send(body);
@@ -10041,8 +10044,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   RenderFrameHostImpl* rfh_b = current_frame_host();
 
-  delegate.OnDisableJsEvictionSent(
-      base::BindLambdaForTesting([&]() { web_contents()->Stop(); }));
+  delegate.OnDisableJsEvictionSent(base::BindLambdaForTesting([&]() {
+    // Posted because Stop() will destroy the NavigationRequest but
+    // DisableJsEviction will be called from inside the navigation which may
+    // not be a safe place to destruct a NavigationRequest.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&WebContentsImpl::Stop,
+                                  base::Unretained(web_contents())));
+  }));
 
   // 3) Do not go back to A (navigation cancelled).
   web_contents()->GetController().GoBack();

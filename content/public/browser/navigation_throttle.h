@@ -14,7 +14,11 @@ namespace content {
 class NavigationHandle;
 
 // A NavigationThrottle tracks and allows interaction with a navigation on the
-// UI thread.
+// UI thread. NavigationThrottles may not be run for some kinds of navigations
+// (e.g. same-document navigations, about:blank, activations into the primary
+// frame tree like prerendering and back-forward cache, etc.). Content-internal
+// code that just wishes to defer a commit, including activations to the
+// primary frame tree, should instead use a CommitDeferringCondition.
 class CONTENT_EXPORT NavigationThrottle {
  public:
   // Represents what a NavigationThrottle can decide to do to a navigation. Note

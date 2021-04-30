@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 
+#include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/invalidate_type.h"
@@ -21,6 +22,7 @@ struct UserAgentOverride;
 
 namespace content {
 
+class CommitDeferringCondition;
 class NavigationHandle;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -97,6 +99,11 @@ class CONTENT_EXPORT NavigatorDelegate {
   // where no NavigationThrottles are added to the navigation.
   virtual std::vector<std::unique_ptr<NavigationThrottle>>
   CreateThrottlesForNavigation(NavigationHandle* navigation_handle) = 0;
+
+  // Returns commit deferring conditions to add to this navigation.
+  virtual std::vector<std::unique_ptr<CommitDeferringCondition>>
+  CreateDeferringConditionsForNavigationCommit(
+      NavigationHandle& navigation_handle) = 0;
 
   // Called at the start of the navigation to get opaque data the embedder
   // wants to see passed to the corresponding URLRequest on the IO thread.

@@ -190,6 +190,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void RedirectComplete(int previous_num_will_redirect_request_called,
                         int previous_did_redirect_navigation_called);
   void WillProcessResponseComplete();
+  void ReadyToCommitComplete();
   void FailComplete(int error_code);
 
   void OnWillStartRequest();
@@ -209,6 +210,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // |auto_advance_|. Otherwise will just set up state for checking the result
   // when the throttles end up finishing.
   void MaybeWaitForThrottleChecksComplete(base::OnceClosure complete_closure);
+
+  // Like above but blocks waiting for the ReadyToCommit checks to complete.
+  // This check calls ReadyToCommitComplete() when finished.
+  void MaybeWaitForReadyToCommitCheckComplete();
 
   // Sets |last_throttle_check_result_| and calls both the
   // |wait_closure_| and the |throttle_checks_complete_closure_|, if they are

@@ -201,6 +201,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // consider cache size limit.
   bool CheckFeatureUsageOnlyAfterAck();
 
+  // Called just before commit for a navigation that's served out of the back
+  // forward cache. This method will disable eviction in renderers and invoke
+  // |done_callback| when they are ready for the navigation to be committed.
+  void WillCommitNavigationToCachedEntry(Entry& bfcache_entry,
+                                         base::OnceClosure done_callback);
+
   // Returns the task runner that should be used by the eviction timer.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
     return task_runner_for_testing_ ? task_runner_for_testing_
