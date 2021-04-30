@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -22,41 +24,56 @@ constexpr char kDirName[] = "directory";
 constexpr char kFileData[] = "Hello";
 constexpr int kFileSize = sizeof(kFileData);
 constexpr char kDownloads[] = "Downloads";
+constexpr char kFirstRun[] = "First Run";
 }  // namespace
 
 class BrowserDataMigratorTest : public ::testing::Test {
  public:
   void SetUp() override {
-    // Setup from_dir_ as below.
-    // |- file
-    // |- directory
-    //    |- file
-    //    |- Downloads/file
-    // |- Downloads/file
-    ASSERT_TRUE(from_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(base::CreateDirectory(from_dir_.GetPath().Append(kDirName)));
+    // Setup `user_data_dir_` as below.
+    // ./                         /* user_data_dir_ */
+    // |- 'First Run'
+    // |- user/                   /* from_dir_ */
+    //     |- file
+    //     |- directory/
+    //         |- file
+    //         |- Downloads/file
+    //     |- Downloads/file
+
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    from_dir_ = user_data_dir_.GetPath().Append("user");
+
+    ASSERT_TRUE(base::WriteFile(user_data_dir_.GetPath().Append(
+                                    kFirstRun) /* .../'First Run' */,
+                                "", 0) == 0);
     ASSERT_TRUE(base::CreateDirectory(
-        from_dir_.GetPath().Append(kDirName).Append(kDownloads)));
-    ASSERT_TRUE(base::CreateDirectory(from_dir_.GetPath().Append(kDownloads)));
-    ASSERT_TRUE(base::WriteFile(from_dir_.GetPath().Append(kFileName),
-                                kFileData, kFileSize));
+        from_dir_.Append(kDirName) /* .../user/directory/ */));
+    ASSERT_TRUE(base::CreateDirectory(from_dir_.Append(kDirName).Append(
+        kDownloads) /* .../user/directory/Downloads/ */));
+    ASSERT_TRUE(base::CreateDirectory(
+        from_dir_.Append(kDownloads) /* .../user/Downloads/ */));
     ASSERT_TRUE(
-        base::WriteFile(from_dir_.GetPath().Append(kDirName).Append(kFileName),
+        base::WriteFile(from_dir_.Append(kFileName) /* .../user/file/ */,
                         kFileData, kFileSize));
-    ASSERT_TRUE(base::WriteFile(from_dir_.GetPath()
-                                    .Append(kDirName)
-                                    .Append(kDownloads)
-                                    .Append(kFileName),
+    ASSERT_TRUE(base::WriteFile(from_dir_.Append(kDirName).Append(
+                                    kFileName) /* .../user/directory/file/ */,
                                 kFileData, kFileSize));
     ASSERT_TRUE(base::WriteFile(
-        from_dir_.GetPath().Append(kDownloads).Append(kFileName), kFileData,
-        kFileSize));
+        from_dir_.Append(kDirName)
+            .Append(kDownloads)
+            .Append(kFileName) /* .../user/directory/Downloads/file/ */,
+        kFileData, kFileSize));
+    ASSERT_TRUE(
+        base::WriteFile(from_dir_.Append(kDownloads)
+                            .Append(kFileName) /* .../user/Downloads/file/ */,
+                        kFileData, kFileSize));
   }
 
-  void TearDown() override { EXPECT_TRUE(from_dir_.Delete()); }
+  void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
 
  protected:
-  base::ScopedTempDir from_dir_;
+  base::ScopedTempDir user_data_dir_;
+  base::FilePath from_dir_;
 };
 
 TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
@@ -108,26 +125,25 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
 }
 
 TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
-  BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+  BrowserDataMigrator browser_data_migrator(from_dir_);
 
   // If `BrowserDataMigrator::to_dir_` does not exist, run migration.
   EXPECT_TRUE(browser_data_migrator.IsMigrationRequiredOnWorker());
 
   // Create `BrowserDataMigrator::to_dir_`.
-  ASSERT_TRUE(
-      base::CreateDirectory(from_dir_.GetPath().Append(kLacrosProfileDir)));
+  ASSERT_TRUE(base::CreateDirectory(from_dir_.Append(kLacrosDir)));
 
   // If `BrowserDataMigrator::to_dir_` already exists, do not run migration.
   EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
 
-  ASSERT_TRUE(base::DeletePathRecursively(from_dir_.GetPath()));
+  ASSERT_TRUE(base::DeletePathRecursively(from_dir_));
 
   // If `BrowserDataMigrator::from_dir_` does not exist, do not run migration.
   EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
 }
 
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
-  BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+  BrowserDataMigrator browser_data_migrator(from_dir_);
 
   BrowserDataMigrator::TargetInfo target_info =
       browser_data_migrator.GetTargetInfo();
@@ -135,15 +151,36 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
   EXPECT_EQ(target_info.total_byte_count,
             kFileSize * 3 /* expect three files */);
 
-  const base::FilePath expected_file_path =
-      from_dir_.GetPath().Append(kFileName);
-  const base::FilePath expected_dir_path = from_dir_.GetPath().Append(kDirName);
+  ASSERT_EQ(target_info.user_data_items.size(), 1);
 
-  ASSERT_EQ(target_info.file_paths.size(), 1);
-  EXPECT_EQ(target_info.file_paths[0], expected_file_path);
+  std::vector<BrowserDataMigrator::TargetItem> expected_user_data_items = {
+      BrowserDataMigrator::TargetItem{
+          from_dir_.DirName().Append(kFirstRun),
+          BrowserDataMigrator::TargetItem::ItemType::kFile}};
 
-  ASSERT_EQ(target_info.dir_paths.size(), 1);
-  EXPECT_EQ(target_info.dir_paths[0], expected_dir_path);
+  EXPECT_EQ(target_info.user_data_items[0], expected_user_data_items[0]);
+
+  ASSERT_EQ(target_info.profile_data_items.size(), 2);
+
+  std::vector<BrowserDataMigrator::TargetItem> expected_profile_data_items = {
+      BrowserDataMigrator::TargetItem{
+          from_dir_.Append(kDirName),
+          BrowserDataMigrator::TargetItem::ItemType::kDirectory},
+      BrowserDataMigrator::TargetItem{
+          from_dir_.Append(kFileName),
+          BrowserDataMigrator::TargetItem::ItemType::kFile}};
+
+  std::sort(
+      target_info.profile_data_items.begin(),
+      target_info.profile_data_items.end(),
+      [](BrowserDataMigrator::TargetItem i1,
+         BrowserDataMigrator::TargetItem i2) { return i1.path < i2.path; });
+
+  for (int i = 0; i < target_info.profile_data_items.size(); i++) {
+    SCOPED_TRACE(target_info.profile_data_items[i].path);
+    EXPECT_EQ(target_info.profile_data_items[i],
+              expected_profile_data_items[i]);
+  }
 }
 
 TEST_F(BrowserDataMigratorTest, RecordStatus) {
@@ -167,7 +204,7 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
     // If `FInalStatus::kSuccess`, the three UMA `kFinalStatus`,
     // `kCopiedDataSize`, `kTotalTime` should be recorded.
     base::HistogramTester histogram_tester;
-    BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+    BrowserDataMigrator browser_data_migrator(from_dir_);
 
     BrowserDataMigrator::TargetInfo target_info;
     target_info.total_byte_count = /* 200 MBs */ 200 * 1024 * 1024;
@@ -192,28 +229,37 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
   base::HistogramTester histogram_tester;
 
   {
-    BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+    BrowserDataMigrator browser_data_migrator(from_dir_);
 
     browser_data_migrator.MigrateInternal();
 
     // Expected dir structure after migration.
-    //  |- Downloads/file
-    //  |- lacros/Default
-    //      |- file
-    //      |- directory
-    //         |- file
-    //         |- Downloads/file
+    // ./                         /* user_data_dir_ */
+    // |- 'First Run'
+    // |- user/                   /* from_dir_ */
+    //     |- Downloads/file
+    //     |- lacros
+    //         |- 'First Run'
+    //         |- Default/
+    //             |- file
+    //             |- directory
+    //                 |- file
+    //                 |- Downloads/file
 
+    EXPECT_FALSE(base::PathExists(from_dir_.Append(kLacrosDir)
+                                      .Append("Default")
+                                      .Append(kDownloads)
+                                      .Append(kFileName)));
+    const base::FilePath new_user_data_dir = from_dir_.Append(kLacrosDir);
+    EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
+    EXPECT_TRUE(
+        base::PathExists(from_dir_.Append(kDownloads).Append(kFileName)));
     EXPECT_TRUE(base::PathExists(
-        from_dir_.GetPath().Append(kDownloads).Append(kFileName)));
+        new_user_data_dir.Append("Default").Append(kFileName)));
     EXPECT_TRUE(base::PathExists(
-        from_dir_.GetPath().Append(kLacrosProfileDir).Append(kFileName)));
-    EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
-                                     .Append(kLacrosProfileDir)
-                                     .Append(kDirName)
-                                     .Append(kFileName)));
-    EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
-                                     .Append(kLacrosProfileDir)
+        new_user_data_dir.Append("Default").Append(kDirName).Append(
+            kFileName)));
+    EXPECT_TRUE(base::PathExists(new_user_data_dir.Append("Default")
                                      .Append(kDirName)
                                      .Append(kDownloads)
                                      .Append(kFileName)));

@@ -15,10 +15,11 @@
 
 namespace ash {
 
-// The new profile data directory location under the original profile data
-// directory location. More concretely the new location will be
-// `/home/chronos/u-<hash>/lacros/Default`.
-constexpr char kLacrosProfileDir[] = "lacros/Default";
+// The new profile data directory location is
+// '/home/chronos/u-<hash>/lacros/Default'. User data directory for lacros.
+constexpr char kLacrosDir[] = "lacros";
+// Profile data directory for lacros.
+constexpr char kLacrosProfilePath[] = "Default";
 
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
@@ -32,6 +33,17 @@ constexpr char kCreateDirectoryFail[] =
 // an instance and calls `MigrateInternal()`.
 class BrowserDataMigrator {
  public:
+  // Used to describe a file/dir that has to be migrated.
+  struct TargetItem {
+    enum class ItemType { kFile, kDirectory };
+    TargetItem(base::FilePath path, ItemType item_type);
+    ~TargetItem() = default;
+    bool operator==(const TargetItem& rhs) const;
+
+    base::FilePath path;
+    bool is_directory;
+  };
+
   // Used to describe what files/dirs have to be migrated to the new location
   // and the total byte size of those files.
   struct TargetInfo {
@@ -39,8 +51,11 @@ class BrowserDataMigrator {
     ~TargetInfo();
     TargetInfo(const TargetInfo&);
 
-    std::vector<base::FilePath> file_paths;
-    std::vector<base::FilePath> dir_paths;
+    // Items that have to be copied that are directly under user data directory.
+    std::vector<TargetItem> user_data_items;
+    // Items that have to be copied that are directly under profile data
+    // directory. Profile data directory itself is inside user data directory.
+    std::vector<TargetItem> profile_data_items;
     int64_t total_byte_count;
   };
 

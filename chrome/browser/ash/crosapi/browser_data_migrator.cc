@@ -26,14 +26,40 @@
 
 namespace ash {
 namespace {
-// The name of temporary directory that will store copies of files from user
-// data directory. At the end of the migration, it will be moved to the
-// appropriate destination.
+// The name of temporary directory that will store copies of files from the
+// original user data directory. At the end of the migration, it will be moved
+// to the appropriate destination.
 constexpr char kTmpDir[] = "browser_data_migrator";
-// The base names of files and directories directly under the original user data
-// directory that should not be copied. e.g. caches or files only needed by ash.
+// The base names of files and directories directly under the original profile
+// data directory that should not be copied. e.g. caches or files only needed by
+// ash.
 const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache"};
+// The base names of files and directories directory under the user data
+// directory.
+const char* const kCopyUserDataPaths[] = {"First Run"};
+
+bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+                    const base::FilePath& dest) {
+  if (item.is_directory) {
+    if (base::CopyDirectory(item.path, dest, true /* recursive */))
+      return true;
+  } else {
+    if (base::CopyFile(item.path, dest))
+      return true;
+  }
+
+  PLOG(ERROR) << "Copy failed for " << item.path;
+  return false;
+}
 }  // namespace
+
+BrowserDataMigrator::TargetItem::TargetItem(base::FilePath path,
+                                            ItemType item_type)
+    : path(path), is_directory(item_type == ItemType::kDirectory) {}
+
+bool BrowserDataMigrator::TargetItem::operator==(const TargetItem& rhs) const {
+  return this->path == rhs.path && this->is_directory == rhs.is_directory;
+}
 
 BrowserDataMigrator::TargetInfo::TargetInfo() : total_byte_count(0) {}
 BrowserDataMigrator::TargetInfo::TargetInfo(const TargetInfo&) = default;
@@ -97,7 +123,7 @@ bool BrowserDataMigrator::IsMigrationRequiredOnUI(
 
 BrowserDataMigrator::BrowserDataMigrator(const base::FilePath& from)
     : from_dir_(from),
-      to_dir_(from.Append(kLacrosProfileDir)),
+      to_dir_(from.Append(kLacrosDir)),
       tmp_dir_(from.Append(kTmpDir)) {}
 
 BrowserDataMigrator::~BrowserDataMigrator() = default;
@@ -217,12 +243,24 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
 
     const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
     if (S_ISREG(info.stat().st_mode)) {
-      target_info.file_paths.emplace_back(entry);
+      target_info.profile_data_items.emplace_back(
+          TargetItem{entry, TargetItem::ItemType::kFile});
       target_info.total_byte_count += info.GetSize();
     } else {
       // Treat symlink the same as directory since even if it points to a file,
       // both `ComputeDirectorySize()` and `CopyDirectory()` can be used.
-      target_info.dir_paths.emplace_back(entry);
+      target_info.profile_data_items.emplace_back(
+          TargetItem{entry, TargetItem::ItemType::kDirectory});
+      target_info.total_byte_count += base::ComputeDirectorySize(entry);
+    }
+  }
+
+  // Copy files directly under user data directory.
+  for (auto* copy_path : kCopyUserDataPaths) {
+    base::FilePath entry = from_dir_.DirName().Append(copy_path);
+    if (base::PathExists(entry)) {
+      target_info.user_data_items.emplace_back(
+          TargetItem{entry, TargetItem::ItemType::kFile});
       target_info.total_byte_count += base::ComputeDirectorySize(entry);
     }
   }
@@ -244,7 +282,8 @@ bool BrowserDataMigrator::HasEnoughDiskSpace(
 
 bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
   base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(tmp_dir_, &error)) {
+  if (!base::CreateDirectoryAndGetError(tmp_dir_.Append(kLacrosProfilePath),
+                                        &error)) {
     PLOG(ERROR) << "CreateDirectoryFailed " << error;
     // Maps to histogram enum `PlatformFileError`.
     UMA_HISTOGRAM_ENUMERATION(kCreateDirectoryFail, -error,
@@ -252,19 +291,19 @@ bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
     return false;
   }
 
-  for (const auto& target_file : target_info.file_paths) {
-    if (!base::CopyFile(target_file, tmp_dir_.Append(target_file.BaseName()))) {
-      PLOG(ERROR) << "CopyFile failed for " << target_file;
+  for (const auto& target_item : target_info.profile_data_items) {
+    base::FilePath dest =
+        tmp_dir_.Append(kLacrosProfilePath).Append(target_item.path.BaseName());
+
+    if (!CopyTargetItem(target_item, dest))
       return false;
-    }
   }
 
-  for (const auto& target_dir : target_info.dir_paths) {
-    if (!base::CopyDirectory(target_dir, tmp_dir_.Append(target_dir.BaseName()),
-                             true /* recursive */)) {
-      PLOG(ERROR) << "CopyDirectory failed for " << target_dir;
+  for (const auto& target_item : target_info.user_data_items) {
+    base::FilePath dest = tmp_dir_.Append(target_item.path.BaseName());
+
+    if (!CopyTargetItem(target_item, dest))
       return false;
-    }
   }
 
   return true;

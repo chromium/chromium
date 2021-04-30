@@ -62,12 +62,12 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorRestartTest, PRE_MigrateOnRestart) {
       g_browser_process->profile_manager()->GetPrimaryUserProfile();
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    const base::FilePath new_profile_data_directory =
-        profile->GetPath().Append(kLacrosProfileDir);
+    const base::FilePath new_user_data_directory =
+        profile->GetPath().Append(kLacrosDir);
     // Make sure that lacros directory does not exist before migration.
-    ASSERT_FALSE(base::DirectoryExists(new_profile_data_directory));
+    ASSERT_FALSE(base::DirectoryExists(new_user_data_directory));
     ASSERT_FALSE(base::PathExists(
-        new_profile_data_directory.Append(chrome::kPreferencesFilename)));
+        new_user_data_directory.Append(chrome::kPreferencesFilename)));
   }
 }
 
@@ -76,12 +76,13 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorRestartTest, MigrateOnRestart) {
       g_browser_process->profile_manager()->GetPrimaryUserProfile();
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    const base::FilePath new_profile_data_directory =
-        profile->GetPath().Append(kLacrosProfileDir);
+    const base::FilePath new_user_data_directory =
+        profile->GetPath().Append(kLacrosDir);
     // Check that the new profile data directory is created.
-    ASSERT_TRUE(base::DirectoryExists(new_profile_data_directory));
-    ASSERT_TRUE(base::PathExists(
-        new_profile_data_directory.Append(chrome::kPreferencesFilename)));
+    ASSERT_TRUE(base::DirectoryExists(new_user_data_directory));
+    ASSERT_TRUE(
+        base::PathExists(new_user_data_directory.Append(kLacrosProfilePath)
+                             .Append(chrome::kPreferencesFilename)));
   }
 }
 }  // namespace ash
