@@ -41,13 +41,18 @@ contains the culprit Chrome crash and backtrace.
 
 There a couple ways to disable a test on Chrome's builders:
 - **With a full CrOS checkout**: If you have a full CrOS checkout, you can add
-the `informational` attribute to the test's definition (see [Tast attributes]
-for more info). This can take time (ie: many hours) to land and propagate onto
-Chrome's builders. So if you need the test disabled ASAP, consult the next
-option.
+the `informational` [attribute] to the test's definition. (You may be able to
+bypass the need for a full CrOS checkout by using the `Edit code` button in
+codesearch UI, but this flow is unverified.) This can take time (ie: many hours)
+to land and propagate onto Chrome's builders. So if you need the test disabled
+ASAP, consult the next option.
 - **With only a Chromium checkout**: You can also add the test to the list of
 disabled tests for the step's GN target. For example, to disable a test in the
-`chrome_all_tast_tests` step, add it to [this list].
+`chrome_all_tast_tests` step, add it to [this list]. **Note**: If the test is
+failing consistently, and you only disable it here, it will likely start to fail
+in the next [Chrome uprev] on CrOS's builders, which can lead to further
+problems down the road. So please make sure you pursue the first option as well
+in that case.
 
 In both cases, please make sure a bug is filed for the test, and route it to
 the appropriate owners.
@@ -114,7 +119,7 @@ To run a Tast test the same way it's ran on Chrome's builders:
 >TODO: Add instructions for rerunning these tests locally.
 
 
-[linux-chromeos]: https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
+[linux-chromeos]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/chromeos_build_instructions.md
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
 [failed build]: https://ci.chromium.org/p/chromium/builders/ci/chromeos-kevin-rel/29791
 [ui.WindowControl]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8865053459542681936/+/steps/chrome_all_tast_tests_on_ChromeOS/0/logs/Deterministic_failure:_ui.WindowControl__status_FAILURE_/0
@@ -122,8 +127,9 @@ To run a Tast test the same way it's ran on Chrome's builders:
 [shard #0 isolated out]: https://isolateserver.appspot.com/browse?namespace=default-gzip&hash=3d35c273195f640c69b1cf0d15d19d9868e3f593
 [tests/ui.WindowControl/messages]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=baefbcfd24c02b3ada4617d259dc6b4220b413b9&as=messages
 [system_logs/chrome/chrome_20201029-195153]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=272166c85f190c336a9885f0267cbdea912e31da&as=chrome_20201029-195153
-[Tast attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[attribute]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [this list]: https://codesearch.chromium.org/chromium/src/chromeos/tast_control.gni
-[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
-[deploy_chrome.py]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md#Deploying-Chrome-to-the-device
-[here]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md#in-simple-chrome
+[Chrome uprev]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/chrome_commit_pipeline.md#the-chrome-os-commit-pipeline-for-chrome-changes
+[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md
+[deploy_chrome.py]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md#Deploying-Chrome-to-the-device
+[here]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/cros_vm.md#in-simple-chrome
