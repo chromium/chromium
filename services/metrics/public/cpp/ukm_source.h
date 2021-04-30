@@ -81,6 +81,27 @@ class METRICS_EXPORT UkmSource {
     // and same page history navigation.
     bool is_same_document_navigation = false;
 
+    // Represents the same origin status of the navigation compared to the
+    // previous document.
+    enum SameOriginStatus {
+      UNSET = 0,
+      SAME_ORIGIN,
+      CROSS_ORIGIN,
+    };
+
+    // Whether this is the same origin as the previous document.
+    //
+    // This is set to the NavigationHandle's same origin state when the
+    // navigation is committed, is not a same document navigation and is not
+    // committed as an error page. Otherwise, this remains unset.
+    SameOriginStatus same_origin_status = SameOriginStatus::UNSET;
+
+    // Whether this navigation is initiated by the renderer.
+    bool is_renderer_initiated = false;
+
+    // Whether the navigation committed an error page.
+    bool is_error_page = false;
+
     // The navigation start time relative to session start. The navigation
     // time within session should be monotonically increasing.
     base::Optional<base::TimeTicks> navigation_time;

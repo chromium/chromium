@@ -55,6 +55,10 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(IsInPrimaryMainFrame, bool());
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
+  bool IsSameOrigin() override {
+    NOTIMPLEMENTED();
+    return false;
+  }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalFrameRoutingId());
   bool IsServedFromBackForwardCache() override {

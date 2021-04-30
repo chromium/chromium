@@ -281,6 +281,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsInMainFrame() override;
   bool IsInPrimaryMainFrame() override;
   bool IsRendererInitiated() override;
+  bool IsSameOrigin() override;
   bool WasServerRedirect() override;
   const std::vector<GURL>& GetRedirectChain() override;
   int GetFrameTreeNodeId() override;
@@ -1332,6 +1333,7 @@ class CONTENT_EXPORT NavigationRequest
   mojom::BeginNavigationParamsPtr begin_params_;
   mojom::CommitNavigationParamsPtr commit_params_;
   bool browser_initiated_;
+  bool same_origin_ = false;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle
   // is created. This can be null if the embedded did not provide a

@@ -5286,18 +5286,23 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
         render_frame_host_->GetProcess()->GetID());
   }
 
+  RenderFrameHostImpl* previous_render_frame_host =
+      frame_tree_node_->current_frame_host();
+
   // Record metrics for the time it takes to get to this state from the
   // beginning of the navigation.
   if (!IsSameDocument() && !is_error) {
-    is_same_process_ =
-        render_frame_host_->GetProcess()->GetID() ==
-        frame_tree_node_->current_frame_host()->GetProcess()->GetID();
+    is_same_process_ = render_frame_host_->GetProcess()->GetID() ==
+                       previous_render_frame_host->GetProcess()->GetID();
 
-    RecordReadyToCommitMetrics(frame_tree_node_->current_frame_host(),
-                               render_frame_host_, *common_params_.get(),
-                               ready_to_commit_time_,
+    RecordReadyToCommitMetrics(previous_render_frame_host, render_frame_host_,
+                               *common_params_.get(), ready_to_commit_time_,
                                origin_agent_cluster_end_result_);
   }
+
+  // TODO(https://crbug.com/888079) Take sandbox into account.
+  same_origin_ = (previous_render_frame_host->GetLastCommittedOrigin() ==
+                  GetOriginForURLLoaderFactory());
 
   SetExpectedProcess(render_frame_host_->GetProcess());
 
@@ -5695,6 +5700,11 @@ SiteInstanceImpl* NavigationRequest::GetSourceSiteInstance() {
 
 bool NavigationRequest::IsRendererInitiated() {
   return !browser_initiated_;
+}
+
+bool NavigationRequest::IsSameOrigin() {
+  DCHECK(HasCommitted());
+  return same_origin_;
 }
 
 bool NavigationRequest::WasServerRedirect() {

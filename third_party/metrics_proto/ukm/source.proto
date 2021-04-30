@@ -10,7 +10,7 @@ option java_package = "org.chromium.components.metrics";
 package ukm;
 
 // Types of source ids defined by
-// https://cs.chromium.org/chromium/src/base/metrics/ukm_source_id.h?l=19
+// https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_source_id.h
 enum SourceType {
   DEFAULT = 0;
   NAVIGATION_ID = 1;
@@ -23,7 +23,7 @@ enum SourceType {
 }
 
 // Source contains data related to a top-level navigation.
-// Next tag: 17
+// Next tag: 18
 message Source {
   // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
   enum UrlScheme {
@@ -92,6 +92,39 @@ message Source {
   // document navigations are fragment navigations, pushState/replaceState,
   // and same page history navigation.
   optional bool is_same_document_navigation = 13;
+
+  // This signifies if the reported source is a navigation to the same origin as
+  // the previous document.
+  // Its value is "unset" for error pages and same document navigations.
+  // It is "same origin" when the previous document is of the same origin as the
+  // one we're navigating to.
+  // Otherwise, it is "cross origin".
+  enum SameOriginStatus {
+    UNSET = 0;
+    SAME_ORIGIN = 1;
+    CROSS_ORIGIN = 2;
+  }
+
+  message NavigationMetadata {
+    // Whether this is the same origin as the previous document, cross-origin or
+    // unset.
+    optional SameOriginStatus same_origin_status = 1;
+
+    // Whether this navigation is initiated by the renderer.
+    // Renderer-initiated navigations include navigations that were triggered
+    // from Javascript, by users interacting with the content (e.g. clicking
+    // on <a> links or submitting forms, or by client-side redirects.
+    // On the other hand, we have browser-initiated navigations, e.g. ones
+    // triggered by the user interacting with the browser's UI.
+    optional bool is_renderer_initiated = 2;
+
+    // Whether the navigation committed an error page, as a result of a network
+    // error.
+    optional bool is_error_page = 3;
+  }
+
+  // Metadata about the navigation that is set when the URL is recorded.
+  optional NavigationMetadata navigation_metadata = 17;
 
   // The URL of the source, as recorded in history. If this URL has not been
   // discovered by Google's crawler, it should not be recorded.

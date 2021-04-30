@@ -120,6 +120,16 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   //  * any other "explicit" URL navigations, e.g. bookmarks
   virtual bool IsRendererInitiated() = 0;
 
+  // Whether the previous document in this frame was same-origin with the new
+  // one created by this navigation.
+  //
+  // |HasCommitted()| must be true before calling this function.
+  //
+  // Note: This doesn't take the initiator of the navigation into consideration.
+  // For instance, a parent (A) can initiate a navigation in its iframe,
+  // replacing document (B) by (C). This methods compare (B) with (C).
+  virtual bool IsSameOrigin() = 0;
+
   // Returns the FrameTreeNode ID for the frame in which the navigation is
   // performed. This ID is browser-global and uniquely identifies a frame that
   // hosts content. The identifier is fixed at the creation of the frame and

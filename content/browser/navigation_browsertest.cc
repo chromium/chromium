@@ -224,6 +224,23 @@ class DidStartNavigationCallback : public WebContentsObserver {
   base::OnceCallback<void(NavigationHandle*)> callback_;
 };
 
+// Helper class. Immediately run a callback when a navigation finishes.
+class DidFinishNavigationCallback : public WebContentsObserver {
+ public:
+  explicit DidFinishNavigationCallback(
+      WebContents* web_contents,
+      base::OnceCallback<void(NavigationHandle*)> callback)
+      : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+  ~DidFinishNavigationCallback() final = default;
+
+ private:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) final {
+    if (callback_)
+      std::move(callback_).Run(navigation_handle);
+  }
+  base::OnceCallback<void(NavigationHandle*)> callback_;
+};
+
 const char* non_cacheable_html_response =
     "HTTP/1.1 200 OK\n"
     "cache-control: no-cache, no-store, must-revalidate\n"
@@ -4870,6 +4887,208 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
 
   VerifyResultsOfAboutBlankNavigation(subframe, main_frame);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameOriginFlagOfSameOriginAboutBlankNavigation) {
+  GURL parent_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  GURL iframe_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), parent_url));
+
+  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    let iframe = document.createElement('iframe');
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                     iframe_url)));
+  WaitForLoadStop(shell()->web_contents());
+
+  base::RunLoop loop;
+  DidFinishNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        ASSERT_TRUE(handle->HasCommitted());
+        EXPECT_TRUE(handle->IsSameOrigin());
+        loop.Quit();
+      }));
+
+  // Changing the src to trigger DidFinishNavigationCallback
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    document.querySelector("iframe").src = 'about:blank';
+  )"));
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameOriginFlagOfCrossOriginAboutBlankNavigation) {
+  GURL parent_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  GURL iframe_url(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), parent_url));
+
+  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    let iframe = document.createElement('iframe');
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                     iframe_url)));
+  WaitForLoadStop(shell()->web_contents());
+
+  base::RunLoop loop;
+  DidFinishNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        ASSERT_TRUE(handle->HasCommitted());
+        EXPECT_FALSE(handle->IsSameOrigin());
+        loop.Quit();
+      }));
+
+  // Changing the src to trigger DidFinishNavigationCallback
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    document.querySelector("iframe").src = 'about:blank';
+  )"));
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameOriginFlagOfSrcdocNavigation) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL cross_origin = embedded_test_server()->GetURL("b.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigating to about:srcdoc from the initial empty document is always a
+  // same-origin navigation:
+  // - about:srcdoc is same-origin with the parent.
+  // - the initial empty document is same-origin with the parent.
+  {
+    base::RunLoop loop;
+    DidFinishNavigationCallback callback(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationHandle* handle) {
+          ASSERT_TRUE(handle->HasCommitted());
+          EXPECT_TRUE(handle->IsSameOrigin());
+          loop.Quit();
+        }));
+    EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      let iframe = document.createElement('iframe');
+      iframe.srcdoc = "dummy content";
+      document.body.appendChild(iframe);
+    )"));
+    loop.Run();
+  }
+
+  // Now, navigate cross-origin, and back to about:srcdoc with a brand new
+  // iframe. The navigation is now considered cross-origin.
+  // - the previous document is cross-origin with the parent.
+  // - about:srcdoc is same-origin with the parent.
+  {
+    EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+      let iframe2 = document.createElement('iframe');
+      iframe2.src = $1;
+      iframe2.id = 'iframe2';
+      document.body.appendChild(iframe2);
+    )",
+                                                       cross_origin)));
+    WaitForLoadStop(shell()->web_contents());
+
+    base::RunLoop loop;
+    DidFinishNavigationCallback callback(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationHandle* handle) {
+          ASSERT_TRUE(handle->HasCommitted());
+          EXPECT_FALSE(handle->IsSameOrigin());
+          loop.Quit();
+        }));
+    EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      document.getElementById("iframe2").srcdoc = "dummy content";
+    )"));
+    loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameOriginFlagOfAboutBlankToAboutBlankNavigation) {
+  GURL parent_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  GURL iframe_url(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), parent_url));
+
+  EXPECT_TRUE(ExecJs(main_frame(), JsReplace(R"(
+    let iframe = document.createElement('iframe');
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                             iframe_url)));
+  WaitForLoadStop(shell()->web_contents());
+
+  // Test a same-origin about:blank navigation
+  {
+    base::RunLoop loop;
+    DidFinishNavigationCallback callback(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationHandle* handle) {
+          ASSERT_TRUE(handle->HasCommitted());
+          EXPECT_TRUE(handle->IsSameOrigin());
+          loop.Quit();
+        }));
+    RenderFrameHostImpl* child_document =
+        current_frame_host()->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(child_document, R"(location.href = "about:blank";)"));
+    loop.Run();
+  }
+
+  // Test another same-origin about:blank navigation
+  {
+    base::RunLoop loop;
+    DidFinishNavigationCallback callback(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationHandle* handle) {
+          ASSERT_TRUE(handle->HasCommitted());
+          EXPECT_TRUE(handle->IsSameOrigin());
+          loop.Quit();
+        }));
+    RenderFrameHostImpl* child_document =
+        current_frame_host()->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(child_document, R"(location.href = "about:blank";)"));
+    loop.Run();
+  }
+
+  // Test a cross-origin about:blank navigation
+  {
+    base::RunLoop loop;
+    DidFinishNavigationCallback callback(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationHandle* handle) {
+          ASSERT_TRUE(handle->HasCommitted());
+          EXPECT_FALSE(handle->IsSameOrigin());
+          loop.Quit();
+        }));
+    EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      document.querySelector('iframe').src = "about:blank";
+    )"));
+    loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameOriginOfSandboxedIframe) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+
+  base::RunLoop loop;
+  DidFinishNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        ASSERT_TRUE(handle->HasCommitted());
+        // TODO(https://crbug.com/888079) Take sandbox into account. Same Origin
+        // should be true
+        EXPECT_FALSE(handle->IsSameOrigin());
+        loop.Quit();
+      }));
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    let iframe = document.createElement('iframe');
+    iframe.sandbox = "allow-scripts";
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+  loop.Run();
 }
 
 // The test below verifies that an initial empty document has a functional
