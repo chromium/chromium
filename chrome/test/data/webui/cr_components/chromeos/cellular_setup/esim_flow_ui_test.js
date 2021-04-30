@@ -184,6 +184,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     assertEquals(
         eSimPage.buttonState.forward, cellularSetup.ButtonState.DISABLED);
+    assertEquals(
+        eSimPage.buttonState.cancel, cellularSetup.ButtonState.DISABLED);
     assertEquals(eSimPage.buttonState.backward, newBackButtonState);
     if (checkShowBusyState) {
       assertTrue(page.showBusy);
@@ -226,10 +228,20 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(exitCellularSetupEventFired);
   }
 
-  function assertButtonState(forwardButtonShouldBeEnabled, backButtonState) {
+  /**
+   * @param {boolean} forwardButtonShouldBeEnabled
+   * @param {cellularSetup.ButtonState} backButtonState
+   * @param {boolean=} opt_cancelButtonShouldBeDisabled
+   */
+  function assertButtonState(
+      forwardButtonShouldBeEnabled, backButtonState,
+      opt_cancelButtonShouldBeDisabled) {
     const buttonState = eSimPage.buttonState;
     assertEquals(buttonState.backward, backButtonState);
-    assertEquals(buttonState.cancel, cellularSetup.ButtonState.ENABLED);
+    assertEquals(
+        buttonState.cancel,
+        opt_cancelButtonShouldBeDisabled ? cellularSetup.ButtonState.DISABLED :
+                                           cellularSetup.ButtonState.ENABLED);
     assertEquals(
         buttonState.forward,
         forwardButtonShouldBeEnabled ? cellularSetup.ButtonState.ENABLED :
@@ -245,8 +257,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertSelectedPage(
         cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled*/ false,
-        /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+        /*forwardButtonShouldBeEnabled=*/ false,
+        /*backButtonState=*/ cellularSetup.ButtonState.HIDDEN,
+        /*opt_cancelButtonShouldBeDisabled=*/ true);
     await flushAsync();
   }
 

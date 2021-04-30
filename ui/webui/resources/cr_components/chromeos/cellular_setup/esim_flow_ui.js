@@ -433,12 +433,16 @@ cr.define('cellular_setup', function() {
           this.delegate.shouldShowCancelButton() ?
           cellularSetup.ButtonState.ENABLED :
           cellularSetup.ButtonState.HIDDEN;
+      const cancelButtonStateIfDisabled =
+          this.delegate.shouldShowCancelButton() ?
+          cellularSetup.ButtonState.DISABLED :
+          cellularSetup.ButtonState.HIDDEN;
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
             backward: cellularSetup.ButtonState.HIDDEN,
-            cancel: cancelButtonStateIfEnabled,
+            cancel: cancelButtonStateIfDisabled,
             forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
@@ -454,7 +458,7 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
           buttonState = this.generateButtonStateForActivationPage_(
-              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*enableForwardBtn*/ false, cancelButtonStateIfDisabled,
               /*isInstalling*/ true);
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
@@ -469,7 +473,7 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
           buttonState = this.generateButtonStateForConfirmationPage_(
-              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*enableForwardBtn*/ false, cancelButtonStateIfDisabled,
               /*isInstalling*/ true);
           break;
         case ESimUiState.PROFILE_SELECTION:
@@ -485,7 +489,7 @@ cr.define('cellular_setup', function() {
         case ESimUiState.PROFILE_SELECTION_INSTALLING:
           buttonState = {
             backward: cellularSetup.ButtonState.HIDDEN,
-            cancel: cancelButtonStateIfEnabled,
+            cancel: cancelButtonStateIfDisabled,
             forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
