@@ -238,7 +238,10 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
   serializer_.WriteHeader();
 
   // Serialize the value and handle errors.
-  v8::TryCatch try_catch(script_state_->GetIsolate());
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   bool wrote_value;
   if (!serializer_.WriteValue(script_state_->GetContext(), value)
            .To(&wrote_value)) {
