@@ -32,12 +32,13 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "weblayer/public/tab.h"
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#include "ui/display/screen.h"
+#include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
 #endif
 
@@ -296,9 +297,10 @@ END_METADATA
 
 }  // namespace
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
 // static
 wm::WMState* Shell::wm_state_ = nullptr;
+display::Screen* Shell::screen_ = nullptr;
 #endif
 // static
 views::ViewsDelegate* Shell::views_delegate_ = nullptr;
@@ -309,8 +311,11 @@ void Shell::PlatformInitialize(const gfx::Size& default_window_size) {
   _setmode(_fileno(stdout), _O_BINARY);
   _setmode(_fileno(stderr), _O_BINARY);
 #endif
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
   wm_state_ = new wm::WMState;
-  views::InstallDesktopScreenIfNecessary();
+  CHECK(!display::Screen::GetScreen());
+  screen_ = views::CreateDesktopScreen().release();
+#endif
   views_delegate_ = new views::DesktopTestViewsDelegate();
 }
 
@@ -320,6 +325,8 @@ void Shell::PlatformExit() {
   // delete platform_;
   // platform_ = nullptr;
 #if defined(USE_AURA)
+  delete screen_;
+  screen_ = nullptr;
   delete wm_state_;
   wm_state_ = nullptr;
 #endif

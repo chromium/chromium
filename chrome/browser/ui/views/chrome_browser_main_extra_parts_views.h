@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -20,6 +21,11 @@ class UiDevToolsServer;
 }
 
 #if defined(USE_AURA)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+namespace display {
+class Screen;
+}
+#endif
 namespace wm {
 class WMState;
 }
@@ -57,6 +63,9 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   std::unique_ptr<DevtoolsProcessObserver> devtools_process_observer_;
 
 #if defined(USE_AURA)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<display::Screen> screen_;
+#endif
   std::unique_ptr<wm::WMState> wm_state_;
 #endif
 

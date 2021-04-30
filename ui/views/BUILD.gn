@@ -793,7 +793,6 @@ component("views") {
         "widget/desktop_aura/desktop_focus_rules.cc",
         "widget/desktop_aura/desktop_native_cursor_manager.cc",
         "widget/desktop_aura/desktop_native_widget_aura.cc",
-        "widget/desktop_aura/desktop_screen.cc",
         "widget/desktop_aura/desktop_screen_position_client.cc",
         "widget/desktop_aura/desktop_window_tree_host.cc",
       ]

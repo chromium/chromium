@@ -42,6 +42,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/wm/test/wm_test_helper.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
 #endif
@@ -64,6 +65,7 @@ struct ShellPlatformDelegate::PlatformData {
   std::unique_ptr<wm::WMTestHelper> wm_test_helper;
 #else
   std::unique_ptr<wm::WMState> wm_state;
+  std::unique_ptr<display::Screen> screen;
 #endif
 
   // TODO(danakj): This looks unused?
@@ -331,7 +333,8 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
       std::make_unique<wm::WMTestHelper>(default_window_size);
 #else
   platform_->wm_state = std::make_unique<wm::WMState>();
-  views::InstallDesktopScreenIfNecessary();
+  CHECK(!display::Screen::GetScreen());
+  platform_->screen = views::CreateDesktopScreen();
 #endif
 
   platform_->views_delegate =

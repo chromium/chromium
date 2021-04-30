@@ -697,6 +697,12 @@ void SitePerProcessBrowserTestBase::ForceUpdateViewportIntersection(
       ->UpdateViewportIntersectionInternal(intersection_state);
 }
 
+void SitePerProcessBrowserTestBase::RunPostedTasks() {
+  base::RunLoop loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, loop.QuitClosure());
+  loop.Run();
+}
+
 //
 // SitePerProcessBrowserTest
 //
@@ -8442,6 +8448,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                               GlobalRoutingID(process1->GetID(), routing_id1)));
   EXPECT_FALSE(base::Contains(web_contents()->pending_widgets_,
                               GlobalRoutingID(process2->GetID(), routing_id2)));
+
+  // There are posted tasks that must be run before the test shuts down, lest
+  // they access deleted state.
+  RunPostedTasks();
 }
 #endif
 

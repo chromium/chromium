@@ -37,6 +37,8 @@ class SitePerProcessBrowserTestBase : public ContentBrowserTest {
       FrameTreeNode* frame_tree_node,
       const blink::mojom::ViewportIntersectionState& intersection_state);
 
+  void RunPostedTasks();
+
  private:
   FrameTreeVisualizer visualizer_;
   base::test::ScopedFeatureList feature_list_;

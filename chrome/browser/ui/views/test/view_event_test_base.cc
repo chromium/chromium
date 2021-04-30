@@ -112,7 +112,7 @@ ViewEventTestBase::ViewEventTestBase() {
         views::test::TestDesktopScreenOzone::GetInstance());
 #endif
   if (!display::Screen::GetScreen())
-    screen_.reset(views::CreateDesktopScreen());
+    screen_ = views::CreateDesktopScreen();
 #endif
 }
 

@@ -322,7 +322,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
     display::Screen::SetScreenInstance(screen_.get());
 #else
     // TODO(crbug.com/756680): Refactor DesktopScreen out of views.
-    screen_.reset(views::CreateDesktopScreen());
+    screen_ = views::CreateDesktopScreen();
 #endif
   }
 

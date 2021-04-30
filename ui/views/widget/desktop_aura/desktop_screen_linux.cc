@@ -58,13 +58,13 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
 
 #endif
 
-display::Screen* CreateDesktopScreen() {
+std::unique_ptr<display::Screen> CreateDesktopScreen() {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform())
-    return new DesktopScreenOzoneLinux();
+    return std::make_unique<DesktopScreenOzoneLinux>();
 #endif
 #if defined(USE_X11)
-  auto* screen = new DesktopScreenX11();
+  auto screen = std::make_unique<DesktopScreenX11>();
   screen->Init();
   return screen;
 #else

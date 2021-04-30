@@ -27,6 +27,10 @@ class ViewsContentClientMainPartsDesktopAura
 
   // ViewsContentClientMainPartsAura:
   int PreMainMessageLoopRun() override;
+  void PostMainMessageLoopRun() override;
+
+ private:
+  std::unique_ptr<display::Screen> screen_;
 };
 
 ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
@@ -38,11 +42,17 @@ ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
 int ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
 
-  views::CreateDesktopScreen();
+  screen_ = views::CreateDesktopScreen();
 
   views_content_client()->OnPreMainMessageLoopRun(browser_context(), nullptr);
 
   return content::RESULT_CODE_NORMAL_EXIT;
+}
+
+void ViewsContentClientMainPartsDesktopAura::PostMainMessageLoopRun() {
+  screen_.reset();
+
+  ViewsContentClientMainPartsAura::PostMainMessageLoopRun();
 }
 
 }  // namespace

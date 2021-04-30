@@ -5995,6 +5995,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // diverted to a different RenderWidgetHostView due to mouse capture.
   EXPECT_TRUE(popup_monitor.EventWasReceived());
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  // There are posted tasks that must be run before the test shuts down, lest
+  // they access deleted state.
+  RunPostedTasks();
 }
 
 // Test that clicking a select element in a nested out-of-process iframe creates
@@ -6122,6 +6126,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     EXPECT_EQ(popup_rect.y() - rwhv_root->GetViewBounds().y(), 248);
   }
 #endif
+
+  // There are posted tasks that must be run before the test shuts down, lest
+  // they access deleted state.
+  RunPostedTasks();
 }
 
 // Verify that scrolling the main frame correctly updates the position to
@@ -6235,6 +6243,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   popup_waiter->Wait();
   EXPECT_EQ(unscrolled_popup_rect.y(),
             popup_waiter->last_initial_rect().y() + 20);
+
+  // There are posted tasks that must be run before the test shuts down, lest
+  // they access deleted state.
+  RunPostedTasks();
 }
 #endif  // !defined(OS_ANDROID)
 
