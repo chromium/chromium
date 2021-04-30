@@ -37,6 +37,10 @@
 namespace ash {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when moved to ash::
+using ::chromeos::ScopedStubInstallAttributes;
+using ::chromeos::StubInstallAttributes;
+
 // Helper class to wait for user adding screen to finish.
 class UserAddingScreenWaiter : public UserAddingScreen::Observer {
  public:
