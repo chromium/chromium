@@ -66,10 +66,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
 
   void OnUserDecisionForTesting(UserDecision decision,
                                 AutofillProfile edited_profile) {
-    if (decision != UserDecision::kUserNotAsked) {
-      // If the user was asked, make sure the prompt is mared as being shown.
-      pending_import()->set_prompt_was_shown();
-    }
+    pending_import()->set_prompt_was_shown();
     OnUserDecision(decision, edited_profile);
   }
 
@@ -249,6 +246,26 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile) {
 }
 
 // Test that a profile is correctly imported when no other profile is stored
+// yet. Here, `kUserNotAsked` is supplied which is done as a fallback in case
+// the UI is unavailable for technical reasons.
+TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_UserNotAskedFallback) {
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type = AutofillProfileImportType::kNewProfile,
+      .is_profile_change_expected = true,
+      .merge_candidate = base::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {observed_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test that a profile is correctly imported when no other profile is stored
 // yet. Here, the profile is edited by the user.
 TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Edited) {
   AutofillProfile observed_profile = test::StandardProfile();
@@ -356,6 +373,30 @@ TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateVerifiedProfile) {
       .merge_candidate = base::nullopt,
       .import_candidate = base::nullopt,
       .expected_final_profiles = {final_profile}};
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a profile that can only be merged with a
+// settings-visible change. Here, `kUserNotAsked` is returned as the fallback
+// mechanism when the UI is not available for technical reasons.
+TEST_F(AddressProfileSaveManagerTest,
+       UserConfirmableMerge_UserNotAskedFallback) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  AutofillProfile final_profile = observed_profile;
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
+      .is_profile_change_expected = true,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {final_profile}};
+
   TestImportScenario(test_scenario);
 }
 
