@@ -5148,6 +5148,61 @@
             ]
         }
     ],
+    "OptionalToolbarButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Adaptive_AlwaysNewTab_20210428",
+                    "params": {
+                        "mode": "always-new-tab"
+                    },
+                    "enable_features": [
+                        "AdaptiveButtonInTopToolbar"
+                    ]
+                },
+                {
+                    "name": "Adaptive_AlwaysShare_20210428",
+                    "params": {
+                        "mode": "always-share"
+                    },
+                    "enable_features": [
+                        "AdaptiveButtonInTopToolbar"
+                    ]
+                },
+                {
+                    "name": "Adaptive_AlwaysVoice_20210428",
+                    "params": {
+                        "mode": "always-voice"
+                    },
+                    "enable_features": [
+                        "AdaptiveButtonInTopToolbar"
+                    ]
+                },
+                {
+                    "name": "NonAdaptiveMic_Actions_20210423",
+                    "params": {
+                        "colorful_mic": "true",
+                        "min_agsa_version": "12.15"
+                    },
+                    "enable_features": [
+                        "AssistantIntentPageUrl",
+                        "AssistantIntentTranslateInfo",
+                        "OmniboxAssistantVoiceSearch",
+                        "TranslateIntent",
+                        "VoiceButtonInTopToolbar",
+                        "VoiceSearchAudioCapturePolicy"
+                    ],
+                    "disable_features": [
+                        "IPH_MicToolbar",
+                        "ToolbarMicIphAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfBlinkCors": [
         {
             "platforms": [
