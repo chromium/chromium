@@ -219,6 +219,20 @@ void PermissionContextBase::UserMadePermissionDecision(
     const GURL& embedding_origin,
     ContentSetting content_setting) {}
 
+std::unique_ptr<PermissionRequest>
+PermissionContextBase::CreatePermissionRequest(
+    const GURL& request_origin,
+    ContentSettingsType content_settings_type,
+    bool has_gesture,
+    content::WebContents* web_contents,
+    PermissionRequestImpl::PermissionDecidedCallback
+        permission_decided_callback,
+    base::OnceClosure delete_callback) const {
+  return std::make_unique<PermissionRequestImpl>(
+      request_origin, content_settings_type, has_gesture,
+      std::move(permission_decided_callback), std::move(delete_callback));
+}
+
 PermissionResult PermissionContextBase::GetPermissionStatus(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -373,14 +387,13 @@ void PermissionContextBase::DecidePermission(
   if (!permission_request_manager)
     return;
 
-  std::unique_ptr<PermissionRequest> request_ptr =
-      std::make_unique<PermissionRequestImpl>(
-          requesting_origin, content_settings_type_, user_gesture,
-          base::BindOnce(&PermissionContextBase::PermissionDecided,
-                         weak_factory_.GetWeakPtr(), id, requesting_origin,
-                         embedding_origin, std::move(callback)),
-          base::BindOnce(&PermissionContextBase::CleanUpRequest,
-                         weak_factory_.GetWeakPtr(), id));
+  std::unique_ptr<PermissionRequest> request_ptr = CreatePermissionRequest(
+      requesting_origin, content_settings_type_, user_gesture, web_contents,
+      base::BindOnce(&PermissionContextBase::PermissionDecided,
+                     weak_factory_.GetWeakPtr(), id, requesting_origin,
+                     embedding_origin, std::move(callback)),
+      base::BindOnce(&PermissionContextBase::CleanUpRequest,
+                     weak_factory_.GetWeakPtr(), id));
   PermissionRequest* request = request_ptr.get();
 
   bool inserted =

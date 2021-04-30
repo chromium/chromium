@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_impl.h"
 #include "components/permissions/permission_result.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
@@ -182,6 +183,17 @@ class PermissionContextBase : public KeyedService,
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
                                ContentSettingsType content_type) override;
+
+  // Implementors can override this method to use a different PermissionRequest
+  // implementation.
+  virtual std::unique_ptr<PermissionRequest> CreatePermissionRequest(
+      const GURL& request_origin,
+      ContentSettingsType content_settings_type,
+      bool has_gesture,
+      content::WebContents* web_contents,
+      PermissionRequestImpl::PermissionDecidedCallback
+          permission_decided_callback,
+      base::OnceClosure delete_callback) const;
 
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;

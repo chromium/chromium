@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
+class GURL;
 class Profile;
 
 namespace base {
@@ -68,6 +70,18 @@ std::string GetProfileCategoryForLogging(Profile* profile);
 
 // Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
 bool IsChromeOs();
+
+// Returns a vector of file extensions of the form ".csv" which are handled by
+// the app for `url`. It is an error to call this with a URL that doesn't
+// correspond to an app in `profile`.
+std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
+                                                          const GURL& url);
+
+// Returns a display-ready string that holds all the file extensions handled by
+// the app for `url`. It is an error to call this with a URL that doesn't
+// correspond to an app in `profile`.
+std::u16string GetFileExtensionsHandledByWebAppDisplayedAsList(Profile* profile,
+                                                               const GURL& url);
 
 }  // namespace web_app
 

@@ -32,7 +32,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
-#include "components/permissions/contexts/file_handling_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
@@ -51,6 +50,7 @@
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
+#include "chrome/browser/web_applications/components/file_handling_permission_context.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/nfc_permission_context.h"
 #endif
@@ -141,8 +141,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FontAccessPermissionContext>(profile);
   permission_contexts[ContentSettingsType::DISPLAY_CAPTURE] =
       std::make_unique<DisplayCapturePermissionContext>(profile);
+#if !defined(OS_ANDROID)  // File Handling is not available on Android.
   permission_contexts[ContentSettingsType::FILE_HANDLING] =
       std::make_unique<FileHandlingPermissionContext>(profile);
+#endif  // !defined(OS_ANDROID)
   return permission_contexts;
 }
 }  // namespace

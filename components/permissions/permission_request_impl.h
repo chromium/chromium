@@ -35,14 +35,18 @@ class PermissionRequestImpl : public PermissionRequest {
 
   ~PermissionRequestImpl() override;
 
+// PermissionRequest:
+#if !defined(OS_ANDROID)
+  // Implementors can override this method to customize the message text.
+  std::u16string GetMessageTextFragment() const override;
+#endif
+
  private:
-  // PermissionRequest:
   RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
   std::u16string GetMessageText() const override;
 #else
   base::Optional<std::u16string> GetChipText() const override;
-  std::u16string GetMessageTextFragment() const override;
 #endif
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;

@@ -5,10 +5,18 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
@@ -129,6 +137,27 @@ bool IsChromeOs() {
 #else
   return false;
 #endif
+}
+
+std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
+                                                          const GURL& url) {
+  auto* provider = WebAppProviderBase::GetProviderBase(profile);
+  const AppRegistrar& registrar = provider->registrar();
+  const apps::FileHandlers* handlers =
+      registrar.GetAppFileHandlers(*registrar.FindAppWithUrlInScope(url));
+  DCHECK(handlers);
+  std::set<std::string> extensions =
+      apps::GetFileExtensionsFromFileHandlers(*handlers);
+  return std::vector<std::string>(extensions.begin(), extensions.end());
+}
+
+std::u16string GetFileExtensionsHandledByWebAppDisplayedAsList(
+    Profile* profile,
+    const GURL& url) {
+  return base::UTF8ToUTF16(base::JoinString(
+      GetFileExtensionsHandledByWebApp(profile, url),
+      l10n_util::GetStringUTF8(
+          IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
 }
 
 }  // namespace web_app
