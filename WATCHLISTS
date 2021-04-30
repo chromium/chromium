@@ -159,7 +159,9 @@
       'filepath': 'ash/ambient/ui/.*assistant.*'\
                   '|ash/app_list/views/assistant/'\
                   '|ash/assistant/'\
+                  '|ash/wallpaper/'\
                   '|chromeos/assistant/'\
+                  '|chromeos/components/personalization_app/'\
                   '|chromeos/services/assistant/'\
                   '|chrome/browser/ui/ash/assistant/'
     },
