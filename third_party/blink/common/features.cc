@@ -922,12 +922,12 @@ const base::Feature kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes{
 // API exposure will be disabled regardless of the OT config.
 // (See https://github.com/WICG/turtledove/blob/main/FLEDGE.md.)
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
-const base::Feature kFledgeInterestGroups{"kFledgeInterestGroups",
+const base::Feature kFledgeInterestGroups{"FledgeInterestGroups",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the availability of the Fledge interest group API as part of the
 // origin trial.
-const base::Feature kFledgeInterestGroupAPI{"kFledgeInterestGroupAPI",
+const base::Feature kFledgeInterestGroupAPI{"FledgeInterestGroupAPI",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
