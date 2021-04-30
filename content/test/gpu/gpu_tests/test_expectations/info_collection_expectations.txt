@@ -64,3 +64,5 @@ crbug.com/1079393 [ win intel-0x3e92 ] InfoCollection_direct_composition [ Failu
 # NVIDIA bots need 456.38+ drivers to use SOFTWARE overlays.
 crbug.com/1113893 [ win nvidia ] InfoCollection_direct_composition [ Failure ]
 
+# InfoCollection_basic is flaky on Fuchsia.
+crbug.com/1154597 [ fuchsia ] InfoCollection_basic [ RetryOnFailure ]
