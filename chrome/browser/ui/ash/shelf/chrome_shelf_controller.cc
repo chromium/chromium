@@ -33,8 +33,6 @@
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_features.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -121,18 +119,6 @@ void SelectItemWithSource(ash::ShelfItemDelegate* delegate,
 // Returns true if the given |item| has a pinned shelf item type.
 bool ItemTypeIsPinned(const ash::ShelfItem& item) {
   return ash::IsPinnedShelfItemType(item.type);
-}
-
-// Returns the app_id of the crostini app that can handle the given web content.
-// Returns the empty string if crostini does not recognise the contents. This is
-// used to prevent crbug.com/855662.
-// TODO(crbug.com/846546): Remove this function when the crostini terminal is
-// less hacky
-std::string GetCrostiniAppIdFromContents(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  base::Optional<std::string> app_id_opt =
-      crostini::CrostiniAppIdFromAppName(browser->app_name());
-  return app_id_opt.value_or("");
 }
 
 }  // namespace
@@ -520,12 +506,6 @@ void ChromeShelfController::UpdateV1AppState(const std::string& app_id) {
 std::string ChromeShelfController::GetAppIDForWebContents(
     content::WebContents* contents) {
   std::string app_id = shelf_controller_helper_->GetAppID(contents);
-  if (!app_id.empty())
-    return app_id;
-
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile()))
-    app_id = GetCrostiniAppIdFromContents(contents);
-
   if (!app_id.empty())
     return app_id;
 

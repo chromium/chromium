@@ -82,7 +82,6 @@ constexpr char kCrostiniAppLaunchResultHistogramRegistered[] =
     "Crostini.AppLaunchResult.Registered";
 constexpr char kCrostiniAppLaunchResultHistogramUnknown[] =
     "Crostini.AppLaunchResult.Unknown";
-constexpr char kCrostiniAppNamePrefix[] = "_crostini_";
 constexpr int64_t kDelayBeforeSpinnerMs = 400;
 
 void OnApplicationLaunched(const std::string& app_id,
@@ -447,19 +446,6 @@ std::string DefaultContainerUserNameForProfile(Profile* profile) {
 
 base::FilePath ContainerChromeOSBaseDirectory() {
   return base::FilePath("/mnt/chromeos");
-}
-
-std::string AppNameFromCrostiniAppId(const std::string& id) {
-  return kCrostiniAppNamePrefix + id;
-}
-
-base::Optional<std::string> CrostiniAppIdFromAppName(
-    const std::string& app_name) {
-  if (!base::StartsWith(app_name, kCrostiniAppNamePrefix,
-                        base::CompareCase::SENSITIVE)) {
-    return base::nullopt;
-  }
-  return app_name.substr(strlen(kCrostiniAppNamePrefix));
 }
 
 void AddNewLxdContainerToPrefs(Profile* profile,

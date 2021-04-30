@@ -7,7 +7,6 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -141,12 +140,6 @@ bool IsBrowserRepresentedInBrowserList(Browser* browser,
     return false;
 
   if (browser->deprecated_is_app()) {
-    // Crostini Terminals always have their own item.
-    // TODO(rjwright): We shouldn't need to special-case Crostini here.
-    // https://crbug.com/846546
-    if (crostini::CrostiniAppIdFromAppName(browser->app_name()))
-      return false;
-
     // V1 App popup windows may have their own item.
     ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
     if (model->ItemByID(id))

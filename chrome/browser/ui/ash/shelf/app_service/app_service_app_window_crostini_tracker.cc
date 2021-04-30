@@ -89,7 +89,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     return;
   }
 
-  // Handle browser windows, such as the Crostini terminal.
+  // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
   if (browser)
     return;
@@ -216,28 +216,10 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     return shelf_id.app_id;
   }
 
-  // Handle browser windows, such as the Crostini terminal.
+  // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
-    base::Optional<std::string> app_id =
-        crostini::CrostiniAppIdFromAppName(browser->app_name());
-    if (!app_id)
-      return std::string();
-
-    // The browser window could be added to InstanceRegistry using Chrome
-    // application's app id, so if the window is for Crostini app, e.g.
-    // terminal, the Chrome instance should be deleted, otherwise, it could
-    // cause inconsistent error.
-    auto* proxy_ = apps::AppServiceProxyFactory::GetForProfile(
-        app_service_controller_->owner()->profile());
-    shelf_id = proxy_->InstanceRegistry().GetShelfId(window);
-    if (shelf_id.app_id != app_id) {
-      app_service_controller_->app_service_instance_helper()->OnInstances(
-          shelf_id.app_id, window, std::string(),
-          apps::InstanceState::kDestroyed);
-    }
-    return app_id.value();
-  }
+  if (browser)
+    return std::string();
 
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that

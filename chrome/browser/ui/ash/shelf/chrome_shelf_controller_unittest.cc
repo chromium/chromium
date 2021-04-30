@@ -4769,37 +4769,6 @@ TEST_F(ChromeShelfControllerTest, CrostiniTerminalPinUnpin) {
   EXPECT_EQ("Chrome, Terminal", GetPinnedAppStatus());
 }
 
-// TODO(crbug.com/846546) Recognising app id from the browser app_name is only
-// necessary because the crostini terminal is a little hacky. Pending a better
-// terminal implementation we should remove this test.
-TEST_F(ChromeShelfControllerTest, CrostiniBrowserWindowsRecogniseShelfItem) {
-  InitShelfController();
-  crostini::CrostiniTestHelper helper(profile());
-
-  // We want to match this shelf item.
-  ash::ShelfItem item;
-  item.id = ash::ShelfID("blah");
-  item.type = ash::ShelfItemType::TYPE_APP;
-  model_->Add(item);
-
-  // We manually create a browser window with the correct app_name, as this is
-  // how the app_id is communicated.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      crostini::AppNameFromCrostiniAppId(item.id.app_id),
-      true /* trusted_srouce */, browser()->window()->GetBounds(), profile(),
-      true /* user_gesture */);
-  params.window = browser()->window();
-  params.type = Browser::TYPE_NORMAL;
-  Browser* b = Browser::Create(params);
-  set_browser(b);
-  chrome::NewTab(browser());
-  browser()->window()->Show();
-
-  EXPECT_EQ(shelf_controller_->GetAppIDForWebContents(
-                browser()->tab_strip_model()->GetActiveWebContents()),
-            item.id.app_id);
-}
-
 // Tests behavior for ensuring some component apps can be marked unpinnable.
 TEST_F(ChromeShelfControllerTest, UnpinnableComponentApps) {
   InitShelfController();

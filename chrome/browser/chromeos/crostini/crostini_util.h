@@ -130,15 +130,6 @@ std::string DefaultContainerUserNameForProfile(Profile* profile);
 // OS host such as within Downloads are shared with the container.
 base::FilePath ContainerChromeOSBaseDirectory();
 
-// The Terminal opens Crosh but overrides the Browser's app_name so that we can
-// identify it as the Crostini Terminal. In the future, we will also use these
-// for Crostini apps marked Terminal=true in their .desktop file.
-std::string AppNameFromCrostiniAppId(const std::string& id);
-
-// Returns nullopt for a non-Crostini app name.
-base::Optional<std::string> CrostiniAppIdFromAppName(
-    const std::string& app_name);
-
 // Returns a list of ports currently being forwarded in Crostini as a JSON
 // object.
 std::string GetActivePortListAsJSON(Profile* profile);

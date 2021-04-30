@@ -661,9 +661,8 @@ bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not track Crostini apps or terminal.  Apps will fail since VMs are not
   // restarted on restore, and we don't want terminal to force the VM to start.
-  if (crostini::CrostiniAppIdFromAppName(browser->app_name()) ||
-      web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-          crostini::kCrostiniTerminalSystemAppId) {
+  if (web_app::GetAppIdFromApplicationName(browser->app_name()) ==
+      crostini::kCrostiniTerminalSystemAppId) {
     return false;
   }
 
