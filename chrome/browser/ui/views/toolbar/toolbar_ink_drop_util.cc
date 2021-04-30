@@ -39,6 +39,7 @@ class ToolbarButtonHighlightPathGenerator
     return path;
   }
 };
+
 }  // namespace
 
 gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
@@ -57,13 +58,6 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
       gfx::Insets(std::max(0, (host_size.height() - inkdrop_dimensions) / 2));
 
   return inkdrop_insets;
-}
-
-std::unique_ptr<views::InkDropHighlight> CreateToolbarInkDropHighlight(
-    const views::InkDropHostView* host_view) {
-  auto highlight = host_view->views::InkDropHostView::CreateInkDropHighlight();
-  highlight->set_visible_opacity(kToolbarInkDropHighlightVisibleOpacity);
-  return highlight;
 }
 
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view) {
@@ -90,4 +84,6 @@ void ConfigureInkDropForToolbar(views::Button* host) {
   host->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
   host->SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   host->SetInkDropHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
+  host->SetInkDropBaseColorCallback(
+      base::BindRepeating(&GetToolbarInkDropBaseColor, host));
 }

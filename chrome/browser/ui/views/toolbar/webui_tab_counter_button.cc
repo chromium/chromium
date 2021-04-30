@@ -612,7 +612,6 @@ void WebUITabCounterButton::RemoveLayerBeneathView(ui::Layer* old_layer) {
 void WebUITabCounterButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   UpdateColors();
-  SetInkDropBaseColor(GetToolbarInkDropBaseColor(this));
 }
 
 void WebUITabCounterButton::Layout() {

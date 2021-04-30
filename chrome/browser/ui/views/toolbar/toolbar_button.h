@@ -116,8 +116,6 @@ class ToolbarButton : public views::LabelButton,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   views::InkDrop* GetInkDrop() override;
   SkColor GetInkDropBaseColor() const override;

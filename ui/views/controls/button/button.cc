@@ -573,14 +573,8 @@ void Button::OnBlur() {
     SchedulePaint();
 }
 
-std::unique_ptr<InkDrop> Button::CreateInkDrop() {
-  std::unique_ptr<InkDrop> ink_drop = InkDropHostView::CreateInkDrop();
-  ink_drop->SetShowHighlightOnFocus(!focus_ring_);
-  return ink_drop;
-}
-
 SkColor Button::GetInkDropBaseColor() const {
-  return ink_drop_base_color_;
+  return InkDropHostView::GetInkDropBaseColor();
 }
 
 void Button::AnimationProgressed(const gfx::Animation* animation) {
@@ -597,6 +591,16 @@ Button::Button(PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
   button_controller_ = std::make_unique<ButtonController>(
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
+  SetCreateInkDropCallback(base::BindRepeating(
+      [](Button* button) {
+        std::unique_ptr<InkDrop> ink_drop =
+            button->CreateDefaultFloodFillInkDropImpl();
+        ink_drop->SetShowHighlightOnFocus(!button->focus_ring());
+        return ink_drop;
+      },
+      base::Unretained(this)));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](Button* button) { return button->ink_drop_base_color_; }, this));
 }
 
 void Button::RequestFocusFromEvent() {

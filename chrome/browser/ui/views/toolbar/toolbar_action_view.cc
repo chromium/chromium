@@ -111,15 +111,6 @@ bool ToolbarActionView::IsTriggerableEvent(const ui::Event& event) {
   return button_controller()->IsTriggerableEventType(event);
 }
 
-SkColor ToolbarActionView::GetInkDropBaseColor() const {
-  return GetToolbarInkDropBaseColor(this);
-}
-
-std::unique_ptr<views::InkDropHighlight>
-ToolbarActionView::CreateInkDropHighlight() const {
-  return CreateToolbarInkDropHighlight(this);
-}
-
 bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_DOWN) {
     context_menu_controller()->ShowContextMenuForView(this, gfx::Point(),

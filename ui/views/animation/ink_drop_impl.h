@@ -267,7 +267,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // The host of the ink drop. Used to create the ripples and highlights, and to
   // add/remove the root layer to/from it.
-  InkDropHostView* ink_drop_host_;
+  InkDropHostView* const ink_drop_host_;
 
   // The root Layer that parents the InkDropRipple layers and the
   // InkDropHighlight layers. The |root_layer_| is the one that is added and
@@ -275,25 +275,25 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   std::unique_ptr<ui::Layer> root_layer_;
 
   // True when the |root_layer_| has been added to the |ink_drop_host_|.
-  bool root_layer_added_to_host_;
+  bool root_layer_added_to_host_ = false;
 
   // The current InkDropHighlight. Lazily created using
   // CreateInkDropHighlight();
   std::unique_ptr<InkDropHighlight> highlight_;
 
   // True denotes the highlight should be shown when |this| is hovered.
-  bool show_highlight_on_hover_;
+  bool show_highlight_on_hover_ = true;
 
   // True denotes the highlight should be shown when |this| is focused.
-  bool show_highlight_on_focus_;
+  bool show_highlight_on_focus_ = false;
 
   // Tracks the logical hovered state of |this| as manipulated by the public
   // SetHovered() function.
-  bool is_hovered_;
+  bool is_hovered_ = false;
 
   // Tracks the logical focused state of |this| as manipulated by the public
   // SetFocused() function.
-  bool is_focused_;
+  bool is_focused_ = false;
 
   // The current InkDropRipple. Created on demand using CreateInkDropRipple().
   std::unique_ptr<InkDropRipple> ink_drop_ripple_;
@@ -311,10 +311,10 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // Used to ensure highlight state transitions are not triggered when exiting
   // the current state.
-  bool exiting_highlight_state_;
+  bool exiting_highlight_state_ = false;
 
   // Used to fail DCHECKS to catch unexpected behavior during tear down.
-  bool destroying_;
+  bool destroying_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropImpl);
 };

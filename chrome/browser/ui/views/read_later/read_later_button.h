@@ -78,10 +78,6 @@ class ReadLaterButton : public views::LabelButton,
   };
 
   // LabelButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-  SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
   void Layout() override;
 

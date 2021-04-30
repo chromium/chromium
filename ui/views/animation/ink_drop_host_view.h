@@ -48,6 +48,8 @@ class VIEWS_EXPORT InkDropHostView : public View {
   };
 
   InkDropHostView();
+  InkDropHostView(const InkDropHostView&) = delete;
+  InkDropHostView& operator=(const InkDropHostView&) = delete;
   ~InkDropHostView() override;
 
   // Adds the |ink_drop_layer| in to a visible layer tree.
@@ -65,13 +67,43 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // InkDropImpl instance.
   virtual std::unique_ptr<InkDrop> CreateInkDrop();
 
+  // Callback version of CreateInkDrop(). Note that this is called in the base
+  // implementation of CreateInkDrop(), so if "it's not working", check the
+  // class hierarchy for overrides.
+  void SetCreateInkDropCallback(
+      base::RepeatingCallback<std::unique_ptr<InkDrop>()> callback);
+
+  // Only here to support metadata.
+  const base::RepeatingCallback<std::unique_ptr<InkDrop>()>&
+  GetCreateInkDropCallback() const;
+
   // Creates and returns the visual effect used for press. Used by InkDropImpl
   // instances.
   virtual std::unique_ptr<InkDropRipple> CreateInkDropRipple() const;
 
+  // Callback version of CreateInkDropRipple(). Note that this is called in the
+  // base implementation of CreateInkDropRipple(), so if "it's not working",
+  // check the class hierarchy for overrides.
+  void SetCreateInkDropRippleCallback(
+      base::RepeatingCallback<std::unique_ptr<InkDropRipple>()> callback);
+
+  // Only here to support metadata.
+  const base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>&
+  GetCreateInkDropRippleCallback() const;
+
   // Creates and returns the visual effect used for hover and focus. Used by
   // InkDropImpl instances.
   virtual std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
+
+  // Callback version of CreateInkDropHighlight(). Note that this is called in
+  // the base implementation of CreateInkDropHighlight(), so if "it's not
+  // working", check the class hierarchy for overrides.
+  void SetCreateInkDropHighlightCallback(
+      base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback);
+
+  // Only here to support metadata.
+  const base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>&
+  GetCreateInkDropHighlightCallback() const;
 
   // Subclasses can override to return a mask for the ink drop. By default,
   // this generates a mask based on HighlightPathGenerator.
@@ -79,8 +111,26 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // this function.
   virtual std::unique_ptr<views::InkDropMask> CreateInkDropMask() const;
 
+  // Callback version of CreateInkDropMask(). Note that this is called in the
+  // base implementation of CreateInkDropMask(), so if "it's not working", check
+  // the class hierarchy for overrides.
+  void SetCreateInkDropMaskCallback(
+      base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback);
+
+  // Only here to support metadata.
+  const base::RepeatingCallback<std::unique_ptr<InkDropMask>()>&
+  GetCreateInkDropMaskCallback() const;
+
   // Returns the base color for the ink drop.
   virtual SkColor GetInkDropBaseColor() const;
+
+  // Callback version of GetInkDropBaseColor(). Note that this is called in the
+  // base implementation of GetInkDropBaseColor(), so if "it's not working",
+  // check the class hierarchy for overrides.
+  void SetInkDropBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
+
+  // Only here to support metadata.
+  const base::RepeatingCallback<SkColor()>& GetInkDropBaseColorCallback() const;
 
   // Toggle to enable/disable an InkDrop on this View.  Descendants can override
   // CreateInkDropHighlight() and CreateInkDropRipple() to change the look/feel
@@ -241,7 +291,15 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   std::unique_ptr<views::InkDropMask> ink_drop_mask_;
 
-  DISALLOW_COPY_AND_ASSIGN(InkDropHostView);
+  base::RepeatingCallback<std::unique_ptr<InkDrop>()> create_ink_drop_callback_;
+  base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>
+      create_ink_drop_ripple_callback_;
+  base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>
+      create_ink_drop_highlight_callback_;
+
+  base::RepeatingCallback<std::unique_ptr<InkDropMask>()>
+      create_ink_drop_mask_callback_;
+  base::RepeatingCallback<SkColor()> ink_drop_base_color_callback_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView, View)

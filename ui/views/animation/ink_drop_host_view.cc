@@ -79,17 +79,44 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
 }
 
 std::unique_ptr<InkDrop> InkDropHostView::CreateInkDrop() {
+  if (create_ink_drop_callback_)
+    return create_ink_drop_callback_.Run();
   return CreateDefaultFloodFillInkDropImpl();
 }
 
+void InkDropHostView::SetCreateInkDropCallback(
+    base::RepeatingCallback<std::unique_ptr<InkDrop>()> callback) {
+  create_ink_drop_callback_ = std::move(callback);
+}
+
+const base::RepeatingCallback<std::unique_ptr<InkDrop>()>&
+InkDropHostView::GetCreateInkDropCallback() const {
+  return create_ink_drop_callback_;
+}
+
 std::unique_ptr<InkDropRipple> InkDropHostView::CreateInkDropRipple() const {
+  if (create_ink_drop_ripple_callback_)
+    return create_ink_drop_ripple_callback_.Run();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
       GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
+void InkDropHostView::SetCreateInkDropRippleCallback(
+    base::RepeatingCallback<std::unique_ptr<InkDropRipple>()> callback) {
+  create_ink_drop_ripple_callback_ = std::move(callback);
+}
+
+const base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>&
+InkDropHostView::GetCreateInkDropRippleCallback() const {
+  return create_ink_drop_ripple_callback_;
+}
+
 std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
     const {
+  if (create_ink_drop_highlight_callback_)
+    return create_ink_drop_highlight_callback_.Run();
+
   auto highlight = std::make_unique<views::InkDropHighlight>(
       size(), 0, gfx::RectF(GetMirroredRect(GetLocalBounds())).CenterPoint(),
       GetInkDropBaseColor());
@@ -102,14 +129,48 @@ std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
   return highlight;
 }
 
+void InkDropHostView::SetCreateInkDropHighlightCallback(
+    base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback) {
+  create_ink_drop_highlight_callback_ = std::move(callback);
+}
+
+const base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>&
+InkDropHostView::GetCreateInkDropHighlightCallback() const {
+  return create_ink_drop_highlight_callback_;
+}
+
 std::unique_ptr<views::InkDropMask> InkDropHostView::CreateInkDropMask() const {
+  if (create_ink_drop_mask_callback_)
+    return create_ink_drop_mask_callback_.Run();
   return std::make_unique<views::PathInkDropMask>(size(),
                                                   GetHighlightPath(this));
 }
 
+void InkDropHostView::SetCreateInkDropMaskCallback(
+    base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback) {
+  create_ink_drop_mask_callback_ = std::move(callback);
+}
+
+const base::RepeatingCallback<std::unique_ptr<InkDropMask>()>&
+InkDropHostView::GetCreateInkDropMaskCallback() const {
+  return create_ink_drop_mask_callback_;
+}
+
 SkColor InkDropHostView::GetInkDropBaseColor() const {
+  if (ink_drop_base_color_callback_)
+    return ink_drop_base_color_callback_.Run();
   NOTREACHED();
   return gfx::kPlaceholderColor;
+}
+
+void InkDropHostView::SetInkDropBaseColorCallback(
+    base::RepeatingCallback<SkColor()> callback) {
+  ink_drop_base_color_callback_ = std::move(callback);
+}
+
+const base::RepeatingCallback<SkColor()>&
+InkDropHostView::GetInkDropBaseColorCallback() const {
+  return ink_drop_base_color_callback_;
 }
 
 void InkDropHostView::SetInkDropMode(InkDropMode ink_drop_mode) {
@@ -301,6 +362,17 @@ InkDropEventHandler* InkDropHostView::GetEventHandler() {
 }
 
 BEGIN_METADATA(InkDropHostView, View)
+ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDrop>()>,
+                      CreateInkDropCallback)
+ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>,
+                      CreateInkDropRippleCallback)
+ADD_PROPERTY_METADATA(
+    base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>,
+    CreateInkDropHighlightCallback)
+ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDropMask>()>,
+                      CreateInkDropMaskCallback)
+ADD_PROPERTY_METADATA(base::RepeatingCallback<SkColor()>,
+                      InkDropBaseColorCallback)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 ADD_PROPERTY_METADATA(float, InkDropVisibleOpacity)
 ADD_PROPERTY_METADATA(base::Optional<float>, InkDropHighlightOpacity)

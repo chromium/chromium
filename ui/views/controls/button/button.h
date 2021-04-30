@@ -213,7 +213,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   void OnBlur() override;
 
   // Overridden from InkDropHostView:
-  std::unique_ptr<InkDrop> CreateInkDrop() override;
+  // This just returns InkDropHostView::GetInkDropBaseColor(). It's overridden
+  // so that ADD_PROPERTY_METADATA can retrieve the InkDropBaseColor property.
   SkColor GetInkDropBaseColor() const override;
 
   // Overridden from views::AnimationDelegateViews:

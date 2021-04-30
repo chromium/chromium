@@ -565,14 +565,7 @@ InkDropImpl::HighlightStateFactory::CreateVisibleState(
 InkDropImpl::InkDropImpl(InkDropHostView* ink_drop_host,
                          const gfx::Size& host_size)
     : ink_drop_host_(ink_drop_host),
-      root_layer_(new ui::Layer(ui::LAYER_NOT_DRAWN)),
-      root_layer_added_to_host_(false),
-      show_highlight_on_hover_(true),
-      show_highlight_on_focus_(false),
-      is_hovered_(false),
-      is_focused_(false),
-      exiting_highlight_state_(false),
-      destroying_(false) {
+      root_layer_(new ui::Layer(ui::LAYER_NOT_DRAWN)) {
   root_layer_->SetBounds(gfx::Rect(host_size));
   SetAutoHighlightMode(AutoHighlightMode::NONE);
   root_layer_->SetName("InkDropImpl:RootLayer");
