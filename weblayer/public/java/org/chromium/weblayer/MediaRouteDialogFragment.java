@@ -6,6 +6,8 @@ package org.chromium.weblayer;
 
 import android.content.Context;
 
+import androidx.fragment.app.Fragment;
+
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 
 /**
@@ -17,7 +19,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 public class MediaRouteDialogFragment extends RemoteFragment {
     private static final String FRAGMENT_TAG = "WebLayerMediaRouteDialogFragment";
 
-    static IRemoteFragment create(BrowserFragment browserFragment) {
+    static IRemoteFragment create(Fragment browserFragment) {
         MediaRouteDialogFragment fragment = new MediaRouteDialogFragment();
         browserFragment.getParentFragmentManager()
                 .beginTransaction()

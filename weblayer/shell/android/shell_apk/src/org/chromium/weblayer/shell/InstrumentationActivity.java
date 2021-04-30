@@ -28,6 +28,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.weblayer.Browser;
+import org.chromium.weblayer.BrowserFragmentCreateParams;
 import org.chromium.weblayer.FullscreenCallback;
 import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.NewTabType;
@@ -54,6 +55,7 @@ public class InstrumentationActivity extends AppCompatActivity {
     public static final String EXTRA_PERSISTENCE_ID = "EXTRA_PERSISTENCE_ID";
     public static final String EXTRA_PROFILE_NAME = "EXTRA_PROFILE_NAME";
     public static final String EXTRA_IS_INCOGNITO = "EXTRA_IS_INCOGNITO";
+    public static final String EXTRA_USE_VIEW_MODEL = "EXTRA_USE_VIEW_MODEL";
     private static final float DEFAULT_TEXT_SIZE = 15.0F;
 
     // Used in tests to specify whether WebLayer should be created automatically on launch.
@@ -498,9 +500,15 @@ public class InstrumentationActivity extends AppCompatActivity {
         boolean incognito = intent.hasExtra(EXTRA_IS_INCOGNITO)
                 ? intent.getBooleanExtra(EXTRA_IS_INCOGNITO, false)
                 : (profileName == null);
-        Fragment fragment = incognito
-                ? WebLayer.createBrowserFragmentWithIncognitoProfile(profileName, persistenceId)
-                : WebLayer.createBrowserFragment(profileName, persistenceId);
+        boolean useViewModel = intent.hasExtra(EXTRA_USE_VIEW_MODEL)
+                && intent.getBooleanExtra(EXTRA_USE_VIEW_MODEL, false);
+        BrowserFragmentCreateParams createParams = (new BrowserFragmentCreateParams.Builder())
+                                                           .setProfileName(profileName)
+                                                           .setPersistenceId(persistenceId)
+                                                           .setIsIncognito(incognito)
+                                                           .setUseViewModel(useViewModel)
+                                                           .build();
+        Fragment fragment = WebLayer.createBrowserFragmentWithParams(createParams);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(viewId, fragment);
 

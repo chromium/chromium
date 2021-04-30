@@ -31,7 +31,8 @@ import java.util.Set;
 public class Browser {
     // Set to null once destroyed (or for tests).
     private IBrowser mImpl;
-    private BrowserFragment mFragment;
+    // The Fragment the Browser is associated with. The value of this may change.
+    private Fragment mFragment;
     private final ObserverList<TabListCallback> mTabListCallbacks;
     private final UrlBarController mUrlBarController;
 
@@ -47,7 +48,7 @@ public class Browser {
         mBrowserRestoreCallbacks = null;
     }
 
-    Browser(IBrowser impl, BrowserFragment fragment) {
+    Browser(IBrowser impl, Fragment fragment) {
         mImpl = impl;
         mFragment = fragment;
         mTabListCallbacks = new ObserverList<TabListCallback>();
@@ -60,6 +61,13 @@ public class Browser {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Changes the fragment. During configuration changes the fragment may change.
+     */
+    void setFragment(BrowserFragment fragment) {
+        mFragment = fragment;
     }
 
     private void throwIfDestroyed() {

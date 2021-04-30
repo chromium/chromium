@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
@@ -43,13 +45,19 @@ public final class BrowserFragment extends RemoteFragment {
 
     // Nonnull between onCreate() and onDestroy().
     private Browser mBrowser;
+    private boolean mUseViewModel;
 
     /**
      * This constructor is for the system FragmentManager only. Please use
      * {@link WebLayer#createBrowserFragment}.
      */
     public BrowserFragment() {
+        this(false);
+    }
+
+    BrowserFragment(boolean useViewModel) {
         super();
+        mUseViewModel = useViewModel;
     }
 
     /**
@@ -72,6 +80,8 @@ public final class BrowserFragment extends RemoteFragment {
         if (args == null) {
             throw new RuntimeException("BrowserFragment was created without arguments.");
         }
+        // If there is saved state, then it should be used and this method should not be called.
+        assert !(new ViewModelProvider(this)).get(BrowserViewModel.class).hasSavedState();
         try {
             mWebLayer = WebLayer.loadSync(appContext);
         } catch (Exception e) {
@@ -91,21 +101,104 @@ public final class BrowserFragment extends RemoteFragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        ThreadCheck.ensureOnUiThread();
+        BrowserViewModel browserViewModel = new ViewModelProvider(this).get(BrowserViewModel.class);
+        if (browserViewModel.hasSavedState()) {
+            configureFromViewModel(browserViewModel);
+        }
+        super.onAttach(context);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (mBrowser != null) {
+            // If mBrowser is non-null, it means mBrowser came from a ViewModel.
+            return;
+        }
         try {
             mBrowser = new Browser(mImpl.getBrowser(), this);
         } catch (RemoteException e) {
             throw new APICallException(e);
+        }
+        if (mUseViewModel) {
+            saveToViewModel(new ViewModelProvider(this).get(BrowserViewModel.class));
         }
     }
 
     @Override
     public void onDestroy() {
         ThreadCheck.ensureOnUiThread();
-        mBrowser.prepareForDestroy();
-        super.onDestroy();
-        mBrowser.onDestroyed();
+        // If a ViewModel is used, then the Browser is destroyed from the ViewModel, not here
+        // (RemoteFragment won't call destroy on Browser either in this case).
+        if (mUseViewModel) {
+            super.onDestroy();
+        } else {
+            mBrowser.prepareForDestroy();
+            super.onDestroy();
+            mBrowser.onDestroyed();
+        }
         mBrowser = null;
+    }
+
+    @Override
+    void saveToViewModel(@NonNull ViewModelImpl model) {
+        super.saveToViewModel(model);
+
+        BrowserViewModel browserViewModel = (BrowserViewModel) model;
+        browserViewModel.mImpl = mImpl;
+        browserViewModel.mWebLayer = mWebLayer;
+        browserViewModel.mBrowser = mBrowser;
+    }
+
+    @Override
+    void configureFromViewModel(@NonNull ViewModelImpl model) {
+        super.configureFromViewModel(model);
+
+        BrowserViewModel browserViewModel = (BrowserViewModel) model;
+        // During configuration changes the system creates a BrowserFragment, not the embedder. When
+        // this happens, whether a ViewModel is used is determined by whether a ViewModel is
+        // associated with the fragment (because the embedder would have configured the fragment
+        // when they created it).
+        mUseViewModel = true;
+        mBrowser = browserViewModel.mBrowser;
+        mWebLayer = browserViewModel.mWebLayer;
+        mImpl = browserViewModel.mImpl;
+        mBrowser.setFragment(this);
+    }
+
+    /**
+     * This class is an implementation detail and not intended for public use. It may change at any
+     * time in incompatible ways, including being removed.
+     * <p>
+     * This class stores BrowserFragment specific state to a ViewModel so that it can reused if a
+     * new Fragment is created that should share the same state. See RemoteFragment for details on
+     * this.
+     */
+    public static final class BrowserViewModel extends RemoteFragment.ViewModelImpl {
+        @Nullable
+        private IBrowserFragment mImpl;
+        @Nullable
+        private WebLayer mWebLayer;
+        @Nullable
+        private Browser mBrowser;
+
+        boolean hasSavedState() {
+            return mBrowser != null;
+        }
+
+        @Override
+        protected void onCleared() {
+            ThreadCheck.ensureOnUiThread();
+            if (mBrowser != null) {
+                mBrowser.prepareForDestroy();
+                super.onCleared();
+                mBrowser.onDestroyed();
+                mBrowser = null;
+            } else {
+                super.onCleared();
+            }
+        }
     }
 }

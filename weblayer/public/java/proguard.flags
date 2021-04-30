@@ -23,3 +23,6 @@
 -keepclassmembers,allowobfuscation class ** {
   @org.chromium.weblayer.VerifiesOnR <methods>;
 }
+
+# Android uses reflection to create an instance of this.
+-keep class org.chromium.weblayer.BrowserFragment$BrowserViewModel

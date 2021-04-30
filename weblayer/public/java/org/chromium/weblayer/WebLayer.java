@@ -504,9 +504,11 @@ public class WebLayer {
     @NonNull
     public static Fragment createBrowserFragment(
             @Nullable String profileName, @Nullable String persistenceId) {
-        String sanitizedName = sanitizeProfileName(profileName);
-        boolean isIncognito = "".equals(sanitizedName);
-        return createBrowserFragmentImpl(sanitizedName, persistenceId, isIncognito);
+        BrowserFragmentCreateParams params = (new BrowserFragmentCreateParams.Builder())
+                                                     .setProfileName(profileName)
+                                                     .setPersistenceId(persistenceId)
+                                                     .build();
+        return createBrowserFragmentWithParams(params);
     }
 
     /**
@@ -523,21 +525,38 @@ public class WebLayer {
     @NonNull
     public static Fragment createBrowserFragmentWithIncognitoProfile(
             @Nullable String profileName, @Nullable String persistenceId) {
-        return createBrowserFragmentImpl(sanitizeProfileName(profileName), persistenceId, true);
+        BrowserFragmentCreateParams params = (new BrowserFragmentCreateParams.Builder())
+                                                     .setProfileName(profileName)
+                                                     .setPersistenceId(persistenceId)
+                                                     .setIsIncognito(true)
+                                                     .build();
+        return createBrowserFragmentWithParams(params);
     }
 
-    private static Fragment createBrowserFragmentImpl(
-            @NonNull String profileName, @Nullable String persistenceId, boolean isIncognito) {
+    /**
+     * Creates a new WebLayer Fragment using the supplied params.
+     *
+     * @param params The Fragment parameters.
+     *
+     * @throws UnsupportedOperationException If {@link params} is incognito and name is not empty
+     *         and <= 87. In order for this function not to trigger loading of WebLayer the
+     *         exception is thrown later on.
+     */
+    @NonNull
+    public static Fragment createBrowserFragmentWithParams(
+            @NonNull BrowserFragmentCreateParams params) {
         ThreadCheck.ensureOnUiThread();
+        String profileName = sanitizeProfileName(params.getProfileName());
+        boolean isIncognito = params.isIncognito() || "".equals(profileName);
         // Support for named incognito profiles was added in 87. Checking is done in
         // BrowserFragment, as this code should not trigger loading WebLayer.
         Bundle args = new Bundle();
         args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
-        if (persistenceId != null) {
-            args.putString(BrowserFragmentArgs.PERSISTENCE_ID, persistenceId);
+        if (params.getPersistenceId() != null) {
+            args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.getPersistenceId());
         }
         args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
-        BrowserFragment fragment = new BrowserFragment();
+        BrowserFragment fragment = new BrowserFragment(params.getUseViewModel());
         fragment.setArguments(args);
         return fragment;
     }
