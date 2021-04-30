@@ -5198,18 +5198,19 @@
             ]
         }
     ],
-    "PageLoadMetricsTimerDelay": [
+    "PageLoadMetricsBufferTimer": [
         {
             "platforms": [
                 "android",
                 "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "100MS",
+                    "name": "Enabled100ms",
                     "params": {
                         "BufferTimerDelayMillis": "100"
                     },
