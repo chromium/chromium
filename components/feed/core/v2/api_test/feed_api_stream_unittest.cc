@@ -869,6 +869,24 @@ TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromNetwork) {
   EXPECT_EQ(std::vector<bool>({true}), observer.calls);
 }
 
+TEST_F(FeedApiTest, HasUnreadContentInitially) {
+  // Prime the feed with new content.
+  {
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+  }
+
+  // Reload FeedStream. Add an observer before initialization completes.
+  // After initialization, the observer will be informed about unread content.
+  CreateStream(/*wait_for_initialization*/ false);
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
+}
+
 TEST_F(FeedApiTest, RemovedUnreadContentObserverDoesNotReceiveCalls) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestUnreadContentObserver observer;

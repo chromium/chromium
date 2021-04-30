@@ -69,8 +69,8 @@ public class SectionHeaderViewBinder
     @Override
     public void onItemsChanged(PropertyListModel<PropertyModel, PropertyKey> headers,
             SectionHeaderView view, int index, int count, PropertyKey payload) {
+        PropertyModel header = headers.get(0);
         if (payload == null || payload == SectionHeaderProperties.HEADER_TEXT_KEY) {
-            PropertyModel header = headers.get(0);
             // Only use 1st tab for legacy headerText;
             view.setHeaderText(header.get(SectionHeaderProperties.HEADER_TEXT_KEY));
 
@@ -78,6 +78,12 @@ public class SectionHeaderViewBinder
             for (int i = index; i < index + count; i++) {
                 view.setHeaderTextAt(
                         headers.get(i).get(SectionHeaderProperties.HEADER_TEXT_KEY), i);
+            }
+        }
+        if (payload == null || payload == SectionHeaderProperties.UNREAD_CONTENT_KEY) {
+            for (int i = index; i < index + count; i++) {
+                view.setHeaderHasBadgeAt(
+                        headers.get(i).get(SectionHeaderProperties.UNREAD_CONTENT_KEY), i);
             }
         }
     }

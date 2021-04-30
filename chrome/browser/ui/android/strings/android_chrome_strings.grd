@@ -3341,6 +3341,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_ACCESSIBILITY_NEW_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new tab view.">
         New tab
       </message>
+      <message name="IDS_ACCESSIBILITY_NEW_TAB_PAGE_SECTION_HAS_UNREAD_CONTENT" desc="Content description for the unread content indicator on a New Tab Page section header">
+        Unread content
+      </message>
       <message name="IDS_ACCESSIBILITY_NEW_INCOGNITO_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new Incognito tab view.">
         New Incognito tab
       </message>

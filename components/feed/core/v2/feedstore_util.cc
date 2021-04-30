@@ -6,6 +6,7 @@
 
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_store.h"
+#include "components/feed/core/v2/public/stream_type.h"
 
 namespace feedstore {
 using feed::LocalActionId;
@@ -16,6 +17,14 @@ base::StringPiece StreamId(const StreamType& stream_type) {
     return kForYouStreamId;
   DCHECK(stream_type.IsWebFeed());
   return kFollowStreamId;
+}
+
+feed::StreamType StreamTypeFromId(base::StringPiece id) {
+  if (id == kForYouStreamId)
+    return feed::kForYouStream;
+  if (id == kFollowStreamId)
+    return feed::kWebFeedStream;
+  return {};
 }
 
 int64_t ToTimestampMillis(base::Time t) {

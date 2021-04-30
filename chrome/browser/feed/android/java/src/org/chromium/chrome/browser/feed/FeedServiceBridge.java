@@ -139,7 +139,7 @@ public final class FeedServiceBridge {
          *
          * @param isWebFeed  Whether to observe the Web Feed, or the For-you Feed.
          */
-        UnreadContentObserver(boolean isWebFeed) {
+        public UnreadContentObserver(boolean isWebFeed) {
             mNativePtr = FeedServiceBridgeJni.get().addUnreadContentObserver(this, isWebFeed);
         }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
 
@@ -22,47 +23,54 @@ void WaitForStoreInitializeTask::Run() {
 }
 
 void WaitForStoreInitializeTask::OnStoreInitialized() {
-  store_->ReadMetadata(base::BindOnce(
-      &WaitForStoreInitializeTask::OnMetadataLoaded, base::Unretained(this)));
+  store_->ReadStartupData(
+      base::BindOnce(&WaitForStoreInitializeTask::ReadStartupDataDone,
+                     base::Unretained(this)));
   store_->ReadWebFeedStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::WebFeedStartupDataDone,
                      base::Unretained(this)));
 }
 
-void WaitForStoreInitializeTask::OnMetadataLoaded(
-    std::unique_ptr<feedstore::Metadata> metadata) {
-  if (metadata && metadata->gaia() != stream_->GetSyncSignedInGaia()) {
+void WaitForStoreInitializeTask::ReadStartupDataDone(
+    FeedStore::StartupData startup_data) {
+  if (startup_data.metadata &&
+      startup_data.metadata->gaia() != stream_->GetSyncSignedInGaia()) {
     store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
                                     base::Unretained(this)));
     return;
   }
-  MaybeUpgradeStreamSchema(std::move(metadata));
+  result_.startup_data = std::move(startup_data);
+  MaybeUpgradeStreamSchema();
 }
 
 void WaitForStoreInitializeTask::ClearAllDone(bool clear_ok) {
   DLOG_IF(ERROR, !clear_ok) << "FeedStore::ClearAll failed";
   // ClearAll just wiped metadata, so send nullptr.
-  MaybeUpgradeStreamSchema(nullptr);
+  MaybeUpgradeStreamSchema();
 }
 
-void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema(
-    std::unique_ptr<feedstore::Metadata> metadata) {
-  if (!metadata || metadata->stream_schema_version() != 1) {
-    if (!metadata) {
-      metadata = std::make_unique<feedstore::Metadata>();
-      metadata->set_gaia(stream_->GetSyncSignedInGaia());
+void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema() {
+  feedstore::Metadata metadata;
+  if (result_.startup_data.metadata)
+    metadata = *result_.startup_data.metadata;
+
+  if (metadata.stream_schema_version() != 1) {
+    result_.startup_data.stream_data.clear();
+    if (metadata.gaia().empty()) {
+      metadata.set_gaia(stream_->GetSyncSignedInGaia());
     }
     store_->UpgradeFromStreamSchemaV0(
-        std::move(*metadata),
-        base::BindOnce(&WaitForStoreInitializeTask::MetadataDone,
+        std::move(metadata),
+        base::BindOnce(&WaitForStoreInitializeTask::UpgradeDone,
                        base::Unretained(this)));
     return;
   }
-  MetadataDone(std::move(*metadata));
+  Done();
 }
 
-void WaitForStoreInitializeTask::MetadataDone(feedstore::Metadata metadata) {
-  result_.metadata = std::move(metadata);
+void WaitForStoreInitializeTask::UpgradeDone(feedstore::Metadata metadata) {
+  result_.startup_data.metadata =
+      std::make_unique<feedstore::Metadata>(std::move(metadata));
   Done();
 }
 

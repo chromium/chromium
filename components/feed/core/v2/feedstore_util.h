@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/optional.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -19,6 +20,7 @@ constexpr base::StringPiece kForYouStreamId{"i"};
 constexpr base::StringPiece kFollowStreamId{"w"};
 
 base::StringPiece StreamId(const feed::StreamType& stream_type);
+feed::StreamType StreamTypeFromId(base::StringPiece id);
 
 ///////////////////////////////////////////////////
 // Functions that operate on feedstore proto types.

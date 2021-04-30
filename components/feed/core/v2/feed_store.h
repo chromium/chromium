@@ -42,6 +42,15 @@ class FeedStore {
     // These are sorted by increasing ID.
     std::vector<feedstore::StoredAction> pending_actions;
   };
+  struct StartupData {
+    StartupData();
+    StartupData(StartupData&&);
+    ~StartupData();
+    StartupData& operator=(StartupData&&);
+
+    std::unique_ptr<feedstore::Metadata> metadata;
+    std::vector<feedstore::StreamData> stream_data;
+  };
   struct WebFeedStartupData {
     feedstore::SubscribedWebFeeds subscribed_web_feeds;
     feedstore::RecommendedWebFeedIndex recommended_feed_index;
@@ -117,6 +126,7 @@ class FeedStore {
       base::OnceCallback<void(feedstore::Metadata)> callback);
   void ReadWebFeedStartupData(
       base::OnceCallback<void(WebFeedStartupData)> callback);
+  void ReadStartupData(base::OnceCallback<void(StartupData)> callback);
   void WriteRecommendedFeeds(feedstore::RecommendedWebFeedIndex index,
                              std::vector<feedstore::WebFeedInfo> web_feed_info,
                              base::OnceClosure callback);
@@ -182,6 +192,10 @@ class FeedStore {
       std::unique_ptr<feedstore::Record> record);
   void OnReadWebFeedStartupDataFinished(
       base::OnceCallback<void(WebFeedStartupData)> callback,
+      bool read_ok,
+      std::unique_ptr<std::vector<feedstore::Record>> records);
+  void OnReadStartupDataFinished(
+      base::OnceCallback<void(StartupData)> callback,
       bool read_ok,
       std::unique_ptr<std::vector<feedstore::Record>> records);
   void ReadRecommendedWebFeedInfoFinished(

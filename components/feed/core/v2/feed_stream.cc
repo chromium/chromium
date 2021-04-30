@@ -220,11 +220,28 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
 }
 
 void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
-  metadata_ = std::move(result.metadata);
+  metadata_ = *std::move(result.startup_data.metadata);
+  for (const feedstore::StreamData& stream_data :
+       result.startup_data.stream_data) {
+    StreamType stream_type =
+        feedstore::StreamTypeFromId(stream_data.stream_id());
+    if (stream_type.IsValid()) {
+      GetStream(stream_type).last_updated_time =
+          feedstore::GetLastAddedTime(stream_data);
+    }
+  }
   metadata_populated_ = true;
   // TODO(crbug/1152592): Test that the index is populated once there's an API
   // to access the data.
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
+
+  for (const feedstore::StreamData& stream_data :
+       result.startup_data.stream_data) {
+    StreamType stream_type =
+        feedstore::StreamTypeFromId(stream_data.stream_id());
+    if (stream_type.IsValid())
+      MaybeNotifyHasUnreadContent(stream_type);
+  }
 }
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
@@ -1064,6 +1081,7 @@ void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
     notice_card_tracker_.OnOpenAction(index);
   }
 }
+
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
                                    const StreamType& stream_type,
                                    const std::string& slice_id) {
@@ -1102,6 +1120,8 @@ bool FeedStream::CanLogViews() const {
 // Metadata::StreamMetadata::view_time_millis. This should be called: when the
 // model is loaded, when a refresh is attempted, and when content is viewed.
 void FeedStream::MaybeNotifyHasUnreadContent(const StreamType& stream_type) {
+  if (!metadata_populated_)
+    return;
   Stream& stream = GetStream(stream_type);
   // Don't notify if we don't know the update time.
   if (stream.last_updated_time.is_null())
@@ -1111,7 +1131,6 @@ void FeedStream::MaybeNotifyHasUnreadContent(const StreamType& stream_type) {
       feedstore::GetStreamViewTime(metadata_, stream_type) !=
           stream.last_updated_time &&
       !stream.last_updated_time.is_null();
-
   for (auto& o : stream.unread_content_notifiers) {
     o.NotifyIfValueChanged(has_new_content);
   }

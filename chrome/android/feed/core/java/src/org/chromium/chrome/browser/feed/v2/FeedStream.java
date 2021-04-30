@@ -24,6 +24,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -403,6 +405,7 @@ public class FeedStream implements Stream {
     private SnackbarManager mSnackManager;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private WindowAndroid mWindowAndroid;
+    private UnreadContentObserver mUnreadContentObserver;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -498,6 +501,17 @@ public class FeedStream implements Stream {
                 }
             }
         };
+        // Only watch for unread content on the web feed, not for-you feed.
+        if (!isInterestFeed) {
+            mUnreadContentObserver = new UnreadContentObserver(/*isWebFeed=*/true);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        if (mUnreadContentObserver != null) {
+            mUnreadContentObserver.destroy();
+        }
     }
 
     @Override
@@ -704,6 +718,12 @@ public class FeedStream implements Stream {
         if (canTrigger) {
             mAccumulatedDySinceLastLoadMore = 0;
         }
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> hasUnreadContent() {
+        return mUnreadContentObserver != null ? mUnreadContentObserver.mHasUnreadContent
+                                              : Stream.super.hasUnreadContent();
     }
 
     /**
@@ -1071,6 +1091,20 @@ public class FeedStream implements Stream {
         protected void onScrollEvent(int scrollAmount) {
             FeedStreamJni.get().reportStreamScrolled(
                     mNativeFeedStream, FeedStream.this, scrollAmount);
+        }
+    }
+
+    private class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+        ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
+
+        UnreadContentObserver(boolean isWebFeed) {
+            super(isWebFeed);
+            mHasUnreadContent.set(false);
+        }
+
+        @Override
+        public void hasUnreadContentChanged(boolean hasUnreadContent) {
+            mHasUnreadContent.set(hasUnreadContent);
         }
     }
 

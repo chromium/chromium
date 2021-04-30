@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -425,6 +426,12 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(headerModel);
         int tabId =
                 mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).size() - 1;
+
+        // Update UNREAD_CONTENT_KEY now, and any time hasUnreadContent() changes.
+        Callback<Boolean> callback = hasUnreadContent
+                -> headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
+        callback.onResult(stream.hasUnreadContent().addObserver(callback));
+
         mTabToStreamMap.put(tabId, stream);
     }
 
@@ -577,6 +584,9 @@ public class FeedSurfaceMediator
         }
 
         unbindStream();
+        for (Stream s : mTabToStreamMap.values()) {
+            s.destroy();
+        }
         mTabToStreamMap.clear();
 
         mPrefChangeRegistrar.removeObserver(Pref.ARTICLES_LIST_VISIBLE);

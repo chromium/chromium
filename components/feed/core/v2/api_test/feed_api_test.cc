@@ -717,7 +717,7 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetch_image_call_count_++;
 }
 
-void FeedApiTest::CreateStream() {
+void FeedApiTest::CreateStream(bool wait_for_initialization) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
@@ -726,9 +726,10 @@ void FeedApiTest::CreateStream() {
       &network_, image_fetcher_.get(), store_.get(),
       persistent_key_value_store_.get(), &prefetch_service_,
       &offline_page_model_, chrome_info);
-
-  WaitForIdleTaskQueue();  // Wait for any initialization.
   stream_->SetWireResponseTranslatorForTesting(&response_translator_);
+
+  if (wait_for_initialization)
+    WaitForIdleTaskQueue();  // Wait for any initialization.
 }
 
 bool FeedApiTest::IsTaskQueueIdle() const {

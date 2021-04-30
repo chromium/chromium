@@ -18,7 +18,7 @@ class FeedStream;
 class WaitForStoreInitializeTask : public offline_pages::Task {
  public:
   struct Result {
-    feedstore::Metadata metadata;
+    FeedStore::StartupData startup_data;
     FeedStore::WebFeedStartupData web_feed_startup_data;
   };
 
@@ -38,8 +38,9 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void OnMetadataLoaded(std::unique_ptr<feedstore::Metadata> metadata);
 
   void ClearAllDone(bool clear_ok);
-  void MaybeUpgradeStreamSchema(std::unique_ptr<feedstore::Metadata> metadata);
-  void MetadataDone(feedstore::Metadata metadata);
+  void MaybeUpgradeStreamSchema();
+  void UpgradeDone(feedstore::Metadata metadata);
+  void ReadStartupDataDone(FeedStore::StartupData startup_data);
   void WebFeedStartupDataDone(FeedStore::WebFeedStartupData data);
   void Done();
 

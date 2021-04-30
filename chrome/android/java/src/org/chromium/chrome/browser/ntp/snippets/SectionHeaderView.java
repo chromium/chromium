@@ -133,7 +133,11 @@ public class SectionHeaderView extends LinearLayout {
     /** Adds a blank tab. */
     void addTab() {
         if (mTabLayout != null) {
-            mTabLayout.addTab(mTabLayout.newTab());
+            TabLayout.Tab tab = mTabLayout.newTab();
+            tab.setCustomView(R.layout.new_tab_page_section_tab);
+            TextView textView = (TextView) tab.getCustomView().findViewById(android.R.id.text1);
+            textView.setTextColor(mTabLayout.getTabTextColors());
+            mTabLayout.addTab(tab);
         }
     }
 
@@ -146,8 +150,24 @@ public class SectionHeaderView extends LinearLayout {
      * @param index Index of the tab to set.
      */
     void setHeaderTextAt(String text, int index) {
-        if (mTabLayout != null && mTabLayout.getTabCount() > index && index >= 0) {
-            mTabLayout.getTabAt(index).setText(text);
+        TabLayout.Tab tab = getTabAt(index);
+        if (tab != null) {
+            tab.setText(text);
+        }
+    }
+
+    @Nullable
+    private TabLayout.Tab getTabAt(int index) {
+        return mTabLayout != null ? mTabLayout.getTabAt(index) : null;
+    }
+
+    /** Sets whether or not the tab shows a blue badge */
+    void setHeaderHasBadgeAt(boolean hasBadge, int index) {
+        TabLayout.Tab tab = getTabAt(index);
+        if (tab != null) {
+            tab.getCustomView()
+                    .findViewById(R.id.badge)
+                    .setVisibility(hasBadge ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -155,8 +175,9 @@ public class SectionHeaderView extends LinearLayout {
      * @param index The index of the tab to set as active. Does nothing if index is invalid.
      */
     void setActiveTab(int index) {
-        if (mTabLayout != null && mTabLayout.getTabCount() > index && index >= 0) {
-            mTabLayout.selectTab(mTabLayout.getTabAt(index));
+        TabLayout.Tab tab = getTabAt(index);
+        if (tab != null) {
+            mTabLayout.selectTab(tab);
         }
     }
 

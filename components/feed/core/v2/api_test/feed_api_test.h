@@ -408,7 +408,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   // For tests.
 
   // Replace stream_.
-  void CreateStream();
+  void CreateStream(bool wait_for_initialization = true);
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();
   void UnloadModel(const StreamType& stream_type);

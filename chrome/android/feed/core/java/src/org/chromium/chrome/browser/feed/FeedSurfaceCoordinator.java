@@ -264,7 +264,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
         mUiConfig = new UiConfig(mRootView);
 
-
         if (isEnhancedProtectionPromoEnabled()) {
             mEnhancedProtectionPromoController =
                     new EnhancedProtectionPromoController(mActivity, mProfile);

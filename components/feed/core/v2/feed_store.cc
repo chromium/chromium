@@ -18,8 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
 namespace feed {
@@ -277,6 +279,12 @@ FeedStore::LoadStreamResult::~LoadStreamResult() = default;
 FeedStore::LoadStreamResult::LoadStreamResult(LoadStreamResult&&) = default;
 FeedStore::LoadStreamResult& FeedStore::LoadStreamResult::operator=(
     LoadStreamResult&&) = default;
+
+FeedStore::StartupData::StartupData() = default;
+FeedStore::StartupData::StartupData(StartupData&&) = default;
+FeedStore::StartupData::~StartupData() = default;
+FeedStore::StartupData& FeedStore::StartupData::operator=(StartupData&&) =
+    default;
 
 FeedStore::FeedStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database)
@@ -668,6 +676,35 @@ void FeedStore::OnReadWebFeedStartupDataFinished(
             std::move(*r.mutable_subscribed_web_feeds());
       } else {
         DLOG(ERROR) << "OnReadWebFeedStartupDataFinished: Got record with no "
+                       "useful data. data_case="
+                    << static_cast<int>(r.data_case());
+      }
+    }
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void FeedStore::ReadStartupData(
+    base::OnceCallback<void(StartupData)> callback) {
+  ReadMany({StreamDataKey(kWebFeedStream), StreamDataKey(kForYouStream),
+            kMetadataKey},
+           base::BindOnce(&FeedStore::OnReadStartupDataFinished, GetWeakPtr(),
+                          std::move(callback)));
+}
+
+void FeedStore::OnReadStartupDataFinished(
+    base::OnceCallback<void(StartupData)> callback,
+    bool read_ok,
+    std::unique_ptr<std::vector<feedstore::Record>> records) {
+  StartupData result;
+  if (records) {
+    for (feedstore::Record& r : *records) {
+      if (r.has_stream_data()) {
+        result.stream_data.push_back(std::move(r.stream_data()));
+      } else if (r.has_metadata()) {
+        result.metadata = base::WrapUnique(r.release_metadata());
+      } else {
+        DLOG(ERROR) << "OnReadStartupDataFinished: Got record with no "
                        "useful data. data_case="
                     << static_cast<int>(r.data_case());
       }

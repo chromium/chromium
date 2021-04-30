@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.feed.shared.stream;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
@@ -18,6 +20,9 @@ import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
 public interface Stream {
+    /** Called when the Stream is no longer needed. */
+    default void destroy() {}
+
     /**
      * @param scrollState Previous saved scroll state to restore to.
      */
@@ -97,6 +102,13 @@ public interface Stream {
     /** @returns The session ID to use if user is signed out. */
     default String getSignedOutSessionId() {
         return "";
+    }
+
+    /** Whether the stream has unread content */
+    default ObservableSupplier<Boolean> hasUnreadContent() {
+        ObservableSupplierImpl<Boolean> result = new ObservableSupplierImpl<>();
+        result.set(false);
+        return result;
     }
 
     /**
