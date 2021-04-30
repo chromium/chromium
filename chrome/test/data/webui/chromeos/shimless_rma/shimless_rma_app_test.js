@@ -4,7 +4,7 @@
 
 import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertTrue} from '../../chai_assert.js';
 
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRmaElement} */
@@ -23,8 +23,11 @@ export function shimlessRMAAppTest() {
   });
 
   test('ShimlessRMALoaded', () => {
-    assertEquals(
-        'hello world',
-        component.shadowRoot.querySelector('#header').textContent);
+    const nextBtn = component.shadowRoot.querySelector('#back');
+    const prevBtn = component.shadowRoot.querySelector('#cancel');
+    const backBtn = component.shadowRoot.querySelector('#next');
+    assertTrue(!!nextBtn);
+    assertTrue(!!prevBtn);
+    assertTrue(!!backBtn);
   });
 }

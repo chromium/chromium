@@ -1,2 +1,28 @@
-<div id="header"></div>
-<button on-click="close_">close</button>
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+<div id="shimlessRMAContainer">
+	<div class="shimlessHeader">
+		<cr-button 
+			id="back" on-click="onBackBtnClicked_"
+			disabled="[[isBtnDisabled_(currentPage_.btnBack)]]"
+			hidden$="[[isBtnHidden_(currentPage_.btnBack)]]">
+		  Back
+		</cr-button>
+	</div>
+	<!-- TODO(joonbug): i18n button labels -->
+	<div id="contentContainer"></div>
+	<div class="shimlessFooter">
+		<cr-button
+			id="cancel" on-click="onCancelBtnClicked_"
+			disabled="[[isBtnDisabled_(currentPage_.btnCancel)]]"
+			hidden$="[[isBtnHidden_(currentPage_.btnCancel)]]">
+		  Cancel
+		</cr-button>
+		<cr-button
+			id="next" on-click="onNextBtnClicked_"
+			disabled="[[isBtnDisabled_(currentPage_.btnNext)]]"
+			hidden$="[[isBtnHidden_(currentPage_.btnNext)]]">
+		  Next
+		</cr-button>
+	</div>
+</div>
