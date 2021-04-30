@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -390,6 +391,31 @@ class PageSpecificContentSettings
  private:
   friend class content::RenderDocumentHostUserData<PageSpecificContentSettings>;
 
+  // Keeps track of cookie and service worker access during a navigation.
+  // These types of access can happen for the current page or for a new
+  // navigation (think cookies sent in the HTTP request or service worker
+  // being run to serve a fetch request). A navigation might fail to
+  // commit in which case we have to handle it as if it had never
+  // occurred. So we cache all cookies and service worker accesses that
+  // happen during a navigation and only apply the changes if the
+  // navigation commits.
+  class InflightNavigationContentSettings
+      : public content::NavigationHandleUserData<
+            InflightNavigationContentSettings> {
+   public:
+    ~InflightNavigationContentSettings() override;
+    std::vector<content::CookieAccessDetails> cookie_accesses;
+    std::vector<std::pair<GURL, content::AllowServiceWorkerResult>>
+        service_worker_accesses;
+
+   private:
+    explicit InflightNavigationContentSettings(
+        content::NavigationHandle& navigation_handle);
+    friend class content::NavigationHandleUserData<
+        InflightNavigationContentSettings>;
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+  };
+
   // This class attaches to WebContents to listen to events and route them to
   // appropriate PageSpecificContentSettings, store navigation related events
   // until the navigation finishes and then transferring the
@@ -416,30 +442,6 @@ class PageSpecificContentSettings
    private:
     friend class content::WebContentsUserData<WebContentsHandler>;
 
-    // Keeps track of cookie and service worker access during a navigation.
-    // These types of access can happen for the current page or for a new
-    // navigation (think cookies sent in the HTTP request or service worker
-    // being run to serve a fetch request). A navigation might fail to
-    // commit in which case we have to handle it as if it had never
-    // occurred. So we cache all cookies and service worker accesses that
-    // happen during a navigation and only apply the changes if the
-    // navigation commits.
-    struct InflightNavigationContentSettings {
-      InflightNavigationContentSettings();
-      InflightNavigationContentSettings(
-          const InflightNavigationContentSettings&);
-      InflightNavigationContentSettings(InflightNavigationContentSettings&&);
-
-      ~InflightNavigationContentSettings();
-
-      InflightNavigationContentSettings& operator=(
-          InflightNavigationContentSettings&&);
-
-      std::vector<content::CookieAccessDetails> cookie_accesses;
-      std::vector<std::pair<GURL, content::AllowServiceWorkerResult>>
-          service_worker_accesses;
-    };
-
     // Applies all stored events for the given navigation to the current main
     // document.
     void TransferNavigationContentSettingsToCommittedDocument(
@@ -447,8 +449,6 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh);
 
     // content::WebContentsObserver overrides.
-    void DidStartNavigation(
-        content::NavigationHandle* navigation_handle) override;
     void ReadyToCommitNavigation(
         content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
@@ -483,16 +483,11 @@ class PageSpecificContentSettings
     // All currently registered |SiteDataObserver|s.
     base::ObserverList<SiteDataObserver>::Unchecked observer_list_;
 
-    // Keeps track of currently inflight navigations. Updates for those are
-    // kept aside until the navigation commits.
-    std::unordered_map<content::NavigationHandle*,
-                       InflightNavigationContentSettings>
-        inflight_navigation_settings_;
-
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
   explicit PageSpecificContentSettings(
+      content::RenderFrameHost* rfh,
       PageSpecificContentSettings::WebContentsHandler& handler,
       Delegate* delegate);
 

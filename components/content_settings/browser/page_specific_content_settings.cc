@@ -118,10 +118,9 @@ PageSpecificContentSettings::WebContentsHandler::WebContentsHandler(
       map_(delegate_->GetSettingsMap()) {
   DCHECK(!PageSpecificContentSettings::GetForCurrentDocument(
       web_contents->GetMainFrame()));
-  content::SetRenderDocumentHostUserData(
-      web_contents->GetMainFrame(), PageSpecificContentSettings::UserDataKey(),
-      base::WrapUnique(
-          new PageSpecificContentSettings(*this, delegate_.get())));
+  content::RenderDocumentHostUserData<PageSpecificContentSettings>::
+      CreateForCurrentDocument(web_contents->GetMainFrame(), *this,
+                               delegate_.get());
 }
 
 PageSpecificContentSettings::WebContentsHandler::~WebContentsHandler() {
@@ -146,16 +145,13 @@ void PageSpecificContentSettings::WebContentsHandler::
 void PageSpecificContentSettings::WebContentsHandler::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {
-  auto it = inflight_navigation_settings_.find(navigation);
-  if (it != inflight_navigation_settings_.end()) {
-    it->second.cookie_accesses.push_back(details);
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->cookie_accesses.push_back(details);
     return;
   }
-  // TODO(carlscab): We should be able to
-  // DHECK(!WillNavigationCreateNewPageSpecificContentSettingsOnCommit) here,
-  // but there is still code that starts a navigation before attaching the tab
-  // helpers in DevConsole related code. So we miss the DidStartNavigation event
-  // for those navigations. (https://crbug.com/1095576)
   OnCookiesAccessed(web_contents()->GetMainFrame(), details);
 }
 
@@ -174,17 +170,14 @@ void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
     content::AllowServiceWorkerResult allowed) {
   DCHECK(scope.is_valid());
 
-  auto it = inflight_navigation_settings_.find(navigation);
-  if (it != inflight_navigation_settings_.end()) {
-    it->second.service_worker_accesses.emplace_back(
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->service_worker_accesses.emplace_back(
         std::make_pair(scope, allowed));
     return;
   }
-  // TODO(carlscab): We should be able to
-  // DHECK(!WillNavigationCreateNewPageSpecificContentSettingsOnCommit) here,
-  // but there is still code that starts a navigation before attaching the tab
-  // helpers in DevConsole related code. So we miss the DidStartNavigation event
-  // for those navigations.
   OnServiceWorkerAccessed(web_contents()->GetMainFrame(), scope, allowed);
 }
 
@@ -196,17 +189,6 @@ void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
       PageSpecificContentSettings::GetForCurrentDocument(frame->GetMainFrame());
   if (tscs)
     tscs->OnServiceWorkerAccessed(scope, allowed);
-}
-
-void PageSpecificContentSettings::WebContentsHandler::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
-          navigation_handle)) {
-    return;
-  }
-
-  inflight_navigation_settings_.insert(
-      std::make_pair(navigation_handle, InflightNavigationContentSettings()));
 }
 
 void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
@@ -227,29 +209,21 @@ void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
 void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
-          navigation_handle)) {
+          navigation_handle) ||
+      !navigation_handle->HasCommitted()) {
     return;
   }
 
-  if (!navigation_handle->HasCommitted()) {
-    inflight_navigation_settings_.erase(navigation_handle);
-    return;
-  }
+  content::RenderDocumentHostUserData<PageSpecificContentSettings>::
+      CreateForCurrentDocument(navigation_handle->GetRenderFrameHost(), *this,
+                               delegate_.get());
+  InflightNavigationContentSettings* inflight_settings =
+      content::NavigationHandleUserData<InflightNavigationContentSettings>::
+          GetForNavigationHandle(*navigation_handle);
 
-  auto tscs =
-      base::WrapUnique(new PageSpecificContentSettings(*this, delegate_.get()));
-
-  // TODO(carlscab): This sort of internal. Maybe add a
-  // RenderDocumentHostUserData::Create(RenderFrameHost* rfh, Params...)
-  content::SetRenderDocumentHostUserData(
-      navigation_handle->GetRenderFrameHost(),
-      PageSpecificContentSettings::UserDataKey(), std::move(tscs));
-
-  auto it = inflight_navigation_settings_.find(navigation_handle);
-  if (it != inflight_navigation_settings_.end()) {
+  if (inflight_settings) {
     TransferNavigationContentSettingsToCommittedDocument(
-        it->second, navigation_handle->GetRenderFrameHost());
-    inflight_navigation_settings_.erase(it);
+        *inflight_settings, navigation_handle->GetRenderFrameHost());
   }
   delegate_->UpdateLocationBar();
 }
@@ -279,29 +253,19 @@ void PageSpecificContentSettings::WebContentsHandler::
     observer.OnSiteDataAccessed();
 }
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings() =
-        default;
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings(
-        const InflightNavigationContentSettings&) = default;
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings(
-        InflightNavigationContentSettings&&) = default;
+PageSpecificContentSettings::InflightNavigationContentSettings::
+    InflightNavigationContentSettings(content::NavigationHandle&) {}
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::~InflightNavigationContentSettings() =
-        default;
+PageSpecificContentSettings::InflightNavigationContentSettings::
+    ~InflightNavigationContentSettings() = default;
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings&
-    PageSpecificContentSettings::WebContentsHandler::
-        InflightNavigationContentSettings::operator=(
-            InflightNavigationContentSettings&&) = default;
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
+    PageSpecificContentSettings::InflightNavigationContentSettings)
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageSpecificContentSettings::WebContentsHandler)
 
 PageSpecificContentSettings::PageSpecificContentSettings(
+    content::RenderFrameHost*,
     PageSpecificContentSettings::WebContentsHandler& handler,
     Delegate* delegate)
     : handler_(handler),
