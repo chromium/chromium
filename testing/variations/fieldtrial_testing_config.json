@@ -1847,6 +1847,27 @@
             ]
         }
     ],
+    "ClientHintReliability": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ClientHintReliability",
+                    "enable_features": [
+                        "AcceptCHFrame",
+                        "CriticalClientHint"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionModelOnAndroid": [
         {
             "platforms": [
