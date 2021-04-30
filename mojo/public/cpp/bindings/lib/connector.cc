@@ -291,11 +291,22 @@ void Connector::ResumeIncomingMethodCallProcessing() {
 }
 
 bool Connector::PrefersSerializedMessages() {
-  if (outgoing_serialization_mode_ == OutgoingSerializationMode::kEager)
+  if (outgoing_serialization_mode_ != OutgoingSerializationMode::kLazy)
     return true;
-  DCHECK_EQ(OutgoingSerializationMode::kLazy, outgoing_serialization_mode_);
-  return peer_remoteness_tracker_ &&
-         peer_remoteness_tracker_->last_known_state().peer_remote();
+
+  // In lazy serialization mode (the default) we prefer to send unserialized
+  // messages. Note that most interfaces don't support lazy serialization
+  // though, so they'll still only send serialized messages. As such, in most
+  // cases this return value is ignored.
+  if (!peer_remoteness_tracker_)
+    return false;
+
+  // If we have set up a remoteness tracker however, that means we've actually
+  // seen at least one unserialized message (see Accept()). In that case we
+  // consult the tracker. The point of this is to avoid the redundant work of
+  // deferred serialization if we're reasonably certain the message is going to
+  // end up serialized anyway.
+  return peer_remoteness_tracker_->last_known_state().peer_remote();
 }
 
 bool Connector::Accept(Message* message) {
@@ -316,6 +327,17 @@ bool Connector::Accept(Message* message) {
     DCHECK(dump_result);
   }
 #endif
+
+  if (!message->is_serialized()) {
+    // The caller is sending an unserialized message. If we haven't set up a
+    // remoteness tracker yet, do so now. See PrefersSerializedMessages() above
+    // for more details.
+    DCHECK_EQ(outgoing_serialization_mode_, OutgoingSerializationMode::kLazy);
+    if (!peer_remoteness_tracker_) {
+      peer_remoteness_tracker_.emplace(
+          message_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_REMOTE, task_runner_);
+    }
+  }
 
   if (quota_checker_)
     quota_checker_->BeforeWrite();
@@ -429,11 +451,6 @@ void Connector::WaitToReadMore() {
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnWatcherHandleReady,
                           base::Unretained(this)));
-
-  if (message_pipe_.is_valid()) {
-    peer_remoteness_tracker_.emplace(
-        message_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_REMOTE, task_runner_);
-  }
 
   if (rv != MOJO_RESULT_OK) {
     // If the watch failed because the handle is invalid or its conditions can
