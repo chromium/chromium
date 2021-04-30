@@ -145,13 +145,7 @@ Polymer({
     },
 
     /** @private {boolean} */
-    crostiniMicSharingEnabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    showCrostiniMicSharingDialog_: {
+    showCrostiniMicPermissionDialog_: {
       type: Boolean,
       value: false,
     },
@@ -221,18 +215,12 @@ Polymer({
         'crostini-container-upgrade-available-changed', (canUpgrade) => {
           this.showCrostiniContainerUpgrade_ = canUpgrade;
         });
-    this.addWebUIListener(
-        'crostini-mic-sharing-enabled-changed',
-        this.onCrostiniMicSharingEnabledChanged_.bind(this));
     settings.CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniInstallerStatus();
     settings.CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniUpgraderDialogStatus();
     settings.CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniContainerUpgradeAvailable();
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCrostiniMicSharingEnabled()
-        .then(this.onCrostiniMicSharingEnabledChanged_.bind(this));
     this.loadDiskInfo_();
   },
 
@@ -403,9 +391,18 @@ Polymer({
   },
 
   /** @private */
-  onPortForwardingClick_: function() {
+  onPortForwardingClick_() {
     settings.Router.getInstance().navigateTo(
         settings.routes.CROSTINI_PORT_FORWARDING);
+  },
+
+  /**
+   * @private
+   * @return {SettingsToggleButtonElement}
+   */
+  getMicToggle_() {
+    return /** @type {SettingsToggleButtonElement} */ (
+        this.$$('#crostini-mic-permission-toggle'));
   },
 
   /**
@@ -413,32 +410,26 @@ Polymer({
    * dialog is shown.
    * @private
    */
-  onMicSharingChange_: function() {
-    // Manually resetting the toggle so that it is only changed by the dialog
-    // or when the dialog isn't required.
-    this.$$('#crostini-mic-sharing-toggle').checked =
-        this.crostiniMicSharingEnabled_;
-    const proposedValue = !this.crostiniMicSharingEnabled_;
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .checkCrostiniMicSharingStatus(proposedValue)
-        .then(requiresRestart => {
-          if (requiresRestart) {
-            this.showCrostiniMicSharingDialog_ = true;
-          } else {
-            settings.CrostiniBrowserProxyImpl.getInstance()
-                .setCrostiniMicSharingEnabled(proposedValue);
-          }
-        });
+  onMicPermissionChange_: async function() {
+    if (await settings.CrostiniBrowserProxyImpl.getInstance()
+            .checkCrostiniIsRunning()) {
+      this.showCrostiniMicPermissionDialog_ = true;
+    } else {
+      this.getMicToggle_().sendPrefChange();
+    }
   },
 
   /** @private */
-  onCrostiniMicSharingDialogClose_: function() {
-    this.showCrostiniMicSharingDialog_ = false;
-  },
+  onCrostiniMicPermissionDialogClose_(e) {
+    const toggle = this.getMicToggle_();
+    if (e.detail.accepted) {
+      toggle.sendPrefChange();
+      settings.CrostiniBrowserProxyImpl.getInstance().shutdownCrostini();
+    } else {
+      toggle.resetToPrefValue();
+    }
 
-  /** @private */
-  onCrostiniMicSharingEnabledChanged_: function(enabled) {
-    this.crostiniMicSharingEnabled_ = enabled;
+    this.showCrostiniMicPermissionDialog_ = false;
   },
 
   /**

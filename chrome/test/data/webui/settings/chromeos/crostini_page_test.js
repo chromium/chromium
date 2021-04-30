@@ -28,11 +28,13 @@ let guestOsBrowserProxy = null;
 /** @type {?TestCrostiniBrowserProxy} */
 let crostiniBrowserProxy = null;
 
+const MIC_ALLOWED_PATH = 'prefs.crostini.mic_allowed.value';
+
 function setCrostiniPrefs(enabled, optional = {}) {
   const {
     sharedPaths = {},
     forwardedPorts = [],
-    crostiniMicSharingEnabled = false,
+    micAllowed = false,
     arcEnabled = false,
   } = optional;
   crostiniPage.prefs = {
@@ -41,13 +43,13 @@ function setCrostiniPrefs(enabled, optional = {}) {
     },
     crostini: {
       enabled: {value: enabled},
+      mic_allowed: {value: micAllowed},
       port_forwarding: {ports: {value: forwardedPorts}},
     },
     guest_os: {
       paths_shared_to_vms: {value: sharedPaths},
     },
   };
-  crostiniBrowserProxy.crostiniMicSharingEnabled = crostiniMicSharingEnabled;
   Polymer.dom.flush();
 }
 
@@ -210,7 +212,7 @@ suite('CrostiniPageTests', function() {
         assertTrue(!!subpage.$$('#remove'));
         assertTrue(!!subpage.$$('#container-upgrade'));
         assertTrue(!!subpage.$$('#crostini-port-forwarding'));
-        assertTrue(!!subpage.$$('#crostini-mic-sharing-toggle'));
+        assertTrue(!!subpage.$$('#crostini-mic-permission-toggle'));
         assertTrue(!!subpage.$$('#crostini-disk-resize'));
       });
 
@@ -367,68 +369,56 @@ suite('CrostiniPageTests', function() {
             assertFalse(subpage.$$('#import cr-button').disabled);
           });
 
-      test('ToggleCrostiniMicSharingCancel', async function() {
+      test('ToggleCrostiniMicPermissionCancel', async function() {
         // Crostini is assumed to be running when the page is loaded.
-        assertTrue(!!subpage.$$('#crostini-mic-sharing-toggle'));
-        assertFalse(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
+        assertTrue(!!subpage.$$('#crostini-mic-permission-toggle'));
+        assertFalse(!!subpage.$$('#crostini-mic-permission-dialog'));
 
-        setCrostiniPrefs(true, {crostiniMicSharingEnabled: true});
-        cr.webUIListenerCallback(
-            'crostini-mic-sharing-enabled-changed',
-            crostiniBrowserProxy.crostiniMicSharingEnabled);
-        assertTrue(subpage.$$('#crostini-mic-sharing-toggle').checked);
+        setCrostiniPrefs(true, {micAllowed: true});
+        assertTrue(subpage.$$('#crostini-mic-permission-toggle').checked);
 
-        subpage.$$('#crostini-mic-sharing-toggle').click();
+        subpage.$$('#crostini-mic-permission-toggle').click();
         await test_util.flushTasks();
-        assertTrue(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
-        const dialog = subpage.$$('settings-crostini-mic-sharing-dialog');
+        assertTrue(!!subpage.$$('#crostini-mic-permission-dialog'));
+        const dialog = subpage.$$('#crostini-mic-permission-dialog');
         const dialogClosedPromise = test_util.eventToPromise('close', dialog);
-        dialog.$$('#cancel').click();
+        dialog.$$('.cancel-button').click();
         await Promise.all([dialogClosedPromise, test_util.flushTasks()]);
 
         // Because the dialog was cancelled, the toggle should not have changed.
-        assertFalse(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
-        assertTrue(subpage.$$('#crostini-mic-sharing-toggle').checked);
+        assertFalse(!!subpage.$$('#crostini-mic-permission-dialog'));
+        assertTrue(subpage.$$('#crostini-mic-permission-toggle').checked);
+        assertTrue(crostiniPage.get(MIC_ALLOWED_PATH));
       });
 
-      test('ToggleCrostiniMicSharingShutdown', async function() {
+      test('ToggleCrostiniMicPermissionShutdown', async function() {
         // Crostini is assumed to be running when the page is loaded.
-        assertTrue(!!subpage.$$('#crostini-mic-sharing-toggle'));
-        assertFalse(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
+        assertTrue(!!subpage.$$('#crostini-mic-permission-toggle'));
+        assertFalse(!!subpage.$$('#crostini-mic-permission-dialog'));
 
-        setCrostiniPrefs(true, {crostiniMicSharingEnabled: false});
-        cr.webUIListenerCallback(
-            'crostini-mic-sharing-enabled-changed',
-            crostiniBrowserProxy.crostiniMicSharingEnabled);
-        assertFalse(subpage.$$('#crostini-mic-sharing-toggle').checked);
+        setCrostiniPrefs(true, {micAllowed: false});
+        assertFalse(subpage.$$('#crostini-mic-permission-toggle').checked);
 
-        subpage.$$('#crostini-mic-sharing-toggle').click();
+        subpage.$$('#crostini-mic-permission-toggle').click();
         await test_util.flushTasks();
-        assertTrue(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
-        const dialog = subpage.$$('settings-crostini-mic-sharing-dialog');
+        assertTrue(!!subpage.$$('#crostini-mic-permission-dialog'));
+        const dialog = subpage.$$('#crostini-mic-permission-dialog');
         const dialogClosedPromise = test_util.eventToPromise('close', dialog);
-        dialog.$$('#shutdown').click();
+        dialog.$$('.action-button').click();
         await Promise.all([dialogClosedPromise, test_util.flushTasks()]);
         assertEquals(1, crostiniBrowserProxy.getCallCount('shutdownCrostini'));
-        assertEquals(
-            1,
-            crostiniBrowserProxy.getCallCount('setCrostiniMicSharingEnabled'));
-        cr.webUIListenerCallback(
-            'crostini-mic-sharing-enabled-changed',
-            crostiniBrowserProxy.crostiniMicSharingEnabled);
-        assertFalse(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
-        assertTrue(subpage.$$('#crostini-mic-sharing-toggle').checked);
+        assertFalse(!!subpage.$$('#crostini-mic-permission-dialog'));
+        assertTrue(subpage.$$('#crostini-mic-permission-toggle').checked);
+        assertTrue(crostiniPage.get(MIC_ALLOWED_PATH));
 
         // Crostini is now shutdown, this means that it doesn't need to be
         // restarted in order for changes to take effect, therefore no dialog is
         // needed and the mic sharing settings can be changed immediately.
-        subpage.$$('#crostini-mic-sharing-toggle').click();
+        subpage.$$('#crostini-mic-permission-toggle').click();
         await test_util.flushTasks();
-        cr.webUIListenerCallback(
-            'crostini-mic-sharing-enabled-changed',
-            crostiniBrowserProxy.crostiniMicSharingEnabled);
-        assertFalse(!!subpage.$$('settings-crostini-mic-sharing-dialog'));
-        assertFalse(subpage.$$('#crostini-mic-sharing-toggle').checked);
+        assertFalse(!!subpage.$$('#crostini-mic-permission-dialog'));
+        assertFalse(subpage.$$('#crostini-mic-permission-toggle').checked);
+        assertFalse(crostiniPage.get(MIC_ALLOWED_PATH));
       });
 
       test('Remove', async function() {

@@ -20,7 +20,6 @@
       'addCrostiniPortForward',
       'getCrostiniDiskInfo',
       'resizeCrostiniDisk',
-      'checkCrostiniMicSharingStatus',
       'addCrostiniPortForward',
       'removeCrostiniPortForward',
       'removeAllCrostiniPortForwards',
@@ -169,14 +168,6 @@
   }
 
   /** @override */
-  checkCrostiniMicSharingStatus(proposedValue) {
-    this.methodCalled('checkCrostiniMicSharingStatus', proposedValue);
-    return Promise.resolve(
-        proposedValue !== this.crostiniMicSharingEnabled &&
-        this.crostiniIsRunning);
-  }
-
-  /** @override */
   deactivateCrostiniPortForward(
       vmName, containerName, portNumber, protocolIndex) {
     this.methodCalled(
@@ -194,7 +185,7 @@
   /** @override */
   checkCrostiniIsRunning() {
     this.methodCalled('checkCrostiniIsRunning');
-    return Promise.resolve(true);
+    return Promise.resolve(this.crostiniIsRunning);
   }
 
   /** @override */
