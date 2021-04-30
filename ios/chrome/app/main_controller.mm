@@ -615,10 +615,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       [self startUpBrowserBasicInitialization];
       break;
     case InitStageSafeMode:
+      [self addPostSafeModeAgents];
       break;
     case InitStageFinal:
       break;
   }
+}
+
+- (void)addPostSafeModeAgents {
+  [self.appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
+  [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
 }
 
 #pragma mark - Property implementation.
@@ -630,8 +636,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
-  [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
-  [appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multuple windows are
