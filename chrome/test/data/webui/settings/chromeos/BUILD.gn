@@ -106,6 +106,7 @@ js_modulizer("modulize") {
     "nearby_share_confirm_page_test.js",
     "nearby_share_receive_dialog_tests.js",
     "nearby_share_subpage_tests.js",
+    "network_always_on_vpn_test.js",
     "network_proxy_section_test.js",
     "network_summary_test.js",
     "network_summary_item_test.js",

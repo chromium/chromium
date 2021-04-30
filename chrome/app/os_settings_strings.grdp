@@ -2298,8 +2298,26 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_DISABLED" desc="Settings > Internet > Network details: Toggle sublabel when roaming is not allowed.">
     Roaming off
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_VPN_PREFERENCES" desc="Settings > Internet > VPN: Title of preferences group.">
+    VPN Preferences
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN" desc="Settings > Internet > Network details: Label for the checkbox determining that all internet traffic has to go through this VPN (virtual private network), and all other network connections are blocked.">
     Always connect through this VPN
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_ENABLE_LABEL" desc="Settings > Internet > VPN: Toggle label to enable always-on VPN.">
+    Always-on VPN
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_ENABLE_SUBLABEL" desc="Settings > Internet > VPN: Toggle sublabel to enable always-on VPN.">
+    Automatically connects when you log in
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_LOCKDOWN_LABEL" desc="Settings > Internet > VPN: Label for the toggle that enables always-on VPN lockdown.">
+    Block traffic without VPN
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_LOCKDOWN_SUBLABEL" desc="Settings > Internet > VPN: Sublabel for the toggle that enables always-on VPN lockdown.">
+    Chrome browser and Android traffic will be blocked unless a VPN is connected
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_ALWAYS_ON_VPN_SERVICE" desc="Settings > Internet > VPN: Label for the dropdown menu determining which VPN client will be automatically started on login.">
+    VPN service
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT" desc="Settings > Internet > Network details: Label for the checkbox determining whether to automatically connect to the network.">
     Automatically connect to this network

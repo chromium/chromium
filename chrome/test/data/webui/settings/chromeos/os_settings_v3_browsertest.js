@@ -368,6 +368,7 @@ TEST_F(
    'multidevice_wifi_sync_disabled_link_tests.m.js'
  ],
  ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.m.js'],
+ ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.m.js'],
  ['NetworkProxySection', 'network_proxy_section_test.m.js'],
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],

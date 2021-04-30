@@ -311,6 +311,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/internet_page/internet_page_browser_proxy.m.js",
     "chromeos/internet_page/internet_shared_css.m.js",
     "chromeos/internet_page/internet_subpage.m.js",
+    "chromeos/internet_page/network_always_on_vpn.m.js",
     "chromeos/internet_page/network_proxy_section.m.js",
     "chromeos/internet_page/network_summary.m.js",
     "chromeos/internet_page/network_summary_item.m.js",
