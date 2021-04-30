@@ -4,7 +4,13 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
+#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/web_apps.h"
 #include "components/services/app_service/app_service_impl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
+#endif
 
 namespace apps {
 

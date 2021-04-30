@@ -6,22 +6,37 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_CHROMEOS_H_
 
 #include <map>
+#include <memory>
 #include <set>
+#include <string>
 
-#include "chrome/browser/apps/app_service/app_platform_metrics_service.h"
+#include "base/callback.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
-#include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
-#include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
-#include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
-#include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
-#include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_chromeos.h"
+#include "chrome/browser/apps/app_service/paused_apps.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/gfx/native_widget_types.h"
+
+class Profile;
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace apps {
 
+class AppPlatformMetricsService;
+class BorealisApps;
+class BuiltInChromeOsApps;
+class CrostiniApps;
+class ExtensionAppsChromeOs;
+class PluginVmApps;
 class StandaloneBrowserApps;
 class UninstallDialog;
+class WebAppsChromeOs;
 
 struct PauseData {
   int hours = 0;

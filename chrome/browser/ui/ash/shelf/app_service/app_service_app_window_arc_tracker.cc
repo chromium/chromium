@@ -35,6 +35,7 @@
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"

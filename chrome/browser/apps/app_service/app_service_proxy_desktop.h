@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_DESKTOP_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_DESKTOP_H_
 
-#include "chrome/browser/apps/app_service/app_service_proxy_base.h"
-#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps.h"
+#include <memory>
+#include <string>
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
-#endif
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_base.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
 namespace apps {
+
+class ExtensionApps;
+class WebApps;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeLacrosWebAppsHost;
+#endif
 
 // Singleton (per Profile) proxy and cache of an App Service's apps in Chrome
 // browser.
