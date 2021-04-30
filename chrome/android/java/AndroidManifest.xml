@@ -406,7 +406,7 @@ by a child template that "extends" this file.
         </receiver>
 
         <!-- Locale related -->
-        <receiver android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"
+        <receiver android:name="org.chromium.chrome.browser.locale.LocaleChangedBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.LOCALE_CHANGED" />

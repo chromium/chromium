@@ -55,13 +55,13 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
+import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
-import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
@@ -241,7 +241,7 @@ public class FirstRunIntegrationTest {
         }
 
         // Select a default search engine.
-        if (searchPromoType == SearchEnginePromoType.DONT_SHOW) {
+        if (searchPromoType == LocaleManager.SearchEnginePromoType.DONT_SHOW) {
             Assert.assertFalse("Search engine page was shown.",
                     freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         } else {
@@ -354,13 +354,13 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testDefaultSearchEngine_DontShow() throws Exception {
-        runSearchEnginePromptTest(SearchEnginePromoType.DONT_SHOW);
+        runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.DONT_SHOW);
     }
 
     @Test
     @MediumTest
     public void testDefaultSearchEngine_ShowExisting() throws Exception {
-        runSearchEnginePromptTest(SearchEnginePromoType.SHOW_EXISTING);
+        runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.SHOW_EXISTING);
     }
 
     @Test
@@ -368,7 +368,7 @@ public class FirstRunIntegrationTest {
     public void testDefaultSearchEngine_WithCctPolicy() throws Exception {
         skipTosDialogViaPolicy();
 
-        runSearchEnginePromptTest(SearchEnginePromoType.SHOW_EXISTING);
+        runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.SHOW_EXISTING);
     }
 
     private void runSearchEnginePromptTest(@SearchEnginePromoType final int searchPromoType)
@@ -558,7 +558,7 @@ public class FirstRunIntegrationTest {
         launchViewIntent(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
 
-        clickThroughFirstRun(secondFreActivity, SearchEnginePromoType.DONT_SHOW);
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
         verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
 
@@ -571,7 +571,7 @@ public class FirstRunIntegrationTest {
         launchCustomTabs(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
 
-        clickThroughFirstRun(secondFreActivity, SearchEnginePromoType.DONT_SHOW);
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
         verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
     }
 
@@ -584,7 +584,7 @@ public class FirstRunIntegrationTest {
         launchViewIntent(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
 
-        clickThroughFirstRun(secondFreActivity, SearchEnginePromoType.DONT_SHOW);
+        clickThroughFirstRun(secondFreActivity, LocaleManager.SearchEnginePromoType.DONT_SHOW);
         verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
 

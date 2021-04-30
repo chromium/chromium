@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.search_engines;
+package org.chromium.chrome.browser.locale;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
@@ -52,9 +53,7 @@ public class SogouPromoDialog extends PromoDialog {
     /** Run when the dialog is dismissed. */
     private final Callback<Boolean> mOnDismissedCallback;
 
-    /** Called when the search engine to use is selected. */
-    private final Callback<Boolean> mOnSelectEngineCallback;
-
+    private final LocaleManager mLocaleManager;
     private final ClickableSpan mSpan;
 
     @UserChoice
@@ -63,9 +62,10 @@ public class SogouPromoDialog extends PromoDialog {
     /**
      * Creates an instance of the dialog.
      */
-    public SogouPromoDialog(Activity activity, @NonNull Callback<Boolean> onSelectEngine,
+    SogouPromoDialog(Activity activity, LocaleManager localeManager,
             @Nullable Callback<Boolean> onDismissed, @NonNull SettingsLauncher settingsLauncher) {
         super(activity);
+        mLocaleManager = localeManager;
         mSpan = new NoUnderlineClickableSpan(activity.getResources(), (widget) -> {
             mChoice = UserChoice.SETTINGS;
             settingsLauncher.launchSettingsActivity(getContext(), SearchEngineSettings.class);
@@ -74,7 +74,6 @@ public class SogouPromoDialog extends PromoDialog {
         setOnDismissListener(this);
         setCanceledOnTouchOutside(false);
         mOnDismissedCallback = onDismissed;
-        mOnSelectEngineCallback = onSelectEngine;
     }
 
     @Override
@@ -119,16 +118,27 @@ public class SogouPromoDialog extends PromoDialog {
         dismiss();
     }
 
+    private void keepGoogle() {
+        mLocaleManager.setSearchEngineAutoSwitch(false);
+        mLocaleManager.addSpecialSearchEngines();
+    }
+
+    private void useSogou() {
+        mLocaleManager.setSearchEngineAutoSwitch(true);
+        mLocaleManager.addSpecialSearchEngines();
+        mLocaleManager.overrideDefaultSearchEngine();
+    }
+
     @Override
     public void onDismiss(DialogInterface dialog) {
         switch (mChoice) {
             case UserChoice.KEEP_GOOGLE:
             case UserChoice.SETTINGS:
             case UserChoice.BACK_KEY:
-                mOnSelectEngineCallback.onResult(false);
+                keepGoogle();
                 break;
             case UserChoice.USE_SOGOU:
-                mOnSelectEngineCallback.onResult(true);
+                useSogou();
                 break;
             default:
                 assert false : "Unexpected choice";

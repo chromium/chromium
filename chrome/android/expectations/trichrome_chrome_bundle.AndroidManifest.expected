@@ -909,6 +909,13 @@
         android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: fd245bee
+    <receiver  # DIFF-ANCHOR: de591772
+        android:name="org.chromium.chrome.browser.locale.LocaleChangedBroadcastReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 5458f2a2
+        <action android:name="android.intent.action.LOCALE_CHANGED"/>
+      </intent-filter>  # DIFF-ANCHOR: 5458f2a2
+    </receiver>  # DIFF-ANCHOR: de591772
     <receiver  # DIFF-ANCHOR: 2b9c19aa
         android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
         android:exported="false">
@@ -925,13 +932,6 @@
         <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
       </intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
     </receiver>  # DIFF-ANCHOR: df76237f
-    <receiver  # DIFF-ANCHOR: a9b53579
-        android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"
-        android:exported="false">
-      <intent-filter>  # DIFF-ANCHOR: 5458f2a2
-        <action android:name="android.intent.action.LOCALE_CHANGED"/>
-      </intent-filter>  # DIFF-ANCHOR: 5458f2a2
-    </receiver>  # DIFF-ANCHOR: a9b53579
     <receiver  # DIFF-ANCHOR: 0cefd906
         android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
         android:exported="false">

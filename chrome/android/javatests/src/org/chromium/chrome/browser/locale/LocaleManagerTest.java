@@ -19,7 +19,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -56,7 +55,7 @@ public class LocaleManagerTest {
             @Override
             public int getSearchEnginePromoShowType() {
                 getShowTypeCallback.notifyCalled();
-                return SearchEnginePromoType.DONT_SHOW;
+                return LocaleManager.SearchEnginePromoType.DONT_SHOW;
             }
         });
 
