@@ -106,6 +106,20 @@ std::string CastSysInfoAndroid::GetFactoryCountry() {
 }
 
 std::vector<std::string> CastSysInfoAndroid::GetFactoryLocaleList() {
+  const std::string factory_locale_list =
+      GetAndroidProperty("ro.product.factory_locale_list", "");
+  if (!factory_locale_list.empty()) {
+    std::vector<std::string> results;
+    std::stringstream stream(factory_locale_list);
+    while (stream.good()) {
+      std::string locale;
+      getline(stream, locale, ',');
+      results.push_back(locale);
+    }
+    if (!results.empty()) {
+      return results;
+    }
+  }
   // This duplicates the read-only property portion of
   // frameworks/base/core/jni/AndroidRuntime.cpp in the Android tree, which is
   // effectively the "factory locale", i.e. the locale chosen by Android
