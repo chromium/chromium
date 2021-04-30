@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_features.h"
@@ -292,6 +293,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kSendBeaconThrowForBlobWithNonSimpleType},
     {wf::EnableSharedArrayBufferOnDesktop,
      features::kSharedArrayBufferOnDesktop},
+    {wf::EnableSharedAutofill, autofill::features::kAutofillAcrossIframes},
     {wf::EnableSignedExchangePrefetchCacheForNavigations,
      features::kSignedExchangePrefetchCacheForNavigations},
     {wf::EnableSignedExchangeSubresourcePrefetch,

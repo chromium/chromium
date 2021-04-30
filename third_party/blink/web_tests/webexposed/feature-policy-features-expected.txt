@@ -46,6 +46,7 @@ picture-in-picture
 publickey-credentials-get
 screen-wake-lock
 serial
+shared-autofill
 storage-access-api
 sync-xhr
 trust-token-redemption

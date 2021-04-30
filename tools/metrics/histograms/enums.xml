@@ -32453,6 +32453,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="80" label="OTPCredentials"/>
   <int value="81" label="DisplayCapture"/>
   <int value="82" label="InterestCohort"/>
+  <int value="83" label="SharedAutofill"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

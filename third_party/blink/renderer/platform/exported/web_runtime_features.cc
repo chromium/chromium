@@ -352,6 +352,10 @@ void WebRuntimeFeatures::EnableSharedArrayBuffer(bool enable) {
   RuntimeEnabledFeatures::SetSharedArrayBufferEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableSharedAutofill(bool enable) {
+  RuntimeEnabledFeatures::SetSharedAutofillEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableSharedWorker(bool enable) {
   RuntimeEnabledFeatures::SetSharedWorkerEnabled(enable);
 }

@@ -259,6 +259,11 @@
       depends_on: ["Serial"],
     },
     {
+      name: "SharedAutofill",
+      permissions_policy_name: "shared-autofill",
+      depends_on: ["SharedAutofill"],
+    },
+    {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access-api",
