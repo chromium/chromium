@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_PROCFS_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "base/values.h"
+#include "base/optional.h"
 
 namespace ash {
 namespace system {
