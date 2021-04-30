@@ -5163,7 +5163,8 @@
       },
       'Mac10.13 Tests': {
         'mixins': [
-            'mac_10.13',
+            'isolate_profile_data',
+            'mac_10.15',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
