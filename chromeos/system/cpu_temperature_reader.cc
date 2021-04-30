@@ -79,8 +79,8 @@ void ReadTemperaturesFromDirectory(const base::FilePath& hwmon_path,
        !temperature_path.empty(); temperature_path = enumerator.Next()) {
     CPUTemperatureInfo info;
     if (!ReadTemperatureFromPath(temperature_path, &info.temp_celsius)) {
-      LOG(WARNING) << "Unable to read CPU temperature from "
-                   << temperature_path.value();
+      DLOG(WARNING) << "Unable to read CPU temperature from "
+                    << temperature_path.value();
       continue;
     }
     // Get appropriate temp*_label file.
