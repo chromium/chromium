@@ -509,9 +509,10 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
         IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
     unsigned internalformat =
         gl::BufferFormatToGLInternalFormat(gpu_memory_buffer->GetFormat());
+    const uint32_t io_surface_plane = 0;
     scoped_refptr<gl::GLImageIOSurface> image(
         gl::GLImageIOSurface::Create(size, internalformat));
-    if (!image->Initialize(gpu_memory_buffer->iosurface(),
+    if (!image->Initialize(gpu_memory_buffer->iosurface(), io_surface_plane,
                            gfx::GenericSharedMemoryId(1),
                            gfx::BufferFormat::BGRA_8888)) {
       return -1;

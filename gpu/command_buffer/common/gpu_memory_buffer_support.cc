@@ -61,7 +61,6 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
              plane == gfx::BufferPlane::V;
       break;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::P010:
       return plane == gfx::BufferPlane::DEFAULT ||
              plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
       break;
@@ -71,6 +70,45 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
   }
   NOTREACHED();
   return false;
+}
+
+gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
+                                       gfx::BufferFormat format) {
+  switch (plane) {
+    case gfx::BufferPlane::DEFAULT:
+      return format;
+    case gfx::BufferPlane::Y:
+      if (format == gfx::BufferFormat::YVU_420 ||
+          format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+        return gfx::BufferFormat::R_8;
+      }
+      if (format == gfx::BufferFormat::P010) {
+        return gfx::BufferFormat::R_16;
+      }
+      NOTREACHED();
+      break;
+    case gfx::BufferPlane::UV:
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+        return gfx::BufferFormat::RG_88;
+      }
+      if (format == gfx::BufferFormat::P010) {
+        // There does not yet exist a gfx::BufferFormat::RG_16, which would be
+        // required for P010.
+        NOTIMPLEMENTED();
+      }
+      break;
+    case gfx::BufferPlane::U:
+      if (format == gfx::BufferFormat::YVU_420)
+        return gfx::BufferFormat::R_8;
+      break;
+    case gfx::BufferPlane::V:
+      if (format == gfx::BufferFormat::YVU_420)
+        return gfx::BufferFormat::R_8;
+      break;
+  }
+
+  NOTREACHED();
+  return format;
 }
 
 uint32_t GetPlatformSpecificTextureTarget() {

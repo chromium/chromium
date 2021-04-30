@@ -102,9 +102,9 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::IO_SURFACE_BUFFER)
     return nullptr;
-  // TODO(https://crbug.com/1201865): Allow Y and UV planes.
-  if (plane != gfx::BufferPlane::DEFAULT)
-    return nullptr;
+
+  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, format);
+  uint32_t io_surface_plane = (plane == gfx::BufferPlane::UV) ? 1 : 0;
 
   base::AutoLock lock(io_surfaces_lock_);
 
@@ -126,8 +126,9 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     // |size| or |format|, which, if subsequently used to determine parameters
     // for bounds checking, could result in an out-of-bounds memory access.
     uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
-    gfx::Size io_surface_size(IOSurfaceGetWidthOfPlane(io_surface, 0),
-                              IOSurfaceGetHeightOfPlane(io_surface, 0));
+    gfx::Size io_surface_size(
+        IOSurfaceGetWidthOfPlane(io_surface, io_surface_plane),
+        IOSurfaceGetHeightOfPlane(io_surface, io_surface_plane));
     if (io_surface_format != BufferFormatToIOSurfacePixelFormat(format)) {
       DLOG(ERROR)
           << "IOSurface pixel format does not match specified buffer format.";
@@ -143,10 +144,11 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     return nullptr;
   }
 
-  unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);
+  unsigned internalformat = gl::BufferFormatToGLInternalFormat(plane_format);
   scoped_refptr<gl::GLImageIOSurface> image(
       gl::GLImageIOSurface::Create(size, internalformat));
-  if (!image->Initialize(io_surface, handle.id, format)) {
+  if (!image->Initialize(io_surface, io_surface_plane, handle.id,
+                         plane_format)) {
     DLOG(ERROR) << "Failed to initialize GLImage for IOSurface.";
     return scoped_refptr<gl::GLImage>();
   }
@@ -164,6 +166,7 @@ GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(
   bool should_clear = false;
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
       gfx::CreateIOSurface(size, format, should_clear));
+  const uint32_t io_surface_plane = 0;
   if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface.";
     return nullptr;
@@ -174,8 +177,8 @@ GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(
       gl::GLImageIOSurface::Create(size, internalformat));
   // Use an invalid GMB id so that we can differentiate between anonymous and
   // shared GMBs by using gfx::GenericSharedMemoryId::is_valid().
-  if (!image->Initialize(io_surface.get(), gfx::GenericSharedMemoryId(),
-                         format)) {
+  if (!image->Initialize(io_surface.get(), io_surface_plane,
+                         gfx::GenericSharedMemoryId(), format)) {
     DLOG(ERROR) << "Failed to initialize anonymous GLImage.";
     return scoped_refptr<gl::GLImage>();
   }

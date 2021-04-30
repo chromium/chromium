@@ -192,6 +192,7 @@ GLImageIOSurface::~GLImageIOSurface() {
 }
 
 bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
+                                  uint32_t io_surface_plane,
                                   gfx::GenericSharedMemoryId io_surface_id,
                                   gfx::BufferFormat format) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -215,6 +216,7 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
   format_ = format;
   io_surface_.reset(io_surface, base::scoped_policy::RETAIN);
   io_surface_id_ = io_surface_id;
+  io_surface_plane_ = io_surface_plane;
   return true;
 }
 
@@ -223,12 +225,13 @@ bool GLImageIOSurface::InitializeWithCVPixelBuffer(
     gfx::GenericSharedMemoryId io_surface_id,
     gfx::BufferFormat format) {
   IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(cv_pixel_buffer);
+  const uint32_t io_surface_plane = 0;
   if (!io_surface) {
     LOG(ERROR) << "Can't init GLImage from CVPixelBuffer with no IOSurface";
     return false;
   }
 
-  if (!Initialize(io_surface, io_surface_id, format))
+  if (!Initialize(io_surface, io_surface_plane, io_surface_id, format))
     return false;
 
   cv_pixel_buffer_.reset(cv_pixel_buffer, base::scoped_policy::RETAIN);
@@ -296,7 +299,7 @@ bool GLImageIOSurface::BindTexImageImpl(unsigned target,
   CGLError cgl_error = CGLTexImageIOSurface2D(
       cgl_context, GL_TEXTURE_RECTANGLE_ARB, texture_format, size_.width(),
       size_.height(), DataFormat(format_), DataType(format_), io_surface_.get(),
-      0);
+      io_surface_plane_);
   if (cgl_error != kCGLNoError) {
     LOG(ERROR) << "Error in CGLTexImageIOSurface2D: "
                << CGLErrorString(cgl_error);
@@ -513,6 +516,7 @@ GLImageIOSurface* GLImageIOSurface::FromGLImage(GLImage* image) {
 bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
+    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:
@@ -522,7 +526,6 @@ bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return true;
     case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:

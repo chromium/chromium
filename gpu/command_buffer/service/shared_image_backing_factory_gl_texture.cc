@@ -295,7 +295,9 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
   if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     image->DisableInUseByWindowServer();
 
-  viz::ResourceFormat format = viz::GetResourceFormat(buffer_format);
+  gfx::BufferFormat plane_buffer_format =
+      GetPlaneBufferFormat(plane, buffer_format);
+  viz::ResourceFormat format = viz::GetResourceFormat(plane_buffer_format);
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
