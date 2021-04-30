@@ -37,15 +37,12 @@ generate_grd("build_grd") {
   input_files = [ "bookmarks.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
-  grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
-  deps = [ "side_panel:build_grdp" ]
-
   if (optimize_webui) {
-    deps += [ ":build" ]
+    deps = [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites = [ "bookmarks.rollup.js|bookmarks.js" ]
   } else {
-    deps += [
+    deps = [
       ":preprocess",
       ":preprocess_generated",
     ]
@@ -131,14 +128,7 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-group("closure_compile") {
-  deps = [
-    ":closure_compile_main",
-    "side_panel:closure_compile",
-  ]
-}
-
-js_type_check("closure_compile_main") {
+js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":actions",

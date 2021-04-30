@@ -102,7 +102,6 @@ if (enable_js_type_check) {
       deps += [
         "bluetooth_internals:closure_compile",
         "bookmarks:closure_compile",
-        "bookmarks/side_panel:closure_compile",
         "commander:closure_compile",
         "discards:closure_compile",
         "download_internals:closure_compile",
