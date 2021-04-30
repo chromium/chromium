@@ -11,7 +11,7 @@ namespace extensions {
 
 namespace settings_namespace {
 
-// The namespaces of the storage areas.
+// The namespaces of the storage areas that have ValueStore.
 enum Namespace {
   LOCAL,    // "local"    i.e. chrome.storage.local
   SYNC,     // "sync"     i.e. chrome.storage.sync

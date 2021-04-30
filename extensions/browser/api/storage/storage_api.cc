@@ -22,94 +22,14 @@
 
 namespace extensions {
 
-// SettingsFunction
-
-SettingsFunction::SettingsFunction()
-    : settings_namespace_(settings_namespace::INVALID) {}
-
-SettingsFunction::~SettingsFunction() {}
-
-bool SettingsFunction::ShouldSkipQuotaLimiting() const {
-  // Only apply quota if this is for sync storage.
-  std::string settings_namespace_string;
-  if (!args_->GetString(0, &settings_namespace_string)) {
-    // This should be EXTENSION_FUNCTION_VALIDATE(false) but there is no way
-    // to signify that from this function. It will be caught in Run().
-    return false;
-  }
-  return settings_namespace_string != "sync";
-}
-
-ExtensionFunction::ResponseAction SettingsFunction::Run() {
-  std::string settings_namespace_string;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &settings_namespace_string));
-  args_->Remove(0, NULL);
-  settings_namespace_ =
-      settings_namespace::FromString(settings_namespace_string);
-  EXTENSION_FUNCTION_VALIDATE(settings_namespace_ !=
-                              settings_namespace::INVALID);
-
-  if (extension()->is_login_screen_extension() &&
-      settings_namespace_ != settings_namespace::MANAGED) {
-    // Login screen extensions are not allowed to use local/sync storage for
-    // security reasons (see crbug.com/978443).
-    return RespondNow(Error(base::StringPrintf(
-        "\"%s\" is not available for login screen extensions",
-        settings_namespace_string.c_str())));
-  }
-
-  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
-  if (!frontend->IsStorageEnabled(settings_namespace_)) {
-    return RespondNow(Error(
-        base::StringPrintf("\"%s\" is not available in this instance of Chrome",
-                           settings_namespace_string.c_str())));
-  }
-
-  observers_ = frontend->GetObservers();
-  frontend->RunWithStorage(
-      extension(), settings_namespace_,
-      base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
-  return RespondLater();
-}
-
-void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
-  ResponseValue response = RunWithStorage(storage);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SettingsFunction::Respond, this, std::move(response)));
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
-    ValueStore::ReadResult result) {
-  TRACE_EVENT2("browser", "SettingsFunction::UseReadResult", "extension_id",
-               extension_id(), "namespace", settings_namespace_);
-  if (!result.status().ok())
-    return Error(result.status().message);
-
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->Swap(&result.settings());
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(dict)));
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
-    ValueStore::WriteResult result) {
-  TRACE_EVENT2("browser", "SettingsFunction::UseWriteResult", "extension_id",
-               extension_id(), "namespace", settings_namespace_);
-  if (!result.status().ok())
-    return Error(result.status().message);
-
-  if (!result.changes().empty()) {
-    observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                       extension_id(), settings_namespace_,
-                       ValueStoreChange::ToValue(result.PassChanges()));
-  }
-
-  return NoArguments();
-}
-
 // Concrete settings functions
 
 namespace {
+
+constexpr char kLocalString[] = "local";
+constexpr char kSyncString[] = "sync";
+constexpr char kManagedString[] = "managed";
+constexpr char kSessionString[] = "session";
 
 // Adds all StringValues from a ListValue to a vector of strings.
 void AddAllStringValues(const base::ListValue& from,
@@ -151,7 +71,130 @@ void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
       "MAX_WRITE_OPERATIONS_PER_HOUR"));
 }
 
+// Returns the settings namespace of `storage_area`, or `Namespace::INVALID` if
+// the StorageArea doesn't map to one.
+settings_namespace::Namespace StorageAreaToSettingsNamespace(
+    StorageAreaNamespace storage_area) {
+  switch (storage_area) {
+    case StorageAreaNamespace::kLocal:
+      return settings_namespace::LOCAL;
+    case StorageAreaNamespace::kSync:
+      return settings_namespace::SYNC;
+    case StorageAreaNamespace::kManaged:
+      return settings_namespace::MANAGED;
+    case StorageAreaNamespace::kSession:
+      return settings_namespace::INVALID;
+    case StorageAreaNamespace::kInvalid:
+      NOTREACHED();
+      return settings_namespace::INVALID;
+  }
+}
+
+// Returns the StorageArea of `storage_area_string`, or
+// `StorageAreaNamespace::kInvalid` if the string doesn't map to one.
+StorageAreaNamespace StorageAreaFromString(
+    const std::string& storage_area_string) {
+  if (storage_area_string == kLocalString)
+    return StorageAreaNamespace::kLocal;
+  if (storage_area_string == kSyncString)
+    return StorageAreaNamespace::kSync;
+  if (storage_area_string == kManagedString)
+    return StorageAreaNamespace::kManaged;
+  if (storage_area_string == kSessionString)
+    return StorageAreaNamespace::kSession;
+  return StorageAreaNamespace::kInvalid;
+}
+
 }  // namespace
+
+// SettingsFunction
+
+SettingsFunction::SettingsFunction() = default;
+
+SettingsFunction::~SettingsFunction() = default;
+
+bool SettingsFunction::ShouldSkipQuotaLimiting() const {
+  // Only apply quota if this is for sync storage.
+  std::string storage_area_string;
+  if (!args_->GetString(0, &storage_area_string)) {
+    // This should be EXTENSION_FUNCTION_VALIDATE(false) but there is no way
+    // to signify that from this function. It will be caught in Run().
+    return false;
+  }
+  return storage_area_string != kSyncString;
+}
+
+ExtensionFunction::ResponseAction SettingsFunction::Run() {
+  std::string storage_area_string;
+  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &storage_area_string));
+  args_->Remove(0, nullptr);
+  storage_area_ = StorageAreaFromString(storage_area_string);
+  EXTENSION_FUNCTION_VALIDATE(storage_area_ != StorageAreaNamespace::kInvalid);
+  settings_namespace_ = StorageAreaToSettingsNamespace(storage_area_);
+  // TODO(emiliapaz): Currently we only have sync, local and managed implemented
+  // in this function. This check will change after we introduce `session`.
+  EXTENSION_FUNCTION_VALIDATE(
+      settings_namespace_ == settings_namespace::SYNC ||
+      settings_namespace_ == settings_namespace::LOCAL ||
+      settings_namespace_ == settings_namespace::MANAGED);
+
+  if (extension()->is_login_screen_extension() &&
+      storage_area_ != StorageAreaNamespace::kManaged) {
+    // Login screen extensions are not allowed to use local/sync storage for
+    // security reasons (see crbug.com/978443).
+    return RespondNow(Error(base::StringPrintf(
+        "\"%s\" is not available for login screen extensions",
+        storage_area_string.c_str())));
+  }
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  if (!frontend->IsStorageEnabled(settings_namespace_)) {
+    return RespondNow(Error(
+        base::StringPrintf("\"%s\" is not available in this instance of Chrome",
+                           storage_area_string.c_str())));
+  }
+
+  observers_ = frontend->GetObservers();
+  frontend->RunWithStorage(
+      extension(), settings_namespace_,
+      base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
+  return RespondLater();
+}
+
+void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
+  ResponseValue response = RunWithStorage(storage);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SettingsFunction::Respond, this, std::move(response)));
+}
+
+ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
+    ValueStore::ReadResult result) {
+  TRACE_EVENT2("browser", "SettingsFunction::UseReadResult", "extension_id",
+               extension_id(), "namespace", storage_area_);
+  if (!result.status().ok())
+    return Error(result.status().message);
+
+  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+  dict->Swap(&result.settings());
+  return OneArgument(base::Value::FromUniquePtrValue(std::move(dict)));
+}
+
+ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
+    ValueStore::WriteResult result) {
+  TRACE_EVENT2("browser", "SettingsFunction::UseWriteResult", "extension_id",
+               extension_id(), "namespace", storage_area_);
+  if (!result.status().ok())
+    return Error(result.status().message);
+
+  if (!result.changes().empty()) {
+    observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
+                       extension_id(), settings_namespace_,
+                       ValueStoreChange::ToValue(result.PassChanges()));
+  }
+
+  return NoArguments();
+}
 
 ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     ValueStore* storage) {

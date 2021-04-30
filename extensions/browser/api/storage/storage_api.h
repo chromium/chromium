@@ -16,6 +16,15 @@
 
 namespace extensions {
 
+// Enumerates all the namespaces of the storage areas.
+enum class StorageAreaNamespace {
+  kLocal,    // "local"    i.e. chrome.storage.local
+  kSync,     // "sync"     i.e. chrome.storage.sync
+  kManaged,  // "managed"  i.e. chrome.storage.managed
+  kSession,  // "session"  i.e. chrome.storage.session
+  kInvalid,
+};
+
 // Superclass of all settings functions.
 class SettingsFunction : public ExtensionFunction {
  protected:
@@ -46,9 +55,14 @@ class SettingsFunction : public ExtensionFunction {
   // SendResponse with its success value.
   void AsyncRunWithStorage(ValueStore* storage);
 
-  // The settings namespace the call was for.  For example, SYNC if the API
-  // call was chrome.settings.experimental.sync..., LOCAL if .local, etc.
-  settings_namespace::Namespace settings_namespace_;
+  // The Storage Area the call was for. For example: kLocal if the API call was
+  // chrome.storage.local, kSync if the API call was chrome.storage.sync, etc.
+  StorageAreaNamespace storage_area_ = StorageAreaNamespace::kInvalid;
+
+  // The settings namespace the call was for. Only includes
+  // StorageAreaNamespace's that use ValueStore.
+  settings_namespace::Namespace settings_namespace_ =
+      settings_namespace::INVALID;
 
   // Observers, cached so that it's only grabbed from the UI thread.
   scoped_refptr<SettingsObserverList> observers_;
