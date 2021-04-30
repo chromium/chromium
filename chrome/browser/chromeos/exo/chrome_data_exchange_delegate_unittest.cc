@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"

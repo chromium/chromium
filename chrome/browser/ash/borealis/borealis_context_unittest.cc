@@ -19,7 +19,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_chunneld_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
-#include "chromeos/dbus/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

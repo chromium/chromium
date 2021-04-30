@@ -26,7 +26,7 @@
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
-#include "chromeos/dbus/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

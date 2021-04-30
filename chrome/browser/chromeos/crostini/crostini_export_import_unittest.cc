@@ -17,7 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"

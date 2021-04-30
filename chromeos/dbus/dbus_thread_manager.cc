@@ -33,7 +33,7 @@
 #include "chromeos/dbus/image_loader_client.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/runtime_probe_client.h"
-#include "chromeos/dbus/seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
