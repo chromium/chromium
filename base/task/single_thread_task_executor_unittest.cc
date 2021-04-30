@@ -37,6 +37,7 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -386,13 +387,29 @@ void RecursiveFuncWin(scoped_refptr<SingleThreadTaskRunner> task_runner,
 
 #endif  // defined(OS_WIN)
 
-void PostNTasksThenQuit(int posts_remaining) {
-  if (posts_remaining > 1) {
-    ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, BindOnce(&PostNTasksThenQuit, posts_remaining - 1));
-  } else {
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+void PostNTasksThenQuit(TimeTicks begin_ticks,
+                        TimeTicks last_post_ticks,
+                        int posts_remaining,
+                        OnceClosure on_done) {
+  // Tasks should be running on a decent heart beat. Some platforms/bots however
+  // have a hard time posting+running *all* tasks before test timeout, allow
+  // those platforms to pass anyways so long as they kept a decent heartbeat up
+  // to that point.
+  const auto now = TimeTicks::Now();
+  EXPECT_LT(now - last_post_ticks, TestTimeouts::tiny_timeout());
+  if (posts_remaining == 0 ||
+      now - begin_ticks >= TestTimeouts::action_max_timeout()) {
+    if (posts_remaining > 0) {
+      LOG(ERROR) << "Slow test environment, bailing out early with "
+                 << posts_remaining << " tasks to go.";
+    }
+    std::move(on_done).Run();
+    return;
   }
+
+  ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, BindOnce(&PostNTasksThenQuit, begin_ticks, now,
+                          posts_remaining - 1, std::move(on_done)));
 }
 
 #if defined(OS_WIN)
@@ -1253,27 +1270,28 @@ TEST_P(SingleThreadTaskExecutorTypedTest, RunLoopQuitOrderAfter) {
   EXPECT_EQ(static_cast<size_t>(task_index), order.Size());
 }
 
-// There was a bug in the MessagePumpGLib where posting tasks recursively
-// caused the message loop to hang, due to the buffer of the internal pipe
-// becoming full. Test all SingleThreadTaskExecutor types to ensure this issue
-// does not exist in other MessagePumps.
+// Regression test for crbug.com/170904 where posting tasks recursively caused
+// the message loop to hang in MessagePumpGLib, due to the buffer of the
+// internal pipe becoming full. Test all SingleThreadTaskExecutor types to
+// ensure this issue does not exist in other MessagePumps.
 //
-// On Linux, the pipe buffer size is 64KiB by default. The bug caused one
-// byte accumulated in the pipe per two posts, so we should repeat 128K
-// times to reproduce the bug.
-#if defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
-// TODO(crbug.com/810077): This is flaky on Fuchsia.
-// TODO(crbug.com/1188497): Also flaky on Chrome OS.
-#define MAYBE_RecursivePosts DISABLED_RecursivePosts
-#else
-#define MAYBE_RecursivePosts RecursivePosts
-#endif
-TEST_P(SingleThreadTaskExecutorTypedTest, MAYBE_RecursivePosts) {
+// On Linux, the pipe buffer size is 64KiB by default. The bug caused one byte
+// accumulated in the pipe per two posts, so we should repeat 128K times to
+// reproduce the bug.
+//
+// Some platforms+bots are flakily unable to run that many tasks before test
+// timeout (see crbug.com/810077 and crbug.com/1188497). This test will bail
+// early and pass in those situations as long as it was able to keep a decent
+// heartbeat between tasks.
+TEST_P(SingleThreadTaskExecutorTypedTest, RecursivePostsDoNotFloodPipe) {
   const int kNumTimes = 1 << 17;
   SingleThreadTaskExecutor executor(GetParam());
-  executor.task_runner()->PostTask(FROM_HERE,
-                                   BindOnce(&PostNTasksThenQuit, kNumTimes));
-  RunLoop().Run();
+  const auto begin_ticks = TimeTicks::Now();
+  RunLoop run_loop;
+  executor.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&PostNTasksThenQuit, begin_ticks, begin_ticks,
+                          kNumTimes - 1, run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_P(SingleThreadTaskExecutorTypedTest, NestableTasksAllowedAtTopLevel) {
