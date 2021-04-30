@@ -52,6 +52,9 @@
 namespace ash {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when moved to ash::
+using ::chromeos::InstallAttributes;
+
 UserSessionInitializer* g_instance = nullptr;
 
 #if BUILDFLAG(ENABLE_RLZ)
