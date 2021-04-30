@@ -89,6 +89,8 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       decoder.IsPlatformDecoder());
   media_log->SetProperty<media::MediaLogProperty::kAudioTracks>(
       std::vector<MediaConfigType>{media_config});
+  MEDIA_LOG(INFO, media_log)
+      << "Initialized AudioDecoder: " << media_config.AsHumanReadableString();
 }
 
 // static
@@ -124,6 +126,7 @@ media::StatusOr<AudioDecoderTraits::OutputType*> AudioDecoderTraits::MakeOutput(
 // static
 void AudioDecoderTraits::InitializeDecoder(
     MediaDecoderType& decoder,
+    bool /*low_delay*/,
     const MediaConfigType& media_config,
     MediaDecoderType::InitCB init_cb,
     MediaDecoderType::OutputCB output_cb) {

@@ -299,6 +299,9 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   if (config.hasHardwareAcceleration())
     copy->setHardwareAcceleration(config.hardwareAcceleration());
 
+  if (config.hasOptimizeForLatency())
+    copy->setOptimizeForLatency(config.optimizeForLatency());
+
   return copy;
 }
 
@@ -326,12 +329,12 @@ HardwarePreference VideoDecoder::GetHardwareAccelerationPreference(
 // static
 void VideoDecoderTraits::InitializeDecoder(
     MediaDecoderType& decoder,
+    bool low_delay,
     const MediaConfigType& media_config,
     MediaDecoderType::InitCB init_cb,
     MediaDecoderType::OutputCB output_cb) {
-  decoder.Initialize(media_config, false /* low_delay */,
-                     nullptr /* cdm_context */, std::move(init_cb), output_cb,
-                     media::WaitingCB());
+  decoder.Initialize(media_config, low_delay, nullptr /* cdm_context */,
+                     std::move(init_cb), output_cb, media::WaitingCB());
 }
 
 // static
@@ -346,6 +349,8 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       decoder.IsPlatformDecoder());
   media_log->SetProperty<media::MediaLogProperty::kVideoTracks>(
       std::vector<MediaConfigType>{media_config});
+  MEDIA_LOG(INFO, media_log)
+      << "Initialized VideoDecoder: " << media_config.AsHumanReadableString();
 }
 
 // static
@@ -450,6 +455,10 @@ ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
 HardwarePreference VideoDecoder::GetHardwarePreference(
     const ConfigType& config) {
   return GetHardwareAccelerationPreference(config);
+}
+
+bool VideoDecoder::GetLowDelayPreference(const ConfigType& config) {
+  return config.hasOptimizeForLatency() && config.optimizeForLatency();
 }
 
 void VideoDecoder::SetHardwarePreference(HardwarePreference preference) {

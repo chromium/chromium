@@ -214,8 +214,9 @@ class MEDIA_EXPORT LogHelper {
 
 // Provides a stringstream to collect a log entry to pass to the provided
 // MediaLog at the requested level.
-#define MEDIA_LOG(level, media_log) \
-  LogHelper((MediaLogMessageLevel::k##level), (media_log)).stream()
+#define MEDIA_LOG(level, media_log)                                      \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log)) \
+      .stream()
 
 // Logs only while |count| < |max|, increments |count| for each log, and warns
 // in the log if |count| has just reached |max|.

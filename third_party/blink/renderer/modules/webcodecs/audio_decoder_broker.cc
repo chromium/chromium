@@ -124,8 +124,9 @@ class MediaAudioTaskWrapper {
                            weak_factory_.GetWeakPtr()));
 
     selector_->SelectDecoder(
-        config, WTF::Bind(&MediaAudioTaskWrapper::OnDecoderSelected,
-                          weak_factory_.GetWeakPtr()));
+        config, /*low_delay=*/false,
+        WTF::Bind(&MediaAudioTaskWrapper::OnDecoderSelected,
+                  weak_factory_.GetWeakPtr()));
   }
 
   void Decode(scoped_refptr<media::DecoderBuffer> buffer, int cb_id) {

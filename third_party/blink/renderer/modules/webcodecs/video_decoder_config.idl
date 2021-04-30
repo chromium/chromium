@@ -35,6 +35,9 @@ dictionary VideoDecoderConfig {
 
   HardwarePreference hardwareAcceleration = "allow";
 
+  // Hint that decoders should be configured for latency versus throughput.
+  boolean optimizeForLatency;
+
   // DEPRECATED: Use visibleRegion.
   [EnforceRange] unsigned long cropLeft;
   [EnforceRange] unsigned long cropTop;

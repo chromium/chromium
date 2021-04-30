@@ -54,6 +54,7 @@ class DecoderSelector {
   // be returned via |select_decoder_cb| posted to |task_runner_|. Subsequent
   // calls will again select from the full list of decoders.
   void SelectDecoder(const DecoderConfig& config,
+                     bool low_delay,
                      SelectDecoderCB select_decoder_cb);
 
  private:

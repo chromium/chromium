@@ -58,7 +58,8 @@ class AudioDecoderSelectorTestParam {
   // Decoder::Initialize() takes different parameters depending on the type.
   static void ExpectInitialize(MockDecoder* decoder,
                                DecoderCapability capability,
-                               media::AudioDecoderConfig expected_config) {
+                               media::AudioDecoderConfig expected_config,
+                               bool /*low_delay */) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
         .WillRepeatedly([capability, expected_config](
                             const media::AudioDecoderConfig& config,
@@ -96,8 +97,9 @@ class VideoDecoderSelectorTestParam {
 
   static void ExpectInitialize(MockDecoder* decoder,
                                DecoderCapability capability,
-                               media::VideoDecoderConfig expected_config) {
-    EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _))
+                               media::VideoDecoderConfig expected_config,
+                               bool low_delay) {
+    EXPECT_CALL(*decoder, Initialize_(_, low_delay, _, _, _, _))
         .WillRepeatedly([capability, expected_config](
                             const media::VideoDecoderConfig& config,
                             bool low_delay, media::CdmContext*,
@@ -162,7 +164,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
               /*is_platform_decoder=*/false, /*supports_decryption=*/true,
               info.first);
       TypeParam::ExpectInitialize(decoder.get(), info.second,
-                                  last_set_decoder_config_);
+                                  last_set_decoder_config_, low_delay_);
       decoders.push_back(std::move(decoder));
     }
 
@@ -180,7 +182,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   void SelectDecoder(DecoderConfig config = TypeParam::CreateConfig()) {
     last_set_decoder_config_ = config;
     decoder_selector_->SelectDecoder(
-        config,
+        config, low_delay_,
         base::BindOnce(&Self::OnDecoderSelectedThunk, base::Unretained(this)));
     RunUntilIdle();
   }
@@ -195,6 +197,8 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   std::unique_ptr<DecoderSelector<TypeParam::kStreamType>> decoder_selector_;
 
   std::vector<std::pair<int, DecoderCapability>> mock_decoders_to_create_;
+
+  bool low_delay_ = false;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebCodecsDecoderSelectorTest);
@@ -212,6 +216,14 @@ TYPED_TEST(WebCodecsDecoderSelectorTest, NoDecoders) {
 }
 
 TYPED_TEST(WebCodecsDecoderSelectorTest, OneDecoder) {
+  this->AddMockDecoder(kDecoder1, kSucceed);
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
+  this->SelectDecoder();
+}
+
+TYPED_TEST(WebCodecsDecoderSelectorTest, LowDelay) {
+  this->low_delay_ = true;
   this->AddMockDecoder(kDecoder1, kSucceed);
 
   EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));

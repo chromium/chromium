@@ -78,6 +78,10 @@ class MODULES_EXPORT DecoderTemplate
   // If derived classes do not override this, this will default to kAllow.
   virtual HardwarePreference GetHardwarePreference(const ConfigType& config);
 
+  // Get the low delay preference from a config.
+  // If derived classes do not override this, this will default to false.
+  virtual bool GetLowDelayPreference(const ConfigType& config);
+
   // Sets the HardwarePreference on the |decoder_|.
   // The default implementation does nothing and must be overridden by derived
   // classes if needed.
@@ -110,6 +114,7 @@ class MODULES_EXPORT DecoderTemplate
     // For kConfigure Requests.
     std::unique_ptr<MediaConfigType> media_config;
     HardwarePreference hw_pref = HardwarePreference::kAllow;
+    bool low_delay = false;
 
     // For kDecode Requests.
     scoped_refptr<media::DecoderBuffer> decoder_buffer;
@@ -166,6 +171,7 @@ class MODULES_EXPORT DecoderTemplate
 
   // Cached config from the last kConfigure request which successfully completed
   // initialization.
+  bool low_delay_ = false;
   std::unique_ptr<MediaConfigType> active_config_;
 
   // TODO(sandersd): Store the last config, flush, and reset so that

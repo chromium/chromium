@@ -129,6 +129,11 @@ HardwarePreference DecoderTemplate<Traits>::GetHardwarePreference(
 }
 
 template <typename Traits>
+bool DecoderTemplate<Traits>::GetLowDelayPreference(const ConfigType&) {
+  return false;
+}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::SetHardwarePreference(HardwarePreference) {}
 
 template <typename Traits>
@@ -163,6 +168,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   request->media_config = std::move(media_config);
   request->reset_generation = reset_generation_;
   request->hw_pref = GetHardwarePreference(*config);
+  request->low_delay = GetLowDelayPreference(*config);
   requests_.push_back(request);
   ProcessRequests();
 }
@@ -300,7 +306,7 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     SetHardwarePreference(pending_request_->hw_pref);
 
     Traits::InitializeDecoder(
-        *decoder_, *pending_request_->media_config,
+        *decoder_, pending_request_->low_delay, *pending_request_->media_config,
         WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
         WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
                            reset_generation_));
@@ -509,7 +515,8 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
 
   // Processing continues in OnInitializeDone().
   Traits::InitializeDecoder(
-      *decoder_, is_flush ? *active_config_ : *pending_request_->media_config,
+      *decoder_, is_flush ? low_delay_ : pending_request_->low_delay,
+      is_flush ? *active_config_ : *pending_request_->media_config,
       WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
       WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
                          reset_generation_));
@@ -547,6 +554,7 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
     Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
                              logger_->log());
 
+    low_delay_ = pending_request_->low_delay;
     active_config_ = std::move(pending_request_->media_config);
     pending_request_.Release();
   }

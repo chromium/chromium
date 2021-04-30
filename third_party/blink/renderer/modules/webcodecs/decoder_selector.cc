@@ -50,11 +50,18 @@ class NullDemuxerStream : public media::DemuxerStream {
     return true;
   }
 
+  void set_low_delay(bool low_delay) { low_delay_ = low_delay; }
+  media::DemuxerStream::Liveness liveness() const override {
+    return low_delay_ ? media::DemuxerStream::LIVENESS_LIVE
+                      : media::DemuxerStream::LIVENESS_UNKNOWN;
+  }
+
  private:
   static const media::DemuxerStream::Type stream_type = StreamType;
 
   media::AudioDecoderConfig audio_decoder_config_;
   media::VideoDecoderConfig video_decoder_config_;
+  bool low_delay_ = false;
 };
 
 template <>
@@ -90,9 +97,11 @@ DecoderSelector<StreamType>::~DecoderSelector() = default;
 template <media::DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::SelectDecoder(
     const DecoderConfig& config,
+    bool low_delay,
     SelectDecoderCB select_decoder_cb) {
   // |impl_| will internally use this the |config| from our NullDemuxerStream.
   demuxer_stream_->Configure(config);
+  demuxer_stream_->set_low_delay(low_delay);
 
   // media::DecoderSelector will call back with a null decoder if selection is
   // in progress when it is destructed.
