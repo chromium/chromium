@@ -30,6 +30,8 @@ const char kCrostiniTerminalSettings[] = "crostini.terminal_settings";
 const char kVmKey[] = "vm_name";
 const char kContainerKey[] = "container_name";
 const char kContainerOsVersionKey[] = "container_os_version";
+// Boolean preferences indicating whether Crostini is allowed to use mic.
+const char kCrostiniMicAllowed[] = "crostini.mic_allowed";
 
 // A boolean preference representing a user level enterprise policy to enable
 // Crostini use.
@@ -94,6 +96,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kCrostiniMimeTypes);
   registry->RegisterListPref(kCrostiniPortForwarding);
   registry->RegisterListPref(kCrostiniSharedUsbDevices);
+  registry->RegisterBooleanPref(kCrostiniMicAllowed, false);
 
   // Set a default value for crostini.containers to ensure that we track the
   // default container even if its creation predates this preference. This
