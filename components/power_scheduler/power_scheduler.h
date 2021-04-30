@@ -32,9 +32,9 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerScheduler
   PowerScheduler& operator=(const PowerScheduler&) = delete;
 
   // base::TaskObserver implementation.
-  void WillProcessTask(const base::PendingTask& pending_task,
+  void WillProcessTask(const base::PendingTask&,
                        bool was_blocked_or_low_priority) override;
-  void DidProcessTask(const base::PendingTask& pending_task) override;
+  void DidProcessTask(const base::PendingTask&) override;
 
   // power_scheduler::PowerModeArbiter::Observer implementation.
   void OnPowerModeChanged(power_scheduler::PowerMode old_mode,
@@ -53,25 +53,36 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerScheduler
   // The affinity might change at runtime (e.g. after Chrome goes back from
   // background), so the power scheduler will set up a polling mechanism to
   // enforce the given mode.
-  void SetPolicy(SchedulingPolicy policy);
+  void SetPolicy(SchedulingPolicy);
 
  private:
   // Register the power mode observer and apply the current policy if necessary.
-  void SetupPolicy();
+  void SetupPolicyOnSequence(SchedulingPolicy);
+
+  void OnPowerModeChangedOnSequence(power_scheduler::PowerMode old_mode,
+                                    power_scheduler::PowerMode new_mode);
 
   // Apply CPU affinity settings according to current policy and power mode.
-  void ApplyPolicy();
+  void ApplyPolicyOnSequence();
 
   // Set the CPU affinity of the current process and set up the polling
   // mechanism to enforce the affinity mode. The check is implemented as a
   // TaskObserver that runs every 100th main thread task.
-  void EnforceCpuAffinity();
+  void EnforceCpuAffinityOnSequence();
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  SEQUENCE_CHECKER(main_thread_checker_);
+  SEQUENCE_CHECKER(thread_pool_checker_);
 
+  scoped_refptr<base::TaskRunner> main_thread_task_runner_;
+  scoped_refptr<base::TaskRunner> thread_pool_task_runner_;
+
+  // Accessed only on the main thread.
   static constexpr int kUpdateAfterEveryNTasks = 100;
   int task_counter_ = 0;
   bool did_call_setup_ = false;
+  SchedulingPolicy pending_policy_ = SchedulingPolicy::kNone;
+
+  // Accessed only on the |thread_pool_task_runner_| sequence.
   bool power_observer_registered_ = false;
   bool task_observer_registered_ = false;
   base::CpuAffinityMode enforced_affinity_ = base::CpuAffinityMode::kDefault;
