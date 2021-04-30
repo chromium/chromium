@@ -833,6 +833,7 @@ extern const char kCECPQ2Enabled[];
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];
 extern const char kDnsOverHttpsTemplates[];
+extern const char kAdditionalDnsQueryTypesEnabled[];
 
 extern const char kRegisteredProtocolHandlers[];
 extern const char kIgnoredProtocolHandlers[];

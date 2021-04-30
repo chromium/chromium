@@ -11233,7 +11233,7 @@
     },
     {
       'name': 'BuiltInDnsClientEnabled',
-      'owners': ['szym@chromium.org', 'pmarko@chromium.org'],
+      'owners': ['ericorth@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -11259,7 +11259,7 @@
     },
     {
       'name': 'DnsOverHttpsMode',
-      'owners': ['dalyk@chromium.org', 'ericorth@chromium.org', 'bingler@chromium.org'],
+      'owners': ['ericorth@chromium.org', 'bingler@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -11314,7 +11314,7 @@
     },
     {
       'name': 'DnsOverHttpsTemplates',
-      'owners': ['dalyk@chromium.org', 'ericorth@chromium.org', 'bingler@chromium.org'],
+      'owners': ['ericorth@chromium.org', 'bingler@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -11339,6 +11339,43 @@
       If the URI template contains a <ph name="HTTP_VARIABLE_DNS">dns</ph> variable, requests to the resolver will use <ph name="HTTP_METHOD_GET">GET</ph>; otherwise requests will use <ph name="HTTP_METHOD_POST">POST</ph>.
 
       Incorrectly formatted templates will be ignored.''',
+    },
+    {
+      'name': 'AdditionalDnsQueryTypesEnabled',
+      'owners': ['ericorth@chromium.org', 'file://net/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': [
+        'android',
+        'chrome.*',
+        'chrome_os',
+      ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow additional DNS query types',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent additional DNS query types',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 857,
+      'caption': '''Allow DNS queries for additional DNS record types''',
+      'tags': [],
+      'desc': '''This policy controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may query additional DNS record types when making insecure DNS requests. This policy has no effect on DNS queries made via Secure DNS, which may always query additional DNS types.
+
+      If this policy is unset or set to Enabled, additional types such as <ph name="DNS_TYPE_HTTPS">HTTPS</ph> (DNS type 65) may be queried in addition to <ph name="DNS_TYPE_A">A</ph> (DNS type 1) and <ph name="DNS_TYPE_AAAA">AAAA</ph> (DNS type 28).
+
+      If this policy is set to Disabled, DNS will only be queried for <ph name="DNS_TYPE_A">A</ph> (DNS type 1) and/or <ph name="DNS_TYPE_AAAA">AAAA</ph> (DNS type 28).
+
+      This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. After removal of the policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will always be able to query additional DNS types.''',
     },
     {
       'name': 'ShelfAutoHideBehavior',
@@ -26718,6 +26755,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 856,
+  'highest_id_currently_used': 857,
   'highest_atomic_group_id_currently_used': 40
 }

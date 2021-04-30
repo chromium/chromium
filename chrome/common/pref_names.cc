@@ -2173,6 +2173,11 @@ const char kDnsOverHttpsMode[] = "dns_over_https.mode";
 // insecure resolvers.
 const char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
 
+// Boolean that specifies whether additional DNS query types (e.g. HTTPS) may be
+// queried alongside the traditional A and AAAA queries.
+const char kAdditionalDnsQueryTypesEnabled[] =
+    "async_dns.additional_dns_query_types_enabled";
+
 // A pref holding the value of the policy used to explicitly allow or deny
 // access to audio capture devices.  When enabled or not set, the user is
 // prompted for device access.  When disabled, access to audio capture devices

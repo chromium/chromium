@@ -2986,6 +2986,18 @@
     ]
   },
 
+  "AdditionalDnsQueryTypesEnabled": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AdditionalDnsQueryTypesEnabled": false
+        },
+        "prefs": { "async_dns.additional_dns_query_types_enabled": { "location": "local_state" } }
+      }
+    ]
+  },
+
   "WPADQuickCheckEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

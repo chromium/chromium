@@ -170,6 +170,9 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
   pref_change_registrar_.Add(prefs::kDnsOverHttpsMode, pref_callback);
   pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, pref_callback);
 
+  // TODO(crbug.com/1203427): Watch for `prefs::kAdditionalDnsQueryTypesEnabled`
+  // changes.
+
   parental_controls_delay_timer_.Start(
       FROM_HERE, kParentalControlsCheckDelay,
       base::BindOnce(&StubResolverConfigReader::OnParentalControlsDelayTimer,
@@ -196,6 +199,7 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBuiltInDnsClientEnabled, false);
   registry->RegisterStringPref(prefs::kDnsOverHttpsMode, std::string());
   registry->RegisterStringPref(prefs::kDnsOverHttpsTemplates, std::string());
+  registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
 }
 
 SecureDnsConfig StubResolverConfigReader::GetSecureDnsConfiguration(
@@ -382,6 +386,8 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   }
 
   if (update_network_service) {
+    // TODO(crbug.com/1203427): Configure for
+    // `prefs::kAdditionalDnsQueryTypesEnabled` value.
     content::GetNetworkService()->ConfigureStubHostResolver(
         GetInsecureStubResolverEnabled(), secure_dns_mode,
         std::move(servers_mojo));
