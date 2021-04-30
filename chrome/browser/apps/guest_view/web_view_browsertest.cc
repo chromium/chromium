@@ -3156,7 +3156,9 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
 }
 
 // TODO(crbug.com/994789): Flaky on MSan, Linux, and ChromeOS.
-#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1204299): Flaky on Windows. Consistently failing on Mac.
+#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_DownloadCookieIsolation_CrossSession \
   DISABLED_DownloadCookieIsolation_CrossSession
 #else
