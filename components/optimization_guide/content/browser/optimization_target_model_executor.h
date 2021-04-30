@@ -130,7 +130,7 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     if (optimization_target_ != optimization_target)
       return;
 
-    model_metadata_to_load_ = model_metadata;
+    supported_features_for_loaded_model_ = model_metadata;
     file_path_to_load_ = file_path;
 
     if (features::LoadModelFileForEachExecution()) {
@@ -181,7 +181,6 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     DCHECK(model_execution_task_runner_->RunsTasksInCurrentSequence());
     loaded_model_.reset();
     model_fb_.reset();
-    supported_features_for_loaded_model_ = base::nullopt;
   }
 
   // Callback invoked when a model file for |optimization_target| has been
@@ -208,8 +207,6 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     if (!model_fb->Initialize(*file_path_to_load_))
       return false;
     model_fb_ = std::move(model_fb);
-
-    supported_features_for_loaded_model_ = model_metadata_to_load_;
 
     loaded_model_ = BuildModelExecutionTask(model_fb_.get());
     if (loaded_model_) {
@@ -302,18 +299,12 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
 
   scoped_refptr<base::SequencedTaskRunner> model_execution_task_runner_;
 
-  // When the model file is updated, the server may pass this metadata that
-  // accompanies the model. This can be nullopt even after a model file update
-  // occurs since.
-  base::Optional<proto::Any> model_metadata_to_load_;
-
   // The model file path to be loaded. May be nullopt if no model has been
   // downloaded yet.
   base::Optional<base::FilePath> file_path_to_load_;
 
-  // Note on lifetimes: |model_fb_|, |loaded_model_|, and
-  // |supported_features_for_loaded_model_| all share the same lifetime, being
-  // set in |LoadModelFile()| and being destroyed in |ResetModelFile()|.
+  // Note on lifetimes: |model_fb_| and |loaded_model_| share the same lifetime,
+  // being set in |LoadModelFile()| and being destroyed in |ResetModelFile()|.
 
   // This will only be non-null when |file_path_to_load_| is set, and while the
   // model is loaded which is manged by a feature flag. See also the above note
@@ -324,7 +315,9 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   // See also the above note regarding lifetime.
   std::unique_ptr<ModelExecutionTask> loaded_model_;
 
-  // See the above note regarding lifetime.
+  // When the model file is updated, the server may pass this metadata that
+  // accompanies the model. This can be nullopt even after a model file update
+  // occurs.
   base::Optional<proto::Any> supported_features_for_loaded_model_;
 
   base::WeakPtrFactory<OptimizationTargetModelExecutor> weak_ptr_factory_{this};

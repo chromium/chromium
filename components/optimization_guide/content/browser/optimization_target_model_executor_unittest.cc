@@ -439,9 +439,12 @@ TEST_F(OptimizationTargetModelExecutorWithModelLoadingTest,
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       any_metadata);
 
+  // While the model isn't actually loaded yet, the supported features are
+  // already known and do not change when the model is loaded or unloaded.
+  EXPECT_TRUE(model_executor()->supported_features_for_loaded_model());
+
   // Model shouldn't be loaded until there is something to execute.
   EXPECT_FALSE(model_executor()->HasLoadedModel());
-  EXPECT_FALSE(model_executor()->supported_features_for_loaded_model());
 
   std::vector<float> input;
   size_t expected_dims = 1 * 32 * 32 * 3;
@@ -463,10 +466,11 @@ TEST_F(OptimizationTargetModelExecutorWithModelLoadingTest,
       input);
   run_loop->Run();
 
-  // After execution, the model should be unloaded in a PostTask.
+  // After execution, the model should be unloaded in a PostTask, but the
+  // metadata should still be available.
   RunUntilIdle();
   EXPECT_FALSE(model_executor()->HasLoadedModel());
-  EXPECT_FALSE(model_executor()->supported_features_for_loaded_model());
+  EXPECT_TRUE(model_executor()->supported_features_for_loaded_model());
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +

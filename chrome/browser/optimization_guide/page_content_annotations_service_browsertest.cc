@@ -119,7 +119,7 @@ class PageContentAnnotationsServiceDisabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-#endif
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
                        KeyedServiceEnabledButFeaturesDisabled) {
@@ -139,6 +139,10 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
+
+  void set_model_is_lazily_loaded(bool model_is_lazily_loaded) {
+    model_is_lazily_loaded_ = model_is_lazily_loaded;
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -179,18 +183,25 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         ->OverrideTargetModelFileForTesting(
             proto::OPTIMIZATION_TARGET_PAGE_TOPICS, any_metadata,
             model_file_path);
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    RetryForHistogramUntilCountReached(
-        histogram_tester,
-        "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
-        ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
-    histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
+    bool expect_model_loaded = !model_is_lazily_loaded_;
 #else
-    base::RunLoop().RunUntilIdle();
+    bool expect_model_loaded = false;
 #endif
+
+    if (expect_model_loaded) {
+      RetryForHistogramUntilCountReached(
+          histogram_tester,
+          "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
+      histogram_tester.ExpectUniqueSample(
+          "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
+          ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+      histogram_tester.ExpectTotalCount(
+          "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
+    } else {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -224,10 +235,11 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     run_loop->Run();
     return got_content_annotations;
   }
-#endif
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool model_is_lazily_loaded_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
@@ -288,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   EXPECT_EQ(
       123,
       got_content_annotations->model_annotations.page_topics_model_version);
-#endif
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -368,6 +380,79 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
 }
 
-#endif
+class PageContentAnnotationsServiceLoadEachExecutionTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceLoadEachExecutionTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOptimizationHints,
+                              features::kPageContentAnnotations,
+                              features::kLoadModelFileForEachExecution},
+        /*disabled_features=*/{});
+    set_model_is_lazily_loaded(true);
+  }
+  ~PageContentAnnotationsServiceLoadEachExecutionTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug/1204162.
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
+                       ModelLoadsAndExecutes) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
+      ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      1);
+
+  PageContentAnnotationsService* service =
+      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
+
+  base::Optional<int64_t> model_version = service->GetPageTopicsModelVersion();
+  EXPECT_TRUE(model_version.has_value());
+  EXPECT_EQ(123, *model_version);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+
+  base::Optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_NE(-1.0,
+            got_content_annotations->model_annotations.floc_protected_score);
+  EXPECT_FALSE(got_content_annotations->model_annotations.categories.empty());
+  EXPECT_EQ(
+      123,
+      got_content_annotations->model_annotations.page_topics_model_version);
+}
+
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 }  // namespace optimization_guide
