@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.Manifest;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -19,7 +18,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -28,7 +26,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -91,11 +88,9 @@ public class UmaSessionStats {
     /**
      * Starts a new session for logging.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
-     *        If null, UmaSessionStats does not record page loads and tab counts.
-     * @param windowAndroid The WindowAndroid used for querying app permission status.
-     *        If null, UmaSessionStats will not record permission status.
+     * If null, UmaSessionStats does not record page loads and tab counts.
      */
-    public void startNewSession(TabModelSelector tabModelSelector, WindowAndroid windowAndroid) {
+    public void startNewSession(TabModelSelector tabModelSelector) {
         ensureNativeInitialized();
 
         mTabModelSelector = tabModelSelector;
@@ -126,24 +121,6 @@ public class UmaSessionStats {
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfo.logDefaultBrowserStats();
-        if (windowAndroid != null) {
-            recordAudioPermissionState(windowAndroid);
-        }
-    }
-
-    private void recordAudioPermissionState(WindowAndroid windowAndroid) {
-        @AudioPermissionState
-        int permissionState;
-        if (windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.GRANTED;
-        } else if (windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.DENIED_CAN_ASK_AGAIN;
-        } else {
-            permissionState = AudioPermissionState.DENIED_CANNOT_ASK_AGAIN;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart", permissionState,
-                AudioPermissionState.NUM_ENTRIES);
     }
 
     private static void ensureNativeInitialized() {
