@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"

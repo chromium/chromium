@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/keyboard/ui/resources",  # For virtual keyboard
   "+components/policy/core/common",
+  "+components/services/app_service/public/mojom/types.mojom-shared.h",
   "+extensions/grit",
   "+extensions/strings/grit",
   "+extensions/test",

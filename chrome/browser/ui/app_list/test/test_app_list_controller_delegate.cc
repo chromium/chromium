@@ -25,7 +25,7 @@ void TestAppListControllerDelegate::DismissView() {
   did_dismiss_view_ = true;
 }
 
-gfx::NativeWindow TestAppListControllerDelegate::GetAppListWindow() {
+aura::Window* TestAppListControllerDelegate::GetAppListWindow() {
   return nullptr;
 }
 

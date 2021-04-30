@@ -15,6 +15,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 class Profile;
 
 // Interface to allow the view delegate to call out to whatever is controlling

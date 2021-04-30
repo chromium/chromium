@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_error.h"

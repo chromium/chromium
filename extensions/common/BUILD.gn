@@ -15,16 +15,16 @@ source_set("common_constants") {
   sources = [
     "constants.cc",
     "constants.h",
+    "logging_constants.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//components/services/app_service/public/mojom",
-    "//components/version_info:channel",
-    "//ui/base",
   ]
+
+  deps = [ "//build:chromecast_buildflags" ]
 
   configs += [
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.

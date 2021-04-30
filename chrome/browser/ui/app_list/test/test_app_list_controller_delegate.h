@@ -18,7 +18,7 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
 
   int64_t GetAppListDisplayId() override;
   void DismissView() override;
-  gfx::NativeWindow GetAppListWindow() override;
+  aura::Window* GetAppListWindow() override;
   bool IsAppPinned(const std::string& app_id) override;
   void PinApp(const std::string& app_id) override;
   void UnpinApp(const std::string& app_id) override;

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"

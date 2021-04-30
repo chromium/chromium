@@ -12,15 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
-
-namespace base {
-class File;
-}
 
 namespace extensions {
 
