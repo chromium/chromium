@@ -1405,6 +1405,12 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   ASSERT_EQ(0u, final_last_active_profile_list->GetSize());
 }
 
+#if defined(OS_WIN)
+#define MAYBE_CleanUpGuestEphemeralProfile DISABLED_CleanUpGuestEphemeralProfile
+#else
+#define MAYBE_CleanUpGuestEphemeralProfile CleanUpGuestEphemeralProfile
+#endif
+// TODO(crbug.com/1203621) Disabled for flakiness.
 TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   // Create two profiles, one of them is guest.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
