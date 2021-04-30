@@ -274,8 +274,6 @@ component("base") {
       "cocoa/flipped_view.mm",
       "cocoa/focus_tracker.h",
       "cocoa/focus_tracker.mm",
-      "cocoa/focus_window_set.h",
-      "cocoa/focus_window_set.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
       "cocoa/nsmenuitem_additions.h",
