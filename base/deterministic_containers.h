@@ -11,6 +11,8 @@
 // this. This file defines replacements for these containers that have the
 // same interface but always iterate their contents in insertion order.
 
+#include "base/optional.h"
+
 namespace base {
 
 template <typename Key,
