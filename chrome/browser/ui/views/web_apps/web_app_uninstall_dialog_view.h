@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -131,8 +131,8 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
   // Tracks whether |parent_| got destroyed.
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
 
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      registrar_observer_{this};
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+      registrar_observation_{this};
 
   WebAppUninstallDialogDelegateView* view_ = nullptr;
 
