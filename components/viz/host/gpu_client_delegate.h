@@ -14,17 +14,13 @@ class HostGpuMemoryBufferManager;
 
 // Delegate interface that GpuClient uses to get the current GpuHost and/or
 // GpuMemoryBufferManager instances. These functions are guaranteed to be called
-// on the thread corresponding to GpuClient's task runner unless otherwise
-// noted.
+// on the thread corresponding to GpuClient's task runner.
 class GpuClientDelegate {
  public:
   virtual ~GpuClientDelegate() {}
 
   // Returns the current instance of GpuHostImpl. If GPU service is not running,
   // tries to launch it. If the launch is unsuccessful, returns nullptr.
-  // If GpuClient's constructor is passed gpu_host_lives_on_ui_thread==true,
-  // then this can only be called on the UI thread. Otherwise, it will be called
-  // on the GpuClient's IO thread.
   virtual GpuHostImpl* EnsureGpuHost() = 0;
 
   // Returns the current HostGpuMemoryBufferManager instance.

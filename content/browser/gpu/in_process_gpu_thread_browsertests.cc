@@ -10,6 +10,7 @@
 #include "content/gpu/in_process_gpu_thread.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -33,7 +34,10 @@ void CreateGpuProcessHost() {
 
 void WaitUntilGpuProcessHostIsCreated() {
   base::RunLoop run_loop;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTaskAndReply(
       FROM_HERE, base::BindOnce(&CreateGpuProcessHost), run_loop.QuitClosure());
   run_loop.Run();
 }

@@ -305,7 +305,12 @@ void BrowserGpuChannelHostFactory::CloseChannel() {
     gpu_channel_ = nullptr;
   }
 
-  gpu_memory_buffer_manager_ = nullptr;
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) &&
+      gpu_memory_buffer_manager_) {
+    delete gpu_memory_buffer_manager_.release();
+  } else {
+    gpu_memory_buffer_manager_ = nullptr;
+  }
 }
 
 BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
@@ -358,6 +363,8 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
 
   if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) &&
       gpu_memory_buffer_manager_) {
+    // Delete this on the main thread (since otherwise the unique_ptr has a
+    // trait to delete it on the IO thread).
     delete gpu_memory_buffer_manager_.release();
   }
 }

@@ -25,20 +25,15 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   using ConnectionErrorHandlerClosure =
       base::OnceCallback<void(GpuClient* client)>;
 
-  // GpuClient must be destroyed on the thread associated with |io_task_runner|.
-  // If |gpu_host_lives_on_ui_thread| is true, then
-  // delegate->EnsureGpuHost() can only be called on the thread that GpuClient
-  // is constructed on. Regardless, GpuClient lives on the IO thread and
-  // always receives incoming Mojo calls on the IO thread.
+  // GpuClient must be destroyed on the thread associated with |task_runner|.
   GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
             int client_id,
             uint64_t client_tracing_id,
-            bool gpu_host_lives_on_ui_thread,
-            scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ~GpuClient() override;
 
-  // This needs to be run on the thread associated with |io_task_runner_|.
+  // This needs to be run on the thread associated with |task_runner_|.
   void Add(mojo::PendingReceiver<mojom::Gpu> receiver);
 
   void PreEstablishGpuChannel();
@@ -91,25 +86,9 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
                                gfx::GpuMemoryBufferHandle handle);
   void ClearCallback();
 
-  static void EstablishGpuChannelOnUIThread(
-      const base::WeakPtr<GpuClient>& weak_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      int client_id,
-      uint64_t client_tracing_id,
-      bool is_gpu_host,
-      GpuClientDelegate* delegate);
-  static void OnEstablishedGpuChannelOnUIThread(
-      const base::WeakPtr<GpuClient>& weak_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      mojo::ScopedMessagePipeHandle channel_handle,
-      const gpu::GPUInfo& gpu_info,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
-      GpuHostImpl::EstablishChannelStatus status);
-
   std::unique_ptr<GpuClientDelegate> delegate_;
   const int client_id_;
   const uint64_t client_tracing_id_;
-  const bool gpu_host_lives_on_ui_thread_;
   mojo::ReceiverSet<mojom::GpuMemoryBufferFactory>
       gpu_memory_buffer_factory_receivers_;
   mojo::ReceiverSet<mojom::Gpu> gpu_receivers_;
@@ -119,11 +98,10 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   ConnectionErrorHandlerClosure connection_error_handler_;
-  // |io_task_runner_| is associated with the thread |gpu_bindings_| is bound
+  // |task_runner_| is associated with the thread |gpu_bindings_| is bound
   // on. GpuClient instance is bound to this thread, and must be destroyed on
   // this thread.
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<GpuClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GpuClient);
