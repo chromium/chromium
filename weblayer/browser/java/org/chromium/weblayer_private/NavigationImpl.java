@@ -244,6 +244,13 @@ public final class NavigationImpl extends INavigation.Stub {
         return mPage.getClientPage();
     }
 
+    @Override
+    public int getNavigationEntryOffset() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().getNavigationEntryOffset(mNativeNavigationImpl);
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -316,5 +323,6 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isFormSubmission(long nativeNavigationImpl);
         String getReferrer(long nativeNavigationImpl);
         long getPage(long nativeNavigationImpl);
+        int getNavigationEntryOffset(long nativeNavigationImpl);
     }
 }

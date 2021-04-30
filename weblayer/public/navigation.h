@@ -169,6 +169,12 @@ class Navigation {
   // NavigationObserve::NavigationFailed(). It can return null if the navigation
   // didn't commit (e.g. 204/205 or download).
   virtual Page* GetPage() = 0;
+
+  // Returns the offset between the indices of the previous last committed and
+  // the newly committed navigation entries (e.g. -1 for back navigations, 0
+  // for reloads, 1 for forward navigations). This may not cover all corner
+  // cases, and can be incorrect in cases like main frame client redirects.
+  virtual int GetNavigationEntryOffset() = 0;
 };
 
 }  // namespace weblayer

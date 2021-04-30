@@ -142,6 +142,10 @@ jlong NavigationImpl::GetPage(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(GetPage());
 }
 
+jint NavigationImpl::GetNavigationEntryOffset(JNIEnv* env) {
+  return GetNavigationEntryOffset();
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -172,6 +176,10 @@ Page* NavigationImpl::GetPage() {
 
   return PageImpl::GetForCurrentDocument(
       navigation_handle_->GetRenderFrameHost());
+}
+
+int NavigationImpl::GetNavigationEntryOffset() {
+  return navigation_handle_->GetNavigationEntryOffset();
 }
 
 GURL NavigationImpl::GetURL() {

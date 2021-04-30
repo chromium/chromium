@@ -106,6 +106,7 @@ public class NavigationTest {
             private boolean mIsFormSubmission;
             private Uri mReferrer;
             private Page mPage;
+            private int mNavigationEntryOffset;
 
             public void notifyCalled(Navigation navigation) {
                 notifyCalled(navigation, false);
@@ -134,6 +135,9 @@ public class NavigationTest {
                 }
                 if (majorVersion >= 91) {
                     mResponseHeaders = navigation.getResponseHeaders();
+                }
+                if (majorVersion >= 92) {
+                    mNavigationEntryOffset = navigation.getNavigationEntryOffset();
                 }
                 notifyCalled();
             }
@@ -198,6 +202,10 @@ public class NavigationTest {
 
             public Page getPage() {
                 return mPage;
+            }
+
+            public int getNavigationEntryOffset() {
+                return mNavigationEntryOffset;
             }
         }
 
@@ -1510,5 +1518,31 @@ public class NavigationTest {
 
         Map<String, String> headers = mCallback.onCompletedCallback.getResponseHeaders();
         assertEquals(headers.get("Content-Type"), "text/html");
+    }
+
+    @MinWebLayerVersion(92)
+    @Test
+    @SmallTest
+    public void testGetNavigationEntryOffset() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+        setNavigationCallback(activity);
+
+        mActivityTestRule.navigateAndWait(URL2);
+        assertEquals(1, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        mActivityTestRule.navigateAndWait(URL3);
+        assertEquals(1, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        NavigationController navigationController =
+                runOnUiThreadBlocking(() -> activity.getTab().getNavigationController());
+
+        navigateAndWaitForCompletion(URL2, () -> navigationController.goBack());
+        assertEquals(-1, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        navigateAndWaitForCompletion(URL3, () -> navigationController.goForward());
+        assertEquals(1, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        navigateAndWaitForCompletion(URL3, () -> navigationController.reload());
+        assertEquals(0, mCallback.onCompletedCallback.getNavigationEntryOffset());
     }
 }

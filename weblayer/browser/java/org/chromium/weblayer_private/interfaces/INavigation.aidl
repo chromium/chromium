@@ -51,4 +51,7 @@ interface INavigation {
 
   // @since 91
   List<String> getResponseHeaders() = 21;
+
+  // @since 92
+  int getNavigationEntryOffset() = 22;
 }

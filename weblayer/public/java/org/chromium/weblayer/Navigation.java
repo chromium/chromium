@@ -449,4 +449,24 @@ public class Navigation extends IClientNavigation.Stub {
             throw new APICallException(e);
         }
     }
+
+    /**
+     * Returns the offset between the indices of the previous last committed and the newly committed
+     * navigation entries (e.g. -1 for back navigations, 0 for reloads, 1 for forward navigations).
+     * This may not cover all corner cases, and can be incorrect in cases like main frame client
+     * redirects.
+     *
+     * @since 92
+     */
+    public int getNavigationEntryOffset() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 92) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.getNavigationEntryOffset();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
 }

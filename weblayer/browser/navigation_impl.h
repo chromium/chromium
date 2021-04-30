@@ -100,6 +100,7 @@ class NavigationImpl : public Navigation {
   jboolean IsFormSubmission(JNIEnv* env) { return IsFormSubmission(); }
   base::android::ScopedJavaLocalRef<jstring> GetReferrer(JNIEnv* env);
   jlong GetPage(JNIEnv* env);
+  int GetNavigationEntryOffset(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -132,6 +133,7 @@ class NavigationImpl : public Navigation {
   bool IsFormSubmission() override;
   GURL GetReferrer() override;
   Page* GetPage() override;
+  int GetNavigationEntryOffset() override;
 
  private:
   content::NavigationHandle* navigation_handle_;
