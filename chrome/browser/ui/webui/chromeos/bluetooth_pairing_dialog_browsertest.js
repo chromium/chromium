@@ -27,6 +27,7 @@ BluetoothPairingDialogTest.prototype = {
   },
 };
 
-TEST_F('BluetoothPairingDialogTest', 'Basic', function() {
+// TODO(crbug.com/1203380)  Disabled for flakiness.
+TEST_F('BluetoothPairingDialogTest', 'DISABLED_Basic', function() {
   assertEquals('chrome://bluetooth-pairing/', document.location.href);
 });
