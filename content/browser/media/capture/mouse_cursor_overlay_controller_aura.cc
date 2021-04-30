@@ -153,12 +153,8 @@ gfx::NativeCursor MouseCursorOverlayController::GetCurrentCursorOrDefault()
   if (auto* window = Observer::GetTargetWindow(observer_)) {
     if (auto* host = window->GetHost()) {
       gfx::NativeCursor cursor = host->last_cursor();
-      if (cursor != ui::mojom::CursorType::kNull) {
-        if (cursor.image_scale_factor() < 1.0f) {
-          cursor.set_image_scale_factor(1.0f);
-        }
+      if (cursor != ui::mojom::CursorType::kNull)
         return cursor;
-      }
     }
   }
 
@@ -174,21 +170,17 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     const gfx::Size window_size = window->bounds().size();
     if (!window_size.IsEmpty()) {
       if (auto* root_window = window->GetRootWindow()) {
-        // Compute the cursor size in terms of DIP coordinates.
         const SkBitmap& bitmap = GetCursorBitmap(cursor);
         const float scale_factor = cursor.image_scale_factor();
-        const gfx::SizeF size =
-            scale_factor > 0.0f
-                ? gfx::ScaleSize(gfx::SizeF(bitmap.width(), bitmap.height()),
-                                 1.0f / scale_factor)
-                : gfx::SizeF(bitmap.width(), bitmap.height());
+        DCHECK_GT(scale_factor, 0.0f);
+
+        // Compute the cursor size in terms of DIP coordinates.
+        const gfx::SizeF size = gfx::ScaleSize(
+            gfx::SizeF(bitmap.width(), bitmap.height()), 1.0f / scale_factor);
 
         // Compute the hotspot in terms of DIP coordinates.
-        const gfx::PointF hotspot =
-            scale_factor > 0.0f
-                ? gfx::ScalePoint(gfx::PointF(GetCursorHotspot(cursor)),
-                                  1.0f / scale_factor)
-                : gfx::PointF(GetCursorHotspot(cursor));
+        const gfx::PointF hotspot = gfx::ScalePoint(
+            gfx::PointF(GetCursorHotspot(cursor)), 1.0f / scale_factor);
 
         // Finally, put it all together: Scale the absolute bounds of the
         // overlay by the window size to produce relative coordinates.

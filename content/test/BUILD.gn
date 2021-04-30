@@ -2390,6 +2390,7 @@ test("content_unittests") {
     "//ui/events:gesture_detection",
     "//ui/events:test_support",
     "//ui/events/blink",
+    "//ui/gfx:geometry_skia",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom:mojom_traits",

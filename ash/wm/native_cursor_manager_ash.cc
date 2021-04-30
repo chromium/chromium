@@ -102,8 +102,9 @@ void NativeCursorManagerAsh::SetCursor(
     gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
     cursor_loader_.SetPlatformCursor(&invisible_cursor);
     cursor.SetPlatformCursor(invisible_cursor.platform());
+    if (cursor.type() != ui::mojom::CursorType::kCustom)
+      cursor.set_image_scale_factor(cursor_loader_.scale());
   }
-  cursor.set_image_scale_factor(cursor_loader_.scale());
 
   delegate->CommitCursor(cursor);
 
