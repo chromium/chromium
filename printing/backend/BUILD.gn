@@ -19,6 +19,9 @@ if (use_cups_ipp && is_chromeos_ash) {
 }
 
 component("backend") {
+  # Avoid producing a very generic "backend.dll" or "libbackend.so".
+  output_name = "printing_backend"
+
   sources = [
     "print_backend.cc",
     "print_backend.h",
