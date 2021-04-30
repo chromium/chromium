@@ -334,8 +334,10 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         std::move(delegate)));
   } else {
-    DCHECK(personal_data_manager_);
-    personal_data_manager_->SaveImportedProfile(profile);
+    // Fallback to the default behavior to saving without the confirmation.
+    std::move(callback).Run(
+        AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked,
+        profile);
   }
 }
 
