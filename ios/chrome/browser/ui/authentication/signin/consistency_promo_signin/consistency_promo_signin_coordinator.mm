@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_signin_error/consistency_signin_error_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,13 +53,11 @@
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
-// Callback used when the user's primary account is set or changes
-// its consent level.
-@property(nonatomic, copy)
-    signin_ui::CompletionCallback primaryAccountSetCompletion;
 // Coordinator to select another identity.
 @property(nonatomic, strong)
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
+// Sets with the selected identity, when the sign-in workflow is in progress.
+@property(nonatomic, strong) ChromeIdentity* signinIdentity;
 
 @end
 
@@ -73,7 +72,6 @@
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
-  self.primaryAccountSetCompletion = nil;
   [self.navigationController
       dismissViewControllerAnimated:YES
                          completion:^() {
@@ -114,11 +112,6 @@
                                       completion:nil];
 }
 
-- (void)stop {
-  [super stop];
-  DCHECK(!self.primaryAccountSetCompletion);
-}
-
 #pragma mark - Private
 
 // Dismisses the bottom sheet view controller.
@@ -131,7 +124,6 @@
                                          SigninCoordinatorResultCanceledByUser
                                                identity:nil];
                          }];
-  self.primaryAccountSetCompletion = nil;
 }
 
 // Calls the sign-in completion block.
@@ -182,20 +174,11 @@
 }
 
 - (void)signinWithIdentity:(ChromeIdentity*)identity {
-  __weak __typeof(self) weakSelf = self;
-  // |onPrimaryAccountChanged| notification is sent immediately after calling
-  // SignIn. All callbacks should be set prior to this operation.
-  self.primaryAccountSetCompletion = ^(BOOL success) {
-    [weakSelf.navigationController
-        dismissViewControllerAnimated:YES
-                           completion:^() {
-                             [weakSelf finishedWithResult:
-                                           SigninCoordinatorResultSuccess
-                                                 identity:identity];
-                           }];
-  };
-
-  self.authenticationService->SignIn(identity);
+  DCHECK(!self.signinIdentity);
+  self.signinIdentity = identity;
+  [self.defaultAccountCoordinator startSigninSpinner];
+  self.authenticationService->SignIn(self.signinIdentity);
+  DCHECK(self.authenticationService->IsAuthenticated());
 }
 
 #pragma mark - BottomSheetPresentationControllerPresentationDelegate
@@ -260,35 +243,40 @@
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (self.primaryAccountSetCompletion == nil) {
-    return;
-  }
   // Since sign-in UI blocks all other Chrome screens until it is dismissed
   // an account change event must come from the bottomsheet.
   // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
   DCHECK(event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
          signin::PrimaryAccountChangeEvent::Type::kSet);
-  self.primaryAccountSetCompletion(/*success=*/YES);
-  self.primaryAccountSetCompletion = nil;
+  ChromeIdentity* signedInIdentity =
+      self.authenticationService->GetAuthenticatedIdentity();
+  DCHECK([signedInIdentity isEqual:self.signinIdentity]);
 }
 
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
+  DCHECK(self.signinIdentity);
+  [self.defaultAccountCoordinator stopSigninSpinner];
   if (error.state() == GoogleServiceAuthError::State::NONE) {
+    __weak __typeof(self) weakSelf = self;
+    [self.navigationController
+        dismissViewControllerAnimated:YES
+                           completion:^() {
+                             [weakSelf
+                                 finishedWithResult:
+                                     SigninCoordinatorResultSuccess
+                                           identity:weakSelf.signinIdentity];
+                           }];
     return;
   }
-
+  self.signinIdentity = nil;
   self.signinErrorCoordinator = [[ConsistencySigninErrorCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
                       errorState:error.state()];
   self.signinErrorCoordinator.delegate = self;
   [self.signinErrorCoordinator start];
-
-  // The account was not set because of an error. Reset the completion callback.
-  self.primaryAccountSetCompletion = nil;
-
   [self.navigationController
       pushViewController:self.signinErrorCoordinator.viewController
                 animated:YES];
