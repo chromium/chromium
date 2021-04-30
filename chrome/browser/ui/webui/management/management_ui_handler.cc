@@ -822,11 +822,16 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(
 base::Value ManagementUIHandler::GetManagedWebsitesInfo(
     Profile* profile) const {
   base::Value managed_websites(base::Value::Type::LIST);
-  for (const auto& entry :
-       ManagedConfigurationAPIFactory::GetForProfile(profile)
-           ->GetManagedOrigins()) {
+  auto* managed_configuration =
+      ManagedConfigurationAPIFactory::GetForProfile(profile);
+
+  if (!managed_configuration)
+    return managed_websites;
+
+  for (const auto& entry : managed_configuration->GetManagedOrigins()) {
     managed_websites.Append(entry.Serialize());
   }
+
   return managed_websites;
 }
 
