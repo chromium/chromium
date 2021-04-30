@@ -105,13 +105,11 @@ TEST_F(SecurityOriginTest, IsSecure) {
     const char* url;
   } inputs[] = {
       // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
-      // TODO(crbug.com/1153336 and crbug.com/1164416): Fix product behavior, so
-      // that blink::SecurityOrigin::IsSecure(const KURL&) is compatible with
-      // network::IsUrlPotentiallyTrustworthy(const GURL&) and then move the
-      // tests below to the AbstractTrustworthinessTest.UrlFromString test case
-      // in //services/network/public/cpp/is_potentially_trustworthy_unittest.
+      // TODO(crbug.com/1164416): Move the tests below to the
+      // AbstractTrustworthinessTest.UrlFromString test case in
+      // //services/network/public/cpp/is_potentially_trustworthy_unittest.
       // See also IsPotentiallyTrustworthy.Url test.
-      {false, "file:///etc/passwd"},
+      {true, "file:///etc/passwd"},
       {false, "blob:data:text/html,Hello"},
       {false, "blob:about:blank"},
       {false, "filesystem:data:text/html,Hello"},
@@ -121,56 +119,59 @@ TEST_F(SecurityOriginTest, IsSecure) {
   };
 
   for (auto test : inputs)
-    EXPECT_EQ(test.is_secure, SecurityOrigin::IsSecure(KURL(test.url)))
+    EXPECT_EQ(test.is_secure,
+              network::IsUrlPotentiallyTrustworthy(KURL(test.url)))
         << "URL: '" << test.url << "'";
 
-  EXPECT_FALSE(SecurityOrigin::IsSecure(NullURL()));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(NullURL()));
 }
 
-TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
-  // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure be aligned with
-  // network::IsURLPotentiallyTrustworthy?
-  // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
+// TODO(crbug.com/1164416): Move the tests below to the
+// AbstractTrustworthinessTest.UrlFromString test case in
+// //services/network/public/cpp/is_potentially_trustworthy_unittest.
+TEST_F(SecurityOriginTest, IsSecureForLocalServers) {
   const char* urls[] = {"http://localhost/", "http://localhost:8080/",
                         "http://127.0.0.1/", "http://127.0.0.1:8080/",
                         "http://[::1]/",     "http://vhost.localhost/"};
-
   for (const char* test : urls) {
     KURL url(test);
-    EXPECT_FALSE(SecurityOrigin::IsSecure(url));
-    {
-      base::test::ScopedCommandLine scoped_command_line;
-      base::CommandLine* command_line =
-          scoped_command_line.GetProcessCommandLine();
-      command_line->AppendSwitchASCII(
-          network::switches::kUnsafelyTreatInsecureOriginAsSecure, test);
-      network::SecureOriginAllowlist::GetInstance().ResetForTesting();
-      EXPECT_TRUE(SecurityOrigin::IsSecure(url));
-    }
+    EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
   }
+}
+
+TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
+  const char* url_string = "http://bar.foo.com";
+  KURL url(url_string);
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure, url_string);
+  network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+  EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
 }
 
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthyHostnamePattern) {
   KURL url("http://bar.foo.com");
-  EXPECT_FALSE(SecurityOrigin::IsSecure(url));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(
       network::switches::kUnsafelyTreatInsecureOriginAsSecure, "*.foo.com");
   network::SecureOriginAllowlist::GetInstance().ResetForTesting();
-  EXPECT_TRUE(SecurityOrigin::IsSecure(url));
+  EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
 }
 
 // Tests that a URL with no host does not match a hostname pattern.
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthyHostnamePatternEmptyHostname) {
-  KURL url("file://foo");
-  EXPECT_FALSE(SecurityOrigin::IsSecure(url));
+  KURL url("http://foo");
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(
       network::switches::kUnsafelyTreatInsecureOriginAsSecure, "*.foo.com");
   network::SecureOriginAllowlist::GetInstance().ResetForTesting();
-  EXPECT_FALSE(SecurityOrigin::IsSecure(url));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
 }
 
 TEST_F(SecurityOriginTest, CanAccess) {
@@ -1234,7 +1235,8 @@ class BlinkSecurityOriginTestTraits {
   }
 
   static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
-    return blink::SecurityOrigin::IsSecure(blink::KURL(String::FromUTF8(str)));
+    return network::IsUrlPotentiallyTrustworthy(
+        blink::KURL(String::FromUTF8(str)));
   }
 
   static bool IsOriginOfLocalhost(const OriginType& origin) {

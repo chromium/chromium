@@ -34,10 +34,8 @@ std::vector<std::string> CanonicalizeAllowlist(
       allowlist, rejected_patterns);
 }
 
-// TODO(crbug.com/1153336 and crbug.com/1164416): Fix product behavior, so that
-// blink::SecurityOrigin::IsSecure(const KURL&) is compatible with
-// network::IsUrlPotentiallyTrustworthy(const GURL&) and then move the tests
-// below to the AbstractTrustworthinessTest.UrlFromString test case in
+// TODO(crbug.com/1164416): Move the tests below to the
+// AbstractTrustworthinessTest.UrlFromString test case in
 // //services/network/public/cpp/is_potentially_trustworthy_unittest.h
 // See also SecurityOriginTest.IsSecure test.
 TEST(IsPotentiallyTrustworthy, Url) {

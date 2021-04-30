@@ -141,15 +141,6 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // scheme (e.g. "http" => 80).
   uint16_t Port() const { return port_; }
 
-  // Returns true if a given URL is secure, based either directly on its
-  // own protocol, or, when relevant, on the protocol of its "inner URL"
-  // Protocols like blob: and filesystem: fall into this latter category.
-  // This method is a stricter alternative to "potentially trustworthy url":
-  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
-  // TODO(crbug.com/1153336): Deprecated, to be removed. Please use
-  // network::IsUrlPotentiallyTrustworthy() instead.
-  static bool IsSecure(const KURL&);
-
   // Returns true if this SecurityOrigin can script objects in the given
   // SecurityOrigin. This check is similar to `IsSameOriginDomainWith()`, but
   // additionally takes "universal access" flag into account, as well as the
