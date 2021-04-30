@@ -86,12 +86,15 @@ function isVideoPlaying() {
 function isVideoStopped() {
   // Video is considered to be stopped if the last 5 fingerprints are the same.
   // We only check for rough equality though to account for rounding errors.
-  if (gFingerprints.length < 5)
+  if (gFingerprints.length < 5) {
     silentReturnToTest('video-not-stopped');
+    return;
+  }
 
   if (allElementsRoughlyEqualTo_(gFingerprints.slice(-5),
                                  gFingerprints[gFingerprints.length - 1])) {
     silentReturnToTest('video-stopped');
+    return;
   }
 
   silentReturnToTest('video-not-stopped');
