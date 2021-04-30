@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since there is an active non-component loaded extension.
-  EXPECT_TRUE(delete_observer_rfh_a.deleted());
+  delete_observer_rfh_a.WaitUntilDeleted();
 }
 
 // Test content script injection disallow the back forward cache.
