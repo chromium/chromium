@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.feed.feedmanagement;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.chrome.browser.feed.webfeed.R;
@@ -20,10 +21,12 @@ import org.chromium.ui.modelutil.ModelListAdapter;
  */
 public class FeedManagementCoordinator {
     private FeedManagementMediator mMediator;
+    private Activity mActivity;
     private final View mView;
 
     public FeedManagementCoordinator(
-            Context context, FollowManagementLauncher followManagementLauncher) {
+            Activity activity, FollowManagementLauncher followManagementLauncher) {
+        mActivity = activity;
         ModelList listItems = new ModelList();
 
         // Once this is attached to the ListView, there is no need to hold a reference to it.
@@ -33,14 +36,23 @@ public class FeedManagementCoordinator {
                 FeedManagementItemViewBinder::bind);
 
         // Inflate the XML.
-        mView = LayoutInflater.from(context).inflate(R.layout.feed_management_activity, null);
+        mView = LayoutInflater.from(mActivity).inflate(R.layout.feed_management_activity, null);
         ListView listView = (ListView) mView.findViewById(R.id.feed_management_menu);
         listView.setAdapter(adapter);
 
-        mMediator = new FeedManagementMediator(context, listItems, followManagementLauncher);
+        // Set up a handler for the header to act as a back button.
+        TextView headerView = (TextView) mView.findViewById(R.id.feed_management_page_title);
+        headerView.setOnClickListener(this::handleHeaderClick);
+
+        mMediator = new FeedManagementMediator(mActivity, listItems, followManagementLauncher);
     }
 
     public View getView() {
         return mView;
+    }
+
+    private void handleHeaderClick(View view) {
+        // Navigate back.
+        mActivity.finish();
     }
 }

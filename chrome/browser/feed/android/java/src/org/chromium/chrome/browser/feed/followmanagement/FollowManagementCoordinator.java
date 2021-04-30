@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.feed.followmanagement;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,9 +24,11 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  */
 public class FollowManagementCoordinator {
     private FollowManagementMediator mMediator;
+    private Activity mActivity;
     private final View mView;
 
-    public FollowManagementCoordinator(Context context) {
+    public FollowManagementCoordinator(Activity activity) {
+        mActivity = activity;
         ModelList listItems = new ModelList();
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listItems);
@@ -34,18 +37,27 @@ public class FollowManagementCoordinator {
                 FollowManagementItemViewBinder::bind);
 
         // Inflate the XML for the activity.
-        mView = LayoutInflater.from(context).inflate(R.layout.follow_management_activity, null);
+        mView = LayoutInflater.from(activity).inflate(R.layout.follow_management_activity, null);
         RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.follow_management_list);
         // With the recycler view, we need to explicitly set a layout manager.
-        LinearLayoutManager manager = new LinearLayoutManager(context);
+        LinearLayoutManager manager = new LinearLayoutManager(activity);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        mMediator = new FollowManagementMediator(context, listItems, adapter,
+        // Set up a handler for the header to act as a back button.
+        TextView headerView = (TextView) mView.findViewById(R.id.follow_management_page_title);
+        headerView.setOnClickListener(this::handleHeaderClick);
+
+        mMediator = new FollowManagementMediator(activity, listItems, adapter,
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()));
     }
 
     public View getView() {
         return mView;
+    }
+
+    private void handleHeaderClick(View view) {
+        // Navigate back.
+        mActivity.finish();
     }
 }
