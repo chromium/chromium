@@ -108,7 +108,6 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x86 emulator.
     'Android SDK built for x86': [23],
-    'Pixel 2': [28],
 }
 
 _BATCH_SUFFIX = '_batch'
