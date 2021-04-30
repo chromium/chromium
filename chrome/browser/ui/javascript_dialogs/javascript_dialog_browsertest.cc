@@ -22,10 +22,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/blink/public/common/features.h"
 
 using DismissalCause =
     javascript_dialogs::TabModalDialogManager::DismissalCause;
@@ -374,4 +376,58 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {
       ukm::builders::AbusiveExperienceHeuristic_JavaScriptDialog::
           kDismissalCauseName,
       static_cast<int64_t>(DismissalCause::kDialogButtonClicked));
+}
+
+class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
+ public:
+  JavaScriptDialogForPrerenderTest()
+      : prerender_helper_(
+            base::BindRepeating(&JavaScriptDialogForPrerenderTest::web_contents,
+                                base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
+  void SetUpOnMainThread() override {
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    JavaScriptDialogTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ protected:
+  content::WebContents* web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/prerender/add_prerender.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  javascript_dialogs::TabModalDialogManager* js_helper =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_);
+  JavaScriptCallbackHelper callback_helper;
+  bool did_suppress = false;
+
+  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+
+  // Prerender to another site.
+  prerender_helper_.AddPrerenderAsync(prerender_url);
+
+  // Show an alert dialog
+  js_helper->RunJavaScriptDialog(web_contents_, web_contents_->GetMainFrame(),
+                                 content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                 std::u16string(), std::u16string(),
+                                 callback_helper.GetCallback(), &did_suppress);
+  ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
+
+  EXPECT_TRUE(js_helper->IsShowingDialogForTesting());
+
+  // Navigate to the prerendered site.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  EXPECT_FALSE(js_helper->IsShowingDialogForTesting());
 }

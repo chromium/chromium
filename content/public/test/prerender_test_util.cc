@@ -212,9 +212,9 @@ int PrerenderTestHelper::AddPrerender(const GURL& gurl) {
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& gurl) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  // Add the link tag that will prerender the URL.
-  EXPECT_TRUE(ExecJs(GetWebContents(), JsReplace("add_prerender($1)", gurl)))
-      << "AddPrerender failed. Did you load add_prerender.html?";
+  auto script = JsReplace("add_prerender($1)", gurl);
+  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback());
 }
 
 int PrerenderTestHelper::AddPrerenderWithTestUtilJS(const GURL& gurl) {

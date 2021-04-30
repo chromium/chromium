@@ -353,6 +353,9 @@ void TabModalDialogManager::OnVisibilityChanged(
 
 void TabModalDialogManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
+
   // Close the dialog if the user started a new navigation. This allows reloads
   // and history navigations to proceed.
   CloseDialog(DismissalCause::kTabNavigated, false, std::u16string());

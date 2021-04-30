@@ -131,7 +131,8 @@ void WebContentsModalDialogManager::CloseAllDialogs() {
 
 void WebContentsModalDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted())
     return;
 
   if (!child_dialogs_.empty()) {
