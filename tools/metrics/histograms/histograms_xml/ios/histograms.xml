@@ -605,9 +605,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
-    expires_after="2021-09-19">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The reason for the application termination in foreground. Recorded when a
     MXMetricPayload is received from the OS (at most once per day) at
@@ -623,6 +626,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
