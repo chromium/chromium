@@ -19,21 +19,6 @@ function syntaxError()
 
 ==Source frame contents end==
 
-Running: testLiveEditWhenPaused
-Script execution paused.
-Script execution paused.
-Script execution resumed.
-
-Running: testNoCrashWhenOnlyOneFunctionOnStack
-Script execution paused.
-Call stack:
-    0) f1 (edit-me-when-paused.js:13)
-Script execution resumed.
-Script execution paused.
-Script execution resumed.
-Script execution paused.
-Script execution resumed.
-
 Running: testBreakpointsUpdated
 breakpoint at 3
   inline breakpoint at (3, 4)
