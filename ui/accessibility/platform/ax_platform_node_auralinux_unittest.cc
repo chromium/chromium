@@ -148,6 +148,7 @@ static void TestAtkObjectIntAttribute(
     base::Optional<ax::mojom::Role> role = base::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
+  new_data.id = ax_node->data().id;
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
@@ -176,6 +177,7 @@ static void TestAtkObjectStringAttribute(
     base::Optional<ax::mojom::Role> role = base::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
+  new_data.id = ax_node->data().id;
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
@@ -198,6 +200,7 @@ static void TestAtkObjectBoolAttribute(
     base::Optional<ax::mojom::Role> role = base::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
+  new_data.id = ax_node->data().id;
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
@@ -416,6 +419,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectState) {
   g_object_unref(state_set);
 
   root = AXNodeData();
+  root.id = 1;
   root.AddState(ax::mojom::State::kDefault);
   root.AddState(ax::mojom::State::kEditable);
   root.AddState(ax::mojom::State::kExpanded);
@@ -472,6 +476,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectState) {
   g_object_unref(state_set);
 
   root = AXNodeData();
+  root.id = 1;
   root.AddState(ax::mojom::State::kInvisible);
   root.AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
   GetRootAsAXNode()->SetData(root);
