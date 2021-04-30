@@ -983,6 +983,17 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.PowerScheduler.ThrottlingDuration" units="ms"
+    expires_after="2021-10-29">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Duration during which CPU throttling was active. Only recorded when a CPU
+    throttling policy is active (e.g. throttle while idle). A sample is recorded
+    every time throttling stops (e.g. when exiting idle state).
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerSupplyMaxPower" units="W"
     expires_after="2021-08-29">
   <owner>bleung@chromium.org</owner>

@@ -16,6 +16,7 @@ enum class SchedulingPolicy {
   kNone,
   kLittleCoresOnly,
   kThrottleIdle,
+  kThrottleIdleAndNopAnimation,
 };
 
 class COMPONENT_EXPORT(POWER_SCHEDULER) PowerScheduler
@@ -74,6 +75,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerScheduler
   bool power_observer_registered_ = false;
   bool task_observer_registered_ = false;
   base::CpuAffinityMode enforced_affinity_ = base::CpuAffinityMode::kDefault;
+  base::TimeTicks enforced_affinity_setup_time_;
   power_scheduler::PowerMode current_power_mode_ =
       power_scheduler::PowerMode::kMaxValue;
   SchedulingPolicy current_policy_ = SchedulingPolicy::kNone;

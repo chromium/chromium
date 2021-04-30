@@ -124,6 +124,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCpuAffinityRestrictToLittleCores;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPowerSchedulerThrottleIdle;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPowerSchedulerThrottleIdleAndNopAnimation;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

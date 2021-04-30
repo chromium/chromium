@@ -8,22 +8,24 @@
 #include "base/cpu.h"
 #include "base/cpu_affinity_posix.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 
 namespace {
 
 perfetto::StaticString TraceEventNameForAffinityMode(
     base::CpuAffinityMode affinity) {
-  if (affinity == base::CpuAffinityMode::kDefault) {
-    return "ApplyCpuAffinityModeDefault";
-  } else if (affinity == base::CpuAffinityMode::kLittleCoresOnly) {
-    return "ApplyCpuAffinityModeLittleCoresOnly";
+  switch (affinity) {
+    case base::CpuAffinityMode::kDefault:
+      return "ApplyCpuAffinityModeDefault";
+    case base::CpuAffinityMode::kLittleCoresOnly:
+      return "ApplyCpuAffinityModeLittleCoresOnly";
   }
-  return "ApplyCpuAffinityModeUnknown";
 }
 
 void ApplyProcessCpuAffinityMode(base::CpuAffinityMode affinity) {
@@ -75,6 +77,9 @@ void PowerScheduler::DidProcessTask(const base::PendingTask& pending_task) {
 void PowerScheduler::OnPowerModeChanged(power_scheduler::PowerMode old_mode,
                                         power_scheduler::PowerMode new_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT2("power", "PowerScheduler::OnPowerModeChanged", "old_mode",
+               power_scheduler::PowerModeToString(old_mode), "new_mode",
+               power_scheduler::PowerModeToString(new_mode));
 
   current_power_mode_ = new_mode;
 
@@ -116,12 +121,14 @@ void PowerScheduler::SetupPolicy() {
   // Reset the power mode in case it contains an obsolete value.
   current_power_mode_ = power_scheduler::PowerMode::kMaxValue;
 
-  if (current_policy_ == SchedulingPolicy::kThrottleIdle &&
-      !power_observer_registered_) {
+  bool needs_power_observer =
+      current_policy_ == SchedulingPolicy::kThrottleIdle ||
+      current_policy_ == SchedulingPolicy::kThrottleIdleAndNopAnimation;
+
+  if (needs_power_observer && !power_observer_registered_) {
     power_scheduler::PowerModeArbiter::GetInstance()->AddObserver(this);
     power_observer_registered_ = true;
-  } else if (current_policy_ != SchedulingPolicy::kThrottleIdle &&
-             power_observer_registered_) {
+  } else if (!needs_power_observer && power_observer_registered_) {
     power_scheduler::PowerModeArbiter::GetInstance()->RemoveObserver(this);
     power_observer_registered_ = false;
   }
@@ -130,15 +137,39 @@ void PowerScheduler::SetupPolicy() {
 }
 
 void PowerScheduler::ApplyPolicy() {
-  auto new_affinity = base::CpuAffinityMode::kDefault;
-  if (current_policy_ == SchedulingPolicy::kLittleCoresOnly ||
-      (current_policy_ == SchedulingPolicy::kThrottleIdle &&
-       (current_power_mode_ == power_scheduler::PowerMode::kIdle ||
-        current_power_mode_ == power_scheduler::PowerMode::kBackground))) {
-    new_affinity = base::CpuAffinityMode::kLittleCoresOnly;
+  bool should_throttle = false;
+  switch (current_policy_) {
+    case SchedulingPolicy::kNone:
+      break;
+    case SchedulingPolicy::kLittleCoresOnly:
+      should_throttle = true;
+      break;
+    case SchedulingPolicy::kThrottleIdle:
+      should_throttle =
+          current_power_mode_ == power_scheduler::PowerMode::kIdle ||
+          current_power_mode_ == power_scheduler::PowerMode::kBackground;
+      break;
+    case SchedulingPolicy::kThrottleIdleAndNopAnimation:
+      should_throttle =
+          current_power_mode_ == power_scheduler::PowerMode::kIdle ||
+          current_power_mode_ == power_scheduler::PowerMode::kBackground ||
+          current_power_mode_ == power_scheduler::PowerMode::kNopAnimation;
+      break;
   }
 
+  auto new_affinity = should_throttle ? base::CpuAffinityMode::kLittleCoresOnly
+                                      : base::CpuAffinityMode::kDefault;
+
   if (new_affinity != enforced_affinity_) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    if (new_affinity == base::CpuAffinityMode::kDefault &&
+        !enforced_affinity_setup_time_.is_null()) {
+      UMA_HISTOGRAM_CUSTOM_TIMES("Power.PowerScheduler.ThrottlingDuration",
+                                 now - enforced_affinity_setup_time_,
+                                 base::TimeDelta::FromMilliseconds(1),
+                                 base::TimeDelta::FromMinutes(10), 100);
+    }
+    enforced_affinity_setup_time_ = now;
     enforced_affinity_ = new_affinity;
     EnforceCpuAffinity();
   }

@@ -614,6 +614,10 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
     power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
         power_scheduler::SchedulingPolicy::kLittleCoresOnly);
   } else if (base::FeatureList::IsEnabled(
+                 features::kPowerSchedulerThrottleIdleAndNopAnimation)) {
+    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+        power_scheduler::SchedulingPolicy::kThrottleIdleAndNopAnimation);
+  } else if (base::FeatureList::IsEnabled(
                  features::kPowerSchedulerThrottleIdle)) {
     power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
         power_scheduler::SchedulingPolicy::kThrottleIdle);
