@@ -645,6 +645,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
                 sb.append('  visibility = [ "//build/android/gyp/resources_shrinker:*" ]\n')
                 break
+            case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
+               sb.append('requires_android = true')
+               break
         }
     }
 
@@ -820,6 +823,7 @@ class BuildConfigGenerator extends DefaultTask {
         for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
             // Replace license names with ones that are whitelisted, see third_party/PRESUBMIT.py
             switch (license.name) {
+                case "The Apache License, Version 2.0":
                 case "The Apache Software License, Version 2.0":
                     licenseStrings.add("Apache Version 2.0")
                     break

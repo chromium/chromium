@@ -392,9 +392,9 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.4.30.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.4.32.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
-  enable_bytecode_checks = false
+  supports_android = true
   deps = [
     ":org_jetbrains_annotations_java",
     ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
@@ -668,7 +668,7 @@ java_prebuilt("org_checkerframework_dataflow_shaded_java") {
 java_prebuilt("org_jetbrains_annotations_java") {
   jar_path = "libs/org_jetbrains_annotations/annotations-13.0.jar"
   output_name = "org_jetbrains_annotations"
-  enable_bytecode_checks = false
+  supports_android = true
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
@@ -680,9 +680,9 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.4.30.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.4.32.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
-  enable_bytecode_checks = false
+  supports_android = true
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
@@ -1390,6 +1390,18 @@ if (!limit_android_deps) {
 
     # Needed to break dependency cycle for errorprone_plugin_java.
     enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_android_java") {
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.4.3.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
+    supports_android = true
+    deps = [
+      ":org_jetbrains_kotlin_kotlin_stdlib_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+    ]
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2489,6 +2501,24 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.4.3.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
+    supports_android = true
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

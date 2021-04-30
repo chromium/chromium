@@ -143,6 +143,8 @@
     "libs/org_jetbrains_annotations",
     "libs/org_jetbrains_kotlin_kotlin_stdlib",
     "libs/org_jetbrains_kotlin_kotlin_stdlib_common",
+    "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android",
+    "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     "libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm",
     "libs/org_ow2_asm_asm",
     "libs/org_ow2_asm_asm_analysis",
