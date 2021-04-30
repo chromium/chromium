@@ -63,8 +63,6 @@ class SubresourceFilterAgent
   virtual bool IsProvisional();
   virtual bool IsSubframeCreatedByAdScript();
 
-  virtual bool HasDocumentLoader();
-
   // Injects the provided subresource |filter| into the DocumentLoader
   // orchestrating the most recently created document.
   virtual void SetSubresourceFilterForCurrentDocument(

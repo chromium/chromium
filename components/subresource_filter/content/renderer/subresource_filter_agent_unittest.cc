@@ -72,8 +72,6 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
     return is_subframe_created_by_ad_script_;
   }
 
-  bool HasDocumentLoader() override { return true; }
-
   void SetSubresourceFilterForCurrentDocument(
       std::unique_ptr<blink::WebDocumentSubresourceFilter> filter) override {
     last_injected_filter_ = std::move(filter);

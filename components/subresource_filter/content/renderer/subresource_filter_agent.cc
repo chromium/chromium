@@ -127,10 +127,6 @@ bool SubresourceFilterAgent::IsSubframeCreatedByAdScript() {
   return render_frame()->GetWebFrame()->IsSubframeCreatedByAdScript();
 }
 
-bool SubresourceFilterAgent::HasDocumentLoader() {
-  return render_frame()->GetWebFrame()->GetDocumentLoader();
-}
-
 void SubresourceFilterAgent::SetSubresourceFilterForCurrentDocument(
     std::unique_ptr<blink::WebDocumentSubresourceFilter> filter) {
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
