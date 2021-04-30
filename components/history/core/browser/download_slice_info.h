@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_DOWNLOAD_SLICE_INFO_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "components/history/core/browser/download_types.h"
 

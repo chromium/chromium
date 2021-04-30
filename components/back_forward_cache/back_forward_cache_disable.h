@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_DISABLE_H_
 #define COMPONENTS_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_DISABLE_H_
 
-#include <string>
-
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 

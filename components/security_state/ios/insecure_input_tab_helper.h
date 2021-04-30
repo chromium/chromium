@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SECURITY_STATE_IOS_INSECURE_INPUT_TAB_HELPER_H_
 #define COMPONENTS_SECURITY_STATE_IOS_INSECURE_INPUT_TAB_HELPER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 #include "ios/web/public/web_state_observer.h"

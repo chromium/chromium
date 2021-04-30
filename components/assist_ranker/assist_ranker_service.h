@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_ASSIST_RANKER_ASSIST_RANKER_SERVICE_H_
 #define COMPONENTS_ASSIST_RANKER_ASSIST_RANKER_SERVICE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"

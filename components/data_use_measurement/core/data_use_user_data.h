@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_USER_DATA_H_
 #define COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_USER_DATA_H_
 
-#include <memory>
-#include <string>
-
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 

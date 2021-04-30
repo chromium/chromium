@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ARC_NET_ALWAYS_ON_VPN_MANAGER_H_
 #define COMPONENTS_ARC_NET_ALWAYS_ON_VPN_MANAGER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

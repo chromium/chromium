@@ -7,9 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
-#include <vector>
-
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit.h"

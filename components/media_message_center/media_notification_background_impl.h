@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/optional.h"
 #include "components/media_message_center/media_notification_background.h"

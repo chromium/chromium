@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_NET_UDP_SOCKET_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_NET_UDP_SOCKET_H_
 
-#include <memory>
-
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/udp_socket.h"

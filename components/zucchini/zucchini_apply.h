@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ZUCCHINI_ZUCCHINI_APPLY_H_
 #define COMPONENTS_ZUCCHINI_ZUCCHINI_APPLY_H_
 
-#include <vector>
-
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/zucchini.h"

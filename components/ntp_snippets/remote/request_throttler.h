@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 
-#include <string>
-
 #include "base/macros.h"
 
 class PrefRegistrySimple;

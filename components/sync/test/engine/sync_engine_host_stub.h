@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TEST_ENGINE_SYNC_ENGINE_HOST_STUB_H_
 #define COMPONENTS_SYNC_TEST_ENGINE_SYNC_ENGINE_HOST_STUB_H_
 
-#include <string>
-
 #include "components/sync/engine/sync_engine_host.h"
 
 namespace syncer {

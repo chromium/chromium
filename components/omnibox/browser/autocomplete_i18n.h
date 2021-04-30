@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_I18N_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_I18N_H_
 
-#include <string>
-
 #include "third_party/icu/source/common/unicode/uchar.h"
 
 // Functor for a simple 16-bit Unicode case-insensitive comparison. This is

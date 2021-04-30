@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PIXEL_TEST_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PIXEL_TEST_H_
 
-#include <vector>
-
 #include "cc/test/pixel_test.h"
 #include "components/viz/test/test_types.h"
 #include "testing/gtest/include/gtest/gtest.h"

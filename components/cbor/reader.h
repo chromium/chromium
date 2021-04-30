@@ -7,9 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-#include <vector>
-
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "components/cbor/cbor_export.h"

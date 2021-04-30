@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 #define COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 
-#include <vector>
-
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"

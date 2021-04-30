@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_SHUTDOWN_NOTIFIER_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_SHUTDOWN_NOTIFIER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"

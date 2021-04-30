@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/macros.h"
 #include "components/arc/mojom/midis.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

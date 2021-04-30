@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_MIGRATOR_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_MIGRATOR_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/values.h"

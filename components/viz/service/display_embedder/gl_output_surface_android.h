@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_GL_OUTPUT_SURFACE_ANDROID_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_GL_OUTPUT_SURFACE_ANDROID_H_
 
-#include <memory>
-
 #include "components/viz/service/display_embedder/gl_output_surface.h"
 
 namespace viz {

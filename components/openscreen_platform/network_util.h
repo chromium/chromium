@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_NETWORK_UTIL_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_NETWORK_UTIL_H_
 
-#include <memory>
-
 #include "net/base/address_family.h"
 #include "third_party/openscreen/src/platform/base/ip_address.h"
 

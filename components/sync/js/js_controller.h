@@ -7,8 +7,6 @@
 
 // See README for design comments.
 
-#include <string>
-
 namespace syncer {
 
 class JsEventHandler;

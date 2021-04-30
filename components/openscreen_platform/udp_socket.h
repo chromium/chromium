@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_UDP_SOCKET_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_UDP_SOCKET_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

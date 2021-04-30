@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_SELECTOR_STORAGE_SELECTOR_H_
 #define COMPONENTS_REPORTING_STORAGE_SELECTOR_STORAGE_SELECTOR_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"

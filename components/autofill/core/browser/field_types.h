@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 
-#include <map>
-#include <set>
-#include <string>
-
 #include "base/strings/string_piece_forward.h"
 #include "components/autofill/core/common/dense_set.h"
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_SERVICE_ACCESSOR_H_
 
 #include <stdint.h>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"

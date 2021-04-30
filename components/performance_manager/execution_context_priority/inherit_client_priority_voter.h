@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 
-#include <map>
-
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/frame_node.h"

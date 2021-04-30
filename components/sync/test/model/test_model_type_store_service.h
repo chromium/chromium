@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TEST_MODEL_TEST_MODEL_TYPE_STORE_SERVICE_H_
 #define COMPONENTS_SYNC_TEST_MODEL_TEST_MODEL_TYPE_STORE_SERVICE_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"

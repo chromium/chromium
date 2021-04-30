@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_STALE_ENTRY_FINALIZER_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_STALE_ENTRY_FINALIZER_TASK_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

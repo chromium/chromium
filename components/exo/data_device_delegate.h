@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_EXO_DATA_DEVICE_DELEGATE_H_
 #define COMPONENTS_EXO_DATA_DEVICE_DELEGATE_H_
 
-#include <string>
-#include <vector>
-
 #include "base/containers/flat_set.h"
 #include "components/exo/data_offer.h"
 

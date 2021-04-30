@@ -35,8 +35,6 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
-#include <memory>
-
 #include "base/scoped_generic.h"
 
 #if defined(USE_GBM)

@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_GET_VISUALS_INFO_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_GET_VISUALS_INFO_TASK_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 #include "url/gurl.h"

@@ -6,8 +6,6 @@
 #define COMPONENTS_EXO_XDG_SHELL_SURFACE_H_
 
 #include <cstdint>
-#include <memory>
-#include <string>
 
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/wm/window_state_observer.h"

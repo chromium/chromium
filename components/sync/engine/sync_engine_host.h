@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_H_
 
-#include <string>
-
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_encryption_handler.h"

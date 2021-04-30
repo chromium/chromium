@@ -7,10 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"

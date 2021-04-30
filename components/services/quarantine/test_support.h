@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
 #define COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
 
-#include <string>
-
 class GURL;
 
 namespace base {

@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"

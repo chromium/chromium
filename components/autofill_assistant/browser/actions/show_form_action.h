@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_FORM_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_FORM_ACTION_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

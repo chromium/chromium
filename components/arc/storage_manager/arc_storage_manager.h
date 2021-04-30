@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ARC_STORAGE_MANAGER_ARC_STORAGE_MANAGER_H_
 #define COMPONENTS_ARC_STORAGE_MANAGER_ARC_STORAGE_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/arc/mojom/storage_manager.mojom.h"

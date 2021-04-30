@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_OBSERVER_H_
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_OBSERVER_H_
 
-#include <set>
-#include <vector>
-
 #include "components/reading_list/core/reading_list_entry.h"
 
 class GURL;

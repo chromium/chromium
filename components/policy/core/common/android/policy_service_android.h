@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/policy/core/common/android/policy_map_android.h"

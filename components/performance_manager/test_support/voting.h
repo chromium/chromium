@@ -7,9 +7,6 @@
 
 #include "components/performance_manager/public/voting/voting.h"
 
-#include <map>
-#include <vector>
-
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "testing/gtest/include/gtest/gtest.h"

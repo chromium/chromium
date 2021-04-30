@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_PROXY_TABS_DATA_TYPE_CONTROLLER_H_
 #define COMPONENTS_SYNC_SESSIONS_PROXY_TABS_DATA_TYPE_CONTROLLER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "components/sync/driver/data_type_controller.h"

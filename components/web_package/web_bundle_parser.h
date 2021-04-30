@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

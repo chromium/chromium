@@ -7,9 +7,6 @@
 #ifndef COMPONENTS_CRONET_NATIVE_GENERATED_CRONET_IDL_IMPL_INTERFACE_H_
 #define COMPONENTS_CRONET_NATIVE_GENERATED_CRONET_IDL_IMPL_INTERFACE_H_
 
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "components/cronet/native/generated/cronet.idl_c.h"
 

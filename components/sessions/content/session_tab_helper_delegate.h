@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_DELEGATE_H_
 #define COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_DELEGATE_H_
 
-#include <string>
-
 #include "components/sessions/core/sessions_export.h"
 
 class SessionID;

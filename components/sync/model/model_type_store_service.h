@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_H_
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"

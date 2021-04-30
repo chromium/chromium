@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_PREF_NAMES_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_PREF_NAMES_H_
 
-#include <string>
-
 namespace prefs {
 
 // Stores counts and timestamps of SSL certificate errors that have occurred.

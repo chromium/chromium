@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_WEEKLY_ACTIVITY_STORAGE_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_WEEKLY_ACTIVITY_STORAGE_H_
 
-#include <string>
 #include <unordered_map>
 
 #include "base/macros.h"

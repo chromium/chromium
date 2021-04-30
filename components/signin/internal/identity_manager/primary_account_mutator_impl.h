@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_IMPL_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_IMPL_H_
 
-#include <string>
-
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"

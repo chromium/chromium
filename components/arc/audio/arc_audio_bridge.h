@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 #define COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
-#include <string>
-
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/macros.h"
 #include "components/arc/mojom/audio.mojom.h"

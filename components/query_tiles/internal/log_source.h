@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_LOG_SOURCE_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_LOG_SOURCE_H_
 
-#include <string>
-
 #include "base/observer_list.h"
 #include "components/query_tiles/internal/log_sink.h"
 #include "components/query_tiles/internal/tile_group.h"

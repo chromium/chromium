@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "ui/gfx/geometry/size.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_COMMON_SWITCHES_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/optional.h"
 #include "build/chromeos_buildflags.h"

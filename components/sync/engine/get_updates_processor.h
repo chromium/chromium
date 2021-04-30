@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_GET_UPDATES_PROCESSOR_H_
 #define COMPONENTS_SYNC_ENGINE_GET_UPDATES_PROCESSOR_H_
 
-#include <map>
-#include <vector>
-
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"

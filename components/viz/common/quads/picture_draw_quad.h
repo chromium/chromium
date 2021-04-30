@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/display_item_list.h"

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PREFS_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PREFS_H_
 
-#include <vector>
-
 class PrefRegistrySimple;
 class PrefService;
 

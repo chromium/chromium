@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_INVALIDATION_PUBLIC_ACK_HANDLER_H_
 #define COMPONENTS_INVALIDATION_PUBLIC_ACK_HANDLER_H_
 
-#include <vector>
-
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 

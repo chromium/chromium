@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_DIALOG_CONTROLLER_ANDROID_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_DIALOG_CONTROLLER_ANDROID_H_
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"

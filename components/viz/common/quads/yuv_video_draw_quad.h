@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"

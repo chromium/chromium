@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_PROTO_DECODERS_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_PROTO_DECODERS_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"

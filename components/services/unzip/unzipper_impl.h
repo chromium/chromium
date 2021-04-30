@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_UNZIP_UNZIPPER_IMPL_H_
 #define COMPONENTS_SERVICES_UNZIP_UNZIPPER_IMPL_H_
 
-#include <memory>
-
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"

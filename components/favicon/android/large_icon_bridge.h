@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/task/cancelable_task_tracker.h"
 

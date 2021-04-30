@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_TICK_CLOCK_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_TICK_CLOCK_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 

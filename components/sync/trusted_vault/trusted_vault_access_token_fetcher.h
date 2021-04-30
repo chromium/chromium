@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/optional.h"
 

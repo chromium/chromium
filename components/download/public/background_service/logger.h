@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 
 namespace base {

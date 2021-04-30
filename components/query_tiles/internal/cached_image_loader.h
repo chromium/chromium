@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_CACHED_IMAGE_LOADER_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_CACHED_IMAGE_LOADER_H_
 
-#include <memory>
-
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/query_tiles/internal/image_loader.h"
 

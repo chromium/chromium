@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_DRIVER_NON_UI_SYNCABLE_SERVICE_BASED_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_SYNC_DRIVER_NON_UI_SYNCABLE_SERVICE_BASED_MODEL_TYPE_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

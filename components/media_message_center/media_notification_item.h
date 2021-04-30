@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ITEM_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ITEM_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

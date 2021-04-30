@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_PREF_NAMES_H_
 #define COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_PREF_NAMES_H_
 
-#include <memory>
-
 #include "base/macros.h"
 
 namespace data_use_measurement {

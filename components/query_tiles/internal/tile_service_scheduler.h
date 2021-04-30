@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_H_
 
-#include <memory>
-#include <string>
-
 #include "components/background_task_scheduler/background_task_scheduler.h"
 #include "components/query_tiles/internal/tile_types.h"
 

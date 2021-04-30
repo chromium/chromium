@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_OBSERVABLE_PROVIDER_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_OBSERVABLE_PROVIDER_H_
 
-#include <string>
-
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"

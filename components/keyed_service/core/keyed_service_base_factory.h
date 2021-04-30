@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_
 
-#include <set>
-
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/dependency_node.h"
 #include "components/keyed_service/core/keyed_service_export.h"

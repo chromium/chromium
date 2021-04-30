@@ -6,7 +6,6 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_OBJC_IDENTITY_MANAGER_OBSERVER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
-#include <vector>
 
 #include "components/signin/public/identity_manager/identity_manager.h"
 

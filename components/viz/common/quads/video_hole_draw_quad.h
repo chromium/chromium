@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/viz_common_export.h"

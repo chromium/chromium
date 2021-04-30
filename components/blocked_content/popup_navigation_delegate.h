@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_POPUP_NAVIGATION_DELEGATE_H_
 #define COMPONENTS_BLOCKED_CONTENT_POPUP_NAVIGATION_DELEGATE_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"

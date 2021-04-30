@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_TEMPORAL_TRACKER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_TEMPORAL_TRACKER_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NACL_RENDERER_TRUSTED_PLUGIN_CHANNEL_H_
 #define COMPONENTS_NACL_RENDERER_TRUSTED_PLUGIN_CHANNEL_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/nacl/common/nacl.mojom.h"

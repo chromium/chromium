@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CYCLE_STATUS_CONTROLLER_H_
 #define COMPONENTS_SYNC_ENGINE_CYCLE_STATUS_CONTROLLER_H_
 
-#include <map>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"

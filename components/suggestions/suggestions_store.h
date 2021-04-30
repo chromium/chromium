@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SUGGESTIONS_SUGGESTIONS_STORE_H_
 #define COMPONENTS_SUGGESTIONS_SUGGESTIONS_STORE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/time/clock.h"
 #include "components/suggestions/proto/suggestions.pb.h"

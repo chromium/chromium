@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_H_
 
-#include <string>
-
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

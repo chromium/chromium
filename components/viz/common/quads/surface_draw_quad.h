@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"

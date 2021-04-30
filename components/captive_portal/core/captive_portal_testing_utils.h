@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "services/network/test/test_url_loader_factory.h"

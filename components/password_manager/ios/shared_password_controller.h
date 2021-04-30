@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_SHARED_PASSWORD_CONTROLLER_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"

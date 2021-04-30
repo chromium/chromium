@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 #define COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 
-#include <memory>
-
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BROWSING_DATA_CONTENT_CONDITIONAL_CACHE_COUNTING_HELPER_H_
 #define COMPONENTS_BROWSING_DATA_CONTENT_CONDITIONAL_CACHE_COUNTING_HELPER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "net/base/net_errors.h"

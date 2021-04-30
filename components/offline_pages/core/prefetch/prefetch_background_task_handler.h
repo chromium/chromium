@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_HANDLER_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_HANDLER_H_
 
-#include <memory>
-
 namespace offline_pages {
 
 // Interface for system-specific integrations with background task scheduling.

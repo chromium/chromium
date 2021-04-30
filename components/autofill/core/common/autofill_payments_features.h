@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PAYMENTS_FEATURES_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PAYMENTS_FEATURES_H_
 
-#include <string>
-
 #include "base/feature_list.h"
 #include "build/build_config.h"
 

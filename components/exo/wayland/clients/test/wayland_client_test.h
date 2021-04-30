@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_EXO_WAYLAND_CLIENTS_TEST_WAYLAND_CLIENT_TEST_H_
 #define COMPONENTS_EXO_WAYLAND_CLIENTS_TEST_WAYLAND_CLIENT_TEST_H_
 
-#include <memory>
-
 #include "components/exo/wayland/clients/test/wayland_client_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

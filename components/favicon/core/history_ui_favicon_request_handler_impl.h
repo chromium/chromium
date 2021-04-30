@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_HISTORY_UI_FAVICON_REQUEST_HANDLER_IMPL_H_
 #define COMPONENTS_FAVICON_CORE_HISTORY_UI_FAVICON_REQUEST_HANDLER_IMPL_H_
 
-#include <map>
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"

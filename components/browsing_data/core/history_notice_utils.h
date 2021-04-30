@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_HISTORY_NOTICE_UTILS_H_
 #define COMPONENTS_BROWSING_DATA_CORE_HISTORY_NOTICE_UTILS_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 
 namespace history {

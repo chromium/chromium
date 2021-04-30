@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_TIMER_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_TIMER_INSTANCE_H_
 
-#include <vector>
-
 #include "components/arc/mojom/timer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

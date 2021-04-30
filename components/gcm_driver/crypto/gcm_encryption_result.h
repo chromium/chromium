@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_GCM_DRIVER_CRYPTO_GCM_ENCRYPTION_RESULT_H_
 #define COMPONENTS_GCM_DRIVER_CRYPTO_GCM_ENCRYPTION_RESULT_H_
 
-#include <string>
-
 namespace gcm {
 
 // Result of encrypting an outgoing message. The values of these reasons must

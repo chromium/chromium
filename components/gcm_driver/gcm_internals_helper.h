@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_GCM_DRIVER_GCM_INTERNALS_HELPER_H_
 #define COMPONENTS_GCM_DRIVER_GCM_INTERNALS_HELPER_H_
 
-#include <vector>
-
 #include "components/gcm_driver/gcm_client.h"
 
 class PrefService;

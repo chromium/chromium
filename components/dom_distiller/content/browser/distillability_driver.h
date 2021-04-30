@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABILITY_DRIVER_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABILITY_DRIVER_H_
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"

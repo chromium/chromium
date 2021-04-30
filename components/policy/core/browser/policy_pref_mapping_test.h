@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_POLICY_PREF_MAPPING_TEST_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_POLICY_PREF_MAPPING_TEST_H_
 
-#include <string>
-
 namespace base {
 class FilePath;
 }

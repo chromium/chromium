@@ -6,9 +6,6 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_FEATURES_H_
 
 #include <stddef.h>
-#include <algorithm>
-#include <utility>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/macros.h"

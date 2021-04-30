@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_METRICS_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_METRICS_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"

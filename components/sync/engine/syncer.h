@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"

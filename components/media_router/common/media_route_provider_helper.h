@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_ROUTE_PROVIDER_HELPER_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_ROUTE_PROVIDER_HELPER_H_
 
-#include <string>
-
 #include "base/strings/string_piece_forward.h"
 
 namespace media_router {

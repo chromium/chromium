@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_RENDERER_CONTENT_CAPTURE_SENDER_H_
 #define COMPONENTS_CONTENT_CAPTURE_RENDERER_CONTENT_CAPTURE_SENDER_H_
 
-#include <vector>
-
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

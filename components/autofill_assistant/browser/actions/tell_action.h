@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_TELL_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_TELL_ACTION_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 

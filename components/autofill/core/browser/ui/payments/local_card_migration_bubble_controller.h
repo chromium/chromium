@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_UKM_DEBUG_UKM_DEBUG_DATA_EXTRACTOR_H_
 #define COMPONENTS_UKM_DEBUG_UKM_DEBUG_DATA_EXTRACTOR_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/values.h"
 #include "components/ukm/ukm_service.h"

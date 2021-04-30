@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_
 #define COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_
 
-#include <string>
-#include <vector>
-
 #include "components/prefs/persistent_pref_store.h"
 
 namespace metrics {

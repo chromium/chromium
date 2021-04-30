@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SUGGESTIONS_SUGGESTIONS_SERVICE_H_
 #define COMPONENTS_SUGGESTIONS_SUGGESTIONS_SERVICE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"

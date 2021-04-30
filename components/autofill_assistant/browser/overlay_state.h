@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_OVERLAY_STATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_OVERLAY_STATE_H_
 
-#include <string>
-
 #include "base/callback.h"
 
 namespace autofill_assistant {

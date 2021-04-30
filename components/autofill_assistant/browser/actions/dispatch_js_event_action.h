@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_DISPATCH_JS_EVENT_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_DISPATCH_JS_EVENT_ACTION_H_
 
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"

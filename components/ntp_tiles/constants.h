@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <utility>
-
 namespace ntp_tiles {
 
 // Maximum number of custom links that can be set by the user. Used on desktop.

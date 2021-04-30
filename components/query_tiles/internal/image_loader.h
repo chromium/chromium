@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_IMAGE_LOADER_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_IMAGE_LOADER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "url/gurl.h"

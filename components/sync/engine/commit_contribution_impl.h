@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/sync/base/passphrase_enums.h"

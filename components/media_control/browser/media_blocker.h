@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_MEDIA_CONTROL_BROWSER_MEDIA_BLOCKER_H_
 #define COMPONENTS_MEDIA_CONTROL_BROWSER_MEDIA_BLOCKER_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 

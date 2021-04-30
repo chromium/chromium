@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_EXO_DATA_SOURCE_OBSERVER_H_
 #define COMPONENTS_EXO_DATA_SOURCE_OBSERVER_H_
 
-#include <string>
-
 namespace exo {
 
 class DataSource;

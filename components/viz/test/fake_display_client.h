@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_TEST_FAKE_DISPLAY_CLIENT_H_
 #define COMPONENTS_VIZ_TEST_FAKE_DISPLAY_CLIENT_H_
 
-#include <vector>
-
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

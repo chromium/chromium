@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/strings/string_piece.h"
 #include "base/util/type_safety/id_type.h"
 

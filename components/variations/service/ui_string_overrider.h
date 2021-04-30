@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/macros.h"
 
 namespace variations {

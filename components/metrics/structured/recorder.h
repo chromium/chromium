@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_RECORDER_H_
 #define COMPONENTS_METRICS_STRUCTURED_RECORDER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"

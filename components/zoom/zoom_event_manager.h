@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ZOOM_ZOOM_EVENT_MANAGER_H_
 #define COMPONENTS_ZOOM_ZOOM_EVENT_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

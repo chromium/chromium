@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_COMMON_SERIALIZED_RECORDING_H_
 #define COMPONENTS_PAINT_PREVIEW_COMMON_SERIALIZED_RECORDING_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"

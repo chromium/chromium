@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_REDUCED_MODE_IMAGE_FETCHER_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_REDUCED_MODE_IMAGE_FETCHER_H_
 
-#include <string>
-
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "url/gurl.h"

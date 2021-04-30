@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HANDLE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HANDLE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"

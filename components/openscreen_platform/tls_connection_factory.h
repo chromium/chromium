@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_TLS_CONNECTION_FACTORY_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_TLS_CONNECTION_FACTORY_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

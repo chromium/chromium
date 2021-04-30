@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
 

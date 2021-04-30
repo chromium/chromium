@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkBlendMode.h"

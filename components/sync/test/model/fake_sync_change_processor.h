@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TEST_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
 #define COMPONENTS_SYNC_TEST_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "components/sync/model/sync_change_processor.h"
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
