@@ -15,7 +15,8 @@ DawnControlClientHolder::DawnControlClientHolder(
     : context_provider_(std::make_unique<WebGraphicsContext3DProviderWrapper>(
           std::move(context_provider))),
       interface_(GetContextProvider()->WebGPUInterface()),
-      procs_(interface_->GetProcs()) {}
+      procs_(interface_->GetProcs()),
+      recyclable_resource_cache_(interface_) {}
 
 void DawnControlClientHolder::SetLostContextCallback() {
   GetContextProvider()->SetLostContextCallback(WTF::BindRepeating(

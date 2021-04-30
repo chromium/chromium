@@ -38,16 +38,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   DCHECK(canvas_resource->IsValid());
   DCHECK(canvas_resource->IsAccelerated());
 
-  // TODO(magchen@): move WaitSyncToken into ~RecyclableCanvasResource().
-  auto finished_access_callback = WTF::Bind(&CanvasResource::WaitSyncToken,
-                                            WTF::RetainedRef(canvas_resource));
-
   const gpu::Mailbox& mailbox =
       canvas_resource->GetOrCreateGpuMailbox(kUnverifiedSyncToken);
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, usage, mailbox, sync_token,
-      std::move(finished_access_callback),
+      base::OnceCallback<void(const gpu::SyncToken&)>(),
       std::move(recyclable_canvas_resource)));
 }
 

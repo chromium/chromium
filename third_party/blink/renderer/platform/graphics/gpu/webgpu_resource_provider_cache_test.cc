@@ -24,8 +24,7 @@ class WebGPURecyclableResourceCacheTest : public testing::Test {
   void TearDown() override;
 
  protected:
-  WebGPURecyclableResourceCache recyclable_resource_cache_{
-      kWebGPUMaxRecyclableResourceCaches};
+  WebGPURecyclableResourceCache recyclable_resource_cache_{nullptr};
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<base::ThreadTaskRunnerHandle> handle_;
   cc::StubDecodeCache image_decode_cache_;
@@ -38,6 +37,11 @@ void WebGPURecyclableResourceCacheTest::SetUp() {
   test_context_provider_ = viz::TestContextProvider::Create();
   InitializeSharedGpuContext(test_context_provider_.get(),
                              &image_decode_cache_);
+
+  auto* webgpu_interface = SharedGpuContext::ContextProviderWrapper()
+                               ->ContextProvider()
+                               ->WebGPUInterface();
+  recyclable_resource_cache_.SetWebGPUInterfaceForTesting(webgpu_interface);
 }
 
 void WebGPURecyclableResourceCacheTest::TearDown() {

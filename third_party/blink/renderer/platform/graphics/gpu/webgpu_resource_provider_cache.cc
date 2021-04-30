@@ -58,8 +58,8 @@ RecyclableCanvasResource::~RecyclableCanvasResource() {
 }
 
 WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
-    wtf_size_t capacity)
-    : capacity_(capacity) {
+    gpu::webgpu::WebGPUInterface* webgpu_interface)
+    : webgpu_interface_(webgpu_interface) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -86,7 +86,11 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
 
 void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
     std::unique_ptr<CanvasResourceProvider> resource_provider) {
-  resource_provider->OnDestroyRecyclableCanvasResource();
+  // WaitSyncToken on the canvas resource.
+  gpu::SyncToken finished_access_token;
+  webgpu_interface_->GenUnverifiedSyncTokenCHROMIUM(
+      finished_access_token.GetData());
+  resource_provider->OnDestroyRecyclableCanvasResource(finished_access_token);
 
   // Transfer to |unused_providers_|.  MRU goes to the front.
   unused_providers_.push_front(std::move(resource_provider));
@@ -124,6 +128,11 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
     return provider;
   }
   return nullptr;
+}
+
+void WebGPURecyclableResourceCache::SetWebGPUInterfaceForTesting(
+    gpu::webgpu::WebGPUInterface* webgpu_interface) {
+  webgpu_interface_ = webgpu_interface;
 }
 
 }  // namespace blink

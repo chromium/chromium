@@ -687,10 +687,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource() override { EnsureWriteAccess(); }
-  void OnDestroyRecyclableCanvasResource() override {
+  void OnDestroyRecyclableCanvasResource(
+      const gpu::SyncToken& sync_token) override {
     // RecyclableCanvasResource should be the only one that holds onto
     // |resource_|.
     DCHECK(resource_->HasOneRef());
+    resource_->WaitSyncToken(sync_token);
   }
 
   const bool is_accelerated_;

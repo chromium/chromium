@@ -237,7 +237,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // for in the digest.
   const IdentifiabilityPaintOpDigest& GetIdentifiablityPaintOpDigest();
   virtual void OnAcquireRecyclableCanvasResource() {}
-  virtual void OnDestroyRecyclableCanvasResource() {}
+  virtual void OnDestroyRecyclableCanvasResource(
+      const gpu::SyncToken& sync_token) {}
 
  protected:
   class CanvasImageProvider;

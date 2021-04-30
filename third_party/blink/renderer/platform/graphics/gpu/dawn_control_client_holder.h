@@ -23,10 +23,6 @@ class WebGPUInterface;
 
 namespace blink {
 
-// TODO(magchen@): Increase the size after the timer for cleaning up stale
-// resources is added.
-constexpr wtf_size_t kWebGPUMaxRecyclableResourceCaches = 4;
-
 // This class holds the WebGPUInterface and a |destroyed_| flag.
 // DawnControlClientHolder::Destroy() should be called to destroy the backing
 // WebGPUInterface.
@@ -59,8 +55,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   gpu::webgpu::WebGPUInterface* interface_;
   DawnProcTable procs_;
   bool lost_ = false;
-  WebGPURecyclableResourceCache recyclable_resource_cache_{
-      kWebGPUMaxRecyclableResourceCaches};
+  WebGPURecyclableResourceCache recyclable_resource_cache_;
 };
 
 }  // namespace blink

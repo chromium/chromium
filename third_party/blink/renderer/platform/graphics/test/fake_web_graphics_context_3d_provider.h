@@ -10,6 +10,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
+#include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -40,6 +41,8 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
     // all references to GLES2Interface have been removed.
     raster_interface_ =
         std::make_unique<gpu::raster::RasterImplementationGLES>(gl_, nullptr);
+
+    webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
     // enable all gpu features.
     for (unsigned feature = 0; feature < gpu::NUMBER_OF_GPU_FEATURE_TYPES;
@@ -78,7 +81,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
     return RasterInterface() &&
            RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
   }
-  gpu::webgpu::WebGPUInterface* WebGPUInterface() override { return nullptr; }
+  gpu::webgpu::WebGPUInterface* WebGPUInterface() override {
+    return webgpu_interface_.get();
+  }
 
   bool BindToCurrentThread() override { return false; }
   void SetLostContextCallback(base::RepeatingClosure) override {}
@@ -102,6 +107,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   viz::TestSharedImageInterface test_shared_image_interface_;
   gpu::gles2::GLES2Interface* gl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
+  std::unique_ptr<gpu::webgpu::WebGPUInterfaceStub> webgpu_interface_;
   sk_sp<GrDirectContext> gr_context_;
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;

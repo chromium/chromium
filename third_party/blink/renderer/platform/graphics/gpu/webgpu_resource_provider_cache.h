@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RESOURCE_PROVIDER_CACHE_H_
 
 #include "base/threading/thread_checker.h"
+#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -49,7 +50,8 @@ class PLATFORM_EXPORT RecyclableCanvasResource {
 
 class PLATFORM_EXPORT WebGPURecyclableResourceCache {
  public:
-  explicit WebGPURecyclableResourceCache(wtf_size_t capacity);
+  explicit WebGPURecyclableResourceCache(
+      gpu::webgpu::WebGPUInterface* webgpu_interface);
   ~WebGPURecyclableResourceCache() = default;
 
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
@@ -62,7 +64,13 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   void OnDestroyRecyclableResource(
       std::unique_ptr<CanvasResourceProvider> resource_provider);
 
+  void SetWebGPUInterfaceForTesting(
+      gpu::webgpu::WebGPUInterface* webgpu_interface);
+
  private:
+  // TODO(magchen@): Increase the size after the timer for cleaning up stale
+  // resources is added.
+  static constexpr wtf_size_t kMaxRecyclableResourceCaches = 4;
   using DequeResourceProvider =
       WTF::Deque<std::unique_ptr<CanvasResourceProvider>>;
 
@@ -76,7 +84,9 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   DequeResourceProvider unused_providers_;
 
   // The maximum number of unused CanvasResourceProviders that we can cached.
-  const wtf_size_t capacity_;
+  const wtf_size_t capacity_ = kMaxRecyclableResourceCaches;
+
+  gpu::webgpu::WebGPUInterface* webgpu_interface_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtr<WebGPURecyclableResourceCache> weak_ptr_;
