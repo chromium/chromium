@@ -3483,7 +3483,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="No hash code for multiple accounts"/>
   <int value="3" label="Hash code set but no account"/>
   <int value="4" label="Hash code set but does not match single account"/>
-  <int value="5" label="Hash code set but does not any account"/>
+  <int value="5" label="Hash code set but does not match any account"/>
   <int value="6" label="Hash code set and matches single account"/>
   <int value="7" label="Hash code set and matches one of multiple accounts"/>
   <int value="8" label="Hash code collides with multiple accounts"/>
