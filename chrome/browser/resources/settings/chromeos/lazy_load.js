@@ -5,6 +5,7 @@
 // Uncomment as these modules are migrated to Polymer 3.
 import './crostini_page/crostini_arc_adb.m.js';
 import './crostini_page/crostini_arc_adb_confirmation_dialog.m.js';
+import './crostini_page/crostini_confirmation_dialog.m.js';
 import './crostini_page/crostini_disk_resize_confirmation_dialog.m.js';
 import './crostini_page/crostini_disk_resize_dialog.m.js';
 import './crostini_page/crostini_export_import.m.js';

@@ -77,6 +77,55 @@ suite('CrostiniPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  suite('<settings-crostini-confirmation-dialog>', function() {
+    let dialog;
+    let cancelOrCloseEvents;
+    let closeEventPromise;
+
+    setup(function() {
+      cancelOrCloseEvents = [];
+      dialog = document.createElement('settings-crostini-confirmation-dialog');
+
+      dialog.addEventListener('cancel', (e) => {
+        cancelOrCloseEvents.push(e);
+      });
+      closeEventPromise =
+          new Promise((resolve) => dialog.addEventListener('close', (e) => {
+            cancelOrCloseEvents.push(e);
+            resolve();
+          }));
+
+      document.body.appendChild(dialog);
+    });
+
+    teardown(function() {
+      dialog.remove();
+    });
+
+    test('accept', async function() {
+      assertTrue(dialog.$$('cr-dialog').open);
+      dialog.$$('.action-button').click();
+
+      await closeEventPromise;
+      assertEquals(cancelOrCloseEvents.length, 1);
+      assertEquals(cancelOrCloseEvents[0].type, 'close');
+      assertTrue(cancelOrCloseEvents[0].detail.accepted);
+      assertFalse(dialog.$$('cr-dialog').open);
+    });
+
+    test('cancel', async function() {
+      assertTrue(dialog.$$('cr-dialog').open);
+      dialog.$$('.cancel-button').click();
+
+      await closeEventPromise;
+      assertEquals(cancelOrCloseEvents.length, 2);
+      assertEquals(cancelOrCloseEvents[0].type, 'cancel');
+      assertEquals(cancelOrCloseEvents[1].type, 'close');
+      assertFalse(cancelOrCloseEvents[1].detail.accepted);
+      assertFalse(dialog.$$('cr-dialog').open);
+    });
+  });
+
   suite('MainPage', function() {
     setup(function() {
       setCrostiniPrefs(false);

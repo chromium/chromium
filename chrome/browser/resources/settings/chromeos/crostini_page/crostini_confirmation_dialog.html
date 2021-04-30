@@ -1,0 +1,26 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="settings-crostini-confirmation-dialog">
+  <template>
+    <style include="settings-shared"></style>
+    <cr-dialog id="dialog" show-on-attach close-text="$i18n{close}"
+        on-cancel="onDialogCancel_" on-close="onDialogClose_">
+      <!-- Pass through the "body" slot. -->
+      <div slot="body"><slot name="body"></slot></div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelTap_">
+          [[cancelButtonText]]
+        </cr-button>
+        <cr-button class="action-button" on-click="onAcceptTap_">
+          [[acceptButtonText]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="crostini_confirmation_dialog.js"></script>
+</dom-module>
