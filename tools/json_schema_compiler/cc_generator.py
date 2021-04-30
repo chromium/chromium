@@ -534,37 +534,52 @@ class _Generator(object):
     c = Code()
     underlying_type = self._type_helper.FollowRef(property.type_)
     underlying_property_type = underlying_type.property_type
+    underlying_item_type = (
+      self._type_helper.FollowRef(underlying_type.item_type)
+      if underlying_property_type is PropertyType.ARRAY
+      else None)
+
     assert (underlying_property_type in supported_property_types), (
       'Property type not implemented for %s, type: %s, namespace: %s' %
       (underlying_property_type, underlying_type.name,
       underlying_type.namespace.name))
 
-    assert (underlying_property_type != PropertyType.ARRAY or
-      underlying_type.item_type.property_type != PropertyType.ENUM), (
-      'Enum types in arrays are not currently supported. Type: %s.' %
-      underlying_type.name)
-
     property_constant = cpp_util.UnixNameToConstantName(property.unix_name)
     out_expression = '&out->%s' % property.unix_name
 
-    if underlying_property_type == PropertyType.ENUM:
+    def get_enum_params(enum_type, include_optional_param):
+      # type: (Type, bool) -> List[str]
       enum_name = cpp_util.Classname(
-        schema_util.StripNamespace(underlying_type.name))
-      cpp_type_namespace = '' if underlying_type.namespace == self._namespace \
-          else '%s::' % underlying_type.namespace.unix_name
+        schema_util.StripNamespace(enum_type.name))
+      cpp_type_namespace = (''
+        if enum_type.namespace == self._namespace
+        else '%s::' % enum_type.namespace.unix_name)
 
       params = [
         'dict',
         '%s' % property_constant,
-        '&%sParse%s' % (cpp_type_namespace, enum_name),
-        'true' if property.optional else 'false',
+        '&%sParse%s' % (cpp_type_namespace, enum_name)
+      ]
+      if include_optional_param:
+        params.append('true' if property.optional else 'false')
+      params += [
         '%s%s' % (cpp_type_namespace,
-                  self._type_helper.GetEnumNoneValue(underlying_type)),
+                  self._type_helper.GetEnumNoneValue(enum_type)),
         '%s' % out_expression,
         'error',
         'error_path_reversed'
       ]
+      return params
+
+    if underlying_property_type == PropertyType.ENUM:
+      params = get_enum_params(underlying_type, include_optional_param=True)
       func_name = 'ParseEnumFromDictionary'
+    elif underlying_item_type and \
+      underlying_item_type.property_type == PropertyType.ENUM:
+      # Array of enums.
+      params = get_enum_params(underlying_item_type,
+                               include_optional_param=False)
+      func_name = 'ParseEnumArrayFromDictionary'
     else:
       params = [
         'dict',

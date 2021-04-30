@@ -32,7 +32,7 @@ static std::unique_ptr<base::DictionaryValue> CreateTestTypeDictionary() {
 void GetManifestParseError(base::StringPiece manifest_json,
                            std::string* error) {
   base::Optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
-  ASSERT_TRUE(manifest);
+  ASSERT_TRUE(manifest) << "Invalid json \n" << manifest_json;
 
   simple_api::ManifestKeys manifest_keys;
   std::u16string error_16;
@@ -248,7 +248,8 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_InvalidTypeError) {
       "object": {
         "foo": "bar"
       },
-      "key_enum": "one"
+      "key_enum": "one",
+      "key_enum_array": ["two"]
     }
   })";
 
@@ -270,7 +271,8 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_ArrayParseError) {
       "integer": 32,
       "array": ["one", "two", 3]
     },
-    "key_enum": "one"
+    "key_enum": "one",
+    "key_enum_array": ["two"]
   })";
 
   std::string error;
@@ -280,6 +282,89 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_ArrayParseError) {
       "string, got integer",
       error);
 }
+
+TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_EnumArrayParseError) {
+  {
+    const char kPartialManifestJson[] = R"({
+      "key_string": "abc",
+      "key_ref": {
+        "string": "ref_string",
+        "boolean": true,
+        "number": 25.4,
+        "integer": 32,
+        "array": ["one", "two"]
+      },
+      "key_enum": "one",
+      "key_enum_array": ["two", false]
+    })";
+
+    std::string error;
+    ASSERT_NO_FATAL_FAILURE(
+        GetManifestParseError(kPartialManifestJson, &error));
+    EXPECT_EQ(
+        "Error at key 'key_enum_array'. Parsing array failed at index 1: "
+        "expected string, got boolean",
+        error);
+  }
+  {
+    const char kPartialManifestJson[] = R"({
+      "key_string": "abc",
+      "key_ref": {
+        "string": "ref_string",
+        "boolean": true,
+        "number": 25.4,
+        "integer": 32,
+        "array": ["one", "two"]
+      },
+      "key_enum": "one",
+      "key_enum_array": [],
+      "key_obj": {
+        "obj_string": "foo",
+        "obj_bool": true,
+        "obj_optional_enum_array": ["one", "invalid_value"]
+      }
+    })";
+
+    std::string error;
+    ASSERT_NO_FATAL_FAILURE(
+        GetManifestParseError(kPartialManifestJson, &error));
+    EXPECT_EQ(
+        "Error at key 'key_obj.obj_optional_enum_array'. Parsing array failed "
+        "at index 1: "
+        "Specified value 'invalid_value' is invalid.",
+        error);
+  }
+  {
+    const char kPartialManifestJson[] = R"({
+      "key_string": "abc",
+      "key_ref": {
+        "string": "ref_string",
+        "boolean": true,
+        "number": 25.4,
+        "integer": 32,
+        "array": ["one", "two"]
+      },
+      "key_enum": "one",
+      "key_enum_array": [],
+      "key_obj": {
+        "obj_string": "foo",
+        "obj_bool": true,
+        "obj_optional_enum_array": false
+      }
+    })";
+
+    std::string error;
+    ASSERT_NO_FATAL_FAILURE(
+        GetManifestParseError(kPartialManifestJson, &error));
+    EXPECT_EQ(
+        "Error at key 'key_obj.obj_optional_enum_array'. Type is invalid. "
+        "Expected list, found boolean.",
+        error);
+  }
+}
+
+TEST(JsonSchemaCompilerSimpleTest,
+     ManifestKeyParsing_OptionalEnumArrayParseError) {}
 
 TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_InvalidEnumValue) {
   const char kPartialManifestJson[] = R"({
@@ -291,7 +376,8 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_InvalidEnumValue) {
       "integer": 32,
       "opt_external_enum": "four"
     },
-    "key_enum": "one"
+    "key_enum": "one",
+    "key_enum_array": ["two"]
   })";
 
   std::string error;
@@ -318,9 +404,11 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
     },
     "key_obj": {
       "obj_string": "foo",
-      "obj_bool": true
+      "obj_bool": true,
+      "obj_optional_enum_array": ["three"]
     },
-    "key_enum": "one"
+    "key_enum": "one",
+    "key_enum_array": ["two", "one"]
   })";
 
   simple_api::ManifestKeys manifest_keys;
@@ -332,6 +420,9 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   ASSERT_TRUE(manifest_keys.key_obj);
   EXPECT_EQ("foo", manifest_keys.key_obj->obj_string);
   EXPECT_TRUE(manifest_keys.key_obj->obj_bool);
+  ASSERT_TRUE(manifest_keys.key_obj->obj_optional_enum_array);
+  EXPECT_THAT(*manifest_keys.key_obj->obj_optional_enum_array,
+              ::testing::ElementsAre(enums::ENUMERATION_THREE));
 
   EXPECT_EQ(simple_api::TEST_ENUM_ONE, manifest_keys.key_enum);
 
@@ -345,6 +436,9 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   EXPECT_THAT(*manifest_keys.key_ref.array,
               ::testing::ElementsAre("one", "two"));
   EXPECT_EQ(enums::ENUMERATION_TWO, manifest_keys.key_ref.opt_external_enum);
+  EXPECT_THAT(manifest_keys.key_enum_array,
+              ::testing::ElementsAre(simple_api::TEST_ENUM_TWO,
+                                     simple_api::TEST_ENUM_ONE));
 }
 
 // Ensure leaving out optional keys is not a manifest parse error.
@@ -358,7 +452,8 @@ TEST(JsonSchemaCompilerSimpleTest,
       "number": 25.4,
       "integer": 32
     },
-    "key_enum": "two"
+    "key_enum": "two",
+    "key_enum_array": ["one"]
   })";
 
   simple_api::ManifestKeys manifest_keys;

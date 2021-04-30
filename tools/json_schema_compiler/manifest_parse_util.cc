@@ -55,6 +55,13 @@ void PopulateInvalidEnumValueError(
       base::StringPrintf("Specified value '%s' is invalid.", value.c_str()));
 }
 
+std::u16string GetArrayParseError(size_t error_index,
+                                  const std::u16string& item_error) {
+  return base::ASCIIToUTF16(
+      base::StringPrintf("Parsing array failed at index %" PRIuS ": %s",
+                         error_index, base::UTF16ToASCII(item_error).c_str()));
+}
+
 void PopulateFinalError(std::u16string* error,
                         std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);

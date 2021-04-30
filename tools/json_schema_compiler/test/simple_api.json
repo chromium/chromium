@@ -69,11 +69,24 @@
           },
           "obj_bool": {
             "type": "boolean"
+          },
+          "obj_optional_enum_array": {
+            "optional": true,
+            "type": "array",
+            "items": {
+              "$ref": "enums.Enumeration"
+            }
           }
         }
       },
       "key_enum": {
         "$ref": "TestEnum"
+      },
+      "key_enum_array": {
+        "type": "array",
+        "items": {
+          "$ref": "TestEnum"
+        }
       }
     },
     "functions": [
