@@ -5419,6 +5419,7 @@ ci.memory_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    os = os.LINUX_BIONIC,
     ssd = True,
 )
 
@@ -5432,6 +5433,7 @@ ci.memory_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     triggered_by = ["ci/Linux ASan LSan Builder"],
+    os = os.LINUX_BIONIC,
 )
 
 ci.memory_builder(

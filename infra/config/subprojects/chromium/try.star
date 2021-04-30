@@ -1337,7 +1337,7 @@ try_.chromium_linux_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_BIONIC,
 )
 
 # TODO(crbug.com/1200574): Remove after migration.
