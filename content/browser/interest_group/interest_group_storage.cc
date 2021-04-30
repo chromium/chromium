@@ -11,6 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -815,6 +817,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
 }
 
 bool DoPerformDatabaseMaintenance(sql::Database& db, base::Time now) {
+  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("Storage.InterestGroup.DBMaintenanceTime");
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
@@ -1021,6 +1024,8 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
   if (!maybe_result)
     return {};
+  base::UmaHistogramCounts1000("Storage.InterestGroup.PerSiteCount",
+                               maybe_result->size());
   return std::move(maybe_result.value());
 }
 
