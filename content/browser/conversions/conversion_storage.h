@@ -44,7 +44,8 @@ class ConversionStorage {
     // marked inactive and no new conversion reports will be created for it.
     // Impressions will be checked against this limit after they schedule a new
     // report.
-    virtual int GetMaxConversionsPerImpression() const = 0;
+    virtual int GetMaxConversionsPerImpression(
+        StorableImpression::SourceType source_type) const = 0;
 
     // These limits are designed solely to avoid excessive disk / memory usage.
     // In particular, they do not correspond with any privacy parameters.

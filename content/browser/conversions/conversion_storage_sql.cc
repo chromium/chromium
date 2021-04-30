@@ -200,6 +200,10 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
 
   base::Time current_time = clock_->Now();
 
+  // TODO(apaseltiner): Support kEvent as well as kNavigation.
+  const StorableImpression::SourceType kSourceType =
+      StorableImpression::SourceType::kNavigation;
+
   // Get all impressions that match this <reporting_origin,
   // conversion_destination> pair. Only get impressions that are active and not
   // past their expiry time.
@@ -216,9 +220,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   statement.BindString(0, serialized_conversion_destination);
   statement.BindString(1, SerializeOrigin(reporting_origin));
   statement.BindTime(2, current_time);
-  // TODO(apaseltiner): Support kEvent as well as kNavigation.
-  statement.BindInt(
-      3, static_cast<int>(StorableImpression::SourceType::kNavigation));
+  statement.BindInt(3, static_cast<int>(kSourceType));
 
   // Create a set of default reports to add to storage.
   std::vector<ConversionReport> new_reports;
@@ -244,8 +246,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
 
     StorableImpression impression(
         impression_data, impression_origin, conversion_origin, reporting_origin,
-        impression_time, expiry_time,
-        StorableImpression::SourceType::kNavigation, impression_id);
+        impression_time, expiry_time, kSourceType, impression_id);
 
     ConversionReport report(std::move(impression), conversion.conversion_data(),
                             /*conversion_time=*/current_time,
@@ -310,7 +311,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   // provide the max number of conversions prior to this new conversion being
   // logged.
   int max_prior_conversions_before_inactive =
-      delegate_->GetMaxConversionsPerImpression() - 1;
+      delegate_->GetMaxConversionsPerImpression(kSourceType) - 1;
 
   base::flat_set<url::Origin> unique_impression_origins;
   for (const ConversionReport& report : new_reports) {

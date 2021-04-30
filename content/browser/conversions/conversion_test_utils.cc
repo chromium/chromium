@@ -104,7 +104,8 @@ void ConfigurableStorageDelegate::ProcessNewConversionReports(
     }
   }
 }
-int ConfigurableStorageDelegate::GetMaxConversionsPerImpression() const {
+int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
+    StorableImpression::SourceType source_type) const {
   return max_conversions_per_impression_;
 }
 int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {

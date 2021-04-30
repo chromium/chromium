@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_test_utils.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -20,12 +21,17 @@ constexpr base::TimeDelta kDefaultExpiry = base::TimeDelta::FromDays(30);
 
 ConversionReport GetReport(base::Time impression_time,
                            base::Time conversion_time,
-                           base::TimeDelta expiry = kDefaultExpiry) {
+                           base::TimeDelta expiry = kDefaultExpiry,
+                           StorableImpression::SourceType source_type =
+                               StorableImpression::SourceType::kNavigation) {
   base::Time report_time = conversion_time;
-  return ConversionReport(
-      ImpressionBuilder(impression_time).SetExpiry(expiry).Build(),
-      /*conversion_data=*/"123", conversion_time, report_time,
-      /*conversion_id=*/base::nullopt);
+  return ConversionReport(ImpressionBuilder(impression_time)
+                              .SetExpiry(expiry)
+                              .SetSourceType(source_type)
+                              .Build(),
+                          /*conversion_data=*/"123", conversion_time,
+                          report_time,
+                          /*conversion_id=*/base::nullopt);
 }
 
 }  // namespace
@@ -115,6 +121,32 @@ TEST_F(ConversionStorageDelegateImplTest,
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(9) +
+                base::TimeDelta::FromHours(1),
+            reports[0].report_time);
+}
+
+TEST_F(ConversionStorageDelegateImplTest,
+       SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
+  base::Time impression_time = base::Time::Now();
+  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
+  std::vector<ConversionReport> reports = {GetReport(
+      impression_time, conversion_time, /*expiry=*/base::TimeDelta::FromDays(1),
+      StorableImpression::SourceType::kEvent)};
+  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2) +
+                base::TimeDelta::FromHours(1),
+            reports[0].report_time);
+}
+
+TEST_F(ConversionStorageDelegateImplTest,
+       SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
+  base::Time impression_time = base::Time::Now();
+  base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
+  std::vector<ConversionReport> reports = {GetReport(
+      impression_time, conversion_time, /*expiry=*/base::TimeDelta::FromDays(4),
+      StorableImpression::SourceType::kEvent)};
+  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
             reports[0].report_time);
 }

@@ -32,9 +32,15 @@ void ConversionStorageDelegateImpl::ProcessNewConversionReports(
   last_report->attribution_credit = 100;
 }
 
-int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression() const {
+int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression(
+    StorableImpression::SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return 3;
+  switch (source_type) {
+    case StorableImpression::SourceType::kNavigation:
+      return 3;
+    case StorableImpression::SourceType::kEvent:
+      return 1;
+  }
 }
 
 int ConversionStorageDelegateImpl::GetMaxImpressionsPerOrigin() const {
@@ -62,6 +68,13 @@ base::Time ConversionStorageDelegateImpl::GetReportTimeForConversion(
   if (debug_mode_)
     return report.report_time;
 
+  base::TimeDelta expiry_deadline =
+      report.impression.expiry_time() - report.impression.impression_time();
+
+  constexpr base::TimeDelta kMinExpiryDeadline = base::TimeDelta::FromDays(2);
+  if (expiry_deadline < kMinExpiryDeadline)
+    expiry_deadline = kMinExpiryDeadline;
+
   // After the initial impression, a schedule of reporting windows and deadlines
   // associated with that impression begins. The time between impression time
   // and impression expiry is split into multiple reporting windows. At the end
@@ -76,41 +89,42 @@ base::Time ConversionStorageDelegateImpl::GetReportTimeForConversion(
   // deadline. For example, a conversion which happens one hour after an
   // impression with an expiry of two hours, is still reported in the 2 day
   // window.
+  //
+  // Note that only navigation (not event) sources have early reporting
+  // deadlines.
   constexpr base::TimeDelta kWindowDeadlineOffset =
       base::TimeDelta::FromHours(1);
-  base::TimeDelta expiry_deadline =
-      report.impression.expiry_time() - report.impression.impression_time();
-  const base::TimeDelta kReportingWindowDeadlines[] = {
-      base::TimeDelta::FromDays(2) - kWindowDeadlineOffset,
-      base::TimeDelta::FromDays(7) - kWindowDeadlineOffset, expiry_deadline};
 
-  base::TimeDelta deadline_to_use;
+  std::vector<base::TimeDelta> early_deadlines;
+  switch (report.impression.source_type()) {
+    case StorableImpression::SourceType::kNavigation:
+      early_deadlines = {base::TimeDelta::FromDays(2) - kWindowDeadlineOffset,
+                         base::TimeDelta::FromDays(7) - kWindowDeadlineOffset};
+      break;
+    case StorableImpression::SourceType::kEvent:
+      early_deadlines = {};
+      break;
+  }
+
+  base::TimeDelta deadline_to_use = expiry_deadline;
 
   // Given a conversion report that was created at |report.report_time|, find
   // the first applicable reporting window this conversion should be reported
   // at.
-  for (base::TimeDelta report_window_deadline : kReportingWindowDeadlines) {
+  for (base::TimeDelta early_deadline : early_deadlines) {
     // If this window is valid for the conversion, use it. |report.report_time|
     // is roughly ~now, as the conversion time is used as the default value for
     // newly created reports that have not had a report time set.
-    if (report.impression.impression_time() + report_window_deadline >=
-        report.report_time) {
-      deadline_to_use = report_window_deadline;
+    if (report.impression.impression_time() + early_deadline >=
+            report.report_time &&
+        early_deadline < deadline_to_use) {
+      deadline_to_use = early_deadline;
       break;
     }
   }
 
   // Valid conversion reports should always have a valid reporting deadline.
   DCHECK(!deadline_to_use.is_zero());
-
-  // If the expiry deadline falls after the first window, but before another
-  // window, use it instead. For example, if expiry is at 3 days, we can send
-  // reports at the 2 day deadline and the expiry deadline instead of at the 7
-  // day deadline.
-  if (expiry_deadline > kReportingWindowDeadlines[0] &&
-      expiry_deadline < deadline_to_use) {
-    deadline_to_use = expiry_deadline;
-  }
 
   return report.impression.impression_time() + deadline_to_use +
          kWindowDeadlineOffset;

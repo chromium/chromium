@@ -31,7 +31,8 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   // ConversionStorageDelegate:
   void ProcessNewConversionReports(
       std::vector<ConversionReport>* reports) override;
-  int GetMaxConversionsPerImpression() const override;
+  int GetMaxConversionsPerImpression(
+      StorableImpression::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
