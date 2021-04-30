@@ -358,16 +358,6 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
         base::scoped_policy::RETAIN);
     ScrollbarPainter scrollbar_painter = [observer painter];
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
-    // drawKnob aligns the thumb to right side of the draw rect.
-    // If the vertical overlay scrollbar is on the left, use trackWidth instead
-    // of scrollbar width, to avoid the gap on the left side of the thumb.
-    IntRect draw_rect = IntRect(rect);
-    if (UsesOverlayScrollbars() && scrollbar.IsLeftSideVerticalScrollbar()) {
-      int thumb_width = [scrollbar_painter trackWidth];
-      draw_rect.SetWidth(thumb_width);
-    }
-    [scrollbar_painter
-        setBoundsSize:NSSizeFromCGSize(CGSize(draw_rect.Size()))];
 
     [scrollbar_painter setDoubleValue:0];
     [scrollbar_painter setKnobProportion:1];
