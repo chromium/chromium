@@ -2120,7 +2120,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
   EXPECT_EQ(2u, folder_item->ChildItemCount());
   EXPECT_TRUE(folder_item->FindChildItem(first_item_id));
   EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
-  histogram_tester.ExpectBucketCount(kAppListAppMovingType,
+  histogram_tester.ExpectBucketCount("Apps.AppListAppMovingType",
                                      kMoveByKeyboardIntoFolder, 1);
 
   // Test that, when a folder is selected, control+shift+arrow does nothing.
@@ -2128,7 +2128,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 
   EXPECT_TRUE(apps_grid_view_->IsSelectedView(new_folder));
   EXPECT_EQ(2u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount(kAppListAppMovingType,
+  histogram_tester.ExpectBucketCount("Apps.AppListAppMovingType",
                                      kMoveByKeyboardIntoFolder, 1);
 
   // Move selection to the item to the right of the folder and put it in the
@@ -2140,7 +2140,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 
   EXPECT_TRUE(apps_grid_view_->IsSelectedView(new_folder));
   EXPECT_EQ(3u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount(kAppListAppMovingType,
+  histogram_tester.ExpectBucketCount("Apps.AppListAppMovingType",
                                      kMoveByKeyboardIntoFolder, 2);
 
   // Move selection to the item below the folder and put it in the folder.
@@ -2149,7 +2149,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 
   EXPECT_TRUE(apps_grid_view_->IsSelectedView(new_folder));
   EXPECT_EQ(4u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount(kAppListAppMovingType,
+  histogram_tester.ExpectBucketCount("Apps.AppListAppMovingType",
                                      kMoveByKeyboardIntoFolder, 3);
 
   // Move the folder to the second row, then put the item above the folder in
@@ -2160,7 +2160,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 
   EXPECT_TRUE(apps_grid_view_->IsSelectedView(new_folder));
   EXPECT_EQ(5u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount(kAppListAppMovingType,
+  histogram_tester.ExpectBucketCount("Apps.AppListAppMovingType",
                                      kMoveByKeyboardIntoFolder, 4);
 }
 

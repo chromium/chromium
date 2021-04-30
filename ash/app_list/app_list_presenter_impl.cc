@@ -59,9 +59,9 @@ void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
   }
   const base::TimeDelta input_latency = present_time - event_time_stamp;
   if (is_showing) {
-    UMA_HISTOGRAM_TIMES(kAppListShowInputLatencyHistogram, input_latency);
+    UMA_HISTOGRAM_TIMES("Apps.AppListShow.InputLatency", input_latency);
   } else {
-    UMA_HISTOGRAM_TIMES(kAppListHideInputLatencyHistogram, input_latency);
+    UMA_HISTOGRAM_TIMES("Apps.AppListHide.InputLatency", input_latency);
   }
 }
 

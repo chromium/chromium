@@ -3714,7 +3714,7 @@ int AppsGridView::GetTargetModelIndexFromItemIndex(size_t item_index) {
 
 void AppsGridView::RecordPageMetrics() {
   DCHECK(!folder_delegate_);
-  UMA_HISTOGRAM_COUNTS_100(kNumberOfPagesHistogram,
+  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages",
                            pagination_model_.total_pages());
 
   // Calculate the number of pages that have empty slots.
@@ -3732,11 +3732,11 @@ void AppsGridView::RecordPageMetrics() {
     if (item_num % TilesPerPage() > 0)
       page_count = 1;
   }
-  UMA_HISTOGRAM_COUNTS_100(kNumberOfPagesNotFullHistogram, page_count);
+  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPagesNotFull", page_count);
 }
 
 void AppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
-  UMA_HISTOGRAM_ENUMERATION(kAppListAppMovingType, type,
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
                             kMaxAppListAppMovingType);
 }
 

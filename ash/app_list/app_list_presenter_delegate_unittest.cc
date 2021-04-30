@@ -873,7 +873,7 @@ TEST_F(PopulatedAppListTest,
   event_generator->DragMouseTo(target_point);
   event_generator->ReleaseLeftButton();
   histogram_tester.ExpectUniqueSample(
-      kAppListPageSwitcherSourceHistogramInClamshell,
+      "Apps.AppListPageSwitcherSource.ClamshellMode",
       AppListPageSwitcherSource::kMouseDrag, 1);
 }
 

@@ -144,7 +144,7 @@ void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
   // TODO(jennyz): Activate the folder via AppListModel notification.
   if (item->GetItemType() == AppListFolderItem::kItemType) {
     contents_view_->ShowFolderContent(static_cast<AppListFolderItem*>(item));
-    UMA_HISTOGRAM_ENUMERATION(kAppListFolderOpenedHistogram,
+    UMA_HISTOGRAM_ENUMERATION("Apps.AppListFolderOpened",
                               kFullscreenAppListFolders, kMaxFolderOpened);
   } else {
     base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));

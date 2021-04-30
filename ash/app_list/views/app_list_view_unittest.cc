@@ -1674,10 +1674,11 @@ TEST_F(AppListViewTest, RecordFolderMetrics_ZeroFolders) {
   Show();
 
   // 1 sample in the 0 folders bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 0));
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 0));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
   // 1 sample in the 0 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
 }
 
 TEST_F(AppListViewTest, RecordFolderMetrics_OneRegularFolder) {
@@ -1687,10 +1688,11 @@ TEST_F(AppListViewTest, RecordFolderMetrics_OneRegularFolder) {
   Show();
 
   // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 1));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 1));
   // 1 sample in the 2 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 2));
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppsInFolders.FullscreenAppListEnabled", 2));
 }
 
 TEST_F(AppListViewTest, RecordFolderMetrics_OemFolder) {
@@ -1700,11 +1702,12 @@ TEST_F(AppListViewTest, RecordFolderMetrics_OemFolder) {
   Show();
 
   // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
   // 1 sample in the 0 folders bucket, because OEM folder is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
   // 1 sample in the 0 apps bucket, because OEM apps don't count.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
 }
 
 TEST_F(AppListViewTest, RecordFolderMetrics_LinuxAppsFolder) {
@@ -1715,11 +1718,12 @@ TEST_F(AppListViewTest, RecordFolderMetrics_LinuxAppsFolder) {
   Show();
 
   // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
   // 1 sample in the 0 folders bucket, because "Linux apps" is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
   // 1 sample in the 1 app bucket, because Linux apps do count.
-  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 1));
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppsInFolders.FullscreenAppListEnabled", 1));
 }
 
 // Tests that in side shelf mode, the app list opens in fullscreen by default

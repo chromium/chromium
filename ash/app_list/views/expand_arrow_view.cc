@@ -376,7 +376,7 @@ void ExpandArrowView::OnButtonPressed() {
 }
 
 void ExpandArrowView::TransitToFullscreenAllAppsState() {
-  UMA_HISTOGRAM_ENUMERATION(kPageOpenedHistogram, AppListState::kStateApps,
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListPageOpened", AppListState::kStateApps,
                             AppListState::kStateLast);
   UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, kExpandArrow,
                             kMaxPeekingToFullscreen);

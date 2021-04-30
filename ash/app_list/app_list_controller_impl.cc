@@ -239,7 +239,7 @@ aura::Window* GetTopVisibleWindow() {
 }
 
 void LogAppListShowSource(AppListShowSource show_source) {
-  UMA_HISTOGRAM_ENUMERATION(kAppListToggleMethodHistogram, show_source);
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListShowSource", show_source);
 }
 
 base::Optional<TabletModeAnimationTransition>
@@ -1318,7 +1318,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION(kSearchResultOpenDisplayTypeHistogram,
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchResultOpenDisplayType",
                             result->display_type(),
                             SearchResultDisplayType::kLast);
 
@@ -1327,12 +1327,13 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   if (launched_from != AppListLaunchedFrom::kLaunchedFromSuggestionChip) {
     base::RecordAction(base::UserMetricsAction("AppList_OpenSearchResult"));
 
-    UMA_HISTOGRAM_COUNTS_100(kSearchQueryLength, GetLastQueryLength());
+    UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength",
+                             GetLastQueryLength());
     if (IsTabletMode()) {
-      UMA_HISTOGRAM_COUNTS_100(kSearchQueryLengthInTablet,
+      UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength.TabletMode",
                                GetLastQueryLength());
     } else {
-      UMA_HISTOGRAM_COUNTS_100(kSearchQueryLengthInClamshell,
+      UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength.ClamshellMode",
                                GetLastQueryLength());
     }
   }

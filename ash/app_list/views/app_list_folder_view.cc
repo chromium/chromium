@@ -515,8 +515,8 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
       metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
-        UMA_HISTOGRAM_PERCENTAGE(kFolderShowHideAnimationSmoothness,
-                                 smoothness);
+        UMA_HISTOGRAM_PERCENTAGE(
+            "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));
 
   hide_for_reparent_ = hide_for_reparent;
