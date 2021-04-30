@@ -464,9 +464,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
-    enum="Boolean" expires_after="2021-06-06">
+    enum="Boolean" expires_after="2022-06-06">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>eugenebut@google.com</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     Recorded on iOS when applicationWillTerminate callback is called when app is
     in the foreground. When this happens the app will not write clean exit
