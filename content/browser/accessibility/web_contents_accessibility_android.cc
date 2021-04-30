@@ -1196,8 +1196,7 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   auto* root_manager = GetRootBrowserAccessibilityManager();
-  if (!root_manager ||
-      !base::FeatureList::IsEnabled(features::kAndroidAutofillAccessibility))
+  if (!root_manager)
     return;
 
   BrowserAccessibility* current_focus = root_manager->GetFocus();
@@ -1236,8 +1235,7 @@ jint WebContentsAccessibilityAndroid::
     GetIdForElementAfterElementHostingAutofillPopup(
         JNIEnv* env,
         const JavaParamRef<jobject>& obj) {
-  if (!base::FeatureList::IsEnabled(features::kAndroidAutofillAccessibility) ||
-      g_element_after_element_hosting_autofill_popup_unique_id == -1 ||
+  if (g_element_after_element_hosting_autofill_popup_unique_id == -1 ||
       GetAXFromUniqueID(
           g_element_after_element_hosting_autofill_popup_unique_id) == nullptr)
     return 0;

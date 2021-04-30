@@ -1276,11 +1276,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-android-autofill-accessibility",
-    "owners": [ "ftirelo" ],
-    "expiry_milestone": 73
-  },
-  {
     "name": "enable-android-dark-search",
     "owners": [ "wylieb", "twellington", "fgorski" ],
     "expiry_milestone": 95

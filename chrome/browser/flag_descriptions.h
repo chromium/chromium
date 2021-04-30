@@ -1608,9 +1608,6 @@ extern const char kAddToHomescreenIPHDescription[];
 extern const char kAImageReaderName[];
 extern const char kAImageReaderDescription[];
 
-extern const char kAndroidAutofillAccessibilityName[];
-extern const char kAndroidAutofillAccessibilityDescription[];
-
 extern const char kAndroidDetailedLanguageSettingsName[];
 extern const char kAndroidDetailedLanguageSettingsDescription[];
 

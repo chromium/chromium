@@ -3185,12 +3185,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebglDraftExtensionsName,
      flag_descriptions::kWebglDraftExtensionsDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableWebGLDraftExtensions)},
-#if defined(OS_ANDROID)
-    {"enable-android-autofill-accessibility",
-     flag_descriptions::kAndroidAutofillAccessibilityName,
-     flag_descriptions::kAndroidAutofillAccessibilityDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidAutofillAccessibility)},
-#endif  // OS_ANDROID
     {"enable-zero-copy", flag_descriptions::kZeroCopyName,
      flag_descriptions::kZeroCopyDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(blink::switches::kEnableZeroCopy,
