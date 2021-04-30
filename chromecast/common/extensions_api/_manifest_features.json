@@ -3,15 +3,6 @@
 // found in the LICENSE file.
 
 {
-  // TODO(crbug/837773) De-dupe automation later.
-  "automation": [{
-    "channel": "dev",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
-  }],
   "cast_redirect": {
     "channel": "stable",
     "extension_types": ["platform_app"]

@@ -42,14 +42,6 @@
     "channel": "stable",
     "extension_types": "all"
   },
-  "automation": [{
-    "channel": "dev",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
-  }],
   "browser_action": {
     "channel": "stable",
     "extension_types": ["extension"],

@@ -25,7 +25,6 @@
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/extensions/manifest_handlers/theme_handler.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
-#include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
@@ -49,7 +48,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<AppThemeColorHandler>());
   registry->RegisterHandler(std::make_unique<AppIsolationHandler>());
   registry->RegisterHandler(std::make_unique<AppLaunchManifestHandler>());
-  registry->RegisterHandler(std::make_unique<AutomationHandler>());
   registry->RegisterHandler(std::make_unique<CommandsHandler>());
   registry->RegisterHandler(std::make_unique<DevToolsPageHandler>());
   registry->RegisterHandler(std::make_unique<HomepageURLHandler>());

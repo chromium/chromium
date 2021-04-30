@@ -99,6 +99,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   void SendAccessibilityFocusedLocationChange(const gfx::Point& mouse_location);
 
  private:
+  friend class AutomationInternalCustomBindingsTest;
+
   // ObjectBackedNativeHandler overrides:
   void Invalidate() override;
 

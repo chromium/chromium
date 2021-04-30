@@ -318,6 +318,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_log_converter_strategy_unittest.cc",
+    "api/automation/automation_internal_custom_bindings_unittests.cc",
     "api_activity_logger_unittest.cc",
     "bindings/api_binding_bridge_unittest.cc",
     "bindings/api_binding_hooks_test_delegate.cc",
