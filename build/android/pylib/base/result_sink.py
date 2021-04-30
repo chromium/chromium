@@ -122,7 +122,8 @@ class ResultSinkClient(object):
     artifacts = artifacts or {}
     if len(test_log_escaped) > report_check_size:
       # Upload the original log without any modifications.
-      artifacts.update({'Test Log': {'contents': base64.b64encode(test_log)}})
+      b64_log = six.ensure_str(base64.b64encode(six.ensure_binary(test_log)))
+      artifacts.update({'Test Log': {'contents': b64_log}})
     if artifacts:
       tr['artifacts'] = artifacts
 
