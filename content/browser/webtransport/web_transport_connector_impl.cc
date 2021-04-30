@@ -4,6 +4,7 @@
 
 #include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -69,6 +70,8 @@ void WebTransportConnectorImpl::Connect(
         fingerprints,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
     return;
