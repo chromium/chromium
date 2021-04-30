@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::mojom::OptionalBool ResizeLocked() const;
   bool ResizeLockedChanged() const;
 
+  apps::mojom::OptionalBool PreferredApp() const;
+  bool PreferredAppChanged() const;
+
   const ::AccountId& AccountId() const;
 
  private:
