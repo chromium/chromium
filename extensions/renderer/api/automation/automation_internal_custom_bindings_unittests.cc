@@ -12,6 +12,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace extensions {
 
@@ -63,14 +64,21 @@ class AutomationInternalCustomBindingsTest
                                                          is_active_profile);
   }
 
+  bool CallGetFocusInternal(AutomationAXTreeWrapper* top_wrapper,
+                            AutomationAXTreeWrapper** focused_wrapper,
+                            ui::AXNode** focused_node) {
+    return automation_internal_bindings_->GetFocusInternal(
+        top_wrapper, focused_wrapper, focused_node);
+  }
+
  private:
   AutomationInternalCustomBindings* automation_internal_bindings_ = nullptr;
 };
 
-TEST_F(AutomationInternalCustomBindingsTest, TestGetDesktop) {
+TEST_F(AutomationInternalCustomBindingsTest, GetDesktop) {
   EXPECT_TRUE(GetTreeIDToTreeMap().empty());
 
-  // Send a tree with one node having role desktop.
+  // A desktop tree.
   ExtensionMsg_AccessibilityEventBundleParams bundle;
   bundle.updates.emplace_back();
   auto& tree_update = bundle.updates.back();
@@ -84,6 +92,233 @@ TEST_F(AutomationInternalCustomBindingsTest, TestGetDesktop) {
   AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
   ASSERT_TRUE(desktop);
   EXPECT_TRUE(desktop->IsDesktopTree());
+}
+
+TEST_F(AutomationInternalCustomBindingsTest, GetFocusOneTree) {
+  // A desktop tree with focus on a button.
+  ExtensionMsg_AccessibilityEventBundleParams bundle;
+  bundle.updates.emplace_back();
+  auto& tree_update = bundle.updates.back();
+  tree_update.has_tree_data = true;
+  tree_update.root_id = 1;
+  auto& tree_data = tree_update.tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.focus_id = 2;
+  tree_update.nodes.emplace_back();
+  auto& node_data1 = tree_update.nodes.back();
+  node_data1.id = 1;
+  node_data1.role = ax::mojom::Role::kDesktop;
+  node_data1.child_ids.push_back(2);
+  tree_update.nodes.emplace_back();
+  auto& node_data2 = tree_update.nodes.back();
+  node_data2.id = 2;
+  node_data2.role = ax::mojom::Role::kButton;
+  SendOnAccessibilityEvents(bundle, true /* active profile */);
+
+  ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
+
+  AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
+  ASSERT_TRUE(desktop);
+
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AXNode* focused_node = nullptr;
+  CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(desktop, focused_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+
+  // Push an update where we change the focus.
+  focused_wrapper = nullptr;
+  focused_node = nullptr;
+  tree_data.focus_id = 1;
+  SendOnAccessibilityEvents(bundle, true /* active profile */);
+  CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(desktop, focused_wrapper);
+  EXPECT_EQ(ax::mojom::Role::kDesktop, focused_node->data().role);
+
+  // Push an update where we change the focus to nothing.
+  focused_wrapper = nullptr;
+  focused_node = nullptr;
+  tree_data.focus_id = 100;
+  SendOnAccessibilityEvents(bundle, true /* active profile */);
+  CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
+  ASSERT_FALSE(focused_wrapper);
+  ASSERT_FALSE(focused_node);
+}
+
+TEST_F(AutomationInternalCustomBindingsTest,
+       GetFocusMultipleTreesChildTreeConstruction) {
+  // Three trees each with a button and link.
+  std::vector<ExtensionMsg_AccessibilityEventBundleParams> bundles;
+  for (int i = 0; i < 3; i++) {
+    bundles.emplace_back();
+    auto& bundle = bundles.back();
+    bundle.updates.emplace_back();
+    auto& tree_update = bundle.updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+
+    // This is a point of inconsistency as the mojo representation allows
+    // updates from multiple trees.
+    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    bundle.tree_id = tree_data.tree_id;
+    tree_data.focus_id = 2;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kRootWebArea;
+    node_data1.child_ids.push_back(2);
+    node_data1.child_ids.push_back(3);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+    tree_update.nodes.emplace_back();
+    auto& node_data3 = tree_update.nodes.back();
+    node_data3.id = 3;
+    node_data3.role = ax::mojom::Role::kLink;
+  }
+
+  // Link up the trees so that the first is a parent of the other two using
+  // child tree id.
+  ui::AXTreeID tree_0_id = bundles[0].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_1_id = bundles[1].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_2_id = bundles[2].updates[0].tree_data.tree_id;
+  bundles[0].updates[0].nodes[1].AddChildTreeId(tree_1_id);
+  bundles[0].updates[0].nodes[2].AddChildTreeId(tree_2_id);
+
+  for (auto& bundle : bundles)
+    SendOnAccessibilityEvents(bundle, true /* active profile */);
+
+  ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
+
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ASSERT_TRUE(wrapper_0);
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ASSERT_TRUE(wrapper_1);
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ASSERT_TRUE(wrapper_2);
+
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AXNode* focused_node = nullptr;
+  CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(wrapper_1, focused_wrapper);
+  EXPECT_EQ(tree_1_id, focused_node->tree()->GetAXTreeID());
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+
+  // Push an update where we change the focus.
+  focused_wrapper = nullptr;
+  focused_node = nullptr;
+
+  // The link in wrapper 0 which has a child tree id pointing to wrapper 2.
+  bundles[0].updates[0].tree_data.focus_id = 3;
+  SendOnAccessibilityEvents(bundles[0], true /* active profile */);
+  CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(wrapper_2, focused_wrapper);
+  EXPECT_EQ(tree_2_id, focused_node->tree()->GetAXTreeID());
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+}
+
+TEST_F(AutomationInternalCustomBindingsTest,
+       GetFocusMultipleTreesAppIdConstruction) {
+  // Three trees each with a button and link.
+  std::vector<ExtensionMsg_AccessibilityEventBundleParams> bundles;
+  for (int i = 0; i < 3; i++) {
+    bundles.emplace_back();
+    auto& bundle = bundles.back();
+    bundle.updates.emplace_back();
+    auto& tree_update = bundle.updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+
+    // This is a point of inconsistency as the mojo representation allows
+    // updates from ultiple trees.
+    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    bundle.tree_id = tree_data.tree_id;
+    tree_data.focus_id = 2;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kRootWebArea;
+    node_data1.child_ids.push_back(2);
+    node_data1.child_ids.push_back(3);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+    tree_update.nodes.emplace_back();
+    auto& node_data3 = tree_update.nodes.back();
+    node_data3.id = 3;
+    node_data3.role = ax::mojom::Role::kLink;
+  }
+
+  // Link up the trees so that the first is a parent of the other two using app
+  // ids.
+  ui::AXTreeID tree_0_id = bundles[0].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_1_id = bundles[1].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_2_id = bundles[2].updates[0].tree_data.tree_id;
+  auto& wrapper0_button_data = bundles[0].updates[0].nodes[1];
+  auto& wrapper0_link_data = bundles[0].updates[0].nodes[2];
+  auto& wrapper1_link_data = bundles[1].updates[0].nodes[2];
+  auto& wrapper2_button_data = bundles[2].updates[0].nodes[1];
+
+  // This construction requires the hosting and client nodes annotate with the
+  // same app id.
+  wrapper0_button_data.AddStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeNodeAppId, "app1");
+  wrapper1_link_data.AddStringAttribute(
+      ax::mojom::StringAttribute::kParentTreeNodeAppId, "app1");
+  wrapper0_link_data.AddStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeNodeAppId, "app2");
+  wrapper2_button_data.AddStringAttribute(
+      ax::mojom::StringAttribute::kParentTreeNodeAppId, "app2");
+
+  for (auto& bundle : bundles)
+    SendOnAccessibilityEvents(bundle, true /* active profile */);
+
+  ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
+
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ASSERT_TRUE(wrapper_0);
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ASSERT_TRUE(wrapper_1);
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ASSERT_TRUE(wrapper_2);
+
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AXNode* focused_node = nullptr;
+  CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(wrapper_1, focused_wrapper);
+  EXPECT_EQ(tree_1_id, focused_node->tree()->GetAXTreeID());
+
+  // This is an interesting inconsistency as this node is technically not in the
+  // app (which starts at the link in wrapper 1).
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+
+  // Push an update where we change the focus.
+  focused_wrapper = nullptr;
+  focused_node = nullptr;
+
+  // The link in wrapper 0 which has a child tree id pointing to wrapper 2.
+  bundles[0].updates[0].tree_data.focus_id = 3;
+  SendOnAccessibilityEvents(bundles[0], true /* active profile */);
+  CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
+  ASSERT_TRUE(focused_wrapper);
+  ASSERT_TRUE(focused_node);
+  EXPECT_EQ(wrapper_2, focused_wrapper);
+  EXPECT_EQ(tree_2_id, focused_node->tree()->GetAXTreeID());
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
 }
 
 }  // namespace extensions
