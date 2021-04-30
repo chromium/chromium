@@ -1704,25 +1704,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [coordinator
       animateAlongsideTransition:^(
-          id<UIViewControllerTransitionCoordinatorContext> context) {
-        // Force updates of the toolbar updater as the toolbar height might
-        // change on rotation.
-        [_toolbarUIUpdater updateState];
-        // Resize horizontal viewport if Smooth Scrolling is on.
-        if (fullscreen::features::ShouldUseSmoothScrolling()) {
-          BrowserViewController* strongSelf = weakSelf;
-          if (strongSelf) {
-            strongSelf.fullscreenController->ResizeHorizontalViewport();
-          }
-        }
+          id<UIViewControllerTransitionCoordinatorContext>) {
+        [weakSelf animateTransition];
       }
-      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        BrowserViewController* strongSelf = weakSelf;
-        if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-          if (strongSelf.tabStripView) {
-            [strongSelf.legacyTabStripCoordinator tabStripSizeDidChange];
-          }
-        }
+      completion:^(id<UIViewControllerTransitionCoordinatorContext>) {
+        [weakSelf completedTransition];
       }];
 
   id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
@@ -1730,6 +1716,24 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
                                     [[UIDevice currentDevice] orientation]);
+}
+
+- (void)animateTransition {
+  // Force updates of the toolbar updater as the toolbar height might
+  // change on rotation.
+  [_toolbarUIUpdater updateState];
+  // Resize horizontal viewport if Smooth Scrolling is on.
+  if (fullscreen::features::ShouldUseSmoothScrolling()) {
+    self.fullscreenController->ResizeHorizontalViewport();
+  }
+}
+
+- (void)completedTransition {
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (self.tabStripView) {
+      [self.legacyTabStripCoordinator tabStripSizeDidChange];
+    }
+  }
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag
@@ -4788,21 +4792,24 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!self.visible || !self.webUsageEnabled)
     return;
 
-  // Block that starts voice search at the end of new Tab animation if
-  // necessary.
-  ProceduralBlock startVoiceSearchIfNecessary = ^void() {
-    if (_startVoiceSearchAfterNewTabAnimation) {
-      _startVoiceSearchAfterNewTabAnimation = NO;
-      [self startVoiceSearch];
-    }
-  };
-
   if (background) {
     self.inNewTabAnimation = NO;
   } else {
     self.inNewTabAnimation = YES;
+    __weak __typeof(self) weakSelf = self;
     [self animateNewTabForWebState:webState
-        inForegroundWithCompletion:startVoiceSearchIfNecessary];
+        inForegroundWithCompletion:^{
+          [weakSelf startVoiceSearchIfNecessary];
+        }];
+  }
+}
+
+// Helper which starts voice search at the end of new Tab animation if
+// necessary.
+- (void)startVoiceSearchIfNecessary {
+  if (_startVoiceSearchAfterNewTabAnimation) {
+    _startVoiceSearchAfterNewTabAnimation = NO;
+    [self startVoiceSearch];
   }
 }
 
@@ -4847,7 +4854,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   auto commonCompletion = ^{
     webStateView.frame = self.contentArea.bounds;
     newPage.userInteractionEnabled = YES;
-    if (currentAnimationIdentifier != _NTPAnimationIdentifier) {
+    if (currentAnimationIdentifier != self->_NTPAnimationIdentifier) {
       // Prevent the completion block from being executed if a new animation has
       // started in between. |self.foregroundTabWasAddedCompletionBlock| isn't
       // called because it is overridden when a new animation is started.
@@ -4942,7 +4949,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           // In an extreme case, this method can be called twice in quick
           // succession, before the animation completes. Check if the blocking
           // UI should be shown or the animation needs to be rolled back.
-          if (_itemsRequireAuthentication) {
+          if (self->_itemsRequireAuthentication) {
             self.blockingView.alpha = 1;
           } else {
             [self.blockingView removeFromSuperview];
