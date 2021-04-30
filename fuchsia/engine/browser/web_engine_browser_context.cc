@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -177,6 +178,10 @@ WebEngineBrowserContext::WebEngineBrowserContext(base::FilePath data_directory)
       simple_factory_key_(GetPath(), IsOffTheRecord()),
       resource_context_(std::make_unique<ResourceContext>()) {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
+
+  profile_metrics::SetBrowserProfileType(
+      this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
+                             : profile_metrics::BrowserProfileType::kRegular);
 
   // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
   // However, since WebEngine does not persist any, that would currently be a
