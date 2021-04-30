@@ -1405,19 +1405,30 @@ TEST_F(ChromeLauncherControllerTest, DefaultApps) {
   StartPrefSyncService(syncer::SyncDataList());
   EXPECT_EQ("Chrome, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kMessagesAppId);
-  EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
+  if (base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2)) {
+    AddWebApp(web_app::kMessagesAppId);
+    EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
 
-  AddExtension(extension_files_app_.get());
-  EXPECT_EQ("Chrome, Files, Messages, Youtube, App1", GetPinnedAppStatus());
+    AddExtension(extension_files_app_.get());
+    EXPECT_EQ("Chrome, Files, Messages, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kGoogleCalendarAppId);
-  EXPECT_EQ("Chrome, Calendar, Files, Messages, Youtube, App1",
-            GetPinnedAppStatus());
+    AddWebApp(web_app::kGoogleCalendarAppId);
+    EXPECT_EQ("Chrome, Calendar, Files, Messages, Youtube, App1",
+              GetPinnedAppStatus());
 
-  AddWebApp(web_app::kGmailAppId);
-  EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
-            GetPinnedAppStatus());
+    AddWebApp(web_app::kGmailAppId);
+    EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
+              GetPinnedAppStatus());
+  } else {
+    AddWebApp(web_app::kGoogleDocsAppId);
+    EXPECT_EQ("Chrome, Doc, Youtube, App1", GetPinnedAppStatus());
+
+    AddWebApp(web_app::kGmailAppId);
+    EXPECT_EQ("Chrome, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
+
+    AddExtension(extension_files_app_.get());
+    EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
+  }
 }
 
 TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
@@ -1429,14 +1440,18 @@ TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
   InitLauncherController();
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
-  // Simulate the default app loader installing some apps. Don't start the
+  // Simulate the preinstalled app loader installing some apps. Don't start the
   // pref sync service, because this user opted out of sync.
   AddWebApp(web_app::kYoutubeAppId);
   AddWebApp(web_app::kMessagesAppId);
   AddWebApp(web_app::kGmailAppId);
+  AddWebApp(web_app::kGoogleDocsAppId);
 
   // Default apps are pinned.
-  EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
+  if (base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2))
+    EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
+  else
+    EXPECT_EQ("Chrome, Gmail, Doc, Youtube", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
