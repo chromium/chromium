@@ -8,7 +8,14 @@
  */
 
 /**
- * Repeatedly runs a query selector until it finds an element.
+ * Runs a query selector until it finds an element (repeated on each mutation).
+ * If the element does not exist this will timeout.
+ *
+ * opt_path defines the path of ancestor Elements to the queried Element, whose
+ * shadow boundaries need to be crossed to find the queried Element. These must
+ * be defined in order from closest parent of the queried Element, to the
+ * ancestor that is in the document.body subtree.
+ * If opt_path is not defined correctly this will timeout.
  *
  * @param {string} query
  * @param {!Array<string>=} opt_path
