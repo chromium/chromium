@@ -203,7 +203,7 @@ std::u16string GetDescriptionForProfileToUpdate(
       /*num_fields_to_include=*/label.empty() ? 2 : 1, ui_language_code);
   DCHECK(!details.empty());
   description_components.push_back(details);
-  // TODO(crbug.com/1167061): Replace the separator with proper localized
+  // TODO(crbug.com/1135178): Replace the separator with proper localized
   // string.
   return base::JoinString(description_components, u" — ");
 }
