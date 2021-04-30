@@ -162,8 +162,6 @@ void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
   qr_code_image_->SetImage(qr_image);
-  qr_code_image_->SetImageSize(GetQRCodeImageSize());
-  qr_code_image_->SetPreferredSize(GetQRCodeImageSize());
   qr_code_image_->SetVisible(true);
 }
 
@@ -239,7 +237,8 @@ void QRCodeGeneratorBubble::Init() {
   qr_code_image->SetHorizontalAlignment(Alignment::kCenter);
   qr_code_image->SetVerticalAlignment(Alignment::kCenter);
   qr_code_image->SetImageSize(GetQRCodeImageSize());
-  qr_code_image->SetPreferredSize(GetQRCodeImageSize());
+  qr_code_image->SetPreferredSize(GetQRCodeImageSize() +
+                                  gfx::Size(border_radius, border_radius));
   qr_code_image->SetBackground(
       views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius));
 
