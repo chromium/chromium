@@ -124,9 +124,13 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
  public:
   ~BackForwardCacheBrowserTest() override {
     if (fail_for_unexpected_messages_while_cached_) {
-      ExpectTotalCount(
-          "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
-          0);
+      // If this is triggered, see
+      // tools/metrics/histograms/histograms_xml/navigation/histograms.xml for
+      // which values correspond which messages.
+      EXPECT_THAT(histogram_tester_.GetAllSamples(
+                      "BackForwardCache.UnexpectedRendererToBrowserMessage."
+                      "InterfaceName"),
+                  testing::ElementsAre());
     }
   }
 
