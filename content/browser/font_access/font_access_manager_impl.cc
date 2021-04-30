@@ -229,7 +229,8 @@ void FontAccessManagerImpl::DidFindAllFonts(
   std::vector<blink::mojom::FontMetadata> data;
   for (const auto& element : table.fonts()) {
     auto entry = blink::mojom::FontMetadata(
-        element.postscript_name(), element.full_name(), element.family());
+        element.postscript_name(), element.full_name(), element.family(),
+        element.style(), element.italic(), element.stretch(), element.weight());
     data.push_back(std::move(entry));
   }
 

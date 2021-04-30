@@ -2335,6 +2335,7 @@ crbug.com/1050754 external/wpt/fetch/stale-while-revalidate/stale-script.html [ 
 crbug.com/1050754 external/wpt/font-access/font_access-blob.tentative.https.window.html [ Crash ]
 crbug.com/1050754 external/wpt/font-access/font_access-chooser.tentative.https.window.html [ Crash ]
 crbug.com/1050754 external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Crash ]
+crbug.com/1050754 external/wpt/font-access/font_metadata.tentative.https.window.html [ Crash ]
 crbug.com/1050754 external/wpt/forced-colors-mode/forced-colors-mode-03.html [ Failure ]
 crbug.com/1050754 external/wpt/forced-colors-mode/forced-colors-mode-04.html [ Failure ]
 crbug.com/1050754 external/wpt/forced-colors-mode/forced-colors-mode-09.html [ Failure ]

@@ -52,6 +52,83 @@ FcFontSet* ListFonts(FcObjectSet* object_set) {
   return output;
 }
 
+// Utility function to pull out an integer value from a pattern and return it,
+// returning a default value if the key is not present or the wrong type.
+int GetIntegerFromFCPattern(FcPattern* pattern,
+                            const char* object,
+                            int index,
+                            int default_value) {
+  int result;
+  if (FcPatternGetInteger(pattern, object, index, &result) == FcResultMatch)
+    return result;
+  return default_value;
+}
+
+// Map FC_SLANT_* values to a boolean for italic/oblique.
+bool FCSlantToWebItalic(int slant) {
+  return slant != FC_SLANT_ROMAN;
+}
+
+// Map FC_WEIGHT_* values to a font-weight (number in [1,1000]).
+// https://drafts.csswg.org/css-fonts-4/#font-weight-prop
+float FCWeightToWebWeight(int weight) {
+  // A lookup table is used to provide values that exactly match CSS numeric
+  // keywords. -1 is used as a sentinel value.
+  constexpr struct {
+    int limit;
+    float weight;
+  } map[] = {
+      {20, 100.f},   // FC_WEIGHT_THIN = 0
+      {45, 200.f},   // FC_WEIGHT_EXTRALIGHT = 40
+      {52, 300.f},   // FC_WEIGHT_LIGHT = 50
+      {65, 350.f},   // FC_WEIGHT_DEMILIGHT = 55
+      {77, 375.f},   // FC_WEIGHT_BOOK = 75
+      {90, 400.f},   // FC_WEIGHT_REGULAR = 80
+      {140, 500.f},  // FC_WEIGHT_MEDIUM = 100
+      {190, 600.f},  // FC_WEIGHT_DEMIBOLD = 180
+      {202, 700.f},  // FC_WEIGHT_BOLD = 200
+      {207, 800.f},  // FC_WEIGHT_EXTRABOLD = 205
+      {212, 900.f},  // FC_WEIGHT_BLACK = 210
+      {-1, 950.f}    // FC_WEIGHT_EXTRABLACK = 215
+  };
+
+  for (auto entry : map) {
+    if (weight < entry.limit || entry.limit < 0)
+      return entry.weight;
+  }
+  NOTREACHED();
+  return 400;
+}
+
+// Map FC_WIDTH_* values to a font-stretch value (percentage).
+// https://drafts.csswg.org/css-fonts-4/#propdef-font-stretch
+float FCWidthToWebStretch(int width) {
+  // FC_WIDTH_* values are effectively rounded percentages as integers. A lookup
+  // table is used to provide values that exactly match CSS percentages. -1 is
+  // used as a sentinel value.
+  constexpr struct {
+    int limit;
+    float stretch;
+  } map[] = {
+      {56, 0.500f},   // FC_WIDTH_ULTRACONDENSED = 50
+      {69, 0.625f},   // FC_WIDTH_EXTRACONDENSED = 63
+      {81, 0.750f},   // FC_WIDTH_CONDENSED = 75
+      {93, 0.875f},   // FC_WIDTH_SEMICONDENSED = 87
+      {106, 1.000f},  // FC_WIDTH_NORMAL = 100
+      {119, 1.125f},  // FC_WIDTH_SEMIEXPANDED = 113
+      {137, 1.250f},  // FC_WIDTH_EXPANDED = 125
+      {175, 1.500f},  // FC_WIDTH_EXTRAEXPANDED = 150
+      {-1, 2.000f},   // FC_WIDTH_ULTRAEXPANDED = 200
+  };
+
+  for (auto entry : map) {
+    if (width < entry.limit || entry.limit < 0)
+      return entry.stretch;
+  }
+  NOTREACHED();
+  return 100;
+}
+
 }  // namespace
 
 FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig() = default;
@@ -132,11 +209,27 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
 
     fonts_seen.insert(postscript_name);
 
+    // These properties may not be present, so defaults are provided and such
+    // fonts are not skipped. These defaults should map to the default web
+    // values when passed to the FCXXXToWebYYY functions.
+    int slant =
+        GetIntegerFromFCPattern(fontset->fonts[i], FC_SLANT, 0,
+                                FC_SLANT_ROMAN);  // Maps to italic: false.
+    int weight = GetIntegerFromFCPattern(
+        fontset->fonts[i], FC_WEIGHT, 0,
+        FC_WEIGHT_REGULAR);  // Maps to weight: 400 (regular).
+    int width = GetIntegerFromFCPattern(
+        fontset->fonts[i], FC_WIDTH, 0,
+        FC_WIDTH_NORMAL);  // Maps to width: 100% (normal).
+
     blink::FontEnumerationTable_FontMetadata metadata;
     metadata.set_postscript_name(postscript_name);
     metadata.set_full_name(full_name);
     metadata.set_family(family);
     metadata.set_style(style);
+    metadata.set_italic(FCSlantToWebItalic(slant));
+    metadata.set_weight(FCWeightToWebWeight(weight));
+    metadata.set_stretch(FCWidthToWebStretch(width));
 
     blink::FontEnumerationTable_FontMetadata* added_font_meta =
         font_enumeration_table->add_fonts();

@@ -29,6 +29,10 @@ struct FontMetadata {
   string postscript_name;
   string full_name;
   string family;
+  string style;
+  bool italic;
+  float stretch;
+  float weight;
 };
 
 // Implemented in the browser process to pass font data to windows

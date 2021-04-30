@@ -144,6 +144,10 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
         << "postscript_name size is not zero.";
     EXPECT_GT(font.full_name().size(), 0ULL) << "full_name size is not zero.";
     EXPECT_GT(font.family().size(), 0ULL) << "family size is not zero.";
+    EXPECT_GE(font.stretch(), 0.5f) << "stretch is in 0.5..2.0.";
+    EXPECT_LE(font.stretch(), 2.0f) << "stretch is in 0.5..2.0.";
+    EXPECT_GE(font.weight(), 1.f) << "weight is in 1..1000.";
+    EXPECT_LE(font.weight(), 1000.f) << "weight is in 1..1000.";
 
     if (previous_font.IsInitialized()) {
       EXPECT_LT(previous_font.postscript_name(), font.postscript_name())

@@ -6,6 +6,8 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
+#import <cmath>
+#import <limits>
 
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
@@ -32,6 +34,85 @@ base::ScopedCFTypeRef<CFStringRef> GetString(CTFontDescriptorRef fd,
                                              CFStringRef attribute) {
   return base::ScopedCFTypeRef<CFStringRef>(base::mac::CFCast<CFStringRef>(
       CTFontDescriptorCopyAttribute(fd, attribute)));
+}
+
+// Utility function to pull out a floating point value from a dictionary and
+// return it, returning a default value if the key is not present or the wrong
+// type.
+CGFloat GetCGFloatFromDictionary(CFDictionaryRef dict,
+                                 CFStringRef key,
+                                 CGFloat default_value) {
+  CFNumberRef number =
+      base::mac::GetValueFromDictionary<CFNumberRef>(dict, key);
+  if (!number)
+    return default_value;
+
+  CGFloat value;
+  if (CFNumberGetValue(number, kCFNumberCGFloatType, &value))
+    return value;
+  return default_value;
+}
+
+// Map CoreText value to a boolean for italic/oblique.
+bool CTSlantToWebItalic(CGFloat slant) {
+  return slant > 0;
+}
+
+// Map CoreText value to a font-weight (number in [1,1000]).
+// https://drafts.csswg.org/css-fonts-4/#font-weight-prop
+float CTWeightToWebWeight(CGFloat weight) {
+  // `fnan` is used as a sentinel value.
+  constexpr CGFloat fnan = std::numeric_limits<CGFloat>::quiet_NaN();
+  constexpr struct {
+    CGFloat limit;
+    float weight;
+  } map[] = {
+      {-0.700f, 100},  // NSFontWeightUltraLight = -0.8
+      {-0.500f, 200},  // NSFontWeightThin = -0.6
+      {-0.200f, 300},  // NSFontWeightLight = -0.4
+      {0.000f, 350},   //
+      {0.115f, 400},   // NSFontWeightRegular = 0
+      {0.265f, 500},   // NSFontWeightMedium = 0.23
+      {0.350f, 600},   // NSFontWeightSemibold = 0.3
+      {0.480f, 700},   // NSFontWeightBold = 0.4
+      {0.590f, 800},   // NSFontWeightHeavy = 0.56
+      {fnan, 900},     // NSFontWeightBlack = 0.62
+  };
+
+  for (auto entry : map) {
+    if (weight < entry.limit || std::isnan(entry.limit))
+      return entry.weight;
+  }
+  NOTREACHED();
+  return 400.f;
+}
+
+// Map CoreText value to a font-stretch value (percentage).
+// https://drafts.csswg.org/css-fonts-4/#propdef-font-stretch
+float CTWidthToWebStretch(CGFloat width) {
+  // `fnan` is used as a sentinel value.
+  constexpr CGFloat fnan = std::numeric_limits<CGFloat>::quiet_NaN();
+  constexpr struct {
+    CGFloat limit;
+    float stretch;
+  } map[] = {
+      {-0.875f, 0.500f},  // -1.00
+      {-0.625f, 0.625f},  // -0.75
+      {-0.375f, 0.750f},  // -0.50
+      {-0.125f, 0.875f},  // -0.25
+      {0.125f, 1.000f},   // 0.00
+      {0.375f, 1.125f},   // 0.25
+      {0.625f, 1.250f},   // 0.50
+      {0.875f, 1.500f},   // 0.75
+      {fnan, 2.000f},     // 1.00
+  };
+
+  for (auto entry : map) {
+    if (width < entry.limit || std::isnan(entry.limit))
+      return entry.stretch;
+  }
+  NOTREACHED();
+  return 0.f;
 }
 
 }  // namespace
@@ -107,12 +188,33 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       }
       fonts_seen.insert(postscript_name);
 
+      // These defaults should map to the default web values when passed to the
+      // CTXXXToWebYYY functions.
+      CGFloat slant = 0.0f;   // Maps to italic: false.
+      CGFloat weight = 0.0f;  // Maps to weight: 400 (regular).
+      CGFloat width = 0.0f;   // Maps to width: 100% (normal).
+
+      base::ScopedCFTypeRef<CFDictionaryRef> traits_ref(
+          base::mac::CFCast<CFDictionaryRef>(
+              CTFontDescriptorCopyAttribute(fd, kCTFontTraitsAttribute)));
+      if (traits_ref) {
+        slant = GetCGFloatFromDictionary(traits_ref.get(), kCTFontSlantTrait,
+                                         slant);
+        weight = GetCGFloatFromDictionary(traits_ref.get(), kCTFontWeightTrait,
+                                          weight);
+        width = GetCGFloatFromDictionary(traits_ref.get(), kCTFontWidthTrait,
+                                         width);
+      }
+
       blink::FontEnumerationTable_FontMetadata metadata;
       metadata.set_postscript_name(postscript_name.c_str());
       metadata.set_full_name(
           base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
       metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
       metadata.set_style(base::SysCFStringRefToUTF8(cf_style.get()).c_str());
+      metadata.set_italic(CTSlantToWebItalic(slant));
+      metadata.set_weight(CTWeightToWebWeight(weight));
+      metadata.set_stretch(CTWidthToWebStretch(width));
 
       blink::FontEnumerationTable_FontMetadata* added_font_meta =
           font_enumeration_table->add_fonts();

@@ -73,8 +73,13 @@ void FontManager::DidShowFontChooser(
 
   auto entries = HeapVector<Member<FontMetadata>>();
   for (const auto& font : fonts) {
-    auto entry = FontEnumerationEntry{font->postscript_name, font->full_name,
-                                      font->family};
+    auto entry = FontEnumerationEntry{.postscript_name = font->postscript_name,
+                                      .full_name = font->full_name,
+                                      .family = font->family,
+                                      .style = font->style,
+                                      .italic = font->italic,
+                                      .stretch = font->stretch,
+                                      .weight = font->weight};
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
   resolver->Resolve(std::move(entries));
@@ -116,10 +121,14 @@ void FontManager::DidGetEnumerationResponse(
       continue;
 
     auto entry = FontEnumerationEntry{
-        String::FromUTF8(element.postscript_name().c_str()),
-        String::FromUTF8(element.full_name().c_str()),
-        String::FromUTF8(element.family().c_str()),
-        String::FromUTF8(element.style().c_str())};
+        .postscript_name = String::FromUTF8(element.postscript_name().c_str()),
+        .full_name = String::FromUTF8(element.full_name().c_str()),
+        .family = String::FromUTF8(element.family().c_str()),
+        .style = String::FromUTF8(element.style().c_str()),
+        .italic = element.italic(),
+        .stretch = element.stretch(),
+        .weight = element.weight(),
+    };
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
 
