@@ -140,6 +140,16 @@
       "use_goma": true
     }
   },
+  "fuchsia_x64_rts": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
   "gpu-fyi-try-lacros-amd-rel": {
     "gn_args": {
       "dcheck_always_on": true,

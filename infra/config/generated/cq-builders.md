@@ -429,8 +429,20 @@ as required builders.
 * [android-marshmallow-arm64-rel-dual-coverage](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel-dual-coverage) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-arm64-rel-dual-coverage)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-arm64-rel-dual-coverage))
   * Experiment percentage: 3.0
 
+* [android-marshmallow-x86-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-x86-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-x86-rel-rts))
+  * Experiment percentage: 5.0
+
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-coverage-experimental-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-coverage-experimental-rel))
   * Experiment percentage: 3.0
+
+* [chromeos-amd64-generic-rel-rts](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-rel-rts))
+  * Experiment percentage: 5.0
+
+* [fuchsia_x64_rts](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia_x64_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia_x64_rts))
+  * Experiment percentage: 5.0
+
+* [ios-simulator-rts](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-rts))
+  * Experiment percentage: 1.0
 
 * [linux-experimental-next-rel](https://ci.chromium.org/p/chromium/builders/try/linux-experimental-next-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-experimental-next-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-experimental-next-rel))
   * Experiment percentage: 10.0
@@ -456,4 +468,10 @@ as required builders.
 
 * [linux_chromium_tsan_rel_ng_bionic](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_bionic) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_tsan_rel_ng_bionic)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_tsan_rel_ng_bionic))
   * Experiment percentage: 40.0
+
+* [mac-rel-rts](https://ci.chromium.org/p/chromium/builders/try/mac-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-rel-rts))
+  * Experiment percentage: 1.0
+
+* [win10_chromium_x64_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10_chromium_x64_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10_chromium_x64_rel_ng_rts))
+  * Experiment percentage: 5.0
 

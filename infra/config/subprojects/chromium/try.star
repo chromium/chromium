@@ -1291,16 +1291,6 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
-    name = "linux-rel-rts",
-    builderless = False,
-    goma_jobs = goma.jobs.J150,
-    use_clang_coverage = True,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-)
-
-try_.chromium_linux_builder(
     name = "linux-trusty-rel",
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_TRUSTY,
@@ -2009,6 +1999,73 @@ try_.gpu_chromium_win_builder(
             ".+/[+]/tools/clang/scripts/update.py",
             ".+/[+]/ui/gl/.+",
         ],
+    ),
+)
+
+# RTS builders (https://crbug.com/1203048)
+try_.chromium_linux_builder(
+    name = "linux-rel-rts",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    use_clang_coverage = True,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+try_.chromium_mac_builder(
+    name = "mac-rel-rts",
+    builderless = False,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
+    tryjob = try_.job(
+        experiment_percentage = 1,
+    ),
+)
+
+try_.chromium_win_builder(
+    name = "win10_chromium_x64_rel_ng_rts",
+    goma_jobs = goma.jobs.J150,
+    use_clang_coverage = True,
+    builderless = False,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+try_.chromium_android_builder(
+    name = "android-marshmallow-x86-rel-rts",
+    goma_jobs = goma.jobs.J300,
+    builderless = False,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+try_.chromium_linux_builder(
+    name = "fuchsia_x64_rts",
+    builderless = False,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+try_.chromium_chromiumos_builder(
+    name = "chromeos-amd64-generic-rel-rts",
+    builderless = False,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+try_.chromium_mac_ios_builder(
+    name = "ios-simulator-rts",
+    use_clang_coverage = True,
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["unit"],
+    builderless = False,
+    tryjob = try_.job(
+        experiment_percentage = 1,
     ),
 )
 
