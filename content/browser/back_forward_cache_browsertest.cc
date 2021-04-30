@@ -1363,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(
         ExpectCached(*delete_observers[j], /*cached=*/i != j,
                      /*backgrounded=*/i != j);
       } else {
-        EXPECT_TRUE(delete_observers[j]->deleted());
+        delete_observers[j]->WaitUntilDeleted();
       }
     }
   }
