@@ -3092,7 +3092,7 @@ enum WebFeature {
   kPopupElement = 3781,
   kV8HTMLPopupElement_Show_Method = 3782,
   kV8HTMLPopupElement_Hide_Method = 3783,
-  kWindowOpenWithAdditionalBoolParameter = 3784,
+  kOBSOLETE_WindowOpenWithAdditionalBoolParameter = 3784,
   kRTCPeerConnectionConstructedWithPlanB = 3785,
   kRTCPeerConnectionConstructedWithUnifiedPlan = 3786,
   kRTCPeerConnectionUsingComplexPlanB = 3787,

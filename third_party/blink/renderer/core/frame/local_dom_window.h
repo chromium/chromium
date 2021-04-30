@@ -347,13 +347,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const String& features,
                   ExceptionState&);
 
-  DOMWindow* open(v8::Isolate*,
-                  const String& url_string,
-                  const AtomicString& target,
-                  const String& features,
-                  bool unused,
-                  ExceptionState&);
-
   FrameConsole* GetFrameConsole() const;
 
   void PrintErrorMessage(const String&) const;
