@@ -641,10 +641,8 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kInProgress:
       ShowProgress(share_target, transfer_metadata);
       break;
-    case TransferMetadata::Status::kRejected:
     case TransferMetadata::Status::kCancelled:
-      // Only show the notification if the remote Receiver rejected
-      // or the remote Sender cancelled.
+      // Only show the notification if the remote cancelled.
       if (!nearby_service_->DidLocalUserCancelTransfer(share_target))
         ShowCancelled(share_target);
       break;
@@ -669,6 +667,7 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kComplete:
       ShowSuccess(share_target);
       break;
+    case TransferMetadata::Status::kRejected:
     case TransferMetadata::Status::kTimedOut:
     case TransferMetadata::Status::kFailed:
     case TransferMetadata::Status::kNotEnoughSpace:
@@ -926,10 +925,7 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
       CreateNearbyNotification(kNearbyNotificationId);
 
   notification.set_title(base::ReplaceStringPlaceholders(
-      l10n_util::GetStringUTF16(
-          share_target.is_incoming
-              ? IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED
-              : IDS_NEARBY_NOTIFICATION_RECEIVER_CANCELLED),
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED),
       {base::UTF8ToUTF16(share_target.device_name)}, /*offsets=*/nullptr));
 
   delegate_map_.erase(kNearbyNotificationId);
