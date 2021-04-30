@@ -21,6 +21,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="WebLayer.MainFrameNavigationStart.ConsentDetermined"
+    enum="Boolean" expires_after="M94">
+  <owner>sky@chromium.org</owner>
+  <owner>src/weblayer/OWNERS</owner>
+  <summary>
+    Tracks whether user consent to metrics reporting has been determined when a
+    navigation starts.
+  </summary>
+</histogram>
+
 <histogram name="WebLayer.Startup.ClassLoaderCreationTime" units="ms"
     expires_after="M98">
   <owner>cduvall@chromium.org</owner>
