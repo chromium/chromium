@@ -221,7 +221,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '19b7815d8dffd2e1b7dd7f40511c999cacb42edc',
+  'angle_revision': '23ff18f97c159604659b91ab99af2e8f9e974775',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
