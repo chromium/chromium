@@ -130,11 +130,6 @@ void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
     NavigateParams params(
         GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
     Navigate(&params);
-
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_APP_INSTALLED_TO_NTP,
-        content::Source<WebContents>(params.navigated_or_inserted_contents),
-        content::Details<const std::string>(&app_id));
   }
 #endif
 }

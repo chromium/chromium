@@ -428,9 +428,6 @@ void AppLauncherHandler::RegisterProfilePrefs(
 }
 
 void AppLauncherHandler::RegisterMessages() {
-  registrar_.Add(this, chrome::NOTIFICATION_APP_INSTALLED_TO_NTP,
-      content::Source<WebContents>(web_ui()->GetWebContents()));
-
   web_ui()->RegisterMessageCallback(
       "getApps", base::BindRepeating(&AppLauncherHandler::HandleGetApps,
                                      base::Unretained(this)));
@@ -484,13 +481,6 @@ void AppLauncherHandler::RegisterMessages() {
 void AppLauncherHandler::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
-  if (type == chrome::NOTIFICATION_APP_INSTALLED_TO_NTP) {
-    highlight_app_id_ = *content::Details<const std::string>(details).ptr();
-    if (has_loaded_apps_)
-      SetAppToBeHighlighted();
-    return;
-  }
-
   if (ignore_changes_ || !has_loaded_apps_)
     return;
 
@@ -726,7 +716,6 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
       web_app_provider_->registrar().GetExternallyInstalledApps(
           web_app::ExternalInstallSource::kExternalPolicy);
 
-  SetAppToBeHighlighted();
   FillAppDictionary(&dictionary);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.getAppsCallback", dictionary);
 
@@ -1259,15 +1248,6 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
   web_app_provider_->install_manager().InstallWebAppFromInfo(
       std::move(web_app), web_app::ForInstallableSite::kUnknown,
       webapps::WebappInstallSource::SYNC, std::move(install_complete_callback));
-}
-
-void AppLauncherHandler::SetAppToBeHighlighted() {
-  if (highlight_app_id_.empty())
-    return;
-
-  base::Value app_id(highlight_app_id_);
-  web_ui()->CallJavascriptFunctionUnsafe("ntp.setAppToBeHighlighted", app_id);
-  highlight_app_id_.clear();
 }
 
 void AppLauncherHandler::OnExtensionPreferenceChanged() {

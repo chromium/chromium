@@ -207,9 +207,6 @@ class AppLauncherHandler
       std::unique_ptr<AppInstallInfo> install_info,
       const favicon_base::FaviconImageResult& image_result);
 
-  // Sends |highlight_app_id_| to the js.
-  void SetAppToBeHighlighted();
-
   void OnExtensionPreferenceChanged();
 
   // Called when an extension is removed (unloaded or uninstalled). Updates the
@@ -277,11 +274,6 @@ class AppLauncherHandler
 
   // True if we have executed HandleGetApps() at least once.
   bool has_loaded_apps_;
-
-  // The ID of the app to be highlighted on the NTP (i.e. shown on the page
-  // and pulsed). This is done for new installs. The actual higlighting occurs
-  // when the app is added to the page (via getAppsCallback or appAdded).
-  std::string highlight_app_id_;
 
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;

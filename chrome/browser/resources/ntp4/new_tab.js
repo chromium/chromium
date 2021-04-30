@@ -373,10 +373,6 @@ export function saveAppPageName(appPage, name) {
   newTabView.saveAppPageName(appPage, name);
 }
 
-function setAppToBeHighlighted(appId) {
-  newTabView.highlightAppId = appId;
-}
-
 // Return an object with all the exports
 const exports = {
   appAdded,
@@ -384,7 +380,6 @@ const exports = {
   appRemoved,
   appsPrefChangeCallback,
   getAppsCallback,
-  setAppToBeHighlighted,
   setFaviconDominantColor,
   updateLogin,
 };

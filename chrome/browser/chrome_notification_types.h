@@ -153,12 +153,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174798): Remove.
   NOTIFICATION_APP_LAUNCHER_REORDERED,
 
-  // Sent when an app is installed and an NTP has been shown. Source is the
-  // WebContents that was shown, and Details is the string ID of the extension
-  // which was installed.
-  // TODO(https://crbug.com/1174799): Remove.
-  NOTIFICATION_APP_INSTALLED_TO_NTP,
-
   // Note:-
   // Currently only Content and Chrome define and use notifications.
   // Custom notifications not belonging to Content and Chrome should start
