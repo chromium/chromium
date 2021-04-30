@@ -239,10 +239,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed"
-    enum="RemoteCommandExecutionStatus" expires_after="2021-03-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2021-11-01">
 <!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
 
-  <owner>anthonyvd@google.com</owner>
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting status of executed CBCM remote commands. The metric
@@ -252,10 +252,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed.Unsigned"
-    enum="RemoteCommandExecutionStatus" expires_after="2021-03-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2021-11-01">
 <!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
 
-  <owner>anthonyvd@google.com</owner>
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting status of executed CBCM remote commands. The metric
@@ -265,8 +265,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2021-03-01">
-  <owner>anthonyvd@google.com</owner>
+    enum="RemoteCommandReceivedStatus" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting received CBCM remote commands. The metric includes
@@ -277,8 +277,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Received.Unsigned"
-    enum="RemoteCommandReceivedStatus" expires_after="2021-03-01">
-  <owner>anthonyvd@google.com</owner>
+    enum="RemoteCommandReceivedStatus" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting received CBCM remote commands. The metric includes
@@ -289,8 +289,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2021-03-01">
-  <owner>anthonyvd@google.com</owner>
+    enum="EnterprisePolicyInvalidations" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting CBCM remote commands invalidations received with and
