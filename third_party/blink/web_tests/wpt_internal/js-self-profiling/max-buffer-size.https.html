@@ -24,13 +24,18 @@
     }, 'max buffer size is not exceeded');
 
     promise_test(async t => {
-    const profiler = await performance.profile({
-      sampleInterval: 10,
-      maxBufferSize: 1,
-    });
+      const profiler = await performance.profile({
+        sampleInterval: 10,
+        maxBufferSize: 1,
+      });
 
-    const watcher = new EventWatcher(t, profiler, ['samplebufferfull']);
-    return watcher.wait_for('samplebufferfull');
+      const watcher = new EventWatcher(t, profiler, ['samplebufferfull']);
+
+      for (let i = 0; i < 10; i++) {
+        ProfileUtils.forceSample();
+      }
+
+      return watcher.wait_for('samplebufferfull');
     }, 'executed samplebufferfull function');
   </script>
 </body>

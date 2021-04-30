@@ -10,10 +10,6 @@
   <iframe src="resources/child-frame.html"></iframe>
 
   <script>
-    function parentCollectSample(profiler) {
-      ProfileUtils.forceSample(profiler);
-    }
-
     promise_test(_ => new Promise(res => window.addEventListener('load', res)),
                  'wait for load event');
 
@@ -23,54 +19,17 @@
       });
 
       const iframe = frames[0];
-      function parentWrapper() {
-        iframe.childCollectSample(profiler);
-      }
-      parentWrapper();
+      await ProfileUtils.forceSampleFrame(iframe);
 
       const trace = await profiler.stop();
 
-      assert_true(ProfileUtils.containsFrame(trace, { name: 'parentWrapper' }),
-                  'function from own (parent) context included in trace');
+      assert_false(ProfileUtils.containsFrame(trace, { name: 'sampleFromMessage' }),
+                   'function from child context not included in trace');
 
-      assert_true(ProfileUtils.containsFrame(trace, { name: 'childCollectSample' }),
-                   'function from child context included in trace');
-
-      assert_true(ProfileUtils.containsFrame(trace, { name: 'parentCollectSample' }),
-                  'sampling wrapper function from own (parent) context included in trace');
-
-      const childUrl = iframe.location.href;
-      assert_true(ProfileUtils.containsResource(trace, childUrl),
-                  'child resources are included');
-    }, 'functions from child frame are included in profile created by parent frame');
-
-    promise_test(async t => {
-      const iframe = frames[0];
-      const profiler = await iframe.childCreateProfiler({
-        sampleInterval: 10,
-      });
-
-      (function parentWrapper() {
-        iframe.childCollectSample(profiler);
-      })();
-
-      const trace = await profiler.stop();
-
-      assert_true(ProfileUtils.containsFrame(trace, { name: 'parentWrapper' }),
-                  'function from parent context included in trace');
-
-      assert_true(ProfileUtils.containsFrame(trace, { name: 'childCollectSample' }),
-                  'function from own (child) context included in trace');
-
-      assert_true(ProfileUtils.containsResource(trace,
-        window.location.href,
-      ), 'parent resource is included');
-
-      assert_true(ProfileUtils.containsResource(trace,
-        iframe.location.href,
-      ), 'child resource is included');
-
-    }, 'functions from parent context are included in profile created by child frame');
+      const childUrl = iframe.src;
+      assert_false(ProfileUtils.containsResource(trace, childUrl),
+                  'child resources are not included');
+    }, 'functions from child frame are not included in profile created by parent frame');
   </script>
 </body>
 </html>

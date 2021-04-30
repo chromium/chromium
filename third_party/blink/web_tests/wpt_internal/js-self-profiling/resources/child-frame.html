@@ -3,14 +3,6 @@
 <head>
 </head>
 <body>
-  <script>
-    function childCreateProfiler(options) {
-      return performance.profile(options);
-    }
-
-    function childCollectSample(profiler) {
-      top.parentCollectSample(profiler);
-    }
-  </script>
+  <script src="profile-utils.js"></script>
 </body>
 </html>

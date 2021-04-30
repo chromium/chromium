@@ -83,6 +83,23 @@
            (expected.column === undefined || expected.column === actual.column);
   }
 
+  function forceSampleFrame(frame) {
+    const channel = new MessageChannel();
+    const replyPromise = new Promise(res => {
+      channel.port1.onmessage = res;
+    });
+    frame.postMessage('', '*', [channel.port2]);
+    return replyPromise;
+  }
+
+  window.addEventListener('message', message => {
+    // Force sample in response to messages received.
+    (function sampleFromMessage() {
+      ProfileUtils.forceSample();
+      message.ports[0].postMessage('');
+    })();
+  });
+
   global.ProfileUtils = {
     // Capturing
     profileFunction,
@@ -92,6 +109,9 @@
     containsFrame,
     containsSubstack,
     containsResource,
+
+    // Cross-frame sampling
+    forceSampleFrame,
 
     // Assertions
     testFunction,
