@@ -562,12 +562,12 @@ class ServiceWorkerRegistryTest : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
 };
 
-TEST_F(ServiceWorkerRegistryTest, RegisteredOriginCount) {
+TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
   {
     base::HistogramTester histogram_tester;
     EXPECT_TRUE(GetRegisteredOrigins().empty());
-    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
-                                        0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.RegisteredStorageKeyCount", 0, 1);
   }
 
   std::pair<GURL, GURL> scope_and_script_pairs[] = {
@@ -599,15 +599,16 @@ TEST_F(ServiceWorkerRegistryTest, RegisteredOriginCount) {
   {
     base::HistogramTester histogram_tester;
     EXPECT_EQ(3UL, GetRegisteredOrigins().size());
-    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
-                                        3, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.RegisteredStorageKeyCount", 3, 1);
   }
 
   // Re-initializing shouldn't re-record the histogram.
   {
     base::HistogramTester histogram_tester;
     EXPECT_EQ(3UL, GetRegisteredOrigins().size());
-    histogram_tester.ExpectTotalCount("ServiceWorker.RegisteredOriginCount", 0);
+    histogram_tester.ExpectTotalCount("ServiceWorker.RegisteredStorageKeyCount",
+                                      0);
   }
 }
 

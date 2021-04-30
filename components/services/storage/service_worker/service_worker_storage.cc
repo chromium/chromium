@@ -1306,7 +1306,7 @@ void ServiceWorkerStorage::DidReadInitialData(
     next_resource_id_ = data->next_resource_id;
     registered_keys_.swap(data->keys);
     state_ = STORAGE_STATE_INITIALIZED;
-    base::UmaHistogramCounts1M("ServiceWorker.RegisteredOriginCount",
+    base::UmaHistogramCounts1M("ServiceWorker.RegisteredStorageKeyCount",
                                registered_keys_.size());
   } else {
     DVLOG(2) << "Failed to initialize: "

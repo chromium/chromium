@@ -736,11 +736,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.RegisteredOriginCount" units="origins"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021-04-29.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The number of origins that have a service worker registration. Recorded near
     browser startup, when the service worker storage system is initialized.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.RegisteredStorageKeyCount" units="origins"
+    expires_after="2022-04-29">
+  <owner>falken@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The number of StorageKeys that have a service worker registration. Recorded
+    near browser startup, when the service worker storage system is initialized.
   </summary>
 </histogram>
 
