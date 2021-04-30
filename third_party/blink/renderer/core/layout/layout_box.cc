@@ -3568,6 +3568,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       cache_status == NGLayoutCacheStatus::kHit)
     cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
 
+  // Only allow simplified layout for non-replaced boxes.
+  if (RuntimeEnabledFeatures::LayoutNGReplacedEnabled() &&
+      cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
+      IsLayoutReplaced())
+    return nullptr;
+
   LayoutUnit bfc_line_offset = new_space.BfcOffset().line_offset;
   base::Optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
