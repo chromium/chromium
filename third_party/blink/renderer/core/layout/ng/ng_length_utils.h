@@ -484,6 +484,7 @@ enum class ReplacedSizeMode {
 CORE_EXPORT LogicalSize
 ComputeReplacedSize(const NGBlockNode&,
                     const NGConstraintSpace&,
+                    const NGBoxStrut& border_padding,
                     ReplacedSizeMode = ReplacedSizeMode::kNormal);
 
 // Based on available inline size, CSS computed column-width, CSS computed

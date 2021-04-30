@@ -792,6 +792,7 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
 // Computes size for a replaced element.
 LogicalSize ComputeReplacedSize(const NGBlockNode& node,
                                 const NGConstraintSpace& space,
+                                const NGBoxStrut& border_padding,
                                 ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
@@ -804,8 +805,6 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     return LogicalSize();
 
   const ComputedStyle& style = node.Style();
-  const NGBoxStrut border_padding =
-      ComputeBorders(space, node) + ComputePadding(space, style);
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
 
   // Replaced elements in quirks-mode resolve their min/max block-sizes against
@@ -1444,7 +1443,7 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
 
   if (node.IsReplaced()) {
     const LogicalSize border_box_size =
-        ComputeReplacedSize(node, constraint_space);
+        ComputeReplacedSize(node, constraint_space, border_padding);
     return {border_box_size, border, scrollbar, padding};
   }
 

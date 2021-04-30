@@ -19,7 +19,7 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   container_builder_.SetIsLegacyLayoutRoot();
 
   const LayoutUnit intrinsic_block_size =
-      ComputeReplacedSize(Node(), ConstraintSpace(),
+      ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
                           ReplacedSizeMode::kIgnoreBlockLengths)
           .block_size;
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
@@ -34,7 +34,7 @@ MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   // This is only used by flex, which expects inline-lengths to be ignored for
   // the min/max content size.
   MinMaxSizes sizes;
-  sizes = ComputeReplacedSize(Node(), ConstraintSpace(),
+  sizes = ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
                               ReplacedSizeMode::kIgnoreInlineLengths)
               .inline_size;
   return {sizes, /* depends_on_block_constraints */ false};
