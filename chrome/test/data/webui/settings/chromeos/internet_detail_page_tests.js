@@ -8,6 +8,8 @@
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+// #import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.m.js';
+// #import {InternetPageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.m.js';
@@ -20,6 +22,9 @@ suite('InternetDetailPage', function() {
 
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   let mojoApi_ = null;
+
+  /** @type {?TestInternetPageBrowserProxy} */
+  let browserProxy = null;
 
   /** @type {Object} */
   const prefs_ = {
@@ -98,6 +103,9 @@ suite('InternetDetailPage', function() {
 
     PolymerTest.clearBody();
     mojoApi_.resetForTest();
+
+    browserProxy = new TestInternetPageBrowserProxy();
+    settings.InternetPageBrowserProxyImpl.instance_ = browserProxy;
   });
 
   teardown(function() {
@@ -414,6 +422,31 @@ suite('InternetDetailPage', function() {
         assertTrue(connectButton.hasAttribute('disabled'));
       });
     });
+
+    test(
+        'Cellular view account button opens carrier account details',
+        function() {
+          init();
+          const mojom = chromeos.networkConfig.mojom;
+          mojoApi_.setNetworkTypeEnabledState(
+              mojom.NetworkType.kCellular, true);
+          const cellularNetwork =
+              getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          return flushAsync()
+              .then(() => {
+                const viewAccountButton =
+                    internetDetailPage.$$('#viewAccountButton');
+                assertTrue(!!viewAccountButton);
+                viewAccountButton.click();
+                return flushAsync();
+              })
+              .then(() => {
+                return browserProxy.whenCalled('showCarrierAccountDetail');
+              });
+        });
 
     test('Cellular Scanning', function() {
       init();

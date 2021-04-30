@@ -11,6 +11,12 @@ cr.define('settings', function() {
   /** @interface */
   /* #export */ class InternetPageBrowserProxy {
     /**
+     * Shows the account details page of a cellular network.
+     * @param {string} guid
+     */
+    showCarrierAccountDetail(guid) {}
+
+    /**
      * Shows the Cellular activation UI.
      * @param {string} guid
      */
@@ -52,6 +58,11 @@ cr.define('settings', function() {
    * @implements {settings.InternetPageBrowserProxy}
    */
   /* #export */ class InternetPageBrowserProxyImpl {
+    /** @override */
+    showCarrierAccountDetail(guid) {
+      chrome.send('showCarrierAccountDetail', [guid]);
+    }
+
     /** @override */
     showCellularSetupUI(guid) {
       chrome.send('showCellularSetupUI', [guid]);

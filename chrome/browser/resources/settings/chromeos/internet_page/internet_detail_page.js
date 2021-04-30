@@ -1650,8 +1650,7 @@ Polymer({
 
   /** @private */
   onViewAccountTap_() {
-    // Currently 'Account Details' is the same as the activation UI.
-    this.browserProxy_.showCellularSetupUI(this.guid);
+    this.browserProxy_.showCarrierAccountDetail(this.guid);
   },
 
   /** @type {string} */

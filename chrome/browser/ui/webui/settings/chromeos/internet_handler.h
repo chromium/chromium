@@ -46,6 +46,7 @@ class InternetHandler
   void ConfigureThirdPartyVpn(const base::ListValue* args);
   void RequestGmsCoreNotificationsDisabledDeviceNames(
       const base::ListValue* args);
+  void ShowCarrierAccountDetail(const base::ListValue* args);
   void ShowCellularSetupUI(const base::ListValue* args);
 
   // Sets list of names of devices whose "Google Play Services" notifications

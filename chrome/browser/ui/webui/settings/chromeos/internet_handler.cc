@@ -37,6 +37,7 @@ namespace {
 
 const char kAddThirdPartyVpnMessage[] = "addThirdPartyVpn";
 const char kConfigureThirdPartyVpnMessage[] = "configureThirdPartyVpn";
+const char kShowCarrierAccountDetail[] = "showCarrierAccountDetail";
 const char kShowCellularSetupUI[] = "showCellularSetupUI";
 const char kRequestGmsCoreNotificationsDisabledDeviceNames[] =
     "requestGmsCoreNotificationsDisabledDeviceNames";
@@ -82,6 +83,10 @@ void InternetHandler::RegisterMessages() {
       base::BindRepeating(
           &InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      kShowCarrierAccountDetail,
+      base::BindRepeating(&InternetHandler::ShowCarrierAccountDetail,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       kShowCellularSetupUI,
       base::BindRepeating(&InternetHandler::ShowCellularSetupUI,
@@ -182,6 +187,15 @@ void InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames(
     const base::ListValue* args) {
   AllowJavascript();
   SetGmsCoreNotificationsDisabledDeviceNames();
+}
+
+void InternetHandler::ShowCarrierAccountDetail(const base::ListValue* args) {
+  std::string guid;
+  if (args->GetSize() < 1 || !args->GetString(0, &guid)) {
+    NOTREACHED() << "Invalid args for: " << kShowCarrierAccountDetail;
+    return;
+  }
+  chromeos::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
 void InternetHandler::ShowCellularSetupUI(const base::ListValue* args) {

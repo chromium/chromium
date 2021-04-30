@@ -147,6 +147,7 @@ js_modulizer("modulize") {
     "test_guest_os_browser_proxy.js",
     "test_kerberos_accounts_browser_proxy.js",
     "test_multidevice_browser_proxy.js",
+    "test_internet_page_browser_proxy.js",
     "test_os_languages_browser_proxy.js",
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",
