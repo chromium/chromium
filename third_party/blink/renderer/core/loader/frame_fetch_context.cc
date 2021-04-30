@@ -836,6 +836,12 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   if (!main_frame.GetSecurityContext()
            ->GetSecurityOrigin()
            ->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(
+        GetFrame(),
+        mojom::blink::AttributionReportingIssueType::
+            kAttributionUntrustworthyOrigin,
+        main_frame.GetDevToolsFrameToken(), nullptr, devtools_request_id,
+        main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
     return false;
   }
 
@@ -843,12 +849,23 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
                                          ->GetSecurityContext()
                                          ->GetSecurityOrigin()
                                          ->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(
+        GetFrame(),
+        mojom::blink::AttributionReportingIssueType::
+            kAttributionUntrustworthyOrigin,
+        GetFrame()->GetDevToolsFrameToken(), nullptr, devtools_request_id,
+        GetFrame()->GetSecurityContext()->GetSecurityOrigin()->ToString());
     return false;
   }
 
   scoped_refptr<const SecurityOrigin> redirect_origin =
       SecurityOrigin::Create(url);
   if (!redirect_origin->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(GetFrame(),
+                           mojom::blink::AttributionReportingIssueType::
+                               kAttributionUntrustworthyOrigin,
+                           base::nullopt, nullptr, devtools_request_id,
+                           redirect_origin->ToString());
     return false;
   }
 
