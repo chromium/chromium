@@ -77,7 +77,7 @@ void CheckBrowserWindows(const std::vector<std::string>& expected_basepaths) {
   std::vector<std::string> actual_basepaths;
   for (const Browser* browser : *BrowserList::GetInstance()) {
     actual_basepaths.push_back(
-        browser->profile()->GetPath().BaseName().AsUTF8Unsafe());
+        browser->profile()->GetBaseName().AsUTF8Unsafe());
   }
 
   if (actual_basepaths.size() != expected_basepaths.size() ||

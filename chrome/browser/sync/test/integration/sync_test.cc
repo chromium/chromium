@@ -1003,7 +1003,7 @@ void SyncTest::TearDownOnMainThread() {
   // the user data dir, and which we don't use otherwise).
   if (previous_profile_) {
     profiles::SetLastUsedProfile(
-        previous_profile_->GetPath().BaseName().MaybeAsASCII());
+        previous_profile_->GetBaseName().MaybeAsASCII());
   }
 
 #if !defined(OS_ANDROID)

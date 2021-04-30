@@ -109,8 +109,7 @@ void ExpectProfileWithName(const std::string& profile_name,
 
   // Create a profile on the fly so the the same comparison
   // can be used in Windows and other platforms.
-  EXPECT_EQ(base::FilePath().AppendASCII(profile_name),
-            profile->GetPath().BaseName());
+  EXPECT_EQ(base::FilePath().AppendASCII(profile_name), profile->GetBaseName());
   std::move(closure).Run();
 }
 

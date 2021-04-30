@@ -28,7 +28,7 @@ std::wstring GetStateStoreKeyName() {
 
 // Returns the name of the registry value for |profile|'s state.
 std::wstring GetValueNameForProfile(Profile* profile) {
-  return profile->GetPath().BaseName().value();
+  return profile->GetBaseName().value();
 }
 
 // Clears |profile|'s state.

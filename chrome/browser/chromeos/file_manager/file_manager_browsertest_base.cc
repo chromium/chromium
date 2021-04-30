@@ -2764,7 +2764,7 @@ FileManagerBrowserTestBase::CreateDriveIntegrationService(Profile* profile) {
   drive_volumes_[profile->GetOriginalProfile()] =
       std::make_unique<DriveFsTestVolume>(profile->GetOriginalProfile());
   if (options.guest_mode != IN_INCOGNITO && options.mount_volumes &&
-      profile->GetPath().BaseName().value() == "user") {
+      profile->GetBaseName().value() == "user") {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&LocalTestVolume::Mount),

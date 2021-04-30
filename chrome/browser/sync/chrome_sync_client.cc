@@ -274,7 +274,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   // should be considered roamed. For now the code assumes all profiles are
   // created in the same order on all machines.
   local_sync_backend_folder =
-      local_sync_backend_folder.Append(profile_->GetPath().BaseName());
+      local_sync_backend_folder.Append(profile_->GetBaseName());
   local_sync_backend_folder =
       local_sync_backend_folder.Append(kLoopbackServerBackendFilename);
 #endif  // defined(OS_WIN)

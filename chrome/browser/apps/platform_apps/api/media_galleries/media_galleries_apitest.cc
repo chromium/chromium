@@ -379,8 +379,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, ToURL) {
 
   base::ListValue custom_args;
   custom_args.AppendInteger(base::checked_cast<int>(pref_id));
-  custom_args.AppendString(
-      browser()->profile()->GetPath().BaseName().MaybeAsASCII());
+  custom_args.AppendString(browser()->profile()->GetBaseName().MaybeAsASCII());
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("tourl", custom_args)) << message_;
 }

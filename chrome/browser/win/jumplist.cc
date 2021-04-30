@@ -935,5 +935,5 @@ base::FilePath JumpList::GetCmdLineProfileDir() {
                      ->GetProfileAttributesStorage()
                      .GetNumberOfProfiles() < 2
              ? base::FilePath()
-             : profile_->GetPath().BaseName();
+             : profile_->GetBaseName();
 }

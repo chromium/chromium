@@ -108,7 +108,7 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
     testing_profile_ =
         testing_profile_manager_.CreateTestingProfile("TestProfile");
     profiles::SetLastUsedProfile(
-        testing_profile_->GetPath().BaseName().MaybeAsASCII());
+        testing_profile_->GetBaseName().MaybeAsASCII());
 
     store_ = CreateAndUseTestPasswordStore(testing_profile_);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

@@ -84,7 +84,7 @@ void ValidateBrowserWindowProperties(
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   base::CommandLine cmd_line(
       base::CommandLine::FromString(prop_var.get().pwszVal));
-  EXPECT_EQ(browser->profile()->GetPath().BaseName().value(),
+  EXPECT_EQ(browser->profile()->GetBaseName().value(),
             cmd_line.GetSwitchValueNative(switches::kProfileDirectory));
   prop_var.Reset();
 
@@ -125,7 +125,7 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   base::CommandLine cmd_line(
       base::CommandLine::FromString(prop_var.get().pwszVal));
-  EXPECT_EQ(browser->profile()->GetPath().BaseName().value(),
+  EXPECT_EQ(browser->profile()->GetBaseName().value(),
             cmd_line.GetSwitchValueNative(switches::kProfileDirectory));
   EXPECT_EQ(base::UTF8ToWide(extension->id()),
             cmd_line.GetSwitchValueNative(switches::kAppId));

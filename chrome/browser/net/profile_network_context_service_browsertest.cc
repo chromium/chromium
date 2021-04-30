@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   // Cache directory should now exist.
   base::FilePath expected_cache_path =
       TempPath()
-          .Append(browser()->profile()->GetPath().BaseName())
+          .Append(browser()->profile()->GetBaseName())
           .Append(chrome::kCacheDirname);
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(expected_cache_path));

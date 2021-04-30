@@ -939,7 +939,7 @@ bool ProfileImpl::IsOffTheRecord() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ProfileImpl::IsMainProfile() const {
   // Profile must be at "Default" path.
-  if (GetPath().BaseName().value() != chrome::kInitialProfile)
+  if (GetBaseName().value() != chrome::kInitialProfile)
     return false;
 
   // Until go/cros-dent-1-lacros is launched, the user could have signed into

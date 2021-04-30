@@ -227,6 +227,13 @@ class Profile : public content::BrowserContext {
   base::FilePath GetPath() override = 0;
   virtual base::FilePath GetPath() const = 0;
 
+  // Returns the base name of the profile, which is the profile directory name
+  // within the user data directory, e.g. "Default", "Profile 1", "Profile 2".
+  base::FilePath GetBaseName() const;
+
+  // Similar to GetBaseName(), but returns a string for debugging.
+  std::string GetDebugName() const;
+
   // Return whether this context is off the record. Default is false.
   // Note that for Chrome this covers BOTH Incognito mode and Guest sessions.
   bool IsOffTheRecord() override = 0;
@@ -405,8 +412,6 @@ class Profile : public content::BrowserContext {
   // Returns whether or not the profile was created by a version of Chrome
   // more recent (or equal to) the one specified.
   virtual bool WasCreatedByVersionOrLater(const std::string& version) = 0;
-
-  std::string GetDebugName() const;
 
   // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(),
   // IsGuestSession(), and IsEphemeralGuestProfile are mutually exclusive.

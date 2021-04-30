@@ -604,7 +604,7 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     base::FilePath drivefs_dir;
     base::CreateTemporaryDirInDir(tmp_dir_.GetPath(),
                                   base::FilePath::StringType(), &drivefs_dir);
-    auto profile_name_storage = profile->GetPath().BaseName().value();
+    auto profile_name_storage = profile->GetBaseName().value();
     base::StringPiece profile_name = profile_name_storage;
     if (base::StartsWith(profile_name, "u-")) {
       profile_name = profile_name.substr(2);

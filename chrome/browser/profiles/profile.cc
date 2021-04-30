@@ -250,6 +250,15 @@ void Profile::RemoveObserver(ProfileObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::FilePath Profile::GetBaseName() const {
+  return GetPath().BaseName();
+}
+
+std::string Profile::GetDebugName() const {
+  std::string name = GetBaseName().MaybeAsASCII();
+  return name.empty() ? "UnknownProfile" : name;
+}
+
 TestingProfile* Profile::AsTestingProfile() {
   return nullptr;
 }
@@ -360,11 +369,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Instead of registering new prefs here, please create a static method and
   // invoke it from RegisterProfilePrefs() in
   // chrome/browser/prefs/browser_prefs.cc.
-}
-
-std::string Profile::GetDebugName() const {
-  std::string name = GetPath().BaseName().MaybeAsASCII();
-  return name.empty() ? "UnknownProfile" : name;
 }
 
 bool Profile::IsRegularProfile() const {

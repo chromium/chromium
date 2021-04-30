@@ -69,7 +69,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
         GetExtensionByPath(registry->enabled_extensions(), app_path_)->id();
     mojo::Remote<chrome::mojom::AppShimHost> host;
     auto app_shim_info = chrome::mojom::AppShimInfo::New();
-    app_shim_info->profile_path = profile()->GetPath().BaseName();
+    app_shim_info->profile_path = profile()->GetBaseName();
     app_shim_info->app_id = extension_id_;
     app_shim_info->app_url = GURL("https://example.com");
     app_shim_info->launch_type =
