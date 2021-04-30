@@ -204,9 +204,9 @@ constexpr char InvalidPolicyNoUrls[] = R"(
     ])";
 
 base::Optional<base::Value> ReadJson(base::StringPiece json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
-  EXPECT_TRUE(value);
-  return value;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(json);
+  EXPECT_TRUE(result.value) << result.error_message;
+  return std::move(result.value);
 }
 
 }  // namespace
@@ -733,6 +733,70 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettingsNoUrls) {
   EXPECT_FALSE(
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, &pref_value));
   EXPECT_FALSE(pref_value);
+}
+
+TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
+       CheckAndApplyPolicySettingsWithUnknownTopLevelKey) {
+  // A policy with an unknown top-level key should generate an error but have
+  // the unknown key removed during normaliziation and be applied successfully.
+  constexpr char kPolicy[] = R"(
+    [
+      {
+        "devices": [
+          {
+            "vendor_id": 1234,
+            "product_id": 5678
+          }
+        ],
+        "unknown_top_level_property": true,
+        "urls": [
+          "https://www.youtube.com"
+        ]
+      }
+    ]
+  )";
+  constexpr char kNormalizedPolicy[] = R"(
+    [
+      {
+        "devices": [
+          {
+            "vendor_id": 1234,
+            "product_id": 5678
+          }
+        ],
+        "urls": [
+          "https://www.youtube.com"
+        ]
+      }
+    ]
+  )";
+
+  PolicyMap policy;
+  policy.Set(key::kWebUsbAllowDevicesForUrls,
+             PolicyLevel::POLICY_LEVEL_MANDATORY,
+             PolicyScope::POLICY_SCOPE_MACHINE,
+             PolicySource::POLICY_SOURCE_CLOUD, ReadJson(kPolicy), nullptr);
+
+  PolicyErrorMap errors;
+  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(handler()->CheckPolicySettings(policy, &errors));
+
+  constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0]\": Unknown property: "
+      u"unknown_top_level_property";
+  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+
+  EXPECT_FALSE(
+      store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, nullptr));
+  UpdateProviderPolicy(policy);
+
+  const base::Value* pref_value = nullptr;
+  EXPECT_TRUE(
+      store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, &pref_value));
+  ASSERT_TRUE(pref_value);
+
+  base::Optional<base::Value> expected_pref_value = ReadJson(kNormalizedPolicy);
+  EXPECT_EQ(*expected_pref_value, *pref_value);
 }
 
 }  // namespace policy
