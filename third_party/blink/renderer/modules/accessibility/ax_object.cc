@@ -160,7 +160,15 @@ String GetIgnoredReasonsDebugString(AXObject::IgnoredReasons& reasons) {
 
 #endif
 
-String GetElementString(Element* element) {
+String GetNodeString(Node* node) {
+  if (node->IsTextNode()) {
+    String string_builder = "\"";
+    string_builder = string_builder + node->nodeValue();
+    string_builder = string_builder + "\"";
+    return string_builder;
+  }
+
+  Element* element = DynamicTo<Element>(node);
   if (!element)
     return "<null>";
 
@@ -1995,7 +2003,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
     DCHECK(!cached_is_ignored_but_included_in_tree_)
         << "Display locked text should not be included in the tree (subject to "
-           "future rule change)";
+           "future rule change): "
+        << ToString(true, true);
   }
 #endif
   bool included_in_tree_changed = false;
@@ -5520,8 +5529,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
     // Add useful HTML element info, like <div.myClass#myId>.
-    if (GetElement())
-      string_builder = string_builder + " " + GetElementString(GetElement());
+    if (GetNode())
+      string_builder = string_builder + " " + GetNodeString(GetNode());
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
@@ -5582,7 +5591,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
         string_builder = string_builder + " ariaHiddenRoot";
         if (aria_hidden_root != this) {
           string_builder =
-              string_builder + GetElementString(aria_hidden_root->GetElement());
+              string_builder + GetNodeString(aria_hidden_root->GetNode());
         }
       }
     }
