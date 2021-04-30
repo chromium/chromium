@@ -10373,66 +10373,80 @@ void RenderFrameHostImpl::
     return;
   }
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_intended",
-                        request->commit_params().intended_as_new_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_intended",
-                        params.intended_as_new_entry);
-
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "browser_method",
-                            browser_method);
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "renderer_method",
-                            params.method);
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "original_method",
-                            request->commit_params().original_method);
-
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_unreachable",
-                        browser_url_is_unreachable);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_unreachable",
-                        params.url_is_unreachable);
-
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "prev_ldwb",
                         is_loaded_from_load_data_with_base_url_);
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "prev_ldwbu",
       is_loaded_from_load_data_with_base_url_and_unreachable_url_);
   SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "b_hist_url_empty",
-      request->common_params().history_url_for_data_url.is_empty());
+      "VerifyDidCommit", "base_url_fdu_empty",
+      request->common_params().base_url_for_data_url.is_empty());
 #if defined(OS_ANDROID)
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_data_url_empty",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "data_url_empty",
                         request->commit_params().data_url_as_string.empty());
 #endif
   SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "r_history_url_empty",
+      "VerifyDidCommit", "history_url_fdu_empty",
       request->common_params().history_url_for_data_url.is_empty());
 
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "browser_post_id",
-                          browser_post_id);
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "renderer_post_id",
-                          params.post_id);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_browser",
+                        request->commit_params().intended_as_new_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_renderer",
+                        params.intended_as_new_entry);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_override_ua",
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "method_browser",
+                            browser_method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "method_renderer",
+                            params.method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "original_method",
+                            request->commit_params().original_method);
+  // For WebView, since we don't want to log potential PIIs.
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "method_post_browser",
+                        browser_method == "POST");
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "method_post_renderer",
+                        params.method == "POST");
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_method_post",
+                        request->commit_params().original_method == "POST");
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "unreachable_browser",
+                        browser_url_is_unreachable);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "unreachable_renderer",
+                        params.url_is_unreachable);
+
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "post_id_browser",
+                          browser_post_id);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "post_id_renderer",
+                          params.post_id);
+  // For WebView, since we don't want to log IDs.
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "post_id_matches",
+                        browser_post_id == params.post_id);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "post_id_-1_browser",
+                        browser_post_id == -1);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "post_id_-1_renderer",
+                        params.post_id == -1);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "override_ua_browser",
                         browser_is_overriding_user_agent);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_override_ua",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "override_ua_renderer",
                         params.is_overriding_user_agent);
 
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "browser_code",
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "code_browser",
                           browser_http_status_code);
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "renderer_code",
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "code_renderer",
                           params.http_status_code);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_suh",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "suh_browser",
                         browser_should_update_history);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_suh",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "suh_renderer",
                         params.should_update_history);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_gesture", browser_gesture);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_gesture",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_browser", browser_gesture);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_renderer",
                         renderer_gesture);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_replace",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_browser",
                         browser_should_replace_current_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_replace",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_renderer",
                         params.should_replace_current_entry);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
@@ -10456,10 +10470,24 @@ void RenderFrameHostImpl::
 
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_reload",
-                        request->GetReloadType() != ReloadType::NONE);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_restore",
-                        request->GetRestoreType() == RestoreType::kRestored);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_count",
+                          frame_tree()->controller().GetEntryCount());
+  SCOPED_CRASH_KEY_NUMBER(
+      "VerifyDidCommit", "last_committed_index",
+      frame_tree()->controller().GetLastCommittedEntryIndex());
+
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "is_reload",
+      NavigationTypeUtils::IsReload(request->common_params().navigation_type));
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "is_restore",
+      NavigationTypeUtils::IsRestore(request->common_params().navigation_type));
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "is_history",
+      NavigationTypeUtils::IsHistory(request->common_params().navigation_type));
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_valid_page_state",
+                        request->commit_params().page_state.IsValid());
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_gesture",
                         request->HasUserGesture());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "was_click",
@@ -10482,8 +10510,12 @@ void RenderFrameHostImpl::
                         request->commit_params().original_url.EqualsIgnoringRef(
                             GetLastCommittedURL()));
 
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "committed_real_load",
+                        frame_tree_node_->has_committed_real_load());
+
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_empty",
                         GetLastCommittedURL().is_empty());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_blank",
