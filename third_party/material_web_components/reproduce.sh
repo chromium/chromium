@@ -21,6 +21,19 @@ check_dep "which npm" "npm" "visiting https://nodejs.org/en/"
 check_dep "which rsync" "rsync" "installing rsync"
 check_dep "which egrep" "egrep" "installing egrep"
 
+INSTALLED_PACKAGES=`npm ls -g`
+
+check_npm_dep() {
+  echo "$INSTALLED_PACKAGES" | grep " $1@" > /dev/null
+  if [ $? -ne 0 ]; then
+    echo >&2 "This script requires $1."
+    echo >&2 "Have you tried sudo npm install -g $1?"
+    exit 1
+  fi
+}
+
+check_npm_dep "resolve"
+
 pushd "$(dirname "$0")" > /dev/null
 
 rm -rf node_modules
@@ -31,6 +44,11 @@ rsync -c --delete --delete-excluded -r -v --prune-empty-dirs \
     --exclude-from="rsync_exclude.txt" \
     "node_modules/" \
     "components-chromium/node_modules/"
+
+# Rewrite imports to relative paths for rollup.
+find components-chromium/ \
+   \( -name "*.js" -or -name "*.d.ts" \) \
+   -exec node rewrite_imports.js {} +
 
 new=$(git status --porcelain components-chromium | grep '^??' | \
       cut -d' ' -f2 | egrep '\.(js|css)$' || true)

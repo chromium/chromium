@@ -53,11 +53,11 @@
  *
  * @packageDocumentation
  */
-import { render } from 'lit-html/lib/shady-render.js';
+import { render } from '../lit-html/lib/shady-render.js';
 import { UpdatingElement } from './lib/updating-element.js';
 export * from './lib/updating-element.js';
 export * from './lib/decorators.js';
-export { html, svg, TemplateResult, SVGTemplateResult } from 'lit-html/lit-html.js';
+export { html, svg, TemplateResult, SVGTemplateResult } from '../lit-html/lit-html.js';
 import { supportsAdoptingStyleSheets, unsafeCSS } from './lib/css-tag.js';
 export * from './lib/css-tag.js';
 // IMPORTANT: do not change the property name or the assignment expression.
