@@ -469,14 +469,11 @@ class EncryptedMediaTest
     // TODO(xhwang): Even when config change or playback is not supported we
     // still start Chrome only to return directly here. We probably should not
     // run these test cases at all. See http://crbug.com/693288
-    if (CurrentSourceType() != SrcType::MSE) {
-      DVLOG(0) << "Config change only happens when using MSE.";
-      return;
-    }
-    if (!IsPlayBackPossible(CurrentKeySystem())) {
-      DVLOG(0) << "Skipping test - ConfigChange test requires video playback.";
-      return;
-    }
+    if (CurrentSourceType() != SrcType::MSE)
+      GTEST_SKIP() << "Config change only happens when using MSE.";
+
+    if (!IsPlayBackPossible(CurrentKeySystem()))
+      GTEST_SKIP() << "ConfigChange test requires video playback.";
 
     base::StringPairs query_params;
     query_params.emplace_back("keySystem", CurrentKeySystem());
@@ -505,10 +502,8 @@ class EncryptedMediaTest
   void TestDifferentContainers(const std::string& video_media_file,
                                const std::string& audio_media_file) {
     // MP4 without MSE is not support yet, http://crbug.com/170793.
-    if (CurrentSourceType() != SrcType::MSE) {
-      DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-      return;
-    }
+    if (CurrentSourceType() != SrcType::MSE)
+      GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
 
     RunEncryptedMediaMultipleFileTest(CurrentKeySystem(), video_media_file,
                                       audio_media_file, media::kEnded);
@@ -590,28 +585,25 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - Playback_Multiple test requires playback.";
-    return;
-  }
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "Playback_Multiple test requires playback.";
+
   TestMultiplePlayback("bear-320x240-av_enc-av.webm");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-flac-cenc.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-opus-cenc.mp4");
 }
 
@@ -619,10 +611,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        DISABLED_Playback_VideoOnly_MP4_VP9) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
@@ -633,10 +624,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9Profile2) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
 
@@ -651,19 +641,17 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-av1-cenc.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1_10bit) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
@@ -694,36 +682,28 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - FrameSizeChange test requires video playback.";
-    return;
-  }
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "FrameSizeChange test requires video playback.";
+
   TestFrameSizeChange();
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, PolicyCheck) {
   // There is no need to run this test twice for the same key system.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP();
 
   TestPolicyCheck();
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, RemoveTemporarySession) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - RemoveTemporarySession test requires license "
-                "server.";
-    return;
-  }
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "RemoveTemporarySession test requires license server.";
 
   // Although this test doesn't play anything, there is no need to run it
   // twice for the same key system.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP();
 
   base::StringPairs query_params{{"keySystem", CurrentKeySystem()}};
   RunEncryptedMediaTestPage("eme_remove_session_test.html", CurrentKeySystem(),
@@ -747,27 +727,23 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, EncryptedMediaDisabled) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-640x360-v_frag-cenc.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_MDAT) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
+
   TestSimplePlayback("bear-640x360-v_frag-cenc-mdat.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBCS) {
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+  if (CurrentSourceType() != SrcType::MSE)
+    GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
 
   TestSimplePlayback("bear-640x360-v_frag-cbcs.mp4");
 }
