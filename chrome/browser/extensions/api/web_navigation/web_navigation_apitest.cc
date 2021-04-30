@@ -225,7 +225,8 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
   WebNavigationApiBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"content_injection_supported", "true"}}}},
+          {{"content_injection_supported", "true"},
+           {"all_extensions_allowed", "true"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
   ~WebNavigationApiBackForwardCacheTest() override = default;

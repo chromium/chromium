@@ -14,12 +14,18 @@ namespace extensions {
 class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
  public:
   explicit ExtensionBackForwardCacheBrowserTest(
+      bool all_extensions_allowed = true,
       bool allow_content_scripts = true) {
+    // If `allow_content_scripts` is true then `all_extensions_allowed` must
+    // also be true.
+    DCHECK(!(allow_content_scripts && !all_extensions_allowed));
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
           {{"content_injection_supported",
             allow_content_scripts ? "true" : "false"},
-           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"all_extensions_allowed",
+            all_extensions_allowed ? "true" : "false"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
@@ -32,18 +38,30 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Test that does not allow content scripts to be injected.
 class ExtensionBackForwardCacheContentScriptDisabledBrowserTest
     : public ExtensionBackForwardCacheBrowserTest {
  public:
   ExtensionBackForwardCacheContentScriptDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(/*allow_content_scripts=*/false) {}
+      : ExtensionBackForwardCacheBrowserTest(/*all_extensions_allowed*/ true,
+                                             /*allow_content_scripts=*/false) {}
 };
 
-IN_PROC_BROWSER_TEST_F(
-    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    ScriptDisallowed) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                                .AppendASCII("content_script")));
+// Test that causes non-component extensions to disable back forward cache.
+class ExtensionBackForwardCacheExtensionsDisabledBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  ExtensionBackForwardCacheExtensionsDisabledBrowserTest()
+      : ExtensionBackForwardCacheBrowserTest(/*all_extensions_allowed*/ false,
+                                             /*allow_content_scripts*/ false) {}
+};
+
+// Tests that a non-component extension that is installed prevents back forward
+// cache.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
+                       ScriptDisallowed) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
+                                .AppendASCII("extension")));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -59,7 +77,39 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Expect that |rfh_a| is destroyed as it wouldn't be placed in the cache.
+  // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
+  // since there is an active non-component loaded extension.
+  EXPECT_TRUE(delete_observer_rfh_a.deleted());
+}
+
+// Test content script injection disallow the back forward cache.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
+    ScriptDisallowed) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                                .AppendASCII("content_script")));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  std::u16string expected_title = u"modified";
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // 2) Navigate to B.
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
+  // since the active extension injected content_scripts.
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
@@ -81,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Ensure that |rfh_a| is in the cache.
+  // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -108,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Expect that |rfh_a| is destroyed as it wouldn't be placed in the cache.
+  // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
@@ -130,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, CSSAllowed) {
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Ensure that |rfh_a| is in the cache.
+  // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -159,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Ensure that |rfh_a| is in the cache.
+  // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -168,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // Now unload the extension after something is in the cache.
   UnloadExtension(extension->id());
 
-  // Expect that |rfh_a| is destroyed as it should be cleared from the cache.
+  // Expect that `rfh_a` is destroyed as it should be cleared from the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
@@ -188,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       ui_test_utils::NavigateToURL(browser(), url_b);
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  // Ensure that |rfh_a| is in the cache.
+  // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -198,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                                 .AppendASCII("content_css")));
 
-  // Expect that |rfh_a| is destroyed as it should be cleared from the cache.
+  // Expect that `rfh_a` is destroyed as it should be cleared from the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 

@@ -33,6 +33,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/invalidate_type.h"
@@ -45,6 +46,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_net_request/web_contents_helper.h"
 #include "extensions/browser/disable_reason.h"
@@ -59,6 +61,7 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -77,6 +80,9 @@ using content::WebContents;
 namespace extensions {
 
 namespace {
+
+// User data key for caching if bfcache is disabled.
+const char kIsBFCacheDisabledKey[] = "extensions.backforward.browsercontext";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -146,6 +152,58 @@ void RecordExtensionPermissionsPerNavigation(
   }
   // kTotal is used as the total navigations denominator.
   RecordPermission(ExtensionPermissionsOnLoad::kTotal);
+}
+
+bool AreAllExtensionsAllowedForBFCache() {
+  // If back forward cache is disabled, indicate we accept everything.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+    return true;
+
+  static base::FeatureParam<bool> all_extensions_allowed(
+      &features::kBackForwardCache, "all_extensions_allowed", false);
+  return all_extensions_allowed.Get();
+}
+
+void DisableBackForwardCacheIfNecessary(
+    const ExtensionSet& enabled_extensions,
+    content::BrowserContext* context,
+    content::NavigationHandle* navigation_handle) {
+  // If we allow all extensions for bfcache then just return.
+  if (AreAllExtensionsAllowedForBFCache())
+    return;
+
+  bool disable_bfcache = false;
+  // If the user data exists we know we are disabled.
+  if (context->GetUserData(kIsBFCacheDisabledKey)) {
+    disable_bfcache = true;
+  } else {
+    // Compute whether we need to disable it.
+    for (const auto& extension : enabled_extensions) {
+      // Skip component extensions.
+      if (Manifest::IsComponentLocation(extension->location())) {
+        continue;
+      }
+      if (util::IsExtensionVisibleToContext(*extension, context)) {
+        // Set a user data key indicating we've disabled disabled bfcache for
+        // this context.
+        context->SetUserData(kIsBFCacheDisabledKey,
+                             std::make_unique<base::SupportsUserData::Data>());
+
+        disable_bfcache = true;
+        break;
+      }
+    }
+  }
+
+  if (disable_bfcache) {
+    // We do not care if GetPreviousRenderFrameHostId returns a reused
+    // RenderFrameHost since disabling the cache multiple times has no side
+    // effects.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kExtensions));
+  }
 }
 
 }  // namespace
@@ -286,6 +344,9 @@ void TabHelper::DidFinishNavigation(
       enabled_extensions, context,
       sessions::SessionTabHelper::IdForTab(web_contents()).id(),
       navigation_handle->GetURL());
+
+  DisableBackForwardCacheIfNecessary(enabled_extensions, context,
+                                     navigation_handle);
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser && browser->deprecated_is_app()) {

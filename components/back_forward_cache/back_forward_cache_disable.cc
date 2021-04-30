@@ -31,6 +31,8 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "PermissionRequestManager";
     case DisabledReasonId::kModalDialog:
       return "ModalDialog";
+    case DisabledReasonId::kExtensions:
+      return "Extensions";
     default:
       return "Unknown (default)";
   }

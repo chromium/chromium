@@ -6706,6 +6706,7 @@ others/histograms.xml -->
       label="kEmbedder-kChromePasswordManagerClient_BindCredentialManager"/>
   <int value="196618" label="kEmbedder-kPermissionRequestManager"/>
   <int value="196619" label="kEmbedder-kModalDialog"/>
+  <int value="196620" label="kEmbedder-kExtensions"/>
 </enum>
 
 <enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">
