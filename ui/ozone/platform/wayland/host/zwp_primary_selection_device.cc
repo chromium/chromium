@@ -28,9 +28,9 @@ ZwpPrimarySelectionDevice::~ZwpPrimarySelectionDevice() = default;
 
 void ZwpPrimarySelectionDevice::SetSelectionSource(
     ZwpPrimarySelectionSource* source) {
-  DCHECK(source);
-  zwp_primary_selection_device_v1_set_selection(
-      data_device_.get(), source->data_source(), connection()->serial());
+  auto* data_source = source ? source->data_source() : nullptr;
+  zwp_primary_selection_device_v1_set_selection(data_device_.get(), data_source,
+                                                connection()->serial());
   connection()->ScheduleFlush();
 }
 
