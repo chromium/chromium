@@ -2,14 +2,12 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "outDir": "./",
 
     "noEmitOnError": true,
     "pretty": true,
 
     "composite": true,
     "declaration": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
 
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,

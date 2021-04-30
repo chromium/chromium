@@ -13,6 +13,7 @@ template("ts_library") {
                              "deps",
                              "extra_deps",
                              "in_files",
+                             "tsconfig_base",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
@@ -75,6 +76,14 @@ template("ts_library") {
         args +=
             [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
       }
+    }
+
+    if (defined(tsconfig_base)) {
+      inputs += [ tsconfig_base ]
+      args += [
+        "--tsconfig_base",
+        rebase_path(tsconfig_base, target_gen_dir),
+      ]
     }
 
     if (defined(extra_deps)) {

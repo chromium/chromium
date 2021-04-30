@@ -7,6 +7,7 @@ import json
 import os
 import re
 import sys
+from collections import OrderedDict
 
 _CWD = os.getcwd()
 _HERE_DIR = os.path.dirname(__file__)
@@ -33,15 +34,25 @@ def main(argv):
   parser.add_argument('--path_mappings', nargs='*')
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--out_dir', required=True)
+  parser.add_argument('--tsconfig_base')
   parser.add_argument('--in_files', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   args = parser.parse_args(argv)
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
+  TSCONFIG_BASE_PATH = os.path.join(_HERE_DIR, 'tsconfig_base.json')
 
-  with open(os.path.join(_HERE_DIR, 'tsconfig_base.json')) as root_tsconfig:
-    tsconfig = json.loads(root_tsconfig.read())
+  tsconfig = OrderedDict()
+
+  tsconfig['extends'] = args.tsconfig_base \
+      if args.tsconfig_base is not None \
+      else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
+
+  tsconfig['compilerOptions'] = OrderedDict()
+  tsconfig['compilerOptions']['tsBuildInfoFile'] = 'tsconfig.tsbuildinfo'
+  tsconfig['compilerOptions']['rootDir'] = root_dir
+  tsconfig['compilerOptions']['outDir'] = out_dir
 
   tsconfig['files'] = []
   if args.in_files is not None:
@@ -50,9 +61,6 @@ def main(argv):
 
   if args.definitions is not None:
     tsconfig['files'].extend(args.definitions)
-
-  tsconfig['compilerOptions']['rootDir'] = root_dir
-  tsconfig['compilerOptions']['outDir'] = out_dir
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
