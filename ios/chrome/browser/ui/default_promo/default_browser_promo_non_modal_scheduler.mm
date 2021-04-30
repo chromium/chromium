@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -80,9 +81,21 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 - (void)logUserFinishedActivityFlow {
 }
 
-- (void)dismissPromo {
+- (void)logPromoWasDismissed {
+  self.promoIsShowing = NO;
+}
+
+- (void)logTabGridEntered {
+  [self dismissPromoAnimated:YES];
+}
+
+- (void)logPopupMenuEntered {
+  [self dismissPromoAnimated:YES];
+}
+
+- (void)dismissPromoAnimated:(BOOL)animated {
   [self cancelDismissPromoTimer];
-  [self.handler dismissDefaultBrowserNonModalPromo];
+  [self.handler dismissDefaultBrowserNonModalPromoAnimated:animated];
 }
 
 - (void)setWebStateList:(WebStateList*)webStateList {
@@ -140,7 +153,16 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
     willShowOverlayForRequest:(OverlayRequest*)request
           initialPresentation:(BOOL)initialPresentation {
   [self cancelShowPromoTimer];
-  [self dismissPromo];
+  [self dismissPromoAnimated:YES];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level <= SceneActivationLevelBackground) {
+    [self.handler dismissDefaultBrowserNonModalPromoAnimated:NO];
+  }
 }
 
 #pragma mark - Timer Management
@@ -191,11 +213,7 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 
 - (void)dismissPromoTimerFinished {
   self.dismissPromoTimer = nil;
-  [self.handler dismissDefaultBrowserNonModalPromo];
-}
-
-- (void)logPromoWasDismissed {
-  self.promoIsShowing = NO;
+  [self.handler dismissDefaultBrowserNonModalPromoAnimated:YES];
 }
 
 @end

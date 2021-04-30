@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
@@ -98,6 +99,7 @@
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
                                   DefaultBrowserPromoCommands,
+                                  DefaultPromoNonModalPresentationDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
@@ -540,10 +542,16 @@
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+
+  self.viewController.nonModalPromoScheduler =
+      [DefaultBrowserSceneAgent agentFromScene:sceneState].nonModalScheduler;
+  self.viewController.nonModalPromoPresentationDelegate = self;
+
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                           ->GetSceneState()];
+    IncognitoReauthSceneAgent* reauthAgent =
+        [IncognitoReauthSceneAgent agentFromScene:sceneState];
 
     self.incognitoAuthMediator =
         [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
@@ -1090,8 +1098,8 @@
                                                    completion:nil];
 }
 
-- (void)dismissDefaultBrowserNonModalPromo {
-  [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:YES
+- (void)dismissDefaultBrowserNonModalPromoAnimated:(BOOL)animated {
+  [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:animated
                                                    completion:nil];
 }
 
@@ -1103,6 +1111,18 @@
   [agent.nonModalScheduler logPromoWasDismissed];
   [self.nonModalPromoCoordinator stop];
   self.nonModalPromoCoordinator = nil;
+}
+
+#pragma mark - DefaultPromoNonModalPresentationDelegate
+
+- (BOOL)defaultNonModalPromoIsShowing {
+  return self.nonModalPromoCoordinator != nil;
+}
+
+- (void)dismissDefaultNonModalPromoAnimated:(BOOL)animated
+                                 completion:(void (^)())completion {
+  [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:animated
+                                                   completion:completion];
 }
 
 @end

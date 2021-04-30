@@ -790,6 +790,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       OverlayPresenter::FromBrowser(mainBrowser,
                                     OverlayModality::kInfobarBanner);
   [self.sceneState addAgent:defaultBrowserAgent];
+  if (defaultBrowserAgent.nonModalScheduler) {
+    [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];
+  }
 
   [self.sceneState
       addAgent:[[PolicySignoutSceneAgent alloc]

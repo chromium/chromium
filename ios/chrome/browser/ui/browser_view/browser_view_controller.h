@@ -23,6 +23,8 @@ class Browser;
 @class BrowserContainerViewController;
 @class BrowserViewControllerDependencyFactory;
 @class CommandDispatcher;
+@class DefaultBrowserPromoNonModalScheduler;
+@protocol DefaultPromoNonModalPresentationDelegate;
 @class ToolbarAccessoryPresenter;
 @protocol IncognitoReauthCommands;
 
@@ -80,6 +82,15 @@ class Browser;
 // Positioner for activity services attached to the toolbar.
 @property(nonatomic, readonly) id<ActivityServicePositioner>
     activityServicePositioner;
+
+// Scheduler for the non-modal default browser promo.
+// TODO(crbug.com/1204120): The BVC should not need this model-level object.
+@property(nonatomic, weak)
+    DefaultBrowserPromoNonModalScheduler* nonModalPromoScheduler;
+
+// Presentation delegate for the non-modal default browser promo.
+@property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
+    nonModalPromoPresentationDelegate;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;

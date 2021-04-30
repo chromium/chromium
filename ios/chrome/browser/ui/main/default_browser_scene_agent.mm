@@ -41,6 +41,7 @@
   if (!base::ios::IsRunningOnOrLater(14, 0, 1)) {
     return;
   }
+
   AppState* appState = self.sceneState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the UI if user has met the

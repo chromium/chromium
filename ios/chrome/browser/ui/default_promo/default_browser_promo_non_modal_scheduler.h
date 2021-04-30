@@ -7,13 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/main/scene_state_observer.h"
+
 @class CommandDispatcher;
 class OverlayPresenter;
 class WebStateList;
 
 // A scheduler that determines when to show the non-modal default browser
 // promo based on many sources of data.
-@interface DefaultBrowserPromoNonModalScheduler : NSObject
+@interface DefaultBrowserPromoNonModalScheduler : NSObject <SceneStateObserver>
 
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 
@@ -33,6 +35,12 @@ class WebStateList;
 
 // Handles the promo being dismissed, either through user action or timeout.
 - (void)logPromoWasDismissed;
+
+// Handles entering the tab grid, dismissing the promo.
+- (void)logTabGridEntered;
+
+// Handles presenting the popup menu, dismissing the promo.
+- (void)logPopupMenuEntered;
 
 @end
 
