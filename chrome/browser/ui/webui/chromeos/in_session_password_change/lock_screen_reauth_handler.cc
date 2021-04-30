@@ -20,6 +20,7 @@
 #include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -174,7 +175,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.SetBoolean("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetBoolean("doSamlRedirect", ShouldDoSamlRedirect(context.email));
-
+  params.SetString("clientVersion", version_info::GetVersionNumber());
   AllowJavascript();
   CallJavascriptFunction("$(\'main-element\').loadAuthenticator", params);
 }
