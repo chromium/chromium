@@ -7,110 +7,93 @@
  * These values are persisted to logs and should not be renumbered or
  * re-used.
  * See tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const NuxNtpBackgroundInteractions = {
-  PageShown: 0,
-  DidNothingAndNavigatedAway: 1,
-  DidNothingAndChoseSkip: 2,
-  DidNothingAndChoseNext: 3,
-  ChoseAnOptionAndNavigatedAway: 4,
-  ChoseAnOptionAndChoseSkip: 5,
-  ChoseAnOptionAndChoseNext: 6,
-  NavigatedAwayThroughBrowserHistory: 7,
-  BackgroundImageFailedToLoad: 8,
-  BackgroundImageNeverLoaded: 9,
-};
+export enum NuxNtpBackgroundInteractions {
+  PageShown = 0,
+  DidNothingAndNavigatedAway,
+  DidNothingAndChoseSkip,
+  DidNothingAndChoseNext,
+  ChoseAnOptionAndNavigatedAway,
+  ChoseAnOptionAndChoseSkip,
+  ChoseAnOptionAndChoseNext,
+  NavigatedAwayThroughBrowserHistory,
+  BackgroundImageFailedToLoad,
+  BackgroundImageNeverLoaded,
+}
 
 /**
  * NuxGoogleAppsInteractions enum.
  * These values are persisted to logs and should not be renumbered or
  * re-used.
  * See tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const NuxGoogleAppsInteractions = {
-  PageShown: 0,
-  NotUsed_DEPRECATED: 1,
-  GetStarted_DEPRECATED: 2,
-  DidNothingAndNavigatedAway: 3,
-  DidNothingAndChoseSkip: 4,
-  ChoseAnOptionAndNavigatedAway: 5,
-  ChoseAnOptionAndChoseSkip: 6,
-  ChoseAnOptionAndChoseNext: 7,
-  ClickedDisabledNextButtonAndNavigatedAway: 8,
-  ClickedDisabledNextButtonAndChoseSkip: 9,
-  ClickedDisabledNextButtonAndChoseNext: 10,
-  DidNothingAndChoseNext: 11,
-  NavigatedAwayThroughBrowserHistory: 12,
-};
-
-/** @interface */
-class ModuleMetricsProxy {
-  recordPageShown() {}
-
-  recordDidNothingAndNavigatedAway() {}
-
-  recordDidNothingAndChoseSkip() {}
-
-  recordDidNothingAndChoseNext() {}
-
-  recordChoseAnOptionAndNavigatedAway() {}
-
-  recordChoseAnOptionAndChoseSkip() {}
-
-  recordChoseAnOptionAndChoseNext() {}
-
-  recordClickedDisabledNextButtonAndNavigatedAway() {}
-
-  recordClickedDisabledNextButtonAndChoseSkip() {}
-
-  recordClickedDisabledNextButtonAndChoseNext() {}
-
-  recordNavigatedAwayThroughBrowserHistory() {}
+export enum NuxGoogleAppsInteractions {
+  PageShown = 0,
+  NotUsed_DEPRECATED,
+  GetStarted_DEPRECATED,
+  DidNothingAndNavigatedAway,
+  DidNothingAndChoseSkip,
+  ChoseAnOptionAndNavigatedAway,
+  ChoseAnOptionAndChoseSkip,
+  ChoseAnOptionAndChoseNext,
+  ClickedDisabledNextButtonAndNavigatedAway,
+  ClickedDisabledNextButtonAndChoseSkip,
+  ClickedDisabledNextButtonAndChoseNext,
+  DidNothingAndChoseNext,
+  NavigatedAwayThroughBrowserHistory,
 }
 
-/** @implements {ModuleMetricsProxy} */
-export class ModuleMetricsProxyImpl {
+interface ModuleMetricsProxy {
+  recordPageShown(): void;
+  recordDidNothingAndNavigatedAway(): void;
+  recordDidNothingAndChoseSkip(): void;
+  recordDidNothingAndChoseNext(): void;
+  recordChoseAnOptionAndNavigatedAway(): void;
+  recordChoseAnOptionAndChoseSkip(): void;
+  recordChoseAnOptionAndChoseNext(): void;
+  recordClickedDisabledNextButtonAndNavigatedAway(): void;
+  recordClickedDisabledNextButtonAndChoseSkip(): void;
+  recordClickedDisabledNextButtonAndChoseNext(): void;
+  recordNavigatedAwayThroughBrowserHistory(): void;
+}
+
+export class ModuleMetricsProxyImpl implements ModuleMetricsProxy {
+  private interactionMetric_: string;
+  private interactions_: any;
+
   /**
-   * @param {string} histogramName The histogram that will record the module
+   * @param histogramName The histogram that will record the module
    *      navigation metrics.
    */
-  constructor(histogramName, interactions) {
-    /** @private {string} */
+  constructor(histogramName: string, interactions: any) {
     this.interactionMetric_ = histogramName;
     this.interactions_ = interactions;
   }
 
-  /** @override */
   recordPageShown() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.PageShown,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordDidNothingAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.DidNothingAndNavigatedAway,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordDidNothingAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.DidNothingAndChoseSkip,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordDidNothingAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.DidNothingAndChoseNext,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordChoseAnOptionAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
@@ -118,21 +101,18 @@ export class ModuleMetricsProxyImpl {
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordChoseAnOptionAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.ChoseAnOptionAndChoseSkip,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordChoseAnOptionAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_, this.interactions_.ChoseAnOptionAndChoseNext,
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndNavigatedAway() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
@@ -140,7 +120,6 @@ export class ModuleMetricsProxyImpl {
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndChoseSkip() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
@@ -148,7 +127,6 @@ export class ModuleMetricsProxyImpl {
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndChoseNext() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
@@ -156,7 +134,6 @@ export class ModuleMetricsProxyImpl {
         Object.keys(this.interactions_).length);
   }
 
-  /** @override */
   recordNavigatedAwayThroughBrowserHistory() {
     chrome.metricsPrivate.recordEnumerationValue(
         this.interactionMetric_,
@@ -166,10 +143,12 @@ export class ModuleMetricsProxyImpl {
 }
 
 export class ModuleMetricsManager {
-  /** @param {ModuleMetricsProxy} metricsProxy */
-  constructor(metricsProxy) {
-    this.metricsProxy_ = metricsProxy;
+  private metricsProxy_: ModuleMetricsProxy;
+  private options_: any;
+  firstPart: any;
 
+  constructor(metricsProxy: ModuleMetricsProxy) {
+    this.metricsProxy_ = metricsProxy;
     this.options_ = {
       didNothing: {
         andNavigatedAway: metricsProxy.recordDidNothingAndNavigatedAway,

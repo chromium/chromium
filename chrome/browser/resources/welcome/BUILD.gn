@@ -7,13 +7,12 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_chromeos_ash && !is_android)
 
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 generate_grd("build_grd") {
   grd_prefix = "welcome"
@@ -36,14 +35,8 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
 
-  deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
+  deps = [ ":build" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 
   if (is_chrome_branded) {
     deps += [ ":build_icons_grdp" ]
@@ -77,21 +70,20 @@ if (is_chrome_branded) {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "google_apps/google_app_proxy.js",
-    "google_apps/google_apps_metrics_proxy.js",
-    "landing_view_proxy.js",
-    "navigation_behavior.js",
-    "ntp_background/ntp_background_metrics_proxy.js",
-    "ntp_background/ntp_background_proxy.js",
-    "set_as_default/nux_set_as_default_proxy.js",
-    "shared/bookmark_proxy.js",
-    "shared/module_metrics_proxy.js",
-    "shared/nux_types.js",
-    "signin_view_proxy.js",
-    "welcome_browser_proxy.js",
-    "welcome.js",
+    "google_apps/google_app_proxy.ts",
+    "google_apps/google_apps_metrics_proxy.ts",
+    "landing_view_proxy.ts",
+    "navigation_behavior.ts",
+    "ntp_background/ntp_background_metrics_proxy.ts",
+    "ntp_background/ntp_background_proxy.ts",
+    "set_as_default/nux_set_as_default_proxy.ts",
+    "shared/bookmark_proxy.ts",
+    "shared/module_metrics_proxy.ts",
+    "shared/nux_types.ts",
+    "signin_view_proxy.ts",
+    "welcome_browser_proxy.ts",
+    "welcome.ts",
   ]
 }
 
@@ -99,21 +91,20 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "google_apps/nux_google_apps.js",
-    "landing_view.js",
-    "ntp_background/nux_ntp_background.js",
-    "set_as_default/nux_set_as_default.js",
-    "shared/action_link_style_css.js",
-    "shared/animations_css.js",
-    "shared/chooser_shared_css.js",
-    "shared/navi_colors_css.js",
-    "shared/onboarding_background.js",
-    "shared/splash_pages_shared_css.js",
-    "shared/step_indicator.js",
-    "signin_view.js",
-    "welcome_app.js",
+    "google_apps/nux_google_apps.ts",
+    "landing_view.ts",
+    "ntp_background/nux_ntp_background.ts",
+    "set_as_default/nux_set_as_default.ts",
+    "shared/action_link_style_css.ts",
+    "shared/animations_css.ts",
+    "shared/chooser_shared_css.ts",
+    "shared/navi_colors_css.ts",
+    "shared/onboarding_background.ts",
+    "shared/splash_pages_shared_css.ts",
+    "shared/step_indicator.ts",
+    "signin_view.ts",
+    "welcome_app.ts",
   ]
 }
 
@@ -134,78 +125,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-group("closure_compile") {
-  deps = [
-    ":welcome_files",
-    "./google_apps:closure_compile",
-    "./ntp_background:closure_compile",
-    "./set_as_default:closure_compile",
-    "./shared:closure_compile",
-  ]
-}
-
-js_type_check("welcome_files") {
-  is_polymer3 = true
-  deps = [
-    ":landing_view",
-    ":signin_view",
-    ":welcome_app",
-  ]
-}
-
-js_library("landing_view") {
-  deps = [
-    ":landing_view_proxy",
-    ":navigation_behavior",
-    ":welcome_browser_proxy",
-    "./shared:onboarding_background",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("landing_view_proxy") {
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("signin_view") {
-  deps = [
-    ":navigation_behavior",
-    ":signin_view_proxy",
-    ":welcome_browser_proxy",
-    "./shared:onboarding_background",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("signin_view_proxy") {
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigation_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("welcome_app") {
-  deps = [
-    ":navigation_behavior",
-    ":welcome_browser_proxy",
-    "./set_as_default/:nux_set_as_default_proxy",
-    "./shared:bookmark_proxy",
-    "./shared:nux_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("welcome_browser_proxy") {
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 group("web_components") {
   public_deps = [
     ":web_components_local",
@@ -218,8 +137,55 @@ group("web_components") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "landing_view.js",
-    "signin_view.js",
-    "welcome_app.js",
+    "landing_view.ts",
+    "signin_view.ts",
+    "welcome_app.ts",
+  ]
+}
+
+ts_library("build") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/$preprocess_folder"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "google_apps/google_app_proxy.ts",
+    "google_apps/google_apps_metrics_proxy.ts",
+    "google_apps/nux_google_apps.ts",
+    "landing_view.ts",
+    "landing_view_proxy.ts",
+    "navigation_behavior.ts",
+    "ntp_background/ntp_background_metrics_proxy.ts",
+    "ntp_background/ntp_background_proxy.ts",
+    "ntp_background/nux_ntp_background.ts",
+    "set_as_default/nux_set_as_default.ts",
+    "set_as_default/nux_set_as_default_proxy.ts",
+    "shared/action_link_style_css.ts",
+    "shared/animations_css.ts",
+    "shared/bookmark_proxy.ts",
+    "shared/chooser_shared_css.ts",
+    "shared/module_metrics_proxy.ts",
+    "shared/navi_colors_css.ts",
+    "shared/nux_types.ts",
+    "shared/onboarding_background.ts",
+    "shared/splash_pages_shared_css.ts",
+    "shared/step_indicator.ts",
+    "signin_view.ts",
+    "signin_view_proxy.ts",
+    "welcome_app.ts",
+    "welcome_browser_proxy.ts",
+    "welcome.ts",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }

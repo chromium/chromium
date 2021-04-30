@@ -13,21 +13,21 @@ declare namespace chrome {
 
     export interface BookmarkTreeNode {
       id: string;
-      parentId: string|undefined;
-      index: number|undefined;
-      url: string|undefined;
+      parentId?: string;
+      index?: number;
+      url?: string;
       title: string;
-      dateAdded: number|undefined;
-      dateGroupModified: number|undefined;
-      unmodifiable: BookmarkTreeNodeUnmodifiable|undefined;
-      children: BookmarkTreeNode[]|undefined;
+      dateAdded?: number;
+      dateGroupModified?: number;
+      unmodifiable?: BookmarkTreeNodeUnmodifiable;
+      children?: BookmarkTreeNode[];
     }
 
     export interface CreateDetails {
-      parentId: string|undefined;
-      index: number|undefined;
-      title: string|undefined;
-      url: string|undefined;
+      parentId?: string;
+      index?: number;
+      title?: string;
+      url?: string;
     }
 
     export const MAX_WRITE_OPERATIONS_PER_HOUR: number;

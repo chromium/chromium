@@ -13,20 +13,14 @@ import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from '../navigation_behavior.js';
+import {navigateToNextStep, NavigationBehavior} from '../navigation_behavior.js';
 import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {NavigationBehaviorInterface}
- */
 const NuxSetAsDefaultElementBase =
     mixinBehaviors([WebUIListenerBehavior, NavigationBehavior], PolymerElement);
 
@@ -42,7 +36,6 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   static get properties() {
     return {
-      /** @type {stepIndicatorModel} */
       indicatorModel: Object,
 
       // <if expr="is_win">
@@ -59,20 +52,16 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     };
   }
 
+  private browserProxy_: NuxSetAsDefaultProxy|null = null;
+  private finalized_: boolean = false;
+  private navigateToNextStep_: Function;
+  indicatorModel: stepIndicatorModel;
+
   constructor() {
     super();
-
-    /** @private {NuxSetAsDefaultProxy} */
-    this.browserProxy_ = null;
-
-    /** @private {boolean} */
-    this.finalized_ = false;
-
-    /** @private {!Function} */
     this.navigateToNextStep_ = navigateToNextStep;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -104,8 +93,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_.recordNavigatedAway();
   }
 
-  /** @private */
-  onDeclineClick_() {
+  private onDeclineClick_() {
     if (this.finalized_) {
       return;
     }
@@ -114,8 +102,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.finished_();
   }
 
-  /** @private */
-  onSetDefaultClick_() {
+  private onSetDefaultClick_() {
     if (this.finalized_) {
       return;
     }
@@ -126,10 +113,8 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   /**
    * Automatically navigate to the next onboarding step once default changed.
-   * @param {!DefaultBrowserInfo} status
-   * @private
    */
-  onDefaultBrowserChange_(status) {
+  private onDefaultBrowserChange_(status: DefaultBrowserInfo) {
     if (status.isDefault) {
       this.browserProxy_.recordSuccessfullySetDefault();
       // Triggers toast in the containing welcome-app.
@@ -149,10 +134,9 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     // </if>
   }
 
-  /** @private */
-  finished_() {
+  private finished_() {
     this.finalized_ = true;
     this.navigateToNextStep_();
   }
 }
-customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement);
+customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement as any);

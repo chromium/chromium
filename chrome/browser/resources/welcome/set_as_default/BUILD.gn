@@ -5,27 +5,6 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [ ":nux_set_as_default" ]
-}
-
-js_library("nux_set_as_default") {
-  deps = [
-    ":nux_set_as_default_proxy",
-    "../:navigation_behavior",
-    "../shared:nux_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("nux_set_as_default_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
 html_to_js("web_components") {
-  js_files = [ "nux_set_as_default.js" ]
+  js_files = [ "nux_set_as_default.ts" ]
 }

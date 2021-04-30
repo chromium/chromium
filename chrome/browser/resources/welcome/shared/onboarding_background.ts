@@ -19,39 +19,29 @@ export class OnboardingBackgroundElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
-
-    /** @private @const {!Array<!Animation>} */
-    this.animations_ = [];
-  }
+  private animations_: Animation[] = [];
 
   connectedCallback() {
     super.connectedCallback();
-
-    [['blue-line', 60],
-     ['green-line', 68],
-     ['red-line', 45],
-     ['grey-line', 68],
-     ['yellow-line', 49],
-    ].forEach(([id, width]) => {
+    const details: Array<[string, number]> = [
+      ['blue-line', 60],
+      ['green-line', 68],
+      ['red-line', 45],
+      ['grey-line', 68],
+      ['yellow-line', 49],
+    ];
+    details.forEach(([id, width]) => {
       this.createLineAnimation_(
-          /** @type{!HTMLElement} */ (this.shadowRoot.querySelector(`#${id}`)),
-          width);
+          (this.shadowRoot.querySelector(`#${id}`) as HTMLElement), width);
     });
   }
 
-  /**
-   * @param {!HTMLElement} lineContainer
-   * @param {number} width
-   * @private
-   */
-  createLineAnimation_(lineContainer, width) {
+  private createLineAnimation_(lineContainer: HTMLElement, width: number) {
     const line = lineContainer.firstElementChild;
     const lineFill = line.firstElementChild;
     const pointOptions = {
       endDelay: 3250,
-      fill: 'forwards',
+      fill: 'forwards' as FillMode,
       duration: 750,
     };
 
@@ -60,8 +50,7 @@ export class OnboardingBackgroundElement extends PolymerElement {
           {width: '0px'},
           {width: `${width}px`},
         ],
-        Object.assign({}, pointOptions, {easing: 'cubic-bezier(.6,0,0,1)'}),
-    );
+        Object.assign({}, pointOptions, {easing: 'cubic-bezier(.6,0,0,1)'}));
     startPointAnimation.pause();
     this.animations_.push(startPointAnimation);
     this.loopAnimation_(startPointAnimation);
@@ -72,8 +61,7 @@ export class OnboardingBackgroundElement extends PolymerElement {
           {width: '0px'},
         ],
         Object.assign(
-            {}, pointOptions, {easing: 'cubic-bezier(.66,0,.86,.25)'}),
-    );
+            {}, pointOptions, {easing: 'cubic-bezier(.66,0,.86,.25)'}));
     endPointWidthAnimation.pause();
     this.animations_.push(endPointWidthAnimation);
     this.loopAnimation_(endPointWidthAnimation);
@@ -85,8 +73,7 @@ export class OnboardingBackgroundElement extends PolymerElement {
         ],
         Object.assign({}, pointOptions, {
           easing: 'cubic-bezier(.66,0,.86,.25)',
-        }),
-    );
+        }));
     endPointTransformAnimation.pause();
     this.animations_.push(endPointTransformAnimation);
     this.loopAnimation_(endPointTransformAnimation);
@@ -102,18 +89,13 @@ export class OnboardingBackgroundElement extends PolymerElement {
           easing: 'cubic-bezier(0,.56,.46,1)',
           endDelay: 2500,
           fill: 'forwards',
-        },
-    );
+        });
     lineTransformAnimation.pause();
     this.animations_.push(lineTransformAnimation);
     this.loopAnimation_(lineTransformAnimation);
   }
 
-  /**
-   * @param {!Animation} animation
-   * @private
-   */
-  loopAnimation_(animation) {
+  private loopAnimation_(animation: Animation) {
     // Animations that have a delay after them can only be looped by re-playing
     // them as soon as they finish. The |endDelay| property of JS animations
     // only works if |iterations| is 1, and the |delay| property runs before

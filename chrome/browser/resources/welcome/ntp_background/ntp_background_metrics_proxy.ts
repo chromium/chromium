@@ -12,19 +12,16 @@ export class NtpBackgroundMetricsProxyImpl extends ModuleMetricsProxyImpl {
   }
 
   getInteractions() {
-    return this.interactions_;
+    return NuxNtpBackgroundInteractions;
   }
 
-  /** @return {!NtpBackgroundMetricsProxyImpl} */
-  static getInstance() {
+  static getInstance(): NtpBackgroundMetricsProxyImpl {
     return instance || (instance = new NtpBackgroundMetricsProxyImpl());
   }
 
-  /** @param {!NtpBackgroundMetricsProxyImpl} obj */
-  static setInstance(obj) {
+  static setInstance(obj: NtpBackgroundMetricsProxyImpl) {
     instance = obj;
   }
 }
 
-/** @type {?NtpBackgroundMetricsProxyImpl} */
-let instance = null;
+let instance: NtpBackgroundMetricsProxyImpl|null = null;

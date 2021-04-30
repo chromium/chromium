@@ -5,80 +5,60 @@
 const NUX_SIGNIN_VIEW_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.SignInInterstitialInteraction';
 
-/**
- * NuxSignInInterstitialInteractions enum.
- * These values are persisted to logs and should not be renumbered or re-used.
- * See tools/metrics/histograms/enums.xml.
- * @enum {number}
- */
-const NuxSignInInterstitialInteractions = {
-  PageShown: 0,
-  NavigatedAway: 1,
-  Skip: 2,
-  SignIn: 3,
-  NavigatedAwayThroughBrowserHistory: 4,
-};
+enum NuxSignInInterstitialInteractions {
+  PageShown = 0,
+  NavigatedAway,
+  Skip,
+  SignIn,
+  NavigatedAwayThroughBrowserHistory,
+}
 
 const NUX_SIGNIN_VIEW_INTERACTIONS_COUNT =
     Object.keys(NuxSignInInterstitialInteractions).length;
 
-/** @interface */
-export class SigninViewProxy {
-  recordPageShown() {}
-  recordNavigatedAway() {}
-  recordNavigatedAwayThroughBrowserHistory() {}
-  recordSkip() {}
-  recordSignIn() {}
+export interface SigninViewProxy {
+  recordPageShown(): void;
+  recordNavigatedAway(): void;
+  recordNavigatedAwayThroughBrowserHistory(): void;
+  recordSkip(): void;
+  recordSignIn(): void;
 }
 
-/** @implements {SigninViewProxy} */
-export class SigninViewProxyImpl {
-  /** @override */
+export class SigninViewProxyImpl implements SigninViewProxy {
   recordPageShown() {
     this.recordInteraction_(NuxSignInInterstitialInteractions.PageShown);
   }
 
-  /** @override */
   recordNavigatedAway() {
     this.recordInteraction_(NuxSignInInterstitialInteractions.NavigatedAway);
   }
 
-  /** @override */
   recordNavigatedAwayThroughBrowserHistory() {
     this.recordInteraction_(
         NuxSignInInterstitialInteractions.NavigatedAwayThroughBrowserHistory);
   }
 
-  /** @override */
   recordSkip() {
     this.recordInteraction_(NuxSignInInterstitialInteractions.Skip);
   }
 
-  /** @override */
   recordSignIn() {
     this.recordInteraction_(NuxSignInInterstitialInteractions.SignIn);
   }
 
-  /**
-   * @param {number} interaction
-   * @private
-   */
-  recordInteraction_(interaction) {
+  private recordInteraction_(interaction: number): void {
     chrome.metricsPrivate.recordEnumerationValue(
         NUX_SIGNIN_VIEW_INTERACTION_METRIC_NAME, interaction,
         NUX_SIGNIN_VIEW_INTERACTIONS_COUNT);
   }
 
-  /** @return {!SigninViewProxy} */
-  static getInstance() {
+  static getInstance(): SigninViewProxy {
     return instance || (instance = new SigninViewProxyImpl());
   }
 
-  /** @param {!SigninViewProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: SigninViewProxy) {
     instance = obj;
   }
 }
 
-/** @type {?SigninViewProxy} */
-let instance = null;
+let instance: SigninViewProxy|null = null;

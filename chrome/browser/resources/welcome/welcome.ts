@@ -9,6 +9,12 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+declare global {
+  interface Window {
+    defaultResourceLoaded: boolean;
+  }
+}
+
 assert(
     !window.defaultResourceLoaded,
     'welcome.js run twice. You probably have an invalid import.');

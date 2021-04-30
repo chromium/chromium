@@ -16,42 +16,33 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
+import {NavigationBehavior, Routes} from './navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
 /**
  * The strings contained in the arrays should be valid DOM-element tag names.
- * @typedef {{
- *   'new-user': !Array<string>,
- *   'returning-user': !Array<string>
- * }}
  */
-let NuxOnboardingModules;
+type NuxOnboardingModules = {
+  'new-user': string[],
+  'returning-user': string[]
+};
 
 /**
  * This list needs to be updated if new modules need to be supported in the
  * onboarding flow.
- * @const {!Set<string>}
  */
-const MODULES_WHITELIST = new Set([
+const MODULES_WHITELIST: Set<string> = new Set([
   'nux-google-apps', 'nux-ntp-background', 'nux-set-as-default', 'signin-view'
 ]);
 
 /**
  * This list needs to be updated if new modules that need step-indicators are
  * added.
- * @const {!Set<string>}
  */
-const MODULES_NEEDING_INDICATOR =
+const MODULES_NEEDING_INDICATOR: Set<string> =
     new Set(['nux-google-apps', 'nux-ntp-background', 'nux-set-as-default']);
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NavigationBehaviorInterface}
- */
 const WelcomeAppElementBase =
     mixinBehaviors([NavigationBehavior], PolymerElement);
 
@@ -67,27 +58,22 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
   static get properties() {
     return {
-      /** @private */
-      modulesInitialized_: {
-        type: Boolean,
-        // Default to false so view-manager is hidden until views are
-        // initialized.
-        value: false,
-      },
+      modulesInitialized_: Boolean,
     };
   }
+  private currentRoute_: Routes|null = null;
+  private modules_: NuxOnboardingModules;
+
+  // Default to false so view-manager is hidden until views are
+  // initialized.
+  private modulesInitialized_: boolean = false;
 
   constructor() {
     super();
-
-    /** @private {?Routes} */
-    this.currentRoute_ = null;
-
-    /** @private {NuxOnboardingModules} */
     this.modules_ = {
       'new-user': loadTimeData.getString('newUserModules').split(','),
       'returning-user':
-          loadTimeData.getString('returningUserModules').split(','),
+          loadTimeData.getString('returningUserModules').split(',')
     };
   }
 
@@ -98,17 +84,11 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
         'default-browser-change', () => this.onDefaultBrowserChange_());
   }
 
-  /** @private */
-  onDefaultBrowserChange_() {
+  private onDefaultBrowserChange_() {
     this.shadowRoot.querySelector('cr-toast').show();
   }
 
-  /**
-   * @param {Routes} route
-   * @param {number} step
-   * @private
-   */
-  onRouteChange(route, step) {
+  private onRouteChange(route: Routes, step: number) {
     const setStep = () => {
       // If the specified step doesn't exist, that means there are no more
       // steps. In that case, replace this page with NTP.
@@ -133,8 +113,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     this.currentRoute_ = route;
   }
 
-  /** @param {Routes} route */
-  initializeModules(route) {
+  initializeModules(route: Routes) {
     // Remove all views except landing.
     this.$.viewManager
         .querySelectorAll('[slot="view"]:not([id="step-landing"])')
@@ -147,8 +126,6 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
     let modules = this.modules_[route];
     assert(modules);  // Modules should be defined if on a valid route.
-
-    /** @type {!Promise} */
     const defaultBrowserPromise =
         NuxSetAsDefaultProxyImpl.getInstance()
             .requestDefaultBrowserState()
@@ -190,19 +167,19 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
           let indicatorActiveCount = 0;
           modules.forEach((elementTagName, index) => {
-            const element = document.createElement(elementTagName);
+            const element =
+                document.createElement(elementTagName) as PolymerElement;
             element.id = 'step-' + (index + 1);
             element.setAttribute('slot', 'view');
             this.$.viewManager.appendChild(element);
-
             if (MODULES_NEEDING_INDICATOR.has(elementTagName)) {
-              element.indicatorModel = {
+              element.set('indicatorModel', {
                 total: indicatorElementCount,
-                active: indicatorActiveCount++,
-              };
+                active: indicatorActiveCount++
+              });
             }
           });
         });
   }
 }
-customElements.define(WelcomeAppElement.is, WelcomeAppElement);
+customElements.define(WelcomeAppElement.is, WelcomeAppElement as any);

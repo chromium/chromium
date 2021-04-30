@@ -146,9 +146,6 @@ if (enable_js_type_check) {
         "nearby_share/shared:closure_compile_module",
       ]
     }
-    if (!is_android && !is_chromeos_ash) {
-      deps += [ "welcome:closure_compile" ]
-    }
     if (enable_extensions) {
       deps += [ "extensions:closure_compile" ]
     }

@@ -5,64 +5,41 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {NtpBackgroundMetricsProxyImpl} from './ntp_background_metrics_proxy.js';
 
-/**
- * @typedef {{
- *   id: number,
- *   imageUrl: string,
- *   thumbnailClass: string,
- *   title: string,
- * }}
- */
-export let NtpBackgroundData;
+export type NtpBackgroundData = {
+  id: number,
+  imageUrl: string,
+  thumbnailClass: string,
+  title: string
+};
 
-/** @interface */
-export class NtpBackgroundProxy {
-  /** @return {!Promise} */
-  clearBackground() {}
-
-  /** @return {!Promise<!Array<!NtpBackgroundData>>} */
-  getBackgrounds() {}
-
-  /**
-   * @param {string} url
-   * @return {!Promise<void>}
-   */
-  preloadImage(url) {}
-
-  recordBackgroundImageFailedToLoad() {}
-
-  /** @param {number} loadTime */
-  recordBackgroundImageLoadTime(loadTime) {}
-
-  recordBackgroundImageNeverLoaded() {}
-
-  /** @param {number} id */
-  setBackground(id) {}
+export interface NtpBackgroundProxy {
+  clearBackground(): void;
+  getBackgrounds(): Promise<NtpBackgroundData[]>;
+  preloadImage(url: string): Promise<void>;
+  recordBackgroundImageFailedToLoad(): void;
+  recordBackgroundImageLoadTime(loadTime: number): void;
+  recordBackgroundImageNeverLoaded(): void;
+  setBackground(id: number): void;
 }
 
-/** @implements {NtpBackgroundProxy} */
-export class NtpBackgroundProxyImpl {
-  /** @override */
+export class NtpBackgroundProxyImpl implements NtpBackgroundProxy {
   clearBackground() {
-    return sendWithPromise('clearBackground');
+    return chrome.send('clearBackground');
   }
 
-  /** @override */
   getBackgrounds() {
     return sendWithPromise('getBackgrounds');
   }
 
-  /** @override */
-  preloadImage(url) {
+  preloadImage(url: string) {
     return new Promise((resolve, reject) => {
-      const preloadedImage = new Image();
-      preloadedImage.onerror = reject;
-      preloadedImage.onload = resolve;
-      preloadedImage.src = url;
-    });
+             const preloadedImage = new Image();
+             preloadedImage.onerror = reject;
+             preloadedImage.onload = () => resolve();
+             preloadedImage.src = url;
+           }) as Promise<void>;
   }
 
-  /** @override */
   recordBackgroundImageFailedToLoad() {
     const ntpInteractions =
         NtpBackgroundMetricsProxyImpl.getInstance().getInteractions();
@@ -72,13 +49,11 @@ export class NtpBackgroundProxyImpl {
         Object.keys(ntpInteractions).length);
   }
 
-  /** @override */
-  recordBackgroundImageLoadTime(loadTime) {
+  recordBackgroundImageLoadTime(loadTime: number) {
     chrome.metricsPrivate.recordTime(
         'FirstRun.NewUserExperience.NtpBackgroundLoadTime', loadTime);
   }
 
-  /** @override */
   recordBackgroundImageNeverLoaded() {
     const ntpInteractions =
         NtpBackgroundMetricsProxyImpl.getInstance().getInteractions();
@@ -88,21 +63,17 @@ export class NtpBackgroundProxyImpl {
         Object.keys(ntpInteractions).length);
   }
 
-  /** @override */
-  setBackground(id) {
+  setBackground(id: number) {
     chrome.send('setBackground', [id]);
   }
 
-  /** @return {!NtpBackgroundProxy} */
-  static getInstance() {
+  static getInstance(): NtpBackgroundProxy {
     return instance || (instance = new NtpBackgroundProxyImpl());
   }
 
-  /** @param {!NtpBackgroundProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: NtpBackgroundProxy) {
     instance = obj;
   }
 }
 
-/** @type {?NtpBackgroundProxy} */
-let instance = null;
+let instance: NtpBackgroundProxy|null = null;

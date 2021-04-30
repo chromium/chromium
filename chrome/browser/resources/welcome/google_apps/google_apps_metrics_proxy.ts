@@ -11,16 +11,13 @@ export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
         NuxGoogleAppsInteractions);
   }
 
-  /** @return {!GoogleAppsMetricsProxyImpl} */
-  static getInstance() {
+  static getInstance(): GoogleAppsMetricsProxyImpl {
     return instance || (instance = new GoogleAppsMetricsProxyImpl());
   }
 
-  /** @param {!GoogleAppsMetricsProxyImpl} obj */
-  static setInstance(obj) {
+  static setInstance(obj: GoogleAppsMetricsProxyImpl) {
     instance = obj;
   }
 }
 
-/** @type {?GoogleAppsMetricsProxyImpl} */
-let instance = null;
+let instance: GoogleAppsMetricsProxyImpl|null = null;

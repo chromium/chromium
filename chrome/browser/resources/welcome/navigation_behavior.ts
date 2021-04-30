@@ -20,20 +20,18 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 /**
  * Valid route pathnames.
- * @enum {string}
  */
-export const Routes = {
-  LANDING: 'landing',
-  NEW_USER: 'new-user',
-  RETURNING_USER: 'returning-user',
-};
+export enum Routes {
+  LANDING = 'landing',
+  NEW_USER = 'new-user',
+  RETURNING_USER = 'returning-user'
+}
 
 /**
  * Regular expression that captures the leading slash, the content and the
  * trailing slash in three different groups.
- * @const {!RegExp}
  */
-const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
+const CANONICAL_PATH_REGEX: RegExp = /(^\/)([\/-\w]+)(\/$)/;
 const path = location.pathname.replace(CANONICAL_PATH_REGEX, '$1$2');
 
 // Sets up history state based on the url path, unless it's already set (e.g.
@@ -52,38 +50,31 @@ if (!history.state || !history.state.route || !history.state.step) {
   }
 }
 
-/** @type {!Set<!PolymerElement>} */
-const routeObservers = new Set();
-
-/** @type {?PolymerElement} */
-let currentRouteElement;
+const routeObservers: Set<NavigationBehaviorInterface> = new Set();
+let currentRouteElement: NavigationBehaviorInterface|null;
 
 // Notifies all the elements that extended NavigationBehavior.
 function notifyObservers() {
   if (currentRouteElement) {
-    (/** @type {{onRouteExit: Function}} */ (currentRouteElement))
-        .onRouteExit();
+    currentRouteElement.onRouteExit();
     currentRouteElement = null;
   }
-
-  const route = /** @type {!Routes} */ (history.state.route);
+  const route = (history.state.route as Routes);
   const step = history.state.step;
   routeObservers.forEach(observer => {
-    (/** @type {{onRouteChange: Function}} */ (observer))
-        .onRouteChange(route, step);
+    observer.onRouteChange(route, step);
 
     // Modules are only attached to DOM if they're for the current route, so
     // as long as the id of an element matches up to the current step, it
     // means that element is for the current route.
-    if (observer.id === `step-${step}`) {
+    if ((observer as unknown as HTMLElement).id === `step-${step}`) {
       currentRouteElement = observer;
     }
   });
 
   // If currentRouteElement is not null, it means there was a new route.
   if (currentRouteElement) {
-    (/** @type {{notifyRouteEnter: Function}} */ (currentRouteElement))
-        .notifyRouteEnter();
+    currentRouteElement.notifyRouteEnter();
   }
 }
 
@@ -93,26 +84,18 @@ window.addEventListener('popstate', notifyObservers);
 // Notify the active element before unload.
 window.addEventListener('beforeunload', () => {
   if (currentRouteElement) {
-    (/** @type {{onRouteUnload: Function}} */ (currentRouteElement))
-        .onRouteUnload();
+    (currentRouteElement as {onRouteUnload: Function}).onRouteUnload();
   }
 });
 
 export function navigateToNextStep() {
   history.pushState(
-      {
-        route: history.state.route,
-        step: history.state.step + 1,
-      },
-      '', `/${history.state.route}`);
+      {route: history.state.route, step: history.state.step + 1}, '',
+      `/${history.state.route}`);
   notifyObservers();
 }
 
-/**
- * @param {!Routes} route
- * @param {number} step
- */
-export function navigateTo(route, step) {
+export function navigateTo(route: Routes, step: number) {
   assert([
     Routes.LANDING,
     Routes.NEW_USER,
@@ -138,15 +121,12 @@ export function navigateTo(route, step) {
  * @polymerBehavior
  */
 export const NavigationBehavior = {
-  /** @type {string} */
   subtitle: '',
 
-  /** @override */
   attached() {
     assert(!routeObservers.has(this));
     routeObservers.add(this);
-
-    const route = /** @type {!Routes} */ (history.state.route);
+    const route = (history.state.route as Routes);
     const step = history.state.step;
 
     // history state was set when page loaded, so when the element first
@@ -166,21 +146,21 @@ export const NavigationBehavior = {
    * Notifies elements that route was entered and updates the state of the
    * app based on the new route.
    */
-  notifyRouteEnter() {
+  notifyRouteEnter(): void {
     this.onRouteEnter();
     this.updateFocusForA11y();
     this.updateTitle();
   },
 
   /** Called to update focus when progressing through the modules. */
-  updateFocusForA11y() {
+  updateFocusForA11y(): void {
     const header = this.$$('h1');
     if (header) {
       afterNextRender(this, () => header.focus());
     }
   },
 
-  updateTitle() {
+  updateTitle(): void {
     let title = loadTimeData.getString('headerText');
     if (this.subtitle) {
       title += ' - ' + this.subtitle;
@@ -188,42 +168,23 @@ export const NavigationBehavior = {
     document.title = title;
   },
 
-  /** @override */
   detached() {
     assert(routeObservers.delete(this));
   },
 
-  /**
-   * @param {!Routes} route
-   * @param {number} step
-   */
-  onRouteChange(route, step) {},
-
-  onRouteEnter() {},
-
-  onRouteExit() {},
-
-  onRouteUnload() {},
+  onRouteChange(_route: Routes, _step: number): void{},
+  onRouteEnter(): void{},
+  onRouteExit(): void{},
+  onRouteUnload(): void {}
 };
 
-/** @interface */
-export class NavigationBehaviorInterface {
-  constructor() {
-    /** @type {string} */
-    this.subtitle;
-  }
-
-  notifyRouteEnter() {}
-  updateFocusForA11y() {}
-  updateTitle() {}
-
-  /**
-   * @param {!Routes} route
-   * @param {number} step
-   */
-  onRouteChange(route, step) {}
-
-  onRouteEnter() {}
-  onRouteExit() {}
-  onRouteUnload() {}
+export interface NavigationBehaviorInterface {
+  subtitle: string;
+  notifyRouteEnter(): void;
+  updateFocusForA11y(): void;
+  updateTitle(): void;
+  onRouteChange(route: Routes, step: number): void;
+  onRouteEnter(): void;
+  onRouteExit(): void;
+  onRouteUnload(): void;
 }

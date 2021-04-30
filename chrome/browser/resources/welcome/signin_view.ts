@@ -6,21 +6,17 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shared/action_link_style_css.js';
 import './shared/animations_css.js';
+import './shared/onboarding_background.js';
 import './shared/splash_pages_shared_css.js';
 import '../strings.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
+import {NavigationBehavior} from './navigation_behavior.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NavigationBehaviorInterface}
- */
 const SigninViewElementBase =
     mixinBehaviors([NavigationBehavior], PolymerElement);
 
@@ -34,20 +30,14 @@ export class SigninViewElement extends SigninViewElementBase {
     return html`{__html_template__}`;
   }
 
+  private finalized_: boolean = false;
+  private welcomeBrowserProxy_: WelcomeBrowserProxy|null = null;
+  private signinViewProxy_: SigninViewProxy|null = null;
+
   constructor() {
     super();
-
-    /** @private {boolean} */
-    this.finalized_ = false;
-
-    /** @private {?WelcomeBrowserProxy} */
-    this.welcomeBrowserProxy_ = null;
-
-    /** @private {?SigninViewProxy} */
-    this.signinViewProxy_ = null;
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.welcomeBrowserProxy_ = WelcomeBrowserProxyImpl.getInstance();
@@ -57,7 +47,7 @@ export class SigninViewElement extends SigninViewElementBase {
   onRouteEnter() {
     this.finalized_ = false;
     this.signinViewProxy_.recordPageShown();
-    /** @type {!OnboardingBackgroundElement} */ (this.$.background).play();
+    (this.$.background as OnboardingBackgroundElement).play();
   }
 
   onRouteExit() {
@@ -66,7 +56,7 @@ export class SigninViewElement extends SigninViewElementBase {
     }
     this.finalized_ = true;
     this.signinViewProxy_.recordNavigatedAwayThroughBrowserHistory();
-    /** @type {!OnboardingBackgroundElement} */ (this.$.background).pause();
+    (this.$.background as OnboardingBackgroundElement).pause();
   }
 
   onRouteUnload() {
@@ -85,11 +75,10 @@ export class SigninViewElement extends SigninViewElementBase {
     this.welcomeBrowserProxy_.handleActivateSignIn(null);
   }
 
-  /** @private */
-  onNoThanksClick_() {
+  private onNoThanksClick_() {
     this.finalized_ = true;
     this.signinViewProxy_.recordSkip();
     this.welcomeBrowserProxy_.handleUserDecline();
   }
 }
-customElements.define(SigninViewElement.is, SigninViewElement);
+customElements.define(SigninViewElement.is, SigninViewElement as any);
