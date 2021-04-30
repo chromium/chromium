@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനും ചലിപ്പിക്കാനും <ph name="HOST" /> -നെ, തുടർന്നും അനുവദിക്കുക</translation>
 <translation id="1355088139103479645">എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കണോ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> പ്ലഗിൻ ബ്ലോക്കുചെയ്‌തു</translation>
-<translation id="1358612436266364864">ഹൈലൈറ്റുകൾ നീക്കം ചെയ്യുക</translation>
 <translation id="1358741672408003399">സ്‌പെല്ലിംഗും വ്യാകരണവും</translation>
 <translation id="1359923111303110318">Smart Lock ഉപയോഗിച്ച് നിങ്ങളുടെ ഉപകരണം അൺലോക്ക് ചെയ്യാനാവും. അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="1361164813881551742">നേരിട്ട് ചേർക്കുക</translation>
@@ -1892,7 +1891,6 @@
 <translation id="3031417829280473749">ഏജന്റ് X</translation>
 <translation id="3031557471081358569">ഇറക്കുമതി ചെയ്യുന്നതിനായി ഇനങ്ങള്‍ തിരഞ്ഞെടുക്കുക:</translation>
 <translation id="3036327949511794916">ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാനുള്ള സമയപരിധി കഴിഞ്ഞു.</translation>
-<translation id="3036438888981457032">ഹൈലൈറ്റുകൾ നീക്കം ചെയ്യുക</translation>
 <translation id="3036546437875325427">ഫ്ലാഷ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3037754279345160234">ഡൊമെയ്‌നിൽ ചേരാനുള്ള കോൺഫിഗറേഷൻ വിശകലനം ചെയ്യാനാവില്ല. നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
 <translation id="3038612606416062604">നേരിട്ട് ഒരു പ്രിന്റർ ചേർക്കുക</translation>
@@ -3390,6 +3388,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം തിരഞ്ഞെടുത്തു</translation>
 <translation id="4739639199548674512">ടിക്കറ്റുകൾ</translation>
 <translation id="4742334355511750246">ചിത്രങ്ങൾ കാണിക്കാൻ അനുവാദമില്ല</translation>
+<translation id="4742970037960872810">ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ആപ്പുകൾ അപ്‌ഡേറ്റ് ചെയ്യുന്നത് എങ്ങനെയെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5391,6 +5390,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="701080569351381435">ഉറവിടം കാണുക</translation>
 <translation id="7014174261166285193">ഇന്‍സ്റ്റാളേഷന്‍ പരാജയപ്പെട്ടു.</translation>
+<translation id="7014480873681694324">ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="7017004637493394352">വീണ്ടും "Ok Google" പറയുക</translation>
 <translation id="7017219178341817193">ഒരു പുതിയ പേജ് ചേര്‍ക്കുക</translation>
 <translation id="7017354871202642555">വിന്‍ഡോ സജ്ജമാക്കിയതിനുശേഷം മോഡ് സജ്ജമാക്കാന്‍ കഴിയില്ല.</translation>

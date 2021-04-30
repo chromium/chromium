@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸರಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1355088139103479645">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="1358612436266364864">ಹೈಲೈಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1358741672408003399">ಕಾಗುಣಿತ ಮತ್ತು ವ್ಯಾಕರಣ</translation>
 <translation id="1359923111303110318">Smart Lock ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಬಹುದು. ಅನ್‌ಲಾಕ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1361164813881551742">ಹಸ್ತಚಾಲಿತವಾಗಿ ಸೇರಿಸು</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">ಏಜೆಂಟ್  X</translation>
 <translation id="3031557471081358569">ಆಮದು ಮಾಡಲು ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="3036327949511794916">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ಹಿಂತಿರುಗಿಸುವ ಗಡುವು ಮೀರಿದೆ.</translation>
-<translation id="3036438888981457032">ಹೈಲೈಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="3036546437875325427">ಫ್ಲ್ಯಾಶ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3037754279345160234">ಡೊಮೇನ್ ಜೋಡಣೆ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ವಿಶ್ಲೇಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="3038612606416062604">ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಿಂಟರ್ ಸೇರಿಸಿ</translation>
@@ -3395,6 +3393,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" /> ರಲ್ಲಿ <ph name="CURRENT_ELEMENT" /> ಹೆಚ್ಚುವರಿ ವಿಷಯವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4739639199548674512">ಟಿಕೆಟ್‌ಗಳು</translation>
 <translation id="4742334355511750246">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5396,6 +5395,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="701080569351381435">ಮೂಲ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7014174261166285193">ಸ್ಥಾಪನೆ ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="7014480873681694324">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7017004637493394352">"Ok Google" ಎಂದು ಮತ್ತೊಮ್ಮೆ ಹೇಳಿ</translation>
 <translation id="7017219178341817193">ಒಂದು ಹೊಸ ಪುಟವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7017354871202642555">ವಿಂಡೋ ಸೆಟ್ ಮಾಡಿದ ನಂತರ ಮೋಡ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>

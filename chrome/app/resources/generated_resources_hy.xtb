@@ -329,7 +329,6 @@
 <translation id="1354045473509304750">Թույլատրել <ph name="HOST" /> կայքին օգտագործել և տեղաշարժել տեսախցիկը</translation>
 <translation id="1355088139103479645">Ջնջե՞լ բոլոր տվյալները</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> փլագինն արգելափակված է</translation>
-<translation id="1358612436266364864">Հեռացնել ընդգծումը</translation>
 <translation id="1358741672408003399">Ուղղագրություն և քերականություն</translation>
 <translation id="1359923111303110318">Ձեր սարքը կարող է ապակողպվել Smart Lock-ի միջոցով։ Սեղմեք Enter՝ ապակողպելու համար։</translation>
 <translation id="1361164813881551742">Ավելացնել ձեռքով</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">Գործակալ X</translation>
 <translation id="3031557471081358569">Ընտրեք տարրեր ներմուծման համար՝</translation>
 <translation id="3036327949511794916">Այս <ph name="DEVICE_TYPE" /> սարքը վերադարձնելու վերջնաժամկետը լրացել է։</translation>
-<translation id="3036438888981457032">Հեռացնել ընդգծումը</translation>
 <translation id="3036546437875325427">Միացնել Flash-ը</translation>
 <translation id="3037754279345160234">Չհաջողվեց վերլուծել տիրույթի կապակցման կարգավորումը: Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="3038612606416062604">Ավելացնել տպիչ ձեռքով</translation>
@@ -3395,6 +3393,7 @@
 <translation id="473936925429402449">Ընտրված է լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />-ը՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="4739639199548674512">Տոմսեր</translation>
 <translation id="4742334355511750246">Չի թույլատրվում ցուցադրել պատկերներ</translation>
+<translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ինչպես թարմացնել հավելվածները<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Միացնել կայքի ձայնը}one{Միացնել կայքի ձայնը}other{Միացնել կայքերի ձայնը}}</translation>
 <translation id="4746351372139058112">Հաղորդագրություններ</translation>
@@ -5397,6 +5396,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7014174261166285193">Տեղադրումը չհաջողվեց:</translation>
+<translation id="7014480873681694324">Հեռացնել ընդգծումը</translation>
 <translation id="7017004637493394352">Նորից ասեք «Ok Google»</translation>
 <translation id="7017219178341817193">Ավելացնել նոր էջ</translation>
 <translation id="7017354871202642555">Հնարավոր չէ կարգավորել ռեժիմը՝ պատուհանը կարգավորելուց հետո:</translation>

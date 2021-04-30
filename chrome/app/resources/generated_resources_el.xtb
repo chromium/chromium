@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Να συνεχίσει να επιτρέπεται στον ιστότοπο <ph name="HOST" /> να χρησιμοποιεί και να μετακινεί την κάμερά σας.</translation>
 <translation id="1355088139103479645">Διαγραφή όλων των δεδομένων;</translation>
 <translation id="1355466263109342573">Η προσθήκη <ph name="PLUGIN_NAME" /> είναι αποκλεισμένη</translation>
-<translation id="1358612436266364864">Κατάργηση επισημάνσεων</translation>
 <translation id="1358741672408003399">Ορθογραφικός και γραμματικός έλεγχος</translation>
 <translation id="1359923111303110318">Η συσκευή σας μπορεί να ξεκλειδωθεί με το Smart Lock. Πατήστε Enter για ξεκλείδωμα.</translation>
 <translation id="1361164813881551742">Μη αυτόματη προσθήκη</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">Πράκτορας X</translation>
 <translation id="3031557471081358569">Επιλογή στοιχείων για εισαγωγή:</translation>
 <translation id="3036327949511794916">Η προθεσμία επιστροφής αυτής της συσκευής (<ph name="DEVICE_TYPE" />) έχει παρέλθει.</translation>
-<translation id="3036438888981457032">Κατάργηση επισημάνσεων</translation>
 <translation id="3036546437875325427">Ενεργοποίηση Flash</translation>
 <translation id="3037754279345160234">Δεν είναι δυνατή η ανάλυση της διαμόρφωσης για συμμετοχή σε τομέα. Επικοινωνήστε με τον διαχειριστή σας.</translation>
 <translation id="3038612606416062604">Μη αυτόματη προσθήκη εκτυπωτή</translation>
@@ -3394,6 +3392,7 @@
 <translation id="473936925429402449">Επιλεγμένο, επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Εισιτήρια</translation>
 <translation id="4742334355511750246">Δεν επιτρέπεται να εμφανίζουν εικόνες</translation>
+<translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Μάθετε πώς μπορείτε να ενημερώνετε τις εφαρμογές<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Κατάργηση σίγασης ιστοτόπου}other{Κατάργηση σίγασης ιστοτόπων}}</translation>
 <translation id="4746351372139058112">Μηνύματα</translation>
@@ -5394,6 +5393,7 @@
 <translation id="7009709314043432820">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερά σας</translation>
 <translation id="701080569351381435">Προβολή Πηγαίου Κώδικα</translation>
 <translation id="7014174261166285193">Η εγκατάσταση απέτυχε.</translation>
+<translation id="7014480873681694324">Κατάργηση επισήμανσης</translation>
 <translation id="7017004637493394352">Εκφωνήστε ξανά "Ok Google"</translation>
 <translation id="7017219178341817193">Προσθήκη νέας σελίδας</translation>
 <translation id="7017354871202642555">Δεν είναι δυνατή η ρύθμιση της λειτουργίας μετά τη ρύθμιση του παράθυρου.</translation>

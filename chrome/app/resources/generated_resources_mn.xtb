@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />-д таны камерыг ашиглах болон хөдөлгөхийг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="1355088139103479645">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />-г блоклосон</translation>
-<translation id="1358612436266364864">Тодруулгыг хасах</translation>
 <translation id="1358741672408003399">Үг, үсэг болон дүрмийн алдаа</translation>
 <translation id="1359923111303110318">Таны төхөөрөмжийн түгжээг Ухаалаг түгжээгээр тайлах боломжтой. Түгжээг тайлахын тулд Enter дээр дарна уу.</translation>
 <translation id="1361164813881551742">Гараар нэмэх</translation>
@@ -1890,7 +1889,6 @@
 <translation id="3031417829280473749">Х Агент</translation>
 <translation id="3031557471081358569">Импортолж авах зүйлсийг сонгоно уу:</translation>
 <translation id="3036327949511794916">Энэ <ph name="DEVICE_TYPE" />-г буцаах эцсийн хугацаа өнгөрсөн байна.</translation>
-<translation id="3036438888981457032">Тодруулгыг хасах</translation>
 <translation id="3036546437875325427">Flash-г идэвхжүүлэх</translation>
 <translation id="3037754279345160234">Домайнд нэгдэхийн тулд тохиргоог задалж чадахгүй байна. Админтайгаа холбогдоно уу.</translation>
 <translation id="3038612606416062604">Хэвлэгчийг гараар нэмэх</translation>
@@ -3388,6 +3386,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контентыг сонгосон</translation>
 <translation id="4739639199548674512">Тасалбар</translation>
 <translation id="4742334355511750246">Зураг харуулахыг зөвшөөрөөгүй</translation>
+<translation id="4742970037960872810">Тодруулгыг хасах</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Аппыг шинэчилж сурна уу<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
 <translation id="4746351372139058112">Мессежүүд</translation>
@@ -5387,6 +5386,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> таны камерыг ашиглаж байна</translation>
 <translation id="701080569351381435">Эх үүсвэрийг харах</translation>
 <translation id="7014174261166285193">Суулгах ажиллагаа амжилтгүй боллоо.</translation>
+<translation id="7014480873681694324">Тодруулгыг хасах</translation>
 <translation id="7017004637493394352">Дахин "Oк Google" гэж хэлнэ үү</translation>
 <translation id="7017219178341817193">Шинэ хуудас нэмэх</translation>
 <translation id="7017354871202642555">Цонх суулгасны дараагаар горимыг тохируулж болохгүй.</translation>

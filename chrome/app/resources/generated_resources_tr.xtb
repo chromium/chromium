@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> sitesine, kameramı hem kullanması hem de hareket ettirmesi için izni vermeye devam et</translation>
 <translation id="1355088139103479645">Tüm veriler silinsin mi?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> engellendi</translation>
-<translation id="1358612436266364864">Vurgulamaları kaldır</translation>
 <translation id="1358741672408003399">Yazım ve Dilbilgisi</translation>
 <translation id="1359923111303110318">Cihazınızın kilidi Smart Lock ile açılabilir. Kilidi açmak için Enter tuşuna basın.</translation>
 <translation id="1361164813881551742">Manuel Olarak Ekle</translation>
@@ -1894,7 +1893,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3031417829280473749">Ajan X</translation>
 <translation id="3031557471081358569">İçe aktarılacak öğeleri seçin:</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazı iade etmek için son tarih geçti.</translation>
-<translation id="3036438888981457032">Vurgulamaları Kaldır</translation>
 <translation id="3036546437875325427">Flash'ı etkinleştir</translation>
 <translation id="3037754279345160234">Alana katılmak için yapılandırma ayrıştırılamıyor. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="3038612606416062604">Manuel olarak yazıcı ekleyin</translation>
@@ -3393,6 +3391,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="473936925429402449"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> ekstra içerik seçildi</translation>
 <translation id="4739639199548674512">Biletler</translation>
 <translation id="4742334355511750246">Resim göstermesine izin verilmeyen siteler</translation>
+<translation id="4742970037960872810">Vurgulamayı kaldır</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Uygulamaların nasıl güncelleneceğini öğrenin<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sitenin sesini aç}other{Sitelerin sesini aç}}</translation>
 <translation id="4746351372139058112">Mesajlar</translation>
@@ -5393,6 +5392,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" />, kameranızı kullanıyor.</translation>
 <translation id="701080569351381435">Kaynağı Görüntüle</translation>
 <translation id="7014174261166285193">Yükleme işlemi başarısız oldu.</translation>
+<translation id="7014480873681694324">Vurgulamayı Kaldır</translation>
 <translation id="7017004637493394352">Tekrar "Ok Google" deyin</translation>
 <translation id="7017219178341817193">Yeni sayfa ekle</translation>
 <translation id="7017354871202642555">Pencere ayarlandıktan sonra mod ayarlanamaz.</translation>

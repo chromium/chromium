@@ -325,7 +325,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> लाई तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने अनुमति दिइराख्नुहोस्</translation>
 <translation id="1355088139103479645">सबै डेटा मेटाउने हो?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> माथि रोक लगाइएको छ</translation>
-<translation id="1358612436266364864">हाइलाइट हटाउनुहोस्</translation>
 <translation id="1358741672408003399">हिज्जे तथा व्याकरण</translation>
 <translation id="1359923111303110318">तपाईंको यन्त्र Smart Lock प्रयोग गरी अनलक गर्न सकिन्छ। अनलक गर्न Enter थिच्नुहोस्।</translation>
 <translation id="1361164813881551742">म्यानुअल तरिकाले थप्नुहोस्</translation>
@@ -1892,7 +1891,6 @@
 <translation id="3031417829280473749">एजेन्ट एक्स</translation>
 <translation id="3031557471081358569">आयात गर्नका लागि वस्तुहरू चयन गर्नुहोस्:</translation>
 <translation id="3036327949511794916">यो <ph name="DEVICE_TYPE" /> फिर्ता गर्ने म्याद सकिएको छ।</translation>
-<translation id="3036438888981457032">हाइलाइट हटाउनुहोस्</translation>
 <translation id="3036546437875325427">फ्ल्यास सक्षम पार्नुहोस्</translation>
 <translation id="3037754279345160234">डोमेनमा सामेल हुन कन्फिगुरेसनलाई पार्स गर्न सकिँदैन। कृपया आफ्ना प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="3038612606416062604">म्यानुअल तरिकाले प्रिन्टर थप्नुहोस्</translation>
@@ -3390,6 +3388,7 @@
 <translation id="473936925429402449">चयन गरियो, <ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
 <translation id="4739639199548674512">टिकटहरू</translation>
 <translation id="4742334355511750246">फोटोहरू देखाउने अनुमति नदिइएका साइटहरू</translation>
+<translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />एपहरू अद्यावधिक गर्ने तरिका सिक्नुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
 <translation id="4746351372139058112">सन्देशहरू</translation>
@@ -5388,6 +5387,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ले तपाईंको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="701080569351381435">स्रोत हेर्नुहोस्</translation>
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
+<translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7017004637493394352">फेरि "Ok Google" भन्नुहोस्</translation>
 <translation id="7017219178341817193">एउटा नयाँ पृष्ठ थप्नुहोस्</translation>
 <translation id="7017354871202642555">विण्डो कायम भएपछि मोड सेट गर्न सकिँदैन।</translation>

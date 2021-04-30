@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />-ისთვის თქვენი კამერის გამოყენებისა და გადააგილების კლავინდებურად დაშვება</translation>
 <translation id="1355088139103479645">გსურთ ყველა მონაცემის წაშლა?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> დაბლოკილია</translation>
-<translation id="1358612436266364864">გამოყოფილის ამოშლა</translation>
 <translation id="1358741672408003399">მართლწერა და გრამატიკა</translation>
 <translation id="1359923111303110318">თქვენი მოწყობილობის განბლოკვა შესაძლებელია Smart Lock-ით. განსაბლოკად დააჭირეთ კლავიშს „Enter“.</translation>
 <translation id="1361164813881551742">ხელით დამატება</translation>
@@ -1894,7 +1893,6 @@
 <translation id="3031417829280473749">აგენტი X</translation>
 <translation id="3031557471081358569">აირჩიეთ ელემენტები იმპორტისთვის:</translation>
 <translation id="3036327949511794916">ამ <ph name="DEVICE_TYPE" />-ის დაბრუნების ბოლო ვადა გავიდა.</translation>
-<translation id="3036438888981457032">გამოყოფილის ამოშლა</translation>
 <translation id="3036546437875325427">Flash-ის ჩართვა</translation>
 <translation id="3037754279345160234">დომენში გაწევრიანების კონფიგურაციის გარჩევა ვერ მოხერხდა. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.</translation>
 <translation id="3038612606416062604">პრინტერის ხელით დამატება</translation>
@@ -3393,6 +3391,7 @@
 <translation id="473936925429402449">არჩეულია, დამატებითი კონტენტი <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან</translation>
 <translation id="4739639199548674512">ბილეთები</translation>
 <translation id="4742334355511750246">სურათების ჩვენება დაუშვებელია</translation>
+<translation id="4742970037960872810">გამოყოფის ამოშლა</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />შეიტყვეთ აპლიკაციების განახლების შესახებ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{საიტის დადუმების მოხსნა}other{საიტების დადუმების მოხსნა}}</translation>
 <translation id="4746351372139058112">შეტყობინებები</translation>
@@ -5392,6 +5391,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> იყენებს თქვენს კამერას</translation>
 <translation id="701080569351381435">წყაროს ნახვა</translation>
 <translation id="7014174261166285193">ინსტალაცია ვერ მოხერხდა.</translation>
+<translation id="7014480873681694324">გამოყოფის ამოშლა</translation>
 <translation id="7017004637493394352">კიდევ ერთხელ წარმოთქვით „Ok Google“</translation>
 <translation id="7017219178341817193">ახალი გვერდის დამატება</translation>
 <translation id="7017354871202642555">ფანჯრის დაყენების შემდეგ, რეჟიმი ვერ ყენდება.</translation>

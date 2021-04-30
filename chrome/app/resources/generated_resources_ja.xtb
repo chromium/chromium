@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> はブロックされています</translation>
-<translation id="1358612436266364864">選択箇所を解除</translation>
 <translation id="1358741672408003399">スペルと文法</translation>
 <translation id="1359923111303110318">Smart Lock でデバイスのロックを解除できます。解除するには Enter キーを押してください。</translation>
 <translation id="1361164813881551742">手動で追加</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
 <translation id="3036327949511794916">この <ph name="DEVICE_TYPE" />の返却期限が過ぎています。</translation>
-<translation id="3036438888981457032">選択箇所を解除</translation>
 <translation id="3036546437875325427">Flash を有効にする</translation>
 <translation id="3037754279345160234">ドメインの参加設定を解析できません。管理者にお問い合わせください。</translation>
 <translation id="3038612606416062604">プリンタを手動で追加</translation>
@@ -3394,6 +3392,7 @@
 <translation id="473936925429402449">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目を選択しています</translation>
 <translation id="4739639199548674512">チケット</translation>
 <translation id="4742334355511750246">画像の表示を許可しないサイト</translation>
+<translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />アプリケーションの更新方法を確認<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="4746351372139058112">メッセージ</translation>
@@ -5393,6 +5392,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> がカメラを使用しています</translation>
 <translation id="701080569351381435">ソースを表示</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
+<translation id="7014480873681694324">テキストの選択を解除</translation>
 <translation id="7017004637493394352">もう一度「OK Google」と言ってください</translation>
 <translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7017354871202642555">ウィンドウが設定されている場合はモードを設定できません。</translation>

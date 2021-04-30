@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Продолжете да дозволувате <ph name="HOST" /> да ја користи и движи камерата</translation>
 <translation id="1355088139103479645">Да се избришат сите податоци?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> е блокиран</translation>
-<translation id="1358612436266364864">Отстрани го нагласувањето</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
 <translation id="1359923111303110318">Вашиот уред може да се отклучи со Smart Lock. Притиснете Enter за да се отклучи.</translation>
 <translation id="1361164813881551742">Додај рачно</translation>
@@ -1896,7 +1895,6 @@
 <translation id="3031417829280473749">Агентката X</translation>
 <translation id="3031557471081358569">Изберете ставки за увезување:</translation>
 <translation id="3036327949511794916">Крајниот рок за враќање на овој <ph name="DEVICE_TYPE" /> помина.</translation>
-<translation id="3036438888981457032">Отстрани го нагласувањето</translation>
 <translation id="3036546437875325427">Овозможи Flash</translation>
 <translation id="3037754279345160234">Не може да се анализира конфигурацијата за приклучување на доменот. Контактирајте со вашиот администратор.</translation>
 <translation id="3038612606416062604">Додај печатач рачно</translation>
@@ -3395,6 +3393,7 @@
 <translation id="473936925429402449">Избрано, дополнителни содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билети</translation>
 <translation id="4742334355511750246">Не им е дозволено да прикажуваат слики</translation>
+<translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дознајте како да ги ажурирате апликациите<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
 <translation id="4746351372139058112">Пораки</translation>
@@ -5394,6 +5393,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ја користи камерата</translation>
 <translation id="701080569351381435">Прикажи извор</translation>
 <translation id="7014174261166285193">Инсталацијата не успеа.</translation>
+<translation id="7014480873681694324">Отстрани нагласување</translation>
 <translation id="7017004637493394352">Кажете „Ok Google" повторно</translation>
 <translation id="7017219178341817193">Додај нова страница</translation>
 <translation id="7017354871202642555">Не може да се постави режимот откако ќе се постави прозорецот.</translation>

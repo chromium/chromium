@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> сайтына камераны колдонуп, жылдырууга уруксат берүүгө макул болуу</translation>
 <translation id="1355088139103479645">Бардык дайын-даректер өчүрүлсүнбү?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> плагини бөгөттөлгөн</translation>
-<translation id="1358612436266364864">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="1358741672408003399">Орфография жана грамматика</translation>
 <translation id="1359923111303110318">Түзмөгүңүздүн кулпусун Smart Lock менен ачууга болот. Кулпусун ачуу үчүн, "Enter" баскычын басыңыз.</translation>
 <translation id="1361164813881551742">Кол менен кошуу</translation>
@@ -1895,7 +1894,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Импорттоло турган нерселерди тандаңыз:</translation>
 <translation id="3036327949511794916">Бул <ph name="DEVICE_TYPE" /> түзмөгүн кайтарып берүү мөөнөтү өтүп кетти.</translation>
-<translation id="3036438888981457032">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="3036546437875325427">Flash'ти иштетүү</translation>
 <translation id="3037754279345160234">Доменге кошулуу конфигурациясы талданбай жатат. Администраторуңузга кайрылыңыз.</translation>
 <translation id="3038612606416062604">Принтерди кол менен кошуу</translation>
@@ -3394,6 +3392,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="473936925429402449">Тандалды, <ph name="TOTAL_ELEMENTS" /> ичинен <ph name="CURRENT_ELEMENT" />-кошумча мазмун</translation>
 <translation id="4739639199548674512">Билеттер</translation>
 <translation id="4742334355511750246">Сүрөттөрдү көрсөтө албайт</translation>
+<translation id="4742970037960872810">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Колдонмолорду жаңыртканды үйрөнүп алыңыз<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайттын үнүн чыгаруу}other{Сайттардын үнүн чыгаруу}}</translation>
 <translation id="4746351372139058112">Билдирүүлөр</translation>
@@ -5393,6 +5392,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7009709314043432820"><ph name="APP_NAME" /> камераңызды колдонууда</translation>
 <translation id="701080569351381435">Булакты карап көрүү</translation>
 <translation id="7014174261166285193">Орнотулбай калды.</translation>
+<translation id="7014480873681694324">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="7017004637493394352">"Ok Google" деп кайра айтыңыз</translation>
 <translation id="7017219178341817193">Жаңы бет кошуу</translation>
 <translation id="7017354871202642555">Терезе коюлгандан кийин режимди коюуга болбойт.</translation>

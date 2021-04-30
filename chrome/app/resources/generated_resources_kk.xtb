@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> сайтына камераны пайдалануға және жылжытуға рұқсат ету</translation>
 <translation id="1355088139103479645">Барлық деректер жойылсын ба?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> бөгелген</translation>
-<translation id="1358612436266364864">Таңдалғандарды өшіру</translation>
 <translation id="1358741672408003399">Емле және грамматика</translation>
 <translation id="1359923111303110318">Құрылғыңыздың құлпын Smart Lock арқылы ашуға болады. Құлпын ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="1361164813881551742">Қолмен енгізу</translation>
@@ -1891,7 +1890,6 @@
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Импорттау үшін элементтерді таңдаңыз:</translation>
 <translation id="3036327949511794916">Осы <ph name="DEVICE_TYPE" /> құрылғысын қайтару мерзімі өтіп кетті.</translation>
-<translation id="3036438888981457032">Таңдалғандарды өшіру</translation>
 <translation id="3036546437875325427">Flash қолданбасын қосу</translation>
 <translation id="3037754279345160234">Доменге қосылу үшін конфигурацияны талдау мүмкін емес. Әкімшіге хабарласыңыз.</translation>
 <translation id="3038612606416062604">Принтерді қолмен енгізу</translation>
@@ -3390,6 +3388,7 @@
 <translation id="473936925429402449">Таңдалды, <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />-картадағы қосымша мазмұн</translation>
 <translation id="4739639199548674512">Билеттер</translation>
 <translation id="4742334355511750246">Суреттерді көрсетуге рұқсаты жоқтар</translation>
+<translation id="4742970037960872810">Бөлектемеу</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Қолданбаларды жаңарту әдісі туралы ақпарат алу<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайттың дыбысын қосу}other{Сайттардың дыбысын қосу}}</translation>
 <translation id="4746351372139058112">Хабарлар</translation>
@@ -5389,6 +5388,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> камераңызды пайдалануда.</translation>
 <translation id="701080569351381435">Дереккөзді көру</translation>
 <translation id="7014174261166285193">Орнату сәтсіз аяқталды.</translation>
+<translation id="7014480873681694324">Бөлектемеу</translation>
 <translation id="7017004637493394352">Қайтадан "Ok Google" деп айтыңыз</translation>
 <translation id="7017219178341817193">Жаңа бет қосу</translation>
 <translation id="7017354871202642555">Терезе орнатылғаннан кейін режимді орнату мүмкін емес.</translation>

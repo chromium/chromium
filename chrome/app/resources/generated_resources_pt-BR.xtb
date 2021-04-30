@@ -328,7 +328,6 @@
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
 <translation id="1355466263109342573">O <ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1358612436266364864">Remover destaques</translation>
 <translation id="1358741672408003399">Ortografia e gramática</translation>
 <translation id="1359923111303110318">Seu dispositivo pode ser desbloqueado com o Smart Lock. Pressione "Enter" para desbloquear.</translation>
 <translation id="1361164813881551742">Adicionar manualmente</translation>
@@ -1896,7 +1895,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecione os itens que serão importados:</translation>
 <translation id="3036327949511794916">O prazo de devolução deste <ph name="DEVICE_TYPE" /> expirou.</translation>
-<translation id="3036438888981457032">Remover destaques</translation>
 <translation id="3036546437875325427">Ativar Flash</translation>
 <translation id="3037754279345160234">Não é possível analisar a configuração de vínculo de domínios. Entre em contato com seu administrador.</translation>
 <translation id="3038612606416062604">Adicionar uma impressora manualmente</translation>
@@ -3396,6 +3394,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="473936925429402449">Selecionado, conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tíquetes</translation>
 <translation id="4742334355511750246">Bloquear a exibição de imagens</translation>
+<translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicativos<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
 <translation id="4746351372139058112">Mensagens</translation>
@@ -5396,6 +5395,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando a câmera</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
+<translation id="7014480873681694324">Remover destaque</translation>
 <translation id="7017004637493394352">Diga "Ok Google" novamente</translation>
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
 <translation id="7017354871202642555">Não é possível definir o modo após a definição da janela.</translation>

@@ -330,7 +330,6 @@
 <translation id="1354045473509304750">Разрешить сайту <ph name="HOST" /> и дальше использовать вашу камеру и перемещать ее</translation>
 <translation id="1355088139103479645">Удалить все данные?</translation>
 <translation id="1355466263109342573">Плагин "<ph name="PLUGIN_NAME" />" заблокирован</translation>
-<translation id="1358612436266364864">Снять выделение</translation>
 <translation id="1358741672408003399">Правописание и грамматика</translation>
 <translation id="1359923111303110318">Ваше устройство можно разблокировать с помощью Smart Lock. Для этого нажмите Ввод.</translation>
 <translation id="1361164813881551742">Добавить вручную</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">Секретный агент</translation>
 <translation id="3031557471081358569">Выберите элементы для импорта:</translation>
 <translation id="3036327949511794916">Истек срок возврата устройства <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3036438888981457032">Снять выделение</translation>
 <translation id="3036546437875325427">Включить Flash</translation>
 <translation id="3037754279345160234">Не удалось проанализировать конфигурацию для подключения к домену. Обратитесь к администратору.</translation>
 <translation id="3038612606416062604">Добавление принтера вручную</translation>
@@ -3394,6 +3392,7 @@
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
 <translation id="4742334355511750246">Запретить сайтам показывать изображения</translation>
+<translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4743260470722568160">Подробнее о том, <ph name="BEGIN_LINK" />как обновлять приложения<ph name="END_LINK" />…</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включить звук на сайте}one{Включить звук на сайтах}few{Включить звук на сайтах}many{Включить звук на сайтах}other{Включить звук на сайтах}}</translation>
 <translation id="4746351372139058112">Сообщения</translation>
@@ -5393,6 +5392,7 @@
 <translation id="7009709314043432820">Приложение "<ph name="APP_NAME" />" использует камеру</translation>
 <translation id="701080569351381435">Просмотр исходного кода</translation>
 <translation id="7014174261166285193">Установка не выполнена.</translation>
+<translation id="7014480873681694324">Снять выделение</translation>
 <translation id="7017004637493394352">Скажите "Окей, Google" ещё раз</translation>
 <translation id="7017219178341817193">Добавить страницу</translation>
 <translation id="7017354871202642555">Нельзя настроить режим после настройки окна.</translation>

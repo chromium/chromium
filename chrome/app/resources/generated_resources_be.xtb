@@ -330,7 +330,6 @@
 <translation id="1354045473509304750">І далей дазваляць сайту <ph name="HOST" /> выкарыстоўваць і перамяшчаць вашу камеру</translation>
 <translation id="1355088139103479645">Выдаліць усе даныя?</translation>
 <translation id="1355466263109342573">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана</translation>
-<translation id="1358612436266364864">Выдаліць вылучаныя фрагменты</translation>
 <translation id="1358741672408003399">Правапіс і граматыка</translation>
 <translation id="1359923111303110318">Разблакіроўка прылады можа ажыццяўляцца з дапамогай Smart Lock. Каб разблакіраваць яе, націсніце Enter.</translation>
 <translation id="1361164813881551742">Дадаць уручную</translation>
@@ -1897,7 +1896,6 @@
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Выберыце, што імпартаваць:</translation>
 <translation id="3036327949511794916">Тэрмін вяртання прылады <ph name="DEVICE_TYPE" /> мінуў.</translation>
-<translation id="3036438888981457032">Выдаліць вылучаныя фрагменты</translation>
 <translation id="3036546437875325427">Уключыць Flash</translation>
 <translation id="3037754279345160234">Не ўдалося прааналізаваць канфігурацыю, каб далучыцца да дамена. Звярніцеся да адміністратара.</translation>
 <translation id="3038612606416062604">Дадаванне прынтара ўручную</translation>
@@ -3396,6 +3394,7 @@
 <translation id="473936925429402449">Выбрана, дадатковае змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Білеты</translation>
 <translation id="4742334355511750246">Не дазволена паказваць відарысы</translation>
+<translation id="4742970037960872810">Выдаліць вылучэнне</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Даведайцеся, як абнаўляць праграмы<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Уключыць гук на сайце}one{Уключыць гук на сайтах}few{Уключыць гук на сайтах}many{Уключыць гук на сайтах}other{Уключыць гук на сайтах}}</translation>
 <translation id="4746351372139058112">Паведамленні</translation>
@@ -5395,6 +5394,7 @@
 <translation id="7009709314043432820">Праграма "<ph name="APP_NAME" />" выкарыстоўвае камеру</translation>
 <translation id="701080569351381435">Прагляд крыніцы</translation>
 <translation id="7014174261166285193">Памылка ўсталявання.</translation>
+<translation id="7014480873681694324">Выдаліць вылучэнне</translation>
 <translation id="7017004637493394352">Скажыце "Ok Google" яшчэ раз</translation>
 <translation id="7017219178341817193">Дадайце новую старонку</translation>
 <translation id="7017354871202642555">Немагчыма задаць рэжым, калі акно ўжо створана.</translation>

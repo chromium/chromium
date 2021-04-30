@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">మీ కెమెరాను ఉపయోగించడానికి, తరలించడానికి <ph name="HOST" />ను అనుమతించడాన్ని కొనసాగించండి</translation>
 <translation id="1355088139103479645">మొత్తం డేటాను తొలగించాలా?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> బ్లాక్ చేయబడింది</translation>
-<translation id="1358612436266364864">హైలైట్‌లను తీసివేయండి</translation>
 <translation id="1358741672408003399">అక్షరక్రమం మరియు వ్యాకరణం</translation>
 <translation id="1359923111303110318">మీ పరికరాన్ని Smart Lockతో అన్‌లాక్ చేయవచ్చు. అన్‌లాక్ చేయడానికి 'ఎంటర్'ను నొక్కండి.</translation>
 <translation id="1361164813881551742">మాన్యువల్‌గా జోడించండి</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">ఏజెంట్ X</translation>
 <translation id="3031557471081358569">దిగుమతి చెయ్యడానికి ఐటమ్‌లను ఎంచుకోండి:</translation>
 <translation id="3036327949511794916">ఈ <ph name="DEVICE_TYPE" />ని తిరిగిచ్చే గడువు తేదీ గడువు దాటింది.</translation>
-<translation id="3036438888981457032">హైలైట్‌లను తీసివేయండి</translation>
 <translation id="3036546437875325427">ఫ్లాష్‌ను ప్రారంభించు</translation>
 <translation id="3037754279345160234">డొమైన్‌లో చేరడానికి కాన్ఫిగరేషన్‌ను అన్వయించడం సాధ్యపడలేదు. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="3038612606416062604">ఒక ప్రింటర్‌ను మాన్యువల్‌గా జోడించండి</translation>
@@ -3394,6 +3392,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్ ఎంచుకోబడింది</translation>
 <translation id="4739639199548674512">టిక్కెట్‌లు</translation>
 <translation id="4742334355511750246">ఇమేజ్‌లను చూపడానికి అనుమతించబడలేదు</translation>
+<translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />అప్లికేషన్‌లను ఎలా అప్‌డేట్ చేయాలో తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయి}other{సైట్‌లను అన్‌మ్యూట్ చేయి}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5393,6 +5392,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="701080569351381435">సోర్స్‌ను చూడండి</translation>
 <translation id="7014174261166285193">వ్యవస్థాపన విఫలమైంది.</translation>
+<translation id="7014480873681694324">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="7017004637493394352">మళ్లీ "Ok Google" చెప్పండి</translation>
 <translation id="7017219178341817193">కొత్త పేజీని జోడించండి</translation>
 <translation id="7017354871202642555">విండో సెట్ చేయబడిన తర్వాత మోడ్ సెట్ చేయబడదు.</translation>

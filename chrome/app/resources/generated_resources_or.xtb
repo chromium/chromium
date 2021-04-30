@@ -326,7 +326,6 @@
 <translation id="1354045473509304750">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଏବଂ ମୁଭ୍ କରିବା ପାଇଁ <ph name="HOST" />କୁ ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1355088139103479645">ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ କରିବେ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
-<translation id="1358612436266364864">ହାଇଲାଇଟ୍ସକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1358741672408003399">ବନାନ ଓ ବ୍ୟାକରଣ</translation>
 <translation id="1359923111303110318">ଆପଣଙ୍କର ଡିଭାଇସ୍ Smart Lock ସାହାଯ୍ୟରେ ଅନ୍‍ଲକ୍ କରାଯାଇପାରିବ। ଅନ୍‍ଲକ୍ କରିବାକୁ ଏଣ୍ଟର୍ କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="1361164813881551742">ମାନୁଆଲ୍‌ ଭାବେ ଯୋଗକରନ୍ତୁ</translation>
@@ -1888,7 +1887,6 @@
 <translation id="3031417829280473749">ଏଜେଣ୍ଟ X</translation>
 <translation id="3031557471081358569">ଆମଦାନି କରିବା ଲାଗି ଆଇଟମଗୁଡିକ ଚୟନ କରନ୍ତୁ:</translation>
 <translation id="3036327949511794916">ଏହି <ph name="DEVICE_TYPE" />କୁ ଫେରସ୍ତ କରିବା ସମୟସୀମା ସରିଯାଇଛି।</translation>
-<translation id="3036438888981457032">ହାଇଲାଇଟ୍ସକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3036546437875325427">ଫ୍ଲାସ୍‍କୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3037754279345160234">ଡୋମେନ୍‌ରେ ଯୋଗ କରିବାକୁ କନ୍‍ଫିଗ୍‌ରେସନ୍‌ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="3038612606416062604">ମାନୁଆଲୀ ଗୋଟିଏ ପ୍ରିଣ୍ଟର୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -3386,6 +3384,7 @@
 <translation id="473936925429402449">ଚୟନ କରାଯାଇଛି, <ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="4739639199548674512">ଟିକେଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4742334355511750246">ଛବିଗୁଡ଼ିକୁ ଦେଖାଇବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="4742970037960872810">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" /> ଏହା ଜାଣନ୍ତୁ ଯେ କିପରି ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକୁ ଅପ୍‌ଡେଟ୍ କରିବେ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}other{ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5387,6 +5386,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="701080569351381435">ଉତ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
+<translation id="7014480873681694324">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7017004637493394352">ପୁଣି "Ok Google" କୁହନ୍ତୁ</translation>
 <translation id="7017219178341817193">ଏକ ନୂଆ ପୃଷ୍ଠା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7017354871202642555">ୱିଣ୍ଡୋ ସେଟ୍ ହେବା ପରେ ମୋଡ୍ ସେଟ୍ ହୋଇପାରିବ ନାହିଁ।</translation>

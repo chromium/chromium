@@ -327,7 +327,6 @@
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />이(가) 차단되었습니다.</translation>
-<translation id="1358612436266364864">하이라이트 삭제</translation>
 <translation id="1358741672408003399">영문 철자 및 문법</translation>
 <translation id="1359923111303110318">Smart Lock으로 기기를 잠금 해제할 수 있습니다. 잠금 해제하려면 Enter 키를 누르세요.</translation>
 <translation id="1361164813881551742">직접 추가</translation>
@@ -1895,7 +1894,6 @@
 <translation id="3031417829280473749">X 요원</translation>
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
-<translation id="3036438888981457032">하이라이트 삭제</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="3038612606416062604">수동으로 프린터 추가</translation>
@@ -3392,6 +3390,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠 선택됨</translation>
 <translation id="4739639199548674512">티켓</translation>
 <translation id="4742334355511750246">이미지 표시가 허용되지 않음</translation>
+<translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>
 <translation id="4746351372139058112">메시지</translation>
@@ -5391,6 +5390,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
 <translation id="701080569351381435">소스 보기</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
+<translation id="7014480873681694324">강조표시 삭제</translation>
 <translation id="7017004637493394352">다시 한번 "Ok Google"이라고 말하세요.</translation>
 <translation id="7017219178341817193">새 페이지 추가</translation>
 <translation id="7017354871202642555">창이 설정된 후에는 모드를 설정할 수 없습니다.</translation>

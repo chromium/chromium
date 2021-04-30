@@ -127,7 +127,7 @@
 <translation id="1139343347646843679">‏حدث خطأ أثناء إعداد نظام التشغيل Linux. يُرجى التواصل مع المشرف.</translation>
 <translation id="1139923033416533844">استخدام الذاكرة</translation>
 <translation id="1140351953533677694">الوصول إلى بلوتوث والأجهزة التسلسلية</translation>
-<translation id="114036956334641753">الصوت والترجمة</translation>
+<translation id="114036956334641753">الصوت والشرح</translation>
 <translation id="1140746652461896221">حظر المحتوى على أي صفحة تزورها</translation>
 <translation id="1141953877381847186">‏يمكنك السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة لتوفير إجابات سريعة، مثلاً كترجمة نص أو تقديم التعريف لمصطلح معيّن أو تحويل وحدات القياس أو غير ذلك.
     <ph name="BR" />
@@ -331,7 +331,6 @@
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1355466263109342573">تم حظر <ph name="PLUGIN_NAME" /></translation>
-<translation id="1358612436266364864">إزالة التظليل</translation>
 <translation id="1358741672408003399">التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1359923111303110318">‏يمكن فتح قفل جهازك باستخدام Smart Lock. عليك الضغط على Enter لفتح القفل.</translation>
 <translation id="1361164813881551742">الإضافة يدويًا</translation>
@@ -1900,7 +1899,6 @@
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
-<translation id="3036438888981457032">إزالة التظليل</translation>
 <translation id="3036546437875325427">‏تفعيل Flash</translation>
 <translation id="3037754279345160234">يتعذَّر تحليل الإعداد لضمّ النطاق. يُرجى الاتصال بمشرفك.</translation>
 <translation id="3038612606416062604">إضافة طابعة يدويًا</translation>
@@ -3397,6 +3395,7 @@
 <translation id="473936925429402449">تم الاختيار، المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" />.</translation>
 <translation id="4739639199548674512">التذاكر</translation>
 <translation id="4742334355511750246">المواقع الإلكترونية التي لا يُسمح لها بعرض الصور</translation>
+<translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت موقع إلكتروني واحد}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت موقعيِّ الويب}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="4746351372139058112">الرسائل</translation>
@@ -5396,6 +5395,7 @@
 <translation id="7009709314043432820">يستخدم تطبيق <ph name="APP_NAME" /> الكاميرا.</translation>
 <translation id="701080569351381435">عرض المصدر</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
+<translation id="7014480873681694324">إزالة التمييز</translation>
 <translation id="7017004637493394352">‏قل "Ok Google" مرة أخرى</translation>
 <translation id="7017219178341817193">إضافة صفحة جديدة</translation>
 <translation id="7017354871202642555">لا يمكن ضبط الوضع بعد تعيين النافذة.</translation>

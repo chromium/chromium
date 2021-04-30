@@ -327,7 +327,6 @@
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> is blocked</translation>
-<translation id="1358612436266364864">Remove highlights</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Your device can be unlocked with Smart Lock. Press enter to unlock.</translation>
 <translation id="1361164813881551742">Add Manually</translation>
@@ -1895,7 +1894,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Select items to be imported:</translation>
 <translation id="3036327949511794916">The deadline to return this <ph name="DEVICE_TYPE" /> has passed.</translation>
-<translation id="3036438888981457032">Remove Highlights</translation>
 <translation id="3036546437875325427">Enable Flash</translation>
 <translation id="3037754279345160234">Can't parse the configuration to join domain. Please contact your administrator.</translation>
 <translation id="3038612606416062604">Add a printer manually</translation>
@@ -3394,6 +3392,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
+<translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5393,6 +5392,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> is using your camera</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7014174261166285193">Installation failed.</translation>
+<translation id="7014480873681694324">Remove highlight</translation>
 <translation id="7017004637493394352">Say 'OK Google' again</translation>
 <translation id="7017219178341817193">Add a new page</translation>
 <translation id="7017354871202642555">Cannot set mode after window is set.</translation>
