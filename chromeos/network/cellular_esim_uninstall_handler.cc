@@ -278,12 +278,20 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
 void CellularESimUninstallHandler::TransitionUninstallStateOnHermesSuccess(
     UninstallState next_state,
     HermesResponseStatus status) {
-  if (status != HermesResponseStatus::kSuccess) {
+  bool success = status == HermesResponseStatus::kSuccess;
+
+  // If we try to disable and "fail" with an already-disabled error, count this
+  // as a success.
+  if (state_ == UninstallState::kDisablingProfile)
+    success |= status == HermesResponseStatus::kErrorAlreadyDisabled;
+
+  if (!success) {
     NET_LOG(ERROR) << "Hermes error on uninstallation state=" << state_
                    << " status=" << static_cast<int>(status);
     TransitionToUninstallState(UninstallState::kFailure);
     return;
   }
+
   TransitionToUninstallState(next_state);
 }
 

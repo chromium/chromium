@@ -404,7 +404,12 @@ void CellularConnectionHandler::OnEnableCarrierProfileResult(
     HermesResponseStatus status) {
   DCHECK_EQ(state_, ConnectionState::kEnablingProfile);
 
-  if (status != HermesResponseStatus::kSuccess) {
+  // If we try to enable and "fail" with an already-enabled error, count this as
+  // a success.
+  bool success = status == HermesResponseStatus::kSuccess ||
+                 status == HermesResponseStatus::kErrorAlreadyEnabled;
+
+  if (!success) {
     NET_LOG(ERROR) << "eSIM connection flow failed to enable profile";
     CompleteConnectionAttempt(NetworkConnectionHandler::kErrorESimProfileIssue);
     return;

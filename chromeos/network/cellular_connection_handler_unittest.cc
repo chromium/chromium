@@ -159,20 +159,25 @@ class CellularConnectionHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void AddProfile(int profile_num, int euicc_num, bool add_service = true) {
+  void AddProfile(int profile_num,
+                  int euicc_num,
+                  bool add_service = true,
+                  bool already_enabled = false) {
     auto add_profile_behavior =
         add_service
             ? HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
                   kAddProfileWithService
             : HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
                   kAddDelayedProfileWithoutService;
+    auto state = already_enabled ? hermes::profile::State::kActive
+                                 : hermes::profile::State::kInactive;
     std::string iccid = CreateTestIccid(profile_num);
 
     helper_.hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(CreateTestProfilePath(profile_num)),
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), iccid,
         CreateTestName(profile_num), "service_provider", "activation_code",
-        CreateTestServicePath(profile_num), hermes::profile::State::kInactive,
+        CreateTestServicePath(profile_num), state,
         hermes::profile::ProfileClass::kOperational, add_profile_behavior);
 
     if (!add_service) {
@@ -340,6 +345,24 @@ TEST_F(CellularConnectionHandlerTest, Success) {
   base::RunLoop run_loop;
   ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop);
   CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
+  run_loop.Run();
+  ExpectServiceConnectable(/*profile_num=*/1);
+}
+
+TEST_F(CellularConnectionHandlerTest, Success_AlreadyEnabled) {
+  AddCellularDevice();
+  AddEuicc(/*euicc_num=*/1);
+  AddProfile(/*profile_num=*/1,
+             /*euicc_num=*/1,
+             /*add_service=*/true,
+             /*already_enabled=*/true);
+  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
+  SetServiceIccid(/*profile_num=*/1);
+
+  base::RunLoop run_loop;
+  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop);
+  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
+  SetServiceConnectable(/*profile_num=*/1);
   run_loop.Run();
   ExpectServiceConnectable(/*profile_num=*/1);
 }
