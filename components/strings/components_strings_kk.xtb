@@ -157,6 +157,7 @@
 <translation id="1476595624592550506">Құпия сөзді өзгерту</translation>
 <translation id="1484290072879560759">Жөнелту мекенжайын таңдау</translation>
 <translation id="1492194039220927094">Жаңа саясаттар туралы хабарландыру:</translation>
+<translation id="1495677929897281669">Қойындыға оралу</translation>
 <translation id="1501859676467574491">Google есептік жазбасына сақталған карталар көрсетілсін</translation>
 <translation id="1507202001669085618">&lt;p&gt;Интернетке кірерде есептік жазбаға кіру сұралатын Wi-Fi порталын пайдаланған кезде, осы қате шығады.&lt;/p&gt;
     &lt;p&gt;Қатені түзету үшін ашқыңыз келетін бетте &lt;strong&gt;Қосылу&lt;/strong&gt; түймесін басыңыз.&lt;/p&gt;</translation>
@@ -552,7 +553,6 @@
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерінен қауіпсіздік шарасын іске қосу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
-<translation id="3064966200440839136">Сыртқы қолданба арқылы төлеу үшін инкогнито режимінен шығасыз. Жалғастыра бересіз бе?</translation>
 <translation id="306573536155379004">Ойын басталды.</translation>
 <translation id="3080254622891793721">Кескін</translation>
 <translation id="3086579638707268289">Интернеттегі әрекетіңіз қадағаланып жатыр</translation>
@@ -575,7 +575,6 @@
 <translation id="315504272643575312">Есептік жазбаңызды <ph name="MANAGER" /> басқарады.</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
-<translation id="3167968892399408617">Жасырын қойындыларда көрген беттер барлық жасырын қойындыларды жапқаннан кейін браузер журналына, cookie файлдары қоймасына немесе іздеу тарихына тіркелмейді. Барлық жүктеген файлдарыңыз немесе жасаған бетбелгілеріңіз сақталады.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Арал</translation>
 <translation id="3176929007561373547">Прокси серверінің жұмыс істеп жатқанын тексеру үшін прокси параметрлерін
@@ -707,7 +706,6 @@
 <translation id="3615877443314183785">Дұрыс жарамдылық мерзімін енгізіңіз</translation>
 <translation id="36224234498066874">Шолу деректерін өшіру…</translation>
 <translation id="362276910939193118">Тарихты толық көрсету</translation>
-<translation id="3625635938337243871">Сіз инкогнито режимінен шыққаннан кейін де, есептік жазбаға кіру деректері осы құрылғыда сақталады.</translation>
 <translation id="3630155396527302611">Ол желіге кіруге рұқсат алған бағдарламалар тізімінде тұрса, оны
       тізімнен өшіріп, қайта қосып көріңіз.</translation>
 <translation id="3630699740441428070">Бұл құрылғының әкімшілері желі байланысын конфигурациялады. Сол арқылы олар желі трафигін, соның ішінде сіз кіретін веб-сайттарды көре алады.</translation>
@@ -1814,7 +1812,6 @@
 <translation id="782886543891417279">Сіз пайдаланып жатқан Wi-Fi (<ph name="WIFI_NAME" />) желісі оның кіру бетіне кіруіңізді талап етеді.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">Алайда, сіз бақылауда боласыз. Инкогнито режимінде шарлау тарихы жұмыс берушіге, интернет қызметі провайдеріне не кірген веб-сайттарға көрінеді.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7858035578849836010">Файл түрімен байланысты файлдарды ашу.</translation>
 <translation id="7862185352068345852">Сайттан шыққыңыз келе ме?</translation>
@@ -2044,7 +2041,6 @@
 <translation id="8719528812645237045">Жоғарғы жағын бірнеше рет тесу</translation>
 <translation id="8725066075913043281">Әрекетті қайталау</translation>
 <translation id="8726549941689275341">Бет өлшемі:</translation>
-<translation id="8728672262656704056">Инкогнито режиміне өттіңіз</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8731544501227493793">"Құпия сөздерді басқару" түймесі. Chrome параметрлерінде құпия сөздеріңізді көру және басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="MANAGER" /> басқарады</translation>

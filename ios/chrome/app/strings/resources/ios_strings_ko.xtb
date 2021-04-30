@@ -83,6 +83,7 @@
 <translation id="1687475363370981210">모두 읽음으로 표시</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1690731385917361335">항목 없음</translation>
+<translation id="1691390244342876227">Chrome에서 사용자 정보를 확인할 수 없습니다.</translation>
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
@@ -112,7 +113,6 @@
 <translation id="209018056901015185">데스크톱 버전으로 보기</translation>
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
-<translation id="213900355088104901">비공개로 탐색하려면 시크릿 탭을 여세요.</translation>
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2175927920773552910">QR 코드</translation>
@@ -138,6 +138,7 @@
 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다.</translation>
 <translation id="2381405137052800939">기본설정</translation>
 <translation id="2386793615875593361">1장 선택됨</translation>
+<translation id="2410754283952462441">계정 선택</translation>
 <translation id="2421004566762153674">타사 쿠키 차단</translation>
 <translation id="2421044535038393232">수정 계속</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
@@ -213,9 +214,6 @@
 <translation id="3181825792072797598">동기화 사용 설정</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 잠금 해제</translation>
-<translation id="3196681740617426482">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하는 데 쿠키를 사용할 수 있습니다.
-
-시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다.</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3224641773458703735">비밀번호를 내보내려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="3240426699337459095">링크 복사됨</translation>
@@ -351,9 +349,12 @@
 
 동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="4689564913179979534">결제 수단 관리...</translation>
+<translation id="4704093130121805775">기기 간 동기화</translation>
+<translation id="470966556546083668">동기화를 켜지 않음</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4747097190499141774">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">새 시크릿 탭</translation>
+<translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4775879719735953715">기본 브라우저</translation>
 <translation id="4778644898150334464">다른 비밀번호 사용</translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
@@ -383,7 +384,6 @@
 <translation id="4945756290001680296">비밀번호 설정 액세스</translation>
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
-<translation id="5010803260590204777">시크릿 탭을 열어 웹을 비공개로 탐색하세요.</translation>
 <translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5056446788882570708"><ph name="TIME" />에 문제가 발견되었습니다.</translation>
@@ -470,7 +470,6 @@
 <translation id="5955891643922670672">오프라인 버전 보는 중</translation>
 <translation id="5957613098218939406">옵션 더보기</translation>
 <translation id="5963939892571022323">하이라이트 링크를 생성할 수 없습니다.</translation>
-<translation id="5964480694698977962">새 시크릿 탭 만들기</translation>
 <translation id="5965679971710331625">로그인됨</translation>
 <translation id="5979837087407522202">비밀번호 검색</translation>
 <translation id="5982717868370722439"><ph name="USER_EMAIL" />에 기존 데이터 추가</translation>
@@ -513,6 +512,7 @@
 <translation id="6342069812937806050">방금</translation>
 <translation id="6344783595350022745">텍스트 삭제</translation>
 <translation id="6346549652287021269">다운로드를 새로 시작하시겠습니까?</translation>
+<translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
 <translation id="6362362396625799311">시크릿 탭 없음</translation>
 <translation id="6363526231572697780">사용자 이름 없음</translation>
 <translation id="6374469231428023295">다시 시도</translation>
@@ -691,7 +691,6 @@
 <translation id="7982789257301363584">네트워크</translation>
 <translation id="7993619969781047893">일부 사이트에서는 기능이 작동하지 않을 수 있음</translation>
 <translation id="800361585186029508">입력된 URL을 Chrome에서 엽니다.</translation>
-<translation id="8007420562015504427">시크릿 검색</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8023878949384262191">섹션을 확장합니다.</translation>
 <translation id="8027581147000338959">새 창에서 열기</translation>
@@ -755,6 +754,7 @@
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
 <translation id="8706588385081740091">비밀번호</translation>
 <translation id="8717864919010420084">링크 복사</translation>
+<translation id="8721206573513844242">죄송합니다. 사용자 인증 정보의 유효성을 검사할 수 없습니다.</translation>
 <translation id="8721297211384281569">도구 메뉴</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>

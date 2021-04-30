@@ -117,7 +117,6 @@
 <translation id="1129850422003387628">Кіраванне праграмамі</translation>
 <translation id="113050636487300043">Каб адрозніваць профілі, падбярыце для іх асобныя назвы і колеравыя тэмы</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – належыць да групы <ph name="GROUP_NAME" /></translation>
-<translation id="1134009406053225289">Адкрыць у акне ў рэжыме інкогніта</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Ключ бяспекі заблакіраваны, бо занадта шмат разоў быў уведзены няправільны PIN-код. Каб разблакіраваць, выміце ключ і ўстаўце яго зноў.</translation>
 <translation id="1137589305610962734">часовыя даныя</translation>
@@ -198,7 +197,6 @@
 <translation id="120368089816228251">Музычная нота</translation>
 <translation id="1203942045716040624">Агульны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
-<translation id="1211364473545090084">Акно ў рэжыме інкогніта дазваляе карыстацца інтэрнэтам без захавання гісторыі прагляду сайтаў</translation>
 <translation id="1211769675100312947">Ярлыкі, падабраныя вамі</translation>
 <translation id="1213254615020057352">Адпраўка даных пра выкарыстанне і дыягностыку. Дапамажыце палепшыць функцыянальнасць прылады Android для дзіцяці шляхам аўтаматычнай адпраўкі даных пра дыягностыку, выкарыстанне прылады і праграм у Google. Яны не будуць выкарыстаны для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і іншых удасканаленнях. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта налада ўключана ўладальнікам. Уладальнік можа ўключыць адпраўку ў Google даных пра выкарыстанне і дыягностыку гэтай прылады. Калі для вашага дзіцяці ўключана налада "Дадатковыя дзеянні ў інтэрнэце і праграмах", то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google.</translation>
 <translation id="121384500095351701">Бяспечна спампаваць гэты файл нельга</translation>
@@ -348,10 +346,10 @@
 <translation id="1378613616312864539">Гэту наладу кантралюе <ph name="NAME" /></translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Раскрытых пароляў няма}=1{1 раскрыты пароль}one{{NUM_COMPROMISED} раскрыты пароль}few{{NUM_COMPROMISED} раскрытыя паролі}many{{NUM_COMPROMISED} раскрытых пароляў}other{{NUM_COMPROMISED} раскрытага пароля}}</translation>
 <translation id="1380028686461971526">Падключацца да сеткі аўтаматычна</translation>
-<translation id="1380436189840894976">Усё роўна выйсці з рэжыму інкогніта?</translation>
 <translation id="1383597849754832576">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Паўтарыце спробу пазней.</translation>
 <translation id="1383861834909034572">Адкрыццё пры завяршэнні</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1384849755549338773">Прапаноўваць перакладаць сайты на іншых мовах з дапамогай Перакладчыка Google</translation>
 <translation id="1386791642444521222">Актываваць фізічную SIM-карту</translation>
 <translation id="138784436342154190">Аднавіць стандартную пачатковую старонку?</translation>
 <translation id="1388253969141979417">Дазволена выкарыстоўваць мікрафон</translation>
@@ -657,7 +655,6 @@
 <translation id="169675691788639886">На прыладзе быў наладжаны сервер SSH. Не выкарыстоўвайце для ўваходу ўліковыя запісы, у якіх ёсць канфідэнцыяльная інфармацыя.</translation>
 <translation id="1697150536837697295">Мастацтва</translation>
 <translation id="1697686431566694143">Змяніць файл</translation>
-<translation id="1698122934742150150">Толькі бягучы сеанс інкогніта</translation>
 <translation id="1700079447639026019">Сайты, якім забаронена выкарыстоўваць файлы cookie</translation>
 <translation id="1701062906490865540">Выдаліць гэтага карыстальніка</translation>
 <translation id="1703331064825191675">Паролі больш не наробяць клопату</translation>
@@ -810,7 +807,6 @@
 <translation id="1850508293116537636">Павярнуць &amp;па гадзіннікавай стрэлцы</translation>
 <translation id="1852141627593563189">Знайсці шкоднае праграмнае забеспячэнне</translation>
 <translation id="1852799913675865625">Пры спробе прачытаць файл адбылася памылка: <ph name="ERROR_TEXT" />.</translation>
-<translation id="1853692000353488670">Новая ўкладка інкогніта</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1855079636134697549">Камера ўключана</translation>
 <translation id="1856715684130786728">Дадаць размяшчэнне...</translation>
@@ -874,6 +870,7 @@
 <translation id="1920390473494685033">Кантакты</translation>
 <translation id="1921050530041573580">Спалучыце тэлефон, на якім усталяваны Паведамленні</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> DPI</translation>
+<translation id="1923468477587371721">Сайты Google, такія як Gmail, Drive і YouTube, будуць выкарыстоўваць мову Уліковага запісу Google, пакуль вы не зменіце яе ў канкрэтным прадукце</translation>
 <translation id="192494336144674234">Адкрыць з дапамогай</translation>
 <translation id="1925017091976104802">Каб уставіць, націсніце <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="1925021887439448749">Увядзіце карыстальніцкі вэб-адрас</translation>
@@ -1329,7 +1326,6 @@
 <translation id="2434758125294431199">Выберыце, хто можа ажыццяўляць абагульванне з вамі</translation>
 <translation id="2435248616906486374">Сетка адключана</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
-<translation id="2435579801172349831">Адкрыць усе (<ph name="URL_COUNT" />) у акне ў рэжыме інкогніта</translation>
 <translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
 <translation id="244231003699905658">Несапраўдны адрас. Праверце адрас і паўтарыце спробу.</translation>
@@ -1478,7 +1474,6 @@
 <translation id="2602501489742255173">Каб пачаць, правядзіце пальцам уверх</translation>
 <translation id="2603115962224169880">Ачыстка камп'ютара</translation>
 <translation id="2603355571917519942">Функцыя Voice Match гатовая да работы</translation>
-<translation id="2603463522847370204">Адкрыць у &amp;акне ў рэжыме інкогніта</translation>
 <translation id="2604138917550693049">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2605668923777146443">Каб прагледзець параметры функцыі Better Together, перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />.</translation>
@@ -1955,6 +1950,7 @@
 <translation id="311394601889664316">Не дазваляць сайтам змяняць файлы або папкі на прыладзе</translation>
 <translation id="3115147772012638511">Чакаецца кэш...</translation>
 <translation id="3115580024857770654">Згарнуць усе</translation>
+<translation id="3115743155098198207">Кіраваць мовамі Уліковага запісу Google</translation>
 <translation id="3117362587799608430">Док-станцыя не поўнасцю сумяшчальная з прыладай</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}one{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}few{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}many{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}other{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3118319026408854581">Даведка <ph name="PRODUCT_NAME" /></translation>
@@ -2124,7 +2120,6 @@
 <translation id="3315442055907669208">Перайсці ў рэжым чытання</translation>
 <translation id="3317459757438853210">Двухбаковы</translation>
 <translation id="3317678681329786349">Камера і мікрафон заблакіраваны</translation>
-<translation id="3319048459796106952">Новае &amp;акно ў рэжыме інкогніта</translation>
 <translation id="3320630259304269485">Бяспечны прагляд (абарона ад небяспечных сайтаў) і іншыя налады бяспекі</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Гэтыя даныя змяшчаюць канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}=1{Гэты файл змяшчае канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}one{Гэтыя файлы змяшчаюць канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}few{Гэтыя файлы змяшчаюць канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}many{Гэтыя файлы змяшчаюць канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}other{Гэтыя файлы змяшчаюць канфідэнцыяльнае або небяспечнае змесціва. Выдаліце гэта змесціва і паўтарыце спробу.}}</translation>
 <translation id="3323521181261657960">Бонус! Час карыстання павялічыўся</translation>
@@ -2350,7 +2345,6 @@
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы і папкі</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
 <translation id="3574210789297084292">увайсці</translation>
-<translation id="3574917942258583917">Усё роўна выйсці з рэжыму інкогніта?</translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
 <translation id="3576324189521867626">Усталявана</translation>
 <translation id="3578594933904494462">Змесціва гэтай укладкі абагульваецца.</translation>
@@ -2374,6 +2368,7 @@
 <translation id="3599863153486145794">Ачышчае гісторыю на ўсіх прыладах, з якіх выкананы ўваход. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="3600051066689725006">Звесткі пра вэб-запыт</translation>
 <translation id="3600792891314830896">Выключыць гук на сайтах, якія прайграюць гукі</translation>
+<translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">Прапаноўваць новыя функцыі, як толькі яны з'яўляюцца</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3602870520245633055">Друк і сканіраванне</translation>
@@ -3012,7 +3007,6 @@
 <translation id="4307992518367153382">Асноўнае</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ актыўна)</translation>
 <translation id="4310139701823742692">Файл мае няправільны фармат. Праверце файл PPD і паўтарыце спробу.</translation>
-<translation id="43106757207292366">У раздзеле <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" /> можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Дазволы для вэб-сайтаў і праграм могуць дзейнічаць для ўсіх гэтых уліковых запісаў. Калі вы не хочаце даваць сайтам або праграмам доступ да інфармацыі пра ўліковы запіс, вы можаце ўвайсці на прыладу <ph name="DEVICE_TYPE" /> як госць або праглядаць вэб-старонкі ў <ph name="LINK_2_BEGIN" />акне ў рэжыме інкогніта<ph name="LINK_2_END" />.</translation>
 <translation id="431076611119798497">&amp;Звесткі</translation>
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
 <translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
@@ -3076,7 +3070,6 @@
 <translation id="4387004326333427325">Сертыфікат аўтэнтыфікацыі адхілены аддалена</translation>
 <translation id="4387890294700445764">Раскрытыя паролі</translation>
 <translation id="4389091756366370506">Карыстальнік <ph name="VALUE" /></translation>
-<translation id="4390000551125140321">{0,plural, =1{Інкогніта}one{# адкрытае акно ў рэжыме інкогніта}few{# адкрытыя акны ў рэжыме інкогніта}many{# адкрытых вокнаў у рэжыме інкогніта}other{# адкрытага акна ў рэжыме інкогніта}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і яшчэ некалькі (<ph name="NUMBER_OF_OTHER_SWITCHES" />) пераключальнікаў</translation>
 <translation id="439266289085815679">Карыстальнік <ph name="USER_EMAIL" /> кіруе канфігурацыяй Bluetooth.</translation>
 <translation id="4392896746540753732">Рэдагаванне файла канфігурацыі</translation>
@@ -3182,7 +3175,6 @@
 <translation id="4504940961672722399">Каб выкарыстаць гэта пашырэнне, націсніце на гэты значок або націсніце клавішы <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Слова ўжо дададзена</translation>
 <translation id="4507128560633489176">Даныя выдалены.</translation>
-<translation id="4508051413094283164">Адкрыць усе ў акне ў рэжыме інкогніта</translation>
 <translation id="4508265954913339219">Не ўдалося актываваць</translation>
 <translation id="4508765956121923607">Паказаць к&amp;рыніцу</translation>
 <translation id="4510479820467554003">Спіс бацькоўскіх уліковых запісаў</translation>
@@ -3699,6 +3691,7 @@
 <translation id="5107443654503185812">Адно з пашырэнняў выключыла Бяспечны прагляд</translation>
 <translation id="5108967062857032718">Налады &gt; Выдаліць праграмы Android</translation>
 <translation id="5109044022078737958">Мія</translation>
+<translation id="5109816792918100764">Выдаліць наступную мову: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111646998522066203">Выйсці з рэжыму інкогніта</translation>
 <translation id="5111692334209731439">&amp;Менеджар закладак</translation>
 <translation id="5112577000029535889">&amp;Інструменты распрацоўшчыка</translation>
@@ -4034,7 +4027,6 @@
 <translation id="5486561344817861625">Імітаваць перазапуск браўзера</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
 <translation id="5488093641312826914">Элемент "<ph name="COPIED_ITEM_NAME" />" скапіраваны</translation>
-<translation id="5488468185303821006">Дазволіць у рэжыме інкогніта</translation>
 <translation id="5488508217173274228">Параметры шыфравання для сінхранізацыі</translation>
 <translation id="5489435190927933437">Захаваныя паролі для сайта <ph name="DOMAIN" /></translation>
 <translation id="5490721031479690399">Адключыць прыладу Bluetooth</translation>
@@ -4078,7 +4070,6 @@
 <translation id="5526745900034778153">Каб узнавіць сінхранізацыю, увайдзіце ва ўліковы запіс зноў</translation>
 <translation id="5527463195266282916">Спроба панізіць версію пашырэння.</translation>
 <translation id="5527474464531963247">Таксама можна выбраць іншую сетку.</translation>
-<translation id="5530766185686772672">Закрыць укладкі інкогніта</translation>
 <translation id="5532223876348815659">Глабальнае</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запытвае наступныя дазволы</translation>
 <translation id="5534304873398226603">Адхіліць фота ці відэа</translation>
@@ -4439,6 +4430,7 @@
 <translation id="5943127421590245687">Уліковы запіс спраўджаны. Каб разблакіраваць і аднавіць лакальныя даныя, увядзіце стары пароль прылады <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Сканіраваць QR-код</translation>
 <translation id="5945002094477276055">Файл "<ph name="FILE_NAME" />" можа быць небяспечным. Адправіць яго ў сэрвіс "Google Бяспечны прагляд" для праверкі?</translation>
+<translation id="5945363896952315544">На вашым ключы бяспекі больш няма месца для лічбавых адбіткаў. Каб дадаць новы лічбавы адбітак, выдаліце адзін з існуючых.</translation>
 <translation id="5946591249682680882">Ідэнтыфікатар справаздачы <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Падключыце клавіятуру або мыш або працягніце наладжванне з дапамогай сэнсарнага экрана. Калі вы выкарыстоўваеце прылады з Bluetooth, упэўніцеся, што яны гатовыя да спалучэння.</translation>
 <translation id="5949544233750246342">Не атрымалася прааналізаваць файл</translation>
@@ -4474,7 +4466,6 @@
 <translation id="5979421442488174909">&amp;Перакласці на наступную мову: <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Каб дадаць закладку для старонкі, націсніце на зорачку ў адрасным радку</translation>
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
-<translation id="598472838394900788">{0,plural, =1{Інкогніта}one{Інкогніта (#)}few{Інкогніта (#)}many{Інкогніта (#)}other{Інкогніта (#)}}</translation>
 <translation id="5985458664595100876">Няправільны фармат URL-адраса. Падтрымліваюцца фарматы \\server\share і smb://server/share.</translation>
 <translation id="598810097218913399">Выдаліць прызначэнне</translation>
 <translation id="5990266201903445068">Толькі Wi-Fi</translation>
@@ -4558,7 +4549,6 @@
 <translation id="6078752646384677957">Праверце мікрафон і ўзроўні гучнасці.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" запытвае дазвол на падключэнне да прылады HID</translation>
 <translation id="608029822688206592">Сеткі не знойдзены. Устаўце SIM-карту і паўтарыце спробу.</translation>
-<translation id="6080515710685820702">Выкарыстоўваеце даступны іншым камп'ютар? Паспрабуйце адкрыць акно ў рэжыме інкогніта.</translation>
 <translation id="6080689532560039067">Праверце сістэмны час</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – належыць да групы без назвы</translation>
 <translation id="6085886413119427067">Вызначае, як устанаўліваць бяспечнае падключэнне да вэб-сайтаў</translation>
@@ -4845,7 +4835,6 @@
 <translation id="6410390304316730527">Функцыя "Бяспечны прагляд" абараняе ад зламыснікаў, якія могуць падмануць вас і прымусіць да небяспечных дзеянняў – напрыклад, усталяваць шкоднае праграмнае забеспячэнне або выдаць асабістую інфармацыю (паролі, нумары тэлефонаў або даныя крэдытных картак і падобнае). Калі вы выключыце гэту функцыю, будзьце асабліва ўважлівымі пры наведванні незнаёмых сайтаў і сайтаў з няпэўнай рэпутацыяй.</translation>
 <translation id="6410668567036790476">Дадаванне пошукавай сістэмы</translation>
 <translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
-<translation id="6412931879992742813">Новае акно ў рэжыме інкогніта</translation>
 <translation id="641469293210305670">Усталяванне абнаўленняў і праграм</translation>
 <translation id="6414878884710400018">Адкрыць налады сістэмы</translation>
 <translation id="6414888972213066896">Вы спыталі бацьку ці маці, ці можна наведваць гэты сайт</translation>
@@ -5132,7 +5121,6 @@
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732801395666424405">Сертыфікаты не загружаны</translation>
-<translation id="6734468588183300211">У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
 <translation id="6735304988756581115">Паказаць файлы cookie і іншыя даныя сайта...</translation>
 <translation id="6736243959894955139">Адрас</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5384,6 +5372,7 @@
 <translation id="7001036685275644873">Рэзервовае капіраванне файлаў і праграм Linux</translation>
 <translation id="7002055706763150362">Каб наладзіць Smart Lock для прылады Chromebook, нам неабходна спраўдзіць вашу асобу. Увядзіце пароль.</translation>
 <translation id="7003339318920871147">Інтэрнэт-базы даных</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файлы}many{{COUNT} файлаў}other{{COUNT} файла}}</translation>
 <translation id="7003723821785740825">Наладзьце больш хуткі спосаб разблакіроўкі прылады</translation>
 <translation id="7003844668372540529">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайт можа выкарыстоўваць MIDI</translation>
@@ -5438,7 +5427,6 @@
 <translation id="7057767408836081338">Не ўдалося атрымаць даныя праграмы. Спрабуем усё роўна запусціць праграму...</translation>
 <translation id="7058024590501568315">Схаваная сетка</translation>
 <translation id="7059858479264779982">Уключыць аўтазапуск праграмы</translation>
-<translation id="7059893117020417984">Для прагляду вэб-старонак у прыватным рэжыме націсніце меню са значком-кропкамі і адкрыйце акно ў рэжыме інкогніта</translation>
 <translation id="7062222374113411376">Дазволіць нядаўна закрытым сайтам завяршаць перадачу і прыём даных (рэкамендуецца)</translation>
 <translation id="7063129466199351735">Ідзе апрацоўка ярлыкоў...</translation>
 <translation id="7063311912041006059">URL-адрас з <ph name="SPECIAL_SYMBOL" /> на месцы запыту</translation>
@@ -5460,7 +5448,6 @@
 <translation id="7077829361966535409">Не ўдалося загрузіць старонку ўваходу пры бягучых наладах проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Паўтарыце спробу ўваходу<ph name="GAIA_RELOAD_LINK_END" /> або скарыстайце іншыя <ph name="PROXY_SETTINGS_LINK_START" />налады проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усе сеткі</translation>
 <translation id="708060913198414444">К&amp;апіраваць адрас аўдыя</translation>
-<translation id="7081952801286122383">Вы ў рэжыме інкогніта</translation>
 <translation id="708278670402572152">Каб уключыць пошук, адключыцеся</translation>
 <translation id="7084321615353200053">Сайты могуць запытваць дазвол на выкарыстанне камеры (рэкамендуецца)</translation>
 <translation id="7085389578340536476">Дазволіць Chrome запісваць аўдыя?</translation>
@@ -5648,6 +5635,7 @@
 <translation id="7306521477691455105">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да віртуальнай машыны "<ph name="USB_VM_NAME" />", адкрыйце Налады</translation>
 <translation id="7307129035224081534">Прыпынена</translation>
 <translation id="7308436126008021607">фонавая сінхранізацыя</translation>
+<translation id="7308643132139167865">Мовы вэб-сайтаў</translation>
 <translation id="7309257895202129721">Паказаць &amp;элементы кіравання</translation>
 <translation id="7310598146671372464">Не ўдалося ўвайсці. Сервер не падтрымлівае ўказаныя тыпы шыфравання Kerberos. Звярніцеся да адміністратара.</translation>
 <translation id="7320213904474460808">Стандартная сетка</translation>
@@ -5859,6 +5847,7 @@
 <translation id="7552846755917812628">Паспрабуйце наступнае:</translation>
 <translation id="7553012839257224005">Ідзе праверка наяўнасці кантэйнера Linux</translation>
 <translation id="7553242001898162573">Увядзіце пароль</translation>
+<translation id="755472745191515939">Адміністратар не дазваляе выкарыстоўваць гэту мову</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7556033326131260574">Функцыі Smart Lock не ўдалося спраўдзіць ваш уліковы запіс. Каб увайсці, увядзіце пароль.</translation>
 <translation id="7556242789364317684">На жаль, аднавіць налады ў браўзеры <ph name="SHORT_PRODUCT_NAME" /> не ўдалося. Каб выправіць памылку, браўзеру <ph name="SHORT_PRODUCT_NAME" /> трэба скінуць налады прылады з дапамогай Powerwash.</translation>
@@ -5977,7 +5966,6 @@
 <translation id="7681597159868843240">Сайты звычайна выкарыстоўваюць датчыкі руху прылады для работы такіх функцый, як віртуальная рэальнасць або адсочванне фізічнага стану</translation>
 <translation id="7683164815270164555">Запытваць дазвол, калі вэб-праграма спрабуе адкрываць файлы пэўных тыпаў</translation>
 <translation id="7683373461016844951">Каб працягнуць, націсніце "OK", затым "Дадаць карыстальніка" – так вы створыце новы профіль для свайго адраса электроннай пошты ў дамене <ph name="DOMAIN" />.</translation>
-<translation id="7683593009096723900">{COUNT,plural, =0{Адкрыць усе ў &amp;акне ў рэжыме інкогніта}=1{Адкрыць у &amp;акне ў рэжыме інкогніта}one{Адкрыць усе ({COUNT}) у &amp;акне ў рэжыме інкогніта}few{Адкрыць усе ({COUNT}) у &amp;акне ў рэжыме інкогніта}many{Адкрыць усе ({COUNT}) у &amp;акне ў рэжыме інкогніта}other{Адкрыць усе ({COUNT}) у &amp;акне ў рэжыме інкогніта}}</translation>
 <translation id="7684212569183643648">Усталявана адміністратарам</translation>
 <translation id="7684559058815332124">Адкрыць старонку ўваходу ў партал узаемадзеяння</translation>
 <translation id="7684718995427157417">Каб ствараць і тэсціраваць праграмы, уключыце Android Debug Bridge (ADB). Звярніце ўвагу, што, уключыўшы ADB, вы дазваляеце ўсталёўваць праграмы для Android, якія не былі спраўджаны Google, а для выключэння ADB патрабуецца скід налад да заводскіх значэнняў.</translation>
@@ -6160,6 +6148,7 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
+<translation id="7861846108263890455">Мова Уліковага запісу Google</translation>
 <translation id="7864539943188674973">Адключыць Bluetooth</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – спалучана</translation>
 <translation id="7870730066603611552">Праверка параметраў сінхранізацыі пасля наладжвання</translation>
@@ -6421,6 +6410,7 @@
 <translation id="8143442547342702591">Няправільная праграма</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Калі вы ўжо рэгістраваліся на гэтай прыладзе, вы можаце <ph name="LINK2_START" />ўвайсці як існуючы карыстальнік<ph name="LINK2_END" />.</translation>
+<translation id="8146287226035613638">Дадавайце прыярытэтныя мовы і вызначайце іх чарговасць. Вэб-сайты будуць паказвацца на мовах, выбраных вамі ў якасці прыярытэтных, калі гэта магчыма. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Не атрымалася ўвайсці ў сістэму. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
 <translation id="8147900440966275470">Знойдзена ўкладак: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Абмежаваць уваход</translation>
@@ -6548,7 +6538,6 @@
 <translation id="8284279544186306258">усе сайты <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="8286036467436129157">Увайсці</translation>
-<translation id="8286963743045814739">Прыватны прагляд вэб-старонак магчымы ў акне ў рэжыме інкогніта</translation>
 <translation id="8287902281644548111">Пошук па URL-адрасе або выкліку API</translation>
 <translation id="8288032458496410887">Выдаліць <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Памер дыска</translation>
@@ -7435,6 +7424,7 @@
 <translation id="983511809958454316">Гэта функцыя не падтрымліваецца ў VR</translation>
 <translation id="984136553749462603">Калі сайт будзе прайграваць змесціва, абароненае аўтарскім правам, ён можа запытаць дазвол распазнаць вашу прыладу</translation>
 <translation id="984275831282074731">Спосабы аплаты</translation>
+<translation id="984705303330760860">Дадаванне моў праверкі правапісу</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Агульныя</translation>

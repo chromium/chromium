@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">Να επιτρέπεται στους ιστότοπους να εκτελούν JavaScript (συνιστάται)</translation>
 <translation id="534295439873310000">Συσκευές NFC</translation>
 <translation id="5354152178998424783">Αυτή η ενέργεια θα διαγράψει <ph name="DATASIZE" /> δεδομένων και cookie που έχουν αποθηκευτεί από ιστοτόπους.</translation>
-<translation id="5384883051496921101">Αυτός ο ιστότοπος πρόκειται να κοινοποιήσει πληροφορίες με μια εφαρμογή εκτός της κατάστασης ανώνυμης περιήγησης.</translation>
 <translation id="5391532827096253100">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ασφαλής. Πληροφορίες ιστοτόπου</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ακόμη)}other{(+ # ακόμη)}}</translation>
 <translation id="5403592356182871684">Ονόματα</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">Το NFC είναι ανενεργό για αυτήν τη συσκευή. Ενεργοποιήστε το στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Αυτός ο ιστότοπος ανοίγει και αποκρίνεται γρήγορα για τους περισσότερους χρήστες.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">Έξοδος από την κατάσταση ανώνυμης περιήγησης;</translation>
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>

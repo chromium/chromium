@@ -62,6 +62,7 @@
 <translation id="1376578503827013741">계산 중...</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384704387250346179">Google 렌즈로 이미지 번역 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1385855801883526502">스타일 하이라이트</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
 <translation id="1406000523432664303">'추적 안함'</translation>
@@ -119,7 +120,6 @@
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
 <translation id="1843805151597803366">번역을 개선하려면 Google 검색을 통해 현재 페이지를 사용하세요.</translation>
-<translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1856325424225101786">라이트 모드를 재설정하시겠습니까?</translation>
 <translation id="1868024384445905608">이제 Chrome에서 파일을 더 빠르게 다운로드합니다.</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
@@ -299,7 +299,6 @@
 <translation id="2942036813789421260">미리보기 탭 닫힘</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" />님과 <ph name="PARENT_NAME_2" />님이 관리하는 계정입니다.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
-<translation id="2962095958535813455">시크릿 탭으로 전환됨</translation>
 <translation id="2979025552038692506">선택된 시크릿 탭</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2989523299700148168">최근 방문</translation>
@@ -317,12 +316,10 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
-<translation id="3089395242580810162">시크릿 탭에서 열기</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
-<translation id="3137521801621304719">시크릿 모드 나가기</translation>
 <translation id="3143515551205905069">동기화 취소</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3157842584138209013">추가 옵션 버튼에서 저장한 데이터의 양을 확인해보세요.</translation>
@@ -357,7 +354,6 @@
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341058695485821946">저장한 데이터의 양을 확인해보세요.</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
-<translation id="3350687908700087792">모든 시크릿 탭 닫기</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
 <translation id="3367813778245106622">다시 로그인하여 동기화 시작</translation>
 <translation id="337236281855091893">검색하려면 단어를 탭하는 대신 길게 터치하세요.</translation>
@@ -380,7 +376,6 @@
 
 개인정보 보호 샌드박스는 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 현재 사이트는 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인정보 보호 샌드박스를 사용해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
-<translation id="3492207499832628349">새 시크릿 탭</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
@@ -680,7 +675,6 @@
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
 <translation id="5527082711130173040">기기를 스캔하려면 Chrome에서 위치 정보에 액세스해야 합니다. <ph name="BEGIN_LINK1" />권한을 업데이트<ph name="END_LINK1" />하세요. 또한 <ph name="BEGIN_LINK2" />이 기기에서도 위치 정보 액세스 권한이 사용 중지<ph name="END_LINK2" />되어 있습니다.</translation>
-<translation id="5530766185686772672">시크릿 탭 닫기</translation>
 <translation id="5534640966246046842">사이트 복사됨</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5556459405103347317">새로고침</translation>
@@ -1153,7 +1147,6 @@
 <translation id="8503559462189395349">Chrome 비밀번호</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8514477925623180633">Chrome으로 저장한 비밀번호 내보내기</translation>
-<translation id="8514577642972634246">시크릿 모드로 들어가기</translation>
 <translation id="8516012719330875537">이미지 편집기</translation>
 <translation id="8523928698583292556">저장된 암호 삭제</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>

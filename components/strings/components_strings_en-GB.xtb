@@ -157,6 +157,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1476595624592550506">Change your password</translation>
 <translation id="1484290072879560759">Choose delivery address</translation>
 <translation id="1492194039220927094">Policies push:</translation>
+<translation id="1495677929897281669">Back to tab</translation>
 <translation id="1501859676467574491">Show cards from your Google Account</translation>
 <translation id="1507202001669085618">&lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page that you're trying to open.&lt;/p&gt;</translation>
@@ -551,7 +552,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to run safety check in Chrome settings</translation>
 <translation id="3061707000357573562">Patch Service</translation>
-<translation id="3064966200440839136">Leaving incognito mode to pay via an external application. Continue?</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3086579638707268289">Your activity on the web is being monitored</translation>
@@ -574,7 +574,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="315504272643575312">Your account is managed by <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
-<translation id="3167968892399408617">Pages that you view in incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your incognito tabs. Any files you download or bookmarks you create will be kept.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Island</translation>
 <translation id="3176929007561373547">Check your proxy settings or contact your network administrator to
@@ -707,7 +706,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3615877443314183785">Enter a valid expiry date</translation>
 <translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
-<translation id="3625635938337243871">Sign-in data will be stored on this device after you exit Incognito mode.</translation>
 <translation id="3630155396527302611">If it is already listed as a program allowed to access the network, try
       removing it from the list and adding it again.</translation>
 <translation id="3630699740441428070">Administrators of this device have configured your network connection, which may allow them to see your network traffic, including which websites that you visit.</translation>
@@ -1814,7 +1812,6 @@ Additional details:
 <translation id="782886543891417279">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit its login page.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">However, you aren’t invisible. Going incognito doesn’t hide your browsing from your employer, your Internet service provider or the websites that you visit.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7858035578849836010">Open files with file type associations.</translation>
 <translation id="7862185352068345852">Leave site?</translation>
@@ -2044,7 +2041,6 @@ Additional details:
 <translation id="8719528812645237045">Multiple punch top</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8726549941689275341">Page size:</translation>
-<translation id="8728672262656704056">You’ve gone incognito</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731544501227493793">Manage passwords button; press enter to view and manage your passwords in Chrome settings</translation>
 <translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>

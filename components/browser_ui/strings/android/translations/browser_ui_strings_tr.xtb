@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">Sitelerin JavaScript çalıştırmasına izin ver (önerilir)</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5354152178998424783">Bu işlem, siteler tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizler.</translation>
-<translation id="5384883051496921101">Bu site, gizli mod dışında bir uygulama ile bilgi paylaşımında bulunmak üzere.</translation>
 <translation id="5391532827096253100">Bu siteye bağlantınız güvenli değil. Site bilgileri</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">NFC bu cihazda kapalı. Bu özelliği <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda açın.</translation>
 <translation id="8929372349074745002">Bu site, çoğu kullanıcı için hızlı açılıp yanıt veriyor</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">Gizli moddan çıkılsın mı?</translation>
 <translation id="8958424370300090006">Belirli bir site için çerezleri engelleyin.</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unut</translation>

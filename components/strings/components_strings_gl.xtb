@@ -157,6 +157,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1476595624592550506">Cambia o teu contrasinal</translation>
 <translation id="1484290072879560759">Escoller enderezo de envío</translation>
 <translation id="1492194039220927094">Aplicación de políticas:</translation>
+<translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1501859676467574491">Mostra tarxetas da túa Conta de Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Verás este erro se utilizas un portal wifi no que tes que iniciar sesión para poder conectarte a Internet.&lt;/p&gt;
     &lt;p&gt;Para solucionar o erro, fai clic en &lt;strong&gt;Conectar&lt;/strong&gt; na páxina que tentas abrir.&lt;/p&gt;</translation>
@@ -549,7 +550,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3060227939791841287">C9 (sobre)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
-<translation id="3064966200440839136">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
 <translation id="306573536155379004">Comezou a partida.</translation>
 <translation id="3080254622891793721">Libro gráfico</translation>
 <translation id="3086579638707268289">Estase supervisando a túa actividade na Web</translation>
@@ -572,7 +572,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="315504272643575312"><ph name="MANAGER" /> xestiona a túa conta.</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3162559335345991374">É posible que a rede wifi que utilizas requira o acceso á súa páxina de inicio de sesión.</translation>
-<translation id="3167968892399408617">As páxinas que ves nas pestanas do modo de incógnito non se conservarán no historial do teu navegador, no almacenamento de cookies nin no historial de busca unha vez pechadas todas as pestanas do modo de incógnito. Conservaranse todos os ficheiros que descargues ou os marcadores que crees.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Illa</translation>
 <translation id="3176929007561373547">Comproba a configuración do teu proxy ou ponte en contacto co administrador da túa rede para
@@ -705,7 +704,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3615877443314183785">Introduce unha data de caducidade válida</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
-<translation id="3625635938337243871">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
 <translation id="3630155396527302611">Se xa está incluído como programa autorizado para acceder á rede, proba
        a eliminalo da lista e volver engadilo.</translation>
 <translation id="3630699740441428070">Os administradores deste dispositivo configuraron a túa conexión de rede, o cal pode permitirlles ver o tráfico de rede, así como os sitios web que visitas.</translation>
@@ -1812,7 +1810,6 @@ Detalles adicionais:
 <translation id="782886543891417279">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso á súa páxina de inicio de sesión.</translation>
 <translation id="7836231406687464395">Postfix (sobre)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">Con todo, non es invisible. O modo de incógnito non impide que o teu xefe, o teu fornecedor de servizos de Internet nin os sitios web que visitas obteñan información sobre como navegas.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7858035578849836010">Abrir ficheiros con asociacións de tipos de ficheiro.</translation>
 <translation id="7862185352068345852">Queres saír do sitio?</translation>
@@ -2042,7 +2039,6 @@ Detalles adicionais:
 <translation id="8719528812645237045">Varias perforacións na parte superior</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8726549941689275341">Tamaño da páxina:</translation>
-<translation id="8728672262656704056">Entraches no modo de incógnito</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731544501227493793">Botón Xestionar contrasinais. Preme Intro para ver e xestionar os teus contrasinais desde a configuración de Chrome</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> xestiona o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>

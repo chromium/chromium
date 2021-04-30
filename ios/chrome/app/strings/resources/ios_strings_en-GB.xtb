@@ -113,7 +113,6 @@
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
-<translation id="213900355088104901">To browse privately, open an incognito tab</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2175927920773552910">QR code</translation>
@@ -139,6 +138,7 @@
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
+<translation id="2410754283952462441">Choose an account</translation>
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2435457462613246316">Show password</translation>
@@ -214,9 +214,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3181825792072797598">Turn on Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3184767182050912705">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3196681740617426482">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
-
-While in Incognito, sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
 <translation id="3240426699337459095">Link copied</translation>
@@ -357,6 +354,7 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="473775607612524610">Update</translation>
 <translation id="4747097190499141774">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">New Incognito tab</translation>
+<translation id="4766678251456904326">Add account to device</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4778644898150334464">Use other password</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
@@ -386,7 +384,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4945756290001680296">Access password settings</translation>
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="5005498671520578047">Copy password</translation>
-<translation id="5010803260590204777">Open an incognito tab to browse the web privately.</translation>
 <translation id="5017828934289857214">Remind me later</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
@@ -473,7 +470,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5955891643922670672">Viewing Offline Version</translation>
 <translation id="5957613098218939406">More Options</translation>
 <translation id="5963939892571022323">A link to the highlight cannot be created.</translation>
-<translation id="5964480694698977962">Create new incognito tab.</translation>
 <translation id="5965679971710331625">You're signed in</translation>
 <translation id="5979837087407522202">Search passwords</translation>
 <translation id="5982717868370722439">Add existing data to <ph name="USER_EMAIL" />.</translation>
@@ -695,7 +691,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7982789257301363584">Network</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
-<translation id="8007420562015504427">Incognito Search</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023878949384262191">Expands the section.</translation>
 <translation id="8027581147000338959">Open in new window</translation>

@@ -83,6 +83,7 @@
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="1690731385917361335">Закладок нет</translation>
+<translation id="1691390244342876227">Браузеру Chrome не удалось проверить ваши данные.</translation>
 <translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
@@ -112,7 +113,6 @@
 <translation id="209018056901015185">Версия для ПК</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="213900355088104901">Чтобы просматривать сайты анонимно, откройте вкладку в режиме инкогнито</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -138,6 +138,7 @@
 Сайты не могут использовать файлы cookie, чтобы получать данные о ваших действиях в браузере, например для показа персонализированной рекламы.</translation>
 <translation id="2381405137052800939">Основные</translation>
 <translation id="2386793615875593361">Выбрана 1 фотография</translation>
+<translation id="2410754283952462441">Выберите аккаунт</translation>
 <translation id="2421004566762153674">Блокировать сторонние файлы cookie</translation>
 <translation id="2421044535038393232">Продолжить редактирование</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
@@ -213,9 +214,6 @@
 <translation id="3181825792072797598">Включить</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3196681740617426482">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
-
-В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
 <translation id="3240426699337459095">Готово</translation>
@@ -351,9 +349,12 @@
 
 Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="4689564913179979534">Настроить способы оплаты</translation>
+<translation id="4704093130121805775">Синхронизация между устройствами</translation>
+<translation id="470966556546083668">Не включать синхронизацию</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4747097190499141774">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay. Доступ к зашифрованным данным будет только у тех, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется сбросить параметры синхронизации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Новая вкладка инкогнито</translation>
+<translation id="4766678251456904326">Добавить аккаунт на устройство</translation>
 <translation id="4775879719735953715">Браузер по умолчанию</translation>
 <translation id="4778644898150334464">Использовать другой пароль</translation>
 <translation id="4802417911091824046">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay.
@@ -383,7 +384,6 @@
 <translation id="4945756290001680296">Доступ к настройкам паролей</translation>
 <translation id="4979397965658815378">Войдите в аккаунт Google, чтобы пользоваться своими закладками, паролями, историей и другими настройками на любом устройстве</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
-<translation id="5010803260590204777">Чтобы просматривать веб-страницы, не оставляя следов, откройте вкладку инкогнито.</translation>
 <translation id="5017828934289857214">Напомнить позже</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
@@ -470,7 +470,6 @@
 <translation id="5955891643922670672">Просматривается в офлайн-режиме</translation>
 <translation id="5957613098218939406">Другое</translation>
 <translation id="5963939892571022323">Не удалось создать ссылку на выделенный текст.</translation>
-<translation id="5964480694698977962">Создать вкладку инкогнито.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
 <translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" /></translation>
@@ -513,6 +512,7 @@
 <translation id="6342069812937806050">только что</translation>
 <translation id="6344783595350022745">Очистить</translation>
 <translation id="6346549652287021269">Скачать новый файл?</translation>
+<translation id="634878792104344809">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах.</translation>
 <translation id="6362362396625799311">Нет открытых вкладок инкогнито</translation>
 <translation id="6363526231572697780">Имя пользователя не указано</translation>
 <translation id="6374469231428023295">Повторить</translation>
@@ -691,7 +691,6 @@
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7993619969781047893">Некоторые функции на сайтах могут работать некорректно</translation>
 <translation id="800361585186029508">Введенные URL будут открываться в Google Chrome.</translation>
-<translation id="8007420562015504427">Поиск в режиме инкогнито</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8023878949384262191">Разворачивает раздел.</translation>
 <translation id="8027581147000338959">Открыть в новом окне</translation>
@@ -755,6 +754,7 @@
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копировать ссылку</translation>
+<translation id="8721206573513844242">Не удалось проверить ваши учетные данные.</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>

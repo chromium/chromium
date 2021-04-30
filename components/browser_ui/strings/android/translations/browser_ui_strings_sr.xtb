@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">Дозволи сајтовима да покрећу JavaScript (препоручено)</translation>
 <translation id="534295439873310000">NFC уређаји</translation>
 <translation id="5354152178998424783">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови.</translation>
-<translation id="5384883051496921101">Овај сајт ће делити информације са апликацијом изван режима без архивирања.</translation>
 <translation id="5391532827096253100">Веза са овим сајтом није безбедна. Информације о сајту</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и још 1)}one{(и још #)}few{(и још #)}other{(и још #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">NFC је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">Овај сајт се брзо отвара и брзо реагује за већину људи</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">Излазите из режима без архивирања?</translation>
 <translation id="8958424370300090006">Блокирајте колачиће за одређени сајт.</translation>
 <translation id="8959122750345127698">Навигација је недоступна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Заборави</translation>

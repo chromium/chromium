@@ -157,6 +157,7 @@
 <translation id="1476595624592550506">اپنا پاس ورڈ تبدیل کریں</translation>
 <translation id="1484290072879560759">ترسیل کا پتہ منتخب کریں</translation>
 <translation id="1492194039220927094">پالیسیوں کو پُش کرنا:</translation>
+<translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1501859676467574491">‏اپنے Google اکاؤنٹ سے کارڈز دکھائیں</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;اگر آپ کسی ایسے Wi-Fi پورٹل کا استعمال کر رہے ہیں، جس میں آپ کو آن لائن جانے سے پہلے سائن ان کرنا پڑتا ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
     &lt;p&gt;خرابی ٹھیک کرنے کیلئے، اس صفحے پر &lt;strong&gt;منسلک کریں&lt;/strong&gt; پر کلک کریں جسے آپ کھولنے کی کوشش کر رہے ہیں۔&lt;/p&gt;</translation>
@@ -554,7 +555,6 @@
 <translation id="3060227939791841287">C9 ‎(Envelope‎)‎</translation>
 <translation id="3060557858482803256">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
-<translation id="3064966200440839136">کسی خارجی ایپلیکیشن کے ذریعے ادائیگی کرنے کیلئے پوشیدگی وضع کو چھوڑ رہے ہیں۔ جاری رکھیں؟</translation>
 <translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3086579638707268289">ویب پر کی جانے والی آپ کی سرگرمی کو مانیٹر کیا جا رہا ہے</translation>
@@ -577,7 +577,6 @@
 <translation id="315504272643575312">آپ کا اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="3157931365184549694">بحال کریں</translation>
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
-<translation id="3167968892399408617">جو صفحات آپ پوشیدگی ٹیبز میں دیکھتے ہیں وہ آپ کی جانب سے آپ کے سبھی پوشیدگی ٹیبز بند کر دیے جانے کے بعد آپ کے براؤزر کی سرگزشت، کوکی اسٹور یا تلاش کی سرگزشت میں موجود نہیں رہیں گے۔ آپ جو کوئی فائلیں ڈاؤن لوڈ کرتے یا بُک مارکس بناتے ہیں وہ باقی رہیں گے۔</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
 <translation id="3174168572213147020">جزیرہ</translation>
 <translation id="3176929007561373547">اپنی پراکسی کی ترتیبات چیک کریں یا اپنے
@@ -711,7 +710,6 @@
 <translation id="3615877443314183785">ایک درست تاریخ اختتام درج کریں</translation>
 <translation id="36224234498066874">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
-<translation id="3625635938337243871">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔</translation>
 <translation id="3630155396527302611">اگر یہ پہلے سے ہی نیٹ ورک تک رسائی کیلئے اجازت یافتہ پروگرام کے بطور مندرج
       ہے تو اسے فہرست سے ہٹانے اور دوبارہ شامل کرنے کی کوشش کریں۔</translation>
 <translation id="3630699740441428070">اس آلہ کے منتظمین نے آپ کے نیٹ ورک کنکشن کو ترتیب دیا ہے، جس کی مدد سے وہ آپ کی ملاحظہ کردہ ویب سائٹس سمیت آپ کی نیٹ ورک ٹریفک دیکھ سکتے ہیں۔</translation>
@@ -1819,7 +1817,6 @@
 <translation id="782886543891417279">‏آپ جو Wi-Fi استعمال کر رہے ہیں <ph name="WIFI_NAME" /> وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="7836231406687464395">Postfix ‎(Envelope‎)‎</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{کوئی نہیں}=1{1 ایپ (<ph name="EXAMPLE_APP_1" />)}=2{2 ایپس (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ایپس (<ph name="EXAMPLE_APP_1" />، <ph name="EXAMPLE_APP_2" />، <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">تاہم، آپ غیر مرئی نہیں ہیں۔ پوشیدگی اختیار کرنا آپ کے آجر، آپ کے انٹرنیٹ سروس فراہم کنندہ یا آپ جو ویب سائٹس ملاحظہ کرتے ہیں ان سے آپ کی براؤزنگ کو نہیں چھپاتا ہے۔</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7858035578849836010">فائل ٹائپ ایسوسی ایشنز کے ساتھ فائلز کھولیں۔</translation>
 <translation id="7862185352068345852">سائٹ چھوڑیں؟</translation>
@@ -2049,7 +2046,6 @@
 <translation id="8719528812645237045">اوپر متعدد سوراخ</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8726549941689275341">صفحے کا سائز:</translation>
-<translation id="8728672262656704056">آپ پرائیویٹ براؤزنگ کر رہے ہیں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731544501227493793">‏'پاس ورڈز کا نظم کریں' بٹن، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے اینٹر دبائیں</translation>
 <translation id="8734529307927223492">آپ کا <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>

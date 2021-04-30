@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">JavaScriptஐ இயக்குவதற்கு, தளங்களை அனுமதி (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="534295439873310000">NFC சாதனங்கள்</translation>
 <translation id="5354152178998424783">இதைச் செய்தால் தளங்கள் சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
-<translation id="5384883051496921101">இந்தத் தளமானது மறைநிலைக்கு வெளியே உள்ள பயன்பாட்டுடன் தகவலைப் பகிரவிருக்கிறது.</translation>
 <translation id="5391532827096253100">இந்தத் தளத்திற்கான இணைப்பு பாதுகாப்பானதல்ல. தளத் தகவல்</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
 <translation id="5403592356182871684">பெயர்கள்</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">இந்தச் சாதனத்தில் NFC ஆஃப் செய்யப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> ஆன் செய்யவும்.</translation>
 <translation id="8929372349074745002">பெரும்பாலானவர்களுக்கு இந்தத் தளம் வேகமாகத் திறக்கிறது &amp; செயல்படுகிறது</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">மறைநிலையிலிருந்து வெளியேறவா?</translation>
 <translation id="8958424370300090006">குறிப்பிட்ட தளத்திற்கான குக்கீகளைத் தடுக்கும்.</translation>
 <translation id="8959122750345127698">செல்ல முடியவில்லை: <ph name="URL" /></translation>
 <translation id="8986362086234534611">மற</translation>

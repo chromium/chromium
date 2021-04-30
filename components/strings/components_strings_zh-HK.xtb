@@ -157,6 +157,7 @@
 <translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1484290072879560759">選擇付運地址</translation>
 <translation id="1492194039220927094">政策推送：</translation>
+<translation id="1495677929897281669">返回分頁</translation>
 <translation id="1501859676467574491">顯示您 Google 帳戶中的付款卡</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您正在使用的 Wi-Fi 入口網站需要登入才能連線至網絡，便會看到此錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正錯誤，請在嘗試開啟的網頁上按一下 [連線]&lt;strong&gt;&lt;/strong&gt;。&lt;/p&gt;</translation>
@@ -546,7 +547,6 @@
 <translation id="3060227939791841287">C9 (信封)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3061707000357573562">修補服務</translation>
-<translation id="3064966200440839136">即將退出無痕模式，改用外部應用程式付款，要繼續嗎？</translation>
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3086579638707268289">您的網絡活動正受監控</translation>
@@ -569,7 +569,6 @@
 <translation id="315504272643575312">您的帳戶由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 可能要求您前往其登入頁面。</translation>
-<translation id="3167968892399408617">當您關閉所有無痕模式分頁後，您在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，您下載的檔案或建立的書籤將會全部保留。</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3174168572213147020">島嶼</translation>
 <translation id="3176929007561373547">檢查您的 Proxy 設定，或與網絡管理員聯絡，以
@@ -701,7 +700,6 @@
 <translation id="3615877443314183785">請輸入有效的到期日</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
-<translation id="3625635938337243871">離開無痕模式後，登入資料會儲存在此裝置中。</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
 <translation id="3630699740441428070">此裝置的管理員已設定您的網絡連線，此設定可允許管理員查看您的網絡流量，包括您瀏覽的網站。</translation>
@@ -1803,7 +1801,6 @@
 <translation id="782886543891417279">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往其登入頁面。</translation>
 <translation id="7836231406687464395">Postfix (信封)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">但是您並非處於隱藏狀態。使用無痕模式時，您的僱主、互聯網服務供應商和您所瀏覽的網站仍然可以追蹤您的瀏覽行為。</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7858035578849836010">開啟關聯類型的檔案。</translation>
 <translation id="7862185352068345852">要離開網站嗎？</translation>
@@ -2033,7 +2030,6 @@
 <translation id="8719528812645237045">多孔 (頂端)</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8726549941689275341">頁面大小：</translation>
-<translation id="8728672262656704056">您已進入無痕模式</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731544501227493793">管理密碼按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>

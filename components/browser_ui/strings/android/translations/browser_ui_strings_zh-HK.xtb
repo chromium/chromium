@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5354152178998424783">此操作會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
-<translation id="5384883051496921101">此網站即將與外部應用程式分享資料，分享時會離開無痕模式。</translation>
 <translation id="5391532827096253100">呢個網站嘅連線唔安全。網站資料</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">此裝置的 NFC 已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="8929372349074745002">對大部分人來說，此網站能快速開啟並作出回應</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">要離開無痕模式嗎？</translation>
 <translation id="8958424370300090006">禁止特定網站存取 Cookie。</translation>
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>

@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5354152178998424783">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites.</translation>
-<translation id="5384883051496921101">This site is about to share information with an app outside of incognito mode.</translation>
 <translation id="5391532827096253100">Your connection to this site is not secure. Site information</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">NFC is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">This site opens and responds quickly for most people</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">Leave incognito mode?</translation>
 <translation id="8958424370300090006">Block cookies for a specific site.</translation>
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Forget</translation>

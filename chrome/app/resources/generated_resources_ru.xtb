@@ -117,7 +117,6 @@
 <translation id="1129850422003387628">Управление приложениями</translation>
 <translation id="113050636487300043">Укажите имя и установите цветовую тему, чтобы отличать свой профиль от других.</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
-<translation id="1134009406053225289">Открыть в режиме инкогнито</translation>
 <translation id="1136179794690960030">Эмодзи <ph name="EMOJI_NAME" />: <ph name="EMOJI_INDEX" />из <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Чтобы разблокировать ключ, извлеките его и вставьте снова.</translation>
 <translation id="1137589305610962734">временные данные</translation>
@@ -198,7 +197,6 @@
 <translation id="120368089816228251">Ноты</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1209796539517632982">Автоматические серверы имен</translation>
-<translation id="1211364473545090084">Не хотите, чтобы сохранялась история просмотров? Используйте режим инкогнито.</translation>
 <translation id="1211769675100312947">Ярлыки, выбранные вами</translation>
 <translation id="1213254615020057352">Отправка данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти данные не будут использоваться для того, чтобы установить личность ребенка. Они помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Эта настройка принудительно применяется владельцем. Он вправе разрешить автоматическую отправку в Google данных об использовании и диагностике устройства. Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте.</translation>
 <translation id="121384500095351701">Невозможно безопасно скачать этот файл.</translation>
@@ -348,10 +346,10 @@
 <translation id="1378613616312864539">Этим параметром управляет расширение "<ph name="NAME" />"</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нет раскрытых паролей}=1{1 раскрытый пароль}one{{NUM_COMPROMISED} раскрытый пароль}few{{NUM_COMPROMISED} раскрытых пароля}many{{NUM_COMPROMISED} раскрытых паролей}other{{NUM_COMPROMISED} раскрытого пароля}}</translation>
 <translation id="1380028686461971526">Автоподключение к сети</translation>
-<translation id="1380436189840894976">Вы действительно хотите выйти из режима инкогнито?</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383861834909034572">Открытие по завершении</translation>
 <translation id="1383876407941801731">Поиск</translation>
+<translation id="1384849755549338773">Предлагать перевести сайты на других языках с помощью Google Переводчика</translation>
 <translation id="1386791642444521222">Активировать обычную SIM-карту</translation>
 <translation id="138784436342154190">Восстановить настройки стартовой страницы по умолчанию?</translation>
 <translation id="1388253969141979417">Разрешить сайтам использовать микрофон</translation>
@@ -656,7 +654,6 @@
 <translation id="169675691788639886">На этом устройстве изменены параметры SSH-сервера. Не используйте для входа аккаунты, где есть конфиденциальная информация.</translation>
 <translation id="1697150536837697295">Искусство</translation>
 <translation id="1697686431566694143">Разрешить</translation>
-<translation id="1698122934742150150">Только на время текущего сеанса в режиме инкогнито</translation>
 <translation id="1700079447639026019">Сайты, которые не могут использовать файлы cookie</translation>
 <translation id="1701062906490865540">Удалить пользователя</translation>
 <translation id="1703331064825191675">Можно больше не беспокоиться о паролях</translation>
@@ -809,7 +806,6 @@
 <translation id="1850508293116537636">Повернуть &amp;по часовой стрелке</translation>
 <translation id="1852141627593563189">Находите вредоносное ПО</translation>
 <translation id="1852799913675865625">Произошла ошибка при чтении файла: <ph name="ERROR_TEXT" />.</translation>
-<translation id="1853692000353488670">Новая вкладка инкогнито</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1855079636134697549">Камера включена.</translation>
 <translation id="1856715684130786728">Добавить папку...</translation>
@@ -873,6 +869,7 @@
 <translation id="1920390473494685033">Контакты</translation>
 <translation id="1921050530041573580">Подключите телефон с приложением "Сообщения"</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
+<translation id="1923468477587371721">Для сервисов Google, таких как Gmail, Диск и YouTube, будет использоваться язык аккаунта Google, пока вы не измените язык отдельного продукта.</translation>
 <translation id="192494336144674234">Открыть с помощью...</translation>
 <translation id="1925017091976104802">Чтобы вставить изображение, нажмите <ph name="MODIFIER_KEY_DESCRIPTION" />.</translation>
 <translation id="1925021887439448749">Введите веб-адрес</translation>
@@ -1165,6 +1162,7 @@
 <translation id="2249605167705922988">Например: 1–5, 8, 11–13</translation>
 <translation id="2251218783371366160">Открыть в программе просмотра по умолчанию</translation>
 <translation id="225163402930830576">Обновить сети</translation>
+<translation id="2251809247798634662">Новое окно в режиме инкогнито</translation>
 <translation id="225240747099314620">Использовать идентификаторы для защищенного контента (может потребоваться перезагрузка компьютера)</translation>
 <translation id="2255077166240162850">Устройство уже заблокировано в другом домене или режиме.</translation>
 <translation id="2255317897038918278">Штамп времени Microsoft</translation>
@@ -1327,7 +1325,6 @@
 <translation id="2434758125294431199">Укажите, кто может делиться файлами и ссылками с вами</translation>
 <translation id="2435248616906486374">Подключение отсутствует</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
-<translation id="2435579801172349831">Открыть все (<ph name="URL_COUNT" />) в режиме инкогнито</translation>
 <translation id="2436186046335138073">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />"?</translation>
 <translation id="2440604414813129000">Просмотреть и&amp;сходный код</translation>
 <translation id="244231003699905658">Недопустимый адрес. Проверьте его и повторите попытку.</translation>
@@ -1476,7 +1473,6 @@
 <translation id="2602501489742255173">Чтобы начать, проведите по экрану вверх.</translation>
 <translation id="2603115962224169880">Удалить вредоносное ПО с компьютера</translation>
 <translation id="2603355571917519942">Функция Voice Match настроена</translation>
-<translation id="2603463522847370204">Открыть в режиме &amp;инкогнито</translation>
 <translation id="2604138917550693049">Выполнить поиск по изображению, используя Google Объектив</translation>
 <translation id="2604255671529671813">Ошибка подключения к сети</translation>
 <translation id="2605668923777146443">Чтобы посмотреть параметры режима Better Together, откройте <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>
@@ -1953,6 +1949,7 @@
 <translation id="311394601889664316">Запретить сайтам изменять файлы и папки на устройстве</translation>
 <translation id="3115147772012638511">Ожидание кеша…</translation>
 <translation id="3115580024857770654">Свернуть все</translation>
+<translation id="3115743155098198207">Управление языками аккаунта Google</translation>
 <translation id="3117362587799608430">Док-станция не полностью совместима с устройством</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}one{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}few{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}many{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}other{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3118319026408854581">Справка <ph name="PRODUCT_NAME" /></translation>
@@ -2122,7 +2119,6 @@
 <translation id="3315442055907669208">Включить режим чтения</translation>
 <translation id="3317459757438853210">Двусторонняя печать</translation>
 <translation id="3317678681329786349">Доступ к камере и микрофону запрещен</translation>
-<translation id="3319048459796106952">Новое окно в режиме &amp;инкогнито</translation>
 <translation id="3320630259304269485">Безопасный просмотр (защита от опасных сайтов) и другие настройки безопасности</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Эти данные содержат конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}=1{Этот файл содержит конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}one{Эти файлы содержат конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}few{Эти файлы содержат конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}many{Эти файлы содержат конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}other{Эти файлы содержат конфиденциальный или опасный контент. Удалите этот контент и повторите попытку.}}</translation>
 <translation id="3323521181261657960">Время использования устройства продлено</translation>
@@ -2348,7 +2344,6 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3574210789297084292">войти</translation>
-<translation id="3574917942258583917">Вы действительно хотите выйти из режима инкогнито?</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3576324189521867626">Установлено</translation>
 <translation id="3578594933904494462">К контенту на этой вкладке открыт общий доступ</translation>
@@ -2372,6 +2367,7 @@
 <translation id="3599863153486145794">Удаление истории со всех устройств, на которых выполнен вход в аккаунт. Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3600051066689725006">Информация о веб-запросе</translation>
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
+<translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">Предлагать новые функции по мере их появления.</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3602870520245633055">Печать и сканирование</translation>
@@ -3010,7 +3006,6 @@
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активно)</translation>
 <translation id="4310139701823742692">Неверный формат файла PPD. Исправьте проблему и повторите попытку.</translation>
-<translation id="43106757207292366">В <ph name="LINK_BEGIN" />Настройках<ph name="LINK_END" /> можно управлять аккаунтами Google, в которые выполнен вход. Разрешения, предоставленные сайтам и приложениям, могут применяться ко всем аккаунтам. Если вы не хотите, чтобы у сайтов или приложений был доступ к данным вашего аккаунта, включите на устройстве <ph name="DEVICE_TYPE" /> гостевой режим или просматривайте веб-страницы в <ph name="LINK_2_BEGIN" />режиме инкогнито<ph name="LINK_2_END" />.</translation>
 <translation id="431076611119798497">&amp;Подробнее</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
@@ -3074,7 +3069,6 @@
 <translation id="4387004326333427325">Сертификат аутентификации отклонен удаленно</translation>
 <translation id="4387890294700445764">Раскрытые пароли</translation>
 <translation id="4389091756366370506">Пользователь <ph name="VALUE" /></translation>
-<translation id="4390000551125140321">{0,plural, =1{Инкогнито}one{# окно в режиме инкогнито}few{# окна в режиме инкогнито}many{# окон в режиме инкогнито}other{# окна в режиме инкогнито}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё несколько переключателей (<ph name="NUMBER_OF_OTHER_SWITCHES" />)</translation>
 <translation id="439266289085815679">Конфигурацию Bluetooth контролирует пользователь <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Изменение файла конфигурации.</translation>
@@ -3180,7 +3174,6 @@
 <translation id="4504940961672722399">Активируйте это расширение, нажав на значок или с помощью комбинации клавиш <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Это слово уже добавлено.</translation>
 <translation id="4507128560633489176">Данные удалены.</translation>
-<translation id="4508051413094283164">Открыть все в режиме инкогнито</translation>
 <translation id="4508265954913339219">Активация завершилась со сбоем</translation>
 <translation id="4508765956121923607">Исходный код страницы</translation>
 <translation id="4510479820467554003">Аккаунты родителей</translation>
@@ -3697,6 +3690,7 @@
 <translation id="5107443654503185812">Расширение отключило Безопасный просмотр.</translation>
 <translation id="5108967062857032718">Настройки – Удаление приложений для Android</translation>
 <translation id="5109044022078737958">Мия</translation>
+<translation id="5109816792918100764">Удалить язык "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="5111646998522066203">Выйти из режима инкогнито</translation>
 <translation id="5111692334209731439">Диспетчер закладок</translation>
 <translation id="5112577000029535889">Инструменты разработчика</translation>
@@ -4032,7 +4026,6 @@
 <translation id="5486561344817861625">Симулировать перезапуск браузера</translation>
 <translation id="5487521232677179737">Удалить данные</translation>
 <translation id="5488093641312826914">Объект "<ph name="COPIED_ITEM_NAME" />" скопирован</translation>
-<translation id="5488468185303821006">Разрешить использование в режиме инкогнито</translation>
 <translation id="5488508217173274228">Варианты шифрования при синхронизации</translation>
 <translation id="5489435190927933437">Сохраненные пароли для домена <ph name="DOMAIN" /></translation>
 <translation id="5490721031479690399">Отключение устройства Bluetooth</translation>
@@ -4076,7 +4069,6 @@
 <translation id="5526745900034778153">Чтобы возобновить синхронизацию, войдите в аккаунт снова.</translation>
 <translation id="5527463195266282916">Попытка перейти на более раннюю версию расширения.</translation>
 <translation id="5527474464531963247">Можно выбрать другую сеть.</translation>
-<translation id="5530766185686772672">Закрыть вкладки инкогнито</translation>
 <translation id="5532223876348815659">Глобально</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запрашивает разрешение на:</translation>
 <translation id="5534304873398226603">Удалить фото или видео</translation>
@@ -4437,6 +4429,7 @@
 <translation id="5943127421590245687">Ваш аккаунт подтвержден. Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Сканирование QR-кода</translation>
 <translation id="5945002094477276055">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в сервис "Google Безопасный просмотр" для проверки?</translation>
+<translation id="5945363896952315544">На этом электронном ключе недостаточно места. Чтобы добавить новый цифровой отпечаток, удалите один из существующих.</translation>
 <translation id="5946591249682680882">Идентификатор отчета: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Подключите клавиатуру или мышь либо продолжите настройку с помощью сенсорного экрана. Если вы используете Bluetooth-устройства, убедитесь, что они готовы к подключению.</translation>
 <translation id="5949544233750246342">Не удалось проанализировать файл</translation>
@@ -4472,7 +4465,6 @@
 <translation id="5979421442488174909">&amp;Перевести на <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Чтобы добавить страницу в закладки, нажмите на значок звездочки в адресной строке</translation>
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
-<translation id="598472838394900788">{0,plural, =1{Инкогнито}one{Инкогнито (#)}few{Инкогнито (#)}many{Инкогнито (#)}other{Инкогнито (#)}}</translation>
 <translation id="5985458664595100876">Произошла ошибка. Необходимо использовать допустимые форматы URL: \\server\share или smb://server/share.</translation>
 <translation id="598810097218913399">Снять назначение</translation>
 <translation id="5990266201903445068">Только Wi-Fi</translation>
@@ -4556,7 +4548,6 @@
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="6078769373519310690">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение на подключение к HID-устройству</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
-<translation id="6080515710685820702">Компьютером пользуются несколько человек? Откройте окно в режиме инкогнито.</translation>
 <translation id="6080689532560039067">Проверка системного времени</translation>
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
@@ -4843,7 +4834,6 @@
 <translation id="6410390304316730527">Безопасный просмотр помогает предотвратить установку вредоносного ПО и защищает от злоумышленников, которые могут попытаться обманным путем завладеть вашей персональной информацией, например паролями, номерами телефонов и данными банковских карт. Если вы решите отключить эту функцию, будьте особенно осторожны при просмотре незнакомых сайтов.</translation>
 <translation id="6410668567036790476">Добавить поисковую систему</translation>
 <translation id="6412673304250309937">Сверяет URL со списком небезопасных сайтов в Chrome. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
-<translation id="6412931879992742813">Новое окно в режиме инкогнито</translation>
 <translation id="641469293210305670">Установка обновлений и приложений</translation>
 <translation id="6414878884710400018">Открыть системные настройки</translation>
 <translation id="6414888972213066896">Запрос на просмотр сайта отправлен вашему родителю</translation>
@@ -5130,7 +5120,6 @@
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">Камера</translation>
 <translation id="6732801395666424405">Сертификаты не загружены</translation>
-<translation id="6734468588183300211">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы видеть ваши действия в браузере, например, для показа персонализированной рекламы. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
@@ -5382,6 +5371,7 @@
 <translation id="7001036685275644873">Резервное копирование приложений и файлов Linux…</translation>
 <translation id="7002055706763150362">Чтобы начать настройку Smart Lock для Chromebook, введите пароль. Так мы определим, что функцию пытаетесь включить именно вы.</translation>
 <translation id="7003339318920871147">Базы данных в Интернете</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файла}many{{COUNT} файлов}other{{COUNT} файла}}</translation>
 <translation id="7003723821785740825">Настроить разблокировку с помощью отпечатка</translation>
 <translation id="7003844668372540529">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайт может использовать устройство MIDI</translation>
@@ -5436,7 +5426,6 @@
 <translation id="7057767408836081338">Получить данные приложения не удалось. Мы пытаемся запустить его…</translation>
 <translation id="7058024590501568315">Скрытая сеть</translation>
 <translation id="7059858479264779982">Включить автозапуск</translation>
-<translation id="7059893117020417984">Чтобы просматривать сайты анонимно, нажмите на значок с тремя точками и выберите "Новое окно в режиме инкогнито"</translation>
 <translation id="7062222374113411376">Разрешать недавно закрытым сайтам завершать отправку и получение данных</translation>
 <translation id="7063129466199351735">Обработка ярлыков…</translation>
 <translation id="7063311912041006059">URL с параметром <ph name="SPECIAL_SYMBOL" /> вместо запроса</translation>
@@ -5458,7 +5447,6 @@
 <translation id="7077829361966535409">При загрузке текущих настроек прокси-сервера на главной странице произошла ошибка. <ph name="GAIA_RELOAD_LINK_START" />Выполните вход повторно<ph name="GAIA_RELOAD_LINK_END" /> или измените <ph name="PROXY_SETTINGS_LINK_START" />параметры прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Все сети</translation>
 <translation id="708060913198414444">&amp;Копировать URL аудио</translation>
-<translation id="7081952801286122383">Режим инкогнито</translation>
 <translation id="708278670402572152">Чтобы запустить сканирование, отключитесь от сети.</translation>
 <translation id="7084321615353200053">Разрешить сайтам отправлять запрос на использование камеры (рекомендуется)</translation>
 <translation id="7085389578340536476">Разрешить Chrome записывать аудио?</translation>
@@ -5646,6 +5634,7 @@
 <translation id="7306521477691455105">Чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к ВМ "<ph name="USB_VM_NAME" />", откройте настройки.</translation>
 <translation id="7307129035224081534">Приостановлена</translation>
 <translation id="7308436126008021607">Фоновая синхронизация</translation>
+<translation id="7308643132139167865">Языки сайтов</translation>
 <translation id="7309257895202129721">Показать &amp;элементы управления</translation>
 <translation id="7310598146671372464">Не удалось выполнить вход. Сервер не поддерживает выбранные типы шифрования Kerberos. Обратитесь к администратору.</translation>
 <translation id="7320213904474460808">Выбрать сеть по умолчанию</translation>
@@ -5857,6 +5846,7 @@
 <translation id="7552846755917812628">Попробуйте сделать следующее:</translation>
 <translation id="7553012839257224005">Проверка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
+<translation id="755472745191515939">Администратор запретил использовать этот язык</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7556033326131260574">Не удается войти в аккаунт с помощью Smart Lock. Введите пароль.</translation>
 <translation id="7556242789364317684">К сожалению, <ph name="SHORT_PRODUCT_NAME" /> не удалось восстановить ваши настройки. Чтобы исправить ошибку, <ph name="SHORT_PRODUCT_NAME" /> должен выполнить сброс данных на устройстве с помощью функции Powerwash.</translation>
@@ -5975,7 +5965,6 @@
 <translation id="7681597159868843240">Обычно сайты используют датчики движения на устройстве, чтобы применять некоторые функции, например запускать виртуальную реальность или отслеживать физическую активность.</translation>
 <translation id="7683164815270164555">Запрашивать разрешение, когда веб-приложение пытается открыть файлы определенных типов</translation>
 <translation id="7683373461016844951">Чтобы продолжить, нажмите "OK". Затем создайте другой профиль для своего электронного адреса в домене <ph name="DOMAIN" />, выбрав "Добавить пользователя".</translation>
-<translation id="7683593009096723900">{COUNT,plural, =0{Открыть все URL в окне в режиме &amp;инкогнито}=1{Открыть URL в окне в режиме &amp;инкогнито}one{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}few{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}many{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}other{Открыть все URL ({COUNT}) в окне в режиме &amp;инкогнито}}</translation>
 <translation id="7684212569183643648">Установлено администратором</translation>
 <translation id="7684559058815332124">Перейти на страницу входа через адаптивный портал</translation>
 <translation id="7684718995427157417">Чтобы создавать и тестировать приложения, включите Android Debug Bridge (ADB). Обратите внимание, что это позволит устанавливать приложения для Android, которые не были проверены системами Google. Для отключения инструмента потребуется сбросить настройки устройства до заводских.</translation>
@@ -6158,6 +6147,7 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Загрузки</translation>
+<translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Проверять параметры синхронизации после начала сеанса</translation>
@@ -6419,6 +6409,7 @@
 <translation id="8143442547342702591">Недействительное приложение</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Вы уже зарегистрированы на этом устройстве и можете <ph name="LINK2_START" />войти, используя свои регистрационные данные<ph name="LINK2_END" />.</translation>
+<translation id="8146287226035613638">Добавьте и упорядочьте предпочтительные языки. Сайты будут по возможности показываться на них. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Не удалось выполнить вход. Обратитесь к системному администратору или повторите попытку.</translation>
 <translation id="8147900440966275470">Найдена <ph name="NUM" /> вкладка</translation>
 <translation id="8148760431881541277">Ограничение на вход</translation>
@@ -6546,7 +6537,6 @@
 <translation id="8284279544186306258">все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Титры</translation>
 <translation id="8286036467436129157">Вход</translation>
-<translation id="8286963743045814739">В режиме инкогнито можно просматривать сайты анонимно</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
 <translation id="8289128870594824098">Размер диска</translation>
@@ -7433,6 +7423,7 @@
 <translation id="983511809958454316">Эта функция не поддерживается в режиме VR</translation>
 <translation id="984136553749462603">Некоторые сайты при воспроизведении защищенного авторским правом контента запрашивают доступ к информации об устройстве.</translation>
 <translation id="984275831282074731">Способы оплаты</translation>
+<translation id="984705303330760860">Добавить языки проверки правописания</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Общие</translation>

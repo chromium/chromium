@@ -153,7 +153,6 @@
 <translation id="5335288049665977812">Разрешаване на сайтовете да изпълняват JavaScript (препоръчително)</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5354152178998424783">Съхраняваните от сайтовете данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
-<translation id="5384883051496921101">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
 <translation id="5391532827096253100">Връзката ви с този сайт не е защитена. Информация за сайта</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -304,7 +303,6 @@
 <translation id="8926666909099850184">Функцията за NFC е изключена на това устройство. Включете я от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8929372349074745002">За повечето хора този сайт се отваря и реагира бързо</translation>
 <translation id="8941729603749328384">www.example.com</translation>
-<translation id="894871326938397531">Излизане от режим „инкогнито“?</translation>
 <translation id="8958424370300090006">Блокиране на „бисквитките“ за конкретен сайт.</translation>
 <translation id="8959122750345127698">Навигирането не е възможно: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Забравяне</translation>

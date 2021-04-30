@@ -62,6 +62,7 @@
 <translation id="1376578503827013741">正在计算…</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384704387250346179">使用 Google 智能镜头翻译图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="1385855801883526502">为突出显示的内容添加样式</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> 天前曾有活动</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
 <translation id="1406000523432664303">“不跟踪”</translation>
@@ -119,7 +120,6 @@
 <translation id="1829244130665387512">在网页中查找</translation>
 <translation id="1830550083491357902">未登录</translation>
 <translation id="1843805151597803366">如果想获得更好的译文，请允许 Google 搜索使用当前网页</translation>
-<translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1856325424225101786">重置精简模式？</translation>
 <translation id="1868024384445905608">Chrome 现可更快速地下载文件</translation>
 <translation id="1877026089748256423">Chrome版本太旧</translation>
@@ -299,7 +299,6 @@
 <translation id="2942036813789421260">预览标签页已关闭</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
-<translation id="2962095958535813455">已切换到无痕模式标签页</translation>
 <translation id="2979025552038692506">所选的无痕模式标签页</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
@@ -317,12 +316,10 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
 <translation id="3070005020161560471">自动翻译</translation>
-<translation id="3089395242580810162">在无痕式标签页中打开</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
-<translation id="3137521801621304719">退出隐身模式</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3157842584138209013">通过“更多选项”按钮查看您已节省多少数据流量</translation>
@@ -357,7 +354,6 @@
 <translation id="3334729583274622784">更改文件扩展名？</translation>
 <translation id="3341058695485821946">查看您已节省多少数据流量</translation>
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
-<translation id="3350687908700087792">关闭所有无痕模式标签页</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3367813778245106622">重新登录以开始同步</translation>
 <translation id="337236281855091893">若要执行搜索，请轻触并按住某个字词，而不是点按它</translation>
@@ -380,7 +376,6 @@
 
 隐私沙盒尚处于积极开发阶段，目前只能在部分区域使用。现阶段，网站可在继续使用第三方 Cookie 等当前网络技术的同时试用隐私沙盒。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
-<translation id="3492207499832628349">打开新的无痕式标签页</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3507132249039706973">已开启标准保护</translation>
@@ -680,7 +675,6 @@
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5524843473235508879">已禁止重定向。</translation>
 <translation id="5527082711130173040">Chrome 需要拥有位置信息使用权才能扫描设备。请<ph name="BEGIN_LINK1" />更新权限<ph name="END_LINK1" />。<ph name="BEGIN_LINK2" />此设备的位置信息使用权也已被停用<ph name="END_LINK2" />。</translation>
-<translation id="5530766185686772672">关闭无痕模式标签页</translation>
 <translation id="5534640966246046842">已复制网站</translation>
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1153,7 +1147,6 @@
 <translation id="8503559462189395349">Chrome 密码</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8514477925623180633">导出存储在 Chrome 中的密码</translation>
-<translation id="8514577642972634246">进入隐身模式</translation>
 <translation id="8516012719330875537">图片编辑器</translation>
 <translation id="8523928698583292556">删除存储的密码</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>

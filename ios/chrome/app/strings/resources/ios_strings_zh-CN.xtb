@@ -83,6 +83,7 @@
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1690731385917361335">没有书签</translation>
+<translation id="1691390244342876227">Chrome 无法验证您的信息</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
@@ -112,7 +113,6 @@
 <translation id="209018056901015185">请求切换到桌面版网站</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
-<translation id="213900355088104901">要想私密地浏览，请打开一个无痕式标签页</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2175927920773552910">二维码</translation>
@@ -138,6 +138,7 @@
 网站也无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
+<translation id="2410754283952462441">选择帐号</translation>
 <translation id="2421004566762153674">阻止第三方 Cookie</translation>
 <translation id="2421044535038393232">继续修改</translation>
 <translation id="2435457462613246316">显示密码</translation>
@@ -213,9 +214,6 @@
 <translation id="3181825792072797598">开启同步功能</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
-<translation id="3196681740617426482">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
-
-不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
@@ -351,9 +349,12 @@
 
 您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
+<translation id="4704093130121805775">在您的设备之间同步</translation>
+<translation id="470966556546083668">请勿开启同步功能</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
+<translation id="4766678251456904326">向设备添加帐号</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。
@@ -383,7 +384,6 @@
 <translation id="4945756290001680296">访问密码设置</translation>
 <translation id="4979397965658815378">登录 Google 帐号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="5005498671520578047">复制密码</translation>
-<translation id="5010803260590204777">打开一个无痕模式标签页即可私密地浏览网络。</translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
@@ -470,7 +470,6 @@
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
-<translation id="5964480694698977962">创建新的无痕式标签页。</translation>
 <translation id="5965679971710331625">您已登录</translation>
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5982717868370722439">将现有数据添加到 <ph name="USER_EMAIL" />。</translation>
@@ -513,6 +512,7 @@
 <translation id="6342069812937806050">刚刚</translation>
 <translation id="6344783595350022745">明文</translation>
 <translation id="6346549652287021269">开始执行新的下载任务？</translation>
+<translation id="634878792104344809">将您的密码、历史记录等信息同步到您的所有设备上</translation>
 <translation id="6362362396625799311">没有无痕模式标签页</translation>
 <translation id="6363526231572697780">无用户名</translation>
 <translation id="6374469231428023295">重试</translation>
@@ -691,7 +691,6 @@
 <translation id="7982789257301363584">网络</translation>
 <translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
-<translation id="8007420562015504427">无痕搜索</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8023878949384262191">展开此部分。</translation>
 <translation id="8027581147000338959">在新窗口中打开</translation>
@@ -755,6 +754,7 @@
 <translation id="8680787084697685621">帐号登录详细信息已过期。</translation>
 <translation id="8706588385081740091">密码</translation>
 <translation id="8717864919010420084">复制链接</translation>
+<translation id="8721206573513844242">抱歉，我们无法验证您的凭据</translation>
 <translation id="8721297211384281569">工具菜单</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>
