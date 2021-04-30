@@ -1071,6 +1071,7 @@ def main():
         '-DCMAKE_AR=' + os.path.join(host_path, 'bin/llvm-ar'),
         '-DLLVM_CONFIG_PATH=' + os.path.join(host_path, 'bin/llvm-config'),
         '-DCMAKE_SYSTEM_NAME=Fuchsia',
+        '-DCMAKE_CXX_COMPILER_TARGET=%s-fuchsia' % target_arch,
         '-DCMAKE_C_COMPILER_TARGET=%s-fuchsia' % target_arch,
         '-DCMAKE_ASM_COMPILER_TARGET=%s-fuchsia' % target_arch,
         '-DCOMPILER_RT_BUILD_BUILTINS=ON',
@@ -1089,6 +1090,7 @@ def main():
         # These are necessary because otherwise CMake tries to build an
         # executable to test to see if the compiler is working, but in doing so,
         # it links against the builtins.a that we're about to build.
+        '-DCMAKE_CXX_COMPILER_WORKS=ON',
         '-DCMAKE_C_COMPILER_WORKS=ON',
         '-DCMAKE_ASM_COMPILER_WORKS=ON',
         ]
@@ -1106,28 +1108,40 @@ def main():
       CopyFile(os.path.join(build_dir, 'lib', target_spec, builtins_a),
                fuchsia_lib_dst_dir)
 
-      # Build the Fuchsia profile runtime.
+      # Build the Fuchsia profile and asan runtimes.  This is done after the rt
+      # builtins have been created because the CMake build runs link checks that
+      # require that the builtins already exist to succeed.
       # TODO(thakis): Figure out why this doesn't build with the stage0
       # compiler in arm cross builds.
       if target_arch == 'x86_64' and not args.build_mac_arm:
         fuchsia_args.extend([
             '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
             '-DCOMPILER_RT_BUILD_PROFILE=ON',
-            '-DCMAKE_CXX_COMPILER_TARGET=%s-fuchsia' % target_arch,
-            '-DCMAKE_CXX_COMPILER_WORKS=ON',
         ])
-        profile_build_dir = os.path.join(LLVM_BUILD_DIR,
-                                         'fuchsia-profile-' + target_arch)
-        if not os.path.exists(profile_build_dir):
-          os.mkdir(os.path.join(profile_build_dir))
-        os.chdir(profile_build_dir)
+        # Build the asan runtime only on non-Mac platforms.  Macs are excluded
+        # because the asan install changes library RPATHs which CMake only
+        # supports on ELF platforms and MacOS uses Mach-O instead of ELF.
+        if sys.platform != 'darwin':
+          fuchsia_args.append('-DCOMPILER_RT_BUILD_SANITIZERS=ON')
+        build_phase2_dir = os.path.join(LLVM_BUILD_DIR,
+                                         'fuchsia-phase2-' + target_arch)
+        if not os.path.exists(build_phase2_dir):
+          os.mkdir(os.path.join(build_phase2_dir))
+        os.chdir(build_phase2_dir)
         RunCommand(['cmake'] +
                    fuchsia_args +
                    [COMPILER_RT_DIR])
         profile_a = 'libclang_rt.profile.a'
-        RunCommand(['ninja', profile_a])
-        CopyFile(os.path.join(profile_build_dir, 'lib', target_spec, profile_a),
+        asan_a = 'libclang_rt.asan.a'
+        ninja_command = ['ninja', profile_a]
+        if sys.platform != 'darwin':
+          ninja_command.append(asan_a)
+        RunCommand(ninja_command)
+        CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, profile_a),
                               fuchsia_lib_dst_dir)
+        if sys.platform != 'darwin':
+          CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, asan_a),
+                                fuchsia_lib_dst_dir)
 
   # Run tests.
   if (not args.build_mac_arm and

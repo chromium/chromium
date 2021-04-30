@@ -246,6 +246,9 @@ def main():
       # TODO(thakis): Figure out why this doesn't build in --build-mac-arm
       # builds.
       want.append('lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a')
+    if sys.platform != 'darwin':
+      # The Fuchsia asan runtime is only built on non-Mac platforms.
+      want.append('lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.asan.a')
   if sys.platform == 'darwin':
     want.extend([
       # AddressSanitizer runtime.
