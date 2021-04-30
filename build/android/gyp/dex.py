@@ -535,11 +535,14 @@ def _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd):
         final_dex_inputs, options.output, tmp_dir, dex_cmd, options=options)
 
 
-def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar):
+def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar,
+                                  min_api):
   dex_cmd = build_utils.JavaCmd(verify=False) + [
       '-cp',
       r8_jar_path,
       'com.android.tools.r8.D8',
+      '--min-api',
+      min_api,
   ]
   with build_utils.TempDir() as tmp_dir:
     _CreateFinalDex(src_paths, dest_dex_jar, tmp_dir, dex_cmd)

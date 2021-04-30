@@ -98,7 +98,7 @@ def _AllocateDexShards(dex_files):
   return shards
 
 
-def _CreateDexFiles(shards, dex_staging_dir, use_concurrency):
+def _CreateDexFiles(shards, dex_staging_dir, min_api, use_concurrency):
   """Creates dex files within |dex_staging_dir| defined by |shards|."""
   tasks = []
   for name, src_paths in shards.iteritems():
@@ -106,7 +106,7 @@ def _CreateDexFiles(shards, dex_staging_dir, use_concurrency):
     if _IsStale(src_paths, dest_path):
       tasks.append(
           functools.partial(dex.MergeDexForIncrementalInstall, _R8_PATH,
-                            src_paths, dest_path))
+                            src_paths, dest_path, min_api))
 
   # TODO(agrieve): It would be more performant to write a custom d8.jar
   #     wrapper in java that would process these in bulk, rather than spinning
@@ -214,7 +214,8 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
       merge_dex_timer.Start()
       shards = _AllocateDexShards(dex_files)
       build_utils.MakeDirectory(dex_staging_dir)
-      _CreateDexFiles(shards, dex_staging_dir, use_concurrency)
+      _CreateDexFiles(shards, dex_staging_dir, apk.GetMinSdkVersion(),
+                      use_concurrency)
       merge_dex_timer.Stop(log=False)
 
     def do_push_dex():
