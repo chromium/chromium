@@ -284,7 +284,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
     auto present_callback =
         base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
-                                    const gfx::Size&>();
+                                    const gfx::Size&, gfx::GpuFenceHandle>();
 
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(

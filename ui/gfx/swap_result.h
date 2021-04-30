@@ -9,11 +9,11 @@
 
 #include "base/time/time.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
 
 struct CALayerParams;
-class GpuFence;
 
 enum class SwapResult {
   SWAP_ACK,
@@ -70,7 +70,7 @@ struct SwapResponse {
 struct GFX_EXPORT SwapCompletionResult {
   explicit SwapCompletionResult(gfx::SwapResult swap_result);
   SwapCompletionResult(gfx::SwapResult swap_result,
-                       std::unique_ptr<gfx::GpuFence> gpu_fence);
+                       gfx::GpuFenceHandle release_fence);
   SwapCompletionResult(gfx::SwapResult swap_result,
                        std::unique_ptr<gfx::CALayerParams> ca_layer_params);
   SwapCompletionResult(SwapCompletionResult&& other);
@@ -80,7 +80,7 @@ struct GFX_EXPORT SwapCompletionResult {
   SwapCompletionResult& operator=(const SwapCompletionResult other) = delete;
 
   gfx::SwapResult swap_result = SwapResult::SWAP_FAILED;
-  std::unique_ptr<GpuFence> gpu_fence;
+  gfx::GpuFenceHandle release_fence;
   std::unique_ptr<CALayerParams> ca_layer_params;
 };
 

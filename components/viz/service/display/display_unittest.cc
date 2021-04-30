@@ -657,7 +657,8 @@ TEST_F(DisplayTest, DisableSwapUntilResize) {
       [&swap_callback_run]() { swap_callback_run = true; }));
   EXPECT_TRUE(scheduler_->swapped());
 
-  display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+  display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                     /*release_fence=*/gfx::GpuFenceHandle());
   EXPECT_TRUE(swap_callback_run);
 
   display_->Resize(gfx::Size(150, 150));
@@ -3808,7 +3809,8 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
             .Build();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
-    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback({base::TimeTicks::Now(), {}, 0});
     EXPECT_THAT(histograms.GetAllSamples(
                     "Graphics.PresentationTimestamp.InvalidBeforeSwap"),
@@ -3827,7 +3829,8 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
             .Build();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
-    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         {base::TimeTicks::Now() - base::TimeDelta::FromSeconds(1), {}, 0});
     EXPECT_THAT(histograms.GetAllSamples(
@@ -3851,7 +3854,8 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
             .Build();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
-    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         {base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(1),
          {},
@@ -3873,7 +3877,8 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
             .Build();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
-    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         {base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(1), {}, 0});
     EXPECT_THAT(histograms.GetAllSamples(
@@ -3896,7 +3901,8 @@ TEST_F(DisplayTest, InvalidPresentationTimestamps) {
             .Build();
     support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
     display_->DrawAndSwap(base::TimeTicks::Now());
-    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings());
+    display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         {base::TimeTicks::Now() + base::TimeDelta::FromSeconds(1), {}, 0});
     EXPECT_THAT(histograms.GetAllSamples(

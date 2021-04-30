@@ -107,7 +107,8 @@ void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
   latency_tracker_.OnGpuSwapBuffersCompleted(
       std::move(stored_latency_info_.front()));
   stored_latency_info_.pop();
-  client_->DidReceiveSwapBuffersAck({swap_time, swap_time});
+  client_->DidReceiveSwapBuffersAck({swap_time, swap_time},
+                                    /*release_fence=*/gfx::GpuFenceHandle());
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta interval_to_next_refresh =

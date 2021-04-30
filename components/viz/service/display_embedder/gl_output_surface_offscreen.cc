@@ -127,7 +127,8 @@ void GLOutputSurfaceOffscreen::OnSwapBuffersComplete(
   // Swap timings are not available since for offscreen there is no Swap, just a
   // SignalSyncToken. We use base::TimeTicks::Now() as an overestimate.
   auto now = base::TimeTicks::Now();
-  client()->DidReceiveSwapBuffersAck({.swap_start = now});
+  client()->DidReceiveSwapBuffersAck({.swap_start = now},
+                                     /*release_fence=*/gfx::GpuFenceHandle());
   client()->DidReceivePresentationFeedback(gfx::PresentationFeedback(
       now, base::TimeDelta::FromMilliseconds(16), /*flags=*/0));
 

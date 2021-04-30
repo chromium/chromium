@@ -12,10 +12,9 @@ namespace gfx {
 SwapCompletionResult::SwapCompletionResult(gfx::SwapResult swap_result)
     : swap_result(swap_result) {}
 
-SwapCompletionResult::SwapCompletionResult(
-    gfx::SwapResult swap_result,
-    std::unique_ptr<gfx::GpuFence> gpu_fence)
-    : swap_result(swap_result), gpu_fence(std::move(gpu_fence)) {}
+SwapCompletionResult::SwapCompletionResult(gfx::SwapResult swap_result,
+                                           gfx::GpuFenceHandle release_fence)
+    : swap_result(swap_result), release_fence(std::move(release_fence)) {}
 
 SwapCompletionResult::SwapCompletionResult(
     gfx::SwapResult swap_result,

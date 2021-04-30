@@ -163,7 +163,8 @@ void GLOutputSurface::ApplyExternalStencil() {}
 
 void GLOutputSurface::DidReceiveSwapBuffersAck(
     const gfx::SwapResponse& response) {
-  client_->DidReceiveSwapBuffersAck(response.timings);
+  client_->DidReceiveSwapBuffersAck(response.timings,
+                                    /*release_fence=*/gfx::GpuFenceHandle());
 }
 
 void GLOutputSurface::HandlePartialSwap(

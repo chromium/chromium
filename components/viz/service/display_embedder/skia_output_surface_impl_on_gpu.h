@@ -78,7 +78,8 @@ class SkiaOutputSurfaceImplOnGpu
  public:
   using DidSwapBufferCompleteCallback =
       base::RepeatingCallback<void(gpu::SwapBuffersCompleteParams,
-                                   const gfx::Size& pixel_size)>;
+                                   const gfx::Size& pixel_size,
+                                   gfx::GpuFenceHandle release_fence)>;
   using BufferPresentedCallback =
       base::RepeatingCallback<void(const gfx::PresentationFeedback& feedback)>;
   using ContextLostCallback = base::OnceClosure;
@@ -235,7 +236,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   // Provided as a callback to |device_|.
   void DidSwapBuffersCompleteInternal(gpu::SwapBuffersCompleteParams params,
-                                      const gfx::Size& pixel_size);
+                                      const gfx::Size& pixel_size,
+                                      gfx::GpuFenceHandle release_fence);
 
   DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback();
 

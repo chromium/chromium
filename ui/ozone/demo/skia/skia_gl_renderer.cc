@@ -122,8 +122,8 @@ void SkiaGlRenderer::RenderFrame() {
 }
 
 void SkiaGlRenderer::PostRenderFrameTask(gfx::SwapCompletionResult result) {
-  if (result.gpu_fence)
-    result.gpu_fence->Wait();
+  if (!result.release_fence.is_null())
+    gfx::GpuFence(std::move(result.release_fence)).Wait();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&SkiaGlRenderer::RenderFrame,

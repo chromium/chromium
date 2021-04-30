@@ -195,7 +195,8 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
     // has non-null SwapTimings. We don't know the exact swap start/end times
     // here so we use Now() as a filler.
     base::TimeTicks now = base::TimeTicks::Now();
-    display_->DidReceiveSwapBuffersAck({now, now});
+    display_->DidReceiveSwapBuffersAck({now, now},
+                                       /*release_fence=*/gfx::GpuFenceHandle());
   }
   output_surface_provider_.gl_surface()->MaybeDidPresent(
       gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),

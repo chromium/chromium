@@ -71,7 +71,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       base::CancelableOnceCallback<void(gfx::SwapCompletionResult)>;
 
   OutputPresenter::Image* GetNextImage();
-  void PageFlipComplete(OutputPresenter::Image* image);
+  void PageFlipComplete(OutputPresenter::Image* image,
+                        gfx::GpuFenceHandle release_fence);
   void FreeAllSurfaces();
   // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
   // operation

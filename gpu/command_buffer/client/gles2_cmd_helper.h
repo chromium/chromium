@@ -36,4 +36,3 @@ class GPU_GLES2_EXPORT GLES2CmdHelper : public CommandBufferHelper {
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_H_
-

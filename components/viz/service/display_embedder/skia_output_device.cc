@@ -199,12 +199,14 @@ void SkiaOutputDevice::FinishSwapBuffers(
     const gpu::Mailbox& primary_plane_mailbox) {
   DCHECK(!pending_swaps_.empty());
 
+  auto release_fence = std::move(result.release_fence);
   const gpu::SwapBuffersCompleteParams& params =
       pending_swaps_.front().Complete(std::move(result), damage_area,
                                       std::move(released_overlays),
                                       primary_plane_mailbox);
 
-  did_swap_buffer_complete_callback_.Run(params, size);
+  did_swap_buffer_complete_callback_.Run(params, size,
+                                         std::move(release_fence));
 
   pending_swaps_.front().CallFeedback();
 

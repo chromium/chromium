@@ -90,7 +90,8 @@ class SkiaOutputDevice {
       base::OnceCallback<void(const gfx::PresentationFeedback& feedback)>;
   using DidSwapBufferCompleteCallback =
       base::RepeatingCallback<void(gpu::SwapBuffersCompleteParams,
-                                   const gfx::Size& pixel_size)>;
+                                   const gfx::Size& pixel_size,
+                                   gfx::GpuFenceHandle release_fence)>;
   SkiaOutputDevice(
       GrDirectContext* gr_context,
       gpu::MemoryTracker* memory_tracker,

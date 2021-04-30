@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/latency/latency_info.h"
 
 namespace gfx {
@@ -31,7 +32,8 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
   // A notification that the swap of the backbuffer to the hardware is complete
   // and is now visible to the user, along with timing information on when the
   // swapping of the backbuffer started and completed.
-  virtual void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) = 0;
+  virtual void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
+                                        gfx::GpuFenceHandle release_fence) = 0;
 
   // For surfaceless/ozone implementations to create damage for the next frame.
   virtual void SetNeedsRedrawRect(const gfx::Rect& damage_rect) = 0;

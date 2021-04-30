@@ -183,7 +183,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       sk_sp<SkColorSpace> color_space,
       bool is_root_render_pass);
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
-                              const gfx::Size& pixel_size);
+                              const gfx::Size& pixel_size,
+                              gfx::GpuFenceHandle release_fence);
   void BufferPresented(const gfx::PresentationFeedback& feedback);
 
   // Provided as a callback for the GPU thread.

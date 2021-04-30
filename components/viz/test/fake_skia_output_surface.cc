@@ -366,7 +366,8 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
 
 void FakeSkiaOutputSurface::SwapBuffersAck() {
   base::TimeTicks now = base::TimeTicks::Now();
-  client_->DidReceiveSwapBuffersAck({now, now});
+  client_->DidReceiveSwapBuffersAck({now, now},
+                                    /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }
 

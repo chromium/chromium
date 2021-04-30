@@ -99,7 +99,8 @@ class GLOutputSurfaceBufferQueueTest : public ::testing::Test,
   }
 
   // OutputSurfaceClient implementation.
-  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) override {}
+  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
+                                gfx::GpuFenceHandle release_fence) override {}
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override {}
   void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) override {}

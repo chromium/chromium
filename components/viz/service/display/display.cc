@@ -52,6 +52,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -899,7 +900,9 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   return true;
 }
 
-void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) {
+void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
+                                       gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
   // Adding to |pending_presentation_group_timings_| must
   // have been done in DrawAndSwap(), and should not be popped until
   // DidReceiveSwapBuffersAck.

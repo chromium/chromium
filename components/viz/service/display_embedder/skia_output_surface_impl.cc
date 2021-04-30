@@ -740,16 +740,15 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   // calling it bypasses SkiaOutputSurfaceDependency.
   GpuVSyncCallback vsync_callback_runner = base::DoNothing();
 #else
-  GpuVSyncCallback vsync_callback_runner =
-      base::BindRepeating(
-          [](scoped_refptr<base::SingleThreadTaskRunner> runner,
-             base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr,
-             base::TimeTicks timebase, base::TimeDelta interval) {
-            runner->PostTask(FROM_HERE,
-                             base::BindOnce(&SkiaOutputSurfaceImpl::OnGpuVSync,
-                                            weak_ptr, timebase, interval));
-          },
-          base::ThreadTaskRunnerHandle::Get(), weak_ptr_);
+  GpuVSyncCallback vsync_callback_runner = base::BindRepeating(
+      [](scoped_refptr<base::SingleThreadTaskRunner> runner,
+         base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr,
+         base::TimeTicks timebase, base::TimeDelta interval) {
+        runner->PostTask(FROM_HERE,
+                         base::BindOnce(&SkiaOutputSurfaceImpl::OnGpuVSync,
+                                        weak_ptr, timebase, interval));
+      },
+      base::ThreadTaskRunnerHandle::Get(), weak_ptr_);
 #endif
 
   bool result = false;
@@ -885,7 +884,8 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
 
 void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     gpu::SwapBuffersCompleteParams params,
-    const gfx::Size& pixel_size) {
+    const gfx::Size& pixel_size,
+    gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(client_);
   last_swapped_mailbox_ = params.primary_plane_mailbox;
@@ -908,7 +908,8 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
 
   if (!params.ca_layer_params.is_empty)
     client_->DidReceiveCALayerParams(params.ca_layer_params);
-  client_->DidReceiveSwapBuffersAck(params.swap_response.timings);
+  client_->DidReceiveSwapBuffersAck(params.swap_response.timings,
+                                    std::move(release_fence));
   if (!params.released_overlays.empty())
     client_->DidReceiveReleasedOverlays(params.released_overlays);
   if (needs_swap_size_notifications_)

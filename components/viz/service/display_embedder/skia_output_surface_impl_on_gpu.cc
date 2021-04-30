@@ -46,6 +46,7 @@
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -1682,7 +1683,8 @@ void SkiaOutputSurfaceImplOnGpu::BufferPresented(
 
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     gpu::SwapBuffersCompleteParams params,
-    const gfx::Size& pixel_size) {
+    const gfx::Size& pixel_size,
+    gfx::GpuFenceHandle release_fence) {
   if (params.swap_response.result == gfx::SwapResult::SWAP_FAILED) {
     DLOG(ERROR) << "Context lost on SWAP_FAILED";
     if (!context_state_->IsCurrent(nullptr) ||
@@ -1722,8 +1724,9 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
 
 #endif
 
-  PostTaskToClientThread(
-      base::BindOnce(did_swap_buffer_complete_callback_, params, pixel_size));
+  PostTaskToClientThread(base::BindOnce(did_swap_buffer_complete_callback_,
+                                        params, pixel_size,
+                                        std::move(release_fence)));
 }
 
 SkiaOutputSurfaceImplOnGpu::DidSwapBufferCompleteCallback

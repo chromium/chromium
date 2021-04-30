@@ -265,7 +265,8 @@ void GLOutputSurfaceBufferQueue::DidReceiveSwapBuffersAck(
   }
 
   buffer_queue_->PageFlipComplete();
-  client()->DidReceiveSwapBuffersAck(response.timings);
+  client()->DidReceiveSwapBuffersAck(response.timings,
+                                     /*release_fence=*/gfx::GpuFenceHandle());
 
   if (force_swap)
     client()->SetNeedsRedrawRect(gfx::Rect(swap_size_));

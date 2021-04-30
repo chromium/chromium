@@ -67,7 +67,7 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
   ~PresenterImageFuchsia() override;
 
   void BeginPresent() final;
-  void EndPresent() final;
+  void EndPresent(gfx::GpuFenceHandle release_fence) final;
   int GetPresentCount() const final;
   void OnContextLost() final;
 
@@ -108,8 +108,9 @@ void PresenterImageFuchsia::BeginPresent() {
   }
 }
 
-void PresenterImageFuchsia::EndPresent() {
+void PresenterImageFuchsia::EndPresent(gfx::GpuFenceHandle release_fence) {
   DCHECK(present_count_);
+  DCHECK(release_fence.is_null());
   --present_count_;
   if (!present_count_)
     read_access_.reset();

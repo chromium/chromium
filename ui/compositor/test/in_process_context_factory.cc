@@ -133,7 +133,8 @@ class DirectOutputSurface : public viz::OutputSurface {
     // so we provide dummy values here.
     base::TimeTicks now = base::TimeTicks::Now();
     gfx::SwapTimings timings = {now, now};
-    client_->DidReceiveSwapBuffersAck(timings);
+    client_->DidReceiveSwapBuffersAck(timings,
+                                      /*release_fence=*/gfx::GpuFenceHandle());
     client_->DidReceivePresentationFeedback(gfx::PresentationFeedback());
   }
 

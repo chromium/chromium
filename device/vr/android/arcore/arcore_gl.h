@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/gpu_fence.h"
 
 namespace gl {
 class GLContext;

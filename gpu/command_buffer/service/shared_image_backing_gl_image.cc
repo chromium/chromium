@@ -278,7 +278,8 @@ bool SharedImageRepresentationOverlayImpl::BeginReadAccess(
 
 void SharedImageRepresentationOverlayImpl::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
+  auto* gl_backing = static_cast<SharedImageBackingGLImage*>(backing());
+  gl_backing->SetReleaseFence(std::move(release_fence));
 }
 
 gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
@@ -401,6 +402,11 @@ GLuint SharedImageBackingGLImage::GetGLServiceId() const {
 std::unique_ptr<gfx::GpuFence>
 SharedImageBackingGLImage::GetLastWriteGpuFence() {
   return last_write_gl_fence_ ? last_write_gl_fence_->GetGpuFence() : nullptr;
+}
+
+void SharedImageBackingGLImage::SetReleaseFence(
+    gfx::GpuFenceHandle release_fence) {
+  release_fence_ = std::move(release_fence);
 }
 
 scoped_refptr<gfx::NativePixmap> SharedImageBackingGLImage::GetNativePixmap() {
@@ -635,6 +641,9 @@ void SharedImageBackingGLImage::Update(
 
 bool SharedImageBackingGLImage::
     SharedImageRepresentationGLTextureBeginAccess() {
+  if (!release_fence_.is_null())
+    gl::GLFence::CreateFromGpuFence(gfx::GpuFence(std::move(release_fence_)))
+        ->ServerWait();
   return BindOrCopyImageIfNeeded();
 }
 
