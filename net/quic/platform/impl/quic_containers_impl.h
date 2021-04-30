@@ -42,12 +42,6 @@ using QuicHashSetImpl = absl::flat_hash_set<Key, Hash>;
 template <typename Key, typename Value, typename Hash>
 using QuicLinkedHashMapImpl = quiche::SimpleLinkedHashMap<Key, Value, Hash>;
 
-// A map which is faster than (for example) hash_map for a certain number of
-// unique key-value-pair elements, and upgrades itself to unordered_map when
-// runs out of space.
-template <typename Key, typename Value, int Size>
-using QuicSmallMapImpl = base::small_map<std::unordered_map<Key, Value>, Size>;
-
 // Represents a simple queue which may be backed by a list or
 // a flat circular buffer.
 //

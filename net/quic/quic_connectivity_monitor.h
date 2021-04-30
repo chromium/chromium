@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_QUIC_CONNECTIVITY_MONITOR_H_
 #define NET_QUIC_QUIC_CONNECTIVITY_MONITOR_H_
 
+#include "base/containers/flat_set.h"
 #include "base/numerics/clamped_math.h"
 #include "net/base/network_change_notifier.h"
 #include "net/quic/quic_chromium_client_session.h"
@@ -85,11 +86,11 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
 
  private:
   // Size chosen per net.QuicSession.WriteError histogram.
-  using WriteErrorMap = quic::QuicSmallMap<int, size_t, 20>;
+  using WriteErrorMap = base::flat_map<int, size_t>;
   // The most common QuicErrorCode cared by this monitor is:
   // QUIC_PUBLIC_RESET by the peer, or
   // QUIC_PACKET_WRITE_ERROR/QUIC_TOO_MANY_RTOS by self.
-  using QuicErrorCodeMap = quic::QuicSmallMap<quic::QuicErrorCode, size_t, 5>;
+  using QuicErrorCodeMap = base::flat_map<quic::QuicErrorCode, size_t>;
 
   // If NetworkHandle is not supported, always set to
   // NetworkChangeNotifier::kInvalidNetworkHandle.
