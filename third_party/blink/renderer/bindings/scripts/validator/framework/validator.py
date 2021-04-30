@@ -45,8 +45,9 @@ class Validator(object):
         target_type = None
         target_object = None
 
-        def assert_(condition, error_message):
+        def assert_(condition, text, *args, **kwargs):
             if not condition:
+                error_message = text.format(*args, **kwargs)
                 report_error(rule=rule,
                              target=target_object,
                              target_type=target_type,

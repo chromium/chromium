@@ -37,8 +37,8 @@ class ExtendedAttributesApplicableToTypes(RuleBase):
                 extended_attribute not in
                 _extended_attributes_applicable_to_types,
                 ("Extended attribute '{}' is applicable to types, "
-                 "but applied in the wrong context. See {}".format(
-                     extended_attribute, web_idl_link)))
+                 "but applied in the wrong context. See {}"),
+                extended_attribute, web_idl_link)
 
 
 class ExtendedAttributesApplicableToTypesForIdlType(RuleBase):
@@ -47,8 +47,8 @@ class ExtendedAttributesApplicableToTypesForIdlType(RuleBase):
         for annotation in target_object.effective_annotations:
             assert_(annotation.key in _extended_attributes_applicable_to_types,
                     ("Extended attribute '{}' is not applicable to types, "
-                     "but applied to a type. See {}".format(
-                         annotation.key, web_idl_link)))
+                     "but applied to a type. See {}"), annotation.key,
+                    web_idl_link)
 
 
 def register_rules(rule_store):
