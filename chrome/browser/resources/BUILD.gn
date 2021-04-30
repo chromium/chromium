@@ -32,6 +32,7 @@ group("resources") {
       "feedback_webui:resources",
       "gaia_auth_host:resources",
       "history:resources",
+      "media_router:resources",
       "memories:resources",
       "new_tab_page:resources",
       "new_tab_page_third_party:resources",

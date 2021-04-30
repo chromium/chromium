@@ -1,0 +1,120 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/media_router_feedback_resources.h"
+#include "chrome/grit/media_router_feedback_resources_map.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace media_router {
+
+CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false),
+      profile_(Profile::FromWebUI(web_ui)),
+      web_contents_(web_ui->GetWebContents()) {
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::Create(chrome::kChromeUICastFeedbackHost);
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"additionalComments", IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS},
+      {"additionalComments", IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS},
+      {"audioAcceptable", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_ACCEPTABLE},
+      {"audioGood", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_GOOD},
+      {"audioPerfect", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_PERFECT},
+      {"audioPoor", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_POOR},
+      {"audioQuality", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_QUALITY},
+      {"audioUnintelligible", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_UNINTELLIGIBLE},
+      {"cancelButton", IDS_MEDIA_ROUTER_FEEDBACK_CANCEL_BUTTON},
+      {"contentQuestion", IDS_MEDIA_ROUTER_FEEDBACK_CONTENT_QUESTION},
+      {"didNotTry", IDS_MEDIA_ROUTER_FEEDBACK_DID_NOT_TRY},
+      {"emailField", IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD},
+      {"fineLogsWarning", IDS_MEDIA_ROUTER_FEEDBACK_FINE_LOGS_WARNING},
+      {"header", IDS_MEDIA_ROUTER_FEEDBACK_HEADER},
+      {"logsHeader", IDS_MEDIA_ROUTER_FEEDBACK_LOGS_HEADER},
+      {"mirroringQualitySubheading",
+       IDS_MEDIA_ROUTER_FEEDBACK_MIRRORING_QUALITY_SUBHEADING},
+      {"na", IDS_MEDIA_ROUTER_FEEDBACK_NA},
+      {"networkDifferentWifi",
+       IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_DIFFERENT_WIFI},
+      {"networkQuestion", IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_QUESTION},
+      {"networkSameWifi", IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_SAME_WIFI},
+      {"networkWiredPc", IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC},
+      {"no", IDS_MEDIA_ROUTER_FEEDBACK_NO},
+      {"ok", IDS_MEDIA_ROUTER_FEEDBACK_OK},
+      {"privacyDataUsage", IDS_MEDIA_ROUTER_FEEDBACK_PRIVACY_DATA_USAGE},
+      {"prompt", IDS_MEDIA_ROUTER_FEEDBACK_PROMPT},
+      {"required", IDS_MEDIA_ROUTER_FEEDBACK_REQUIRED},
+      {"resending", IDS_MEDIA_ROUTER_FEEDBACK_RESENDING},
+      {"sendButton", IDS_MEDIA_ROUTER_FEEDBACK_SEND_BUTTON},
+      {"sendFail", IDS_MEDIA_ROUTER_FEEDBACK_SEND_FAIL},
+      {"sendLogs", IDS_MEDIA_ROUTER_FEEDBACK_SEND_LOGS},
+      {"sendLogsHtml", IDS_MEDIA_ROUTER_FEEDBACK_SEND_LOGS_HTML},
+      {"sendSuccess", IDS_MEDIA_ROUTER_FEEDBACK_SEND_SUCCESS},
+      {"sending", IDS_MEDIA_ROUTER_FEEDBACK_SENDING},
+      {"softwareQuestion", IDS_MEDIA_ROUTER_FEEDBACK_SOFTWARE_QUESTION},
+      {"title", IDS_MEDIA_ROUTER_FEEDBACK_TITLE},
+      {"typeBugOrError", IDS_MEDIA_ROUTER_FEEDBACK_TYPE_BUG_OR_ERROR},
+      {"typeDiscovery", IDS_MEDIA_ROUTER_FEEDBACK_TYPE_DISCOVERY},
+      {"typeFeatureRequest", IDS_MEDIA_ROUTER_FEEDBACK_TYPE_FEATURE_REQUEST},
+      {"typeOther", IDS_MEDIA_ROUTER_FEEDBACK_TYPE_OTHER},
+      {"typeProjectionQuality",
+       IDS_MEDIA_ROUTER_FEEDBACK_TYPE_PROJECTION_QUALITY},
+      {"typeQuestion", IDS_MEDIA_ROUTER_FEEDBACK_TYPE_QUESTION},
+      {"unknown", IDS_MEDIA_ROUTER_FEEDBACK_UNKNOWN},
+      {"videoAcceptable", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_ACCEPTABLE},
+      {"videoFreezes", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_FREEZES},
+      {"videoGood", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_GOOD},
+      {"videoGreat", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_GREAT},
+      {"videoJerky", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_JERKY},
+      {"videoPerfect", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_PERFECT},
+      {"videoPoor", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_POOR},
+      {"videoQuality", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_QUALITY},
+      {"videoSmooth", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_SMOOTH},
+      {"videoSmoothness", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_SMOOTHNESS},
+      {"videoStutter", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_STUTTER},
+      {"videoUnwatchable", IDS_MEDIA_ROUTER_FEEDBACK_VIDEO_UNWATCHABLE},
+      {"yes", IDS_MEDIA_ROUTER_FEEDBACK_YES},
+      {"yourAnswer", IDS_MEDIA_ROUTER_FEEDBACK_YOUR_ANSWER},
+  };
+  source->AddLocalizedStrings(kStrings);
+  source->AddString(
+      "formDescription",
+      l10n_util::GetStringFUTF8(
+          IDS_MEDIA_ROUTER_FEEDBACK_FORM_DESCRIPTION,
+          base::UTF8ToUTF16("https://support.google.com/"
+                            "chromecast?p=troubleshoot_chromecast")));
+  source->AddString(
+      "setupVisibilityQuestion",
+      l10n_util::GetStringFUTF8(
+          IDS_MEDIA_ROUTER_FEEDBACK_SETUP_VISIBILITY_QUESTION,
+          base::UTF8ToUTF16(
+              "https://support.google.com/chromecast?p=set_up_chromecast")));
+
+  // TODO(jrw): Attach real log data.
+  source->AddString("logData", "dummy log data");
+
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kMediaRouterFeedbackResources,
+                      kMediaRouterFeedbackResourcesSize),
+      IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
+
+  content::WebUIDataSource::Add(profile_, source);
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(CastFeedbackUI)
+
+CastFeedbackUI::~CastFeedbackUI() = default;
+
+}  // namespace media_router

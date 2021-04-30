@@ -169,6 +169,10 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [1640],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/media_router/media_router_feedback_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1650],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/memories/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [1660],

@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
+#include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 #include "chrome/browser/ui/webui/net_export_ui.h"
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
@@ -988,6 +989,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWebRtcLogsHost)
     return &NewWebUI<WebRtcLogsUI>;
 #if !defined(OS_ANDROID)
+  if (url.host_piece() == chrome::kChromeUICastFeedbackHost &&
+      media_router::MediaRouterEnabled(profile)) {
+    return &NewWebUI<media_router::CastFeedbackUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIMediaRouterInternalsHost &&
       media_router::MediaRouterEnabled(profile)) {
     return &NewWebUI<media_router::MediaRouterInternalsUI>;

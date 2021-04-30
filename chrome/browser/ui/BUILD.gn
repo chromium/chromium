@@ -1387,6 +1387,8 @@ static_library("ui") {
       "webui/management/management_ui.h",
       "webui/management/management_ui_handler.cc",
       "webui/management/management_ui_handler.h",
+      "webui/media_router/cast_feedback_ui.cc",
+      "webui/media_router/cast_feedback_ui.h",
       "webui/media_router/media_router_internals_ui.cc",
       "webui/media_router/media_router_internals_ui.h",
       "webui/media_router/media_router_internals_webui_message_handler.cc",
