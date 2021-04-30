@@ -9,7 +9,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -188,4 +188,4 @@ void UpdateTimeEstimator::UpdateForDownloadingTimeLeftEstimation(
       base::TimeDelta::FromSeconds(static_cast<int>(round(time_left)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

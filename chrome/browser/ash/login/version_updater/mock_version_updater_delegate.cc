@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 MockVersionUpdaterDelegate::MockVersionUpdaterDelegate() {}
 
 MockVersionUpdaterDelegate::~MockVersionUpdaterDelegate() {}
 
-}  // namespace chromeos
+}  // namespace ash

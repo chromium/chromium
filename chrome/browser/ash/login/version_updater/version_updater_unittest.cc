@@ -31,7 +31,7 @@ using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -395,4 +395,4 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
   fake_network_portal_detector_->NotifyObserversForTesting();
 }
 
-}  // namespace chromeos
+}  // namespace ash

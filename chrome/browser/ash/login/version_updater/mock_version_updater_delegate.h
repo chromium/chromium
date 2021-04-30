@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockVersionUpdaterDelegate : public VersionUpdater::Delegate {
  public:
@@ -30,6 +30,6 @@ class MockVersionUpdaterDelegate : public VersionUpdater::Delegate {
   MOCK_METHOD0(DelayErrorMessage, void());
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_MOCK_VERSION_UPDATER_DELEGATE_H_

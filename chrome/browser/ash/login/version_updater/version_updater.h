@@ -16,12 +16,14 @@
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when migrated.
+#include "chromeos/network/network_state.h"
 
 namespace base {
 class DefaultTickClock;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Tries to update system, interacting with UpdateEnglineClient and
 // NetworkPortalDetector. Uses callbacks - methods of `delegate_`, which may
@@ -206,6 +208,11 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   DISALLOW_COPY_AND_ASSIGN(VersionUpdater);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when migration is finished.
+namespace chromeos {
+using ::ash::VersionUpdater;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_

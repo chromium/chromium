@@ -19,7 +19,7 @@ constexpr base::TimeDelta kZeroTime = base::TimeDelta();
 
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 class UpdateTimeEstimatorUnitTest : public testing::Test {
  public:
@@ -106,4 +106,4 @@ TEST_F(UpdateTimeEstimatorUnitTest, DownloadingProgress) {
   EXPECT_EQ(time_estimator_.GetUpdateStatus().progress, 96);
 }
 
-}  // namespace chromeos
+}  // namespace ash

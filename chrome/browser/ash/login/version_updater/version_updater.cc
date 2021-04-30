@@ -21,7 +21,7 @@
 #include "chromeos/network/network_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -387,4 +387,4 @@ void VersionUpdater::OnUpdateCheckStarted(
     StartExitUpdate(Result::UPDATE_NOT_REQUIRED);
 }
 
-}  // namespace chromeos
+}  // namespace ash

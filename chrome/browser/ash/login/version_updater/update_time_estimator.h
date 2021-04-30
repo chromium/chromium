@@ -12,7 +12,7 @@ namespace base {
 class TickClock;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Helper class that gives time left expectations.
 class UpdateTimeEstimator {
@@ -75,6 +75,6 @@ class UpdateTimeEstimator {
   const base::TickClock* tick_clock_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
