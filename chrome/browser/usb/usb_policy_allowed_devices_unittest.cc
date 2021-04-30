@@ -21,6 +21,8 @@
 
 namespace {
 
+using testing::UnorderedElementsAre;
+
 class UsbPolicyAllowedDevicesTest : public testing::Test {
  public:
   UsbPolicyAllowedDevicesTest() = default;
@@ -103,29 +105,26 @@ TEST_F(UsbPolicyAllowedDevicesTest, InitializeWithExistingPrefValue) {
 
   auto usb_policy_allowed_devices = CreateUsbPolicyAllowedDevices();
 
-  const UsbPolicyAllowedDevices::UsbDeviceIdsToUrlsMap& map =
-      usb_policy_allowed_devices->map();
+  const auto& map = usb_policy_allowed_devices->map();
   EXPECT_EQ(map.size(), 3ul);
 
   auto device_key = std::make_pair(1234, 5678);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
+  const auto& first = map.at(device_key);
+  EXPECT_THAT(first, UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
+  const auto& second = map.at(device_key);
+  EXPECT_THAT(second, UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
+  const auto& third = map.at(device_key);
+  EXPECT_THAT(third, UnorderedElementsAre(kYoutubeOrigin));
 }
 
 TEST_F(UsbPolicyAllowedDevicesTest,
@@ -138,29 +137,22 @@ TEST_F(UsbPolicyAllowedDevicesTest,
 
   SetWebUsbAllowDevicesForUrlsPrefValue(*pref_value);
 
-  const UsbPolicyAllowedDevices::UsbDeviceIdsToUrlsMap& map =
-      usb_policy_allowed_devices->map();
+  const auto& map = usb_policy_allowed_devices->map();
   EXPECT_EQ(map.size(), 3ul);
 
   auto device_key = std::make_pair(1234, 5678);
   ASSERT_TRUE(base::Contains(map, device_key));
-
-  const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
+  EXPECT_THAT(map.at(device_key),
+              UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
-
-  const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
+  EXPECT_THAT(map.at(device_key),
+              UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
-
-  const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
+  EXPECT_THAT(map.at(device_key), UnorderedElementsAre(kYoutubeOrigin));
 }
 
 TEST_F(UsbPolicyAllowedDevicesTest,
@@ -171,29 +163,26 @@ TEST_F(UsbPolicyAllowedDevicesTest,
 
   auto usb_policy_allowed_devices = CreateUsbPolicyAllowedDevices();
 
-  const UsbPolicyAllowedDevices::UsbDeviceIdsToUrlsMap& map =
-      usb_policy_allowed_devices->map();
+  const auto& map = usb_policy_allowed_devices->map();
   EXPECT_EQ(map.size(), 3ul);
 
   auto device_key = std::make_pair(1234, 5678);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
+  const auto& first = map.at(device_key);
+  EXPECT_THAT(first, UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
+  const auto& second = map.at(device_key);
+  EXPECT_THAT(second, UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
-  const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
+  const auto& third = map.at(device_key);
+  EXPECT_THAT(third, UnorderedElementsAre(kYoutubeOrigin));
 
   // Ensure that the allowed devices can be removed dynamically.
   pref_value = std::make_unique<base::Value>(base::Value::Type::LIST);
@@ -229,18 +218,16 @@ TEST_F(UsbPolicyAllowedDevicesTest,
 
   auto usb_policy_allowed_devices = CreateUsbPolicyAllowedDevices();
 
-  const UsbPolicyAllowedDevices::UsbDeviceIdsToUrlsMap& map =
-      usb_policy_allowed_devices->map();
+  const auto& map = usb_policy_allowed_devices->map();
   ASSERT_EQ(map.size(), 1ul);
 
   auto device_key = std::make_pair(1234, 5678);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   // Ensure a device has all of the URL patterns allowed to access it.
-  const auto& urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(urls, kGoogleOrigin));
-  EXPECT_TRUE(base::Contains(urls, kCrbugOrigin));
-  EXPECT_TRUE(base::Contains(urls, kYoutubeOrigin));
+  const auto& policy = map.at(device_key);
+  EXPECT_THAT(policy, UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin,
+                                           kYoutubeOrigin));
 }
 
 namespace {
