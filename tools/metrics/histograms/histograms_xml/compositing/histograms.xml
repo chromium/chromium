@@ -642,11 +642,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
     once per frame.
 
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.SurfaceAggregator.DeclareResourceCount"
+    units="resources" expires_after="2021-09-05">
+  <owner>kylechar@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    The number of TransferableResources processed while declaring resources as
+    used during surface aggregation. This is logged once per frame.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.SurfaceAggregator.DeclareResourcesUs"
+    units="microseconds" expires_after="2021-09-05">
+  <owner>kylechar@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    Time spent declaring resources as used during surface aggregation. This is a
+    subset of the time recorded for Compositing.SurfaceAggregator.AggregateUs
+    and is logged once per frame.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
   </summary>
 </histogram>
 
@@ -680,11 +701,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
     once per frame.
 
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
   </summary>
 </histogram>
 

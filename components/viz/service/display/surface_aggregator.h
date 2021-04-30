@@ -99,9 +99,11 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   struct AggregateStatistics {
     int prewalked_surface_count = 0;
     int copied_surface_count = 0;
+    int declare_resources_count = 0;
 
     base::TimeDelta prewalk_time;
     base::TimeDelta copy_time;
+    base::TimeDelta declare_resources_time;
   };
 
   // Helper function that gets a list of render passes and returns a map from

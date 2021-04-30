@@ -1552,6 +1552,8 @@ bool SurfaceAggregator::DeclareResourcesToProvider(
     surface->client()->RefResources(resource_list);
   provider_->ReceiveFromChild(child_id, resource_list);
 
+  stats_->declare_resources_count += resource_list.size();
+
   // Figure out which resources are actually used in the render pass.
   // Note that we first gather them in a vector, since ResourceIdSet (which we
   // actually need) is a flat_set, which means bulk insertion we do at the end
@@ -1615,8 +1617,11 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   base::flat_map<CompositorRenderPassId, RenderPassMapEntry> render_pass_map =
       GenerateRenderPassMap(frame.render_pass_list, IsRootSurface(surface));
 
+  base::ElapsedTimer timer;
   bool valid_frame = DeclareResourcesToProvider(surface, frame.resource_list,
                                                 frame.render_pass_list);
+  stats_->declare_resources_time += timer.Elapsed();
+
   if (!valid_frame)
     return gfx::Rect();
   valid_surfaces_.insert(surface->surface_id());
@@ -1947,6 +1952,9 @@ void SurfaceAggregator::RecordStatHistograms() {
       stats_->prewalked_surface_count);
   UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
                            stats_->copied_surface_count);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Compositing.SurfaceAggregator.DeclareResourcesCount",
+      stats_->declare_resources_count);
 
   constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
   constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
@@ -1957,6 +1965,9 @@ void SurfaceAggregator::RecordStatHistograms() {
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time, kMinTime,
       kMaxTime, kTimeBuckets);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Compositing.SurfaceAggregator.DeclareResourcesUs",
+      stats_->declare_resources_time, kMinTime, kMaxTime, kTimeBuckets);
 
   stats_.reset();
 }
