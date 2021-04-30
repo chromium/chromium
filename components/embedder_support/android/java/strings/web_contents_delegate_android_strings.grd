@@ -170,7 +170,7 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- Color picker -->
-      <message name="IDS_COLOR_PICKER_BUTTON_MORE" desc="Text for ColorPicker button to go to advanced view. [CHAR-LIMIT=20]">
+      <message name="IDS_COLOR_PICKER_BUTTON_MORE" desc="Text for ColorPicker button to go to advanced view. [CHAR_LIMIT=20]">
         More
       </message>
       <message name="IDS_COLOR_PICKER_HUE" desc="Label for hue slider in ColorPicker.">
@@ -182,13 +182,13 @@
       <message name="IDS_COLOR_PICKER_VALUE" desc="Label for value slider in ColorPicker.">
         Value
       </message>
-      <message name="IDS_COLOR_PICKER_BUTTON_SET" desc="Label for button in ColorPicker dialog for user to accept the currently chosen color. [CHAR-LIMIT=20]">
+      <message name="IDS_COLOR_PICKER_BUTTON_SET" desc="Label for button in ColorPicker dialog for user to accept the currently chosen color. [CHAR_LIMIT=20]">
         Set
       </message>
-      <message name="IDS_COLOR_PICKER_BUTTON_CANCEL" desc="Label for button in ColorPicker dialog for user to cancel picking a color. [CHAR-LIMIT=20]">
+      <message name="IDS_COLOR_PICKER_BUTTON_CANCEL" desc="Label for button in ColorPicker dialog for user to cancel picking a color. [CHAR_LIMIT=20]">
         Cancel
       </message>
-      <message name="IDS_COLOR_PICKER_DIALOG_TITLE" desc="Title of ColorPicker dialog. [CHAR-LIMIT=20]">
+      <message name="IDS_COLOR_PICKER_DIALOG_TITLE" desc="Title of ColorPicker dialog. [CHAR_LIMIT=20]">
         Select color
       </message>
       <message name="IDS_COLOR_PICKER_BUTTON_RED" desc="Accessibility label for button to select the red color.">

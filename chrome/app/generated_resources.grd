@@ -5373,7 +5373,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Clear input
       </message>
       <if expr="is_android or enable_vr">
-        <message name="IDS_SEARCH_OR_TYPE_WEB_ADDRESS" desc="Prompt to enter text into the text field that will either perform web searches or navigate to a website. [CHAR-LIMIT=38]" formatter_data="android_java">
+        <message name="IDS_SEARCH_OR_TYPE_WEB_ADDRESS" desc="Prompt to enter text into the text field that will either perform web searches or navigate to a website. [CHAR_LIMIT=38]" formatter_data="android_java">
           Search or type web address
         </message>
       </if>
@@ -8820,7 +8820,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NOTIFICATION_BUTTON_CLOSE" desc="Button label to close a notification">
         Close
       </message>
-      <message name="IDS_NOTIFICATION_BUTTON_MORE" desc="Label shown on the second button of a MAC OSX system notification used to expand further options. [CHAR-LIMIT=12]">
+      <message name="IDS_NOTIFICATION_BUTTON_MORE" desc="Label shown on the second button of a MAC OSX system notification used to expand further options. [CHAR_LIMIT=12]">
         More
       </message>
       <message name="IDS_NOTIFICATION_REPLY_PLACEHOLDER" desc="Placeholder text shown in the text box before any text is entered when replying directly to a notification.">

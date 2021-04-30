@@ -168,18 +168,18 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- Select file dialog -->
-      <message name="IDS_LOW_MEMORY_ERROR" desc="Error shown when the browser is restarted due to low memory during a file picker operation. [CHAR-LIMIT=NONE]">
+      <message name="IDS_LOW_MEMORY_ERROR" desc="Error shown when the browser is restarted due to low memory during a file picker operation. [CHAR_LIMIT=NONE]">
         Unable to complete previous operation due to low memory
       </message>
-      <message name="IDS_OPENING_FILE_ERROR" desc="Toast when the browser is unable to open a file for upload. [CHAR-LIMIT=32]">
+      <message name="IDS_OPENING_FILE_ERROR" desc="Toast when the browser is unable to open a file for upload. [CHAR_LIMIT=32]">
         Failed to open selected file
       </message>
 
       <!-- Clipboard -->
-      <message name="IDS_COPY_TO_CLIPBOARD_FAILURE_MESSAGE" desc="Notification for when copying to the clipboard fails. [CHAR-LIMIT=64]">
+      <message name="IDS_COPY_TO_CLIPBOARD_FAILURE_MESSAGE" desc="Notification for when copying to the clipboard fails. [CHAR_LIMIT=64]">
         Failed to copy to the clipboard
       </message>
-      <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR-LIMIT=32]">
+      <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR_LIMIT=32]">
         Link copied
       </message>
       <message name="IDS_CHIP_REMOVE_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for X icon on a chip announcing that clicking on this icon will remove this input chip.">

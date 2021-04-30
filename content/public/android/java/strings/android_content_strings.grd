@@ -167,13 +167,13 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <message name="IDS_ACTIONBAR_SHARE" desc="Contextual action bar item for sharing a block of text via email, or other method. [CHAR-LIMIT=24]">
+      <message name="IDS_ACTIONBAR_SHARE" desc="Contextual action bar item for sharing a block of text via email, or other method. [CHAR_LIMIT=24]">
         Share
       </message>
-      <message name="IDS_ACTIONBAR_WEB_SEARCH" desc="Contextual action bar item for using the selected text in a internet search. [CHAR-LIMIT=24]">
+      <message name="IDS_ACTIONBAR_WEB_SEARCH" desc="Contextual action bar item for using the selected text in a internet search. [CHAR_LIMIT=24]">
         Web search
       </message>
-      <message name="IDS_ACTIONBAR_TEXTSELECTION_TITLE" desc="Title of the text selection contextual action bar on tablets. [CHAR-LIMIT=30]">
+      <message name="IDS_ACTIONBAR_TEXTSELECTION_TITLE" desc="Title of the text selection contextual action bar on tablets. [CHAR_LIMIT=30]">
         Text selection
       </message>
       <message name="IDS_ADD_TO_DICTIONARY" desc="Button that adds the currently highlighted word to the spellcheck dictionary">
@@ -196,73 +196,73 @@
       </message>
 
       <!-- Date/time pickers -->
-      <message name="IDS_ACCESSIBILITY_DATE_PICKER_MONTH" desc="Content description for the date time picker month component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_DATE_PICKER_MONTH" desc="Content description for the date time picker month component. [CHAR_LIMIT=32]">
         Month
       </message>
-      <message name="IDS_ACCESSIBILITY_DATE_PICKER_YEAR" desc="Content description for the date time picker year component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_DATE_PICKER_YEAR" desc="Content description for the date time picker year component. [CHAR_LIMIT=32]">
         Year
       </message>
-      <message name="IDS_DATE_PICKER_DIALOG_SET" desc="Label for 'set' button in date picker dialog and time picker dialog, used to replace the contents of a field with the chosen date or time [CHAR-LIMIT=12]">
+      <message name="IDS_DATE_PICKER_DIALOG_SET" desc="Label for 'set' button in date picker dialog and time picker dialog, used to replace the contents of a field with the chosen date or time [CHAR_LIMIT=12]">
         Set
       </message>
-      <message name="IDS_MONTH_PICKER_DIALOG_TITLE" desc="Title for the month picker dialog, which can be used to choose a month. [CHAR-LIMIT=32]">
+      <message name="IDS_MONTH_PICKER_DIALOG_TITLE" desc="Title for the month picker dialog, which can be used to choose a month. [CHAR_LIMIT=32]">
         Set month
       </message>
-      <message name="IDS_ACCESSIBILITY_DATE_PICKER_WEEK" desc="Content description for the date time picker week component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_DATE_PICKER_WEEK" desc="Content description for the date time picker week component. [CHAR_LIMIT=32]">
         Week
       </message>
-      <message name="IDS_WEEK_PICKER_DIALOG_TITLE" desc="Title for the week picker dialog, which can be used to choose a week. [CHAR-LIMIT=32]">
+      <message name="IDS_WEEK_PICKER_DIALOG_TITLE" desc="Title for the week picker dialog, which can be used to choose a week. [CHAR_LIMIT=32]">
         Set week
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_AM" desc="Value for AM in AM/PM in the time picker dialog. AM represents the morning (ante-meridiem). [CHAR-LIMIT=12]">
+      <message name="IDS_TIME_PICKER_DIALOG_AM" desc="Value for AM in AM/PM in the time picker dialog. AM represents the morning (ante-meridiem). [CHAR_LIMIT=12]">
         AM
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_PM" desc="Value for PM in AM/PM in the time picker dialog. PM represents the afternoon (post-meridiem). [CHAR-LIMIT=12]">
+      <message name="IDS_TIME_PICKER_DIALOG_PM" desc="Value for PM in AM/PM in the time picker dialog. PM represents the afternoon (post-meridiem). [CHAR_LIMIT=12]">
         PM
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_TITLE" desc="Title for the time picker dialog, which can be used to choose a time. [CHAR-LIMIT=32]">
+      <message name="IDS_TIME_PICKER_DIALOG_TITLE" desc="Title for the time picker dialog, which can be used to choose a time. [CHAR_LIMIT=32]">
         Set time
       </message>
-      <message name="IDS_ACCESSIBILITY_TIME_PICKER_HOUR" desc="Content description for the time picker hour component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_TIME_PICKER_HOUR" desc="Content description for the time picker hour component. [CHAR_LIMIT=32]">
         Hour
       </message>
-      <message name="IDS_ACCESSIBILITY_TIME_PICKER_MINUTE" desc="Content description for the time picker minute component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_TIME_PICKER_MINUTE" desc="Content description for the time picker minute component. [CHAR_LIMIT=32]">
         Minute
       </message>
-      <message name="IDS_ACCESSIBILITY_TIME_PICKER_SECOND" desc="Content description for the time picker second component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_TIME_PICKER_SECOND" desc="Content description for the time picker second component. [CHAR_LIMIT=32]">
         Second
       </message>
-      <message name="IDS_ACCESSIBILITY_TIME_PICKER_MILLI" desc="Content description for the time picker milli component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_TIME_PICKER_MILLI" desc="Content description for the time picker milli component. [CHAR_LIMIT=32]">
         Millisecond
       </message>
-      <message name="IDS_ACCESSIBILITY_TIME_PICKER_AMPM" desc="Content description for the time picker AM/PM component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_TIME_PICKER_AMPM" desc="Content description for the time picker AM/PM component. [CHAR_LIMIT=32]">
         AM/PM
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_HOUR_MINUTE_SEPARATOR" desc="Separator used between hours and minutes in the time picker dialog (hh:mm) [CHAR-LIMIT=1]">
+      <message name="IDS_TIME_PICKER_DIALOG_HOUR_MINUTE_SEPARATOR" desc="Separator used between hours and minutes in the time picker dialog (hh:mm) [CHAR_LIMIT=1]">
         :
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_MINUTE_SECOND_SEPARATOR" desc="Separator used between minutes and seconds in the time picker dialog (hh:mm:ss) [CHAR-LIMIT=1]">
+      <message name="IDS_TIME_PICKER_DIALOG_MINUTE_SECOND_SEPARATOR" desc="Separator used between minutes and seconds in the time picker dialog (hh:mm:ss) [CHAR_LIMIT=1]">
         :
       </message>
-      <message name="IDS_TIME_PICKER_DIALOG_SECOND_SUBSECOND_SEPARATOR" desc="Separator used between seconds and subseconds in the time picker dialog (hh:mm:ss.sss) [CHAR-LIMIT=1]">
+      <message name="IDS_TIME_PICKER_DIALOG_SECOND_SUBSECOND_SEPARATOR" desc="Separator used between seconds and subseconds in the time picker dialog (hh:mm:ss.sss) [CHAR_LIMIT=1]">
         .
       </message>
-      <message name="IDS_DATE_TIME_PICKER_DIALOG_TITLE" desc="Title for the date/time picker dialog, which can be used to choose a date and time. [CHAR-LIMIT=32]">
+      <message name="IDS_DATE_TIME_PICKER_DIALOG_TITLE" desc="Title for the date/time picker dialog, which can be used to choose a date and time. [CHAR_LIMIT=32]">
         Set date and time
       </message>
-      <message name="IDS_ACCESSIBILITY_DATETIME_PICKER_DATE" desc="Content description for the date time picker date component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_DATETIME_PICKER_DATE" desc="Content description for the date time picker date component. [CHAR_LIMIT=32]">
         Date
       </message>
-      <message name="IDS_ACCESSIBILITY_DATETIME_PICKER_TIME" desc="Content description for the date time picker time component. [CHAR-LIMIT=32]">
+      <message name="IDS_ACCESSIBILITY_DATETIME_PICKER_TIME" desc="Content description for the date time picker time component. [CHAR_LIMIT=32]">
         Time
       </message>
-      <message name="IDS_DATE_PICKER_DIALOG_OTHER_BUTTON_LABEL" desc="Label for 'other' button in date picker dialog and time picker dialog, used to close the list of suggestions and open the full date/time picker [CHAR-LIMIT=32]">
+      <message name="IDS_DATE_PICKER_DIALOG_OTHER_BUTTON_LABEL" desc="Label for 'other' button in date picker dialog and time picker dialog, used to close the list of suggestions and open the full date/time picker [CHAR_LIMIT=32]">
         Other
       </message>
-      <message name="IDS_DATE_PICKER_DIALOG_TITLE" desc="Title for the date picker dialog, which can be used to choose a date. [CHAR-LIMIT=32]">
+      <message name="IDS_DATE_PICKER_DIALOG_TITLE" desc="Title for the date picker dialog, which can be used to choose a date. [CHAR_LIMIT=32]">
         Set date
       </message>
-      <message name="IDS_DATE_PICKER_DIALOG_CLEAR" desc="Label for 'clear' button in date picker dialog and time picker dialog, used to replace the contents of a field with the empty string [CHAR-LIMIT=12]">
+      <message name="IDS_DATE_PICKER_DIALOG_CLEAR" desc="Label for 'clear' button in date picker dialog and time picker dialog, used to replace the contents of a field with the empty string [CHAR_LIMIT=12]">
         Clear
       </message>
       <message name="IDS_SPEECH_RECOGNITION_SERVICE_NOT_FOUND" desc="Toast message notifying Google speech service can't be found.">

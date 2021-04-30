@@ -390,10 +390,10 @@
         Update
       </message>
       <if expr="is_android">
-        <message name="IDS_SHOW_CONTENT" desc="Generic label to show content for a feature. [CHAR-LIMIT=20]" formatter_data="android_java">
+        <message name="IDS_SHOW_CONTENT" desc="Generic label to show content for a feature. [CHAR_LIMIT=20]" formatter_data="android_java">
           Show
         </message>
-        <message name="IDS_HIDE_CONTENT" desc="Generic label to hide content for a feature. [CHAR-LIMIT=20]" formatter_data="android_java">
+        <message name="IDS_HIDE_CONTENT" desc="Generic label to hide content for a feature. [CHAR_LIMIT=20]" formatter_data="android_java">
           Hide
         </message>
       </if>
@@ -453,7 +453,7 @@
           Recently Closed
         </message>
       </if>
-      <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR-LIMIT=20]" formatter_data="android_java">
+      <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR_LIMIT=20]" formatter_data="android_java">
         Choose
       </message>
 

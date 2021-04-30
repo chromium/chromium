@@ -169,10 +169,9 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- Messages for remote media playback (casting) -->
-      <message name="IDS_CAST_CASTING_VIDEO" desc="AtHome text to tell user which screen casting is happening. [CHAR LIMIT=40]">
+      <message name="IDS_CAST_CASTING_VIDEO" desc="AtHome text to tell user which screen casting is happening. [CHAR_LIMIT=40]">
         Casting to <ph name="SCREEN_NAME">%1$s<ex>Living Room TV</ex></ph>
       </message>
     </messages>
   </release>
 </grit>
-

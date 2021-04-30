@@ -223,7 +223,7 @@
     <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_CHECKBOX_UNCHECK_WARNING" desc="The warning text, after the user unchecks the checkbox, to indicate this card will still be saved on this device only, not to Google account.">
       Saved on this device only
     </message>
-    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_OFFER" desc="The body text for a dialog that offers to migrate local cards into the cloud. [CHAR-LIMIT=NONE] [ICU Syntax]">
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_OFFER" desc="The body text for a dialog that offers to migrate local cards into the cloud. [CHAR_LIMIT=NONE] [ICU Syntax]">
       {NUM_CARDS, plural,
       =1 {This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph>.}
       other {These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph>.}}
@@ -393,7 +393,7 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_NEW_CARD_LINK" desc="Text for link that prompts user to update their credit card after it may have been re-issued." formatter_data="android_java">
     Update card
   </message>
-  <message name="IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC" desc="The placeholder/label text for credit card verification code in the requestAutocomplete dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR-LIMIT=4]" meaning="Placeholder label for a very narrow CVC field that should preferably be translated to an abbreviated form.">
+  <message name="IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC" desc="The placeholder/label text for credit card verification code in the requestAutocomplete dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR_LIMIT=4]" meaning="Placeholder label for a very narrow CVC field that should preferably be translated to an abbreviated form.">
     CVC
   </message>
 

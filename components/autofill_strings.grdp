@@ -185,17 +185,17 @@
   ''' • '''</message>
 
   <!-- Autofill credit card suggestion popup -->
-  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR_LIMIT=32]">
     Exp: <ph name="EXPIRATION_MONTH">$1<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">$2<ex>17</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2" desc="Abbreviated label for credit card expiration date. Please translate the date as either YY/MM or MM/YY depending on how credit card expiration dates are more commonly presented in your locale. [CHAR-LIMIT=32]" meaning="Label for credit card expiration date for the save card dialog.">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2" desc="Abbreviated label for credit card expiration date. Please translate the date as either YY/MM or MM/YY depending on how credit card expiration dates are more commonly presented in your locale. [CHAR_LIMIT=32]" meaning="Label for credit card expiration date for the save card dialog.">
     <ph name="EXPIRATION_MONTH">$1<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">$2<ex>17</ex></ph>
   </message>
 
-  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME" desc="Second line label for the autofill credit card popup when the name is selected. This text will appear below the cardholder name. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME" desc="Second line label for the autofill credit card popup when the name is selected. This text will appear below the cardholder name. [CHAR_LIMIT=32]">
     <ph name="CREDIT_CARD">$1<ex>Visa  ••••5679</ex></ph>, expires on <ph name="EXPIRATION_DATE_ABBR">$2<ex>06/17</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR_LIMIT=32]">
     Expires on <ph name="EXPIRATION_DATE_ABBR">$1<ex>06/17</ex></ph>
   </message>
 
