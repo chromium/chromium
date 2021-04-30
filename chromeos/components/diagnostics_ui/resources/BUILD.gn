@@ -28,6 +28,7 @@ js_type_check("closure_compile_module") {
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
+    ":network_info",
     ":network_list",
     ":overview_card",
     ":percent_bar_chart",
@@ -171,6 +172,14 @@ js_library("mojo_utils") {
   ]
 }
 
+js_library("network_info") {
+  deps = [
+    ":diagnostics_card",
+    ":diagnostics_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("network_list") {
   deps = [
     ":connectivity_card",
@@ -248,6 +257,7 @@ html_to_js("web_components") {
     "diagnostics_shared_css.js",
     "icons.js",
     "memory_card.js",
+    "network_info.js",
     "network_list.js",
     "overview_card.js",
     "percent_bar_chart.js",

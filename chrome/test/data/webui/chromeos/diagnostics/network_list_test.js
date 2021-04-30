@@ -9,7 +9,7 @@ import {fakeNetworkGuidInfoList} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -72,6 +72,23 @@ export function networkListTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Returns all network-info elements.
+   * @return {!NodeList<!Element>}
+   */
+  function getNetworkInfoElements() {
+    return networkListElement.shadowRoot.querySelectorAll('network-info');
+  }
+
+  /**
+   * Returns list of network guids.
+   * @suppress {visibility} // access private member for test
+   * @return {Array<?string>}
+   */
+  function getOtherNetworkGuids() {
+    return networkListElement.otherNetworkGuids_;
+  }
+
   test('ActiveGuidPresent', () => {
     // The network-list element sets up a NetworkListObserver as part
     // of its initialization. Registering this observer causes it to
@@ -92,6 +109,34 @@ export function networkListTestSuite() {
           dx_utils.assertElementContainsText(
               getConnectivityCard().$$('#activeGuid'),
               /** @type {string} */ (fakeNetworkGuidInfoList[1].activeGuid));
+        });
+  });
+
+  test('NetworkGuidsPresent', () => {
+    let networkGuids;
+    let numDomRepeatInstances;
+    let networkInfoElements;
+    return initializeNetworkList(fakeNetworkGuidInfoList)
+        .then(() => {
+          networkGuids = getOtherNetworkGuids();
+          numDomRepeatInstances =
+              networkListElement.$$('#networkInfoList').items.length;
+          networkInfoElements = getNetworkInfoElements();
+          assertEquals(numDomRepeatInstances, networkGuids.length);
+          for (let i = 0; i < networkInfoElements.length; i++) {
+            assertEquals(networkInfoElements[i].guid, networkGuids[i]);
+          }
+          return triggerNetworkListObserver();
+        })
+        .then(() => {
+          networkGuids = getOtherNetworkGuids();
+          numDomRepeatInstances =
+              networkListElement.$$('#networkInfoList').items.length;
+          networkInfoElements = getNetworkInfoElements();
+          assertEquals(numDomRepeatInstances, networkGuids.length);
+          for (let i = 0; i < networkInfoElements.length; i++) {
+            assertEquals(networkInfoElements[i].guid, networkGuids[i]);
+          }
         });
   });
 }
