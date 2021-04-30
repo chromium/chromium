@@ -52,9 +52,13 @@
   #timestamp {
     color: var(--cr-secondary-text-color);
   }
+
+  .dropdown-item {
+    height: 32px;
+  }
 </style>
 <div id="header">
-  <a id="start-justtified" href="[[visit.url.url]]" on-click="onClick_">
+  <a id="start-justtified" href="[[visit.url.url]]" on-click="onTap_">
     <page-favicon url="[[visit.url]]"></page-favicon>
     <span id="title">[[visit.pageTitle]]</span>
     <span id="separator">–</span>
@@ -62,8 +66,19 @@
   </a>
   <div id="end-justified">
     <div id="timestamp">[[getTimeOfVisit_(visit)]]</div>
-    <cr-icon-button id="action" class="icon-more-vert"
-        hidden="[[visit.relatedVisits.length]]">
+    <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+        on-click="onActionMenuButtonTap_">
     </cr-icon-button>
   </div>
 </div>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{actionMenuDescription}">
+      <button id="removeButton" class="dropdown-item"
+          on-click="onRemoveButtonTap_">
+        [[removeButtonTitle_]]
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

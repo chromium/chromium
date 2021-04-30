@@ -28,6 +28,12 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
       content::WebUIDataSource::Create(chrome::kChromeUIMemoriesHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
+      {"cancel", IDS_CANCEL},
+      {"remove", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
+      {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
+      {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
+      {"removeWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
       {"title", IDS_MEMORIES_PAGE_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
@@ -42,6 +48,7 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
                     u"From tab groups and bookmarks");
   source->AddString("tabGroupTileCaption", u"Recent tab group");
   source->AddString("relatedSearchesSectionHeader", u"Try searching for");
+  source->AddString("removeAllFromHistory", u"Remove all from history");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),

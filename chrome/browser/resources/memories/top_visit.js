@@ -57,7 +57,7 @@ class TopVisitElement extends PolymerElement {
    * @param {!CustomEvent<{event:!MouseEvent}>} e
    * @private
    */
-  onVisitClick_(e) {
+  onVisitTap_(e) {
     // Prevent the enclosing <cr-expand-button> from receiving this event.
     e.detail.event.stopImmediatePropagation();
   }

@@ -39,7 +39,7 @@
 <div id="vertical-line"></div>
 <template is="dom-if" if="[[visit.relatedVisits.length]]">
   <cr-expand-button expanded="{{expanded_}}">
-    <visit-row is-top-visit visit="[[visit]]" on-visit-click="onVisitClick_">
+    <visit-row is-top-visit visit="[[visit]]" on-visit-tap="onVisitTap_">
     </visit-row>
   </cr-expand-button>
   <iron-collapse opened="[[expanded_]]">

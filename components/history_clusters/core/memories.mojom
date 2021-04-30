@@ -38,7 +38,10 @@ struct TabGroup {
   array<WebPage> pages;
 };
 
-// Represents a visit to a webpage.
+// Represents the most recent visit to a URL in a Memory. Those visits in a
+// Memory for which there is a more recent visit to the same URL are omitted.
+// However, the time of the least recent visit as well as the number of those
+// visits are preserved for use in the UI as well as deletion.
 struct Visit {
   // Visit identifier. See //components/history/core/browser/history_types.h
   int64 id;
@@ -50,6 +53,9 @@ struct Visit {
   url.mojom.Url? thumbnail_url;
   // Time of the visit.
   mojo_base.mojom.Time time;
+  // Time of the least recent visit in the Memory to the same URL. Equals |time|
+  // if there is only one visit in the Memory to the URL.
+  mojo_base.mojom.Time first_visit_time;
   // Localized string of approximate time of visit, e.g., "2 days ago".
   string relative_date;
   // Time of day of visit, e.g., "3:07 PM".

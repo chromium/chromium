@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/memories_service.h"
@@ -17,10 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-#if !defined(CHROME_BRANDED)
-#include "base/task/cancelable_task_tracker.h"
-#endif
 
 class Profile;
 
@@ -51,6 +48,8 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
       mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
   void QueryMemories(
       history_clusters::mojom::QueryParamsPtr query_params) override;
+  void RemoveVisits(std::vector<history_clusters::mojom::VisitPtr> visits,
+                    RemoveVisitsCallback callback) override;
 
   // history_clusters::MemoriesService::Observer:
   void OnMemoriesDebugMessage(const std::string& message) override;
@@ -65,6 +64,9 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
       history_clusters::mojom::MemoriesResultPtr result_mojom,
       history_clusters::mojom::QueryParamsPtr continuation_query_params,
       std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms);
+  // Called with the set of removed visits. Subsequently, |visits| is sent to
+  // the JS to update the UI.
+  void OnVisitsRemoved(std::vector<history_clusters::mojom::VisitPtr> visits);
 
 #if !defined(CHROME_BRANDED)
   using MemoriesQueryResultsCallback =
@@ -84,6 +86,7 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
 
   Profile* profile_;
   content::WebContents* web_contents_;
+  base::CancelableTaskTracker remove_task_tracker_;
 
   // Used to observe the service.
   base::ScopedObservation<history_clusters::MemoriesService,

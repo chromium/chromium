@@ -76,6 +76,11 @@ class MemoriesService : public KeyedService {
       base::OnceCallback<void(mojom::QueryParamsPtr, Memories)>;
   void QueryMemories(mojom::QueryParamsPtr query_params,
                      QueryMemoriesCallback callback);
+  // Removes all visits to the specified URLs in the specified time ranges in
+  // |expire_list|. Calls |closure| when done.
+  void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,
+                    base::OnceClosure closure,
+                    base::CancelableTaskTracker* task_tracker);
 
  private:
   friend class MemoriesServiceTestApi;

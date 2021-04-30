@@ -38,14 +38,23 @@ interface PageHandler {
   // Note: Returns mock Memories in non-chrome-branded builds if no remote
   // endpoint is specified.
   QueryMemories(QueryParams query_params);
+
+  // Requests to remove all visits to the specified URLs in the specified
+  // timespan in |visits|. This includes the less recent visits to the same set
+  // of URLs whose information is preserved in |visits|. The returned Promise
+  // indicates if the request was accepted by the browser.
+  RemoveVisits(array<Visit> visits) => (bool accepted);
 };
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-
   // Called with the results of the last call to |QueryMemories()|. |result|
   // contains the freshest Memories in reverse chronological order, along with
   // continuation query params meant to be used in the follow-up request to load
   // older Memories.
   OnMemoriesQueryResult(MemoriesResult result);
+
+  // Called with the set of removed visits when the last accepted call to
+  // |RemoveVisits()| succeeds. |removed_visits| will be used to update the UI.
+  OnVisitsRemoved(array<Visit> removed_visits);
 };

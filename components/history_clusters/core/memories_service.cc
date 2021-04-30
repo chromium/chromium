@@ -160,4 +160,12 @@ void MemoriesService::QueryMemories(mojom::QueryParamsPtr query_params,
     std::move(on_visits_callback).Run(visits_);
 }
 
+void MemoriesService::RemoveVisits(
+    const std::vector<history::ExpireHistoryArgs>& expire_list,
+    base::OnceClosure closure,
+    base::CancelableTaskTracker* task_tracker) {
+  std::move(closure).Run();
+  // TODO(crbug.com/1203789): Remove the visits from relevant history tables.
+}
+
 }  // namespace history_clusters

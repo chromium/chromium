@@ -67,7 +67,8 @@
       <span id="text">[[result_.title]]</span>
     </div>
   </div>
-  <div id="memories">
+  <div id="memories" on-remove-visits="onRemoveVisits_"
+      on-remove-empty-memory-element="onRemoveEmptyMemoryEement_">
     <template is="dom-repeat" items="[[result_.memories]]">
       <memory-card memory="[[item]]"></memory-card>
     </template>
@@ -76,3 +77,20 @@
 <iron-scroll-threshold id="scroll-threshold" scroll-target="container"
     on-lower-threshold="onScrolledToBottom_">
 </iron-scroll-threshold>
+
+<cr-lazy-render id="confirmationDialog">
+  <template>
+    <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">
+      <div slot="title">$i18n{removeSelected}</div>
+      <div slot="body">$i18n{removeWarning}</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onRemoveButtonTap_">
+          $i18n{remove}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+</cr-lazy-render>

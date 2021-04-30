@@ -122,6 +122,8 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
       memory->top_visits.push_back(CreateVisitMojom(visits, visit_id));
     }
 
+    // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
+
     if (debug_logger) {
       base::DictionaryValue debug_cluster;
       debug_cluster.SetStringKey("id", memory->id.ToString());
@@ -140,13 +142,6 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
 
       debug_clusters_list.Append(std::move(debug_cluster));
     }
-
-    // TODO(manukh) fill out:
-    //  |related_searches|
-    //  |related_tab_groups|
-    //  |bookmarks|
-    //  |last_visit_time|
-    //  |engagement_score|
 
     result.emplace_back(std::move(memory));
   }
