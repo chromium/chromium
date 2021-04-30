@@ -114,14 +114,6 @@ public class VideoPlayerViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testControlsVisibility() {
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
-        assertEquals(View.VISIBLE, mControls.getVisibility());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
     public void testTryNowButton() {
         View tryNowButton = mControls.findViewById(R.id.try_now);
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW, false);

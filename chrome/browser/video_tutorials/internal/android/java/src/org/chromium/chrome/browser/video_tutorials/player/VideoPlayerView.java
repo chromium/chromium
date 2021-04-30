@@ -57,10 +57,6 @@ class VideoPlayerView {
         mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    void showMediaControls(boolean show) {
-        mControls.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
     void showLanguagePicker(boolean show) {
         mLanguagePickerView.setVisibility(show ? View.VISIBLE : View.GONE);
     }

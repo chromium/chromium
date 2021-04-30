@@ -27,8 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
-import org.chromium.chrome.browser.video_tutorials.Language;
-import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -69,8 +67,6 @@ public class VideoPlayerMediatorUnitTest {
     @Mock
     Callback<Tutorial> mTryNowCallback;
     @Mock
-    private LanguageInfoProvider mLanguageProvider;
-    @Mock
     PlaybackStateObserver mPlaybackStateObserver;
 
     @Before
@@ -86,8 +82,8 @@ public class VideoPlayerMediatorUnitTest {
         VideoPlayerMediator.sEnableShareForTesting = true;
         mTestVideoTutorialService = new TestVideoTutorialService();
         mMediator = new VideoPlayerMediator(mContext, mModel, mTestVideoTutorialService,
-                mLanguagePicker, mLanguageProvider, mWebContents, mPlaybackStateObserver,
-                mTryNowCallback, mCloseCallback);
+                mLanguagePicker, mWebContents, mPlaybackStateObserver, mTryNowCallback,
+                mCloseCallback);
     }
 
     @Test
@@ -133,11 +129,13 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.playVideoTutorial(tutorial);
         Mockito.verify(mNavigationController).loadUrl(any());
         assertThat(mModel.get(VideoPlayerProperties.SHOW_LOADING_SCREEN), equalTo(false));
-        assertThat(mModel.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS), equalTo(false));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_SHARE), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_CLOSE), equalTo(true));
 
         mMediator.onPlay();
         assertThat(mModel.get(VideoPlayerProperties.SHOW_LOADING_SCREEN), equalTo(false));
-        assertThat(mModel.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS), equalTo(false));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_SHARE), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_CLOSE), equalTo(true));
     }
 
     @Test
@@ -146,7 +144,8 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.playVideoTutorial(tutorial);
         mMediator.onPlay();
         mMediator.onPause();
-        assertThat(mModel.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_SHARE), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_CLOSE), equalTo(true));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_WATCH_NEXT), equalTo(false));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE), equalTo(false));
     }
@@ -171,8 +170,6 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.onPlay();
         mMediator.onEnded();
 
-        Language language = new Language("en", "English", "English native");
-        Mockito.when(mLanguageProvider.getLanguageInfo("en")).thenReturn(language);
         mModel.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
         Mockito.verify(mLanguagePicker, Mockito.times(1))
                 .showLanguagePicker(

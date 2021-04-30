@@ -16,10 +16,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  */
 interface VideoPlayerProperties {
     WritableBooleanPropertyKey SHOW_LOADING_SCREEN = new WritableBooleanPropertyKey();
-    WritableBooleanPropertyKey SHOW_MEDIA_CONTROLS = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_LANGUAGE_PICKER = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_TRY_NOW = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_SHARE = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey SHOW_CLOSE = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_WATCH_NEXT = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_CHANGE_LANGUAGE = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<String> CHANGE_LANGUAGE_BUTTON_TEXT =
@@ -32,8 +32,8 @@ interface VideoPlayerProperties {
     WritableObjectPropertyKey<Runnable> CALLBACK_CLOSE = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<State> WATCH_STATE_FOR_TRY_NOW = new WritableObjectPropertyKey<>();
 
-    PropertyKey[] ALL_KEYS = new PropertyKey[] {SHOW_LOADING_SCREEN, SHOW_MEDIA_CONTROLS,
-            SHOW_LANGUAGE_PICKER, SHOW_TRY_NOW, SHOW_SHARE, SHOW_WATCH_NEXT, SHOW_CHANGE_LANGUAGE,
+    PropertyKey[] ALL_KEYS = new PropertyKey[] {SHOW_LOADING_SCREEN, SHOW_LANGUAGE_PICKER,
+            SHOW_TRY_NOW, SHOW_SHARE, SHOW_CLOSE, SHOW_WATCH_NEXT, SHOW_CHANGE_LANGUAGE,
             CHANGE_LANGUAGE_BUTTON_TEXT, CALLBACK_WATCH_NEXT, CALLBACK_CHANGE_LANGUAGE,
             CALLBACK_TRY_NOW, CALLBACK_SHARE, CALLBACK_CLOSE, WATCH_STATE_FOR_TRY_NOW};
 }
