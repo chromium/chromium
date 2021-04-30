@@ -189,6 +189,10 @@ SaveAddressProfileView::SaveAddressProfileView(
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
+  // Since this is a save prompt, original profile must not be set. Otherwise,
+  // it would have been an update prompt.
+  DCHECK(!controller_->GetOriginalProfile());
+
   // TODO(crbug.com/1167060): Accept action should consider the selected
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(

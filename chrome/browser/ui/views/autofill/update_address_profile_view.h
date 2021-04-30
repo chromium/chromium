@@ -42,9 +42,6 @@ class UpdateAddressProfileView : public AutofillBubbleBase,
   // AutofillBubbleBase:
   void Hide() override;
 
-  // View:
-  void AddedToWidget() override;
-
  private:
   SaveUpdateAddressProfileBubbleController* controller_;
 };

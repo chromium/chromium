@@ -63,6 +63,7 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
   const AutofillProfile& address_profile_to_save() {
     return address_profile_to_save_;
   }
+  const AutofillProfile* original_profile() { return &original_profile_; }
   UpdateAddressProfileView* view() { return view_; }
   MockSaveUpdateAddressProfileBubbleController* mock_controller() {
     return &mock_controller_;
@@ -71,7 +72,10 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_save_;
+
+  AutofillProfile address_profile_to_save_ = test::GetFullProfile();
+  AutofillProfile original_profile_ = test::GetFullProfile2();
+
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -86,6 +90,8 @@ void UpdateAddressProfileViewTest::CreateViewAndShow() {
       .WillByDefault(testing::Return(std::u16string()));
   ON_CALL(*mock_controller(), GetProfileToSave())
       .WillByDefault(testing::ReturnRef(address_profile_to_save()));
+  ON_CALL(*mock_controller(), GetOriginalProfile())
+      .WillByDefault(testing::Return(original_profile()));
 
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =

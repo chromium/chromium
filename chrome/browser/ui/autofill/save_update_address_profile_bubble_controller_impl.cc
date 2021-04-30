@@ -46,6 +46,8 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
     const {
   // TODO(crbug.com/1167060): Use ineternationalized string upon having final
   // strings.
+  // TODO(crbug.com/1167060): Update prompt title should reflect the fields that
+  // are being updated.
   return original_profile_ ? u"Update Address?" : u"Save Address?";
 }
 
