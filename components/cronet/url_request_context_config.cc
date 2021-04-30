@@ -157,6 +157,8 @@ const char kSSLKeyLogFile[] = "ssl_key_log_file";
 
 const char kGoAwayOnPathDegrading[] = "go_away_on_path_degrading";
 
+const char kAllowPortMigration[] = "allow_port_migration";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overrided via
 // experimental options explicitly.
 #if defined(OS_IOS)
@@ -515,6 +517,12 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
                                 &quic_race_stale_dns_on_connection)) {
         quic_params->race_stale_dns_on_connection =
             quic_race_stale_dns_on_connection;
+      }
+
+      bool quic_allow_port_migration = false;
+      if (quic_args->GetBoolean(kAllowPortMigration,
+                                &quic_allow_port_migration)) {
+        quic_params->allow_port_migration = quic_allow_port_migration;
       }
 
       bool quic_disable_bidirectional_streams = false;
