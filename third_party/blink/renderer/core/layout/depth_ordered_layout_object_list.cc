@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/layout/depth_ordered_layout_object_list.h"
 
 #include <algorithm>
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 
 namespace blink {
 
@@ -47,8 +49,22 @@ bool DepthOrderedLayoutObjectList::IsEmpty() const {
   return data_->objects().IsEmpty();
 }
 
+namespace {
+
+bool ListModificationAllowedFor(const LayoutObject& object) {
+  if (!object.GetFrameView()->IsInPerformLayout())
+    return true;
+  // We are allowed to insert/remove orthogonal writing mode roots during
+  // layout for interleaved style recalcs, but only when these roots are fully
+  // managed by LayoutNG.
+  return object.GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() &&
+         IsManagedByLayoutNG(object);
+}
+
+}  // namespace
+
 void DepthOrderedLayoutObjectList::Add(LayoutObject& object) {
-  DCHECK(!object.GetFrameView()->IsInPerformLayout());
+  DCHECK(ListModificationAllowedFor(object));
   data_->objects().insert(&object);
   data_->ordered_objects().clear();
 }
@@ -57,7 +73,7 @@ void DepthOrderedLayoutObjectList::Remove(LayoutObject& object) {
   auto it = data_->objects().find(&object);
   if (it == data_->objects().end())
     return;
-  DCHECK(!object.GetFrameView()->IsInPerformLayout());
+  DCHECK(ListModificationAllowedFor(object));
   data_->objects().erase(it);
   data_->ordered_objects().clear();
 }
