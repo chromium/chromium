@@ -45,9 +45,6 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true for builds targeting Android Things.
-  is_android_things = false
-
   # Set true for builds targeting Android appliances.
   is_android_appliance = false
 
@@ -132,11 +129,6 @@ declare_args() {
 
   # True to use the Chromium runtime for cast rendering.
   enable_chromium_runtime_cast_renderer = false
-}
-
-declare_args() {
-  is_android_things_non_public =
-      is_android_things && chromecast_branding != "public"
 }
 
 declare_args() {

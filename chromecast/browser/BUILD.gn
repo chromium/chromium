@@ -698,10 +698,6 @@ if (is_android) {
       "android/apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
       "android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
     ]
-
-    if (is_android_things_non_public) {
-      sources += [ "android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroidThings.java" ]
-    }
   }
 
   java_cpp_enum("java_enums") {

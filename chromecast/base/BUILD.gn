@@ -229,12 +229,6 @@ if (is_android) {
       "cast_sys_info_android.h",
       "cast_sys_info_android_factory.cc",
     ]
-    if (is_android_things) {
-      sources += [
-        "cast_sys_info_android_things.cc",
-        "cast_sys_info_android_things.h",
-      ]
-    }
   }
 } else {  # !is_android
   # Target for OEM partners to override sys_info shared library, i.e.

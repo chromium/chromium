@@ -11,10 +11,7 @@ assert(is_android)
 cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-manifest_variables = [
-  "is_android_things=$is_android_things",
-  "is_android_things_non_public=$is_android_things_non_public",
-]
+manifest_variables = [ "is_android_appliance=$is_android_appliance" ]
 
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
@@ -194,28 +191,8 @@ android_library("cast_shell_java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  if (is_android_things_non_public) {
-    deps += [ ":cast_shell_android_things_sys_info_java" ]
-    if (enable_assistant) {
-      deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-    }
-  } else if (is_android_appliance) {
+  if (is_android_appliance) {
     deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-  }
-}
-
-if (is_android_things_non_public) {
-  android_library("cast_shell_android_things_sys_info_java") {
-    sources = [ "//chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroidThings.java" ]
-    deps = [
-      "//base:base_java",
-      "//chromecast/internal/android/prebuilt/things:support_lib_java",
-    ]
-  }
-
-  generate_jni("cast_shell_android_things_sys_info_jni_headers") {
-    sources = [ "//chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroidThings.java" ]
-    deps = [ "//chromecast/internal/android/prebuilt/things:support_lib_java" ]
   }
 }
 
