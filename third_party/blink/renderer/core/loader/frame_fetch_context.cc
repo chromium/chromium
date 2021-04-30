@@ -888,6 +888,19 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
     // Default invalid params to 0.
     conversion->conversion_data = is_valid_integer ? data : 0UL;
+
+    if (!is_valid_integer) {
+      ReportAttributionIssue(
+          GetFrame(),
+          mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
+          base::nullopt, nullptr, devtools_request_id,
+          search_params->get(kConversionDataParam));
+    }
+  } else {
+    ReportAttributionIssue(
+        GetFrame(),
+        mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
+        base::nullopt, nullptr, devtools_request_id);
   }
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.

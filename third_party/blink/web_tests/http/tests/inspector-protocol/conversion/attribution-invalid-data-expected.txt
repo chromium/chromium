@@ -1,0 +1,25 @@
+Test that clicking an attribution link in insecure contexts triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : {
+                requestId : <string>
+            }
+            violationType : InvalidAttributionData
+        }
+    }
+}
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : badinteger
+            request : {
+                requestId : <string>
+            }
+            violationType : InvalidAttributionData
+        }
+    }
+}
+
