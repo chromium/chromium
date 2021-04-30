@@ -63,13 +63,12 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  const bool show_side_panel_prototype =
-      base::FeatureList::IsEnabled(features::kSidePanel) &&
-      base::FeatureList::IsEnabled(features::kSidePanelPrototype);
+  const bool show_side_panel =
+      base::FeatureList::IsEnabled(features::kSidePanel);
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      show_side_panel_prototype ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
-                                : IDR_READ_LATER_READ_LATER_HTML);
+      show_side_panel ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
+                      : IDR_READ_LATER_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

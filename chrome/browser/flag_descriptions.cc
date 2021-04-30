@@ -2201,10 +2201,6 @@ const char kSendTabToSelfWhenSignedInDescription[] =
 const char kSidePanelName[] = "Side panel";
 const char kSidePanelDescription[] = "Host some content in a side panel.";
 
-const char kSidePanelPrototypeName[] = "Side panel prototype";
-const char kSidePanelPrototypeDescription[] =
-    "Display a prototype of the side panel.";
-
 const char kServiceWorkerSubresourceFilterName[] =
     "ServiceWorker subresource filter";
 const char kServiceWorkerSubresourceFilterDescription[] =
