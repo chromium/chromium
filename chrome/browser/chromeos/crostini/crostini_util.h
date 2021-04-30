@@ -45,9 +45,6 @@ extern const char kCrostiniTerminalSystemAppId[];
 extern const char kCrostiniDefaultVmName[];
 extern const char kCrostiniDefaultContainerName[];
 extern const char kCrostiniDefaultUsername[];
-// In order to be compatible with sync folder id must match standard.
-// Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
-extern const char kCrostiniFolderId[];
 extern const char kCrostiniDefaultImageServerUrl[];
 extern const char kCrostiniStretchImageAlias[];
 extern const char kCrostiniBusterImageAlias[];

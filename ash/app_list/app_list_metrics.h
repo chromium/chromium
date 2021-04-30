@@ -16,6 +16,10 @@ class AppListModel;
 class SearchModel;
 class SearchResult;
 
+// TODO(jamescook): Don't define strings in header files. Our compiler doesn't
+// support "inline constexpr" yet, so we should use extern const char[] or
+// inline the strings if they are only used once.
+
 // The UMA histogram that logs the input latency from input event to the
 // representation time of the shown launcher UI.
 constexpr char kAppListShowInputLatencyHistogram[] =
@@ -83,6 +87,10 @@ constexpr char kNumberOfAppsInFoldersHistogram[] =
 
 // The UMA histogram that logs how many folders users have.
 constexpr char kNumberOfFoldersHistogram[] = "Apps.NumberOfFolders";
+
+// The UMA histogram that logs how many folders users have, excluding the OEM
+// folder and the "Linux apps" folder created by the system.
+ASH_EXPORT extern const char kNumberOfNonSystemFoldersHistogram[];
 
 // The UMA histogram that logs how many pages users have in top level apps grid.
 constexpr char kNumberOfPagesHistogram[] = "Apps.NumberOfPages";

@@ -200,7 +200,7 @@ bool IsSystemCreatedSyncFolder(AppListSyncableService::SyncItem* folder_item) {
   if (folder_item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
     return false;
   return (folder_item->item_id == ash::kOemFolderId ||
-          folder_item->item_id == crostini::kCrostiniFolderId);
+          folder_item->item_id == ash::kCrostiniFolderId);
 }
 
 }  // namespace

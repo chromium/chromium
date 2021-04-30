@@ -1852,8 +1852,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
-    The number of folders that users have in their Launcher. Includes the OEM
-    folder. This metric is recorded every time the launcher is shown.
+    The number of folders that users have in their Launcher. Includes
+    system-created folders like &quot;Linux apps&quot; or the OEM folder.
+    Recorded every time the launcher is shown.
+  </summary>
+</histogram>
+
+<histogram name="Apps.NumberOfNonSystemFolders" units="folder(s)"
+    expires_after="2021-12-31">
+  <owner>jamescook@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their launcher. Does not include
+    system-created folders like &quot;Linux apps&quot; or the OEM folder.
+    Recorded every time the launcher is shown.
   </summary>
 </histogram>
 

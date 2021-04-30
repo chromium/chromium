@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -52,7 +53,7 @@ AppServiceAppItem::AppServiceAppItem(
     if (app_type_ == apps::mojom::AppType::kCrostini ||
         id() == crostini::kCrostiniTerminalSystemAppId) {
       DCHECK(folder_id().empty());
-      SetChromeFolderId(crostini::kCrostiniFolderId);
+      SetChromeFolderId(ash::kCrostiniFolderId);
     }
   }
 

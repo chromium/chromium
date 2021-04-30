@@ -8,6 +8,10 @@ namespace ash {
 
 const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 
+// In order to be compatible with sync folder id must match standard.
+// Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
+const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
+
 ////////////////////////////////////////////////////////////////////////////////
 // AppListItemMetadata:
 

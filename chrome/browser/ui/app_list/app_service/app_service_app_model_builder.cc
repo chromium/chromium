@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -50,12 +51,12 @@ class AppServiceAppModelBuilder::CrostiniFolderObserver
   ~CrostiniFolderObserver() override = default;
 
   void OnAppListItemAdded(ChromeAppListItem* item) override {
-    if (item->id() != crostini::kCrostiniFolderId)
+    if (item->id() != ash::kCrostiniFolderId)
       return;
 
     item->SetIsPersistent(true);
 
-    if (!parent_->GetSyncItem(crostini::kCrostiniFolderId,
+    if (!parent_->GetSyncItem(ash::kCrostiniFolderId,
                               sync_pb::AppListSpecifics::TYPE_FOLDER)) {
       item->SetDefaultPositionIfApplicable(parent_->model_updater());
     }

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
@@ -41,6 +42,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -1663,6 +1665,61 @@ TEST_F(AppListViewTest, ShowPeekingByDefault) {
   Show();
 
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
+}
+
+TEST_F(AppListViewTest, RecordFolderMetrics_ZeroFolders) {
+  base::HistogramTester histogram;
+  Initialize(/*is_tablet_mode=*/false);
+  delegate_->GetTestModel()->PopulateApps(2);
+  Show();
+
+  // 1 sample in the 0 folders bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 0));
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  // 1 sample in the 0 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 0));
+}
+
+TEST_F(AppListViewTest, RecordFolderMetrics_OneRegularFolder) {
+  base::HistogramTester histogram;
+  Initialize(/*is_tablet_mode=*/false);
+  delegate_->GetTestModel()->CreateAndPopulateFolderWithApps(2);
+  Show();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 1));
+  // 1 sample in the 2 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 2));
+}
+
+TEST_F(AppListViewTest, RecordFolderMetrics_OemFolder) {
+  base::HistogramTester histogram;
+  Initialize(/*is_tablet_mode=*/false);
+  delegate_->GetTestModel()->CreateSingleItemFolder(kOemFolderId, "item_id");
+  Show();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
+  // 1 sample in the 0 folders bucket, because OEM folder is a system folder.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  // 1 sample in the 0 apps bucket, because OEM apps don't count.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 0));
+}
+
+TEST_F(AppListViewTest, RecordFolderMetrics_LinuxAppsFolder) {
+  base::HistogramTester histogram;
+  Initialize(/*is_tablet_mode=*/false);
+  delegate_->GetTestModel()->CreateSingleItemFolder(kCrostiniFolderId,
+                                                    "item_id");
+  Show();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfFoldersHistogram, 1));
+  // 1 sample in the 0 folders bucket, because "Linux apps" is a system folder.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfNonSystemFoldersHistogram, 0));
+  // 1 sample in the 1 app bucket, because Linux apps do count.
+  EXPECT_EQ(1, histogram.GetBucketCount(kNumberOfAppsInFoldersHistogram, 1));
 }
 
 // Tests that in side shelf mode, the app list opens in fullscreen by default

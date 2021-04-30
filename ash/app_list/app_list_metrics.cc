@@ -17,6 +17,9 @@
 
 namespace ash {
 
+const char kNumberOfNonSystemFoldersHistogram[] =
+    "Apps.NumberOfNonSystemFolders";
+
 // The UMA histogram that logs smoothness of pagination animation.
 constexpr char kPaginationTransitionAnimationSmoothness[] =
     "Apps.PaginationTransition.AnimationSmoothness";

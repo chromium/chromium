@@ -61,9 +61,6 @@ const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 const char kCrostiniDefaultVmName[] = "termina";
 const char kCrostiniDefaultContainerName[] = "penguin";
 const char kCrostiniDefaultUsername[] = "emperor";
-// In order to be compatible with sync folder id must match standard.
-// Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
-const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
 const char kCrostiniDefaultImageServerUrl[] =
     "https://storage.googleapis.com/cros-containers/%d";
 const char kCrostiniStretchImageAlias[] = "debian/stretch";
