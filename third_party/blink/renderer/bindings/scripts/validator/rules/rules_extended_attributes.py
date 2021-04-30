@@ -5,7 +5,7 @@
 Here are rule classes which validate whether the extended attributes of targets
 violate the rules described in Web IDL https://heycam.github.io/webidl/.
 
-Each rule class should inherit RuleBase.
+Each rule class must inherit RuleBase.
 """
 
 import web_idl

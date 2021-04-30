@@ -82,4 +82,3 @@ web_idl/runtime_enabled_features.py
 web_idl/typedef.py
 web_idl/union.py
 web_idl/user_defined_type.py
-web_idl/validator.py

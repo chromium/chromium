@@ -6,7 +6,7 @@ Here are rule classes which validate whether function-like objects
 (callback functions, operations in interfaces, etc) violate the rules described
 in Web IDL https://heycam.github.io/webidl/.
 
-Each rule class should inherit RuleBase.
+Each rule class must inherit RuleBase.
 """
 
 from validator.framework import target
