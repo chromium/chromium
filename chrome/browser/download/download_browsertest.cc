@@ -4753,8 +4753,9 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
 
 // Check that InProgressDownloadManager can handle transient downloads with the
 // same GUID.
+// TODO(crbug.com/1204298): Disabled due to flakines.
 IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
-                       DownloadURLWithInProgressManager) {
+                       DISABLED_DownloadURLWithInProgressManager) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
