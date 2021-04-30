@@ -4876,6 +4876,15 @@
           'gtest_tests': 'chromium_linux_cast_video_gtests',
         },
       },
+      'Cast Linux Debug': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'additional_compile_targets': [
+          'cast_shell',
+          'cast_test_lists',
+        ],
+      },
       'Fuchsia ARM64': {
         'additional_compile_targets': [
           'all',
