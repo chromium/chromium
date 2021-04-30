@@ -62,12 +62,12 @@ NoteTakingHelper* g_helper = nullptr;
 
 // Allowed note-taking app IDs.
 const char* const kDefaultAllowedAppIds[] = {
+    web_app::kA4AppId,
     // TODO(jdufault): Remove dev version? See crbug.com/640828.
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
     NoteTakingHelper::kNoteTakingWebAppIdTest,
     NoteTakingHelper::kNoteTakingWebAppIdDev,
-    web_app::kA4AppId,
 };
 
 // Returns whether |app_id| looks like it's probably an Android package name
