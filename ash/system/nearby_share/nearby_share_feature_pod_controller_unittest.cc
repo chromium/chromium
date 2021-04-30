@@ -82,6 +82,15 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
   EXPECT_FALSE(button_->GetVisible());
 }
 
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
+  CreateUserSessions(1);
+  BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
+  SetUpButton();
+  // If the login screen is showing (e.g. multi-user signin), it should not be
+  // visible, regardless of whether an active user is signed in.
+  EXPECT_FALSE(button_->GetVisible());
+}
+
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
   CreateUserSessions(1);
   test_delegate_->set_is_pod_button_visible(false);
