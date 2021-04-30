@@ -888,17 +888,20 @@ class LocalDeviceInstrumentationTestRun(
           tests_to_rerun.append(t)
 
     # If we have a crash that isn't recognized as a crash in a batch, the tests
-    # will be marked as unknown. When they're reran unbatched and pass,
+    # will be marked as unknown. Sometimes a test failure causes a crash, but
+    # the crash isn't recorded because the failure was detected first.
+    # When the UNKNOWN tests are reran while unbatched and pass,
     # they'll have an UNKNOWN, PASS status, so will be improperly marked as
     # flaky, so change status to NOTRUN and don't try rerunning. They will
     # get rerun individually at the local_device_test_run/environment level.
     # as the "Batch" annotation was removed.
-    found_crash = False
+    found_crash_or_fail = False
     for r in results:
-      if r.GetType() == base_test_result.ResultType.CRASH:
-        found_crash = True
+      if (r.GetType() == base_test_result.ResultType.CRASH
+          or r.GetType() == base_test_result.ResultType.FAIL):
+        found_crash_or_fail = True
         break
-    if not found_crash:
+    if not found_crash_or_fail:
       # Don't bother rerunning since the unrecognized crashes in
       # the batch will keep failing.
       tests_to_rerun = None
