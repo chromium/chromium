@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -129,7 +129,6 @@ public class ReadLaterContextMenuTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @DisabledTest(message = "crbug.com/1204238")
     public void testContextMenuAddToOfflinePage() throws Throwable {
         String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);
@@ -138,7 +137,7 @@ public class ReadLaterContextMenuTest {
         RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
         String linkUrl = mTestServer.getServer().getURL(CONTEXT_MENU_LINK_URL);
-        verify(mRequestCoordinatorBridgeJniMock, times(1))
+        verify(mRequestCoordinatorBridgeJniMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .savePageLater(any(), any(), eq(linkUrl), any(), any(), any(), anyBoolean());
     }
 
