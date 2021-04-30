@@ -3743,15 +3743,15 @@ void SpdySession::DecreaseRecvWindowSize(int32_t delta_window_size) {
   // |session_recv_window_size_ - session_unacked_recv_window_bytes_|, if more
   // data are sent by the peer, that means that the receive window is not being
   // respected.
-  if (delta_window_size >
-      session_recv_window_size_ - session_unacked_recv_window_bytes_) {
+  int32_t receiving_window_size =
+      session_recv_window_size_ - session_unacked_recv_window_bytes_;
+  if (delta_window_size > receiving_window_size) {
     RecordProtocolErrorHistogram(PROTOCOL_ERROR_RECEIVE_WINDOW_VIOLATION);
     DoDrainSession(
         ERR_HTTP2_FLOW_CONTROL_ERROR,
         "delta_window_size is " + base::NumberToString(delta_window_size) +
             " in DecreaseRecvWindowSize, which is larger than the receive " +
-            "window size of " +
-            base::NumberToString(session_recv_window_size_));
+            "window size of " + base::NumberToString(receiving_window_size));
     return;
   }
 

@@ -4243,7 +4243,7 @@ TEST_F(SpdySessionTest, SessionFlowControlTooMuchDataTwoDataFrames) {
   spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
       0, spdy::ERROR_CODE_FLOW_CONTROL_ERROR,
       "delta_window_size is 400 in DecreaseRecvWindowSize, which is larger "
-      "than the receive window size of 500"));
+      "than the receive window size of 300"));
   MockWrite writes[] = {
       CreateMockWrite(goaway, 4),
   };
