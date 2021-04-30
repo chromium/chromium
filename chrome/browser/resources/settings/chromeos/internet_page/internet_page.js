@@ -6,6 +6,9 @@
 
 const mojom = chromeos.networkConfig.mojom;
 
+/** @type {number} */
+const ESIM_PROFILE_LIMIT = 5;
+
 /**
  * @fileoverview
  * 'settings-internet-page' is the settings page containing internet
@@ -439,18 +442,31 @@ Polymer({
       this.showCellularSetupDialog_ = true;
       this.cellularSetupDialogPageName_ = pageName;
     } else {
-      // isConnectedToNonCellularNetwork_ may
-      // not be fetched yet if the page just opened, fetch it explicitly.
-      this.updateIsConnectedToNonCellularNetwork_().then(
-          ((isConnected) => {
-            this.showCellularSetupDialog_ = isConnected;
-            if (!isConnected) {
-              this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
-              return;
-            }
-            this.cellularSetupDialogPageName_ = pageName;
-          }).bind(this));
+      this.attemptShowESimSetupDialog_();
     }
+  },
+
+  /** @private */
+  async attemptShowESimSetupDialog_() {
+    const numProfiles = await cellular_setup.getNumESimProfiles();
+    if (numProfiles >= ESIM_PROFILE_LIMIT) {
+      this.showErrorToast_(
+          this.i18n('eSimProfileLimitReachedErrorToast', ESIM_PROFILE_LIMIT));
+      return;
+    }
+    // isConnectedToNonCellularNetwork_ may
+    // not be fetched yet if the page just opened, fetch it
+    // explicitly.
+    this.updateIsConnectedToNonCellularNetwork_().then(
+        ((isConnected) => {
+          this.showCellularSetupDialog_ = isConnected;
+          if (!isConnected) {
+            this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
+            return;
+          }
+          this.cellularSetupDialogPageName_ =
+              cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+        }).bind(this));
   },
 
   /**

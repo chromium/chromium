@@ -2559,6 +2559,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_ESIM_MOBILE_DATA_NOT_ENABLED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when mobile data is not enabled.">
     Enable mobile data to install an eSIM profile
   </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_PROFILE_LIMIT_REACHED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when they have reached the maximum number of allowed eSIM profiles installed.">
+    You can install up to <ph name="PROFILE_LIMIT">$1<ex>5</ex></ph> eSIM profiles on this device. To add another profile, first remove an existing profile.
+  </message>
 
   <!-- Users Page (OS Settings) -->
   <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">

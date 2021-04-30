@@ -46,9 +46,6 @@ suite('InternetPage', function() {
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
 
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
-
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
   });
@@ -90,6 +87,9 @@ suite('InternetPage', function() {
   }
 
   setup(function() {
+    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
+    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+
     PolymerTest.clearBody();
     internetPage = document.createElement('settings-internet-page');
     assertTrue(!!internetPage);
@@ -442,6 +442,37 @@ suite('InternetPage', function() {
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
       });
 
+  test(
+      'Show profile limit reached toast if route params' +
+          'contains showCellularSetup, does not contain showPsimFlow,' +
+          'connected to a non-cellular network, cellular enabled,' +
+          'but profile limit is reached',
+      async function() {
+        loadTimeData.overrideValues({
+          updatedCellularActivationUi: true,
+        });
+        eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 5);
+
+        const mojom = chromeos.networkConfig.mojom;
+        const wifiNetwork =
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
+        mojoApi_.addNetworksForTest([wifiNetwork]);
+        await flushAsync();
+
+        const cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertFalse(!!cellularSetupDialog);
+
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
+
+        assertTrue(internetPage.$.errorToast.open);
+        assertEquals(
+            internetPage.$.errorToastMessage.innerHTML,
+            internetPage.i18n('eSimProfileLimitReachedErrorToast', 5));
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+      });
+
   test('Show sim lock dialog through URL parameters', async () => {
     loadTimeData.overrideValues({
       updatedCellularActivationUi: true,
@@ -471,6 +502,7 @@ suite('InternetPage', function() {
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
       async function() {
+        eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
         mojoApi_.setNetworkTypeEnabledState(
             chromeos.networkConfig.mojom.NetworkType.kCellular, true);
         await flushAsync();

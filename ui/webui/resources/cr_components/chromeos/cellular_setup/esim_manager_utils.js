@@ -42,6 +42,19 @@ cr.define('cellular_setup', function() {
   }
 
   /**
+   * @return {!Promise<number>}
+   */
+  /* #export */ function getNumESimProfiles() {
+    return getEuicc()
+        .then(euicc => {
+          return euicc.getProfileList();
+        })
+        .then(response => {
+          return response.profiles.length;
+        });
+  }
+
+  /**
    * Returns the Euicc that should be used for eSim operations or null
    * if there is none available.
    * @return {!Promise<?chromeos.cellularSetup.mojom.EuiccRemote>}
@@ -94,5 +107,6 @@ cr.define('cellular_setup', function() {
     getEuicc,
     getESimProfile,
     getPendingESimProfiles,
+    getNumESimProfiles,
   };
 });

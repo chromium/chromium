@@ -729,6 +729,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST},
       {"eSimMobileDataNotEnabledErrorToast",
        IDS_SETTINGS_INTERNET_ESIM_MOBILE_DATA_NOT_ENABLED_ERROR_TOAST},
+      {"eSimProfileLimitReachedErrorToast",
+       IDS_SETTINGS_INTERNET_ESIM_PROFILE_LIMIT_REACHED_ERROR_TOAST},
       {"eSimInstallErrorDialogTitle",
        IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE},
       {"eSimInstallErrorDialogConfirmationCodeMessage",
