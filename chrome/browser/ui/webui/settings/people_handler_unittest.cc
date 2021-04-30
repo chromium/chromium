@@ -315,29 +315,43 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(should_succeed, data.arg3()->GetBool());
   }
 
+  std::vector<const base::Value*> GetAllFiredValuesForEventName(
+      const std::string& event_name) {
+    std::vector<const base::Value*> arguments;
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         web_ui_.call_data()) {
+      if (data->function_name() == "cr.webUIListenerCallback" &&
+          data->arg1()->is_string() &&
+          data->arg1()->GetString() == event_name) {
+        arguments.push_back(data->arg2());
+      }
+    }
+    return arguments;
+  }
+
+  // Must be called at most once per test to check if a sync-prefs-changed
+  // event happened. Returns the single fired value.
   const base::DictionaryValue* ExpectSyncPrefsChanged() {
-    const content::TestWebUI::CallData& data1 = *web_ui_.call_data().back();
-    EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
-
-    std::string event;
-    EXPECT_TRUE(data1.arg1()->GetAsString(&event));
-    EXPECT_EQ(event, "sync-prefs-changed");
-
-    const base::DictionaryValue* dictionary = nullptr;
-    EXPECT_TRUE(data1.arg2()->GetAsDictionary(&dictionary));
+    std::vector<const base::Value*> args =
+        GetAllFiredValuesForEventName("sync-prefs-changed");
+    EXPECT_EQ(1U, args.size());
+    EXPECT_NE(args[0], nullptr);
+    EXPECT_TRUE(args[0]->is_dict());
+    const base::DictionaryValue* dictionary;
+    args[0]->GetAsDictionary(&dictionary);
     return dictionary;
   }
 
+  // Must be called at most once per test to check if a sync-status-changed
+  // event happened. Returns the single fired value.
   const base::DictionaryValue* ExpectSyncStatusChanged() {
-    const content::TestWebUI::CallData& data = *web_ui_.call_data().back();
-    EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-
-    std::string event;
-    EXPECT_TRUE(data.arg1()->GetAsString(&event));
-    EXPECT_EQ(event, "sync-status-changed");
-
-    const base::DictionaryValue* dictionary = nullptr;
-    EXPECT_TRUE(data.arg2()->GetAsDictionary(&dictionary));
+    std::vector<const base::Value*> args =
+        GetAllFiredValuesForEventName("sync-status-changed");
+    EXPECT_EQ(1U, args.size());
+    EXPECT_NE(args[0], nullptr);
+    EXPECT_TRUE(args[0]->is_dict());
+    const base::DictionaryValue* dictionary;
+    args[0]->GetAsDictionary(&dictionary);
     return dictionary;
   }
 
@@ -463,8 +477,8 @@ TEST_F(PeopleHandlerTest,
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   NotifySyncStateChanged();
 
-  // Updates for the sync status and the sync prefs are sent.
-  EXPECT_EQ(2U, web_ui_.call_data().size());
+  // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
+  EXPECT_EQ(3U, web_ui_.call_data().size());
 
   const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
   CheckBool(dictionary, "syncAllDataTypes", true);

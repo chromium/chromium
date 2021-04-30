@@ -41,6 +41,8 @@ extern const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout;
 
 extern const base::Feature kSyncSupportTrustedVaultPassphraseRecovery;
 
+extern const base::Feature kSyncOfferTrustedVaultOptIn;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_DRIVER_SYNC_DRIVER_SWITCHES_H_

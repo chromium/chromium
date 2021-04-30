@@ -156,6 +156,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSetDecryptionPassphrase(const base::ListValue* args);
   void HandleShowSyncSetupUI(const base::ListValue* args);
   void HandleSyncPrefsDispatch(const base::ListValue* args);
+  void HandleOfferTrustedVaultOptInDispatch(const base::ListValue* args);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleAttemptUserExit(const base::ListValue* args);
   void HandleTurnOnSync(const base::ListValue* args);
@@ -206,6 +207,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   // for checking if we're navigating to the setup page and acquiring the
   // |sync_blocker_|.
   void InitializeSyncBlocker();
+
+  // Whether the entry in settings to opt in to trusted vault encryption
+  // should be visible.
+  bool ShouldOfferTrustedVaultOptIn() const;
 
   // Weak pointer.
   Profile* profile_;

@@ -25,6 +25,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy {
       'signOut',
       'pauseSync',
       'sendSyncPrefsChanged',
+      'sendOfferTrustedVaultOptInChanged',
       'startSignIn',
       'startSyncingWithEmail',
     ];
@@ -129,6 +130,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy {
   /** @override */
   sendSyncPrefsChanged() {
     this.methodCalled('sendSyncPrefsChanged');
+  }
+
+  /** @override */
+  sendOfferTrustedVaultOptInChanged() {
+    this.methodCalled('sendOfferTrustedVaultOptInChanged');
   }
 
   /** @override */

@@ -230,6 +230,11 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
      * manager in passwords section on page load.
      */
     sendSyncPrefsChanged() {}
+
+    /**
+     * Forces an offer-trusted-vault-opt-in-changed event to be fired.
+     */
+    sendOfferTrustedVaultOptInChanged() {}
   }
 
   /**
@@ -340,6 +345,11 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
     /** @override */
     sendSyncPrefsChanged() {
       chrome.send('SyncPrefsDispatch');
+    }
+
+    /** @override */
+    sendOfferTrustedVaultOptInChanged() {
+      chrome.send('SyncOfferTrustedVaultOptInDispatch');
     }
   }
 

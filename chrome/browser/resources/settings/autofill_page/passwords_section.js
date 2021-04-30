@@ -19,6 +19,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -198,6 +199,16 @@ Polymer({
           'isOptedInForAccountStorage_, numberOfDevicePasswords_)',
     },
 
+    /**
+     * Whether the entry point leading to enroll in trusted vault encryption
+     * should be shown.
+     * @private
+     */
+    shouldOfferTrustedVaultOptIn_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private */
     hasLeakedCredentials_: {
       type: Boolean,
@@ -338,6 +349,12 @@ Polymer({
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
     // </if>
 
+    syncBrowserProxy.sendOfferTrustedVaultOptInChanged();
+    this.addWebUIListener(
+        'offer-trusted-vault-opt-in-changed', (offerOptIn) => {
+          this.shouldOfferTrustedVaultOptIn_ = offerOptIn;
+        });
+
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
     });
@@ -461,6 +478,15 @@ Polymer({
         routes.CHECK_PASSWORDS, new URLSearchParams('start=true'));
     this.passwordManager_.recordPasswordCheckReferrer(
         PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS);
+  },
+
+  /**
+   * Shows the page to opt in to trusted vault encryption.
+   * @private
+   */
+  onTrustedVaultOptInClick_() {
+    OpenWindowProxyImpl.getInstance().openURL(
+        loadTimeData.getString('trustedVaultOptInUrl'));
   },
 
   /**

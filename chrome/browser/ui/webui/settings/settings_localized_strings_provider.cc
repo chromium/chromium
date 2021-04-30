@@ -1027,7 +1027,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"managePasswordsPlaintext",
        IDS_SETTINGS_PASSWORDS_MANAGE_PASSWORDS_PLAINTEXT},
       {"savedToThisDeviceOnly",
-       IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY}};
+       IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY},
+      {"trustedVaultOptInLabel", IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_LABEL},
+      {"trustedVaultOptInSubLabel",
+       IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_SUB_LABEL}};
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
@@ -1090,6 +1093,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL,
           base::ASCIIToUTF16(chrome::kSyncLearnMoreURL)));
+  // TODO(crbug.com/1202088): Add the correct URL here when that's available.
+  html_source->AddString("trustedVaultOptInUrl",
+                         google_password_manager_url.spec());
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
