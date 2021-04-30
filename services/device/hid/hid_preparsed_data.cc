@@ -42,7 +42,7 @@ struct PreparsedDataHeader {
 
   uint16_t unknown[3];
 
-  // Number of report items for input reports.
+  // Number of report items for input reports. Includes unused items.
   uint16_t input_item_count;
 
   uint16_t unknown2;
@@ -53,7 +53,7 @@ struct PreparsedDataHeader {
 
   uint16_t unknown3;
 
-  // Number of report items for output reports.
+  // Number of report items for output reports. Includes unused items.
   uint16_t output_item_count;
 
   uint16_t unknown4;
@@ -64,10 +64,11 @@ struct PreparsedDataHeader {
 
   uint16_t unknown5;
 
-  // Number of report items for feature reports.
+  // Number of report items for feature reports. Includes unused items.
   uint16_t feature_item_count;
 
-  // Total number of report items (input, output, and feature).
+  // Total number of report items (input, output, and feature). Unused items are
+  // excluded.
   uint16_t item_count;
 
   // Maximum feature report size, in bytes. Includes the report ID byte. Zero if
@@ -188,12 +189,19 @@ bool ValidatePreparsedDataHeader(const PreparsedDataHeader& header) {
     return false;
   if (header.feature_report_byte_length == 0 && header.feature_item_count > 0)
     return false;
-  if (header.input_item_count + header.output_item_count +
-          header.feature_item_count !=
-      header.item_count) {
-    return false;
-  }
-  if (header.item_count * sizeof(PreparsedDataItem) != header.size_bytes)
+
+  // Calculate the expected total size of report items in the
+  // _HIDP_PREPARSED_DATA object. Use the individual item counts for each report
+  // type instead of the total |item_count|. In some cases additional items are
+  // allocated but are not used for any reports. Unused items are excluded from
+  // |item_count| but are included in the item counts for each report type and
+  // contribute to the total size of the object. See crbug.com/1199890 for more
+  // information.
+  uint16_t total_item_size =
+      (header.input_item_count + header.output_item_count +
+       header.feature_item_count) *
+      sizeof(PreparsedDataItem);
+  if (total_item_size != header.size_bytes)
     return false;
   return true;
 }
