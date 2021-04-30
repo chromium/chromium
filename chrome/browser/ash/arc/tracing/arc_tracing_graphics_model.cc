@@ -228,6 +228,10 @@ class BufferGraphicsEventMapper {
         BufferEventType::kChromeOSSwap, BufferEventType::kNone));
     rules_.emplace_back(MappingRule(
         std::make_unique<ArcTracingEventMatcher>(
+            "viz,benchmark:Graphics.Pipeline.DrawAndSwap(step=WaitForSwap)"),
+        BufferEventType::kChromeOSWaitForAck, BufferEventType::kNone));
+    rules_.emplace_back(MappingRule(
+        std::make_unique<ArcTracingEventMatcher>(
             "viz,benchmark:Graphics.Pipeline.DrawAndSwap(step=WaitForAck)"),
         BufferEventType::kChromeOSWaitForAck, BufferEventType::kNone));
     rules_.emplace_back(MappingRule(
@@ -1884,24 +1888,27 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::DictionaryValue& root) {
 
   const base::Value* view_list =
       root.FindKeyOfType(kKeyViews, base::Value::Type::LIST);
-  if (!view_list || view_list->GetList().empty())
-    return false;
+  if (!view_list || view_list->GetList().empty()) {
+    // Views are optional for overview tracing.
+    if (!skip_structure_validation_)
+      return false;
+  } else {
+    for (const auto& view_entry : view_list->GetList()) {
+      if (!view_entry.is_dict())
+        return false;
+      const base::Value* activity =
+          view_entry.FindKeyOfType(kKeyActivity, base::Value::Type::STRING);
+      const base::Value* task_id =
+          view_entry.FindKeyOfType(kKeyTaskId, base::Value::Type::INTEGER);
+      if (!activity || !task_id)
+        return false;
+      const ViewId view_id(task_id->GetInt(), activity->GetString());
+      if (view_buffers_.find(view_id) != view_buffers_.end())
+        return false;
 
-  for (const auto& view_entry : view_list->GetList()) {
-    if (!view_entry.is_dict())
-      return false;
-    const base::Value* activity =
-        view_entry.FindKeyOfType(kKeyActivity, base::Value::Type::STRING);
-    const base::Value* task_id =
-        view_entry.FindKeyOfType(kKeyTaskId, base::Value::Type::INTEGER);
-    if (!activity || !task_id)
-      return false;
-    const ViewId view_id(task_id->GetInt(), activity->GetString());
-    if (view_buffers_.find(view_id) != view_buffers_.end())
-      return false;
-
-    if (!LoadEventsContainer(&view_entry, &view_buffers_[view_id]))
-      return false;
+      if (!LoadEventsContainer(&view_entry, &view_buffers_[view_id]))
+        return false;
+    }
   }
 
   if (!LoadEventsContainer(root.FindKey(kKeyAndroid), &android_top_level_))

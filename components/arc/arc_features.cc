@@ -65,6 +65,10 @@ const base::Feature kNativeBridgeToggleFeature{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, tracing raw files are saved in order to help debug failures.
+const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",

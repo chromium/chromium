@@ -33,6 +33,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
@@ -203,6 +204,22 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
     const base::FilePath& model_path) {
   DCHECK(system_stat_collector);
 
+  if (base::FeatureList::IsEnabled(arc::kSaveRawFilesOnTracing)) {
+    const base::FilePath raw_path =
+        model_path.DirName().Append(model_path.BaseName().value() + "_raw");
+    const base::FilePath system_path =
+        model_path.DirName().Append(model_path.BaseName().value() + "_system");
+    if (!base::WriteFile(base::FilePath(raw_path), data.c_str(),
+                         data.length())) {
+      LOG(ERROR) << "Failed to save raw trace model to " << raw_path.value();
+    }
+    const std::string system_raw = system_stat_collector->SerializeToJson();
+    if (!base::WriteFile(base::FilePath(system_path), system_raw.c_str(),
+                         system_raw.length())) {
+      LOG(ERROR) << "Failed to save system model to " << system_path.value();
+    }
+  }
+
   arc::ArcTracingModel common_model;
   const base::TimeTicks time_min_clamped =
       std::max(time_min, time_max - system_stat_collector->max_interval());
@@ -248,8 +265,11 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
 }
 
 std::pair<base::Value, std::string> LoadGraphicsModel(
+    ArcGraphicsTracingMode mode,
     const std::string& json_text) {
   arc::ArcTracingGraphicsModel graphics_model;
+  if (mode != ArcGraphicsTracingMode::kFull)
+    graphics_model.set_skip_structure_validation();
   if (!graphics_model.LoadFromJson(json_text)) {
     UpdateStatistics(Action::kLoadFailed);
     return std::make_pair(base::Value(), "Failed to load tracing model");
@@ -621,7 +641,7 @@ void ArcGraphicsTracingHandler::HandleLoadFromText(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadGraphicsModel,
+      base::BindOnce(&LoadGraphicsModel, mode_,
                      std::move(args->GetList()[0].GetString())),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));

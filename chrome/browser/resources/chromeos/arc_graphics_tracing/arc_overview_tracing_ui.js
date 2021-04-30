@@ -94,6 +94,12 @@ function calculateAppRenderQualityAndCommitDeviation(model) {
     return a[2] - b[2];
   });
 
+  if (deltas.events.length < 3) {
+    return [
+      0.0 /* % */, 0.0 /* ms */
+    ];
+  }
+
   // Get 10% and 90% indices.
   var lowerPosition = Math.round(deltas.events.length / 10);
   var upperPosition = deltas.events.length - 1 - lowerPosition;

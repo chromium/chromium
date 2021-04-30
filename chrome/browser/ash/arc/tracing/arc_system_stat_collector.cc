@@ -13,8 +13,11 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -22,6 +25,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
@@ -126,6 +130,17 @@ const base::FilePath& GetCpuTemperaturePathOnFileThread() {
   return instance->path();
 }
 
+bool ReadNonNegativeInt(const base::Value& root,
+                        const std::string& key,
+                        int* out) {
+  const base::Value* value =
+      root.FindKeyOfType(key, base::Value::Type::INTEGER);
+  if (!value || value->GetInt() < 0)
+    return false;
+  *out = value->GetInt();
+  return true;
+}
+
 enum SystemReader {
   kZram = 0,
   kMemoryInfo,
@@ -138,6 +153,23 @@ enum SystemReader {
   kPackagePowerConstraint,
   kTotal
 };
+
+constexpr char kKeyCpuFrequency[] = "cpu_frequency";
+constexpr char kKeyCpuPower[] = "cpu_power";
+constexpr char kKeyCpuTemperature[] = "cpu_temperature";
+constexpr char kKeyGemObjects[] = "gem_objects";
+constexpr char kKeyGemSizeKb[] = "gem_size_kb";
+constexpr char kKeyGpuPower[] = "gpu_power";
+constexpr char kKeyMaxInterval[] = "max_interval";
+constexpr char kKeyMemoryPower[] = "memory_power";
+constexpr char kKeyMemTotalKb[] = "mem_total_kb";
+constexpr char kKeyMemUsedKb[] = "mem_used_kb";
+constexpr char kKeyPackagePowerConstraint[] = "package_power_constraint";
+constexpr char kKeySamples[] = "samples";
+constexpr char kKeySwapSectorsRead[] = "swap_sectors_read";
+constexpr char kKeySwapSectorsWrite[] = "swap_sectors_write";
+constexpr char kKeySwapWaitingTimeMs[] = "swap_waiting_time_ms";
+constexpr char kKeyTimestamp[] = "timestamp";
 
 }  // namespace
 
@@ -412,6 +444,132 @@ void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
             [](const auto& lhs, const auto& rhs) {
               return lhs.timestamp < rhs.timestamp;
             });
+}
+
+// Serializes the model to |base::Value|, this can be passed to
+// javascript for rendering.
+std::unique_ptr<base::Value> ArcSystemStatCollector::Serialize() const {
+  std::unique_ptr<base::Value> root =
+      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+
+  root->SetKey(
+      kKeyMaxInterval,
+      base::Value(base::NumberToString(max_interval_.InMicroseconds())));
+
+  // Samples
+  base::ListValue sample_list;
+  for (auto& sample : samples_) {
+    base::Value sample_value(base::Value::Type::DICTIONARY);
+
+    sample_value.SetKey(
+        kKeyTimestamp,
+        base::Value(base::NumberToString(
+            (sample.timestamp - base::TimeTicks()).InMicroseconds())));
+    sample_value.SetKey(kKeySwapSectorsRead,
+                        base::Value(sample.swap_sectors_read));
+    sample_value.SetKey(kKeySwapSectorsWrite,
+                        base::Value(sample.swap_sectors_write));
+    sample_value.SetKey(kKeySwapWaitingTimeMs,
+                        base::Value(sample.swap_waiting_time_ms));
+    sample_value.SetKey(kKeyMemTotalKb, base::Value(sample.mem_total_kb));
+    sample_value.SetKey(kKeyMemUsedKb, base::Value(sample.mem_used_kb));
+    sample_value.SetKey(kKeyGemObjects, base::Value(sample.gem_objects));
+    sample_value.SetKey(kKeyGemSizeKb, base::Value(sample.gem_size_kb));
+    sample_value.SetKey(kKeyCpuTemperature,
+                        base::Value(sample.cpu_temperature));
+    sample_value.SetKey(kKeyCpuFrequency, base::Value(sample.cpu_frequency));
+    sample_value.SetKey(kKeyCpuPower, base::Value(sample.cpu_power));
+    sample_value.SetKey(kKeyGpuPower, base::Value(sample.gpu_power));
+    sample_value.SetKey(kKeyMemoryPower, base::Value(sample.memory_power));
+    sample_value.SetKey(kKeyPackagePowerConstraint,
+                        base::Value(sample.package_power_constraint));
+
+    sample_list.Append(std::move(sample_value));
+  }
+  root->SetKey(kKeySamples, std::move(sample_list));
+
+  return root;
+}
+
+std::string ArcSystemStatCollector::SerializeToJson() const {
+  std::unique_ptr<base::Value> root = Serialize();
+  DCHECK(root);
+  std::string output;
+  if (!base::JSONWriter::WriteWithOptions(
+          *root, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
+    LOG(ERROR) << "Failed to serialize system collector";
+  }
+  return output;
+}
+
+bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
+  const base::Optional<base::Value> root = base::JSONReader::Read(json_data);
+  if (!root)
+    return false;
+  return LoadFromValue(*root);
+}
+
+bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
+  samples_.clear();
+
+  int64_t max_interval_mcs;
+  const base::Value* max_interval =
+      root.FindKeyOfType(kKeyMaxInterval, base::Value::Type::STRING);
+  if (!max_interval ||
+      !base::StringToInt64(max_interval->GetString(), &max_interval_mcs)) {
+    return false;
+  }
+
+  max_interval_ = base::TimeDelta::FromMicroseconds(max_interval_mcs);
+
+  const base::Value* sample_list =
+      root.FindKeyOfType(kKeySamples, base::Value::Type::LIST);
+  if (!sample_list)
+    return false;
+
+  for (const auto& sample_entry : sample_list->GetList()) {
+    if (!sample_entry.is_dict())
+      return false;
+
+    Sample sample;
+    int64_t timestamp_mcs;
+    const base::Value* timestamp =
+        sample_entry.FindKeyOfType(kKeyTimestamp, base::Value::Type::STRING);
+    if (!timestamp ||
+        !base::StringToInt64(timestamp->GetString(), &timestamp_mcs))
+      return false;
+
+    sample.timestamp =
+        base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_mcs);
+
+    if (!ReadNonNegativeInt(sample_entry, kKeySwapSectorsRead,
+                            &sample.swap_sectors_read) ||
+        !ReadNonNegativeInt(sample_entry, kKeySwapSectorsWrite,
+                            &sample.swap_sectors_write) ||
+        !ReadNonNegativeInt(sample_entry, kKeySwapWaitingTimeMs,
+                            &sample.swap_waiting_time_ms) ||
+        !ReadNonNegativeInt(sample_entry, kKeyMemTotalKb,
+                            &sample.mem_total_kb) ||
+        !ReadNonNegativeInt(sample_entry, kKeyMemUsedKb, &sample.mem_used_kb) ||
+        !ReadNonNegativeInt(sample_entry, kKeyGemObjects,
+                            &sample.gem_objects) ||
+        !ReadNonNegativeInt(sample_entry, kKeyGemSizeKb, &sample.gem_size_kb) ||
+        !ReadNonNegativeInt(sample_entry, kKeyCpuTemperature,
+                            &sample.cpu_temperature) ||
+        !ReadNonNegativeInt(sample_entry, kKeyCpuFrequency,
+                            &sample.cpu_frequency) ||
+        !ReadNonNegativeInt(sample_entry, kKeyCpuPower, &sample.cpu_power) ||
+        !ReadNonNegativeInt(sample_entry, kKeyGpuPower, &sample.gpu_power) ||
+        !ReadNonNegativeInt(sample_entry, kKeyMemoryPower,
+                            &sample.memory_power) ||
+        !ReadNonNegativeInt(sample_entry, kKeyPackagePowerConstraint,
+                            &sample.package_power_constraint)) {
+      return false;
+    }
+    samples_.emplace_back(sample);
+  }
+
+  return true;
 }
 
 void ArcSystemStatCollector::ScheduleSystemStatUpdate() {
