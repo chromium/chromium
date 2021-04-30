@@ -8,9 +8,7 @@ package org.chromium.chrome.browser.lifecycle;
  * Implement this interface and register in {@link
  * org.chromium.chrome.browser.init.ActivityLifecycleDispatcher} to receive destroy events.
  */
-public interface Destroyable extends LifecycleObserver {
-    /**
-     * Called when activity is being destroyed.
-     */
-    void destroy();
+public interface DestroyObserver extends LifecycleObserver {
+    /** Called when activity is being destroyed. */
+    void onDestroy();
 }

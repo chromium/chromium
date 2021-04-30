@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,7 +41,7 @@ import org.chromium.ui.util.ColorUtils;
  * Maintains the status bar color for a {@link Window}.
  */
 public class StatusBarColorController
-        implements Destroyable, TopToolbarCoordinator.UrlExpansionObserver,
+        implements DestroyObserver, TopToolbarCoordinator.UrlExpansionObserver,
                    StatusIndicatorCoordinator.StatusIndicatorObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
@@ -210,9 +210,9 @@ public class StatusBarColorController
         mTopUiThemeColor = topUiThemeColorProvider;
     }
 
-    // Destroyable implementation.
+    // DestroyObserver implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mStatusBarColorTabObserver.destroy();
         if (mOverviewModeBehavior != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);

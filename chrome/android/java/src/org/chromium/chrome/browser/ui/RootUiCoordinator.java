@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
@@ -128,7 +128,7 @@ import java.util.function.Consumer;
  * still being discussed See https://crbug.com/931496.
  */
 public class RootUiCoordinator
-        implements Destroyable, InflationObserver, NativeInitObserver,
+        implements DestroyObserver, InflationObserver, NativeInitObserver,
                    MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
     protected ChromeActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
@@ -294,7 +294,7 @@ public class RootUiCoordinator
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         // TODO(meiliang): Understand why we need to set most of the class member instances to null
         //  other than the mActivity. If the nulling calls are not necessary, we can remove them.
         mCallbackController.destroy();
@@ -356,7 +356,7 @@ public class RootUiCoordinator
             mActivity.getModalDialogManager().removeObserver(mModalDialogManagerObserver);
         }
 
-        if (mBottomSheetManager != null) mBottomSheetManager.destroy();
+        if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
         if (mBottomSheetController != null) {
             if (mContextualSearchSuppressor != null) {
                 mBottomSheetController.removeObserver(mContextualSearchSuppressor);

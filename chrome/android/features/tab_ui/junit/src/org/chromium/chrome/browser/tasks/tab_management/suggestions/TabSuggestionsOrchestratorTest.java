@@ -144,7 +144,7 @@ public class TabSuggestionsOrchestratorTest {
                 mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         verify(mDispatcher, times(1)).register(eq(tabSuggestionsOrchestrator));
-        tabSuggestionsOrchestrator.destroy();
+        tabSuggestionsOrchestrator.onDestroy();
         verify(mDispatcher, times(1)).unregister(eq(tabSuggestionsOrchestrator));
     }
 

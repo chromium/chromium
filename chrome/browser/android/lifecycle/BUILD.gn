@@ -10,7 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/lifecycle/ActivityLifecycleDispatcher.java",
     "java/src/org/chromium/chrome/browser/lifecycle/ActivityResultWithNativeObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/ConfigurationChangedObserver.java",
-    "java/src/org/chromium/chrome/browser/lifecycle/Destroyable.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/DestroyObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/InflationObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/LifecycleObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/NativeInitObserver.java",

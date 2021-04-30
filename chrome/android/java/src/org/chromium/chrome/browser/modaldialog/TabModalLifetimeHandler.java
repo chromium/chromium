@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter.TabModalBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -33,7 +33,7 @@ import org.chromium.url.GURL;
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab
  * modal dialog.
  */
-public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable {
+public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObserver {
     /** The observer to dismiss all dialogs when the attached tab is not interactable. */
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -173,7 +173,7 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         if (mPresenter != null) mPresenter.destroy();
 

@@ -125,7 +125,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
      * Destroy any members that needs clean up.
      */
     public void destroy() {
-        mTabListCoordinator.destroy();
+        mTabListCoordinator.onDestroy();
         mMediator.destroy();
         mModelChangeProcessor.destroy();
         if (mTabSelectionEditorCoordinator != null) {

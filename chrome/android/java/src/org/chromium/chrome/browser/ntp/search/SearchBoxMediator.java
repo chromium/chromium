@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class SearchBoxMediator
-        implements Destroyable, NativeInitObserver, AssistantVoiceSearchService.Observer {
+        implements DestroyObserver, NativeInitObserver, AssistantVoiceSearchService.Observer {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
@@ -75,7 +75,7 @@ class SearchBoxMediator
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         if (mAssistantVoiceSearchService != null) {
             mAssistantVoiceSearchService.destroy();
             mAssistantVoiceSearchService = null;

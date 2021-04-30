@@ -13,7 +13,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -36,7 +36,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             new ObserverList<>();
     private final ObserverList<StartStopWithNativeObserver> mStartStopObservers =
             new ObserverList<>();
-    private final ObserverList<Destroyable> mDestroyables = new ObserverList<>();
+    private final ObserverList<DestroyObserver> mDestroyables = new ObserverList<>();
     private final ObserverList<SaveInstanceStateObserver> mSaveInstanceStateObservers =
             new ObserverList<>();
     private final ObserverList<WindowFocusChangedObserver> mWindowFocusChangesObservers =
@@ -71,8 +71,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof NativeInitObserver) {
             mNativeInitObservers.addObserver((NativeInitObserver) observer);
         }
-        if (observer instanceof Destroyable) {
-            mDestroyables.addObserver((Destroyable) observer);
+        if (observer instanceof DestroyObserver) {
+            mDestroyables.addObserver((DestroyObserver) observer);
         }
         if (observer instanceof SaveInstanceStateObserver) {
             mSaveInstanceStateObservers.addObserver((SaveInstanceStateObserver) observer);
@@ -106,8 +106,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof NativeInitObserver) {
             mNativeInitObservers.removeObserver((NativeInitObserver) observer);
         }
-        if (observer instanceof Destroyable) {
-            mDestroyables.removeObserver((Destroyable) observer);
+        if (observer instanceof DestroyObserver) {
+            mDestroyables.removeObserver((DestroyObserver) observer);
         }
         if (observer instanceof SaveInstanceStateObserver) {
             mSaveInstanceStateObservers.removeObserver((SaveInstanceStateObserver) observer);
@@ -206,8 +206,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnDestroy() {
         mActivityState = ActivityState.DESTROYED;
 
-        for (Destroyable destroyable : mDestroyables) {
-            destroyable.destroy();
+        for (DestroyObserver destroyable : mDestroyables) {
+            destroyable.onDestroy();
         }
 
         // Drain observers to prevent possible memory leaks.

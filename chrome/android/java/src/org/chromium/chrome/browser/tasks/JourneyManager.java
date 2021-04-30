@@ -17,7 +17,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Manages Journey related signals, specifically those related to tab engagement.
  */
-public class JourneyManager implements Destroyable {
+public class JourneyManager implements DestroyObserver {
     @VisibleForTesting
     static final String PREFS_FILE = "last_engagement_for_tab_id_pref";
 
@@ -174,7 +174,7 @@ public class JourneyManager implements Destroyable {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mTabModelSelectorTabObserver.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);

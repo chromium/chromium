@@ -1312,6 +1312,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mBottomControlsCoordinatorSupplier = null;
         }
 
+        if (mLocationBar != null) {
+            mLocationBar.destroy();
+            mLocationBar = null;
+        }
+
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
 

@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.HintlessActivityTabObserv
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -43,7 +43,7 @@ import org.chromium.url.GURL;
  * A class that manages activity-specific interactions with the BottomSheet component that it
  * otherwise shouldn't know about.
  */
-class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable {
+class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObserver {
     /** A means of accessing the focus state of the omibox. */
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
@@ -395,7 +395,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mCallbackController.destroy();
         if (mLastActivityTab != null) mLastActivityTab.removeObserver(mTabObserver);
         mTabProvider.removeObserver(mActivityTabObserver);

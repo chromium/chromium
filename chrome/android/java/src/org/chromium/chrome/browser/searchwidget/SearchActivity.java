@@ -359,6 +359,8 @@ public class SearchActivity extends AsyncInitializationActivity
         if (mTab != null && mTab.isInitialized()) mTab.destroy();
         if (mLocationBarCoordinator != null && mLocationBarCoordinator.getOmniboxStub() != null) {
             mLocationBarCoordinator.getOmniboxStub().removeUrlFocusChangeListener(this);
+            mLocationBarCoordinator.destroy();
+            mLocationBarCoordinator = null;
         }
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();

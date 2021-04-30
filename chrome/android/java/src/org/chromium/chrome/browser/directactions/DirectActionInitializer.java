@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * the coordinator {@code mCoordinator}.
  */
 @TargetApi(29)
-public class DirectActionInitializer implements NativeInitObserver, Destroyable {
+public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControls;
@@ -184,9 +184,9 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
                 .allowlistActions(itemIds);
     }
 
-    // Implements Destroyable
+    // Implements DestroyObserver
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mCoordinator = null;
         mDirectActionsRegistered = false;
     }

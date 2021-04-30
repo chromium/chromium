@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,7 +28,7 @@ import javax.inject.Inject;
  * they enter/leave the TabModel.
  */
 @ActivityScope
-public class TabObserverRegistrar implements TabModelObserver, Destroyable {
+public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     private CustomTabActivityTabProvider mTabProvider;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
     private final Set<TabObserver> mTabObservers = new HashSet<>();
@@ -183,7 +183,7 @@ public class TabObserverRegistrar implements TabModelObserver, Destroyable {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         removePageLoadMetricsObservers();
     }
 

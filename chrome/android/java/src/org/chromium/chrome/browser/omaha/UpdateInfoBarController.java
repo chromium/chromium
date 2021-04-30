@@ -8,7 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateInteractionSource;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuild
 import org.chromium.ui.widget.Toast;
 
 /** Helper class that creates infobars based on {@link UpdateState} changes. */
-public class UpdateInfoBarController implements Destroyable {
+public class UpdateInfoBarController implements DestroyObserver {
     private final Callback<UpdateStatus> mObserver = status -> {
         handleStatusChange(status);
     };
@@ -32,9 +32,9 @@ public class UpdateInfoBarController implements Destroyable {
         return new UpdateInfoBarController(activity);
     }
 
-    // Destroyable implementation.
+    // DestroyObserver implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         UpdateStatusProvider.getInstance().removeObserver(mObserver);
         mActivity.getLifecycleDispatcher().unregister(this);
         mActivity = null;

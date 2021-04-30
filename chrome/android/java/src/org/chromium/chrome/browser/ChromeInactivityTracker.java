@@ -7,7 +7,7 @@ package org.chromium.chrome.browser;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
  * TODO(crbug.com/1081453): Split ChromeInactivityTracker out from ChromeTabbedActivity.
  */
 public class ChromeInactivityTracker
-        implements StartStopWithNativeObserver, PauseResumeWithNativeObserver, Destroyable {
+        implements StartStopWithNativeObserver, PauseResumeWithNativeObserver, DestroyObserver {
     private static final String TAG = "InactivityTracker";
 
     private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
@@ -94,7 +94,7 @@ public class ChromeInactivityTracker
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mLifecycleDispatcher.unregister(this);
     }
 }

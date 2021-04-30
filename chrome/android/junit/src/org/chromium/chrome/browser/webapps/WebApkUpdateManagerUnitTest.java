@@ -722,7 +722,7 @@ public class WebApkUpdateManagerUnitTest {
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
-        updateManager.destroy();
+        updateManager.onDestroy();
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertFalse(updateManager.updateRequested());

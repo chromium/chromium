@@ -12,7 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator.PaymentHandlerToolbarObserver;
@@ -54,7 +54,7 @@ import java.lang.annotation.RetentionPolicy;
     // Used to postpone execution of a callback to avoid destroy objects (e.g., WebContents) in
     // their own methods.
     private final Handler mHandler = new Handler();
-    private final Destroyable mActivityDestroyListener;
+    private final DestroyObserver mActivityDestroyListener;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final View mTabView;
     private final BottomSheetController mBottomSheetController;
@@ -109,9 +109,9 @@ import java.lang.annotation.RetentionPolicy;
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
 
         mActivityLifecycleDispatcher = activityLifeCycleDispatcher;
-        mActivityDestroyListener = new Destroyable() {
+        mActivityDestroyListener = new DestroyObserver() {
             @Override
-            public void destroy() {
+            public void onDestroy() {
                 mCloseReason = CloseReason.ACTIVITY_DIED;
                 mHandler.post(mHider);
             }

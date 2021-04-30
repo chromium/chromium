@@ -209,7 +209,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         // Early return if the component hasn't initialized yet.
         if (mActivity == null) return;
 
-        mTabStripCoordinator.destroy();
+        mTabStripCoordinator.onDestroy();
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();
         }

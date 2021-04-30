@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -55,7 +55,7 @@ import java.util.List;
  * TabSwitcher UI.
  */
 public class TabSwitcherCoordinator
-        implements Destroyable, TabSwitcher, TabSwitcher.TabListDelegate,
+        implements DestroyObserver, TabSwitcher, TabSwitcher.TabListDelegate,
                    TabSwitcherMediator.ResetHandler, TabSwitcherMediator.MessageItemsController,
                    TabSwitcherMediator.PriceWelcomeMessageController {
     /**
@@ -615,10 +615,10 @@ public class TabSwitcherCoordinator
 
     // ResetHandler implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
                 mTabSwitcherMenuActionHandler);
-        mTabListCoordinator.destroy();
+        mTabListCoordinator.onDestroy();
         mMessageCardProviderCoordinator.destroy();
         mContainerViewChangeProcessor.destroy();
         if (mTabGridDialogCoordinator != null) {

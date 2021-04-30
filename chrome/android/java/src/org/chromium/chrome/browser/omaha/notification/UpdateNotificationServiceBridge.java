@@ -21,7 +21,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 
@@ -31,7 +31,8 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
  * backend notification scheduling system.
  */
 @JNINamespace("updates")
-public class UpdateNotificationServiceBridge implements UpdateNotificationController, Destroyable {
+public class UpdateNotificationServiceBridge
+        implements UpdateNotificationController, DestroyObserver {
     private final Callback<UpdateStatusProvider.UpdateStatus> mObserver = status -> {
         mUpdateStatus = status;
         processUpdateStatus();
@@ -56,9 +57,9 @@ public class UpdateNotificationServiceBridge implements UpdateNotificationContro
         processUpdateStatus();
     }
 
-    // Destroyable implementation.
+    // DestroyObserver implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         UpdateStatusProvider.getInstance().removeObserver(mObserver);
         mActivityLifecycle.unregister(this);
         mActivityLifecycle = null;

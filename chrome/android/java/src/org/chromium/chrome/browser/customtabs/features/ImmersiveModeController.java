@@ -19,7 +19,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 
 import javax.inject.Inject;
@@ -28,8 +28,7 @@ import javax.inject.Inject;
  * Allows to enter and exit immersive mode in TWAs and WebAPKs.
  */
 @ActivityScope
-public class ImmersiveModeController implements WindowFocusChangedObserver, Destroyable {
-
+public class ImmersiveModeController implements WindowFocusChangedObserver, DestroyObserver {
     private static final int ENTER_IMMERSIVE_MODE_ON_WINDOW_FOCUS_DELAY_MILLIS = 300;
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
 
@@ -131,7 +130,7 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
     }
 }

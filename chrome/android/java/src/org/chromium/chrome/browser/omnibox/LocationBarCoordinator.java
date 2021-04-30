@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
@@ -67,7 +66,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                                                      OmniboxSuggestionsDropdownEmbedder,
                                                      AutocompleteDelegate {
     /** Identifies coordinators with methods specific to a device type. */
-    public interface SubCoordinator extends Destroyable {}
+    public interface SubCoordinator {
+        /** Destroys SubCoordinator. */
+        void destroy();
+    }
 
     private LocationBarLayout mLocationBarLayout;
     @Nullable
@@ -218,9 +220,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     @Override
     public void destroy() {
-        mActivityLifecycleDispatcher.unregister(this);
-        mActivityLifecycleDispatcher = null;
-
         if (mSubCoordinator != null) {
             mSubCoordinator.destroy();
             mSubCoordinator = null;
@@ -263,6 +262,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     @Override
     public void onFinishNativeInitialization() {
+        mActivityLifecycleDispatcher.unregister(this);
+        mActivityLifecycleDispatcher = null;
+
         mTemplateUrlServiceSupplier.set(TemplateUrlServiceFactory.get());
         mLocationBarMediator.onFinishNativeInitialization();
         mAutocompleteCoordinator.onNativeInitialized();

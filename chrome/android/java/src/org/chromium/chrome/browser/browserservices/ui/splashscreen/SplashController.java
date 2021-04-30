@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
@@ -48,7 +48,7 @@ import dagger.Lazy;
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
 @ActivityScope
 public class SplashController
-        extends CustomTabTabObserver implements InflationObserver, Destroyable {
+        extends CustomTabTabObserver implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
         private final View mView;
         private final Runnable mAction;
@@ -197,7 +197,7 @@ public class SplashController
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         if (mFadeOutAnimator != null) {
             mFadeOutAnimator.cancel();
         }

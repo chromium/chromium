@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * This class is responsible for listening for new SendTabToSelfEntries and showing an infobar
  * to the user if the user does not have notifications enabled.
  */
-public class SendTabToSelfInfoBarController implements Destroyable {
+public class SendTabToSelfInfoBarController implements DestroyObserver {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<Tab> mTabSupplier;
 
@@ -39,9 +39,9 @@ public class SendTabToSelfInfoBarController implements Destroyable {
         mTabSupplier = tabSupplier;
     }
 
-    // Destroyable implementation.
+    // DestroyObserver implementation.
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mActivityLifecycleDispatcher.unregister(this);
     }
 

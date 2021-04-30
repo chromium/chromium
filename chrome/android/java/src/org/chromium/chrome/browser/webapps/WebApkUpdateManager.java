@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.metrics.WebApkUma.UpdateRequestQueued;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,7 +47,7 @@ import javax.inject.Inject;
  * an update request to the WebAPK Server when an update is needed.
  */
 @ActivityScope
-public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, Destroyable {
+public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, DestroyObserver {
     private static final String TAG = "WebApkUpdateManager";
 
     // Maximum wait time for WebAPK update to be scheduled.
@@ -107,7 +107,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         destroyFetcher();
         if (mUpdateFailureHandler != null) {
             mUpdateFailureHandler.removeCallbacksAndMessages(null);

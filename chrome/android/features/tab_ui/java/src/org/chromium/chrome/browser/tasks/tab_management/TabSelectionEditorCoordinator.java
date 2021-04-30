@@ -212,7 +212,7 @@ class TabSelectionEditorCoordinator {
      * Destroy any members that needs clean up.
      */
     public void destroy() {
-        mTabListCoordinator.destroy();
+        mTabListCoordinator.onDestroy();
         mTabSelectionEditorLayout.destroy();
         mTabSelectionEditorMediator.destroy();
         mTabSelectionEditorLayoutChangeProcessor.destroy();

@@ -11,7 +11,7 @@ import android.os.Build;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /**
@@ -40,7 +40,7 @@ import org.chromium.content_public.browser.NavigationHandle;
  *    content views become invisible, we have to use onDidStartNavigation rather than one of the
  *    later events.
  */
-public class AutofillSessionLifetimeController implements Destroyable {
+public class AutofillSessionLifetimeController implements DestroyObserver {
     private Activity mActivity;
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
@@ -73,9 +73,9 @@ public class AutofillSessionLifetimeController implements Destroyable {
         lifecycleDispatcher.register(this);
     }
 
-    // Destroyable
+    // DestroyObserver
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mActivityTabObserver.destroy();
         mActivity = null;
     }

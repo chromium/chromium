@@ -9,14 +9,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}.
  */
-public interface LocationBar extends Destroyable {
+public interface LocationBar {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
 
@@ -74,4 +73,7 @@ public interface LocationBar extends Destroyable {
      */
     @Nullable
     OmniboxStub getOmniboxStub();
+
+    /** Destroys the LocationBar. */
+    void destroy();
 }

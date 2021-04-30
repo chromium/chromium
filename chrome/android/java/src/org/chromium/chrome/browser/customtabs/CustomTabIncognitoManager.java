@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,7 +35,8 @@ import javax.inject.Inject;
  * |isEnabledIncognitoCCT| returns true.
  */
 @ActivityScope
-public class CustomTabIncognitoManager implements NativeInitObserver, Destroyable, UnownedUserData {
+public class CustomTabIncognitoManager
+        implements NativeInitObserver, DestroyObserver, UnownedUserData {
     @SuppressLint("StaticFieldLeak") // This is for test only.
     private static CustomTabIncognitoManager sCustomTabIncognitoManagerUsedForTesting;
 
@@ -117,7 +118,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         if (mOTRProfileID != null) {
             Profile.getLastUsedRegularProfile()
                     .getOffTheRecordProfile(mOTRProfileID, /*createIfNeeded=*/true)

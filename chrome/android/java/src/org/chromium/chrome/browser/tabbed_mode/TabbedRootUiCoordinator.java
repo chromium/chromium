@@ -166,7 +166,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();
         if (mEmptyBackgroundViewWrapper != null) mEmptyBackgroundViewWrapper.destroy();
 
@@ -226,7 +226,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mMerchantTrustSignalsCoordinator = null;
         }
 
-        super.destroy();
+        super.onDestroy();
     }
 
     @Override

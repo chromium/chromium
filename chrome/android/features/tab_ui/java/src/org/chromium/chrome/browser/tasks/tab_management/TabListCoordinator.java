@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -48,7 +48,7 @@ import java.util.List;
  * Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes.
  */
 public class TabListCoordinator
-        implements PriceMessageService.PriceWelcomeMessageProvider, Destroyable {
+        implements PriceMessageService.PriceWelcomeMessageProvider, DestroyObserver {
     /**
      * Modes of showing the list of tabs.
      *
@@ -383,7 +383,7 @@ public class TabListCoordinator
      * Destroy any members that needs clean up.
      */
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mMediator.destroy();
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);

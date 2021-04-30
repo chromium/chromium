@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 
 /**
  * Handles the visibility update of the activity tab.
  */
-public class AccessibilityVisibilityHandler implements Destroyable {
+public class AccessibilityVisibilityHandler implements DestroyObserver {
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
     private TabImpl mTab;
 
@@ -37,10 +37,10 @@ public class AccessibilityVisibilityHandler implements Destroyable {
         lifecycleDispatcher.register(this);
     }
 
-    // Destroyable
+    // DestroyObserver
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mActivityTabObserver.destroy();
         mTab = null;
     }

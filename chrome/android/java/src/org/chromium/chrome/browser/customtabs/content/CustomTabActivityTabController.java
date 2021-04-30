@@ -338,7 +338,7 @@ public class CustomTabActivityTabController implements InflationObserver {
             tab = maybeTakeTabFromStartupTabPreloader();
             if (tab != null) mode = TabCreationMode.FROM_STARTUP_TAB_PRELOADER;
         } else {
-            mStartupTabPreloader.destroy();
+            mStartupTabPreloader.onDestroy();
         }
 
         if (tab == null) {

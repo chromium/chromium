@@ -54,7 +54,7 @@ public class SearchBoxCoordinator {
     }
 
     public void destroy() {
-        mMediator.destroy();
+        mMediator.onDestroy();
     }
 
     public void setAlpha(float alpha) {
