@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

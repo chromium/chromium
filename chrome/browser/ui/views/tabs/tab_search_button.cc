@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/metadata/metadata_impl_macros.h"

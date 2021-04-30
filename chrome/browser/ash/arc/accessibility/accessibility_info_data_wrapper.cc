@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ash/arc/accessibility/geometry_util.h"
 #include "components/exo/wm_helper.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

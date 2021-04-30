@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/observer_list.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/animating_layout_manager.h"

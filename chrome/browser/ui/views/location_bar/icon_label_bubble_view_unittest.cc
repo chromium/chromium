@@ -13,6 +13,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"

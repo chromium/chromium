@@ -24,6 +24,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"

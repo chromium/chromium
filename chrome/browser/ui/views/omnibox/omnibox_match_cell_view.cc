@@ -26,6 +26,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/render_text.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"

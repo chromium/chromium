@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"

@@ -35,6 +35,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 #include "ui/aura/env.h"
+#include "ui/compositor/compositor.h"
 
 namespace chromeos {
 namespace power {

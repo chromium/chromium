@@ -25,6 +25,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/closure_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/accessibility/view_accessibility.h"

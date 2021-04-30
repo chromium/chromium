@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/compositor/layer.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 

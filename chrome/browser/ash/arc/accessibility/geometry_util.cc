@@ -9,6 +9,7 @@
 
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/widget/widget.h"

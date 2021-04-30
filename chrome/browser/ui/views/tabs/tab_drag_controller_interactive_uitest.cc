@@ -65,6 +65,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/env.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/native/native_view_host.h"

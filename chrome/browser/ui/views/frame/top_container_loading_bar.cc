@@ -7,6 +7,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"

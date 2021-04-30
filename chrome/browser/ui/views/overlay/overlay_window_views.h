@@ -26,6 +26,10 @@ class SkipAdLabelButton;
 class TrackImageButton;
 }  // namespace views
 
+namespace viz {
+class FrameSinkId;
+}  // namespace viz
+
 class BackToTabLabelButton;
 class HangUpButton;
 class ToggleMicrophoneButton;

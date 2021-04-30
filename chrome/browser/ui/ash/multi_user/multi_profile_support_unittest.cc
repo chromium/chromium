@@ -66,6 +66,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"

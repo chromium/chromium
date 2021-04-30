@@ -29,6 +29,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"

@@ -63,6 +63,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/tween.h"

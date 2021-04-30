@@ -66,6 +66,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/range/range.h"

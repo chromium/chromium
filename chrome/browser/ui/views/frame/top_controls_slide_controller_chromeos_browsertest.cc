@@ -42,6 +42,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"

@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "ui/compositor/compositor.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

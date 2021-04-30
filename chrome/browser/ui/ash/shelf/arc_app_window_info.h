@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/image/image_skia.h"
 
 // The information about the ARC application window which has to be kept
 // even when its AppWindow is not present.

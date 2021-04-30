@@ -23,6 +23,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"

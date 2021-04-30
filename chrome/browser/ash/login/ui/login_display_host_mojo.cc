@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 
 namespace chromeos {

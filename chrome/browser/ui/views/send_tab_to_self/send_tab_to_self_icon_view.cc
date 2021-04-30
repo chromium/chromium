@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/send_tab_to_self/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 

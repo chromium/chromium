@@ -25,6 +25,7 @@
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/background.h"
