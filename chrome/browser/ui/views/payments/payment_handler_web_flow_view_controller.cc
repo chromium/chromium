@@ -296,9 +296,10 @@ PaymentHandlerWebFlowViewController::CreateHeaderContentView(
 std::unique_ptr<views::Background>
 PaymentHandlerWebFlowViewController::GetHeaderBackground(
     views::View* header_view) {
+  DCHECK(header_view);
   auto default_header_background =
       PaymentRequestSheetController::GetHeaderBackground(header_view);
-  if (web_contents()) {
+  if (web_contents() && header_view->GetWidget()) {
     return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
         web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
         default_header_background->get_color()));
