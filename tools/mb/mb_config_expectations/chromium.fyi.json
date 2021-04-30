@@ -252,6 +252,15 @@
       "use_rbe": true
     }
   },
+  "TSAN Release (deps-cache-full-files) (reclient)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
+      "use_rbe": true
+    }
+  },
   "TSAN Release (j-250) (reclient)": {
     "gn_args": {
       "enable_nacl": false,
