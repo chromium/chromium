@@ -92,11 +92,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature
 // Enables the redesigned managed device info UI in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kManagedDeviceUIRedesign;
 
-// Enables the media session notification. If this is enabled, we will show
-// a notification that shows the currently playing media with controls.
-// TODO(beccahughes): Remove after launch. (https://crbug.com/897836)
-ASH_PUBLIC_EXPORT extern const base::Feature kMediaSessionNotification;
-
 // Enables resizing/moving the selection region for partial screenshot.
 ASH_PUBLIC_EXPORT extern const base::Feature kMovablePartialScreenshot;
 

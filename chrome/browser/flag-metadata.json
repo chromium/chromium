@@ -2065,11 +2065,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-media-session-notifications",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "enable-media-session-service",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82

@@ -4688,11 +4688,6 @@ const char kMediaAppVideoDescription[] =
     "Use chrome://media-app as the default handler for video. Hides the "
     "deprecated VideoPlayer chrome app as a file handler.";
 
-const char kMediaSessionNotificationsName[] = "Media session notifications";
-const char kMediaSessionNotificationsDescription[] =
-    "Shows notifications for media sessions showing the currently playing "
-    "media and providing playback controls";
-
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
