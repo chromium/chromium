@@ -23,13 +23,8 @@ WEBUI_TAB_STRIP_URL = 'chrome://tab-strip/'
 class WebUITabStripStory(MultiTabStory):
   """Base class for webui tab strip stories"""
 
-  def __init__(self, story_set, extra_browser_args=None):
-    super(WebUITabStripStory, self).__init__(story_set, extra_browser_args)
-    self._ui_devtools = None
-
   def RunPageInteractions(self, action_runner):
-    self._ui_devtools = action_runner.tab.browser.GetUIDevtools()
-    ClickOn(self._ui_devtools, 'WebUITabCounterButton')
+    ClickOn(self._devtools, 'WebUITabCounterButton')
     action_runner = Inspect(action_runner.tab.browser, WEBUI_TAB_STRIP_URL)
     self.InteractWithPage(action_runner)
 

@@ -43,9 +43,10 @@ class DesktopUIStorySet(story.StorySet):
                          cloud_storage_bucket=story.PARTNER_BUCKET)
     for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
-          cls(self,
-              ['--enable-features=TabSearch', '--top-chrome-touch-ui=disabled'
-               ]))
+          cls(self, [
+              '--enable-ui-devtools=enabled',
+              '--top-chrome-touch-ui=disabled',
+          ]))
 
     for cls in self.DOWNLOAD_SHELF_STORIES:
       self.AddStory(cls(self))

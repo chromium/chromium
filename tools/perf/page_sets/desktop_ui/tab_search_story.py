@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import py_utils
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
+from page_sets.desktop_ui.ui_devtools_utils import ClickOn
 from page_sets.desktop_ui.url_list import TOP_URL
-from telemetry.internal.actions.action_runner import ActionRunner
+from page_sets.desktop_ui.webui_utils import Inspect
 
 TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.CloseAction',
@@ -32,26 +32,15 @@ class TabSearchStory(MultiTabStory):
   """Base class for tab search stories"""
 
   def RunPageInteractions(self, action_runner):
-    tabs = action_runner.tab.browser.tabs
-
-    # Open Tab Search bubble.
-    action_runner.tab.browser.supports_inspecting_webui = True
-    action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
-    # Wait for Tab Search bubble to be inspectable.
-    py_utils.WaitFor(
-        lambda: any([True for tab in tabs if tab.url == TAB_SEARCH_URL]), 10)
-
-    # Wait for Tab Search bubble to load.
-    tab = next(iter([tab for tab in tabs if tab.url == TAB_SEARCH_URL]))
-    action_runner = ActionRunner(
-        tab)  # Recreate action_runner for Tab Search bubble.
-    tab.WaitForDocumentReadyStateToBeComplete()
-
-    # Send key navigation to Tab Search bubble.
+    self.ToggleTabSearch()
+    action_runner = Inspect(action_runner.tab.browser, TAB_SEARCH_URL)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
                                     'used_js_heap_size_begin')
     self.InteractWithPage(action_runner)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY % 'used_js_heap_size_end')
+
+  def ToggleTabSearch(self, index=0):
+    ClickOn(self._devtools, 'TabSearchButton', index)
 
   def InteractWithPage(self, action_runner):
     self.ScrollTabs(action_runner)
@@ -87,21 +76,21 @@ class TabSearchStory(MultiTabStory):
 
   def CloseAndOpen(self, action_runner):
     action_runner.Wait(1)
-    action_runner.tab.browser.ExecuteBrowserCommand('closeTabSearch')
+    self.ToggleTabSearch()
     action_runner.Wait(1)
-    action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
+    self.ToggleTabSearch()
     action_runner.Wait(5)
 
   def CloseAndOpenLoading(self, action_runner):
     action_runner.Wait(1)
-    action_runner.tab.browser.ExecuteBrowserCommand('closeTabSearch')
+    self.ToggleTabSearch()
     action_runner.Wait(1)
     tabs = action_runner.tab.browser.tabs
     i = 0
     for url in self.URL_LIST2:
       tabs[i].Navigate(url)
       i = i + 1
-    action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
+    self.ToggleTabSearch()
     action_runner.Wait(5)
 
   def ScrollUpAndDown(self, action_runner):
@@ -249,8 +238,9 @@ class TabSearchStoryMeasureMemoryMultiwindow(TabSearchStoryMeasureMemory):
   def InteractWithPage(self, action_runner):
     action_runner.Wait(2)
     tabs = action_runner.tab.browser.tabs
-    new_tab = tabs.New(in_new_window=True)
-    new_tab.browser.ExecuteBrowserCommand('openTabSearch')
+    tabs.New(in_new_window=True)
+    self.ToggleTabSearch(
+        index=1)  # Toggle the tab search button in the 2nd window.
     action_runner.Wait(2)
     action_runner.MeasureMemory(deterministic_mode=True)
 

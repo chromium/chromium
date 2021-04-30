@@ -17,6 +17,7 @@ class MultiTabStory(page.Page):
                                         name=self.NAME,
                                         page_set=story_set,
                                         extra_browser_args=extra_browser_args)
+    self._devtools = None
 
   def RunNavigateSteps(self, action_runner):
     url_list = self.URL_LIST
@@ -33,6 +34,7 @@ class MultiTabStory(page.Page):
         except py_utils.TimeoutException:
           logging.warning('WaitForNetworkQuiescence() timeout, url[%d]: %s' %
                           (i, url))
+    self._devtools = action_runner.tab.browser.GetUIDevtools()
 
   def StartMeasuringFrameTime(self, action_runner, name):
     action_runner.ExecuteJavaScript(MEASURE_FRAME_TIME_SCRIPT)
