@@ -101,6 +101,9 @@ SkiaGraphics::SkiaGraphics(Client* client, const gfx::Size& size)
 
 SkiaGraphics::~SkiaGraphics() = default;
 
+// TODO(https://crbug.com/1099020): After completely switching to non-Pepper
+// plugin, make Flush() return false since there is no pending action for
+// syncing the client's snapshot.
 bool SkiaGraphics::Flush(ResultCallback callback) {
   sk_sp<SkImage> snapshot = skia_graphics_->makeImageSnapshot();
   skia_graphics_->getCanvas()->drawImage(

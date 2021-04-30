@@ -7,13 +7,62 @@
 #include <memory>
 #include <utility>
 
+#include "cc/paint/paint_canvas.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
+#include "pdf/ppapi_migration/bitmap.h"
+#include "pdf/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
 
 namespace {
+
+// `kCanvasSize` needs to be big enough to hold plugin's snapshots during
+// testing.
+constexpr gfx::Size kCanvasSize(100, 100);
+
+// Note: Make sure `kDefaultColor` is different from `kPaintColor` and the
+// plugin's background color. This will help identify bitmap changes after
+// painting.
+constexpr SkColor kDefaultColor = SK_ColorGREEN;
+
+constexpr SkColor kPaintColor = SK_ColorRED;
+
+struct PaintParams {
+  // The plugin container's device scale.
+  float device_scale;
+
+  // The window area.
+  gfx::Rect window_rect;
+
+  // The target painting area on the canvas.
+  gfx::Rect paint_rect;
+};
+
+// Generates the expected `SkBitmap` with `paint_color` filled in the expected
+// clipped area and `kDefaultColor` as the background color.
+SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
+                                        const gfx::Rect& plugin_rect,
+                                        const gfx::Rect& paint_rect,
+                                        SkColor paint_color) {
+  gfx::Rect expected_clipped_area = gfx::IntersectRects(
+      gfx::ScaleToEnclosingRectSafe(plugin_rect, 1.0f / device_scale),
+      paint_rect);
+
+  SkBitmap expected_bitmap =
+      CreateN32PremulSkBitmap(gfx::SizeToSkISize(kCanvasSize));
+  expected_bitmap.eraseColor(kDefaultColor);
+  expected_bitmap.erase(paint_color, gfx::RectToSkIRect(expected_clipped_area));
+  return expected_bitmap;
+}
 
 class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
@@ -64,23 +113,77 @@ class PdfViewWebPluginTest : public testing::Test {
     wrapper_ptr_ = nullptr;
   }
 
-  void TestUpdateGeometrySetsPluginRect(float device_scale,
-                                        const gfx::Rect& window_rect,
-                                        const gfx::Rect& expected_plugin_rect) {
+  void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
     // The plugin container's device scale must be set before calling
     // UpdateGeometry().
     ASSERT_TRUE(wrapper_ptr_);
     wrapper_ptr_->set_device_scale(device_scale);
     plugin_->UpdateGeometry(window_rect, window_rect, window_rect,
                             /*is_visible=*/true);
+  }
 
+  void TestUpdateGeometrySetsPluginRect(float device_scale,
+                                        const gfx::Rect& window_rect,
+                                        const gfx::Rect& expected_plugin_rect) {
+    UpdatePluginGeometry(device_scale, window_rect);
     EXPECT_EQ(expected_plugin_rect, plugin_->GetPluginRectForTesting())
+        << "Failure at device scale of " << device_scale << ", window rect of "
+        << window_rect.ToString();
+  }
+
+  void TestPaintEmptySnapshots(float device_scale,
+                               const gfx::Rect& window_rect,
+                               const gfx::Rect& paint_rect) {
+    UpdatePluginGeometry(device_scale, window_rect);
+    canvas_.DrawColor(kDefaultColor);
+
+    plugin_->Paint(canvas_.sk_canvas(), paint_rect);
+
+    // Expect the clipped area on canvas to be filled with plugin's background
+    // color.
+    SkBitmap expected_bitmap = GenerateExpectedBitmapForPaint(
+        device_scale, plugin_->GetPluginRectForTesting(), paint_rect,
+        plugin_->GetBackgroundColor());
+    EXPECT_TRUE(
+        cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
+                          cc::ExactPixelComparator(/*discard_alpha=*/false)))
+        << "Failure at device scale of " << device_scale << ", window rect of "
+        << window_rect.ToString();
+  }
+
+  void TestPaintSnapshots(float device_scale,
+                          const gfx::Rect& window_rect,
+                          const gfx::Rect& paint_rect) {
+    UpdatePluginGeometry(device_scale, window_rect);
+    canvas_.DrawColor(kDefaultColor);
+
+    // Fill the graphics device with `kPaintColor` and update the plugin's
+    // snapshot.
+    const gfx::Rect& plugin_rect = plugin_->GetPluginRectForTesting();
+    std::unique_ptr<Graphics> graphics =
+        plugin_->CreatePaintGraphics(plugin_rect.size());
+    graphics->PaintImage(
+        CreateSkiaImageForTesting(plugin_rect.size(), kPaintColor),
+        gfx::Rect(plugin_rect.width(), plugin_rect.height()));
+    graphics->Flush(base::DoNothing());
+
+    plugin_->Paint(canvas_.sk_canvas(), paint_rect);
+
+    // Expect the clipped area on canvas to be filled with `kPaintColor`.
+    SkBitmap expected_bitmap = GenerateExpectedBitmapForPaint(
+        device_scale, plugin_rect, paint_rect, kPaintColor);
+    EXPECT_TRUE(
+        cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
+                          cc::ExactPixelComparator(/*discard_alpha=*/false)))
         << "Failure at device scale of " << device_scale << ", window rect of "
         << window_rect.ToString();
   }
 
   FakeContainerWrapper* wrapper_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
+
+  // Provides the cc::PaintCanvas for painting.
+  gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
@@ -103,6 +206,38 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
   for (const auto& params : kUpdateGeometryParams) {
     TestUpdateGeometrySetsPluginRect(params.device_scale, params.window_rect,
                                      params.expected_plugin_rect);
+  }
+}
+
+TEST_F(PdfViewWebPluginTest, PaintEmptySnapshots) {
+  static constexpr PaintParams kPaintEmptySnapshotsParams[]{
+      // The window origin falls outside the `paint_rect` area.
+      {1.0f, gfx::Rect(10, 10, 20, 20), gfx::Rect(5, 5, 15, 15)},
+      {4.0f, gfx::Rect(10, 10, 20, 20), gfx::Rect(5, 5, 15, 15)},
+      // The window origin falls within the `paint_rect` area.
+      {1.0f, gfx::Rect(4, 4, 20, 20), gfx::Rect(8, 8, 15, 15)},
+      {4.0f, gfx::Rect(4, 4, 20, 20), gfx::Rect(8, 8, 15, 15)},
+  };
+
+  for (const auto& params : kPaintEmptySnapshotsParams) {
+    TestPaintEmptySnapshots(params.device_scale, params.window_rect,
+                            params.paint_rect);
+  }
+}
+
+TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
+  static constexpr PaintParams kPaintWithScalesTestParams[] = {
+      // The window origin falls outside the `paint_rect` area.
+      {1.0f, gfx::Rect(8, 8, 30, 30), gfx::Rect(10, 10, 30, 30)},
+      {2.0f, gfx::Rect(8, 8, 30, 30), gfx::Rect(10, 10, 30, 30)},
+      // The window origin falls within the `paint_rect` area.
+      {1.0f, gfx::Rect(10, 10, 30, 30), gfx::Rect(4, 4, 30, 30)},
+      {2.0f, gfx::Rect(10, 10, 30, 30), gfx::Rect(4, 4, 30, 30)},
+  };
+
+  for (const auto& params : kPaintWithScalesTestParams) {
+    TestPaintSnapshots(params.device_scale, params.window_rect,
+                       params.paint_rect);
   }
 }
 
