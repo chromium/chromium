@@ -530,7 +530,7 @@ component("headless_non_renderer") {
   }
 
   if (headless_use_embedded_resources) {
-    defines = [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
     deps += [ ":embed_resources" ]
     sources += [
       "$root_gen_dir/headless/embedded_resource_pak.cc",
@@ -577,10 +577,6 @@ if (!is_component_build) {
       sources += [ "lib/headless_content_main_delegate_mac.mm" ]
     }
 
-    if (headless_use_embedded_resources) {
-      defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    }
-
     if (enable_basic_printing) {
       sources += [
         "lib/renderer/headless_print_render_frame_helper_delegate.cc",
@@ -603,6 +599,14 @@ if (!is_component_build) {
       ]
     }
     configs += [ ":headless_policy_config" ]
+    if (headless_use_embedded_resources) {
+      defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+      deps += [ ":embed_resources" ]
+      sources += [
+        "$root_gen_dir/headless/embedded_resource_pak.cc",
+        "$root_gen_dir/headless/embedded_resource_pak.h",
+      ]
+    }
   }
 } else {
   # For component builds all dependencies are already included in the headless
