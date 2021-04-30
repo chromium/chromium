@@ -6,13 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 
 #include "base/threading/thread_checker.h"
+#include "media/base/audio_buffer.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
-
-namespace media {
-class AudioBuffer;
-}
 
 namespace blink {
 
