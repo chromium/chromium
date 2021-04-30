@@ -20,6 +20,7 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "components/sync/trusted_vault/trusted_vault_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,9 +98,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       : file_path_(
             CreateUniqueTempDir(&temp_dir_)
                 .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))) {
-    override_features.InitAndEnableFeature(
-        switches::kFollowTrustedVaultKeyRotation);
-
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
     delegate_ = delegate.get();
 
@@ -177,8 +175,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList override_features;
-
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
   testing::NiceMock<MockDelegate>* delegate_;

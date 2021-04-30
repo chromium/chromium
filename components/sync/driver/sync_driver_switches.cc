@@ -58,25 +58,6 @@ const base::Feature kSyncWifiConfigurations{"SyncWifiConfigurations",
 const base::Feature kDecoupleSyncFromAndroidMasterSync{
     "DecoupleSyncFromAndroidMasterSync", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Allows trusted vault implementation to follow key rotation (including device
-// registration).
-const base::Feature kFollowTrustedVaultKeyRotation{
-    "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Allows device registration within trusted vault server without having trusted
-// vault key. Effectively disabled if kFollowTrustedVaultKeyRotation is
-// disabled.
-const base::Feature kAllowSilentTrustedVaultDeviceRegistration{
-    "AllowSilentTrustedVaultDeviceRegistration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Specifies how long requests to vault service shouldn't be retried after
-// encountering transient error.
-const base::FeatureParam<base::TimeDelta>
-    kTrustedVaultServiceThrottlingDuration{
-        &kFollowTrustedVaultKeyRotation,
-        "TrustedVaultServiceThrottlingDuration", base::TimeDelta::FromDays(1)};
-
 // Sync requires policies to be loaded before starting.
 const base::Feature kSyncRequiresPoliciesLoaded{
     "SyncRequiresPoliciesLoaded", base::FEATURE_DISABLED_BY_DEFAULT};

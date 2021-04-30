@@ -1118,7 +1118,7 @@ class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {
   SingleClientNigoriSyncTestWithSecurityDomainsServer()
       : SyncTest(SINGLE_CLIENT) {
     override_features_.InitAndEnableFeature(
-        switches::kFollowTrustedVaultKeyRotation);
+        switches::kSyncSupportTrustedVaultPassphraseRecovery);
   }
   SingleClientNigoriSyncTestWithSecurityDomainsServer(
       const SingleClientNigoriSyncTestWithSecurityDomainsServer& other) =

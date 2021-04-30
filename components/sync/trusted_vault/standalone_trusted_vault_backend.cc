@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_switches.h"
 
 namespace syncer {
 
