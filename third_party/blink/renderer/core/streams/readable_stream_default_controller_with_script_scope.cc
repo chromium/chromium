@@ -61,8 +61,11 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
 
   ScriptState::Scope scope(script_state_);
 
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
+                                 "");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   ReadableStreamDefaultController::Enqueue(script_state_, controller_, js_chunk,
                                            exception_state);
   if (exception_state.HadException()) {
