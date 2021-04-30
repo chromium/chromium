@@ -45,6 +45,7 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -299,6 +300,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
+    /*
+     *  Listens to FrameMetrics and records jank metrics.
+     */
+    private JankTracker mJankTracker;
+
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -1556,6 +1562,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setTrackColdStartupMetrics(true);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mJankTracker = new JankTracker(this);
+        }
+
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
@@ -2340,6 +2350,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mStartupPaintPreviewHelperSupplier != null) {
             mStartupPaintPreviewHelperSupplier.destroy();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mJankTracker != null) {
+            mJankTracker.destroy();
+            mJankTracker = null;
         }
 
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
