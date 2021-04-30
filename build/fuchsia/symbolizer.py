@@ -4,43 +4,11 @@
 
 import logging
 import os
-import re
 import subprocess
 
 from common import SDK_ROOT
 from common import GetHostArchFromPlatform
 from common import GetHostToolPathFromPlatform
-
-# Paths to the llvm-symbolizer executable in different test hosts.
-X64_LLVM_SYMBOLIZER_PATH = os.path.join(SDK_ROOT, os.pardir, os.pardir,
-                                        'llvm-build', 'Release+Asserts', 'bin',
-                                        'llvm-symbolizer')
-ARM64_XENIAL_LLVM_SYMBOLIZER_PATH = os.path.join('/', 'usr', 'lib', 'llvm-3.8',
-                                                 'bin', 'llvm-symbolizer')
-ARM64_BIONIC_LLVM_SYMBOLIZER_PATH = os.path.join('/', 'usr', 'lib', 'llvm-6.0',
-                                                 'bin', 'llvm-symbolizer')
-
-
-def _GetLLVMSymbolizerPath():
-  """Determines the path to the LLVM symbolizer executable based on test host
-  architecture and Ubuntu distro."""
-
-  if GetHostArchFromPlatform() == 'x64':
-    return X64_LLVM_SYMBOLIZER_PATH
-
-  # Get distro codename from /etc/os-release.
-  with open(os.path.join('/', 'etc', 'os-release')) as os_release_file:
-    os_release_text = os_release_file.read()
-  version_codename_re = r'^VERSION_CODENAME=(?P<codename>[\w.-]+)$'
-  match = re.search(version_codename_re, os_release_text, re.MULTILINE)
-  codename = match.group('codename') if match else None
-
-  if codename == 'xenial':
-    return ARM64_XENIAL_LLVM_SYMBOLIZER_PATH
-  elif codename == 'bionic':
-    return ARM64_BIONIC_LLVM_SYMBOLIZER_PATH
-  else:
-    raise Exception('Unknown Ubuntu release "%s"' % codename)
 
 
 def BuildIdsPaths(package_paths):
@@ -62,13 +30,13 @@ def RunSymbolizer(input_file, output_file, build_ids_files):
                   unstripped binaries on the filesystem.
   Returns a Popen object for the started process."""
 
-  symbolizer = GetHostToolPathFromPlatform('symbolize')
-  llvm_symbolizer_path = _GetLLVMSymbolizerPath()
-  symbolizer_cmd = [symbolizer,
-                    '-ids-rel', '-llvm-symbolizer', llvm_symbolizer_path,
-                    '-build-id-dir', os.path.join(SDK_ROOT, '.build-id')]
+  symbolizer = GetHostToolPathFromPlatform('symbolizer')
+  symbolizer_cmd = [
+      symbolizer, '--build-id-dir',
+      os.path.join(SDK_ROOT, '.build-id')
+  ]
   for build_ids_file in build_ids_files:
-    symbolizer_cmd.extend(['-ids', build_ids_file])
+    symbolizer_cmd.extend(['--ids-txt', build_ids_file])
 
   logging.info('Running "%s".' % ' '.join(symbolizer_cmd))
   return subprocess.Popen(symbolizer_cmd, stdin=input_file, stdout=output_file,
