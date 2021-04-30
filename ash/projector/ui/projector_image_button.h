@@ -23,6 +23,8 @@ class ASH_EXPORT ProjectorImageButton : public ProjectorButton {
   ProjectorImageButton(const ProjectorImageButton&) = delete;
   ProjectorImageButton& operator=(const ProjectorImageButton&) = delete;
   ~ProjectorImageButton() override = default;
+
+  void SetVectorIcon(const gfx::VectorIcon& icon);
 };
 
 }  // namespace ash

@@ -15,6 +15,10 @@ ProjectorImageButton::ProjectorImageButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon)
     : ProjectorButton(callback) {
+  SetVectorIcon(icon);
+}
+
+void ProjectorImageButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
