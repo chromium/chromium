@@ -8674,11 +8674,8 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                           dict.Add("old", old_state);
                           dict.Add("new", new_state);
                         });
-  if (render_frame_host->GetParent())
-    return;
 
-  if (old_state == LifecycleState::kActive &&
-      new_state != LifecycleState::kActive) {
+  if (old_state == LifecycleState::kActive && !render_frame_host->GetParent()) {
     // TODO(sreejakshetty): Remove this reset when ColorChooser becomes
     // per-frame.
     // Close the color chooser popup when RenderFrameHost changes state from

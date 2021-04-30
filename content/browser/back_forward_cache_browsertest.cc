@@ -60,6 +60,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/idle_test_utils.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
@@ -8575,7 +8576,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Navigate to B, now A enters BackForwardCache. Check the
   // LifecycleStateImpl of both RenderFrameHost A and B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  {
+    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+        web_contents());
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_a, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+    // We don't know |rfh_b| yet, so we'll match any frame.
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    testing::Not(rfh_a),
+                    RenderFrameHost::LifecycleState::kPendingCommit,
+                    RenderFrameHost::LifecycleState::kActive));
+
+    EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  }
   RenderFrameHostImpl* rfh_b = current_frame_host();
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
@@ -8589,13 +8605,147 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to A and check again the LifecycleStateImpl of both
   // RenderFrameHost A and B.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  {
+    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+        web_contents());
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_a, RenderFrameHost::LifecycleState::kInBackForwardCache,
+                    RenderFrameHost::LifecycleState::kActive));
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_b, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
             rfh_b->lifecycle_state());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CheckLifecycleStateTransitionWithSubframes) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(d)"));
+
+  // Navigate to A(B) and check the lifecycle states of A and B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_b->IsInBackForwardCache());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_a->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_a->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_b->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_b->GetLifecycleState());
+
+  // Navigate to C(D), now A(B) enters BackForwardCache.
+  {
+    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+        web_contents());
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_a, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_b, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+    // We don't know |rfh_c| and |rfh_d| yet, so we'll match any frame.
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    testing::Not(testing::AnyOf(rfh_a, rfh_b)),
+                    RenderFrameHost::LifecycleState::kPendingCommit,
+                    RenderFrameHost::LifecycleState::kActive))
+        .Times(2);
+    // Deletion of frame D's initial RFH.
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    testing::Not(testing::AnyOf(rfh_a, rfh_b)),
+                    RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kPendingDeletion));
+
+    EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  }
+  RenderFrameHostImpl* rfh_c = current_frame_host();
+  RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_c->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_d->IsInBackForwardCache());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_a->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh_a->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_b->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh_b->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_c->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_c->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_d->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_d->GetLifecycleState());
+
+  // Go back to A(B), A(B) is restored and C(D) enters BackForwardCache.
+  {
+    testing::NiceMock<MockWebContentsObserver> state_change_observer(
+        web_contents());
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_a, RenderFrameHost::LifecycleState::kInBackForwardCache,
+                    RenderFrameHost::LifecycleState::kActive));
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_b, RenderFrameHost::LifecycleState::kInBackForwardCache,
+                    RenderFrameHost::LifecycleState::kActive));
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_c, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+    EXPECT_CALL(state_change_observer,
+                RenderFrameHostStateChanged(
+                    rfh_d, RenderFrameHost::LifecycleState::kActive,
+                    RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_b->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_c->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_d->IsInBackForwardCache());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_a->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_a->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_b->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_b->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_c->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh_c->GetLifecycleState());
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
+            rfh_d->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh_d->GetLifecycleState());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
