@@ -69,9 +69,15 @@ StorageArea::StorageArea(LocalDOMWindow* window,
       cached_area_(std::move(storage_area)),
       storage_type_(storage_type),
       should_enqueue_events_(should_enqueue_events) {
+  // Pointer registration is needed for sorting in CachedStorageArea::EnqueueStorageEvent.
+  recordreplay::RegisterPointer(static_cast<CachedStorageArea::Source*>(this));
   DCHECK(window);
   DCHECK(cached_area_);
   cached_area_->RegisterSource(this);
+}
+
+StorageArea::~StorageArea() {
+  recordreplay::UnregisterPointer(static_cast<CachedStorageArea::Source*>(this));
 }
 
 unsigned StorageArea::length(ExceptionState& exception_state) const {

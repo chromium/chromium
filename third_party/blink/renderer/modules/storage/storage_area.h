@@ -61,6 +61,7 @@ class StorageArea final : public ScriptWrappable,
               scoped_refptr<CachedStorageArea>,
               StorageType,
               bool should_enqueue_events);
+  ~StorageArea() override;
 
   unsigned length(ExceptionState&) const;
   String key(unsigned index, ExceptionState&) const;
