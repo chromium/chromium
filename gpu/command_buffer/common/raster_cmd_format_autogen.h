@@ -983,9 +983,9 @@ static_assert(
     offsetof(WritePixelsINTERNALImmediate, pixels_offset) == 40,
     "offset of WritePixelsINTERNALImmediate pixels_offset should be 40");
 
-struct ReadbackImagePixelsINTERNALImmediate {
-  typedef ReadbackImagePixelsINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kReadbackImagePixelsINTERNALImmediate;
+struct ReadbackARGBImagePixelsINTERNALImmediate {
+  typedef ReadbackARGBImagePixelsINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kReadbackARGBImagePixelsINTERNALImmediate;
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
@@ -1063,48 +1063,164 @@ struct ReadbackImagePixelsINTERNALImmediate {
   uint32_t pixels_offset;
 };
 
-static_assert(sizeof(ReadbackImagePixelsINTERNALImmediate) == 48,
-              "size of ReadbackImagePixelsINTERNALImmediate should be 48");
+static_assert(sizeof(ReadbackARGBImagePixelsINTERNALImmediate) == 48,
+              "size of ReadbackARGBImagePixelsINTERNALImmediate should be 48");
 static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, header) == 0,
-    "offset of ReadbackImagePixelsINTERNALImmediate header should be 0");
+    offsetof(ReadbackARGBImagePixelsINTERNALImmediate, header) == 0,
+    "offset of ReadbackARGBImagePixelsINTERNALImmediate header should be 0");
 static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, src_x) == 4,
-    "offset of ReadbackImagePixelsINTERNALImmediate src_x should be 4");
+    offsetof(ReadbackARGBImagePixelsINTERNALImmediate, src_x) == 4,
+    "offset of ReadbackARGBImagePixelsINTERNALImmediate src_x should be 4");
 static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, src_y) == 8,
-    "offset of ReadbackImagePixelsINTERNALImmediate src_y should be 8");
-static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, dst_width) == 12,
-    "offset of ReadbackImagePixelsINTERNALImmediate dst_width should be 12");
-static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, dst_height) == 16,
-    "offset of ReadbackImagePixelsINTERNALImmediate dst_height should be 16");
-static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, row_bytes) == 20,
-    "offset of ReadbackImagePixelsINTERNALImmediate row_bytes should be 20");
-static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate,
+    offsetof(ReadbackARGBImagePixelsINTERNALImmediate, src_y) == 8,
+    "offset of ReadbackARGBImagePixelsINTERNALImmediate src_y should be 8");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate, dst_width) ==
+                  12,
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate dst_width "
+              "should be 12");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate, dst_height) ==
+                  16,
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate dst_height "
+              "should be 16");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate, row_bytes) ==
+                  20,
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate row_bytes "
+              "should be 20");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate,
                        dst_sk_color_type) == 24,
-              "offset of ReadbackImagePixelsINTERNALImmediate "
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate "
               "dst_sk_color_type should be 24");
-static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate,
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate,
                        dst_sk_alpha_type) == 28,
-              "offset of ReadbackImagePixelsINTERNALImmediate "
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate "
               "dst_sk_alpha_type should be 28");
 static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, shm_id) == 32,
-    "offset of ReadbackImagePixelsINTERNALImmediate shm_id should be 32");
-static_assert(
-    offsetof(ReadbackImagePixelsINTERNALImmediate, shm_offset) == 36,
-    "offset of ReadbackImagePixelsINTERNALImmediate shm_offset should be 36");
-static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate,
+    offsetof(ReadbackARGBImagePixelsINTERNALImmediate, shm_id) == 32,
+    "offset of ReadbackARGBImagePixelsINTERNALImmediate shm_id should be 32");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate, shm_offset) ==
+                  36,
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate shm_offset "
+              "should be 36");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate,
                        color_space_offset) == 40,
-              "offset of ReadbackImagePixelsINTERNALImmediate "
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate "
               "color_space_offset should be 40");
-static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, pixels_offset) ==
-                  44,
-              "offset of ReadbackImagePixelsINTERNALImmediate pixels_offset "
-              "should be 44");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNALImmediate,
+                       pixels_offset) == 44,
+              "offset of ReadbackARGBImagePixelsINTERNALImmediate "
+              "pixels_offset should be 44");
+
+struct ReadbackYUVImagePixelsINTERNALImmediate {
+  typedef ReadbackYUVImagePixelsINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kReadbackYUVImagePixelsINTERNALImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  typedef uint32_t Result;
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLbyte) * 16);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLuint _dst_width,
+            GLuint _dst_height,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _y_offset,
+            GLuint _y_stride,
+            GLuint _u_offset,
+            GLuint _u_stride,
+            GLuint _v_offset,
+            GLuint _v_stride,
+            const GLbyte* _mailbox) {
+    SetHeader();
+    dst_width = _dst_width;
+    dst_height = _dst_height;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+    y_offset = _y_offset;
+    y_stride = _y_stride;
+    u_offset = _u_offset;
+    u_stride = _u_stride;
+    v_offset = _v_offset;
+    v_stride = _v_stride;
+    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+  }
+
+  void* Set(void* cmd,
+            GLuint _dst_width,
+            GLuint _dst_height,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _y_offset,
+            GLuint _y_stride,
+            GLuint _u_offset,
+            GLuint _u_stride,
+            GLuint _v_offset,
+            GLuint _v_stride,
+            const GLbyte* _mailbox) {
+    static_cast<ValueType*>(cmd)->Init(
+        _dst_width, _dst_height, _shm_id, _shm_offset, _y_offset, _y_stride,
+        _u_offset, _u_stride, _v_offset, _v_stride, _mailbox);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t dst_width;
+  uint32_t dst_height;
+  int32_t shm_id;
+  uint32_t shm_offset;
+  uint32_t y_offset;
+  uint32_t y_stride;
+  uint32_t u_offset;
+  uint32_t u_stride;
+  uint32_t v_offset;
+  uint32_t v_stride;
+};
+
+static_assert(sizeof(ReadbackYUVImagePixelsINTERNALImmediate) == 44,
+              "size of ReadbackYUVImagePixelsINTERNALImmediate should be 44");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, header) == 0,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate header should be 0");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, dst_width) == 4,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate dst_width should be 4");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, dst_height) == 8,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate dst_height should be 8");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, shm_id) == 12,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate shm_id should be 12");
+static_assert(offsetof(ReadbackYUVImagePixelsINTERNALImmediate, shm_offset) ==
+                  16,
+              "offset of ReadbackYUVImagePixelsINTERNALImmediate shm_offset "
+              "should be 16");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, y_offset) == 20,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate y_offset should be 20");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, y_stride) == 24,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate y_stride should be 24");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, u_offset) == 28,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate u_offset should be 28");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, u_stride) == 32,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate u_stride should be 32");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, v_offset) == 36,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate v_offset should be 36");
+static_assert(
+    offsetof(ReadbackYUVImagePixelsINTERNALImmediate, v_stride) == 40,
+    "offset of ReadbackYUVImagePixelsINTERNALImmediate v_stride should be 40");
 
 struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
   typedef ConvertYUVAMailboxesToRGBINTERNALImmediate ValueType;

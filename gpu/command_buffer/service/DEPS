@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/paint",
   "+skia",
+  "+third_party/libyuv/include/libyuv/planar_functions.h",
   "+third_party/skia",
   "+components/crash/core/common/crash_key.h",
   "+components/viz/common/gpu/dawn_context_provider.h",

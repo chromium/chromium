@@ -60,6 +60,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -602,18 +603,29 @@ class RasterDecoderImpl final : public RasterDecoder,
       const SkImageInfo& src_info,
       const void* pixel_data,
       size_t row_bytes);
-  void DoReadbackImagePixelsINTERNAL(GLint src_x,
-                                     GLint src_y,
-                                     GLuint dst_width,
-                                     GLuint dst_height,
-                                     GLuint row_bytes,
-                                     GLuint dst_sk_color_type,
-                                     GLuint dst_sk_alpha_type,
-                                     GLint shm_id,
-                                     GLuint shm_offset,
-                                     GLuint color_space_offset,
-                                     GLuint pixels_offset,
-                                     const volatile GLbyte* mailbox);
+  void DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
+                                         GLint src_y,
+                                         GLuint dst_width,
+                                         GLuint dst_height,
+                                         GLuint row_bytes,
+                                         GLuint dst_sk_color_type,
+                                         GLuint dst_sk_alpha_type,
+                                         GLint shm_id,
+                                         GLuint shm_offset,
+                                         GLuint color_space_offset,
+                                         GLuint pixels_offset,
+                                         const volatile GLbyte* mailbox);
+  void DoReadbackYUVImagePixelsINTERNAL(GLuint dst_width,
+                                        GLuint dst_height,
+                                        GLint shm_id,
+                                        GLuint shm_offset,
+                                        GLuint y_offset,
+                                        GLuint y_stride,
+                                        GLuint u_offset,
+                                        GLuint u_stride,
+                                        GLuint v_offset,
+                                        GLuint v_stride,
+                                        const volatile GLbyte* mailbox);
   void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
                                            GLenum plane_config,
                                            GLenum subsampling,
@@ -2619,7 +2631,7 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   return written;
 }
 
-void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
+void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     GLint src_x,
     GLint src_y,
     GLuint dst_width,
@@ -2736,7 +2748,7 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     return;
   }
 
-  typedef cmds::ReadbackImagePixelsINTERNALImmediate::Result Result;
+  typedef cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result Result;
   Result* result =
       GetSharedMemoryAs<Result*>(shm_id, shm_offset, sizeof(Result));
   if (!result) {
@@ -2753,6 +2765,150 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
   } else {
     *result = 1;
   }
+}
+
+namespace {
+struct YUVReadbackResult {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+};
+
+void OnReadYUVImagePixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  YUVReadbackResult* context = reinterpret_cast<YUVReadbackResult*>(raw_ctx);
+  context->async_result = std::move(async_result);
+}
+}  // namespace
+
+void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
+    GLuint dst_width,
+    GLuint dst_height,
+    GLint shm_id,
+    GLuint shm_offset,
+    GLuint y_offset,
+    GLuint y_stride,
+    GLuint u_offset,
+    GLuint u_stride,
+    GLuint v_offset,
+    GLuint v_stride,
+    const volatile GLbyte* mailbox) {
+  if (dst_width % 2 != 0 || dst_height % 2 != 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "|dst_width| and |dst_height| must be divisible by 2");
+    return;
+  }
+
+  Mailbox source_mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(mailbox));
+  DLOG_IF(ERROR, !source_mailbox.Verify())
+      << "ReadbackImagePixels was passed an invalid mailbox";
+  auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
+      source_mailbox, shared_context_state_);
+  if (!source_shared_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "Unknown mailbox");
+    return;
+  }
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+
+  // We don't use |end_semaphores| here because we're going to sync with
+  // with the CPU later regardless.
+  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+      source_scoped_access = source_shared_image->BeginScopedReadAccess(
+          &begin_semaphores, nullptr);
+
+  if (!begin_semaphores.empty()) {
+    bool result = shared_context_state_->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(result);
+  }
+
+  if (!source_scoped_access) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "Source shared image is not accessible");
+    return;
+  }
+
+  auto sk_image =
+      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+  if (!sk_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Couldn't create SkImage for reading.");
+    return;
+  }
+
+  auto* result = GetSharedMemoryAs<
+      cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
+      shm_id, shm_offset,
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result));
+  if (!result) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "Failed to retrieve memory for readPixels result");
+    return;
+  }
+
+  size_t y_size = dst_height * y_stride;
+  uint8_t* y_out =
+      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + y_offset, y_size);
+  if (!y_out) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "Failed to get memory for y plane output");
+    return;
+  }
+
+  size_t u_size = ((dst_height + 1) / 2) * u_stride;
+  uint8_t* u_out =
+      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + u_offset, u_size);
+  if (!u_out) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "Failed to get memory for u plane output");
+    return;
+  }
+
+  size_t v_size = ((dst_height + 1) / 2) * v_stride;
+  uint8_t* v_out =
+      GetSharedMemoryAs<uint8_t*>(shm_id, shm_offset + v_offset, v_size);
+  if (!v_out) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "Failed to get memory for v plane output");
+    return;
+  }
+
+  SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
+  SkISize dst_size = SkISize::Make(dst_width, dst_height);
+
+  // While this function indicates it's asynchronous, the flushAndSubmit()
+  // call below ensures it completes synchronously. We do this because
+  // RasterImplementation/Decoder does not currently have a query
+  // that can handle asynchronous calls.
+  YUVReadbackResult yuv_result;
+  sk_image->asyncRescaleAndReadPixelsYUV420(
+      kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect, dst_size,
+      SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+      &OnReadYUVImagePixelsDone, &yuv_result);
+
+  // TODO(crbug.com/1023262): Eventually we should make this function truly
+  // asynchronous by removing this flush and implementing a query that can
+  // signal back to client process.
+  gr_context()->flushAndSubmit(true);
+  if (!yuv_result.async_result) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "Failed to read pixels from SkImage");
+    return;
+  }
+
+  auto& async_result = yuv_result.async_result;
+  libyuv::I420Copy(static_cast<const uint8_t*>(async_result->data(0)),
+                   async_result->rowBytes(0),
+                   static_cast<const uint8_t*>(async_result->data(1)),
+                   async_result->rowBytes(1),
+                   static_cast<const uint8_t*>(async_result->data(2)),
+                   async_result->rowBytes(2), y_out, y_stride, u_out, u_stride,
+                   v_out, v_stride, dst_width, dst_height);
+
+  *result = 1;
 }
 
 void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(

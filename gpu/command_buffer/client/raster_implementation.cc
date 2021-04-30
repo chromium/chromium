@@ -359,13 +359,14 @@ RasterImplementation::SingleThreadChecker::~SingleThreadChecker() {
   CHECK_EQ(0, raster_implementation_->use_count_);
 }
 
-struct RasterImplementation::AsyncReadbackRequest {
-  AsyncReadbackRequest(void* dst_pixels,
-                       GLuint dst_size,
-                       GLuint pixels_offset,
-                       GLuint finished_query,
-                       std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
-                       base::OnceCallback<void(GrSurfaceOrigin, bool)> callback)
+struct RasterImplementation::AsyncARGBReadbackRequest {
+  AsyncARGBReadbackRequest(
+      void* dst_pixels,
+      GLuint dst_size,
+      GLuint pixels_offset,
+      GLuint finished_query,
+      std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> callback)
       : dst_pixels(dst_pixels),
         dst_size(dst_size),
         pixels_offset(pixels_offset),
@@ -374,7 +375,7 @@ struct RasterImplementation::AsyncReadbackRequest {
         query(finished_query),
         done(false),
         readback_successful(false) {}
-  ~AsyncReadbackRequest() {
+  ~AsyncARGBReadbackRequest() {
     // RasterDecoder::ReadbackImagePixels always stores the result pixels with
     // top left origin.
     std::move(callback).Run(kTopLeft_GrSurfaceOrigin, readback_successful);
@@ -388,6 +389,95 @@ struct RasterImplementation::AsyncReadbackRequest {
   GLuint query;
   bool done;
   bool readback_successful;
+};
+
+struct RasterImplementation::AsyncYUVReadbackRequest {
+  AsyncYUVReadbackRequest(gfx::Rect output_rect,
+                          GLuint query,
+                          int y_plane_stride,
+                          GLuint y_plane_offset,
+                          uint8_t* y_plane_data,
+                          int u_plane_stride,
+                          GLuint u_plane_offset,
+                          uint8_t* u_plane_data,
+                          int v_plane_stride,
+                          GLuint v_plane_offset,
+                          uint8_t* v_plane_data,
+                          std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
+                          base::OnceCallback<void()> release_mailbox,
+                          base::OnceCallback<void(bool)> readback_done)
+      : output_rect(output_rect),
+        query(query),
+        y_plane_stride(y_plane_stride),
+        y_plane_offset(y_plane_offset),
+        y_plane_data(y_plane_data),
+        u_plane_stride(u_plane_stride),
+        u_plane_offset(u_plane_offset),
+        u_plane_data(u_plane_data),
+        v_plane_stride(v_plane_stride),
+        v_plane_offset(v_plane_offset),
+        v_plane_data(v_plane_data),
+        shared_memory(std::move(shared_memory)),
+        release_mailbox(std::move(release_mailbox)),
+        readback_done(std::move(readback_done)) {}
+  ~AsyncYUVReadbackRequest() {
+    std::move(release_mailbox).Run();
+    std::move(readback_done).Run(readback_successful);
+  }
+
+  void CopyYUVPlanes() {
+    void* shm_address = shared_memory->address();
+    auto* result =
+        static_cast<cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result*>(
+            shm_address);
+    if (!*result)
+      return;
+
+    CopyYUVPlane(output_rect.height(), y_plane_stride, y_plane_offset,
+                 shm_address, y_plane_data);
+
+    // U and V planes are half the size of the Y plane.
+    CopyYUVPlane(output_rect.height() / 2, u_plane_stride, u_plane_offset,
+                 shm_address, u_plane_data);
+    CopyYUVPlane(output_rect.height() / 2, v_plane_stride, v_plane_offset,
+                 shm_address, v_plane_data);
+
+    readback_successful = true;
+  }
+
+  const gfx::Rect output_rect;
+  GLuint query;
+
+  int y_plane_stride;
+  GLuint y_plane_offset;
+  uint8_t* y_plane_data;
+
+  int u_plane_stride;
+  GLuint u_plane_offset;
+  uint8_t* u_plane_data;
+
+  int v_plane_stride;
+  GLuint v_plane_offset;
+  uint8_t* v_plane_data;
+
+  std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
+  base::OnceCallback<void()> release_mailbox;
+  base::OnceCallback<void(bool)> readback_done;
+
+  bool done = false;
+  bool readback_successful = false;
+
+ private:
+  void CopyYUVPlane(GLuint plane_height,
+                    int plane_stride,
+                    GLuint plane_offset,
+                    void* in_buffer,
+                    uint8_t* out_buffer) {
+    // RasterDecoder writes the pixels into |in_buffer| with the requested
+    // stride so we can copy the whole block here.
+    memcpy(out_buffer, static_cast<uint8_t*>(in_buffer) + plane_offset,
+           plane_height * plane_stride);
+  }
 };
 
 RasterImplementation::RasterImplementation(
@@ -1324,7 +1414,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   // asynchronous. Instead, store the result at the beginning of the shared
   // memory we allocate to transfer pixels.
   GLuint color_space_offset = base::bits::AlignUp(
-      sizeof(cmds::ReadbackImagePixelsINTERNALImmediate::Result),
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
       sizeof(uint64_t));
 
   // Add the size of the SkColorSpace while maintaining 8-byte alignment.
@@ -1349,7 +1439,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   // Readback success/failure result is stored at the beginning of the shared
   // memory region. Client is responsible for initialization so we do so here.
   auto* readback_result =
-      static_cast<cmds::ReadbackImagePixelsINTERNALImmediate::Result*>(
+      static_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
           shm_address);
   *readback_result = 0;
 
@@ -1371,7 +1461,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     BeginQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM, query);
   }
 
-  helper_->ReadbackImagePixelsINTERNALImmediate(
+  helper_->ReadbackARGBImagePixelsINTERNALImmediate(
       src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
       dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
       color_space_offset, pixels_offset, source_mailbox.name);
@@ -1379,13 +1469,13 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   if (is_async) {
     EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
 
-    auto request = std::make_unique<AsyncReadbackRequest>(
+    auto request = std::make_unique<AsyncARGBReadbackRequest>(
         dst_pixels, dst_size, pixels_offset, query,
         std::move(scoped_shared_memory), std::move(readback_done));
     auto* request_ptr = request.get();
-    request_queue_.push(std::move(request));
+    argb_request_queue_.push(std::move(request));
     SignalQuery(query,
-                base::BindOnce(&RasterImplementation::OnAsyncReadbackDone,
+                base::BindOnce(&RasterImplementation::OnAsyncARGBReadbackDone,
                                base::Unretained(this), request_ptr));
   } else {
     WaitForCmd();
@@ -1398,21 +1488,21 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   }
 }
 
-void RasterImplementation::OnAsyncReadbackDone(
-    AsyncReadbackRequest* finished_request) {
+void RasterImplementation::OnAsyncARGBReadbackDone(
+    AsyncARGBReadbackRequest* finished_request) {
   finished_request->done = true;
 
   // Only process requests in the order they were sent, regardless of when they
   // finish.
-  while (!request_queue_.empty()) {
-    auto& request = request_queue_.front();
+  while (!argb_request_queue_.empty()) {
+    auto& request = argb_request_queue_.front();
     if (!request->done)
       break;
 
     // Readback success/failure is stored at the beginning of the shared memory
     // region.
     auto* result =
-        static_cast<cmds::ReadbackImagePixelsINTERNALImmediate::Result*>(
+        static_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
             request->shared_memory->address());
     if (*result) {
       memcpy(request->dst_pixels,
@@ -1422,19 +1512,26 @@ void RasterImplementation::OnAsyncReadbackDone(
       request->readback_successful = true;
     }
 
-    if (request_queue_.front()->query)
+    if (request->query)
       DeleteQueriesEXT(1, &request->query);
 
-    request_queue_.pop();
+    argb_request_queue_.pop();
   }
 }
 
 void RasterImplementation::CancelRequests() {
-  while (!request_queue_.empty()) {
-    if (request_queue_.front()->query)
-      DeleteQueriesEXT(1, &request_queue_.front()->query);
+  while (!argb_request_queue_.empty()) {
+    if (argb_request_queue_.front()->query)
+      DeleteQueriesEXT(1, &argb_request_queue_.front()->query);
 
-    request_queue_.pop();
+    argb_request_queue_.pop();
+  }
+
+  while (!yuv_request_queue_.empty()) {
+    if (yuv_request_queue_.front()->query)
+      DeleteQueriesEXT(1, &yuv_request_queue_.front()->query);
+
+    yuv_request_queue_.pop();
   }
 }
 
@@ -1462,6 +1559,18 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
                               std::move(readback_done), out);
 }
 
+void RasterImplementation::ReadbackImagePixels(
+    const gpu::Mailbox& source_mailbox,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    int src_x,
+    int src_y,
+    void* dst_pixels) {
+  ReadbackImagePixelsINTERNAL(
+      source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
+}
+
 void RasterImplementation::ReadbackYUVPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
@@ -1477,19 +1586,108 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
-  NOTREACHED();
+  DCHECK(!!release_mailbox);
+  DCHECK(!!readback_done);
+
+  if (output_rect.width() % 2 != 0 || output_rect.height() % 2 != 0) {
+    SetGLError(GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+               "|output_rect| width and height must be divisible by 2");
+    return;
+  }
+
+  GLuint y_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+
+  if (y_plane_row_stride_bytes < output_rect.width()) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|y_plane_row_stride_bytes| must be >= the width of the y plane.");
+    return;
+  }
+  GLuint y_padded_size = output_rect.height() * y_plane_row_stride_bytes;
+
+  GLuint u_offset =
+      base::bits::AlignUp(y_offset + y_padded_size, sizeof(uint64_t));
+  if (u_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|u_plane_row_stride_bytes| must be >= the width of the u plane.");
+    return;
+  }
+  GLuint u_padded_size =
+      ((output_rect.height() + 1) / 2) * u_plane_row_stride_bytes;
+
+  GLuint v_offset =
+      base::bits::AlignUp(u_offset + u_padded_size, sizeof(uint64_t));
+  if (v_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
+    SetGLError(
+        GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+        "|v_plane_row_stride_bytes| must be >= the width of the v plane.");
+    return;
+  }
+  GLuint v_padded_size =
+      ((output_rect.height() + 1) / 2) * v_plane_row_stride_bytes;
+
+  size_t total_size =
+      base::bits::AlignUp(v_offset + v_padded_size, sizeof(uint64_t));
+
+  std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
+                                              mapped_memory_.get());
+  if (!scoped_shared_memory->valid()) {
+    SetGLError(GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
+               "couldn't allocate shared memory");
+    return;
+  }
+
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* shm_address = scoped_shared_memory->address();
+
+  auto* readback_result =
+      static_cast<cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result*>(
+          shm_address);
+  *readback_result = 0;
+
+  GLuint query;
+  GenQueriesEXT(1, &query);
+  BeginQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM, query);
+  helper_->ReadbackYUVImagePixelsINTERNALImmediate(
+      output_rect.width(), output_rect.height(), shm_id, shm_offset, y_offset,
+      y_plane_row_stride_bytes, u_offset, u_plane_row_stride_bytes, v_offset,
+      v_plane_row_stride_bytes, source_mailbox.name);
+  EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
+
+  auto request = std::make_unique<AsyncYUVReadbackRequest>(
+      output_rect, query, y_plane_row_stride_bytes, y_offset, y_plane_data,
+      u_plane_row_stride_bytes, u_offset, u_plane_data,
+      v_plane_row_stride_bytes, v_offset, v_plane_data,
+      std::move(scoped_shared_memory), std::move(release_mailbox),
+      std::move(readback_done));
+  auto* request_ptr = request.get();
+  yuv_request_queue_.push(std::move(request));
+  SignalQuery(query,
+              base::BindOnce(&RasterImplementation::OnAsyncYUVReadbackDone,
+                             base::Unretained(this), request_ptr));
 }
 
-void RasterImplementation::ReadbackImagePixels(
-    const gpu::Mailbox& source_mailbox,
-    const SkImageInfo& dst_info,
-    GLuint dst_row_bytes,
-    int src_x,
-    int src_y,
-    void* dst_pixels) {
-  ReadbackImagePixelsINTERNAL(
-      source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
+void RasterImplementation::OnAsyncYUVReadbackDone(
+    AsyncYUVReadbackRequest* finished_request) {
+  finished_request->done = true;
+
+  while (!yuv_request_queue_.empty()) {
+    auto& request = yuv_request_queue_.front();
+    if (!request->done)
+      break;
+
+    request->CopyYUVPlanes();
+
+    if (request->query)
+      DeleteQueriesEXT(1, &request->query);
+
+    yuv_request_queue_.pop();
+  }
 }
 
 void RasterImplementation::IssueImageDecodeCacheEntryCreation(

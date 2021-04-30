@@ -358,10 +358,15 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
       void* dst_pixels);
 
-  struct AsyncReadbackRequest;
-  void OnAsyncReadbackDone(AsyncReadbackRequest* request);
+  struct AsyncARGBReadbackRequest;
+  void OnAsyncARGBReadbackDone(AsyncARGBReadbackRequest* request);
+  base::queue<std::unique_ptr<AsyncARGBReadbackRequest>> argb_request_queue_;
+
+  struct AsyncYUVReadbackRequest;
+  void OnAsyncYUVReadbackDone(AsyncYUVReadbackRequest* request);
+  base::queue<std::unique_ptr<AsyncYUVReadbackRequest>> yuv_request_queue_;
+
   void CancelRequests();
-  base::queue<std::unique_ptr<AsyncReadbackRequest>> request_queue_;
 
 // Set to 1 to have the client fail when a GL error is generated.
 // This helps find bugs in the renderer since the debugger stops on the error.
