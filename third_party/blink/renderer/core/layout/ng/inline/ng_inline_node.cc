@@ -1230,7 +1230,7 @@ void NGInlineNode::ShapeText(
     // glyphs with the desired size to make it less special for line breaker.
     if (UNLIKELY(start_item.IsSymbolMarker())) {
       LayoutUnit symbol_width = ListMarker::WidthOfSymbol(start_style);
-      DCHECK_GT(symbol_width, 0);
+      DCHECK_GE(symbol_width, 0);
       start_item.shape_result_ = ShapeResult::CreateForSpaces(
           &font, direction, start_item.StartOffset(), start_item.Length(),
           symbol_width);
