@@ -4,8 +4,6 @@
 
 #include "services/network/public/cpp/is_potentially_trustworthy_unittest.h"
 
-#include "base/test/scoped_command_line.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,41 +30,6 @@ std::vector<std::string> CanonicalizeAllowlist(
     std::vector<std::string>* rejected_patterns) {
   return SecureOriginAllowlist::CanonicalizeAllowlistForTesting(
       allowlist, rejected_patterns);
-}
-
-// TODO(crbug.com/1164416): Move the tests below to the
-// AbstractTrustworthinessTest.UrlFromString test case in
-// //services/network/public/cpp/is_potentially_trustworthy_unittest.h
-// See also SecurityOriginTest.IsSecure test.
-TEST(IsPotentiallyTrustworthy, Url) {
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file:///test/fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file:///test/"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file://localhost/test/"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file://otherhost/test/"));
-
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://localhost/fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://localhost./fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://pumpkin.localhost/fun.html"));
-  EXPECT_TRUE(
-      IsUrlPotentiallyTrustworthy("http://crumpet.pumpkin.localhost/fun.html"));
-  EXPECT_TRUE(
-      IsUrlPotentiallyTrustworthy("http://pumpkin.localhost:8080/fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy(
-      "http://crumpet.pumpkin.localhost:3000/fun.html"));
-
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://127.0.0.1/fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("ftp://127.0.0.1/fun.html"));
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://127.3.0.1/fun.html"));
-
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://[::1]/fun.html"));
-
-  EXPECT_TRUE(
-      IsUrlPotentiallyTrustworthy("filesystem:ftp://127.0.0.1/temporary/"));
-  EXPECT_TRUE(
-      IsUrlPotentiallyTrustworthy("blob:ftp://127.0.0.1/guid-goes-here"));
-
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("blob:data:text/html,Hello"));
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("blob:about:blank"));
 }
 
 class SecureOriginAllowlistTest : public testing::Test {
