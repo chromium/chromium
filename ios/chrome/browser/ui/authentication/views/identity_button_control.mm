@@ -185,9 +185,11 @@ const CGFloat kArrowDownMargin = 12.;
 
 - (void)updateArrowDirection {
   UIImage* image = nil;
+  UIColor* tintColor = nil;
   switch (self.arrowDirection) {
     case IdentityButtonControlArrowRight:
       image = [UIImage imageNamed:@"identity_picker_view_arrow_right"];
+      tintColor = [UIColor colorNamed:kTextTertiaryColor];
       break;
     case IdentityButtonControlArrowDown:
       image = [UIImage imageNamed:@"identity_picker_view_arrow_down"];
@@ -196,6 +198,7 @@ const CGFloat kArrowDownMargin = 12.;
   DCHECK(image);
   self.arrowImageView.image =
       [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  self.arrowImageView.tintColor = tintColor;
 }
 
 #pragma mark - UIResponder

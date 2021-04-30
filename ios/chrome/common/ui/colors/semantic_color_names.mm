@@ -29,6 +29,7 @@ NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
 NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
+NSString* const kTextTertiaryColor = @"text_tertiary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
 NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";
 NSString* const kToolbarButtonColor = @"toolbar_button_color";

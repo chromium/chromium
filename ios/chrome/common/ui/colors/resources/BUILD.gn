@@ -48,6 +48,7 @@ group("resources") {
     ":text_primary_dark_color",
     ":text_secondary_color",
     ":text_secondary_dark_color",
+    ":text_tertiary_color",
     ":textfield_background_color",
     ":textfield_background_dark_color",
     ":textfield_placeholder_color",
@@ -188,6 +189,10 @@ colorset("tertiary_background_color") {
 
 colorset("tertiary_background_dark_color") {
   sources = [ "tertiary_background_dark_color.colorset/Contents.json" ]
+}
+
+colorset("text_tertiary_color") {
+  sources = [ "text_tertiary_color.colorset/Contents.json" ]
 }
 
 colorset("text_primary_color") {
