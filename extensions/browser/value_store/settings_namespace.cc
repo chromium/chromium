@@ -31,16 +31,6 @@ std::string ToString(Namespace settings_namespace) {
   return std::string();
 }
 
-Namespace FromString(const std::string& namespace_string) {
-  if (namespace_string == kLocalNamespace)
-    return LOCAL;
-  if (namespace_string == kSyncNamespace)
-    return SYNC;
-  if (namespace_string == kManagedNamespace)
-    return MANAGED;
-  return INVALID;
-}
-
 }  // namespace settings_namespace
 
 }  // namespace extensions
