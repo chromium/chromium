@@ -876,6 +876,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         base::TimeTicks now);
     ~MainThreadOnly();
 
+    bool IsInNestedRunloop();
+
     IdleTimeEstimator idle_time_estimator;
     TraceableState<UseCase, TracingCategoryName::kDefault> current_use_case;
     Policy current_policy;
@@ -953,8 +955,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                std::vector<scoped_refptr<MainThreadTaskQueue>>>
         running_queues;
 
-    // True if a nested RunLoop is running.
-    bool nested_runloop;
+    // Depth of nested_runloop.
+    int nested_runloop_depth = 0;
 
     // High-priority for compositing events after input. This will cause
     // compositing events get a higher priority until the start of the next

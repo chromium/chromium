@@ -485,7 +485,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       virtual_time_pause_count(0),
       max_virtual_time_task_starvation_count(0),
       virtual_time_stopped(false),
-      nested_runloop(false),
       prioritize_compositing_after_input(
           false,
           "Scheduler.PrioritizeCompositingAfterInput",
@@ -502,6 +501,10 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
               "PowerModeVoter.Audible")) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
+
+bool MainThreadSchedulerImpl::MainThreadOnly::IsInNestedRunloop() {
+  return nested_runloop_depth != 0;
+}
 
 MainThreadSchedulerImpl::AnyThread::AnyThread(
     MainThreadSchedulerImpl* main_thread_scheduler_impl)
@@ -2035,7 +2038,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
     case VirtualTimePolicy::kAdvance:
       if (virtual_time_domain_) {
         virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(
-            main_thread_only().nested_runloop
+            main_thread_only().IsInNestedRunloop()
                 ? 0
                 : main_thread_only().max_virtual_time_task_starvation_count);
         virtual_time_domain_->SetVirtualTimeFence(base::TimeTicks());
@@ -2052,7 +2055,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
     case VirtualTimePolicy::kDeterministicLoading:
       if (virtual_time_domain_) {
         virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(
-            main_thread_only().nested_runloop
+            main_thread_only().IsInNestedRunloop()
                 ? 0
                 : main_thread_only().max_virtual_time_task_starvation_count);
       }
@@ -2062,7 +2065,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
       // system. We also pause while the renderer is waiting for various
       // asynchronous things e.g. resource load or navigation.
       SetVirtualTimeStopped(main_thread_only().virtual_time_pause_count != 0 ||
-                            main_thread_only().nested_runloop);
+                            main_thread_only().IsInNestedRunloop());
       break;
   }
 }
@@ -2680,7 +2683,7 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   }
 
   main_thread_only().running_queues.push(queue);
-  if (main_thread_only().nested_runloop)
+  if (main_thread_only().IsInNestedRunloop())
     return;
 
   main_thread_only().current_task_start_time = task_timing.start_time();
@@ -2718,7 +2721,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   if (scheduling_settings().mbi_override_task_runner_handle)
     EndAgentGroupSchedulerScope();
 
-  if (main_thread_only().nested_runloop)
+  if (main_thread_only().IsInNestedRunloop())
     return;
 
   DispatchOnTaskCompletionCallbacks();
@@ -2861,13 +2864,13 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
 
 void MainThreadSchedulerImpl::OnBeginNestedRunLoop() {
   DCHECK(!main_thread_only().running_queues.empty());
-  main_thread_only().nested_runloop = true;
+  main_thread_only().nested_runloop_depth++;
   ApplyVirtualTimePolicy();
 }
 
 void MainThreadSchedulerImpl::OnExitNestedRunLoop() {
   DCHECK(!main_thread_only().running_queues.empty());
-  main_thread_only().nested_runloop = false;
+  main_thread_only().nested_runloop_depth--;
   ApplyVirtualTimePolicy();
 }
 
@@ -3021,13 +3024,13 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
 
 void MainThreadSchedulerImpl::OnSafepointEntered() {
   DCHECK(WTF::IsMainThread());
-  DCHECK(!main_thread_only().nested_runloop);
+  DCHECK(!main_thread_only().IsInNestedRunloop());
   main_thread_only().metrics_helper.OnSafepointEntered(helper_.NowTicks());
 }
 
 void MainThreadSchedulerImpl::OnSafepointExited() {
   DCHECK(WTF::IsMainThread());
-  DCHECK(!main_thread_only().nested_runloop);
+  DCHECK(!main_thread_only().IsInNestedRunloop());
   main_thread_only().metrics_helper.OnSafepointExited(helper_.NowTicks());
 }
 
