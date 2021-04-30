@@ -12,6 +12,7 @@
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
+#include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
@@ -230,6 +231,16 @@ void (*ObjectTraits<struct wp_presentation_feedback>::deleter)(
 
 const wl_interface* ObjectTraits<struct wl_proxy>::interface = nullptr;
 void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
+
+const wl_interface* ObjectTraits<zwp_pointer_gesture_pinch_v1>::interface =
+    &zwp_pointer_gesture_pinch_v1_interface;
+void (*ObjectTraits<zwp_pointer_gesture_pinch_v1>::deleter)(
+    zwp_pointer_gesture_pinch_v1*) = &zwp_pointer_gesture_pinch_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_pointer_gestures_v1>::interface =
+    &zwp_pointer_gestures_v1_interface;
+void (*ObjectTraits<zwp_pointer_gestures_v1>::deleter)(
+    zwp_pointer_gestures_v1*) = &zwp_pointer_gestures_v1_destroy;
 
 const wl_interface* ObjectTraits<wp_viewport>::interface =
     &wp_viewport_interface;

@@ -45,6 +45,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
@@ -274,6 +275,11 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
       // Wayland doesn't expose InputDeviceType.
       devices.emplace_back(InputDevice(
           pointer_->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN, "pointer"));
+
+      // Pointer is required for PointerGestures to be functional.
+      if (wayland_zwp_pointer_gestures_)
+        wayland_zwp_pointer_gestures_->Init();
+
     } else {
       LOG(ERROR) << "Failed to get wl_pointer from seat";
     }
@@ -571,6 +577,17 @@ void WaylandConnection::Global(void* data,
     }
     connection->zaura_shell_ =
         std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
+  } else if (!connection->wayland_zwp_pointer_gestures_ &&
+             (strcmp(interface, "zwp_pointer_gestures_v1") == 0)) {
+    auto zwp_pointer_gestures_v1 =
+        wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, version);
+    if (!zwp_pointer_gestures_v1) {
+      LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
+      return;
+    }
+    connection->wayland_zwp_pointer_gestures_ =
+        std::make_unique<WaylandZwpPointerGestures>(
+            zwp_pointer_gestures_v1.release(), connection);
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =

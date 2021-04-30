@@ -26,7 +26,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   XDGToplevelWrapperImpl& operator=(const XDGToplevelWrapperImpl&) = delete;
   ~XDGToplevelWrapperImpl() override;
 
-  // ShellSurfaceWrapper overrides:
+  // ShellToplevelWrapper overrides:
   bool Initialize() override;
   void SetMaximized() override;
   void UnSetMaximized() override;

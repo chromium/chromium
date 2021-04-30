@@ -1,0 +1,72 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
+
+#include <pointer-gestures-unstable-v1-client-protocol.h>
+
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+
+namespace ui {
+
+WaylandZwpPointerGestures::WaylandZwpPointerGestures(
+    zwp_pointer_gestures_v1* pointer_gestures,
+    WaylandConnection* connection)
+    : obj_(pointer_gestures), connection_(connection) {
+  DCHECK(obj_);
+  DCHECK(connection_);
+}
+
+WaylandZwpPointerGestures::~WaylandZwpPointerGestures() = default;
+
+void WaylandZwpPointerGestures::Init() {
+  DCHECK(connection_->pointer());
+
+  pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(
+      obj_.get(), connection_->pointer()->wl_object()));
+
+  static const zwp_pointer_gesture_pinch_v1_listener
+      zwp_pointer_gesture_pinch_v1_listener = {
+          &WaylandZwpPointerGestures::OnPinchBegin,
+          &WaylandZwpPointerGestures::OnPinchUpdate,
+          &WaylandZwpPointerGestures::OnPinchEnd,
+      };
+  zwp_pointer_gesture_pinch_v1_add_listener(
+      pinch_.get(), &zwp_pointer_gesture_pinch_v1_listener, this);
+}
+
+// static
+void WaylandZwpPointerGestures::OnPinchBegin(
+    void* data,
+    struct zwp_pointer_gesture_pinch_v1* zwp_pointer_gesture_pinch_v1,
+    uint32_t serial,
+    uint32_t time,
+    struct wl_surface* surface,
+    uint32_t fingers) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandZwpPointerGestures::OnPinchUpdate(
+    void* data,
+    struct zwp_pointer_gesture_pinch_v1* zwp_pointer_gesture_pinch_v1,
+    uint32_t time,
+    wl_fixed_t dx,
+    wl_fixed_t dy,
+    wl_fixed_t scale,
+    wl_fixed_t rotation) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandZwpPointerGestures::OnPinchEnd(
+    void* data,
+    struct zwp_pointer_gesture_pinch_v1* zwp_pointer_gesture_pinch_v1,
+    uint32_t serial,
+    uint32_t time,
+    int32_t cancelled) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+}  // namespace ui

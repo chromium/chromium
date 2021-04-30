@@ -63,6 +63,8 @@ struct zwp_linux_dmabuf_v1;
 struct zwp_linux_buffer_release_v1;
 struct zwp_linux_explicit_synchronization_v1;
 struct zwp_linux_surface_synchronization_v1;
+struct zwp_pointer_gesture_pinch_v1;
+struct zwp_pointer_gestures_v1;
 struct zxdg_shell_v6;
 struct zxdg_surface_v6;
 struct zxdg_toplevel_v6;
@@ -306,6 +308,18 @@ struct ObjectTraits<wl_proxy> {
   // Interface is null for proxy.
   static const wl_interface* interface;
   static void (*deleter)(void*);
+};
+
+template <>
+struct ObjectTraits<zwp_pointer_gesture_pinch_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_pointer_gesture_pinch_v1*);
+};
+
+template <>
+struct ObjectTraits<zwp_pointer_gestures_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_pointer_gestures_v1*);
 };
 
 template <>
