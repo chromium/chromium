@@ -83,6 +83,8 @@ class SpeechRecognitionRecognizerImpl
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level);
 
+  const bool enable_soda_;
+
  private:
   void OnCaptionBubbleClosed() final;
 
@@ -99,7 +101,6 @@ class SpeechRecognitionRecognizerImpl
   // the speech recognition service back to the renderer.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
 
-  bool enable_soda_ = false;
   std::unique_ptr<soda::SodaClient> soda_client_;
 
   std::unique_ptr<CloudSpeechRecognitionClient> cloud_client_;

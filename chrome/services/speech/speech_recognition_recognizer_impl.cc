@@ -149,7 +149,8 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
-    : client_remote_(std::move(remote)),
+    : enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
+      client_remote_(std::move(remote)),
       config_path_(config_path),
       options_(std::move(options)) {
   recognition_event_callback_ = media::BindToCurrentLoop(
@@ -159,18 +160,17 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       media::BindToCurrentLoop(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
           weak_factory_.GetWeakPtr()));
-  // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
-  // here because it exists at a different location. Instead,
-  // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  enable_soda_ = base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
-#endif
   if (enable_soda_) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
+    // here because it exists at a different location. Instead,
+    // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
     DCHECK(base::PathExists(binary_path));
     soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
     if (!soda_client_->BinaryLoadedSuccessfully()) {
       OnSpeechRecognitionError();
     }
+#endif
   } else {
     cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
         recognition_event_callback(),

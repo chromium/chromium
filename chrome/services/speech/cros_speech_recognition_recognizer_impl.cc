@@ -46,7 +46,6 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
           std::move(options),
           binary_path,
           config_path),
-      enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
       binary_path_(binary_path),
       languagepack_path_(config_path) {
   recognition_event_callback_ = base::BindRepeating(
