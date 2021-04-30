@@ -1,0 +1,59 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.tab.proto;
+
+option java_package = "org.chromium.chrome.browser.tab.proto";
+
+message PriceTrackingData {
+  // metadata relating to the product
+  optional BuyableProduct buyable_product = 1;
+
+  // price update data for the product
+  optional ProductPriceUpdate product_update = 2;
+}
+
+message BuyableProduct {
+  enum ProductReferenceType {
+    UNKNOWN = 0;
+    // The product referenced in the product details page.
+    MAIN_PRODUCT = 1;
+  }
+
+  // The title of the product.
+  optional string title = 1;
+
+  // Direct link to the product image.
+  optional string image_url = 2;
+
+  // Price as shown in the page.
+  optional ProductPrice current_price = 3;
+
+  // Determines how the product is referenced in the current page.
+  optional ProductReferenceType reference_type = 4;
+
+  // Docid of the offer.
+  optional fixed64 offer_id = 5;
+}
+
+message ProductPriceUpdate {
+  // Docid of the offer represented by this update.
+  optional fixed64 offer_id = 1;
+
+  // Old price as seen on the shopping backend.
+  optional ProductPrice old_price = 2;
+
+  // New price as seen on the shopping backend.
+  optional ProductPrice new_price = 3;
+}
+
+message ProductPrice {
+  // Code for the currency e.g. USD.
+  optional string currency_code = 1;
+
+  // Price in micros.
+  optional int64 amount_micros = 2;
+}

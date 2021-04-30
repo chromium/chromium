@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
-import org.chromium.chrome.browser.page_annotations.PageAnnotationsService;
-import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,6 +35,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Semaphore;
@@ -68,12 +67,6 @@ public class ShoppingPersistedTabDataTest {
     @Mock
     protected Profile mProfileMock;
 
-    @Mock
-    protected PageAnnotationsServiceFactory mServiceFactoryMock;
-
-    @Mock
-    protected PageAnnotationsService mPageAnnotationsServiceMock;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -82,12 +75,11 @@ public class ShoppingPersistedTabDataTest {
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock, OptimizationGuideDecision.TRUE);
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                OptimizationGuideDecision.TRUE, null);
         PersistedTabDataConfiguration.setUseTestConfig(true);
-
         Profile.setLastUsedProfileForTesting(mProfileMock);
-        doReturn(mPageAnnotationsServiceMock).when(mServiceFactoryMock).getForLastUsedProfile();
-        ShoppingPersistedTabData.sPageAnnotationsServiceFactory = mServiceFactoryMock;
     }
 
     @UiThreadTest
@@ -114,11 +106,15 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testShoppingBloomFilterNotShoppingWebsite() {
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_INITIAL);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock, OptimizationGuideDecision.FALSE);
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                OptimizationGuideDecision.FALSE, null);
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
@@ -128,21 +124,26 @@ public class ShoppingPersistedTabDataTest {
                     tab, (shoppingPersistedTabData) -> { semaphore.release(); });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 0);
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 0);
     }
 
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testShoppingBloomFilterShoppingWebsite() {
         for (@OptimizationGuideDecision int decision :
                 new int[] {OptimizationGuideDecision.TRUE, OptimizationGuideDecision.UNKNOWN}) {
-            ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(
-                    mPageAnnotationsServiceMock,
-                    ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+            ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                    mOptimizationGuideBridgeJniMock,
+                    HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                    ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                             .BUYABLE_PRODUCT_INITIAL);
             ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                    mOptimizationGuideBridgeJniMock, decision);
+                    mOptimizationGuideBridgeJniMock,
+                    HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(), decision,
+                    null);
             Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                     ShoppingPersistedTabDataTestUtils.TAB_ID,
                     ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
@@ -152,8 +153,8 @@ public class ShoppingPersistedTabDataTest {
                         tab, (shoppingPersistedTabData) -> { semaphore.release(); });
             });
             ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-            ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                    mPageAnnotationsServiceMock, 1);
+            ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                    mOptimizationGuideBridgeJniMock, 1);
         }
     }
 
@@ -171,15 +172,17 @@ public class ShoppingPersistedTabDataTest {
                     tab, (shoppingPersistedTabData) -> { semaphore.release(); });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 0);
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 0);
     }
 
     @SmallTest
     @Test
     @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"})
-    public void test2DayTabWithStaleOverride1day() {
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400/"
+            + "price_tracking_with_optimization_guide/true"})
+    public void
+    test2DayTabWithStaleOverride1day() {
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
@@ -191,20 +194,26 @@ public class ShoppingPersistedTabDataTest {
                     tab, (shoppingPersistedTabData) -> { semaphore.release(); });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 0);
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 0);
     }
 
     @SmallTest
     @Test
     @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"})
-    public void testHalfDayTabWithStaleOverride1day() {
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400/"
+            + "price_tracking_with_optimization_guide/true"})
+    public void
+    testHalfDayTabWithStaleOverride1day() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_INITIAL);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock, OptimizationGuideDecision.TRUE);
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                OptimizationGuideDecision.TRUE, null);
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
@@ -216,24 +225,26 @@ public class ShoppingPersistedTabDataTest {
                     tab, (shoppingPersistedTabData) -> { semaphore.release(); });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 1);
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 1);
     }
 
     @UiThreadTest
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testNoRefetch() {
         final Semaphore initialSemaphore = new Semaphore(0);
         final Semaphore updateSemaphore = new Semaphore(0);
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        // Mock annotations response.
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_INITIAL);
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
@@ -248,10 +259,12 @@ public class ShoppingPersistedTabDataTest {
             });
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(initialSemaphore);
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 1);
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 1);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_PRICE_UPDATED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
@@ -268,8 +281,8 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(updateSemaphore);
         // EndpointFetcher should not have been called a second time - because we haven't passed the
         // time to live
-        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
-                mPageAnnotationsServiceMock, 1);
+        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
+                mOptimizationGuideBridgeJniMock, 1);
     }
 
     @UiThreadTest
@@ -416,13 +429,17 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testSPTDSavingEnabledUponSuccessfulResponse() {
         final Semaphore semaphore = new Semaphore(0);
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
@@ -436,13 +453,17 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testSPTDSavingEnabledUponSuccessfulProductUpdateResponse() {
         final Semaphore semaphore = new Semaphore(0);
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
@@ -461,9 +482,31 @@ public class ShoppingPersistedTabDataTest {
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
-                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
-                        .BUYABLE_PRODUCT_EMPTY);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.BUYABLE_PRODUCT_EMPTY);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
+                Assert.assertNull(shoppingPersistedTabData);
+                semaphore.release();
+            });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSPTDNullOptimizationGuideFalse() {
+        final Semaphore semaphore = new Semaphore(0);
+        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.NONE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertNull(shoppingPersistedTabData);

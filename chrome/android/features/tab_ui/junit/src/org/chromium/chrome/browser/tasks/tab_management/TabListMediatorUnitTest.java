@@ -64,6 +64,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -104,6 +106,9 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.BuyableProduct;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPrice;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -128,6 +133,7 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -147,7 +153,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * Tests for {@link TabListMediator}.
  */
@@ -176,19 +181,34 @@ public class TabListMediatorUnitTest {
     private static final String TAB2_DOMAIN = "tab2.com";
     private static final String TAB3_DOMAIN = "tab3.com";
     private static final String NEW_DOMAIN = "new.com";
-    private static final String TAB1_URL = "https://" + TAB1_DOMAIN;
-    private static final String TAB2_URL = "https://" + TAB2_DOMAIN;
-    private static final String TAB3_URL = "https://" + TAB3_DOMAIN;
+    private static final String TAB1_URL = JUnitTestGURLs.URL_1;
+    private static final String TAB2_URL = JUnitTestGURLs.URL_2;
+    private static final String TAB3_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String NEW_URL = "https://" + NEW_DOMAIN;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
-    private static final String EMPTY_ENDPOINT_RESPONSE = "{}";
-    private static final String ENDPOINT_RESPONSE =
-            "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + "\"price\" : 123456789012345, \"currency\" : \"USD\"}]}";
+
+    private static final BuyableProduct BUYABLE_PRODUCT_PROTO_INITIAL =
+            BuyableProduct.newBuilder()
+                    .setCurrentPrice(createProductPrice(123456789012345L, "USD"))
+                    .build();
+    private static ProductPrice createProductPrice(long amountMicros, String currencyCode) {
+        return ProductPrice.newBuilder()
+                .setCurrencyCode(currencyCode)
+                .setAmountMicros(amountMicros)
+                .build();
+    }
+    private static final PriceTrackingData PRICE_TRACKING_BUYABLE_PRODUCT_INITIAL =
+            PriceTrackingData.newBuilder().setBuyableProduct(BUYABLE_PRODUCT_PROTO_INITIAL).build();
+    private static final Any ANY_BUYABLE_PRODUCT_INITIAL =
+            Any.newBuilder()
+                    .setValue(ByteString.copyFrom(
+                            PRICE_TRACKING_BUYABLE_PRODUCT_INITIAL.toByteArray()))
+                    .build();
+    private static final Any ANY_EMPTY = Any.newBuilder().build();
 
     @IntDef({TabListMediatorType.TAB_SWITCHER, TabListMediatorType.TAB_STRIP,
             TabListMediatorType.TAB_GRID_DIALOG})
@@ -294,7 +314,6 @@ public class TabListMediatorUnitTest {
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
-        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE);
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
         TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.setForTesting(true);
@@ -1894,10 +1913,12 @@ public class TabListMediatorUnitTest {
                     PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                             PriceTrackingUtilities.TRACK_PRICES_ON_TABS, priceTrackingEnabled);
                     Profile.setLastUsedProfileForTesting(mProfile);
-                    Map<String, String> responses = new HashMap<>();
-                    responses.put(TAB1_URL, ENDPOINT_RESPONSE);
-                    responses.put(TAB2_URL, EMPTY_ENDPOINT_RESPONSE);
-                    mockEndpointResponse(responses);
+                    Map<GURL, Any> responses = new HashMap<>();
+                    GURL gurl1 = JUnitTestGURLs.getGURL(TAB1_URL);
+                    GURL gurl2 = JUnitTestGURLs.getGURL(TAB2_URL);
+                    responses.put(gurl1, ANY_BUYABLE_PRODUCT_INITIAL);
+                    responses.put(gurl2, ANY_EMPTY);
+                    mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, responses);
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                     initAndAssertAllProperties(mMediatorSpy);
                     List<Tab> tabs = new ArrayList<>();
@@ -2795,19 +2816,22 @@ public class TabListMediatorUnitTest {
         }
     }
 
-    private void mockOptimizationGuideResponse(@OptimizationGuideDecision int decision) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                OptimizationGuideCallback callback =
-                        (OptimizationGuideCallback) invocation.getArguments()[3];
-                callback.onOptimizationGuideDecision(decision, null);
-                return null;
-            }
-        })
-                .when(mOptimizationGuideBridgeJniMock)
-                .canApplyOptimization(
-                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
+    private void mockOptimizationGuideResponse(
+            @OptimizationGuideDecision int decision, Map<GURL, Any> responses) {
+        for (Map.Entry<GURL, Any> responseEntry : responses.entrySet()) {
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) {
+                    OptimizationGuideCallback callback =
+                            (OptimizationGuideCallback) invocation.getArguments()[3];
+                    callback.onOptimizationGuideDecision(decision, responseEntry.getValue());
+                    return null;
+                }
+            })
+                    .when(mOptimizationGuideBridgeJniMock)
+                    .canApplyOptimization(anyLong(), eq(responseEntry.getKey()), anyInt(),
+                            any(OptimizationGuideCallback.class));
+        }
     }
 
     private void initWithThreeTabs() {

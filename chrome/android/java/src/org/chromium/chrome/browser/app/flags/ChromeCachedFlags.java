@@ -122,6 +122,7 @@ public class ChromeCachedFlags {
                 ShoppingPersistedTabData.TIME_TO_LIVE_MS,
                 ShoppingPersistedTabData.DISPLAY_TIME_MS,
                 ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS,
+                ShoppingPersistedTabData.PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE,
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER,
                 StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON,
                 StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB,
