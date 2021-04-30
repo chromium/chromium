@@ -33,6 +33,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Due to this quadratic behavior, we must limit the size of the origin to
     // prevent the fuzzer from triggering OOM crash. Note that real domain names
     // are limited to 253 characters.
+    return EXIT_SUCCESS;
   }
 
   String url = String(data, it - 1 - data);
