@@ -1236,7 +1236,7 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
   }
 
   *message_pipe_handle =
-      ExtractMessagePipeFromInvitation(name_string.as_string());
+      ExtractMessagePipeFromInvitation(std::string(name_string));
   if (*message_pipe_handle == MOJO_HANDLE_INVALID)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   return MOJO_RESULT_OK;

@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -245,7 +246,7 @@ void NodeController::ConnectIsolated(ConnectionParams connection_params,
       FROM_HERE,
       base::BindOnce(&NodeController::ConnectIsolatedOnIOThread,
                      base::Unretained(this), std::move(connection_params), port,
-                     connection_name.as_string()));
+                     std::string(connection_name)));
 }
 
 void NodeController::SetPortObserver(const ports::PortRef& port,

@@ -23,7 +23,7 @@ bool StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value>::Read(
     base::Value value;
     if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
       return false;
-    dict_storage.emplace_back(key.as_string(), std::move(value));
+    dict_storage.emplace_back(std::string(key), std::move(value));
   }
   *value_out = base::Value(base::Value::DictStorage(std::move(dict_storage)));
   return true;
