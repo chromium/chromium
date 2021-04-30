@@ -38,8 +38,8 @@ void CdmSessionAdapter::CreateCdm(CdmFactory* cdm_factory,
                                   const std::string& key_system,
                                   const CdmConfig& cdm_config,
                                   WebCdmCreatedCB web_cdm_created_cb) {
-  TRACE_EVENT_ASYNC_BEGIN0("media", "CdmSessionAdapter::CreateCdm",
-                           ++trace_id_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "CdmSessionAdapter::CreateCdm",
+                                    ++trace_id_);
 
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -171,9 +171,9 @@ void CdmSessionAdapter::OnCdmCreated(
            << (cdm ? "success" : "failure (" + error_message + ")");
   DCHECK(!cdm_);
 
-  TRACE_EVENT_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm", trace_id_,
-                         "success", (cdm ? "true" : "false"), "error_message",
-                         error_message);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "media", "CdmSessionAdapter::CreateCdm", trace_id_, "success",
+      (cdm ? "true" : "false"), "error_message", error_message);
 
   auto key_system_uma_prefix =
       kMediaEME + GetKeySystemNameForUMA(key_system) + kDot;

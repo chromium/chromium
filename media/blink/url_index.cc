@@ -59,12 +59,12 @@ UrlData::UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
 UrlData::~UrlData() = default;
 
 std::pair<GURL, UrlData::CorsMode> UrlData::key() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::make_pair(url(), cors_mode());
 }
 
 void UrlData::set_valid_until(base::Time valid_until) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   valid_until_ = valid_until;
 }
 
@@ -73,7 +73,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
   if (ValidateDataOrigin(other->data_origin_)) {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     valid_until_ = std::max(valid_until_, other->valid_until_);
     // set_length() will not override the length if already known.
     set_length(other->length_);
@@ -91,12 +91,12 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
 }
 
 void UrlData::set_cacheable(bool cacheable) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   cacheable_ = cacheable;
 }
 
 void UrlData::set_length(int64_t length) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (length != kPositionNotSpecified) {
     length_ = length;
   }
@@ -113,7 +113,7 @@ void UrlData::set_has_access_control() {
 }
 
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
 
@@ -125,7 +125,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
 }
 
 void UrlData::Fail() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Handled similar to a redirect.
   std::vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
@@ -135,12 +135,12 @@ void UrlData::Fail() {
 }
 
 void UrlData::OnRedirect(RedirectCB cb) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   redirect_callbacks_.push_back(std::move(cb));
 }
 
 void UrlData::Use() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   last_used_ = base::Time::Now();
 }
 
@@ -158,12 +158,12 @@ bool UrlData::ValidateDataOrigin(const GURL& origin) {
 }
 
 void UrlData::OnEmpty() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   url_index_->RemoveUrlData(this);
 }
 
 bool UrlData::FullyCached() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (length_ == kPositionNotSpecified)
     return false;
   // Check that the first unavailable block in the cache is after the
@@ -172,7 +172,7 @@ bool UrlData::FullyCached() {
 }
 
 bool UrlData::Valid() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::Time now = base::Time::Now();
   if (!range_supported_ && !FullyCached())
     return false;
@@ -186,27 +186,27 @@ bool UrlData::Valid() {
 }
 
 void UrlData::set_last_modified(base::Time last_modified) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   last_modified_ = last_modified;
 }
 
 void UrlData::set_etag(const std::string& etag) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   etag_ = etag;
 }
 
 void UrlData::set_range_supported() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   range_supported_ = true;
 }
 
 ResourceMultiBuffer* UrlData::multibuffer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return &multibuffer_;
 }
 
 size_t UrlData::CachedSize() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return multibuffer()->map().size();
 }
 

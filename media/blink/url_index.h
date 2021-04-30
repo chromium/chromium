@@ -214,7 +214,8 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   ResourceMultiBuffer multibuffer_;
   std::vector<RedirectCB> redirect_callbacks_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
+
   DISALLOW_COPY_AND_ASSIGN(UrlData);
 };
 
