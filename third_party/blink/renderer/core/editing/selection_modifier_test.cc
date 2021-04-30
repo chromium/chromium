@@ -363,9 +363,10 @@ TEST_F(SelectionModifierTest, PositionDisconnectedInFlatTree2) {
       modifier.Modify(SelectionModifyAlteration::kExtend,
                       SelectionModifyDirection::kForward,
                       TextGranularity::kParagraph);
+      EXPECT_TRUE(extent.IsConnected());
       bool flat_extent_is_connected =
           ToPositionInFlatTree(selection.Extent()).IsConnected();
-      EXPECT_EQ(flat_base_is_connected && flat_extent_is_connected
+      EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
                     ? "<div id=\"host\">x</div>^y|"
                     : "<div id=\"host\">x</div>y",
                 GetSelectionTextFromBody(modifier.Selection().AsSelection()));

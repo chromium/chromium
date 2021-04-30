@@ -407,14 +407,17 @@ SelectionInDOMTree ConvertToSelectionInDOMTree(
 
 SelectionInFlatTree ConvertToSelectionInFlatTree(
     const SelectionInDOMTree& selection) {
+  SelectionInFlatTree::Builder builder;
   const PositionInFlatTree& base = ToPositionInFlatTree(selection.Base());
   const PositionInFlatTree& extent = ToPositionInFlatTree(selection.Extent());
-  if (!base.IsConnected() || !extent.IsConnected())
-    return SelectionInFlatTree();
-  return SelectionInFlatTree::Builder()
-      .SetAffinity(selection.Affinity())
-      .SetBaseAndExtent(base, extent)
-      .Build();
+  if (base.IsConnected() && extent.IsConnected())
+    builder.SetBaseAndExtent(base, extent);
+  else if (base.IsConnected())
+    builder.Collapse(base);
+  else if (extent.IsConnected())
+    builder.Collapse(extent);
+  builder.SetAffinity(selection.Affinity());
+  return builder.Build();
 }
 
 template <typename Strategy>

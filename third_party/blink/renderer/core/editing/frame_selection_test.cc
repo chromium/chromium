@@ -1103,4 +1103,35 @@ TEST_F(FrameSelectionTest, SelectedTextForClipboardEntersTextControls) {
   EXPECT_EQ("foo\nbar\nbaz", Selection().SelectedTextForClipboard());
 }
 
+// For https://crbug.com/1177295
+TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
+  SetBodyContent("<div id=host>x</div>y");
+  SetShadowContent("", "host");
+  Element* host = GetElementById("host");
+  Node* text = host->firstChild();
+  Position positions[] = {
+      Position::BeforeNode(*host),         Position::FirstPositionInNode(*host),
+      Position::LastPositionInNode(*host), Position::AfterNode(*host),
+      Position::BeforeNode(*text),         Position::FirstPositionInNode(*text),
+      Position::LastPositionInNode(*text), Position::AfterNode(*text)};
+  for (const Position& base : positions) {
+    EXPECT_TRUE(base.IsConnected());
+    bool flat_base_is_connected = ToPositionInFlatTree(base).IsConnected();
+    EXPECT_EQ(base.AnchorNode() == host, flat_base_is_connected);
+    for (const Position& extent : positions) {
+      const SelectionInDOMTree& selection =
+          SelectionInDOMTree::Builder().SetBaseAndExtent(base, extent).Build();
+      Selection().SetSelection(selection, SetSelectionOptions());
+      EXPECT_TRUE(extent.IsConnected());
+      bool flat_extent_is_connected =
+          ToPositionInFlatTree(selection.Extent()).IsConnected();
+      EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
+                    ? "<div id=\"host\"></div>|y"
+                    : "<div id=\"host\"></div>y",
+                GetSelectionTextInFlatTreeFromBody(
+                    GetVisibleSelectionInFlatTree().AsSelection()));
+    }
+  }
+}
+
 }  // namespace blink
