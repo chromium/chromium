@@ -201,7 +201,7 @@ constexpr MessageInfo kChromeMemoryPressureNotification = {
     kChromeMemoryPressureNotificationIndices, nullptr};
 
 // Proto Message: ChromeTaskAnnotator
-constexpr int kChromeTaskAnnotatorIndices[] = {1, -1};
+constexpr int kChromeTaskAnnotatorIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeTaskAnnotator = {kChromeTaskAnnotatorIndices,
                                               nullptr};
 
@@ -424,7 +424,7 @@ constexpr MessageInfo kTracePacketDefaults = {
     kTracePacketDefaultsIndices, kTracePacketDefaultsComplexMessages};
 
 // Proto Message: ChromeProcessDescriptor
-constexpr int kChromeProcessDescriptorIndices[] = {1, 2, 3, -1};
+constexpr int kChromeProcessDescriptorIndices[] = {1, 2, 3, 5, -1};
 constexpr MessageInfo kChromeProcessDescriptor = {
     kChromeProcessDescriptorIndices, nullptr};
 
