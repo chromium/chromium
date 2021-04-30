@@ -333,6 +333,11 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   wtf_size_t RangeSetCount(wtf_size_t range_index) const;
   wtf_size_t RangeStartingSetIndex(wtf_size_t range_index) const;
 
+  // NGGridTrackCollectionBase overrides.
+  wtf_size_t RangeTrackNumber(wtf_size_t range_index) const override;
+  wtf_size_t RangeTrackCount(wtf_size_t range_index) const override;
+  wtf_size_t RangeCount() const override;
+
   // Returns true if the specified property has been set in the track span
   // properties bitmask of the range at position |range_index|.
   bool RangeHasTrackSpanProperty(
@@ -354,11 +359,8 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   }
 
  protected:
-  // NGGridTrackCollectionBase overrides.
-  wtf_size_t RangeTrackNumber(wtf_size_t range_index) const override;
-  wtf_size_t RangeTrackCount(wtf_size_t range_index) const override;
+  // NGGridTrackCollectionBase override.
   bool IsRangeCollapsed(wtf_size_t range_index) const override;
-  wtf_size_t RangeCount() const override;
 
  private:
   void AppendTrackRange(

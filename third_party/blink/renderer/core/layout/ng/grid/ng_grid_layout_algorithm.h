@@ -42,7 +42,14 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kMinor,
   };
 
-  struct ItemSetIndices {
+  struct OutOfFlowItemPlacement {
+    wtf_size_t start_range_index = kNotFound;
+    wtf_size_t start_offset_in_range = kNotFound;
+    wtf_size_t end_range_index = kNotFound;
+    wtf_size_t end_offset_in_range = kNotFound;
+  };
+
+  struct GridItemSetIndices {
     wtf_size_t begin = kNotFound;
     wtf_size_t end = kNotFound;
   };
@@ -84,12 +91,17 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     // For this item and track direction, computes the pair of indices |begin|
     // and |end| such that the item spans every set from the respective
     // collection's |sets_| with an index in the range [begin, end).
-    // |grid_placement| is used to resolve the grid lines of out of flow items.
     void ComputeSetIndices(
+        const NGGridLayoutAlgorithmTrackCollection& track_collection);
+    const GridItemSetIndices& SetIndices(
+        GridTrackSizingDirection track_direction) const;
+
+    // For this out of flow item and track collection, computes and stores its
+    // first and last spanned ranges, as well as the start and end track offset.
+    // |grid_placement| is used to resolve the grid lines.
+    void ComputeOutOfFlowItemPlacement(
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         const NGGridPlacement& grid_placement);
-    const ItemSetIndices& SetIndices(
-        GridTrackSizingDirection track_direction) const;
 
     void Trace(Visitor* visitor) const;
 
@@ -112,8 +124,14 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
 
-    ItemSetIndices column_set_indices;
-    ItemSetIndices row_set_indices;
+    GridItemSetIndices column_set_indices;
+    GridItemSetIndices row_set_indices;
+
+    // These fields are only for out of flow items. They are used to store their
+    // start/end range indices, and offsets in range in the respective track
+    // collection; see |OutOfFlowItemPlacement|.
+    OutOfFlowItemPlacement column_placement;
+    OutOfFlowItemPlacement row_placement;
   };
 
   struct CORE_EXPORT GridItems {
@@ -175,9 +193,15 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // See |SetGeometry|.
   struct SetOffsetData {
-    SetOffsetData(LayoutUnit offset, wtf_size_t last_indefinite_index)
-        : offset(offset), last_indefinite_index(last_indefinite_index) {}
+    SetOffsetData(LayoutUnit offset,
+                  wtf_size_t track_count,
+                  wtf_size_t last_indefinite_index)
+        : offset(offset),
+          track_count(track_count),
+          last_indefinite_index(last_indefinite_index) {}
+
     LayoutUnit offset;
+    wtf_size_t track_count;
     wtf_size_t last_indefinite_index;
   };
 
@@ -259,6 +283,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;
+
+  // Helper that computes tracks sizes in a given range.
+  static Vector<std::div_t> ComputeTrackSizesInRange(
+      const SetGeometry& set_geometry,
+      wtf_size_t range_starting_set_index,
+      wtf_size_t range_set_count);
 
  private:
   friend class NGGridLayoutAlgorithmTest;
@@ -383,9 +413,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid.
-  void PlaceOutOfFlowItems(const HeapVector<GridItemData>& out_of_flow_items,
-                           const GridGeometry& grid_geometry,
-                           LayoutUnit block_size);
+  void PlaceOutOfFlowItems(
+      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      const HeapVector<GridItemData>& out_of_flow_items,
+      const GridGeometry& grid_geometry,
+      LayoutUnit block_size);
 
   // Gets the out of flow descendants from the container builder and computes
   // their containing block rect.
@@ -396,19 +429,29 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridPlacement& grid_placement,
       LayoutUnit block_size);
 
-  // Helper method to compute the containing grid area for grid items or the
-  // containing block rect for out of flow elements.
-  LogicalRect ComputeContainingGridAreaRect(const GridGeometry& grid_geometry,
-                                            const GridItemData& item,
-                                            LayoutUnit block_size);
+  // Helper method to compute the containing block rect for out of flow
+  // elements.
+  LogicalRect ComputeContainingGridAreaRect(
+      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      const GridGeometry& grid_geometry,
+      const GridItemData& item,
+      LayoutUnit block_size);
 
-  // Helper method that computes the offset and size of an item.
-  void ComputeOffsetAndSize(const GridItemData& item,
-                            const SetGeometry& set_geometry,
-                            const GridTrackSizingDirection track_direction,
-                            LayoutUnit block_size,
-                            LayoutUnit* start_offset,
-                            LayoutUnit* size) const;
+  void ComputeGridItemOffsetAndSize(
+      const GridItemData& grid_item,
+      const SetGeometry& set_geometry,
+      const GridTrackSizingDirection track_direction,
+      LayoutUnit* start_offset,
+      LayoutUnit* size) const;
+
+  void ComputeOutOfFlowOffsetAndSize(
+      const GridItemData& out_of_flow_item,
+      const SetGeometry& set_geometry,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection,
+      LayoutUnit block_size,
+      LayoutUnit* start_offset,
+      LayoutUnit* size) const;
 
   NGGridData::TrackCollectionGeometry ConvertSetGeometry(
       const SetGeometry& set_geometry,

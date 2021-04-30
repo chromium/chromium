@@ -76,8 +76,8 @@ class NGGridLayoutAlgorithmTest
                                                 &items_->grid_items_);
 
     for (auto& grid_item : items_->grid_items_) {
-      grid_item.ComputeSetIndices(column_track_collection_, grid_placement);
-      grid_item.ComputeSetIndices(row_track_collection_, grid_placement);
+      grid_item.ComputeSetIndices(column_track_collection_);
+      grid_item.ComputeSetIndices(row_track_collection_);
     }
 
     grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),
@@ -103,9 +103,9 @@ class NGGridLayoutAlgorithmTest
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     LayoutUnit offset, size;
-    algorithm.ComputeOffsetAndSize(items_->grid_items_.item_data[index],
-                                   grid_geometry_.row_geometry, kForRows,
-                                   kIndefiniteSize, &offset, &size);
+    algorithm.ComputeGridItemOffsetAndSize(items_->grid_items_.item_data[index],
+                                           grid_geometry_.row_geometry,
+                                           kForRows, &offset, &size);
     return size;
   }
 
