@@ -238,9 +238,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
   EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, loadPdf));
 }
 
-// This test tries to load files bundled in our CIPD package. The CIPD package
+// These tests try to load files bundled in our CIPD package. The CIPD package
 // is included in the `linux-chromeos-chrome` trybot but not in
-// `linux-chromeos-rel` trybot. Only include this test when our CIPD package is
+// `linux-chromeos-rel` trybot. Only include these when our CIPD package is
 // present.
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
@@ -286,6 +286,43 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   // TODO(b/175840855): Consider checking `inkEngineCanvas` size, it is
   // currently different to image size.
   EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, checkInkLoaded));
+}
+
+// Tests that clicking on the 'Info' button in the app bar opens the information
+// panel.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
+  WaitForTestSystemAppInstall();
+  auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
+  params.launch_files = {TestFile(kFileJpeg640x480)};
+  content::WebContents* app = LaunchApp(std::move(params));
+  PrepareAppForTest(app);
+
+  // Ensure test image loaded.
+  EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+
+  // Note the button id (icon-button-2283726) corresponds to the info panel
+  // button and is calculated from a hash of the label ("Info"). This id is
+  // used because the UI toolkit has loose guarantees about where the actual
+  // label appears in the shadow DOM.
+  constexpr char clickInfo[] = R"(
+    (async () => {
+      const infoButton = await waitForNode(
+          '#icon-button-2283726', ['backlight-app-bar', 'backlight-app']);
+      infoButton.click();
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, clickInfo));
+
+  constexpr char hasInfoPanelOpen[] = R"(
+    (async () => {
+      const metadataPanel = await waitForNode(
+          'backlight-metadata-panel', ['backlight-image-handler']);
+      return !!metadataPanel;
+    })();
+  )";
+  EXPECT_EQ(true,
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, hasInfoPanelOpen));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
