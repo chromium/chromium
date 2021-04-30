@@ -3716,6 +3716,10 @@
                 },
                 {
                     "name": "EnabledM2FullSet",
+                    "params": {
+                        "DiscoverFeedIsNativeUIEnabled": "true",
+                        "RefactoredNTPLoggingEnabled": "true"
+                    },
                     "enable_features": [
                         "DiscoverFeedInNtp",
                         "RefactoredNTP"
