@@ -1051,24 +1051,13 @@ CommandHandler.onCommand = function(command) {
         }
       }
 
-      // Get unicode-aware array of characters.
-      const characterArray = [...word];
       const language = chrome.i18n.getUILanguage();
-      for (let i = 0; i < characterArray.length; ++i) {
-        const character = characterArray[i];
-        const phoneticText = PhoneticData.forCharacter(character, language);
-        // Speak the character followed by its phonetic disambiguation, if it
-        // was found.
+      const phoneticText = PhoneticData.forText(word, language);
+      if (phoneticText) {
         new Output()
-            .withString(character)
-            .withQueueMode(i === 0 ? QueueMode.CATEGORY_FLUSH : QueueMode.QUEUE)
+            .withString(phoneticText)
+            .withQueueMode(QueueMode.CATEGORY_FLUSH)
             .go();
-        if (phoneticText) {
-          new Output()
-              .withString(phoneticText)
-              .withQueueMode(QueueMode.QUEUE)
-              .go();
-        }
       }
     }
       return false;

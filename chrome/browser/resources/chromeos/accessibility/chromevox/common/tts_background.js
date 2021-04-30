@@ -770,6 +770,9 @@ TtsBackground = class extends ChromeTtsBase {
       return;
     }
 
+    // Remove this property so we don't trap ourselves in a loop.
+    delete properties[AbstractTts.PHONETIC_CHARACTERS];
+
     text = text.toLowerCase();
     // If undefined language, use the UI language of the browser as a best
     // guess.
