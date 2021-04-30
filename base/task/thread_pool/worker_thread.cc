@@ -343,9 +343,15 @@ void WorkerThread::RunWorker() {
       continue;
     }
 
+    recordreplay::Assert("WorkerThread::RunWorker #7");
+
     task_source = task_tracker_->RunAndPopNextTask(std::move(task_source));
 
+    recordreplay::Assert("WorkerThread::RunWorker #7.1");
+
     delegate_->DidProcessTask(std::move(task_source));
+
+    recordreplay::Assert("WorkerThread::RunWorker #7.2");
 
     // Calling WakeUp() guarantees that this WorkerThread will run Tasks from
     // TaskSources returned by the GetWork() method of |delegate_| until it

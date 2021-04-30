@@ -83,7 +83,9 @@ RegisteredTaskSource::RegisteredTaskSource(
 }
 
 RegisteredTaskSource::~RegisteredTaskSource() {
+  recordreplay::Assert("~RegisteredTaskSource Start");
   Unregister();
+  recordreplay::Assert("~RegisteredTaskSource Done");
 }
 
 //  static
