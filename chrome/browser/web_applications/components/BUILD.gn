@@ -215,6 +215,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "external_app_install_features_unittest.cc",
     "file_handler_manager_unittest.cc",
     "install_finalizer_unittest.cc",
     "os_integration_manager_unittest.cc",
@@ -297,6 +298,10 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/chromeos" ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chromeos/crosapi/cpp" ]
   }
 
   if (is_win) {
