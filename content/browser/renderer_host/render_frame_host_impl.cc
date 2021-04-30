@@ -2022,7 +2022,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
   DCHECK_LE(world_id, ISOLATED_WORLD_ID_MAX);
 
   const bool wants_result = !callback.is_null();
-  GetMojomFrameInRenderer()->JavaScriptExecuteRequestInIsolatedWorld(
+  GetAssociatedLocalFrame()->JavaScriptExecuteRequestInIsolatedWorld(
       javascript, wants_result, world_id, std::move(callback));
 }
 

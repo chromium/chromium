@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -696,6 +697,11 @@ class CORE_EXPORT LocalFrame final
       bool has_user_gesture,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) final;
+  void JavaScriptExecuteRequestInIsolatedWorld(
+      const String& javascript,
+      bool wants_result,
+      int32_t world_id,
+      JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
@@ -830,6 +836,33 @@ class CORE_EXPORT LocalFrame final
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,
                            SmartClipReturnsEmptyStringsWhenUserSelectIsNone);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipDoesNotCrashPositionReversed);
+
+  // A wrapper class used as the callback for JavaScript executed
+  // in an isolated world.
+  class JavaScriptIsolatedWorldRequest
+      : public GarbageCollected<JavaScriptIsolatedWorldRequest>,
+        public WebScriptExecutionCallback {
+   public:
+    JavaScriptIsolatedWorldRequest(
+        LocalFrame* local_frame,
+        bool wants_result,
+        JavaScriptExecuteRequestInIsolatedWorldCallback callback);
+    JavaScriptIsolatedWorldRequest(const JavaScriptIsolatedWorldRequest&) =
+        delete;
+    JavaScriptIsolatedWorldRequest& operator=(
+        const JavaScriptIsolatedWorldRequest&) = delete;
+    ~JavaScriptIsolatedWorldRequest() override;
+
+    // WebScriptExecutionCallback:
+    void Completed(const WebVector<v8::Local<v8::Value>>& result) override;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(local_frame_); }
+
+   private:
+    Member<LocalFrame> local_frame_;
+    bool wants_result_;
+    JavaScriptExecuteRequestInIsolatedWorldCallback callback_;
+  };
 
   // Frame protected overrides:
   bool DetachImpl(FrameDetachType) override;

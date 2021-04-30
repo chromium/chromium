@@ -739,6 +739,14 @@ interface LocalFrame {
       int32 world_id)
       => (mojo_base.mojom.Value result);
 
+  // Same as JavaScriptExecuteRequest above except the script is run in the
+  // isolated world specified by the fourth parameter.
+  JavaScriptExecuteRequestInIsolatedWorld(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result,
+      int32 world_id) => (mojo_base.mojom.Value result);
+
+
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using
   // TextInputHost.

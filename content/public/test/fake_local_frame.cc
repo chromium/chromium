@@ -125,6 +125,12 @@ void FakeLocalFrame::JavaScriptExecuteRequestForTests(
     int32_t world_id,
     JavaScriptExecuteRequestForTestsCallback callback) {}
 
+void FakeLocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
+    const std::u16string& javascript,
+    bool wants_result,
+    int32_t world_id,
+    JavaScriptExecuteRequestInIsolatedWorldCallback callback) {}
+
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 

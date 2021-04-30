@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
@@ -187,6 +188,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
@@ -220,6 +222,9 @@
 namespace blink {
 
 namespace {
+
+constexpr char kInvalidWorldID[] =
+    "JavaScriptExecuteRequestInIsolatedWorld gets an invalid world id.";
 
 // Maintain a global (statically-allocated) hash map indexed by the the result
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
@@ -684,6 +689,40 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
 
   if (client_redirect_reason != ClientNavigationReason::kNone)
     probe::FrameClearedScheduledNavigation(this);
+}
+
+LocalFrame::JavaScriptIsolatedWorldRequest::JavaScriptIsolatedWorldRequest(
+    LocalFrame* local_frame,
+    bool wants_result,
+    JavaScriptExecuteRequestInIsolatedWorldCallback callback)
+    : local_frame_(local_frame),
+      wants_result_(wants_result),
+      callback_(std::move(callback)) {}
+
+LocalFrame::JavaScriptIsolatedWorldRequest::~JavaScriptIsolatedWorldRequest() =
+    default;
+
+void LocalFrame::JavaScriptIsolatedWorldRequest::Completed(
+    const WebVector<v8::Local<v8::Value>>& result) {
+  base::Value value;
+  if (!result.empty() && !result.begin()->IsEmpty() && wants_result_) {
+    // It's safe to always use the main world context when converting
+    // here. V8ValueConverter shouldn't actually care about the context
+    // scope, and it switches to v8::Object's creation context when
+    // encountered. (from extensions/renderer/script_injection.cc)
+    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame_);
+    v8::Context::Scope context_scope(context);
+    std::unique_ptr<WebV8ValueConverter> converter =
+        Platform::Current()->CreateWebV8ValueConverter();
+    converter->SetDateAllowed(true);
+    converter->SetRegExpAllowed(true);
+    std::unique_ptr<base::Value> new_value =
+        converter->FromV8Value(*result.begin(), context);
+    if (new_value)
+      value = base::Value::FromUniquePtrValue(std::move(new_value));
+  }
+
+  std::move(callback_).Run(std::move(value));
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
@@ -3697,6 +3736,37 @@ void LocalFrame::JavaScriptExecuteRequestForTests(
   } else {
     std::move(callback).Run({});
   }
+}
+
+void LocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
+    const String& javascript,
+    bool wants_result,
+    int32_t world_id,
+    JavaScriptExecuteRequestInIsolatedWorldCallback callback) {
+  TRACE_EVENT_INSTANT0("test_tracing",
+                       "JavaScriptExecuteRequestInIsolatedWorld",
+                       TRACE_EVENT_SCOPE_THREAD);
+
+  if (world_id <= DOMWrapperWorld::kMainWorldId ||
+      world_id > DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit) {
+    // Returns if the world_id is not valid. world_id is passed as a plain int
+    // over IPC and needs to be verified here, in the IPC endpoint.
+    std::move(callback).Run(base::Value());
+    mojo::ReportBadMessage(kInvalidWorldID);
+    return;
+  }
+
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  scoped_refptr<DOMWrapperWorld> isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(this), world_id);
+  ScriptSourceCode source_code = ScriptSourceCode(javascript);
+  HeapVector<ScriptSourceCode> sources;
+  sources.Append(&source_code, 1);
+  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
+      DomWindow(), std::move(isolated_world), sources, false /* user_gesture */,
+      MakeGarbageCollected<JavaScriptIsolatedWorldRequest>(
+          this, wants_result, std::move(callback)));
+  executor->Run();
 }
 
 void LocalFrame::BindReportingObserver(

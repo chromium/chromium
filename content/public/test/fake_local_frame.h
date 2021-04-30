@@ -99,6 +99,11 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       bool has_user_gesture,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) override;
+  void JavaScriptExecuteRequestInIsolatedWorld(
+      const std::u16string& javascript,
+      bool wants_result,
+      int32_t world_id,
+      JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;
 #if defined(OS_MAC)

@@ -102,7 +102,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
-#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/range/range.h"
@@ -729,28 +728,6 @@ class CONTENT_EXPORT RenderFrameImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameImplTest,
                            TestOverlayRoutingTokenSendsNow);
 
-  // A wrapper class used as the callback for JavaScript executed
-  // in an isolated world.
-  class JavaScriptIsolatedWorldRequest
-      : public blink::WebScriptExecutionCallback {
-   public:
-    JavaScriptIsolatedWorldRequest(
-        base::WeakPtr<RenderFrameImpl> render_frame_impl,
-        bool wants_result,
-        JavaScriptExecuteRequestInIsolatedWorldCallback callback);
-    void Completed(
-        const blink::WebVector<v8::Local<v8::Value>>& result) override;
-
-   private:
-    ~JavaScriptIsolatedWorldRequest() override;
-
-    base::WeakPtr<RenderFrameImpl> render_frame_impl_;
-    bool wants_result_;
-    JavaScriptExecuteRequestInIsolatedWorldCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(JavaScriptIsolatedWorldRequest);
-  };
-
   // Similar to base::AutoReset, but skips restoration of the original value if
   // |this| is already destroyed.
   template <typename T>
@@ -806,11 +783,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void UpdateSubresourceLoaderFactories(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories) override;
-  void JavaScriptExecuteRequestInIsolatedWorld(
-      const std::u16string& javascript,
-      bool wants_result,
-      int32_t world_id,
-      JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void SetWantErrorMessageStackTrace() override;
   void Unload(int proxy_routing_id,
               bool is_loading,
