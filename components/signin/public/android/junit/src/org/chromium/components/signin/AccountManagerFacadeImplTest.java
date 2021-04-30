@@ -6,6 +6,7 @@ package org.chromium.components.signin;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
@@ -37,10 +38,10 @@ import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
-import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {CustomShadowAsyncTask.class, ShadowUserManager.class,
-                ShadowChromiumPlayServicesAvailability.class, ShadowAccountManager.class})
+                ShadowAccountManager.class})
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
 
@@ -62,6 +63,9 @@ public class AccountManagerFacadeImplTest {
 
     @Mock
     private UmaRecorder mUmaRecorderMock;
+
+    @Mock
+    ExternalAuthUtils mExternalAuthUtilsMock;
 
     @Mock
     private AccountsChangeObserver mObserverMock;
@@ -81,8 +85,10 @@ public class AccountManagerFacadeImplTest {
 
     @Before
     public void setUp() {
-        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(true);
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+
         mShadowUserManager =
                 shadowOf((UserManager) mContext.getSystemService(Context.USER_SERVICE));
         mShadowAccountManager = shadowOf(AccountManager.get(mContext));

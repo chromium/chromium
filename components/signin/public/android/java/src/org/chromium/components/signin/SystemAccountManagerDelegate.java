@@ -28,18 +28,15 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.io.IOException;
 
@@ -60,17 +57,9 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
-        Context context = ContextUtils.getApplicationContext();
-        final int resultCode =
-                ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
-        if (resultCode == ConnectionResult.SUCCESS) {
-            return;
+        if (!isGooglePlayServicesAvailable()) {
+            throw new AccountManagerDelegateException("Can't use Google Play Services");
         }
-
-        throw new GmsAvailabilityException(
-                String.format("Can't use Google Play Services: %s",
-                        GoogleApiAvailability.getInstance().getErrorString(resultCode)),
-                resultCode);
     }
 
     @Override
@@ -241,11 +230,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public boolean isGooglePlayServicesAvailable() {
-        // TODO(http://crbug.com/577190): Remove StrictMode override.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
-                    ContextUtils.getApplicationContext());
-        }
+        return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
     }
 
     protected boolean hasGetAccountsPermission() {
