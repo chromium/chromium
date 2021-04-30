@@ -2319,6 +2319,12 @@
       status: "experimental",
     },
     {
+      name: "WebTransportCustomCertificates",
+      origin_trial_feature_name: "WebTransport",
+      status: "experimental",
+      depends_on: ["WebTransport"],
+    },
+    {
       name: "WebUSB",
       status: "stable",
     },
