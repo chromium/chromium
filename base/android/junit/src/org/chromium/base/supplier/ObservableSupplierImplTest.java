@@ -12,7 +12,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifecycle.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Unit tests for {@link ObservableSupplierImpl}.
@@ -176,6 +179,81 @@ public class ObservableSupplierImplTest {
 
         mSupplier.set(TEST_STRING_2);
         checkState(1, TEST_STRING_1, TEST_STRING_2, "after setting second string.");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_hasValue() {
+        mSupplier.destroy();
+        mSupplier.hasValue();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_set() {
+        mSupplier.destroy();
+        mSupplier.set(TEST_STRING_1);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_get() {
+        mSupplier.set(TEST_STRING_1);
+        mSupplier.destroy();
+        mSupplier.get();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_addObserver() {
+        mSupplier.set(TEST_STRING_1);
+        mSupplier.destroy();
+        mSupplier.addObserver((String s) -> {});
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_removeObserver() {
+        mSupplier.set(TEST_STRING_1);
+        Callback<String> observer = (String s) -> {};
+        mSupplier.addObserver(observer);
+        mSupplier.destroy();
+        mSupplier.removeObserver(observer);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDestruction_accessPostDestroy_destroy() {
+        mSupplier.set(TEST_STRING_1);
+        mSupplier.destroy();
+        mSupplier.destroy();
+    }
+
+    @Test
+    public void testDestruction_withNonDestroyable() {
+        final AtomicBoolean suppliedObjectIsDestroyed = new AtomicBoolean(false);
+        Object destroyable = new Object() {
+            public void destroy() {
+                suppliedObjectIsDestroyed.set(true);
+            }
+        };
+
+        ObservableSupplierImpl<Object> supplier = new ObservableSupplierImpl<>();
+        supplier.set(destroyable);
+        Assert.assertTrue(supplier.hasValue());
+        supplier.destroy();
+        Assert.assertFalse(suppliedObjectIsDestroyed.get());
+    }
+
+    @Test
+    public void testDestruction_withDestroyable() {
+        final AtomicBoolean suppliedObjectIsDestroyed = new AtomicBoolean(false);
+        Destroyable destroyable = new Destroyable() {
+            @Override
+            public void destroy() {
+                suppliedObjectIsDestroyed.set(true);
+            }
+        };
+
+        ObservableSupplierImpl<Destroyable> supplier = new ObservableSupplierImpl<>();
+        supplier.set(destroyable);
+        Assert.assertTrue(supplier.hasValue());
+        supplier.destroy();
+        Assert.assertTrue(suppliedObjectIsDestroyed.get());
     }
 
     private void checkState(int expectedCallCount, String expectedLastSuppliedString,

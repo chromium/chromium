@@ -138,7 +138,9 @@ public class BrowserStateBrowserControlsVisibilityDelegate
     /**
      * Performs clean-up.
      */
+    @Override
     public void destroy() {
         mHandler.removeCallbacksAndMessages(null);
+        super.destroy();
     }
 }

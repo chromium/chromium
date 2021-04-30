@@ -48,11 +48,13 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Int
     }
 
     /** Clean up observers and suppliers. */
+    @Override
     public void destroy() {
         for (ObservableSupplier<Integer> os : mInsetSuppliers) {
             os.removeObserver(mInsetSupplierObserver);
         }
         mInsetSuppliers.clear();
+        super.destroy();
     }
 
     /** Compute the new inset based on the current registered providers. */
