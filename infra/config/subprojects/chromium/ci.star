@@ -3785,6 +3785,16 @@ ci.fyi_coverage_builder(
 )
 
 ci.fyi_coverage_builder(
+    name = "linux-lacros-code-coverage",
+    console_view_entry = consoles.console_view_entry(
+        category = "code_coverage",
+        short_name = "lac",
+    ),
+    use_clang_coverage = True,
+    coverage_test_types = ["overall", "unit"],
+)
+
+ci.fyi_coverage_builder(
     name = "mac-code-coverage",
     builderless = True,
     console_view_entry = consoles.console_view_entry(

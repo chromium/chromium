@@ -354,6 +354,7 @@
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
+      'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
       'linux-perfetto-rel': 'perfetto_release_bot',
       'linux-upload-perfetto': 'release_bot',
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols',
@@ -2312,6 +2313,10 @@
 
     'ios_simulator_release_static_asan_bot_xctest': [
         'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+
+    'lacros_on_linux_clang_code_coverage': [
+      'lacros_on_linux', 'release_bot', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
     'lacros_on_linux_release_bot': [

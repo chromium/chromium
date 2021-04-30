@@ -776,6 +776,23 @@
       "use_ozone": true
     }
   },
+  "linux-lacros-code-coverage": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "ozone_platform": "wayland",
+      "ozone_platform_wayland": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true
+    }
+  },
   "linux-lacros-tester-fyi-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
