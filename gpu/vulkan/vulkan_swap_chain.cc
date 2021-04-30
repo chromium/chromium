@@ -40,6 +40,7 @@ VkSemaphore CreateSemaphore(VkDevice vk_device) {
 VulkanSwapChain::VulkanSwapChain(uint64_t acquire_next_image_timeout_ns)
     : acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_GT(acquire_next_image_timeout_ns, 0u);
 }
 
 VulkanSwapChain::~VulkanSwapChain() {
