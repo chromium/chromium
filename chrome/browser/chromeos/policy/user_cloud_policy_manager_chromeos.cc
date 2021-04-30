@@ -563,9 +563,9 @@ void UserCloudPolicyManagerChromeOS::SetPolicyRequired(bool policy_required) {
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
     DCHECK_EQ(1u, flags.size());
-    chromeos::UserSessionManager::GetInstance()->SetSwitchesForUser(
+    ash::UserSessionManager::GetInstance()->SetSwitchesForUser(
         account_id_,
-        chromeos::UserSessionManager::CommandLineSwitchesType::kSessionControl,
+        ash::UserSessionManager::CommandLineSwitchesType::kSessionControl,
         flags);
   }
 }
@@ -609,9 +609,7 @@ void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
   }
 
   std::string refresh_token = user_context_refresh_token_for_tests_.value_or(
-      chromeos::UserSessionManager::GetInstance()
-          ->user_context()
-          .GetRefreshToken());
+      ash::UserSessionManager::GetInstance()->user_context().GetRefreshToken());
 
   if (!refresh_token.empty()) {
     token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance();

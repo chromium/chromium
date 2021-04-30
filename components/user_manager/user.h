@@ -22,13 +22,13 @@ namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class MockUserManager;
+class UserSessionManager;
 class UserImageManagerImpl;
 }  // namespace ash
 
 namespace chromeos {
 class SupervisedUserManagerImpl;
 class UserAddingScreenTest;
-class UserSessionManager;
 }  // namespace chromeos
 
 namespace gfx {
@@ -216,7 +216,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;
-  friend class chromeos::UserSessionManager;
+  friend class ash::UserSessionManager;
 
   // For testing:
   friend class FakeUserManager;

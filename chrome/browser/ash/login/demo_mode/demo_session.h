@@ -249,4 +249,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::DemoSession;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SESSION_H_

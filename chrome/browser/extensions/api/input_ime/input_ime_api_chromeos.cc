@@ -603,7 +603,7 @@ bool InputImeEventRouter::RegisterImeExtension(
   engine->Initialize(std::move(observer), extension_id.c_str(), profile);
   engine_map_[extension_id] = std::move(engine);
 
-  chromeos::UserSessionManager::GetInstance()
+  ash::UserSessionManager::GetInstance()
       ->GetDefaultIMEState(profile)
       ->AddInputMethodExtension(extension_id, descriptors,
                                 engine_map_[extension_id].get());

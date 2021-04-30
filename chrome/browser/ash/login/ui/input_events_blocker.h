@@ -30,4 +30,10 @@ class InputEventsBlocker : public ui::EventHandler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::InputEventsBlocker;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_INPUT_EVENTS_BLOCKER_H_

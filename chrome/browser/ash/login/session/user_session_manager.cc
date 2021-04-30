@@ -27,6 +27,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -162,12 +163,9 @@
 #include "ui/base/ime/chromeos/input_method_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
-using ::ash::AccountManager;
-using ::ash::AccountManagerMigratorFactory;
 using ::signin::ConsentLevel;
 
 // Time to wait for child policy refresh. If that time is exceeded session
@@ -200,8 +198,7 @@ void InitLocaleAndInputMethodsForNewUser(
   }
 
   // First, we'll set kLanguagePreloadEngines.
-  input_method::InputMethodManager* manager =
-      input_method::InputMethodManager::Get();
+  auto* manager = input_method::InputMethodManager::Get();
 
   input_method::InputMethodDescriptor preferred_input_method;
   if (!public_session_input_method.empty()) {
@@ -307,7 +304,7 @@ void LogCustomFeatureFlags(const std::set<std::string>& feature_flags) {
     }
   }
 
-  ash::about_flags::ReadOnlyFlagsStorage flags_storage(feature_flags);
+  about_flags::ReadOnlyFlagsStorage flags_storage(feature_flags);
   ::about_flags::RecordUMAStatistics(&flags_storage, "Login.CustomFlags");
 }
 
@@ -465,10 +462,10 @@ UserSessionManager::~UserSessionManager() {
 // Observes the Device Account's LST and informs UserSessionManager about it.
 // Used by UserSessionManager to keep the user's token handle up to date.
 class UserSessionManager::DeviceAccountGaiaTokenObserver
-    : public ash::AccountManager::Observer {
+    : public AccountManager::Observer {
  public:
   DeviceAccountGaiaTokenObserver(
-      ash::AccountManager* account_manager,
+      AccountManager* account_manager,
       const AccountId& account_id,
       base::RepeatingCallback<void(const AccountId& account_id)> callback)
       : account_id_(account_id), callback_(callback) {
@@ -482,7 +479,7 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
 
   ~DeviceAccountGaiaTokenObserver() override = default;
 
-  // ash::AccountManager::Observer overrides:
+  // AccountManager::Observer overrides:
   void OnTokenUpserted(const account_manager::Account& account) override {
     if (account.key.account_type != account_manager::AccountType::kGaia)
       return;
@@ -503,7 +500,7 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
   const AccountId account_id_;
   // `callback_` is called when `account_id`'s LST changes.
   base::RepeatingCallback<void(const AccountId& account_id)> callback_;
-  base::ScopedObservation<ash::AccountManager, ash::AccountManager::Observer>
+  base::ScopedObservation<AccountManager, AccountManager::Observer>
       account_manager_observation_{this};
 };
 
@@ -564,7 +561,8 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
     if (injected_authenticator_builder_) {
       authenticator_ = injected_authenticator_builder_->Create(consumer);
     } else {
-      authenticator_ = new ChromeCryptohomeAuthenticator(consumer);
+      authenticator_ =
+          base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);
     }
   } else {
     // TODO(nkostylev): Fix this hack by improving Authenticator dependencies.
@@ -777,7 +775,7 @@ bool UserSessionManager::RespectLocalePreference(
 
   // In Demo Mode, each sessions uses a new empty User Profile, so we need to
   // rely on the local state set in the browser process.
-  if (chromeos::DemoSession::IsDeviceInDemoMode() && pref_app_locale.empty()) {
+  if (DemoSession::IsDeviceInDemoMode() && pref_app_locale.empty()) {
     const std::string local_state_locale =
         g_browser_process->local_state()->GetString(
             language::prefs::kApplicationLocale);
@@ -878,8 +876,7 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   std::set<std::string> designated_flags =
       flags_ui::PrefServiceFlagsStorage(profile->GetPrefs()).GetFlags();
   ApplyUserPolicyToFlags(profile->GetPrefs(), &designated_flags);
-  std::set<std::string> actual_flags =
-      ash::about_flags::ParseFlagsFromCommandLine();
+  std::set<std::string> actual_flags = about_flags::ParseFlagsFromCommandLine();
   std::set<std::string> flags_difference;
   std::set_symmetric_difference(
       designated_flags.begin(), designated_flags.end(), actual_flags.begin(),
@@ -907,13 +904,13 @@ bool UserSessionManager::NeedsToUpdateEasyUnlockKeys() const {
 }
 
 void UserSessionManager::AddSessionStateObserver(
-    chromeos::UserSessionStateObserver* observer) {
+    ash::UserSessionStateObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   session_state_observer_list_.AddObserver(observer);
 }
 
 void UserSessionManager::RemoveSessionStateObserver(
-    chromeos::UserSessionStateObserver* observer) {
+    ash::UserSessionStateObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   session_state_observer_list_.RemoveObserver(observer);
 }
@@ -1137,8 +1134,7 @@ void UserSessionManager::VoteForSavingLoginPassword(
 }
 
 void UserSessionManager::InitDemoSessionIfNeeded(base::OnceClosure callback) {
-  chromeos::DemoSession* demo_session =
-      chromeos::DemoSession::StartIfInDemoMode();
+  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
   if (!demo_session || !demo_session->started()) {
     std::move(callback).Run();
     return;
@@ -1219,8 +1215,7 @@ void UserSessionManager::InitProfilePreferences(
   }
 
   if (user->is_active()) {
-    input_method::InputMethodManager* manager =
-        input_method::InputMethodManager::Get();
+    auto* manager = input_method::InputMethodManager::Get();
     manager->SetState(GetDefaultIMEState(profile));
   }
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -1509,7 +1504,7 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
   }
 
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
-  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
+  chromeos::PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
   FinalizePrepareProfile(profile);
 }
 
@@ -1517,7 +1512,7 @@ void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
     Profile* profile) {
   RestoreAuthSessionImpl(profile, has_auth_cookies_);
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
-  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
+  chromeos::PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
   FinalizePrepareProfile(profile);
 }
 
@@ -1617,7 +1612,7 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   // Only allow Quirks downloads after login is finished.
   quirks::QuirksManager::Get()->OnLoginCompleted();
 
-  if (chromeos::features::ShouldUseBrowserSyncConsent() &&
+  if (features::ShouldUseBrowserSyncConsent() &&
       ProfileSyncServiceFactory::IsSyncAllowed(profile)) {
     turn_sync_on_helper_ = std::make_unique<TurnSyncOnHelper>(profile);
   }
@@ -1679,10 +1674,10 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
     bool skip_post_login_screens =
         (oobe_controller && oobe_controller->skip_post_login_screens()) ||
-        cmdline->HasSwitch(chromeos::switches::kOobeSkipPostLogin);
+        cmdline->HasSwitch(switches::kOobeSkipPostLogin);
 
     if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
-      profile->GetPrefs()->SetTime(chromeos::prefs::kOobeOnboardingTime,
+      profile->GetPrefs()->SetTime(prefs::kOobeOnboardingTime,
                                    base::Time::Now());
       // Don't specify start URLs if the administrator has configured the start
       // URLs via policy.
@@ -1740,7 +1735,7 @@ void UserSessionManager::RestoreAuthSessionImpl(
   CHECK(authenticator_.get() || !restore_from_auth_cookies);
   if (chrome::IsRunningInForcedAppMode() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          switches::kDisableGaiaServices)) {
     return;
   }
 
@@ -2002,8 +1997,7 @@ void UserSessionManager::ActiveUserChanged(user_manager::User* active_user) {
   if (!profile)
     return;
 
-  input_method::InputMethodManager* manager =
-      input_method::InputMethodManager::Get();
+  auto* manager = input_method::InputMethodManager::Get();
   // `manager` might not be available in some unit tests.
   if (!manager)
     return;
@@ -2307,4 +2301,4 @@ bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
   return full_restore_service != nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

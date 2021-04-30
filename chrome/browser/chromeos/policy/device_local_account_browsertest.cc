@@ -469,8 +469,8 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
         .Wait();
 
-    chromeos::test::UserSessionManagerTestApi session_manager_test_api(
-        chromeos::UserSessionManager::GetInstance());
+    ash::test::UserSessionManagerTestApi session_manager_test_api(
+        ash::UserSessionManager::GetInstance());
     session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
   }
 

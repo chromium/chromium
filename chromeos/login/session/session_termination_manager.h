@@ -50,4 +50,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SessionTerminationManager;
+}
+
 #endif  // CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_

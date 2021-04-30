@@ -319,7 +319,7 @@ bool IsArcCompatibleFileSystemUsedForUser(const user_manager::User* user) {
   if (!user)
     return false;
 
-  // chromeos::UserSessionManager does the actual file system check and stores
+  // ash::UserSessionManager does the actual file system check and stores
   // the result to prefs, so that it survives crash-restart.
   FileSystemCompatibilityState filesystem_compatibility =
       GetFileSystemCompatibilityPref(user->GetAccountId());

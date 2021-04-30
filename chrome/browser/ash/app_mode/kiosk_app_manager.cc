@@ -221,10 +221,9 @@ void KioskAppManager::InitSession(Profile* profile,
     // set here is to be able to properly restore session if the session is
     // restarted - e.g. due to crash. For example, this will ensure restarted
     // app session restores auto-launched state.
-    chromeos::UserSessionManager::GetInstance()->SetSwitchesForUser(
+    UserSessionManager::GetInstance()->SetSwitchesForUser(
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-        chromeos::UserSessionManager::CommandLineSwitchesType::
-            kPolicyAndKioskControl,
+        UserSessionManager::CommandLineSwitchesType::kPolicyAndKioskControl,
         flags);
   }
 

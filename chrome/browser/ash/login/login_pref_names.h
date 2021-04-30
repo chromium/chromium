@@ -30,4 +30,12 @@ extern const char kSamlPasswordSyncToken[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace prefs {
+using ::chromeos::prefs::kOobeOnboardingTime;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_

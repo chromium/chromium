@@ -420,4 +420,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::GaiaScreenHandler;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_GAIA_SCREEN_HANDLER_H_

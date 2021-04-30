@@ -67,6 +67,7 @@ std::set<std::string> ParseFlagsFromCommandLine();
 namespace chromeos {
 namespace about_flags {
 using ::ash::about_flags::OwnerFlagsStorage;
+using ::ash::about_flags::ReadOnlyFlagsStorage;
 }  // namespace about_flags
 }  // namespace chromeos
 

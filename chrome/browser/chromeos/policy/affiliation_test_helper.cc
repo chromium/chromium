@@ -178,8 +178,8 @@ void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
 
 // static
 void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
-  chromeos::test::UserSessionManagerTestApi session_manager_test_api(
-      chromeos::UserSessionManager::GetInstance());
+  ash::test::UserSessionManagerTestApi session_manager_test_api(
+      ash::UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
   const bool is_active_directory =

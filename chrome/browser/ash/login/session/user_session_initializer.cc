@@ -49,9 +49,9 @@
 #include "components/rlz/rlz_tracker.h"
 #endif
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 UserSessionInitializer* g_instance = nullptr;
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -69,7 +69,7 @@ UserSessionInitializer::RlzInitParams CollectRlzParams() {
   UserSessionInitializer::RlzInitParams params;
   params.disabled = base::PathExists(GetRlzDisabledFlagPath());
   params.time_since_oobe_completion =
-      chromeos::StartupUtils::GetTimeSinceOobeFlagFileCreation();
+      StartupUtils::GetTimeSinceOobeFlagFileCreation();
   return params;
 }
 #endif
@@ -202,7 +202,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
 
-  if (chromeos::features::IsClipboardHistoryEnabled()) {
+  if (features::IsClipboardHistoryEnabled()) {
     clipboard_image_model_factory_impl_ =
         std::make_unique<ClipboardImageModelFactoryImpl>(profile);
   }
@@ -215,7 +215,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   DCHECK(profile);
 
   // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
-  ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+  HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
@@ -302,4 +302,4 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
   inited_for_testing_ = true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

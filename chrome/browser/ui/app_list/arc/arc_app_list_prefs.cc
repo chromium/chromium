@@ -944,12 +944,10 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
     if (arc::ArcSessionManager::Get()->is_directly_started() &&
         !user_manager->IsLoggedInAsKioskApp() &&
         !user_manager->IsLoggedInAsArcKioskApp() &&
-        !chromeos::UserSessionManager::GetInstance()
-             ->ui_shown_time()
-             .is_null()) {
+        !ash::UserSessionManager::GetInstance()->ui_shown_time().is_null()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Arc.FirstAppLaunchRequest.TimeDelta",
-          time - chromeos::UserSessionManager::GetInstance()->ui_shown_time(),
+          time - ash::UserSessionManager::GetInstance()->ui_shown_time(),
           base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(2), 20);
     }
   }

@@ -227,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
     restore_observer.Wait();
   }
 
-  chromeos::test::UserSessionManagerTestApi session_manager_test_api(
-      chromeos::UserSessionManager::GetInstance());
+  test::UserSessionManagerTestApi session_manager_test_api(
+      UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
   DCHECK(UserSessionManager::GetInstance()->UserSessionsRestored());

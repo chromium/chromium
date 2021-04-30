@@ -63,8 +63,7 @@
 #include "content/public/common/content_switches.h"
 #include "services/service_manager/public/cpp/connector.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Whether kiosk auto launch should be started.
@@ -120,7 +119,7 @@ void StartLoginOobeSession() {
 void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(chromeos::switches::kLoginUser)) {
+  if (command_line->HasSwitch(switches::kLoginUser)) {
     // TODO(https://crbug.com/977489): There's a lot of code duplication with
     // UserSessionManager::FinalizePrepareProfile, which is (only!) run for
     // regular session starts. This needs to be refactored.
@@ -136,7 +135,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
       return;
     }
 
-    chromeos::DemoSession* demo_session = chromeos::DemoSession::Get();
+    auto* demo_session = DemoSession::Get();
     // In demo session, delay starting user session until the offline demo
     // session resources have been loaded.
     if (demo_session && demo_session->started() &&
@@ -264,4 +263,4 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   btl->AddLoginTimeMarker("UserLoggedIn-End", false);
 }
 
-}  // namespace chromeos
+}  // namespace ash

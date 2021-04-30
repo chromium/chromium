@@ -49,4 +49,12 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace test {
+using ::chromeos::test::WaitForPrimaryUserSessionStart;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_

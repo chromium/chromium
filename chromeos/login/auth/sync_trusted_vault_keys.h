@@ -43,4 +43,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SyncTrustedVaultKeys {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SyncTrustedVaultKeys;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_SYNC_TRUSTED_VAULT_KEYS_H_

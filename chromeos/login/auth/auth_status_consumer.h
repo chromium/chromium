@@ -156,6 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthStatusConsumer
 // source migration is finished.
 namespace ash {
 using ::chromeos::AuthFailure;
-}
+using ::chromeos::AuthStatusConsumer;
+}  // namespace ash
 
 #endif  // CHROMEOS_LOGIN_AUTH_AUTH_STATUS_CONSUMER_H_

@@ -18,4 +18,12 @@ void ShowNotificationIfNeeded(Profile* profile);
 }  // namespace tpm_firmware_update
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace tpm_firmware_update {
+using ::chromeos::tpm_firmware_update::ShowNotificationIfNeeded;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_

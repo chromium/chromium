@@ -112,8 +112,8 @@ void UserNetworkConfigurationUpdater::ApplyNetworkPolicy(
   // if the password substitution variable exists in the ONC.
   bool save_password =
       chromeos::onc::HasUserPasswordSubsitutionVariable(network_configs_onc);
-  chromeos::UserSessionManager::GetInstance()->VoteForSavingLoginPassword(
-      chromeos::UserSessionManager::PasswordConsumingService::kNetwork,
+  ash::UserSessionManager::GetInstance()->VoteForSavingLoginPassword(
+      ash::UserSessionManager::PasswordConsumingService::kNetwork,
       save_password);
 
   network_config_handler_->SetPolicy(onc_source_, user_->username_hash(),

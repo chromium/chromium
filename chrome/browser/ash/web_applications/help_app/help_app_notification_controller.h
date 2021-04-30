@@ -46,4 +46,10 @@ class HelpAppNotificationController {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::HelpAppNotificationController;
+}
+
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_NOTIFICATION_CONTROLLER_H_

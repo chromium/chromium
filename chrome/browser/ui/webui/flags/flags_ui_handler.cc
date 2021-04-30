@@ -160,7 +160,7 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
   // Adhere to policy-enforced command-line switch handling when applying
   // modified flags.
   auto flags = flags_storage_->GetFlags();
-  chromeos::UserSessionManager::ApplyUserPolicyToFlags(
+  ash::UserSessionManager::ApplyUserPolicyToFlags(
       Profile::FromWebUI(web_ui())->GetPrefs(), &flags);
 
   AccountId account_id =

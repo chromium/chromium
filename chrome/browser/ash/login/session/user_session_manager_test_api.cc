@@ -6,7 +6,7 @@
 
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 UserSessionManagerTestApi::UserSessionManagerTestApi(
@@ -40,4 +40,4 @@ void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

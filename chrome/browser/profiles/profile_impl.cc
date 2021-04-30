@@ -768,7 +768,7 @@ void ProfileImpl::DoFinalInit() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MigrateSigninScopedDeviceId(this);
 
-  if (chromeos::UserSessionManager::GetInstance()
+  if (ash::UserSessionManager::GetInstance()
           ->RestartToApplyPerSessionFlagsIfNeed(this, true)) {
     return;
   }
@@ -1136,7 +1136,7 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
     // or we are in tests. In both cases the first loaded locale is correct.
     OnLocaleReady();
   } else {
-    chromeos::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
+    ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
         this,
         base::BindOnce(&ProfileImpl::OnLocaleReady, base::Unretained(this)));
   }

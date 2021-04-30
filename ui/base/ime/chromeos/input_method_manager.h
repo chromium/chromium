@@ -372,4 +372,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
 }  // namespace input_method
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::InputMethodManager;
+}
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_INPUT_METHOD_MANAGER_H_

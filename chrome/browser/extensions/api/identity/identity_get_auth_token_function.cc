@@ -875,9 +875,8 @@ void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   if (chrome::IsRunningInForcedAppMode()) {
     std::string app_client_id;
     std::string app_client_secret;
-    if (chromeos::UserSessionManager::GetInstance()
-            ->GetAppModeChromeClientOAuthInfo(&app_client_id,
-                                              &app_client_secret)) {
+    if (ash::UserSessionManager::GetInstance()->GetAppModeChromeClientOAuthInfo(
+            &app_client_id, &app_client_secret)) {
       token_key_account_access_token_fetcher_ =
           identity_manager->CreateAccessTokenFetcherForClient(
               token_key_.account_info.account_id, app_client_id,

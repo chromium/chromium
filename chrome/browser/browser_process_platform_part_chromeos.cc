@@ -222,7 +222,7 @@ void BrowserProcessPlatformPart::ShutdownDeviceDisablingManager() {
 
 void BrowserProcessPlatformPart::InitializeSessionManager() {
   DCHECK(!session_manager_);
-  session_manager_ = std::make_unique<chromeos::ChromeSessionManager>();
+  session_manager_ = std::make_unique<ash::ChromeSessionManager>();
 }
 
 void BrowserProcessPlatformPart::ShutdownSessionManager() {

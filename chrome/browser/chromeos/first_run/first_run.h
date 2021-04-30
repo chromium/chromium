@@ -28,4 +28,13 @@ void LaunchHelpApp(Profile* profile);
 }  // namespace first_run
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace first_run {
+using ::chromeos::first_run::LaunchHelpApp;
+using ::chromeos::first_run::ShouldLaunchHelpApp;
+}  // namespace first_run
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_FIRST_RUN_FIRST_RUN_H_

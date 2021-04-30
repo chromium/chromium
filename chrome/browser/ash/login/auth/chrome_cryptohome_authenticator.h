@@ -22,4 +22,9 @@ class ChromeCryptohomeAuthenticator : public CryptohomeAuthenticator {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ChromeCryptohomeAuthenticator;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_CRYPTOHOME_AUTHENTICATOR_H_

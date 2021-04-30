@@ -22,6 +22,7 @@ class Profile;
 
 namespace ash {
 class AccountManagerFactory;
+class ChromeSessionManager;
 class ChromeUserManager;
 class ProfileHelper;
 
@@ -35,7 +36,6 @@ class SystemClock;
 }  // namespace ash
 
 namespace chromeos {
-class ChromeSessionManager;
 class InSessionPasswordChangeManager;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
@@ -95,7 +95,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   policy::BrowserPolicyConnectorChromeOS* browser_policy_connector_chromeos();
 
-  chromeos::ChromeSessionManager* session_manager() {
+  ash::ChromeSessionManager* session_manager() {
     return session_manager_.get();
   }
 
@@ -159,7 +159,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   void ShutdownPrimaryProfileServices();
 
-  std::unique_ptr<chromeos::ChromeSessionManager> session_manager_;
+  std::unique_ptr<ash::ChromeSessionManager> session_manager_;
 
   bool created_profile_helper_;
   std::unique_ptr<ash::ProfileHelper> profile_helper_;

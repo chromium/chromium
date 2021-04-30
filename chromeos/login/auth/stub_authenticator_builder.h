@@ -71,4 +71,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticatorBuilder {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::StubAuthenticatorBuilder;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_STUB_AUTHENTICATOR_BUILDER_H_

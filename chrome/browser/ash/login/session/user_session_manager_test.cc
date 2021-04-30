@@ -26,8 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kFakePassword[] = "p4zzw0r(|";
@@ -40,8 +39,6 @@ class TestUserSessionManager : public UserSessionManager {
   TestUserSessionManager() = default;
   ~TestUserSessionManager() override = default;
 };
-
-}  // namespace
 
 class UserSessionManagerTest : public testing::Test {
  public:
@@ -97,8 +94,8 @@ class UserSessionManagerTest : public testing::Test {
         "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
         std::string() /* supervised_user_id */,
         TestingProfile::TestingFactories());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        test_user_, profile);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(test_user_,
+                                                            profile);
 
     user_manager->LoginUser(account_id);
     return profile;
@@ -214,8 +211,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_WithoutProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
+  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   profile->GetPrefs()->SetString(language::prefs::kApplicationLocale, "fr-CA");
   g_browser_process->SetApplicationLocale("fr");
@@ -234,8 +230,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
+  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   g_browser_process->SetApplicationLocale("fr");
 
@@ -251,4 +246,5 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   EXPECT_EQ("fr-CA", profile->requested_locale().value());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

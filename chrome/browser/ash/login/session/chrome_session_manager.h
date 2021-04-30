@@ -18,7 +18,7 @@ class CommandLine;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class ChromeSessionManager : public session_manager::SessionManager {
  public:
@@ -49,6 +49,12 @@ class ChromeSessionManager : public session_manager::SessionManager {
   DISALLOW_COPY_AND_ASSIGN(ChromeSessionManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ChromeSessionManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_CHROME_SESSION_MANAGER_H_

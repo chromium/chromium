@@ -825,7 +825,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
   chromeos::TimeZoneResolver::RegisterPrefs(registry);
   ash::UserImageManager::RegisterPrefs(registry);
-  chromeos::UserSessionManager::RegisterPrefs(registry);
+  ash::UserSessionManager::RegisterPrefs(registry);
   ash::WebKioskAppManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);
   cryptauth::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);

@@ -275,4 +275,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::NetworkCertLoader;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_CERT_LOADER_H_

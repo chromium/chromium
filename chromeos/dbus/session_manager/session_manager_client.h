@@ -478,4 +478,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SessionManagerClient;
+}
+
 #endif  // CHROMEOS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_

@@ -17,7 +17,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 
 class UserSessionInitializer : public session_manager::SessionManagerObserver {
  public:
@@ -91,6 +91,6 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   base::WeakPtrFactory<UserSessionInitializer> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_USER_SESSION_INITIALIZER_H_

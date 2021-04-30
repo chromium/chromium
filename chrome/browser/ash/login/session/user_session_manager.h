@@ -24,21 +24,34 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/ui/input_events_blocker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chrome/browser/chromeos/eol_notification.h"
 #include "chrome/browser/chromeos/u2f_notification.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/arc/net/always_on_vpn_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 class AccountId;
@@ -53,17 +66,10 @@ namespace user_manager {
 class User;
 }  // namespace user_manager
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 class UserSessionManagerTestApi;
 }  // namespace test
-
-class EasyUnlockKeyManager;
-class HelpAppNotificationController;
-class InputEventsBlocker;
-class LoginDisplayHost;
-class StubAuthenticatorBuilder;
 
 class UserSessionManagerDelegate {
  public:
@@ -263,8 +269,8 @@ class UserSessionManager
   // Returns true if Easy unlock keys needs to be updated.
   bool NeedsToUpdateEasyUnlockKeys() const;
 
-  void AddSessionStateObserver(chromeos::UserSessionStateObserver* observer);
-  void RemoveSessionStateObserver(chromeos::UserSessionStateObserver* observer);
+  void AddSessionStateObserver(ash::UserSessionStateObserver* observer);
+  void RemoveSessionStateObserver(ash::UserSessionStateObserver* observer);
 
   void ActiveUserChanged(user_manager::User* active_user) override;
 
@@ -379,7 +385,7 @@ class UserSessionManager
   // information in Local State like GAIA ID.
   void StoreUserContextDataBeforeProfileIsCreated();
 
-  // Initializes `chromeos::DemoSession` if starting user session for demo mode.
+  // Initializes `DemoSession` if starting user session for demo mode.
   // Runs `callback` when demo session initialization finishes, i.e. when the
   // offline demo session resources are loaded. In addition, disables browser
   // launch if demo session is started.
@@ -552,7 +558,7 @@ class UserSessionManager
 
   PendingUserSessions pending_user_sessions_;
 
-  base::ObserverList<chromeos::UserSessionStateObserver>::Unchecked
+  base::ObserverList<ash::UserSessionStateObserver>::Unchecked
       session_state_observer_list_;
 
   // Set of user_id for those users that we should restore authentication
@@ -638,13 +644,14 @@ class UserSessionManager
   DISALLOW_COPY_AND_ASSIGN(UserSessionManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::UserSessionManager;
-using ::chromeos::UserSessionManagerDelegate;
-}  // namespace ash
+namespace chromeos {
+using ::ash::UserSessionManager;
+using ::ash::UserSessionManagerDelegate;
+using ::ash::UserSessionStateObserver;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_USER_SESSION_MANAGER_H_
