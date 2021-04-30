@@ -11,7 +11,6 @@ goog.provide('Output');
 goog.require('AbstractEarcons');
 goog.require('AutomationTreeWalker');
 goog.require('ChromeVox');
-goog.require('EarconEngine');
 goog.require('EventSourceState');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');

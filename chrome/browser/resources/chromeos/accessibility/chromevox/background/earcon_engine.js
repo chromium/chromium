@@ -8,12 +8,10 @@
  * rest of the code.
  */
 
-goog.provide('EarconEngine');
-
 /**
  * EarconEngine generates ChromeVox's earcons using the web audio API.
  */
-EarconEngine = class {
+export class EarconEngine {
   constructor() {
     // Public control parameters. All of these are meant to be adjustable.
 
@@ -121,6 +119,16 @@ EarconEngine = class {
     /** @private {boolean} */
     this.persistProgressTicks_ = false;
 
+    /**
+     * Maps a earcon name to the last source input audio for that
+     * earcon.
+     * @private {!Object<!Earcon, !AudioNode|undefined>}
+     */
+    this.lastEarconSources_ = {};
+
+    /** @private {!Earcon|undefined} */
+    this.currentTrackedEarcon_;
+
     // Initialization: load the base sound data files asynchronously.
     const allSoundFilesToLoad =
         EarconEngine.SOUNDS.concat(EarconEngine.REVERBS);
@@ -129,6 +137,113 @@ EarconEngine = class {
                                       EarconEngine.BASE_URL + sound + '.wav';
                                   this.loadSound(sound, url);
                                 }).bind(this));
+  }
+
+  /**
+   * A high-level way to ask the engine to play a specific earcon.
+   * @param {!Earcon} earcon The earcon to play.
+   */
+  playEarcon(earcon) {
+    // These earcons are not tracked by the engine via their audio sources.
+    switch (earcon) {
+      case Earcon.CHROMEVOX_LOADED:
+        this.cancelProgressPersistent();
+        return;
+      case Earcon.CHROMEVOX_LOADING:
+        this.startProgressPersistent();
+        return;
+      case Earcon.PAGE_FINISH_LOADING:
+        this.cancelProgress();
+        return;
+      case Earcon.PAGE_START_LOADING:
+        this.startProgress();
+        return;
+      case Earcon.POP_UP_BUTTON:
+        this.onPopUpButton();
+        return;
+
+      // TODO(dmazzoni): decide if we want new earcons for these
+      // or not. We may choose to not have earcons for some of these.
+      case Earcon.LIST_ITEM:
+      case Earcon.LONG_DESC:
+      case Earcon.MATH:
+      case Earcon.OBJECT_CLOSE:
+      case Earcon.OBJECT_ENTER:
+      case Earcon.OBJECT_EXIT:
+      case Earcon.OBJECT_OPEN:
+      case Earcon.OBJECT_SELECT:
+      case Earcon.RECOVER_FOCUS:
+        return;
+    }
+
+    // These earcons are tracked by the engine via their audio sources.
+    if (this.lastEarconSources_[earcon] !== undefined) {
+      // Playback of |earcon| is in progress.
+      return;
+    }
+
+    this.currentTrackedEarcon_ = earcon;
+    switch (earcon) {
+      case Earcon.ALERT_MODAL:
+      case Earcon.ALERT_NONMODAL:
+        this.onAlert();
+        break;
+      case Earcon.BUTTON:
+        this.onButton();
+        break;
+      case Earcon.CHECK_OFF:
+        this.onCheckOff();
+        break;
+      case Earcon.CHECK_ON:
+        this.onCheckOn();
+        break;
+      case Earcon.EDITABLE_TEXT:
+        this.onTextField();
+        break;
+      case Earcon.INVALID_KEYPRESS:
+        this.onWrap();
+        break;
+      case Earcon.LINK:
+        this.onLink();
+        break;
+      case Earcon.LISTBOX:
+        this.onSelect();
+        break;
+      case Earcon.SELECTION:
+        this.onSelection();
+        break;
+      case Earcon.SELECTION_REVERSE:
+        this.onSelectionReverse();
+        break;
+      case Earcon.SKIP:
+        this.onSkim();
+        break;
+      case Earcon.SLIDER:
+        this.onSlider();
+        break;
+      case Earcon.SMART_STICKY_MODE_OFF:
+        this.onSmartStickyModeOff();
+        break;
+      case Earcon.SMART_STICKY_MODE_ON:
+        this.onSmartStickyModeOn();
+        break;
+      case Earcon.NO_POINTER_ANCHOR:
+        this.onNoPointerAnchor();
+        break;
+      case Earcon.WRAP:
+      case Earcon.WRAP_EDGE:
+        this.onWrap();
+        break;
+    }
+    this.currentTrackedEarcon_ = undefined;
+
+    // Clear source once it finishes playing.
+    const source = this.lastEarconSources_[earcon];
+    if (source !== undefined) {
+      source.onended = () => {
+        delete this.lastEarconSources_[earcon];
+      };
+    }
   }
 
   /**
@@ -259,7 +374,9 @@ EarconEngine = class {
 
     const destination = this.createCommonFilters(opt_properties);
     source.connect(destination);
-
+    if (this.currentTrackedEarcon_) {
+      this.lastEarconSources_[this.currentTrackedEarcon_] = source;
+    }
     if (opt_properties.time) {
       source.start(this.context_.currentTime + opt_properties.time);
     } else {
@@ -461,6 +578,9 @@ EarconEngine = class {
     let gain = properties.gain;
     for (let i = 0; i < properties.overtones; i++) {
       const osc = this.context_.createOscillator();
+      if (this.currentTrackedEarcon_) {
+        this.lastEarconSources_[this.currentTrackedEarcon_] = osc;
+      }
       osc.frequency.value = properties.freq * (i + 1);
 
       if (properties.endFreq) {
@@ -602,6 +722,8 @@ EarconEngine = class {
       overtones: 3,
       overtoneFactor: 0.1
     });
+
+    this.currentTrackedEarcon_ = undefined;
   }
 
   /**
@@ -762,7 +884,7 @@ EarconEngine = class {
   resetPan() {
     this.basePan = EarconEngine.CENTER_PAN_;
   }
-};
+}
 
 /**
  * @type {Array<string>} The list of sound data files to load.

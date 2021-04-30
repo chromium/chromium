@@ -44,7 +44,6 @@ chromevox_modules = [
   "background/custom_automation_event.js",
   "background/desktop_automation_handler.js",
   "background/download_handler.js",
-  "background/earcon_engine.js",
   "background/editing/editable_line.js",
   "background/editing/editing.js",
   "background/editing/intent_handler.js",
@@ -120,11 +119,12 @@ chromevox_modules = [
 # ES6 modules.
 chromevox_es6_modules = [
   "background/background.js",
-  "background/live_regions.js",
+  "background/earcon_engine.js",
+  "background/earcons.js",
   "background/es6_loader.js",
   "background/find_handler.js",
+  "background/live_regions.js",
   "background/media_automation_handler.js",
-  "background/earcons.js",
   "background/range_automation_handler.js",
 ]
 

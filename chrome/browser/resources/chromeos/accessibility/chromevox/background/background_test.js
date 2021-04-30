@@ -3401,3 +3401,45 @@ TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', function() {
         .replay();
   });
 });
+
+SYNC_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
+  const engine = ChromeVoxState.instance.earcons_.engine_;
+  assertTrue(engine !== undefined);
+
+  // We only test a few earcons here. Not all earcons prevent parallel playback
+  // or have mappings into the earcon engine.
+
+  // There are no tracked sources yet.
+  assertEquals(0, Object.keys(engine.lastEarconSources_).length);
+
+  // Note that alert modal vs nonmodal would be allowed to play in parallel (as
+  // do wrap / wrap edge) because they are different events even though they
+  // really play the same sound.
+  ChromeVox.earcons.playEarcon(Earcon.ALERT_MODAL);
+  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
+  const lastAlertSource = engine.lastEarconSources_[Earcon.ALERT_MODAL];
+  assertTrue(lastAlertSource !== undefined);
+
+  ChromeVox.earcons.playEarcon(Earcon.ALERT_MODAL);
+  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
+
+  // The earcon for this stayed the same (above), so there's no duplicate
+  // playback of two alerts.
+  assertEquals(lastAlertSource, engine.lastEarconSources_[Earcon.ALERT_MODAL]);
+
+  // This simulates a parallel playback of the button earcon which is allowed.
+  ChromeVox.earcons.playEarcon(Earcon.BUTTON);
+  assertEquals(2, Object.keys(engine.lastEarconSources_).length);
+  assertTrue(engine.lastEarconSources_[Earcon.BUTTON] !== undefined);
+
+  // This gets called by web audio when the earcon finishes.
+  lastAlertSource.onended();
+
+  // The button earcon is still playing.
+  assertEquals(1, Object.keys(engine.lastEarconSources_).length);
+  assertTrue(engine.lastEarconSources_[Earcon.BUTTON] !== undefined);
+
+  // Finish up the button earcon, too.
+  engine.lastEarconSources_[Earcon.BUTTON].onended();
+  assertEquals(0, Object.keys(engine.lastEarconSources_).length);
+});
