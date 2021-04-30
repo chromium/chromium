@@ -47,6 +47,8 @@ void WaylandPointer::Enter(void* data,
                            wl_fixed_t surface_y) {
   DCHECK(data);
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->connection_->set_pointer_enter_serial(serial);
+
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   gfx::PointF location{wl_fixed_to_double(surface_x),
                        wl_fixed_to_double(surface_y)};

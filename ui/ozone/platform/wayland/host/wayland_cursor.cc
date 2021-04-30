@@ -97,8 +97,8 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
 
 void WaylandCursor::HideCursor() {
   DCHECK(pointer_);
-  wl_pointer_set_cursor(pointer_->wl_object(), connection_->serial(), nullptr,
-                        0, 0);
+  wl_pointer_set_cursor(pointer_->wl_object(),
+                        connection_->pointer_enter_serial(), nullptr, 0, 0);
 
   wl_surface_attach(pointer_surface_.get(), nullptr, 0, 0);
   wl_surface_commit(pointer_surface_.get());
@@ -142,7 +142,8 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
                                     uint32_t hotspot_y_dip) {
   DCHECK(pointer_);
 
-  wl_pointer_set_cursor(pointer_->wl_object(), connection_->serial(),
+  wl_pointer_set_cursor(pointer_->wl_object(),
+                        connection_->pointer_enter_serial(),
                         pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
