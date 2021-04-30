@@ -9675,6 +9675,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="6" label="Move failed">
     Migration did not complete since move stage did not complete.
   </int>
+  <int value="7" label="Data wipe failed">
+    Failed to delete lacros data directory with old data.
+  </int>
 </enum>
 
 <enum name="BrowserGestureActionType">

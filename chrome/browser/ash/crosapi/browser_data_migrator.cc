@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -20,9 +21,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
 
 namespace ash {
 namespace {
@@ -38,6 +41,11 @@ const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache"};
 // directory.
 const char* const kCopyUserDataPaths[] = {"First Run"};
 
+// Lacros' user data is backward compatible up until this version.
+constexpr char kRequiredDataVersion[] = "0";
+
+// Copies `item` to location pointed by `dest`. Returns true on success and
+// false on failure.
 bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
                     const base::FilePath& dest) {
   if (item.is_directory) {
@@ -96,22 +104,32 @@ void BrowserDataMigrator::MaybeMigrate(const AccountId& account_id,
   std::unique_ptr<BrowserDataMigrator> browser_data_migrator =
       std::make_unique<BrowserDataMigrator>(profile_data_dir);
 
+  // Check if user data directory needs to be wiped for a backward incompatible
+  // update.
+  base::Version data_version = crosapi::browser_util::GetDataVer(
+      g_browser_process->local_state(), user_id_hash);
+  base::Version current_version = version_info::GetVersion();
+  base::Version required_version =
+      base::Version(base::StringPiece(kRequiredDataVersion));
+  bool is_data_wipe_required =
+      IsDataWipeRequired(data_version, current_version, required_version);
+
   if (async) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         base::BindOnce(&BrowserDataMigrator::MigrateInternal,
-                       std::move(browser_data_migrator)),
+                       std::move(browser_data_migrator), is_data_wipe_required),
         base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
-                       std::move(callback)));
+                       std::move(callback), user_id_hash));
   } else {
     // Temporarily allowing blocking since we have to ensure that the migration
     // happens before profile is created.
     base::ScopedAllowBlocking allow_blocking;
-    // Migrate synchronously on UI thread.
-    bool did_migrate = browser_data_migrator->MigrateInternal();
-    MigrateInternalFinishedUIThread(std::move(callback), did_migrate);
+    MigrationResult result =
+        browser_data_migrator->MigrateInternal(is_data_wipe_required);
+    MigrateInternalFinishedUIThread(std::move(callback), user_id_hash, result);
   }
 }
 
@@ -148,14 +166,52 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
   UMA_HISTOGRAM_MEDIUM_TIMES(kTotalTime, timer->Elapsed());
 }
 
-// TODO(crbug.com/1178702): Once testing phase is over and lacros become the
+bool BrowserDataMigrator::IsDataWipeRequired(
+    base::Version data_version,
+    const base::Version& current_version,
+    const base::Version& required_version) {
+  // `data_version` is invalid if any wipe has not been recorded yet. In
+  // such a case, assume that the last data wipe happened significantly long
+  // time ago.
+  if (!data_version.IsValid()) {
+    data_version = base::Version("0");
+  }
+
+  if (current_version < required_version) {
+    // If `current_version` is smaller than the `required_version`, that means
+    // that the data wipe doesn't need to happen yet.
+    return false;
+  }
+
+  if (data_version >= required_version) {
+    // If `data_version` is greater or equal to `required_version`, this means
+    // data wipe has already happened and that user data is compatible with the
+    // current lacros.
+    return false;
+  }
+
+  return true;
+}
+
+// TODO(crbug.com/1178702): Once testing phase is over and lacros becomes the
 // only web browser, update the underlying logic of migration from copy to move.
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
-bool BrowserDataMigrator::MigrateInternal() {
+BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
+    bool is_data_wipe_required) {
+  if (is_data_wipe_required) {
+    if (!base::DeletePathRecursively(to_dir_)) {
+      RecordStatus(FinalStatus::kDataWipeFailed);
+      return {ResultValue::kFailed, ResultValue::kFailed};
+    }
+  }
+
+  ResultValue data_wipe_result =
+      is_data_wipe_required ? ResultValue::kSucceeded : ResultValue::kSkipped;
+
   if (!IsMigrationRequiredOnWorker()) {
     RecordStatus(FinalStatus::kSkipped);
-    return false;
+    return {data_wipe_result, ResultValue::kSkipped};
   }
 
   // Check if tmp directory already exists and delete if it does.
@@ -166,7 +222,7 @@ bool BrowserDataMigrator::MigrateInternal() {
     if (!base::DeletePathRecursively(tmp_dir_)) {
       PLOG(ERROR) << "Failed to delete tmp dir";
       RecordStatus(FinalStatus::kDeleteTmpDirFailed);
-      return false;
+      return {data_wipe_result, ResultValue::kFailed};
     }
   }
 
@@ -175,7 +231,7 @@ bool BrowserDataMigrator::MigrateInternal() {
 
   if (!HasEnoughDiskSpace(target_info)) {
     RecordStatus(FinalStatus::kNotEnoughSpace, &target_info);
-    return false;
+    return {data_wipe_result, ResultValue::kFailed};
   }
 
   if (!CopyToTmpDir(target_info)) {
@@ -183,7 +239,7 @@ bool BrowserDataMigrator::MigrateInternal() {
       base::DeletePathRecursively(tmp_dir_);
     }
     RecordStatus(FinalStatus::kCopyFailed, &target_info);
-    return false;
+    return {data_wipe_result, ResultValue::kFailed};
   }
 
   if (!MoveTmpToTargetDir()) {
@@ -191,22 +247,27 @@ bool BrowserDataMigrator::MigrateInternal() {
       base::DeletePathRecursively(tmp_dir_);
     }
     RecordStatus(FinalStatus::kMoveFailed, &target_info);
-    return false;
+    return {data_wipe_result, ResultValue::kFailed};
   }
 
-  // TODO(crbug.com/1178702): Add UMA data collection here for success status,
-  // data size and elapsed time.
   LOG(WARNING) << "BrowserDataMigrator::Migrate took "
                << timer.Elapsed().InMilliseconds() << " ms and migrated "
                << target_info.total_byte_count / (1000 * 1000) << " MBs.";
   RecordStatus(FinalStatus::kSuccess, &target_info, &timer);
-  return true;
+  return {data_wipe_result, ResultValue::kSucceeded};
 }
 
 void BrowserDataMigrator::MigrateInternalFinishedUIThread(
     base::OnceClosure callback,
-    bool did_migrate) {
-  if (did_migrate) {
+    const std::string& user_id_hash,
+    MigrationResult result) {
+  if (result.data_wipe == ResultValue::kSucceeded) {
+    crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
+                                         user_id_hash,
+                                         version_info::GetVersion());
+  }
+
+  if (result.data_migration == ResultValue::kSucceeded) {
     // If we did a migration, then we should set kClearUserDataDir1Pref. Note
     // that if we did the migration, then the new user-data-dir has the ash
     // profile as the main lacros profile.

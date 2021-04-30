@@ -24,6 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/version.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -44,10 +45,12 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -238,11 +241,16 @@ const char kLacrosStabilityMoreStable[] = "more-stable";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
+const char kDataVerPref[] = "lacros.data_version";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
   registry->RegisterBooleanPref(kClearUserDataDir1Pref,
                                 /*default_value=*/false);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kDataVerPref);
 }
 
 base::FilePath GetUserDataDir() {
@@ -557,6 +565,28 @@ base::ScopedFD CreateStartupData(
   }
 
   return fd;
+}
+
+base::Version GetDataVer(PrefService* local_state,
+                         const std::string& user_id_hash) {
+  const base::DictionaryValue* data_versions =
+      local_state->GetDictionary(kDataVerPref);
+  const std::string* data_version_str =
+      data_versions->FindStringPath(user_id_hash);
+
+  if (!data_version_str)
+    return base::Version();
+
+  return base::Version(*data_version_str);
+}
+
+void RecordDataVer(PrefService* local_state,
+                   const std::string& user_id_hash,
+                   const base::Version& version) {
+  DCHECK(version.IsValid());
+  DictionaryPrefUpdate update(local_state, kDataVerPref);
+  base::DictionaryValue* dict = update.Get();
+  dict->SetString(user_id_hash, version.GetString());
 }
 
 }  // namespace browser_util

@@ -287,6 +287,7 @@
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
@@ -785,6 +786,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(registry);
   chromeos::CellularMetricsLogger::RegisterLocalStatePrefs(registry);
   ash::ChromeUserManagerImpl::RegisterPrefs(registry);
+  crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   chromeos::DemoModeDetector::RegisterPrefs(registry);
   chromeos::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);

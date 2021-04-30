@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/version.h"
 #include "chromeos/login/auth/user_context.h"
 
 namespace ash {
@@ -72,7 +73,22 @@ class BrowserDataMigrator {
     kNotEnoughSpace = 4,
     kCopyFailed = 5,
     kMoveFailed = 6,
-    kMaxValue = kMoveFailed
+    kDataWipeFailed = 7,
+    kMaxValue = kDataWipeFailed
+  };
+
+  enum class ResultValue {
+    kSkipped,
+    kSucceeded,
+    kFailed,
+  };
+
+  // Return value of `MigrateInternal()`.
+  struct MigrationResult {
+    // Describes the end result of user data wipe.
+    ResultValue data_wipe;
+    // Describes the end result of data migration.
+    ResultValue data_migration;
   };
 
   // The class is instantiated on UI thread, bound to `MigrateInternal()` and
@@ -97,16 +113,34 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsMigrationRequiredOnUI);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequiredInvalid);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
+                           IsDataWipeRequiredFutureVersion);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
+                           IsDataWipeRequiredSameVersion);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequired);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequired2);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MaybeWipeUserDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
+  // Checks if lacros' data directory needs to be wiped before migration.
+  // `data_version` is the version of last data wipe. `current_version` is the
+  // version of ash-chrome. `required_version` is the version that introduces
+  // some breaking change. `data_version` needs to be greater or equal to
+  // `required_version`. If `required_version` is newer than `current_version`,
+  // data wipe is not required.
+  static bool IsDataWipeRequired(base::Version data_version,
+                                 const base::Version& current_version,
+                                 const base::Version& required_version);
   // Handles the migration on a worker thread. Returns whether a migration
   // occurred.
-  bool MigrateInternal();
+  MigrationResult MigrateInternal(bool is_data_wipe_required);
   // Called when the migration is finished on the UI thread.
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
-                                              bool did_migrate);
+                                              const std::string& user_id_hash,
+                                              MigrationResult result);
   // Records to UMA histograms. Note that if `target_info` is nullptr, timer
   // will be ignored.
   static void RecordStatus(const FinalStatus& final_status,

@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace aura {
 class Window;
@@ -23,6 +24,7 @@ class Window;
 
 namespace base {
 class FilePath;
+class Version;
 }  // namespace base
 
 namespace mojo {
@@ -76,8 +78,15 @@ extern const char kLaunchOnLoginPref[];
 // introduced by account_manager in M91/M92 timeframe.
 extern const char kClearUserDataDir1Pref[];
 
+// A dictionary local state pref that records the last data version of
+// lacros-chrome.
+extern const char kDataVerPref[];
+
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Registers prefs used via local state PrefService.
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
@@ -166,6 +175,18 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
 base::ScopedFD CreateStartupData(
     ::crosapi::EnvironmentProvider* environment_provider,
     crosapi::mojom::InitialBrowserAction initial_browser_action);
+
+// Reads `kDataVerPref` and gets corresponding data version for `user_id_hash`.
+// If no such version is registered yet, returns `Version` that is invalid.
+// Should only be called on UI thread since it reads from `LocalState`.
+base::Version GetDataVer(PrefService* local_state,
+                         const std::string& user_id_hash);
+
+// Records data version for `user_id_hash` in `LocalState`. Should only be
+// called on UI thread since it reads from `LocalState`.
+void RecordDataVer(PrefService* local_state,
+                   const std::string& user_id_hash,
+                   const base::Version& version);
 
 }  // namespace browser_util
 }  // namespace crosapi

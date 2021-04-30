@@ -124,6 +124,52 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
   }
 }
 
+TEST_F(BrowserDataMigratorTest, IsDataWipeRequiredInvalid) {
+  const base::Version data_version;
+  const base::Version current{"3"};
+  const base::Version required{"2"};
+
+  ASSERT_FALSE(data_version.IsValid());
+  EXPECT_TRUE(
+      BrowserDataMigrator::IsDataWipeRequired(data_version, current, required));
+}
+
+TEST_F(BrowserDataMigratorTest, IsDataWipeRequiredFutureVersion) {
+  const base::Version data_version{"1"};
+  const base::Version current{"2"};
+  const base::Version required{"3"};
+
+  EXPECT_FALSE(
+      BrowserDataMigrator::IsDataWipeRequired(data_version, current, required));
+}
+
+TEST_F(BrowserDataMigratorTest, IsDataWipeRequiredSameVersion) {
+  const base::Version data_version{"3"};
+  const base::Version current{"4"};
+  const base::Version required{"3"};
+
+  EXPECT_FALSE(
+      BrowserDataMigrator::IsDataWipeRequired(data_version, current, required));
+}
+
+TEST_F(BrowserDataMigratorTest, IsDataWipeRequired) {
+  const base::Version data_version{"1"};
+  const base::Version current{"3"};
+  const base::Version required{"2"};
+
+  EXPECT_TRUE(
+      BrowserDataMigrator::IsDataWipeRequired(data_version, current, required));
+}
+
+TEST_F(BrowserDataMigratorTest, IsDataWipeRequired2) {
+  const base::Version data_version{"1"};
+  const base::Version current{"3"};
+  const base::Version required{"3"};
+
+  EXPECT_TRUE(
+      BrowserDataMigrator::IsDataWipeRequired(data_version, current, required));
+}
+
 TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
   BrowserDataMigrator browser_data_migrator(from_dir_);
 
@@ -231,7 +277,7 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
   {
     BrowserDataMigrator browser_data_migrator(from_dir_);
 
-    browser_data_migrator.MigrateInternal();
+    browser_data_migrator.MigrateInternal(false /* is_data_wipe_required */);
 
     // Expected dir structure after migration.
     // ./                         /* user_data_dir_ */
