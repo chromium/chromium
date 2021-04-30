@@ -19,7 +19,6 @@ js_type_check("closure_compile_module") {
     ":crostini_disk_resize_dialog.m",
     ":crostini_export_import.m",
     ":crostini_import_confirmation_dialog.m",
-    ":crostini_mic_sharing_dialog.m",
     ":crostini_page.m",
     ":crostini_port_forwarding.m",
     ":crostini_port_forwarding_add_port_dialog.m",
@@ -133,18 +132,6 @@ js_library("crostini_import_confirmation_dialog.m") {
   extra_deps = [ ":crostini_import_confirmation_dialog_module" ]
 }
 
-js_library("crostini_mic_sharing_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_mic_sharing_dialog.m.js" ]
-  deps = [
-    ":crostini_browser_proxy.m",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-  extra_deps = [ ":crostini_mic_sharing_dialog_module" ]
-}
-
 js_library("crostini_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_page.m.js" ]
   deps = [
@@ -213,7 +200,6 @@ js_library("crostini_subpage.m") {
     ":crostini_confirmation_dialog.m",
     ":crostini_disk_resize_confirmation_dialog.m",
     ":crostini_disk_resize_dialog.m",
-    ":crostini_mic_sharing_dialog.m",
     ":crostini_port_forwarding.m",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
@@ -240,7 +226,6 @@ group("polymer3_elements") {
     ":crostini_disk_resize_dialog_module",
     ":crostini_export_import_module",
     ":crostini_import_confirmation_dialog_module",
-    ":crostini_mic_sharing_dialog_module",
     ":crostini_page_module",
     ":crostini_port_forwarding_add_port_dialog_module",
     ":crostini_port_forwarding_module",
@@ -306,15 +291,6 @@ polymer_modulizer("crostini_export_import") {
 polymer_modulizer("crostini_import_confirmation_dialog") {
   js_file = "crostini_import_confirmation_dialog.js"
   html_file = "crostini_import_confirmation_dialog.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("crostini_mic_sharing_dialog") {
-  js_file = "crostini_mic_sharing_dialog.js"
-  html_file = "crostini_mic_sharing_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
   migrated_imports = os_settings_migrated_imports
