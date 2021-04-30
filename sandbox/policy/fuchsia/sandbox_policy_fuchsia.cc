@@ -234,13 +234,13 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
     if (base::PathExists(vulkan_icd_path))
       options->paths_to_clone.push_back(vulkan_icd_path);
 
-    // /dev/class/goldfish-pipe, /dev/class/goldfish-address-space and
-    // /dev/class/goldfish-control are used for Fuchsia Emulator.
+    // The following devices are used for Fuchsia Emulator.
     options->paths_to_clone.insert(
         options->paths_to_clone.end(),
-        {base::FilePath("/dev/class/goldfish-pipe"),
+        {base::FilePath("/dev/class/goldfish-address-space"),
          base::FilePath("/dev/class/goldfish-control"),
-         base::FilePath("/dev/class/goldfish-address-space")});
+         base::FilePath("/dev/class/goldfish-pipe"),
+         base::FilePath("/dev/class/goldfish-sync")});
   }
 
   // If the process needs access to any services then transfer the
