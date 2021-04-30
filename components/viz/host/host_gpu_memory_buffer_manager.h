@@ -69,7 +69,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
-      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback);
+      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
+      bool call_sync = false);
 
   bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
                                             gfx::BufferUsage usage) const;
@@ -134,6 +135,9 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   int client_id,
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
+
+  bool CreateBufferUsesGpuService(gfx::BufferFormat format,
+                                  gfx::BufferUsage usage);
 
   GpuServiceProvider gpu_service_provider_;
   mojom::GpuService* gpu_service_ = nullptr;

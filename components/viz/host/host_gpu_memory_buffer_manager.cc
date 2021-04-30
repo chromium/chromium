@@ -14,6 +14,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -143,13 +144,12 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle,
-    base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback) {
+    base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
+    bool call_sync) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (!weak_ptr_)
     weak_ptr_ = weak_factory_.GetWeakPtr();
-  if (gpu_memory_buffer_support_->GetNativeGpuMemoryBufferType() !=
-          gfx::EMPTY_BUFFER &&
-      IsNativeGpuMemoryBufferConfiguration(format, usage)) {
+  if (CreateBufferUsesGpuService(format, usage)) {
     if (auto* gpu_service = GetGpuService()) {
       PendingBufferInfo buffer_info;
       buffer_info.size = size;
@@ -159,11 +159,23 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
       buffer_info.callback = std::move(callback);
       pending_buffers_[client_id].insert(
           std::make_pair(id, std::move(buffer_info)));
-      gpu_service->CreateGpuMemoryBuffer(
-          id, size, format, usage, client_id, surface_handle,
-          base::BindOnce(
-              &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
-              weak_ptr_, gpu_service_version_, client_id, id));
+      if (call_sync) {
+        DCHECK(runs_on_ui_thread_);
+        gfx::GpuMemoryBufferHandle handle;
+        {
+          mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
+          gpu_service->CreateGpuMemoryBuffer(id, size, format, usage, client_id,
+                                             surface_handle, &handle);
+        }
+        OnGpuMemoryBufferAllocated(gpu_service_version_, client_id, id,
+                                   std::move(handle));
+      } else {
+        gpu_service->CreateGpuMemoryBuffer(
+            id, size, format, usage, client_id, surface_handle,
+            base::BindOnce(
+                &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
+                weak_ptr_, gpu_service_version_, client_id, id));
+      }
     } else {
       // GPU service failed to start. Run the callback with null handle.
       std::move(callback).Run(gfx::GpuMemoryBufferHandle());
@@ -213,7 +225,11 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  DCHECK(!task_runner_->BelongsToCurrentThread());
+  DCHECK(runs_on_ui_thread_ || !task_runner_->BelongsToCurrentThread());
+
+  bool call_sync = runs_on_ui_thread_ &&
+                   task_runner_->BelongsToCurrentThread() &&
+                   CreateBufferUsesGpuService(format, usage);
 
   // A refcounted wrapper around a bool so that if the thread waiting on a
   // PostTask to the main thread is quit due to shutdown and the task runs
@@ -235,26 +251,30 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       cancelled, &handle, &wait_event);
   // We block with a WaitableEvent until the callback is run. So using
   // base::Unretained() is safe here.
-  auto allocate_callback =
-      base::BindOnce(&HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer,
-                     base::Unretained(this), id, client_id_, size, format,
-                     usage, surface_handle, std::move(reply_callback));
-  task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
-      allow_base_sync_primitives;
-  if (runs_on_ui_thread_ && shutdown_event) {
-    // If this class is running on the UI thread then
-    // TileManager::FinishTasksAndCleanUp could block on the worker thread where
-    // this task is running. That could in turn block on a task posted to the UI
-    // thread. We avoid this deadlock by having an event that TileManager can
-    // set to cancel this wait.
-    base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
-    size_t index =
-        base::WaitableEvent::WaitMany(waitables, base::size(waitables));
-    if (index == 1)
-      cancelled->data = true;
+  auto allocate_callback = base::BindOnce(
+      &HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer,
+      base::Unretained(this), id, client_id_, size, format, usage,
+      surface_handle, std::move(reply_callback), call_sync);
+  if (runs_on_ui_thread_ && task_runner_->BelongsToCurrentThread()) {
+    std::move(allocate_callback).Run();
   } else {
-    wait_event.Wait();
+    task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
+        allow_base_sync_primitives;
+    if (runs_on_ui_thread_ && shutdown_event) {
+      // If this class is running on the UI thread then
+      // TileManager::FinishTasksAndCleanUp could block on the worker thread
+      // where this task is running. That could in turn block on a task posted
+      // to the UI thread. We avoid this deadlock by having an event that
+      // TileManager can set to cancel this wait.
+      base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
+      size_t index =
+          base::WaitableEvent::WaitMany(waitables, base::size(waitables));
+      if (index == 1)
+        cancelled->data = true;
+    } else {
+      wait_event.Wait();
+    }
   }
 
   if (handle.is_null())
@@ -420,6 +440,14 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
     allocated_buffers_[client_id].insert(std::make_pair(id, buffer_info));
   }
   std::move(pending_buffer.callback).Run(std::move(handle));
+}
+
+bool HostGpuMemoryBufferManager::CreateBufferUsesGpuService(
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage) {
+  return gpu_memory_buffer_support_->GetNativeGpuMemoryBufferType() !=
+             gfx::EMPTY_BUFFER &&
+         IsNativeGpuMemoryBufferConfiguration(format, usage);
 }
 
 }  // namespace viz

@@ -85,6 +85,7 @@ interface GpuService {
       pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
           vea_provider);
 
+  [Sync]
   CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
                         gfx.mojom.Size size,
                         gfx.mojom.BufferFormat format,

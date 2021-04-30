@@ -35,6 +35,7 @@ class Compositor;
 namespace viz {
 class GpuHostImpl;
 class HostFrameSinkManager;
+class HostGpuMemoryBufferManager;
 }
 
 namespace mojo {
@@ -86,6 +87,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;
+  friend class viz::HostGpuMemoryBufferManager;
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::Compositor;
