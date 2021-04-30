@@ -329,10 +329,16 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Click on the primary action button ("Next" usually).
+     * Click on the primary action button ("Next" usually) for Gaia. On the
+     * Login or Enterprise Enrollment screen.
      */
     static clickGaiaPrimaryButtonForTesting() {
-      $('gaia-signin').clickPrimaryButtonForTesting();
+      if (!$('gaia-signin').hidden) {
+        $('gaia-signin').clickPrimaryButtonForTesting();
+      } else {
+        assert(!$('enterprise-enrollment').hidden);
+        $('enterprise-enrollment').clickPrimaryButtonForTesting();
+      }
     }
   }  // class Oobe
 

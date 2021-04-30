@@ -380,6 +380,10 @@ Polymer({
     this.$["step-ad-join"].focus();
   },
 
+  clickPrimaryButtonForTesting() {
+    this.$['step-signin'].clickPrimaryButtonForTesting();
+  },
+
   /**
    * Skips the device attribute update,
    * shows the successful enrollment step.
