@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -36,7 +37,7 @@ void AddPointerDevicesFromString(
     if (base::StringToInt(dev, &devid))
       devices->push_back({devid, type});
     else
-      DLOG(WARNING) << "Invalid device id: " << dev.as_string();
+      DLOG(WARNING) << "Invalid device id: " << dev;
   }
 }
 

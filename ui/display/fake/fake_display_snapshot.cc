@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -373,7 +374,7 @@ std::unique_ptr<DisplaySnapshot> FakeDisplaySnapshot::CreateFromSpec(
 
   // Leftovers should be just the native mode at this point.
   std::unique_ptr<DisplayMode> native_mode =
-      ParseDisplayMode(leftover.as_string());
+      ParseDisplayMode(std::string(leftover));
 
   // Fail without valid native mode.
   if (!native_mode)

@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
@@ -160,8 +161,7 @@ bool ReplaceTemplateExpressionsInternal(
     size_t key_end = source.find(kKeyClose, current_pos);
     CHECK_NE(key_end, std::string::npos);
 
-    std::string key =
-        source.substr(current_pos, key_end - current_pos).as_string();
+    std::string key(source.substr(current_pos, key_end - current_pos));
     CHECK(!key.empty());
 
     auto value = replacements.find(key);
@@ -240,12 +240,12 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     // If there are no more templates, copy the remaining JS to the output and
     // return true.
     if (current_template.type == NONE) {
-      formatted->append(remaining.as_string());
+      formatted->append(std::string(remaining));
       return true;
     }
 
     // Copy the JS before the template to the output.
-    formatted->append(remaining.substr(0, current_template.start).as_string());
+    formatted->append(std::string(remaining.substr(0, current_template.start)));
 
     // Retrieve the HTML portion of the source.
     base::StringPiece html_template =
