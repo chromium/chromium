@@ -623,7 +623,15 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
   EXPECT_EQ(menu_runner1, menu_runner2);
 }
 
-TEST_F(EditableComboboxTest, RefocusingReopensMenuBasedOnLatestContent) {
+#if defined(OS_LINUX)
+// Flaky on Linux. https://crbug.com/1204584
+#define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
+    DISABLED_RefocusingReopensMenuBasedOnLatestContent
+#else
+#define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
+    RefocusingReopensMenuBasedOnLatestContent
+#endif
+TEST_F(EditableComboboxTest, MAYBE_RefocusingReopensMenuBasedOnLatestContent) {
   std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad", u"bac2"};
   InitEditableCombobox(items, /*filter_on_edit=*/true);
   combobox_->GetTextfieldForTest()->RequestFocus();
