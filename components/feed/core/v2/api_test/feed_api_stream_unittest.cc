@@ -17,6 +17,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/feed_feature_list.h"
@@ -64,22 +65,24 @@ TEST_F(FeedApiTest, BackgroundRefreshForYouSuccess) {
   EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 
-TEST_F(FeedApiTest, BackgroundRefreshWebFeedSuccess) {
-  // Trigger a background refresh.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshWebFeed);
-  WaitForIdleTaskQueue();
+TEST_F(FeedApiTest, WebFeedDoesNotBackgroundRefresh) {
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    RequestSchedule schedule;
+    schedule.anchor_time = kTestTimeEpoch;
+    schedule.refresh_offsets = {base::TimeDelta::FromSeconds(12),
+                                base::TimeDelta::FromSeconds(48)};
 
-  // Verify the refresh happened and that we can load a stream without the
-  // network.
-  ASSERT_TRUE(
-      refresh_scheduler_.completed_tasks.count(RefreshTaskId::kRefreshWebFeed));
-  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+    injected_response.request_schedule = schedule;
+    response_translator_.InjectResponse(std::move(injected_response));
+  }
+
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  // Verify that prefetch service is NOT informed.
-  EXPECT_EQ(0, prefetch_service_.NewSuggestionsAvailableCallCount());
+
+  // The request schedule should be ignored.
+  EXPECT_TRUE(refresh_scheduler_.scheduled_run_times.empty());
 }
 
 TEST_F(FeedApiTest, BackgroundRefreshPrefetchesImages) {
@@ -365,7 +368,7 @@ TEST_F(FeedApiTest, ForceRefreshForDebugging) {
             surface.DescribeUpdates());
 }
 
-TEST_P(FeedStreamTestForAllStreamTypes, RefreshScheduleFlow) {
+TEST_F(FeedApiTest, RefreshScheduleFlow) {
   // Inject a typical network response, with a server-defined request schedule.
   {
     RequestSchedule schedule;
@@ -380,36 +383,41 @@ TEST_P(FeedStreamTestForAllStreamTypes, RefreshScheduleFlow) {
 
     // Load the stream, and then destroy the surface to allow background
     // refresh.
-    TestSurface surface(stream_.get());
+    TestForYouSurface surface(stream_.get());
     WaitForIdleTaskQueue();
     UnloadModel(surface.GetStreamType());
   }
 
   // Verify the first refresh was scheduled.
   EXPECT_EQ(base::TimeDelta::FromSeconds(12),
-            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
+            refresh_scheduler_
+                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 
   // Simulate executing the background task.
   refresh_scheduler_.Clear();
   task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(12));
-  stream_->ExecuteRefreshTask(GetRefreshTaskId());
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   // Verify |RefreshTaskComplete()| was called and next refresh was scheduled.
-  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(GetRefreshTaskId()));
+  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(
+      RefreshTaskId::kRefreshForYouFeed));
   EXPECT_EQ(base::TimeDelta::FromSeconds(48 - 12),
-            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
+            refresh_scheduler_
+                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 
   // Simulate executing the background task again.
   refresh_scheduler_.Clear();
   task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(48 - 12));
-  stream_->ExecuteRefreshTask(GetRefreshTaskId());
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   // Verify |RefreshTaskComplete()| was called and next refresh was scheduled.
-  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(GetRefreshTaskId()));
+  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(
+      RefreshTaskId::kRefreshForYouFeed));
   EXPECT_EQ(GetFeedConfig().default_background_refresh_interval,
-            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
+            refresh_scheduler_
+                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
 TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {

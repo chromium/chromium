@@ -35,8 +35,7 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
       out_id = RefreshTaskId::kRefreshForYouFeed;
       return true;
     case Type::kWebFeed:
-      out_id = RefreshTaskId::kRefreshWebFeed;
-      return true;
+      return false;
   }
 }
 

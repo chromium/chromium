@@ -21,6 +21,8 @@ namespace feed {
 
 enum class RefreshTaskId {
   kRefreshForYouFeed,
+  // TODO(1152592): Refresh is not currently used for the Web Feed. Remove this
+  // code if we don't need it.
   kRefreshWebFeed,
 };
 
