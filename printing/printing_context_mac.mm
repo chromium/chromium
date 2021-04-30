@@ -128,7 +128,7 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
     __block auto block_callback = std::move(callback);
     [CATransaction setCompletionBlock:^{
       NSInteger selection = [panel runModalWithPrintInfo:print_info];
-      if (selection == NSOKButton) {
+      if (selection == NSModalResponseOK) {
         print_info_.reset([[panel printInfo] retain]);
         settings_->set_ranges(GetPageRangesFromPrintInfo());
         InitPrintSettingsFromPrintInfo();

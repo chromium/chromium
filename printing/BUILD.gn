@@ -180,10 +180,6 @@ component("printing") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
-
-    # TODO(crbug.com/1203935) Modernize macOS system API usage so that this
-    # flag can be removed.
-    cflags += [ "-Wno-deprecated-declarations" ]
   }
 
   if (is_win) {
