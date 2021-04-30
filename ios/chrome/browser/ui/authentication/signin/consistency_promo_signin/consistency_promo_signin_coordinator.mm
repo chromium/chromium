@@ -56,8 +56,8 @@
 // Coordinator to select another identity.
 @property(nonatomic, strong)
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
-// Sets with the selected identity, when the sign-in workflow is in progress.
-@property(nonatomic, strong) ChromeIdentity* signinIdentity;
+// |self.defaultAccountCoordinator.selectedIdentity|.
+@property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
 
 @end
 
@@ -112,6 +112,12 @@
                                       completion:nil];
 }
 
+#pragma mark - Properties
+
+- (ChromeIdentity*)selectedIdentity {
+  return self.defaultAccountCoordinator.selectedIdentity;
+}
+
 #pragma mark - Private
 
 // Dismisses the bottom sheet view controller.
@@ -133,6 +139,21 @@
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult
                                completionInfo:completionInfo];
+}
+
+// Displays the error panel.
+- (void)displayCookieErrorWithState:(GoogleServiceAuthError::State)errorState {
+  DCHECK(!self.signinErrorCoordinator);
+  [self.defaultAccountCoordinator stopSigninSpinner];
+  self.signinErrorCoordinator = [[ConsistencySigninErrorCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:self.browser
+                      errorState:errorState];
+  self.signinErrorCoordinator.delegate = self;
+  [self.signinErrorCoordinator start];
+  [self.navigationController
+      pushViewController:self.signinErrorCoordinator.viewController
+                animated:YES];
 }
 
 #pragma mark - SwipeGesture
@@ -174,10 +195,9 @@
 }
 
 - (void)signinWithIdentity:(ChromeIdentity*)identity {
-  DCHECK(!self.signinIdentity);
-  self.signinIdentity = identity;
+  DCHECK([self.selectedIdentity isEqual:identity]);
   [self.defaultAccountCoordinator startSigninSpinner];
-  self.authenticationService->SignIn(self.signinIdentity);
+  self.authenticationService->SignIn(self.selectedIdentity);
   DCHECK(self.authenticationService->IsAuthenticated());
 }
 
@@ -235,51 +255,59 @@
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
-  ChromeIdentity* identity = self.defaultAccountCoordinator.selectedIdentity;
-  [self signinWithIdentity:identity];
+  [self signinWithIdentity:self.selectedIdentity];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  // Since sign-in UI blocks all other Chrome screens until it is dismissed
-  // an account change event must come from the bottomsheet.
-  // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
-  DCHECK(event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-         signin::PrimaryAccountChangeEvent::Type::kSet);
-  ChromeIdentity* signedInIdentity =
-      self.authenticationService->GetAuthenticatedIdentity();
-  DCHECK([signedInIdentity isEqual:self.signinIdentity]);
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // Since sign-in UI blocks all other Chrome screens until it is dismissed
+      // an account change event must come from the bottomsheet.
+      // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
+      ChromeIdentity* signedInIdentity =
+          self.authenticationService->GetAuthenticatedIdentity();
+      DCHECK([signedInIdentity isEqual:self.selectedIdentity]);
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      // Sign out can be triggered from |onAccountsInCookieUpdated:error:|,
+      // if there is cookie fetch error.
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+  }
 }
 
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
-  DCHECK(self.signinIdentity);
-  [self.defaultAccountCoordinator stopSigninSpinner];
+  DCHECK(!self.accountChooserCoordinator);
+  if (self.signinErrorCoordinator) {
+    // TODO(crbug.com/1204528): This case should not happen, but
+    // |onAccountsInCookieUpdated:error:| can be called twice when there is an
+    // error. Once this bug is fixed, this |if| should be replaced with
+    // |DCHECK(!self.signinErrorCoordinator)|.
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
   if (error.state() == GoogleServiceAuthError::State::NONE) {
-    __weak __typeof(self) weakSelf = self;
+    [self.defaultAccountCoordinator stopSigninSpinner];
     [self.navigationController
         dismissViewControllerAnimated:YES
                            completion:^() {
                              [weakSelf
                                  finishedWithResult:
                                      SigninCoordinatorResultSuccess
-                                           identity:weakSelf.signinIdentity];
+                                           identity:weakSelf.selectedIdentity];
                            }];
     return;
   }
-  self.signinIdentity = nil;
-  self.signinErrorCoordinator = [[ConsistencySigninErrorCoordinator alloc]
-      initWithBaseViewController:self.navigationController
-                         browser:self.browser
-                      errorState:error.state()];
-  self.signinErrorCoordinator.delegate = self;
-  [self.signinErrorCoordinator start];
-  [self.navigationController
-      pushViewController:self.signinErrorCoordinator.viewController
-                animated:YES];
+  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
+    [weakSelf displayCookieErrorWithState:error.state()];
+  });
 }
 
 #pragma mark - UINavigationControllerDelegate
