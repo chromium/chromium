@@ -98,9 +98,11 @@ class TestResult(object):
             'single_test_runner.py incorrectly reported results %s for test %s'
             % (', '.join(results), test_name))
         if len(results) == 2:
-            assert ((ResultType.Timeout in results and ResultType.Failure in results) or
-                    (ResultType.Crash in results and ResultType.Failure in results)), (
-                'Allowed combination of 2 results are 1. TIMEOUT and FAIL 2. CRASH and FAIL'
+            assert results.issubset({ResultType.Timeout,
+                                     ResultType.Failure,
+                                     ResultType.Crash}), (
+                'Allowed combination of 2 results are 1. TIMEOUT and FAIL '
+                '2. CRASH and FAIL 3. CRASH and TIMEOUT '
                 'Test %s reported the following results %s' %
                 (test_name, ', '.join(results)))
             if ResultType.Timeout in results:
