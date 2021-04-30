@@ -56,10 +56,7 @@ source_set("recent_tabs_ui_constants") {
 }
 
 source_set("recent_tabs_ui") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "recent_tabs_consumer.h",
     "recent_tabs_menu_provider.h",
