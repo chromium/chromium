@@ -587,8 +587,8 @@ TEST_F(EditableComboboxTest, MAYBE_SpaceIsReflectedInTextfield) {
   EXPECT_EQ(u"a  b", combobox_->GetText());
 }
 
-#if defined(OS_WIN)
-// Flaky on Windows. https://crbug.com/965601
+#if defined(OS_WIN) || defined(OS_LINUX)
+// Flaky on Windows and Linux. https://crbug.com/965601
 #define MAYBE_MenuCanAdaptToContentChange DISABLED_MenuCanAdaptToContentChange
 #else
 #define MAYBE_MenuCanAdaptToContentChange MenuCanAdaptToContentChange
