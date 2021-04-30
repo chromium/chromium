@@ -81,7 +81,8 @@ BASE_EXPORT bool DeleteFile(const FilePath& path);
 BASE_EXPORT bool DeletePathRecursively(const FilePath& path);
 
 // Simplified way to get a callback to do DeleteFile(path) and ignore the
-// DeleteFile() result.
+// DeleteFile() result. On Windows, this will retry the delete via delayed tasks
+// for up to 2 seconds before giving up, to deal with AV S/W locking the file.
 BASE_EXPORT OnceCallback<void(const FilePath&)> GetDeleteFileCallback();
 
 // Simplified way to get a callback to do DeletePathRecursively(path) and ignore

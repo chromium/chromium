@@ -27,9 +27,11 @@
 namespace base {
 
 #if !defined(OS_NACL_NONSFI)
+#if !defined(OS_WIN)
 OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
   return BindOnce(IgnoreResult(&DeleteFile));
 }
+#endif  // !defined(OS_WIN)
 
 OnceCallback<void(const FilePath&)> GetDeletePathRecursivelyCallback() {
   return BindOnce(IgnoreResult(&DeletePathRecursively));

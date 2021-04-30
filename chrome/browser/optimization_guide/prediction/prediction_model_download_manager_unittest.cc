@@ -424,16 +424,8 @@ TEST_F(PredictionModelDownloadManagerTest, UnverifiedFileShouldDeleteTempFile) {
       PredictionModelDownloadStatus::kFailedCrxVerification, 1);
 }
 
-// TODO(crbug.com/1156112): Flaky on Windows.
-#if defined(OS_WIN)
-#define MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile \
-  DISABLED_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile
-#else
-#define MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile \
-  VerifiedCrxWithInvalidPublisherShouldDeleteTempFile
-#endif
 TEST_F(PredictionModelDownloadManagerTest,
-       MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile) {
+       VerifiedCrxWithInvalidPublisherShouldDeleteTempFile) {
   base::HistogramTester histogram_tester;
 
   TestPredictionModelDownloadObserver observer;
@@ -544,17 +536,9 @@ TEST_F(PredictionModelDownloadManagerTest,
       PredictionModelDownloadStatus::kFailedModelFileNotFound, 1);
 }
 
-// TODO(crbug.com/1156112): Flaky on Windows.
-#if defined(OS_WIN)
-#define MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted \
-  DISABLED_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted
-#else
-#define MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted \
-  VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted
-#endif
 TEST_F(
     PredictionModelDownloadManagerTest,
-    MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted) {
+    VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted) {
   base::HistogramTester histogram_tester;
 
   TestPredictionModelDownloadObserver observer;

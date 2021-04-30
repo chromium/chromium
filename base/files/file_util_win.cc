@@ -18,16 +18,20 @@
 #include <limits>
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/debug/alias.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/guid.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,8 +39,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -377,7 +383,45 @@ bool DeleteFileAndRecordMetrics(const FilePath& path, bool recursive) {
   return false;
 }
 
+constexpr int kMaxDeleteAttempts = 9;
+
+void LogFileDeleteRetryCount(int attempt) {
+  UmaHistogramExactLinear("Windows.FileDeleteRetryCount", attempt,
+                          kMaxDeleteAttempts);
+}
+
+void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
+  // Retry every 250ms for up to two seconds. These values were pulled out of
+  // thin air, and may be adjusted in the future based on the metrics collected.
+  static constexpr TimeDelta kDeleteFileRetryDelay =
+      TimeDelta::FromMilliseconds(250);
+
+  if (DeleteFile(file_path)) {
+    // Log how many times we had to retry the RetryDeleteFile operation before
+    // it succeeded. This will be from 0 to kMaxDeleteAttempts - 1.
+    LogFileDeleteRetryCount(attempt);
+    return;
+  }
+  const DWORD last_error = ::GetLastError();
+  ++attempt;
+  DCHECK_LE(attempt, kMaxDeleteAttempts);
+  if (attempt == kMaxDeleteAttempts) {
+    // Log kMaxDeleteAttempts to indicate failure after exhausting all attempts.
+    LogFileDeleteRetryCount(attempt);
+    UmaHistogramSparse("Windows.FileDeleteLastRetryError", last_error);
+    return;
+  }
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      BindOnce(&DeleteFileWithRetry, attempt, file_path),
+      kDeleteFileRetryDelay);
+}
+
 }  // namespace
+
+OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
+  return BindOnce(&DeleteFileWithRetry, 0);
+}
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
