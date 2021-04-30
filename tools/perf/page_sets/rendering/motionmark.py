@@ -85,8 +85,6 @@ class MotionMarkPage(rendering_story.RenderingStory):
         ) % (suite_name, test_name, complexity)
 
 
-
-
 # Why: MotionMark Animometer case """
 class MotionmarkAnimMultiply175(MotionMarkPage):
   BASE_NAME = 'motionmark_anim_multiply_175'
@@ -218,3 +216,67 @@ class MotionmarkSVGBouncingSVGImages50(MotionMarkPage):
 class MotionmarkSVGBouncingPNGImages200(MotionMarkPage):
   BASE_NAME = 'motionmark_svg_bouncing_png_images_200'
   URL = MotionMarkPage.GetUrl('SVG suite', 'SVG bouncing png images', 200)
+
+
+class MotionMarkRampPage(MotionMarkPage):
+  ABSTRACT_STORY = True
+  TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_RAMP]
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+
+  @classmethod
+  def GetRampUrl(cls, suite_name, test_name):
+    # Strip unwanted characters from names
+    for ch in [' ', '.', ',']:
+      suite_name = suite_name.replace(ch, '')
+      test_name = test_name.replace(ch, '')
+
+    return ('https://browserbench.org/MotionMark1.1/developer.html'
+            '?suite-name=%s'
+            '&test-name=%s'
+            '&test-interval=20'
+            '&display=minimal'
+            '&tiles=big'
+            '&controller=ramp'
+            '&kalman-process-error=1'
+            '&kalman-measurement-error=4'
+            '&time-measurement=performance') % (suite_name, test_name)
+
+
+class MotionMarkRampCanvasArcs(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_canvas_arcs'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Canvas Arcs')
+
+
+class MotionMarkRampLeaves(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_leaves'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Leaves')
+
+
+class MotionMarkRampPaths(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_paths'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Paths')
+
+
+class MotionMarkRampCanvasLines(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_canvas_lines'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Canvas Lines')
+
+
+class MotionMarkRampFocus(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_focus'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Focus')
+
+
+class MotionMarkRampImages(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_images'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Images')
+
+
+class MotionMarkRampDesign(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_design'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Design')
+
+
+class MotionMarkRampSuits(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_suits'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Suits')

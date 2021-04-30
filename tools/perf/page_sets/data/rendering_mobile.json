@@ -435,6 +435,33 @@
         "motionmark_html_leaves_20_50": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
+        "motionmark_ramp_canvas_arcs": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_canvas_lines": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_design": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_focus": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_images": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_leaves": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_multiply": {
+            "DEFAULT": "rendering_common_a09b5e8aa5.wprgo"
+        },
+        "motionmark_ramp_paths": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
+        "motionmark_ramp_suits": {
+            "DEFAULT": "rendering_common_7d1ccc2c94.wprgo"
+        },
         "motionmark_svg_bouncing_circles_250": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
