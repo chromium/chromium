@@ -67,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   {
     base::RunLoop loop;
     WizardController::SkipPostLoginScreensForTesting();
-    EXPECT_FALSE(UserSessionInitializer::Get()->get_inited_for_testing());
-    UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
+    EXPECT_FALSE(ash::UserSessionInitializer::Get()->get_inited_for_testing());
+    ash::UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
         loop.QuitClosure());
 
     login_manager_.LoginAsNewRegularUser();
