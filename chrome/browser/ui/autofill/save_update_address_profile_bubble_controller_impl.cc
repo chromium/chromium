@@ -100,9 +100,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetSaveBubbleView() const {
 
 PageActionIconType
 SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconType() {
-  // TODO(crbug.com/1167060): Switch to PageActionIconType::kSaveAutofillAddress
-  // once there are acceesible name for the page icon view.
-  return PageActionIconType::kSaveCard;
+  return PageActionIconType::kSaveAutofillAddress;
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
