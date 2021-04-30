@@ -10691,32 +10691,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest, NoCacheWithoutHeader) {
                     {}, {}, {}, FROM_HERE);
 }
 
-namespace {
-
-const char kResponseWithOptIn[] =
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "BFCache-Opt-In: unload\r\n"
-    "\r\n"
-    "bfcache opt in page.";
-
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
                        CacheIfHeaderIsPresent) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/opt_in_document");
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/opt_in_document"));
+  GURL url_a(embedded_test_server()->GetURL("a.com",
+                                            "/set-header?"
+                                            "BFCache-Opt-In: unload"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
-  TestNavigationObserver observer(web_contents());
-  shell()->LoadURL(url_a);
-  response.WaitForRequest();
-  response.Send(kResponseWithOptIn);
-  response.Done();
-  observer.Wait();
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -10730,23 +10714,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
                        NoCacheIfHeaderOnlyPresentOnDestinationPage) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/opt_in_document");
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/opt_in_document"));
+  GURL url_b(embedded_test_server()->GetURL("b.com",
+                                            "/set-header?"
+                                            "BFCache-Opt-In: unload"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
   // 2) Navigate to B.
-  TestNavigationObserver observer(web_contents());
-  shell()->LoadURL(url_b);
-  response.WaitForRequest();
-  response.Send(kResponseWithOptIn);
-  response.Done();
-  observer.Wait();
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back. - A doesn't have header so it shouldn't be cached.
   web_contents()->GetController().GoBack();
