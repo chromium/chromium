@@ -2873,6 +2873,14 @@ extern const char kWifiSyncAndroidDescription[];
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kDefaultChatWebAppName[];
+extern const char kDefaultChatWebAppDescription[];
+
+extern const char kDefaultMeetWebAppName[];
+extern const char kDefaultMeetWebAppDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if defined(OS_CHROMEOS)
 extern const char kDeprecateLowUsageCodecsName[];
 extern const char kDeprecateLowUsageCodecsDescription[];

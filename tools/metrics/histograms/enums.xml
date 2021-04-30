@@ -45350,6 +45350,7 @@ from previous Chrome versions.
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
   <int value="-1222805155" label="PdfIsolation:enabled"/>
+  <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
   <int value="-1222159993"
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
@@ -45494,6 +45495,7 @@ from previous Chrome versions.
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1104914981" label="frame-throttle-fps"/>
+  <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
@@ -47197,6 +47199,7 @@ from previous Chrome versions.
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
   <int value="434033638" label="PwaPersistentNotification:disabled"/>
+  <int value="434333410" label="DefaultMeetWebApp:disabled"/>
   <int value="434530296"
       label="HappinessTrackingSurveysForDesktopMigration:disabled"/>
   <int value="436249288" label="ImeMojoDecoder:disabled"/>
@@ -48959,6 +48962,7 @@ from previous Chrome versions.
   <int value="1974776131" label="MediaFeeds:disabled"/>
   <int value="1975657253" label="ScalableAppList:disabled"/>
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
+  <int value="1976885976" label="DefaultChatWebApp:disabled"/>
   <int value="1978548617" label="FilesZipMount:enabled"/>
   <int value="1979222611" label="XRSandbox:disabled"/>
   <int value="1979472169" label="TabGroupsFeedback:disabled"/>

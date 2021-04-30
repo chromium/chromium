@@ -21,6 +21,10 @@ namespace {
 constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kMigrateDefaultChromeAppToWebAppsGSuite,
     &kMigrateDefaultChromeAppToWebAppsNonGSuite,
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    &kDefaultChatWebApp,
+    &kDefaultMeetWebApp,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 bool g_always_enabled_for_testing = false;
@@ -80,6 +84,14 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsBeta{
 const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsManaged{
     "MigrateDefaultChromeAppToWebAppsChromeOsManaged",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables default installing the Chat web app.
+const base::Feature kDefaultChatWebApp{"DefaultChatWebApp",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables default installing the Meet web app.
+const base::Feature kDefaultMeetWebApp{"DefaultMeetWebApp",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,

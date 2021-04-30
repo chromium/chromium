@@ -3440,6 +3440,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBypassAppBannerEngagementChecksName,
      flag_descriptions::kBypassAppBannerEngagementChecksDescription, kOsAll,
      SINGLE_VALUE_TYPE(webapps::switches::kBypassAppBannerEngagementChecks)},
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"enable-default-chat-web-app", flag_descriptions::kDefaultChatWebAppName,
+     flag_descriptions::kDefaultChatWebAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(web_app::kDefaultChatWebApp)},
+    {"enable-default-meet-web-app", flag_descriptions::kDefaultMeetWebAppName,
+     flag_descriptions::kDefaultMeetWebAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(web_app::kDefaultMeetWebApp)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1069293): Add macOS and Linux implementations.
     {"enable-desktop-pwas-app-icon-shortcuts-menu",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuName,

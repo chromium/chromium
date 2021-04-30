@@ -21,6 +21,10 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsBeta;
 
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsManaged;
+
+extern const base::Feature kDefaultChatWebApp;
+
+extern const base::Feature kDefaultMeetWebApp;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
