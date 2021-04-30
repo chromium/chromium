@@ -365,37 +365,6 @@ public class FeedSurfaceMediator
     private void initializePropertiesForStream() {
         Stream stream = mCoordinator.getStream();
 
-        if (mSnapScrollHelper != null && stream != null) {
-            mStreamScrollListener = new ScrollListener() {
-                @Override
-                public void onScrollStateChanged(int state) {}
-
-                @Override
-                public void onScrolled(int dx, int dy) {
-                    mSnapScrollHelper.handleScroll();
-                }
-
-                @Override
-                public void onHeaderOffsetChanged(int verticalOffset) {}
-            };
-            stream.addScrollListener(mStreamScrollListener);
-        }
-
-        mStreamContentChangedListener = contents -> {
-            if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
-
-            if (mContentFirstAvailableTimeMs == 0) {
-                mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
-                if (mHasPendingUmaRecording) {
-                    maybeRecordContentLoadingTime();
-                    mHasPendingUmaRecording = false;
-                }
-            }
-            mIsLoadingFeed = false;
-            mStreamContentChanged = true;
-        };
-        stream.addOnContentChangedListener(mStreamContentChangedListener);
-
         if (mHasHeader) {
             mSectionHeaderModel.set(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
                     new FeedSurfaceHeaderSelectedCallback());
@@ -474,10 +443,46 @@ public class FeedSurfaceMediator
         mRestoreScrollState = null;
         mCurrentStream = stream;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
+        if (mSnapScrollHelper != null) {
+            mStreamScrollListener = new ScrollListener() {
+                @Override
+                public void onScrollStateChanged(int state) {}
+
+                @Override
+                public void onScrolled(int dx, int dy) {
+                    mSnapScrollHelper.handleScroll();
+                }
+
+                @Override
+                public void onHeaderOffsetChanged(int verticalOffset) {}
+            };
+            mCurrentStream.addScrollListener(mStreamScrollListener);
+        }
+
+        mStreamContentChangedListener = contents -> {
+            if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
+
+            if (mContentFirstAvailableTimeMs == 0) {
+                mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
+                if (mHasPendingUmaRecording) {
+                    maybeRecordContentLoadingTime();
+                    mHasPendingUmaRecording = false;
+                }
+            }
+            mIsLoadingFeed = false;
+            mStreamContentChanged = true;
+        };
+        mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
     }
 
     void unbindStream() {
         if (mCurrentStream == null) return;
+        if (mStreamScrollListener != null) {
+            mCurrentStream.removeScrollListener(mStreamScrollListener);
+            mStreamScrollListener = null;
+        }
+        mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
+
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
         mCurrentStream.unbind();
         mCurrentStream = null;
