@@ -97,8 +97,7 @@ repack("pak") {
   output = "$root_out_dir/headless_lib.pak"
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("embed_resources") {
+action("embed_resources") {
   # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
   script = "lib/embed_data.py"
 

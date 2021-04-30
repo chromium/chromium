@@ -55,7 +55,7 @@ def GenerateArray(filepath):
   with open(filepath, 'rb') as f:
     contents = f.read()
 
-  contents = [ str(ord(char)) for char in contents ]
+  contents = [ str(byte) for byte in bytearray(contents) ]
 
   return len(contents), '{' + ','.join(contents) + '}'
 
