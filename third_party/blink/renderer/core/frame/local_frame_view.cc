@@ -2713,13 +2713,17 @@ void LocalFrameView::ClearResizeObserverLimit() {
 
 bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     DocumentLifecycle::LifecycleState target_state) {
+  recordreplay::Assert("LocalFrameView::RunStyleAndLayoutLifecyclePhases Start");
+
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunStyleAndLayoutLifecyclePhases");
   UpdateStyleAndLayoutIfNeededRecursive();
   DCHECK(ShouldThrottleRendering() ||
          Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
-  if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
+  if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean) {
+    recordreplay::Assert("LocalFrameView::RunStyleAndLayoutLifecyclePhases #1");
     return false;
+  }
 
   frame_->GetDocument()
       ->GetRootScrollerController()
@@ -2737,8 +2741,10 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     });
   }
 
-  if (target_state == DocumentLifecycle::kLayoutClean)
+  if (target_state == DocumentLifecycle::kLayoutClean) {
+    recordreplay::Assert("LocalFrameView::RunStyleAndLayoutLifecyclePhases #2");
     return false;
+  }
 
   // Now we can run post layout steps in preparation for further phases.
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
@@ -2757,11 +2763,13 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     });
   }
 
+  recordreplay::Assert("LocalFrameView::RunStyleAndLayoutLifecyclePhases Done");
   return Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean;
 }
 
 bool LocalFrameView::RunCompositingInputsLifecyclePhase(
     DocumentLifecycle::LifecycleState target_state) {
+  recordreplay::Assert("LocalFrameView::RunCompositingInputsLifecyclePhase Start");
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunCompositingInputsLifecyclePhase");
   auto* layout_view = GetLayoutView();
@@ -2778,6 +2786,7 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
     });
   }
 
+  recordreplay::Assert("LocalFrameView::RunCompositingInputsLifecyclePhase Done");
   return target_state > DocumentLifecycle::kCompositingInputsClean;
 }
 
