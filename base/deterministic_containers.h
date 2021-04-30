@@ -152,14 +152,14 @@ class deterministic_unordered_map {
     return (iter != end()) ? iter->second : insert(k, T()).first->second;
   }
 
-  std::pair<iterator, bool> insert(const Key& k, const T& v) {
+  std::pair<iterator, bool> insert(const Key& k, T&& v) {
     auto iter = find(k);
     if (iter != end()) {
       return { iter, false };
     }
     size_t index = vector_.size();
     vector_.emplace_back();
-    vector_.back().emplace(k, v);
+    vector_.back().emplace(k, std::move(v));
     map_[k] = index;
     return { iterator(vector_.size() - 1, vector_), true };
   }

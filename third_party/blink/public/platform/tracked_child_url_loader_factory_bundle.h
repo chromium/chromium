@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/deterministic_containers.h"
 #include "base/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
@@ -118,8 +119,8 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
       std::pair<base::WeakPtr<TrackedChildURLLoaderFactoryBundle>,
                 scoped_refptr<base::SequencedTaskRunner>>;
   using ObserverList =
-      std::unordered_map<TrackedChildURLLoaderFactoryBundle*,
-                         std::unique_ptr<ObserverPtrAndTaskRunner>>;
+      base::deterministic_unordered_map<TrackedChildURLLoaderFactoryBundle*,
+                                        std::unique_ptr<ObserverPtrAndTaskRunner>>;
 
   explicit HostChildURLLoaderFactoryBundle(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
