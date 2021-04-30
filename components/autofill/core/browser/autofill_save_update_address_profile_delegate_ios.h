@@ -37,6 +37,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   std::u16string GetMessageDescriptionText() const;
   std::u16string GetMessageActionText() const;
   const autofill::AutofillProfile* GetProfile() const;
+  const autofill::AutofillProfile* GetOriginalProfile() const;
   void set_modal_is_shown_to_true() { modal_is_shown_ = true; }
 
   void set_modal_is_dismissed_to_true() { modal_is_dismissed_ = true; }

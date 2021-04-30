@@ -48,8 +48,7 @@ using save_address_profile_infobar_overlays::
 @implementation SaveAddressProfileInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  SaveAddressProfileBannerRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  if (!self.consumer || !self.config)
     return;
 
   [self.consumer
@@ -58,7 +57,11 @@ using save_address_profile_infobar_overlays::
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
   [self.consumer setSubtitleText:base::SysUTF16ToNSString(
                                      self.config->message_sub_text())];
-  [self.consumer setPresentsModal:YES];
+
+  if (!self.config->is_update_banner()) {
+    // TODO(crbug.com/1167062): Implement update address modal.
+    [self.consumer setPresentsModal:YES];
+  }
 }
 
 @end

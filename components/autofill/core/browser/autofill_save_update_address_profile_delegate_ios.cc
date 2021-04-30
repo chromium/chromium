@@ -49,12 +49,18 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageDescriptionText() const {
 std::u16string
 AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageActionText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(u"Save...");
+  return original_profile_ ? std::u16string(u"Update...")
+                           : std::u16string(u"Save...");
 }
 
 const autofill::AutofillProfile*
 AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile() const {
   return &profile_;
+}
+
+const autofill::AutofillProfile*
+AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
+  return base::OptionalOrNullptr(original_profile_);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
@@ -88,7 +94,8 @@ int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageText()
     const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(u"Save address?");
+  return original_profile_ ? std::u16string(u"Update Address?")
+                           : std::u16string(u"Save Address?");
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

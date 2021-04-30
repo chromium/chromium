@@ -30,6 +30,7 @@ SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
   message_text_ = delegate->GetMessageText();
   button_label_text_ = delegate->GetMessageActionText();
   message_sub_text_ = delegate->GetMessageDescriptionText();
+  is_update_banner_ = delegate->GetOriginalProfile() ? true : false;
 }
 
 SaveAddressProfileBannerRequestConfig::

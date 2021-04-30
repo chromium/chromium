@@ -35,6 +35,9 @@ class SaveAddressProfileBannerRequestConfig
   // The name of the icon image.
   NSString* icon_image_name() const { return icon_image_name_; }
 
+  // The banner type.
+  BOOL is_update_banner() const { return is_update_banner_; }
+
  private:
   OVERLAY_USER_DATA_SETUP(SaveAddressProfileBannerRequestConfig);
   explicit SaveAddressProfileBannerRequestConfig(infobars::InfoBar* infobar);
@@ -50,6 +53,9 @@ class SaveAddressProfileBannerRequestConfig
   std::u16string message_sub_text_;
   std::u16string button_label_text_;
   NSString* icon_image_name_ = nil;
+
+  // Determines the type of the banner, true for save and false for the update.
+  bool is_update_banner_ = false;
 };
 
 }  // namespace save_address_profile_infobar_overlays
