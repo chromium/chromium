@@ -177,8 +177,12 @@ class ProfileManager : public Profile::Delegate {
   // and CREATE_STATUS_CREATED) so binding parameters with bind::Passed() is
   // prohibited. Returns the file path to the profile that will be created
   // asynchronously.
+  // If |is_hidden| is true, the new profile will be created as ephemeral
+  // (removed on the next startup) and omitted (not visible in the list of
+  // profiles).
   static base::FilePath CreateMultiProfileAsync(const std::u16string& name,
                                                 size_t icon_index,
+                                                bool is_hidden,
                                                 const CreateCallback& callback);
 
   // Returns the full path to be used for guest profiles.

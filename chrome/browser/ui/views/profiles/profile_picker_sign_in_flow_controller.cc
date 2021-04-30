@@ -175,13 +175,6 @@ void ProfilePickerSignInFlowController::Init() {
     return;
   }
 
-  // Mark this profile ephemeral so that it is deleted upon next startup if the
-  // browser crashes before finishing the flow.
-  entry->SetIsEphemeral(true);
-  // Mark this profile as omitted so that it is not displayed in the list of
-  // profiles.
-  entry->SetIsOmitted(true);
-
   // Record that the sign in process starts (its end is recorded automatically
   // by the instance of DiceTurnSyncOnHelper constructed later on).
   signin_metrics::RecordSigninUserActionForAccessPoint(

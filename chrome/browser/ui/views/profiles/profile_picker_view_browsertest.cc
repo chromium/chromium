@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::RunLoop run_loop;
   Profile* second_profile = nullptr;
   ProfileManager::CreateMultiProfileAsync(
-      u"Joe", /*icon_index=*/0,
+      u"Joe", /*icon_index=*/0, /*is_hidden=*/false,
       base::BindLambdaForTesting(
           [&](Profile* profile, Profile::CreateStatus status) {
             if (status == Profile::CREATE_STATUS_INITIALIZED) {

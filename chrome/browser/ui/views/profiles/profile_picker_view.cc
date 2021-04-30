@@ -550,7 +550,7 @@ void ProfilePickerView::SwitchToSignIn(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
-      icon_index,
+      icon_index, /*is_hidden=*/true,
       base::BindRepeating(&ProfilePickerView::OnProfileForSigninCreated,
                           weak_ptr_factory_.GetWeakPtr(), profile_color,
                           base::AdaptCallbackForRepeating(

@@ -485,7 +485,7 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
   ProfileManager::CreateMultiProfileAsync(
-      profile_name, avatar_index,
+      profile_name, avatar_index, /*is_hidden=*/false,
       base::BindRepeating(&ProfilePickerHandler::OnProfileCreated,
                           weak_factory_.GetWeakPtr(), profile_color,
                           create_shortcut));

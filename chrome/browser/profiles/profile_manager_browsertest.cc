@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
   base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
       u"New Profile",
-      /*icon_index=*/0,
+      /*icon_index=*/0, /*is_hidden=*/false,
       base::BindRepeating(&ProfileCreationComplete,
                           run_loop.QuitWhenIdleClosure()));
   run_loop.Run();

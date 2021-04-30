@@ -126,7 +126,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
                               ? storage.ChooseNameForNewProfile(*icon_index)
                               : local_profile_name;
     ProfileManager::CreateMultiProfileAsync(
-        name, *icon_index,
+        name, *icon_index, /*is_hidden=*/false,
         base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
                             weak_pointer_factory_.GetWeakPtr()));
   }

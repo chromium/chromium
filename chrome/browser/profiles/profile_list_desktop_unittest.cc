@@ -80,12 +80,9 @@ class ProfileListDesktopTest : public testing::Test {
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = ASCIIToUTF16(name);
+    params.is_ephemeral = true;
+    params.is_omitted = true;
     storage->AddProfile(std::move(params));
-    ProfileAttributesEntry* entry =
-        storage->GetProfileAttributesWithPath(profile_path);
-    ASSERT_NE(entry, nullptr);
-    entry->SetIsEphemeral(true);
-    entry->SetIsOmitted(true);
   }
 
   int change_count() const { return mock_observer_->change_count(); }

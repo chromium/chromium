@@ -862,6 +862,7 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
 base::FilePath ProfileManager::CreateMultiProfileAsync(
     const std::u16string& name,
     size_t icon_index,
+    bool is_hidden,
     const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!name.empty());
@@ -893,6 +894,8 @@ base::FilePath ProfileManager::CreateMultiProfileAsync(
     init_params.profile_path = new_path;
     init_params.profile_name = name;
     init_params.icon_index = icon_index;
+    init_params.is_ephemeral = is_hidden;
+    init_params.is_omitted = is_hidden;
     storage.AddProfile(std::move(init_params));
   }
 
