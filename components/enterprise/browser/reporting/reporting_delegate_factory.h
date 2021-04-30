@@ -9,6 +9,7 @@
 
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
@@ -33,6 +34,9 @@ class ReportingDelegateFactory {
 
   virtual std::unique_ptr<ReportScheduler::Delegate>
   GetReportSchedulerDelegate() = 0;
+
+  virtual std::unique_ptr<RealTimeReportGenerator::Delegate>
+  GetRealTimeReportGeneratorDelegate() = 0;
 };
 
 }  // namespace enterprise_reporting

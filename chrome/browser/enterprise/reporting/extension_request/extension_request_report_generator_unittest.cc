@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -23,9 +24,11 @@ namespace enterprise_reporting {
 namespace {
 
 constexpr int kTimeStamp = 42;
-constexpr char kProfileName[] = "profile";
+constexpr char kProfileName[] = "profile-1";
+constexpr char kAnotherProfileName[] = "profile-2";
 constexpr char kExtensionId1[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kExtensionId2[] = "abcdefghijklmnopabcdefghijklmnpo";
+constexpr char kExtensionId3[] = "abcdefghijklmnopabcdefghijklmonp";
 
 constexpr char kAllowedExtensionSettings[] = R"({
   "abcdefghijklmnopabcdefghijklmnop" : {
@@ -49,31 +52,40 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
   void SetExtensionRequestsList(const std::vector<std::string>& pendings,
-                                const std::vector<std::string>& uploadeds) {
+                                const std::vector<std::string>& uploadeds,
+                                TestingProfile* profile) {
     SetRequestPrefs(pendings, prefs::kCloudExtensionRequestIds,
-                    extension_misc::kExtensionRequestTimestamp);
+                    extension_misc::kExtensionRequestTimestamp, profile);
     SetRequestPrefs(uploadeds, kCloudExtensionRequestUploadedIds,
-                    "upload_timestamp");
+                    "upload_timestamp", profile);
   }
 
-  void SetExtensionSettings(const std::string& settings_string) {
+  void SetExtensionSettings(const std::string& settings_string,
+                            TestingProfile* profile) {
     base::Optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
-    profile_->GetTestingPrefService()->SetManagedPref(
+    profile->GetTestingPrefService()->SetManagedPref(
         extensions::pref_names::kExtensionManagement,
         base::Value::ToUniquePtrValue(std::move(*settings)));
   }
 
-  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateReports() {
-    return generator_.Generate(profile_);
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateReports(
+      Profile* profile) {
+    return generator_.GenerateForProfile(profile);
   }
 
-  void CreateProfile() {
-    profile_ = profile_manager_.CreateTestingProfile(kProfileName);
-    profile_->GetTestingPrefService()->SetManagedPref(
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateReports() {
+    return generator_.Generate();
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) {
+    TestingProfile* profile =
+        profile_manager_.CreateTestingProfile(profile_name);
+    profile->GetTestingPrefService()->SetManagedPref(
         prefs::kCloudExtensionRequestEnabled,
         std::make_unique<base::Value>(true));
+    return profile;
   }
 
   void VerifyReport(ExtensionsWorkflowEvent* actual_report,
@@ -92,10 +104,15 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
+  void AddProfileToThrottler(Profile* profile) {
+    throttler_.Get()->AddProfile(profile->GetPath());
+  }
+
  private:
   void SetRequestPrefs(const std::vector<std::string>& ids,
                        const std::string& pref_name,
-                       const std::string& timestamp_name) {
+                       const std::string& timestamp_name,
+                       TestingProfile* profile) {
     std::unique_ptr<base::Value> id_values =
         std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
     for (const auto& id : ids) {
@@ -106,64 +123,85 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
       id_values->SetKey(id, std::move(request_data));
     }
 
-    profile_->GetTestingPrefService()->SetUserPref(pref_name,
-                                                   std::move(id_values));
+    profile->GetTestingPrefService()->SetUserPref(pref_name,
+                                                  std::move(id_values));
   }
 
   content::BrowserTaskEnvironment task_environment_;
   ExtensionRequestReportGenerator generator_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  ScopedExtensionRequestReportThrottler throttler_;
 };
 
 TEST_F(ExtensionRequestReportGeneratorTest, AddRequests) {
-  CreateProfile();
-  SetExtensionRequestsList({kExtensionId1, kExtensionId2}, {});
+  auto* profile = CreateProfile(kProfileName);
+  SetExtensionRequestsList({kExtensionId1, kExtensionId2}, {}, profile);
 
-  auto reports = GenerateReports();
+  auto reports = GenerateReports(profile);
 
   EXPECT_EQ(2u, reports.size());
   VerifyReport(reports[0].get(), kExtensionId1, /*is_removed=*/false);
   VerifyReport(reports[1].get(), kExtensionId2, /*is_removed=*/false);
 
-  reports = GenerateReports();
+  reports = GenerateReports(profile);
 
   EXPECT_EQ(0u, reports.size());
 }
 
 TEST_F(ExtensionRequestReportGeneratorTest, RemovalRequest) {
-  CreateProfile();
-  SetExtensionRequestsList({}, {kExtensionId1, kExtensionId2});
+  auto* profile = CreateProfile(kProfileName);
+  SetExtensionRequestsList({}, {kExtensionId1, kExtensionId2}, profile);
 
-  auto reports = GenerateReports();
+  auto reports = GenerateReports(profile);
 
   EXPECT_EQ(2u, reports.size());
   VerifyReport(reports[0].get(), kExtensionId1, /*is_removed=*/true);
   VerifyReport(reports[1].get(), kExtensionId2, /*is_removed=*/true);
 
-  reports = GenerateReports();
+  reports = GenerateReports(profile);
 
   EXPECT_EQ(0u, reports.size());
 }
 
 TEST_F(ExtensionRequestReportGeneratorTest, ApprovedRequest) {
-  CreateProfile();
-  SetExtensionRequestsList({kExtensionId1}, {});
-  SetExtensionSettings(kAllowedExtensionSettings);
+  auto* profile = CreateProfile(kProfileName);
+  SetExtensionRequestsList({kExtensionId1}, {}, profile);
+  SetExtensionSettings(kAllowedExtensionSettings, profile);
 
-  auto reports = GenerateReports();
+  auto reports = GenerateReports(profile);
 
   EXPECT_EQ(0u, reports.size());
 }
 
 TEST_F(ExtensionRequestReportGeneratorTest, RejectedRequest) {
-  CreateProfile();
-  SetExtensionRequestsList({kExtensionId1}, {});
-  SetExtensionSettings(kBlockedExtensionSettings);
+  auto* profile = CreateProfile(kProfileName);
+  SetExtensionRequestsList({kExtensionId1}, {}, profile);
+  SetExtensionSettings(kBlockedExtensionSettings, profile);
+
+  auto reports = GenerateReports(profile);
+
+  EXPECT_EQ(0u, reports.size());
+}
+
+TEST_F(ExtensionRequestReportGeneratorTest, MultipleProfiles) {
+  auto* profile = CreateProfile(kProfileName);
+  auto* another_profile = CreateProfile(kAnotherProfileName);
+
+  SetExtensionRequestsList({kExtensionId1, kExtensionId2}, {}, profile);
+  SetExtensionRequestsList({kExtensionId1, kExtensionId3}, {}, another_profile);
+
+  AddProfileToThrottler(profile);
+  AddProfileToThrottler(another_profile);
 
   auto reports = GenerateReports();
 
-  EXPECT_EQ(0u, reports.size());
+  EXPECT_EQ(4u, reports.size());
+  VerifyReport(reports[0].get(), kExtensionId1, /*is_removed=*/false);
+  VerifyReport(reports[1].get(), kExtensionId2, /*is_removed=*/false);
+  VerifyReport(reports[2].get(), kExtensionId1, /*is_removed=*/false);
+  VerifyReport(reports[3].get(), kExtensionId3, /*is_removed=*/false);
+
+  EXPECT_EQ(0u, GenerateReports().size());
 }
 
 }  // namespace enterprise_reporting

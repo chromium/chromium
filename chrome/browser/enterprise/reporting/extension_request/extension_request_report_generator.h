@@ -36,8 +36,10 @@ class ExtensionRequestReportGenerator {
       const ExtensionRequestReportGenerator&) = delete;
   ~ExtensionRequestReportGenerator();
 
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> Generate();
+
   // Uploads extension request update for |profile|.
-  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> Generate(
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateForProfile(
       Profile* profile);
 };
 

@@ -4560,6 +4560,7 @@ test("unit_tests") {
       "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_unittest.cc",
       "../browser/enterprise/reporting/policy_info_unittest.cc",
       "../browser/enterprise/reporting/profile_report_generator_unittest.cc",
+      "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",
       "../browser/enterprise/reporting/report_generator_unittest.cc",
       "../browser/enterprise/reporting/report_request_queue_generator_unittest.cc",
       "../browser/enterprise/reporting/report_scheduler_desktop_unittest.cc",

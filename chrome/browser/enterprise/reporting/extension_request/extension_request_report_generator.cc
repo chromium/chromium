@@ -10,9 +10,12 @@
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
@@ -37,10 +40,12 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   auto report = std::make_unique<ExtensionsWorkflowEvent>();
   report->set_id(extension_id);
   if (request_data) {
-    base::Optional<base::Time> timestamp = ::util::ValueToTime(
-        request_data->FindKey(extension_misc::kExtensionRequestTimestamp));
-    if (timestamp)
-      report->set_request_timestamp_millis(timestamp->ToJavaTime());
+    if (request_data->is_dict()) {
+      base::Optional<base::Time> timestamp = ::util::ValueToTime(
+          request_data->FindKey(extension_misc::kExtensionRequestTimestamp));
+      if (timestamp)
+        report->set_request_timestamp_millis(timestamp->ToJavaTime());
+    }
     report->set_removed(false);
   } else {
     report->set_removed(true);
@@ -71,7 +76,32 @@ ExtensionRequestReportGenerator::ExtensionRequestReportGenerator() = default;
 ExtensionRequestReportGenerator::~ExtensionRequestReportGenerator() = default;
 
 std::vector<std::unique_ptr<ExtensionsWorkflowEvent>>
-ExtensionRequestReportGenerator::Generate(Profile* profile) {
+ExtensionRequestReportGenerator::Generate() {
+  auto* throttler = ExtensionRequestReportThrottler::Get();
+
+  // Returns empty list if real time extension request uploading is not enabled.
+  if (!throttler->IsEnabled()) {
+    return std::vector<std::unique_ptr<ExtensionsWorkflowEvent>>();
+  }
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> reports;
+  for (auto& profile_path : throttler->GetProfiles()) {
+    Profile* profile = profile_manager->GetProfileByPath(profile_path);
+    if (!profile)
+      continue;
+    std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> profile_reports =
+        GenerateForProfile(profile);
+    reports.insert(reports.end(),
+                   std::make_move_iterator(profile_reports.begin()),
+                   std::make_move_iterator(profile_reports.end()));
+  }
+  throttler->ResetProfiles();
+  return reports;
+}
+
+std::vector<std::unique_ptr<ExtensionsWorkflowEvent>>
+ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   DCHECK(profile);
 
   std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> reports;

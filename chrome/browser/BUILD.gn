@@ -3611,6 +3611,8 @@ static_library("browser") {
       "enterprise/reporting/prefs.h",
       "enterprise/reporting/profile_report_generator_desktop.cc",
       "enterprise/reporting/profile_report_generator_desktop.h",
+      "enterprise/reporting/real_time_report_generator_desktop.cc",
+      "enterprise/reporting/real_time_report_generator_desktop.h",
       "enterprise/reporting/report_generator_desktop.cc",
       "enterprise/reporting/report_generator_desktop.h",
       "enterprise/reporting/report_scheduler_desktop.cc",

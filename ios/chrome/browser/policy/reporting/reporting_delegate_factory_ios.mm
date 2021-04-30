@@ -35,4 +35,10 @@ ReportingDelegateFactoryIOS::GetReportSchedulerDelegate() {
   return std::make_unique<ReportSchedulerIOS>();
 }
 
+std::unique_ptr<RealTimeReportGenerator::Delegate>
+ReportingDelegateFactoryIOS::GetRealTimeReportGeneratorDelegate() {
+  // Using nullptr as the new pipeline is not supported on iOS.
+  return nullptr;
+}
+
 }  // namespace enterprise_reporting

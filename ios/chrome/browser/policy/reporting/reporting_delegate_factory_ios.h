@@ -11,6 +11,7 @@
 
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
@@ -37,6 +38,9 @@ class ReportingDelegateFactoryIOS : public ReportingDelegateFactory {
 
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
       override;
+
+  std::unique_ptr<RealTimeReportGenerator::Delegate>
+  GetRealTimeReportGeneratorDelegate() override;
 };
 
 }  // namespace enterprise_reporting

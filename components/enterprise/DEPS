@@ -7,4 +7,5 @@ include_rules = [
   "+components/version_info",
   "+net",
   "+services/network/public",
+  "+third_party/protobuf"
 ]
