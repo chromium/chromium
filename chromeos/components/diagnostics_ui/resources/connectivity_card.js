@@ -46,6 +46,12 @@ Polymer({
         chromeos.diagnostics.mojom.RoutineType.kSignalStrength,
       ],
     },
+
+    /** @type {string} */
+    activeGuid: {
+      type: String,
+      value: '',
+    },
   },
 
   /** @protected */

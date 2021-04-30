@@ -10,8 +10,9 @@ import './system_routine_controller.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
+import {NetworkHealthProviderInterface, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
+import {FakeNetworkHealthProvider} from './fake_network_health_provider.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
 import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
 
@@ -30,6 +31,11 @@ let systemDataProvider = null;
  * @type {?SystemRoutineControllerInterface}
  */
 let systemRoutineController = null;
+
+/**
+ * @type {?NetworkHealthProviderInterface}
+ */
+let networkHealthProvider = null;
 
 /**
  * @param {!SystemDataProviderInterface} testProvider
@@ -69,4 +75,32 @@ export function getSystemRoutineController() {
 
   assert(!!systemRoutineController);
   return systemRoutineController;
+}
+
+/**
+ * @param {!NetworkHealthProviderInterface} testProvider
+ */
+export function setNetworkHealthProviderForTesting(testProvider) {
+  networkHealthProvider = testProvider;
+}
+
+function setupFakeNetworkHealthProvider_() {
+  const provider = new FakeNetworkHealthProvider();
+  // The fake provides a stable state with all networks connected.
+  provider.setFakeNetworkGuidInfo([fakeAllNetworksAvailable]);
+
+  setNetworkHealthProviderForTesting(provider);
+}
+
+/**
+ * @return {!NetworkHealthProviderInterface}
+ */
+export function getNetworkHealthProvider() {
+  if (!networkHealthProvider) {
+    // TODO(michaelcheco): Instantiate a real mojo interface here.
+    setupFakeNetworkHealthProvider_();
+  }
+
+  assert(!!networkHealthProvider);
+  return networkHealthProvider;
 }

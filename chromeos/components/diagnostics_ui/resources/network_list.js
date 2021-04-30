@@ -8,6 +8,9 @@ import './diagnostics_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js'
+import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+
 /**
  * @fileoverview
  * 'network-list' is responsible for displaying Ethernet, Cellular,
@@ -18,6 +21,11 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  /**
+   * @private {?NetworkHealthProviderInterface}
+   */
+  networkHealthProvider_: null,
+
   properties: {
     /** @type {boolean} */
     isTestRunning: {
@@ -25,5 +33,42 @@ Polymer({
       value: false,
       notify: true,
     },
+
+    /** @private {Array<?string>} */
+    otherNetworkGuids_: {
+      type: Array,
+      value: () => [],
+    },
+
+    /** @private {string} */
+    activeGuid_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  /** @override */
+  created() {
+    this.networkHealthProvider_ = getNetworkHealthProvider();
+    this.observeNetworkList_();
+  },
+
+  /** @private */
+  observeNetworkList_() {
+    // Calling observeNetworkList will trigger onNetworkListChanged.
+    this.networkHealthProvider_.observeNetworkList(this);
+  },
+
+  /**
+   * Implements NetworkListObserver.onNetworkListChanged
+   * @param {!NetworkGuidInfo} networkGuidInfo
+   */
+  onNetworkListChanged(networkGuidInfo) {
+    // The connectivity-card is responsible for displaying the active network
+    // so we need to filter out the activeGuid to avoid displaying a
+    // a network-info card for it.
+    this.otherNetworkGuids_ = networkGuidInfo.networkGuids.filter(
+        guid => guid !== networkGuidInfo.activeGuid);
+    this.activeGuid_ = networkGuidInfo.activeGuid || '';
   },
 });
