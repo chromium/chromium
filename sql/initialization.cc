@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -52,6 +53,7 @@ void EnsureSqliteInitialized() {
 
   static bool first_call = true;
   if (first_call) {
+    TRACE_EVENT0("sql", "EnsureSqliteInitialized");
     sqlite3_initialize();
 
 #if !defined(OS_IOS)
