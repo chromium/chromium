@@ -22,8 +22,10 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
-#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -45,16 +47,13 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::WithArgs;
 
-class SetFormFieldValueActionTest : public content::RenderViewHostTestHarness {
+class SetFormFieldValueActionTest : public testing::Test {
  public:
-  SetFormFieldValueActionTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~SetFormFieldValueActionTest() override {}
+  SetFormFieldValueActionTest() {}
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
 
     ON_CALL(mock_action_delegate_, GetWebController)
         .WillByDefault(Return(&mock_web_controller_));
@@ -96,6 +95,10 @@ class SetFormFieldValueActionTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   Selector fake_selector_;
   MockActionDelegate mock_action_delegate_;
   MockWebController mock_web_controller_;
@@ -137,9 +140,9 @@ TEST_F(SetFormFieldValueActionTest, RequestedPasswordButPasswordNotAvailable) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kFakeUrl), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL(kFakeUrl));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -170,9 +173,9 @@ TEST_F(SetFormFieldValueActionTest, UsernameToFill) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kFakeUrl), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL(kFakeUrl));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
   ElementFinder::Result expected_element;
@@ -202,9 +205,9 @@ TEST_F(SetFormFieldValueActionTest, UsernameFillingFailsForMismatchingOrigin) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL("http://not-real.com/"), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL("http://not-real.com"));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -226,9 +229,9 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kFakeUrl), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL(kFakeUrl));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -259,9 +262,10 @@ TEST_F(SetFormFieldValueActionTest, PasswordFillingFailsForMismatchingOrigin) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL("http://not-real.com/"), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL("http://not-real.com"));
+        ;
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -283,9 +287,9 @@ TEST_F(SetFormFieldValueActionTest, PasswordFillingSucceedsForSubdomain) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL("http://login.example.com/"), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL("http://login.example.com/"));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -316,9 +320,9 @@ TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kFakeUrl), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL(kFakeUrl));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -597,9 +601,9 @@ TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id = "fake_object_id";
-        content::NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kFakeUrl), web_contents()->GetMainFrame());
-        element_result->container_frame_host = web_contents()->GetMainFrame();
+        content::WebContentsTester::For(web_contents_.get())
+            ->NavigateAndCommit(GURL(kFakeUrl));
+        element_result->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
   ElementFinder::Result expected_element;

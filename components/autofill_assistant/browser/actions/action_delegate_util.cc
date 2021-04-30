@@ -159,7 +159,7 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
   }
 }
 
-void OnGetPasswordManagerValue(
+void OnResolveTextValue(
     base::OnceCallback<void(const std::string&,
                             const ElementFinder::Result&,
                             base::OnceCallback<void(const ClientStatus&)>)>
@@ -195,43 +195,9 @@ void PerformWithTextValue(
         perform,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
-  std::string value;
-  switch (text_value.value_case()) {
-    case TextValue::kText:
-      value = text_value.text();
-      break;
-    case TextValue::kAutofillValue: {
-      ClientStatus autofill_status = GetFormattedAutofillValue(
-          text_value.autofill_value(), delegate->GetUserData(), &value);
-      if (!autofill_status.ok()) {
-        std::move(done).Run(autofill_status);
-        return;
-      }
-      break;
-    }
-    case TextValue::kPasswordManagerValue: {
-      GetPasswordManagerValue(
-          text_value.password_manager_value(), element, delegate->GetUserData(),
-          delegate->GetWebsiteLoginManager(),
-          base::BindOnce(&OnGetPasswordManagerValue, std::move(perform),
-                         element, std::move(done)));
-      return;
-    }
-    case TextValue::kClientMemoryKey: {
-      ClientStatus client_memory_status = GetClientMemoryStringValue(
-          text_value.client_memory_key(), delegate->GetUserData(), &value);
-      if (!client_memory_status.ok()) {
-        std::move(done).Run(client_memory_status);
-        return;
-      }
-      break;
-    }
-    case TextValue::VALUE_NOT_SET:
-      std::move(done).Run(ClientStatus(INVALID_ACTION));
-      return;
-  }
-
-  std::move(perform).Run(value, element, std::move(done));
+  ResolveTextValue(text_value, element, delegate,
+                   base::BindOnce(&OnResolveTextValue, std::move(perform),
+                                  element, std::move(done)));
 }
 
 void PerformWithElementValue(

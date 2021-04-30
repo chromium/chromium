@@ -491,4 +491,40 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
   return OkClientStatus();
 }
 
+void ResolveTextValue(const TextValue& text_value,
+                      const ElementFinder::Result& target_element,
+                      const ActionDelegate* action_delegate,
+                      base::OnceCallback<void(const ClientStatus&,
+                                              const std::string&)> callback) {
+  std::string value;
+  ClientStatus status = OkClientStatus();
+  switch (text_value.value_case()) {
+    case TextValue::kText:
+      value = text_value.text();
+      break;
+    case TextValue::kAutofillValue: {
+      status = GetFormattedAutofillValue(
+          text_value.autofill_value(), action_delegate->GetUserData(), &value);
+      break;
+    }
+    case TextValue::kPasswordManagerValue: {
+      GetPasswordManagerValue(text_value.password_manager_value(),
+                              target_element, action_delegate->GetUserData(),
+                              action_delegate->GetWebsiteLoginManager(),
+                              std::move(callback));
+      return;
+    }
+    case TextValue::kClientMemoryKey: {
+      status =
+          GetClientMemoryStringValue(text_value.client_memory_key(),
+                                     action_delegate->GetUserData(), &value);
+      break;
+    }
+    case TextValue::VALUE_NOT_SET:
+      status = ClientStatus(INVALID_ACTION);
+  }
+
+  std::move(callback).Run(status, value);
+}
+
 }  // namespace autofill_assistant

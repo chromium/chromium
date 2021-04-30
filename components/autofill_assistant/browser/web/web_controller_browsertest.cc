@@ -2307,6 +2307,18 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInput) {
   GetFieldsValue(selectors, {expected_output, expected_output});
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       SendKeyboardInputAndCheckPasswordField) {
+  auto input = UTF8ToUnicode("password");
+  std::string output;
+
+  Selector selector({"#input_password"});
+  EXPECT_EQ(ACTION_APPLIED, SendKeyboardInput(selector, input).proto_status());
+  EXPECT_EQ(ACTION_APPLIED,
+            GetStringAttribute(selector, {"value"}, &output).proto_status());
+  EXPECT_EQ("password", output);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInputWithDelay) {
   Selector selector({"#input6"});
 

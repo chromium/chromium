@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -28,10 +29,21 @@ class GetElementStatusAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void OnWaitForElement(const ClientStatus& element_status);
+  void OnFindElement(const std::vector<std::string>& attribute_list,
+                     const ClientStatus& status,
+                     std::unique_ptr<ElementFinder::Result> element);
   void OnGetStringAttribute(const ClientStatus& status,
                             const std::string& text);
+  void OnResolveTextValue(const std::string& text,
+                          const ClientStatus& status,
+                          const std::string& value);
+  void CompareResult(const std::string& text,
+                     const std::string& value,
+                     bool is_re2);
 
   void EndAction(const ClientStatus& status);
+
+  std::unique_ptr<ElementFinder::Result> element_;
 
   Selector selector_;
   ProcessActionCallback callback_;

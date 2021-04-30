@@ -15,11 +15,13 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
+#include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
-#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -688,38 +690,61 @@ TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
   EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options_visa));
 }
 
-TEST(UserDataUtilTest, RequestEmptyAutofillValue) {
-  UserData user_data;
+class UserDataUtilTextValueTest : public testing::Test {
+ public:
+  UserDataUtilTextValueTest() {}
+
+  void SetUp() override {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+
+    ON_CALL(mock_action_delegate_, GetUserData)
+        .WillByDefault(Return(&user_data_));
+    ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
+        .WillByDefault(Return(&mock_website_login_manager_));
+  }
+
+  MOCK_METHOD2(OnResult, void(const ClientStatus&, const std::string&));
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  MockActionDelegate mock_action_delegate_;
+  UserData user_data_;
+  MockWebsiteLoginManager mock_website_login_manager_;
+};
+
+TEST_F(UserDataUtilTextValueTest, RequestEmptyAutofillValue) {
   AutofillValue autofill_value;
   std::string result;
 
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             INVALID_ACTION);
   EXPECT_EQ(result, "");
 }
 
-TEST(UserDataUtilTest, RequestDataFromUnknownProfile) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownProfile) {
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("none");
   autofill_value.set_value_expression("value");
   std::string result;
 
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             PRECONDITION_FAILED);
   EXPECT_EQ(result, "");
 }
 
-TEST(UserDataUtilTest, RequestUnknownDataFromKnownProfile) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownProfile) {
   autofill::AutofillProfile contact(base::GenerateGUID(),
                                     autofill::test::kEmptyOrigin);
   // Middle name is expected to be empty.
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data.selected_addresses_["contact"] =
+  user_data_.selected_addresses_["contact"] =
       std::make_unique<autofill::AutofillProfile>(contact);
 
   AutofillValue autofill_value;
@@ -732,19 +757,18 @@ TEST(UserDataUtilTest, RequestUnknownDataFromKnownProfile) {
 
   std::string result;
 
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
 }
 
-TEST(UserDataUtilTest, RequestKnownDataFromKnownProfile) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, RequestKnownDataFromKnownProfile) {
   autofill::AutofillProfile contact(base::GenerateGUID(),
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data.selected_addresses_["contact"] =
+  user_data_.selected_addresses_["contact"] =
       std::make_unique<autofill::AutofillProfile>(contact);
 
   AutofillValue autofill_value;
@@ -758,17 +782,16 @@ TEST(UserDataUtilTest, RequestKnownDataFromKnownProfile) {
   std::string result;
 
   EXPECT_TRUE(
-      GetFormattedAutofillValue(autofill_value, &user_data, &result).ok());
+      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
   EXPECT_EQ(result, "John");
 }
 
-TEST(UserDataUtilTest, EscapeDataFromProfile) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
   autofill::AutofillProfile contact(base::GenerateGUID(),
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "Jo.h*n", /* middle name */ "",
                                  "Doe", "", "", "", "", "", "", "", "", "");
-  user_data.selected_addresses_["contact"] =
+  user_data_.selected_addresses_["contact"] =
       std::make_unique<autofill::AutofillProfile>(contact);
 
   AutofillValueRegexp autofill_value;
@@ -782,37 +805,18 @@ TEST(UserDataUtilTest, EscapeDataFromProfile) {
   std::string result;
 
   EXPECT_TRUE(
-      GetFormattedAutofillValue(autofill_value, &user_data, &result).ok());
+      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
 }
 
-class UserDataPasswordManagerValueTest
-    : public content::RenderViewHostTestHarness {
- public:
-  UserDataPasswordManagerValueTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~UserDataPasswordManagerValueTest() override {}
-
-  void SetUp() override { RenderViewHostTestHarness::SetUp(); }
-
-  MOCK_METHOD2(OnResult, void(const ClientStatus&, const std::string&));
-
- protected:
-  UserData user_data_;
-  MockWebsiteLoginManager mock_website_login_manager_;
-};
-
-TEST_F(UserDataPasswordManagerValueTest,
-       GetCredentialsFromDifferentDomainFails) {
+TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.other.com"), web_contents()->GetMainFrame());
-  element.container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.other.com"));
+  element.container_frame_host = web_contents_->GetMainFrame();
 
   EXPECT_CALL(*this,
               OnResult(EqualsStatus(ClientStatus(PASSWORD_ORIGIN_MISMATCH)),
@@ -822,49 +826,48 @@ TEST_F(UserDataPasswordManagerValueTest,
   PasswordManagerValue password_value;
   password_value.set_credential_type(PasswordManagerValue::PASSWORD);
 
-  GetPasswordManagerValue(
-      password_value, element, &user_data_, &mock_website_login_manager_,
-      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
-                     base::Unretained(this)));
+  GetPasswordManagerValue(password_value, element, &user_data_,
+                          &mock_website_login_manager_,
+                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                         base::Unretained(this)));
 
   PasswordManagerValue username_value;
   username_value.set_credential_type(PasswordManagerValue::USERNAME);
 
-  GetPasswordManagerValue(
-      username_value, element, &user_data_, &mock_website_login_manager_,
-      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
-                     base::Unretained(this)));
+  GetPasswordManagerValue(username_value, element, &user_data_,
+                          &mock_website_login_manager_,
+                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                         base::Unretained(this)));
 }
 
-TEST_F(UserDataPasswordManagerValueTest, GetUsernameFromSameDomain) {
+TEST_F(UserDataUtilTextValueTest, GetUsernameFromSameDomain) {
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.example.com"), web_contents()->GetMainFrame());
-  element.container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  element.container_frame_host = web_contents_->GetMainFrame();
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::USERNAME);
 
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "username"));
 
-  GetPasswordManagerValue(
-      password_manager_value, element, &user_data_,
-      &mock_website_login_manager_,
-      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
-                     base::Unretained(this)));
+  GetPasswordManagerValue(password_manager_value, element, &user_data_,
+                          &mock_website_login_manager_,
+                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                         base::Unretained(this)));
 }
 
-TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFromSameDomain) {
+TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFromSameDomain) {
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.example.com"), web_contents()->GetMainFrame());
-  element.container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  element.container_frame_host = web_contents_->GetMainFrame();
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
@@ -873,21 +876,20 @@ TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFromSameDomain) {
       .WillOnce(RunOnceCallback<1>(true, "password"));
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "password"));
 
-  GetPasswordManagerValue(
-      password_manager_value, element, &user_data_,
-      &mock_website_login_manager_,
-      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
-                     base::Unretained(this)));
+  GetPasswordManagerValue(password_manager_value, element, &user_data_,
+                          &mock_website_login_manager_,
+                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                         base::Unretained(this)));
 }
 
-TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFails) {
+TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.example.com"), web_contents()->GetMainFrame());
-  element.container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  element.container_frame_host = web_contents_->GetMainFrame();
 
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
@@ -898,41 +900,109 @@ TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFails) {
               OnResult(EqualsStatus(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE)),
                        std::string()));
 
-  GetPasswordManagerValue(
-      password_manager_value, element, &user_data_,
-      &mock_website_login_manager_,
-      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
-                     base::Unretained(this)));
+  GetPasswordManagerValue(password_manager_value, element, &user_data_,
+                          &mock_website_login_manager_,
+                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                         base::Unretained(this)));
 }
 
-TEST(UserDataUtilTest, ClientMemoryKey) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, ClientMemoryKey) {
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("Hello World");
-  user_data.additional_values_["key"] = value_proto;
+  user_data_.additional_values_["key"] = value_proto;
 
   std::string result;
 
-  EXPECT_TRUE(GetClientMemoryStringValue("key", &user_data, &result).ok());
+  EXPECT_TRUE(GetClientMemoryStringValue("key", &user_data_, &result).ok());
   EXPECT_EQ(result, "Hello World");
 }
 
-TEST(UserDataUtilTest, EmptyClientMemoryKey) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, EmptyClientMemoryKey) {
   std::string result;
 
   EXPECT_EQ(INVALID_ACTION,
-            GetClientMemoryStringValue(std::string(), &user_data, &result)
+            GetClientMemoryStringValue(std::string(), &user_data_, &result)
                 .proto_status());
 }
 
-TEST(UserDataUtilTest, NonExistingClientMemoryKey) {
-  UserData user_data;
+TEST_F(UserDataUtilTextValueTest, NonExistingClientMemoryKey) {
   std::string result;
 
   EXPECT_EQ(
       PRECONDITION_FAILED,
-      GetClientMemoryStringValue("key", &user_data, &result).proto_status());
+      GetClientMemoryStringValue("key", &user_data_, &result).proto_status());
+}
+
+TEST_F(UserDataUtilTextValueTest, TextValueText) {
+  TextValue text_value;
+  text_value.set_text("text");
+
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "text"));
+
+  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+                   base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                  base::Unretained(this)));
+}
+
+TEST_F(UserDataUtilTextValueTest, TextValueAutofillValue) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
+                                 "", "", "", "", "", "", "", "", "");
+  user_data_.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  TextValue text_value;
+  AutofillValue* autofill_value = text_value.mutable_autofill_value();
+  autofill_value->mutable_profile()->set_identifier("contact");
+  autofill_value->set_value_expression(
+      base::StrCat({"${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_FIRST)),
+                    "}"}));
+
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "John"));
+
+  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+                   base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                  base::Unretained(this)));
+}
+
+TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("https://www.example.com"), "username");
+
+  ElementFinder::Result element;
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  element.container_frame_host = web_contents_->GetMainFrame();
+
+  TextValue text_value;
+  text_value.mutable_password_manager_value()->set_credential_type(
+      PasswordManagerValue::PASSWORD);
+
+  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+      .WillOnce(RunOnceCallback<1>(true, "password"));
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "password"));
+
+  ResolveTextValue(text_value, element, &mock_action_delegate_,
+                   base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                  base::Unretained(this)));
+}
+
+TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
+  ValueProto value_proto;
+  value_proto.mutable_strings()->add_values("Hello World");
+  user_data_.additional_values_["key"] = value_proto;
+
+  TextValue text_value;
+  text_value.set_client_memory_key("key");
+
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "Hello World"));
+
+  ResolveTextValue(text_value, ElementFinder::Result(), &mock_action_delegate_,
+                   base::BindOnce(&UserDataUtilTextValueTest::OnResult,
+                                  base::Unretained(this)));
 }
 
 }  // namespace

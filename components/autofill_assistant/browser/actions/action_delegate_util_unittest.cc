@@ -19,7 +19,8 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
-#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,16 +35,13 @@ using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Return;
 
-class ActionDelegateUtilTest : public content::RenderViewHostTestHarness {
+class ActionDelegateUtilTest : public testing::Test {
  public:
-  ActionDelegateUtilTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ActionDelegateUtilTest() override {}
+  ActionDelegateUtilTest() {}
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
@@ -81,6 +79,10 @@ class ActionDelegateUtilTest : public content::RenderViewHostTestHarness {
                     base::OnceCallback<void(const ClientStatus&)> done));
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   MockActionDelegate mock_action_delegate_;
   UserData user_data_;
   MockWebsiteLoginManager mock_website_login_manager_;
@@ -336,9 +338,9 @@ TEST_F(ActionDelegateUtilTest, PerformWithAutofillValue) {
 
 TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
   auto element = std::make_unique<ElementFinder::Result>();
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.example.com"), web_contents()->GetMainFrame());
-  element->container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  element->container_frame_host = web_contents_->GetMainFrame();
 
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
@@ -361,9 +363,9 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
 
 TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
   auto element = std::make_unique<ElementFinder::Result>();
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://www.other.com"), web_contents()->GetMainFrame());
-  element->container_frame_host = web_contents()->GetMainFrame();
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://www.other.com"));
+  element->container_frame_host = web_contents_->GetMainFrame();
 
   user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");

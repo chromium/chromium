@@ -2910,18 +2910,18 @@ message GetElementStatusProto {
 
   message TextMatch {
     oneof value_source {
-      // The value to check against.
-      string value = 1;
-      // A value from an Autofill source. Note that this must be preceded by a
-      // |CollectUserDataAction|.
-      AutofillValue autofill_value = 2;
       // A regular expression.
       string re2 = 4;
+      // A value resolvable to a text. May require to be preceded by a
+      // |CollectUserDataAction|.
+      TextValue text_value = 5;
     }
 
     // Optional. The expectations to declare this as a matching success. If
     // left empty, the action will always be treated as successful.
     optional MatchExpectation match_expectation = 3;
+
+    reserved 1, 2;
   }
 
   message ValueMatch { optional TextMatch text_match = 1; }

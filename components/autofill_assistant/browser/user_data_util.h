@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -103,6 +104,14 @@ void GetPasswordManagerValue(
 ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
                                         const UserData* user_data,
                                         std::string* out_value);
+
+// Take a |text_value| and resolve its content to a string. Reports the result
+// through the |callback|.
+void ResolveTextValue(
+    const TextValue& text_value,
+    const ElementFinder::Result& target_element,
+    const ActionDelegate* action_delegate,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
 
 }  // namespace autofill_assistant
 
