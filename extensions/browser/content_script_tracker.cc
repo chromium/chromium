@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/user_script.h"
@@ -74,63 +75,81 @@ class ContentScriptsSet : public base::SupportsUserData::Data {
 
 const char* ContentScriptsSet::kUserDataKey = "ContentScriptTracker's data";
 
-// If `match_about_blank` is true, then traverses parent/opener chain until the
-// first non-about-scheme document and returns its url.  Otherwise, simply
-// returns `document_url`.
-//
-// This function approximates
-// ScriptContext::GetEffectiveDocumentURLForInjection() from the renderer side.
-// Unlike the renderer code, this just iterates up frame tree, and doesn't look
-// at the effective or precursor origin of the frame. This is okay, because our
-// only caller (DoesContentScriptMatch()) expects false positives.
-GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
-                             const GURL& document_url,
-                             bool match_about_blank) {
-  base::flat_set<content::RenderFrameHost*> already_visited_frames;
+class RenderFrameHostAdapter
+    : public ContentScriptInjectionUrlGetter::FrameAdapter {
+ public:
+  explicit RenderFrameHostAdapter(content::RenderFrameHost* frame)
+      : frame_(frame) {}
 
-  // Common scenario. If `match_about_blank` is false (as is the case in most
-  // extensions), or if the frame is not an about:-page, just return
-  // `document_url` (supposedly the URL of the frame).
-  if (!match_about_blank || !document_url.SchemeIs(url::kAboutScheme))
-    return document_url;
+  ~RenderFrameHostAdapter() override = default;
 
-  // Non-sandboxed about:blank and about:srcdoc pages inherit their security
-  // origin from their parent frame/window. So, traverse the frame/window
-  // hierarchy to find the closest non-about:-page and return its URL.
-  //
-  // TODO(https://crbug.com/1186321): The assumption above is incorrect -
-  // about:blank frames inherit their origin from the initiator of the
-  // navigation (which might not be the parent and/or the opener).
-  content::RenderFrameHost* found_frame = frame;
-  do {
-    DCHECK(found_frame);
-    already_visited_frames.insert(found_frame);
+  std::unique_ptr<FrameAdapter> Clone() const override {
+    return std::make_unique<RenderFrameHostAdapter>(frame_);
+  }
 
-    // The loop should only execute (and consider the parent chain) if the
-    // currently considered frame has about: scheme.
-    DCHECK(match_about_blank);
-    DCHECK(
-        ((found_frame == frame) && document_url.SchemeIs(url::kAboutScheme)) ||
-        found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
-
-    // Attempt to find `next_candidate` - either a parent of opener of
-    // `found_frame`.
-    content::RenderFrameHost* next_candidate = found_frame->GetParent();
-    if (!next_candidate) {
-      next_candidate =
-          content::WebContents::FromRenderFrameHost(found_frame)->GetOpener();
+  std::unique_ptr<FrameAdapter> GetLocalParentOrOpener() const override {
+    content::RenderFrameHost* parent_or_opener = frame_->GetParent();
+    if (!parent_or_opener) {
+      parent_or_opener =
+          content::WebContents::FromRenderFrameHost(frame_)->GetOpener();
     }
-    if (!next_candidate ||
-        base::Contains(already_visited_frames, next_candidate)) {
-      break;
-    }
+    if (!parent_or_opener)
+      return nullptr;
 
-    found_frame = next_candidate;
-  } while (found_frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme));
+    // Renderer-side WebLocalFrameAdapter only considers local frames.
+    // Comparing processes is robust way to replicate such renderer-side checks,
+    // because out caller (DoesContentScriptMatch) accepts false positives.
+    // This comparison might be less accurate (e.g. give more false positives)
+    // than SiteInstance comparison, but comparing processes should be robust
+    // and stable as SiteInstanceGroup refactoring proceeds.
+    if (parent_or_opener->GetProcess() != frame_->GetProcess())
+      return nullptr;
 
-  if (found_frame == frame)
-    return document_url;  // Not committed yet at ReadyToCommitNavigation time.
-  return found_frame->GetLastCommittedURL();
+    return std::make_unique<RenderFrameHostAdapter>(parent_or_opener);
+  }
+
+  GURL GetUrl() const override { return frame_->GetLastCommittedURL(); }
+
+  url::Origin GetOrigin() const override {
+    return frame_->GetLastCommittedOrigin();
+  }
+
+  bool CanAccess(const url::Origin& target) const override {
+    // CanAccess should not be called - see the comment for
+    // kAllowInaccessibleParents in GetEffectiveDocumentURL below.
+    NOTREACHED();
+    return true;
+  }
+
+  bool CanAccess(const FrameAdapter& target) const override {
+    // CanAccess should not be called - see the comment for
+    // kAllowInaccessibleParents in GetEffectiveDocumentURL below.
+    NOTREACHED();
+    return true;
+  }
+
+  uintptr_t GetId() const override { return frame_->GetRoutingID(); }
+
+ private:
+  content::RenderFrameHost* const frame_;
+};
+
+// This function approximates ScriptContext::GetEffectiveDocumentURLForInjection
+// from the renderer side.
+GURL GetEffectiveDocumentURL(
+    content::RenderFrameHost* frame,
+    const GURL& document_url,
+    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+  // This is a simplification to avoid calling
+  // `RenderFrameHostAdapter::CanAccess` which is unable to replicate all of
+  // WebSecurityOrigin::CanAccess checks (e.g. universal access or file
+  // exceptions tracked on the renderer side).  This is okay, because our only
+  // caller (DoesContentScriptMatch()) expects false positives.
+  constexpr bool kAllowInaccessibleParents = true;
+
+  return ContentScriptInjectionUrlGetter::Get(
+      RenderFrameHostAdapter(frame), document_url, match_origin_as_fallback,
+      kAllowInaccessibleParents);
 }
 
 // If `user_script` will inject JavaScript content script into the target of
@@ -153,18 +172,8 @@ bool DoesContentScriptMatch(const UserScript& user_script,
   if (user_script.js_scripts().empty())
     return false;
 
-  // TODO(devlin): Update GetEffectiveDocumentURL() to take a
-  // MatchOriginAsFallbackBehavior.
-  bool match_about_blank = false;
-  switch (user_script.match_origin_as_fallback()) {
-    case MatchOriginAsFallbackBehavior::kAlways:
-    case MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree:
-      match_about_blank = true;
-      break;
-    case MatchOriginAsFallbackBehavior::kNever:
-      break;  // `false` is correct for `match_about_blank`.
-  }
-  GURL effective_url = GetEffectiveDocumentURL(frame, url, match_about_blank);
+  GURL effective_url = GetEffectiveDocumentURL(
+      frame, url, user_script.match_origin_as_fallback());
   bool is_subframe = frame->GetParent();
   return user_script.MatchesDocument(effective_url, is_subframe);
 }

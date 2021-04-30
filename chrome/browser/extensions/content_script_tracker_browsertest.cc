@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -300,6 +302,98 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       *second_tab->GetMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+}
+
+class ContentScriptTrackerMatchOriginAsFallbackBrowserTest
+    : public ContentScriptTrackerBrowserTest {
+ public:
+  ContentScriptTrackerMatchOriginAsFallbackBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kContentScriptsMatchOriginAsFallback);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Covers detecting content script injection into a 'data:...' URL.
+IN_PROC_BROWSER_TEST_F(
+    ContentScriptTrackerMatchOriginAsFallbackBrowserTest,
+    ContentScriptDeclarationInExtensionManifest_DataUrlIframe) {
+  // Install a test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "match_origin_as_fallback": true,
+          "matches": ["*://bar.com/*"],
+          "js": ["content_script.js"]
+        }]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+                document.body.innerText = 'content script has run';
+                chrome.test.sendMessage('Hello from content script!'); )");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a test page that *is* covered by `content_scripts.matches`
+  // manifest entry above.
+  {
+    GURL injected_url =
+        embedded_test_server()->GetURL("bar.com", "/title1.html");
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker properly covered the initial frame.
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("content script has run",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+
+  // Add a new subframe with a `data:...` URL.  This will verify that the
+  // browser-side ContentScriptTracker correctly accounts for the renderer-side
+  // support for injecting contents scripts into data: URLs (see r793302).
+  {
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    const char kScript[] = R"(
+        let iframe = document.createElement('iframe');
+        iframe.src = 'data:text/html,contents';
+        document.body.appendChild(iframe);
+    )";
+    ExecuteScriptAsync(first_tab, kScript);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker properly covered the new child frame (and
+  // continues to correctly cover the initial frame).
+  //
+  // The verification below is a bit redundant, because `main_frame` and
+  // `child_frame` are currently hosted in the same process, but this kind of
+  // verification is important if 1( we ever consider going back to per-frame
+  // tracking or 2) we start isolating opaque-origin/sandboxed frames into a
+  // separate process (tracked in https://crbug.com/510122).
+  content::RenderFrameHost* main_frame = first_tab->GetMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+  EXPECT_EQ("content script has run",
+            content::EvalJs(main_frame, "document.body.innerText"));
+  EXPECT_EQ("content script has run",
+            content::EvalJs(child_frame, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *main_frame->GetProcess(), extension->id()));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *child_frame->GetProcess(), extension->id()));
 }
 
 // Covers detecting content script injection into 'about:blank'.
