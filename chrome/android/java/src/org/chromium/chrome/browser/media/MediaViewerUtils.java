@@ -162,7 +162,7 @@ public class MediaViewerUtils {
         if (originalUrl != null) {
             intent.putExtra(Intent.EXTRA_ORIGINATING_URI, Uri.parse(originalUrl));
         }
-        if (referrer != null) intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(originalUrl));
+        if (referrer != null) intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(referrer));
     }
 
     /**
