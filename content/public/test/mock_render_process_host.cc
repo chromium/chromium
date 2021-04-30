@@ -145,6 +145,7 @@ void MockRenderProcessHost::RemoveObserver(
 void MockRenderProcessHost::ShutdownForBadMessage(
     CrashReportMode crash_report_mode) {
   ++bad_msg_count_;
+  shutdown_requested_ = true;
 }
 
 void MockRenderProcessHost::UpdateClientPriority(PriorityClient* client) {}

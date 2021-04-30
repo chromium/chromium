@@ -268,6 +268,7 @@ enum BadMessageReason {
   WCI_INVALID_FULLSCREEN_OPTIONS = 240,
   PAYMENTS_WITHOUT_PERMISSION = 241,
   WEB_BUNDLE_INVALID_NAVIGATION_URL = 242,
+  WCI_INVALID_DOWNLOAD_IMAGE_RESULT = 243,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
