@@ -4,6 +4,7 @@
 
 #include "media/capture/video/video_capture_feedback.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/logging.h"
@@ -14,6 +15,11 @@ namespace {
 
 // Arbitrary limit above what is considered a reasonable request.
 constexpr size_t kCombinedMappedSizesCountLimit = 6;
+
+void SortSizesDescending(std::vector<gfx::Size>& sizes) {
+  std::sort(sizes.begin(), sizes.end(),
+            [](gfx::Size& a, gfx::Size& b) { return a.height() > b.height(); });
+}
 
 }  // namespace
 
@@ -69,6 +75,7 @@ void VideoCaptureFeedback::Combine(const VideoCaptureFeedback& other) {
     }
     mapped_sizes.push_back(mapped_size);
   }
+  SortSizesDescending(mapped_sizes);
 }
 
 bool VideoCaptureFeedback::Empty() const {
@@ -102,6 +109,7 @@ VideoCaptureFeedback& VideoCaptureFeedback::RequireMapped(bool require) {
 VideoCaptureFeedback& VideoCaptureFeedback::WithMappedSizes(
     std::vector<gfx::Size> mapped_sizes) {
   this->mapped_sizes = std::move(mapped_sizes);
+  SortSizesDescending(mapped_sizes);
   return *this;
 }
 
