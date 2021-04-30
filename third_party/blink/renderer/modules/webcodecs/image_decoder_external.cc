@@ -105,7 +105,9 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
-      tracks_(MakeGarbageCollected<ImageTrackList>(this)) {
+      tracks_(MakeGarbageCollected<ImageTrackList>(this)),
+      completed_property_(
+          MakeGarbageCollected<CompletedProperty>(GetExecutionContext())) {
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebCodecs);
 
   // |data| is a required field.
@@ -191,6 +193,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
   construction_succeeded_ = true;
   data_complete_ = true;
+  completed_property_->ResolveWithUndefined();
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
       task_runner, mime_type_, std::move(segment_reader), data_complete_,
       alpha_option, color_behavior, desired_size, animation_option_);
@@ -276,6 +279,10 @@ bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
+ScriptPromise ImageDecoderExternal::completed(ScriptState* script_state) {
+  return completed_property_->Promise(script_state->World());
+}
+
 ImageTrackList& ImageDecoderExternal::tracks() const {
   return *tracks_;
 }
@@ -302,12 +309,16 @@ void ImageDecoderExternal::close() {
     return;
 
   auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError, "Aborted by close.");
+      DOMExceptionCode::kAbortError,
+      failed_ ? "Aborted by close." : "Aborted by failure.");
   reset(exception);
 
   // Failure cases should have already rejected the tracks ready promise.
   if (!failed_ && decoder_ && tracks_->IsEmpty())
     tracks_->OnTracksReady(exception);
+
+  if (!data_complete_)
+    completed_property_->Reject(exception);
 
   if (consumer_)
     consumer_->Cancel();
@@ -347,6 +358,11 @@ void ImageDecoderExternal::OnStateChange() {
     if (available > 0 || data_complete != internal_data_complete_) {
       decoder_->AsyncCall(&ImageDecoderCore::AppendData)
           .WithArgs(available, std::move(data), data_complete);
+      // Note: Requiring a selected track to DecodeMetadata() means we won't
+      // resolve completed if all data comes in while there's no selected
+      // track. This is intentional since if we resolve completed while there's
+      // no underlying decoder, we may signal completed while the tracks have
+      // out of date metadata in them.
       if (tracks_->IsEmpty() || tracks_->selectedTrack()) {
         DecodeMetadata();
         MaybeSatisfyPendingDecodes();
@@ -365,6 +381,7 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   visitor->Trace(consumer_);
   visitor->Trace(tracks_);
   visitor->Trace(pending_decodes_);
+  visitor->Trace(completed_property_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -534,7 +551,12 @@ void ImageDecoderExternal::OnMetadata(
   --pending_metadata_requests_;
   DCHECK_GE(pending_metadata_requests_, 0);
 
+  const bool was_complete = data_complete_;
+  // Set public value before resolving.
   data_complete_ = metadata.data_complete;
+  if (!was_complete && data_complete_)
+    completed_property_->ResolveWithUndefined();
+
   if (metadata.failed || failed_) {
     SetFailed();
     return;
@@ -599,6 +621,7 @@ void ImageDecoderExternal::SetFailed() {
         "Failed to retrieve track metadata."));
   }
   MaybeSatisfyPendingDecodes();
+  close();
 }
 
 }  // namespace blink

@@ -4728,6 +4728,7 @@ interface ImageDecoder
     static method isTypeSupported
     attribute @@toStringTag
     getter complete
+    getter completed
     getter tracks
     getter type
     method close

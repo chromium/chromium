@@ -773,6 +773,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     static method isTypeSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter complete
+[Worker]     getter completed
 [Worker]     getter tracks
 [Worker]     getter type
 [Worker]     method close

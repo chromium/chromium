@@ -224,6 +224,24 @@ promise_test(t => {
 }, 'Test partial decoding without a frame results in an error');
 
 promise_test(t => {
+  var decoder;
+  var p1;
+  return ImageDecoder.isTypeSupported('image/png').then(support => {
+    assert_implements_optional(
+        support, 'Optional codec image/png not supported.');
+    return fetch('four-colors.png')
+        .then(response => {
+          return response.arrayBuffer();
+        })
+        .then(buffer => {
+          decoder =
+              new ImageDecoder({data: buffer.slice(0, 100), type: 'image/png'});
+          return decoder.completed;
+        })
+  });
+}, 'Test completed property on fully buffered decode');
+
+promise_test(t => {
   var decoder = null;
 
   return ImageDecoder.isTypeSupported('image/png').then(support => {
@@ -439,3 +457,36 @@ promise_test(async t => {
     return promise_rejects_dom(t, 'AbortError', p);
   });
 }, 'Test ReadableStream aborts promises on track change');
+
+promise_test(async t => {
+  let support = await ImageDecoder.isTypeSupported('image/gif');
+  assert_implements_optional(
+      support, 'Optional codec image/gif not supported.');
+
+  let source = new InfiniteGifSource();
+  await source.load(5);
+
+  let stream = new ReadableStream(source, {type: 'bytes'});
+  let decoder = new ImageDecoder({data: stream, type: 'image/gif'});
+  return decoder.tracks.ready.then(_ => {
+    let p = decoder.completed;
+    decoder.close();
+    return promise_rejects_dom(t, 'AbortError', p);
+  });
+}, 'Test ReadableStream aborts completed on close');
+
+promise_test(async t => {
+  let support = await ImageDecoder.isTypeSupported('image/gif');
+  assert_implements_optional(
+      support, 'Optional codec image/gif not supported.');
+
+  let source = new InfiniteGifSource();
+  await source.load(5);
+
+  let stream = new ReadableStream(source, {type: 'bytes'});
+  let decoder = new ImageDecoder({data: stream, type: 'image/gif'});
+  return decoder.tracks.ready.then(_ => {
+    source.close();
+    return decoder.completed;
+  });
+}, 'Test ReadableStream resolves completed');

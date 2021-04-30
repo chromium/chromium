@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
@@ -54,6 +55,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   void close();
   String type() const;
   bool complete() const;
+  ScriptPromise completed(ScriptState* script_state);
   ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.
@@ -148,6 +150,10 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
+
+  using CompletedProperty =
+      ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>;
+  Member<CompletedProperty> completed_property_;
 
   // WeakPtrFactory used only for decode() requests. Invalidated upon decoding
   // errors or a call to reset().
