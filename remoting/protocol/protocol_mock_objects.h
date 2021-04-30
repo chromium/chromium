@@ -37,8 +37,6 @@
 
 namespace remoting {
 
-class VideoEncoder;
-
 namespace protocol {
 
 class MockAuthenticator : public Authenticator {
@@ -81,8 +79,6 @@ class MockConnectionToClientEventHandler
   MOCK_METHOD0(OnConnectionChannelsConnected, void());
   MOCK_METHOD1(OnConnectionClosed, void(ErrorCode error));
   MOCK_METHOD1(OnTransportProtocolChange, void(const std::string& protocol));
-  MOCK_METHOD1(OnCreateVideoEncoder,
-               void(std::unique_ptr<VideoEncoder>* encoder));
   MOCK_METHOD2(OnRouteChange,
                void(const std::string& channel_name,
                     const TransportRoute& route));

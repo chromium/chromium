@@ -13,10 +13,6 @@
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/video/video_decode_accelerator.h"
 
-namespace media {
-struct CreateVideoEncoderParams;
-}
-
 namespace gpu {
 class GpuChannel;
 }
@@ -46,9 +42,6 @@ class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
   void OnCreateVideoDecoder(int32_t command_buffer_route_id,
                             const VideoDecodeAccelerator::Config& config,
                             int32_t route_id,
-                            IPC::Message* reply_message);
-  void OnCreateVideoEncoder(int32_t command_buffer_route_id,
-                            const CreateVideoEncoderParams& params,
                             IPC::Message* reply_message);
 
   gpu::GpuChannel* const channel_;
