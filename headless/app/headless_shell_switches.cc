@@ -124,7 +124,8 @@ const char kVirtualTimeBudget[] = "virtual-time-budget";
 const char kWindowSize[] = "window-size";
 
 // Allowlist for Negotiate Auth servers.
-const char kAuthServerAllowlist[] = "auth-server-whitelist";
+const char kAuthServerAllowlist[] = "auth-server-allowlist";
+const char kAuthServerAllowlistDeprecated[] = "auth-server-whitelist";
 
 // Sets font render hinting when running headless, affects Skia rendering and
 // whether glyph subpixel positioning is enabled.

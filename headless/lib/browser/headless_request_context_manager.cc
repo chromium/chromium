@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_request_context_manager.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -186,8 +187,22 @@ HeadlessRequestContextManager::CreateSystemContext(
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   auto auth_params = ::network::mojom::HttpAuthDynamicParams::New();
-  auth_params->server_allowlist =
-      command_line->GetSwitchValueASCII(switches::kAuthServerAllowlist);
+
+  // Support both current and deprecated switches for now, with the current
+  // switch value overriding the deprecated one. Expect the deprecated switch
+  // support to be removed soon, see crbug/1142696.
+  if (command_line->HasSwitch(switches::kAuthServerAllowlist)) {
+    auth_params->server_allowlist =
+        command_line->GetSwitchValueASCII(switches::kAuthServerAllowlist);
+  } else if (command_line->HasSwitch(
+                 switches::kAuthServerAllowlistDeprecated)) {
+    LOG(ERROR) << "'" << switches::kAuthServerAllowlistDeprecated
+               << "' is deprecated and will be removed soon. Please use '"
+               << switches::kAuthServerAllowlist << "' instead.";
+    auth_params->server_allowlist = command_line->GetSwitchValueASCII(
+        switches::kAuthServerAllowlistDeprecated);
+  }
+
   auto* network_service = content::GetNetworkService();
   network_service->ConfigureHttpAuthPrefs(std::move(auth_params));
 
