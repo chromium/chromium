@@ -17,23 +17,13 @@ namespace content {
 class WebContents;
 }
 
-namespace infobars {
-class InfoBar;
-}
-
-// //chrome's specialization of ContentInfoBarManager, which implements creation
-// of confirm infobars and ties the lifetime of ContentInfoBarManager instances
-// to that of the WebContents with which they are associated.
+// //chrome's specialization of ContentInfoBarManager, which ties the lifetime
+// of ContentInfoBarManager instances to that of the WebContents with which they
+// are associated.
 class InfoBarService : public infobars::ContentInfoBarManager,
                        public content::WebContentsUserData<InfoBarService> {
  public:
   ~InfoBarService() override;
-
-  // Cross-platform method for creating a confirm infobar.
-  // TODO(crbug.com/1199686): Move this to a static helper function as part of
-  // eliminating the //chrome-level InfoBarService.
-  virtual std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
  protected:
   explicit InfoBarService(content::WebContents* web_contents);

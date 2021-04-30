@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nacl_host/nacl_infobar_delegate.h"
 
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -11,10 +12,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-
 // static
 void NaClInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  infobar_service->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new NaClInfoBarDelegate())));
 }
 

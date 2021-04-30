@@ -5,6 +5,7 @@
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/hung_plugin_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,7 +18,7 @@ infobars::InfoBar* HungPluginInfoBarDelegate::Create(
     HungPluginTabHelper* helper,
     int plugin_child_id,
     const std::u16string& plugin_name) {
-  return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  return infobar_service->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new HungPluginInfoBarDelegate(
           helper, plugin_child_id, plugin_name))));
 }

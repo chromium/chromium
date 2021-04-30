@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/core/infobar.h"
@@ -229,8 +230,8 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   auto proxy = std::make_unique<GlobalConfirmInfoBar::DelegateProxy>(
       weak_factory_.GetWeakPtr());
   GlobalConfirmInfoBar::DelegateProxy* proxy_ptr = proxy.get();
-  infobars::InfoBar* added_bar = infobar_service->AddInfoBar(
-      infobar_service->CreateConfirmInfoBar(std::move(proxy)));
+  infobars::InfoBar* added_bar =
+      infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(proxy)));
 
   // If AddInfoBar() fails, either infobars are globally disabled, or something
   // strange has gone wrong and we can't show the infobar on every tab. In

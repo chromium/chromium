@@ -9,6 +9,7 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -87,8 +88,7 @@ void MaybeShowKnownInterceptionDisclosureDialog(
     infobar_service->AddInfoBar(
         KnownInterceptionDisclosureInfoBar::CreateInfoBar(std::move(delegate)));
 #else
-    infobar_service->AddInfoBar(
-        infobar_service->CreateConfirmInfoBar(std::move(delegate)));
+    infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 #endif
   }
 }

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/elevation_icon_setter.h"
 #include "ui/base/window_open_disposition.h"
@@ -18,16 +17,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view_class_properties.h"
-
-// InfoBarService -------------------------------------------------------------
-
-std::unique_ptr<infobars::InfoBar> InfoBarService::CreateConfirmInfoBar(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  return std::make_unique<ConfirmInfoBar>(std::move(delegate));
-}
-
-
-// ConfirmInfoBar -------------------------------------------------------------
 
 ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     : InfoBarView(std::move(delegate)) {

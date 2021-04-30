@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
@@ -16,7 +17,7 @@
 
 // static
 void PageInfoInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  infobar_service->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new PageInfoInfoBarDelegate())));
 }
 

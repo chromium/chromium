@@ -8,9 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -30,11 +32,10 @@ void ThemeInstalledInfoBarDelegate::Create(
     std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller) {
   // Create the new infobar.
   std::unique_ptr<infobars::InfoBar> new_infobar(
-      infobar_service->CreateConfirmInfoBar(
-          std::unique_ptr<ConfirmInfoBarDelegate>(
-              new ThemeInstalledInfoBarDelegate(
-                  theme_service, theme_name, theme_id,
-                  std::move(prev_theme_reinstaller)))));
+      CreateConfirmInfoBar(base::WrapUnique<ConfirmInfoBarDelegate>(
+          new ThemeInstalledInfoBarDelegate(
+              theme_service, theme_name, theme_id,
+              std::move(prev_theme_reinstaller)))));
 
   // If there's a previous theme infobar, just replace that instead of adding a
   // new one.

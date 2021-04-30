@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,8 +39,8 @@ void KeystonePromotionInfoBarDelegate::Create(
     content::WebContents* webContents) {
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(webContents);
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+  infobar_service->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new KeystonePromotionInfoBarDelegate(
               Profile::FromBrowserContext(webContents->GetBrowserContext())
                   ->GetPrefs()))));

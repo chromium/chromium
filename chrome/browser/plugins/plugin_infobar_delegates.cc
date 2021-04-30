@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
@@ -58,8 +59,7 @@ void OutdatedPluginInfoBarDelegate::Create(
   std::unique_ptr<ConfirmInfoBarDelegate> delegate_ptr;
   delegate_ptr.reset(
       new OutdatedPluginInfoBarDelegate(installer, std::move(plugin_metadata)));
-  infobar_service->AddInfoBar(
-      infobar_service->CreateConfirmInfoBar(std::move(delegate_ptr)));
+  infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(delegate_ptr)));
 }
 
 OutdatedPluginInfoBarDelegate::OutdatedPluginInfoBarDelegate(
@@ -185,6 +185,5 @@ void OutdatedPluginInfoBarDelegate::ReplaceWithInfoBar(
   delegate_ptr.reset(new OutdatedPluginInfoBarDelegate(
       installer(), std::move(plugin_metadata_), message));
   infobar()->owner()->ReplaceInfoBar(
-      infobar(), static_cast<InfoBarService*>(infobar()->owner())
-                     ->CreateConfirmInfoBar(std::move(delegate_ptr)));
+      infobar(), CreateConfirmInfoBar(std::move(delegate_ptr)));
 }

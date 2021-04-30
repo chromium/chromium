@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -15,8 +16,8 @@
 
 // static
 void CollectedCookiesInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+  infobar_service->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new CollectedCookiesInfoBarDelegate())));
 }
 

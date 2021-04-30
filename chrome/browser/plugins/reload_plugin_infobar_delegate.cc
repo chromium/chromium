@@ -5,6 +5,7 @@
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -16,8 +17,8 @@ void ReloadPluginInfoBarDelegate::Create(
     InfoBarService* infobar_service,
     content::NavigationController* controller,
     const std::u16string& message) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+  infobar_service->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new ReloadPluginInfoBarDelegate(controller, message))));
 }
 

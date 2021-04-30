@@ -589,6 +589,8 @@ static_library("browser") {
     "image_fetcher/image_decoder_impl.h",
     "image_fetcher/image_fetcher_service_factory.cc",
     "image_fetcher/image_fetcher_service_factory.h",
+    "infobars/confirm_infobar_creator.cc",
+    "infobars/confirm_infobar_creator.h",
     "infobars/infobar_responder.cc",
     "infobars/infobar_responder.h",
     "infobars/infobar_service.cc",
