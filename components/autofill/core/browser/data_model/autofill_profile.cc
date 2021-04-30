@@ -695,7 +695,11 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
                                     const std::string& app_locale) {
   // Verified profiles should never be overwritten with unverified data.
-  DCHECK(!IsVerified() || profile.IsVerified());
+  // This is not true anymore when explicit save prompts are used.
+  DCHECK(!IsVerified() || profile.IsVerified() ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAddressProfileSavePrompt));
+
   AutofillProfileComparator comparator(app_locale);
   DCHECK(comparator.AreMergeable(*this, profile));
 

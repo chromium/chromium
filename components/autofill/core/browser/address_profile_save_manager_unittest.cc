@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -333,11 +334,63 @@ TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateProfile) {
   TestImportScenario(test_scenario);
 }
 
+// Test that the observation of quasi identical profile that has a different
+// structure in the name will result in a silent update even when the profile
+// has the legacy property of being verified.
+TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateVerifiedProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+  updateable_profile.set_origin(kSettingsOrigin);
+  ASSERT_TRUE(updateable_profile.IsVerified());
+
+  AutofillProfile final_profile = observed_profile;
+  test::CopyGUID(updateable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {updateable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
+      .is_profile_change_expected = true,
+      .merge_candidate = base::nullopt,
+      .import_candidate = base::nullopt,
+      .expected_final_profiles = {final_profile}};
+  TestImportScenario(test_scenario);
+}
+
 // Test the observation of a profile that can only be merged with a
 // settings-visible change.
 TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge) {
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  AutofillProfile final_profile = observed_profile;
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
+      .is_profile_change_expected = true,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {final_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a profile that can only be merged with a
+// settings-visible change. The existing profile has the legacy property of
+// being verified.
+TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_VerifiedProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  mergeable_profile.set_origin(kSettingsOrigin);
+  ASSERT_TRUE(mergeable_profile.IsVerified());
+
   AutofillProfile final_profile = observed_profile;
   test::CopyGUID(mergeable_profile, &final_profile);
 
