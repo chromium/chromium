@@ -9,7 +9,6 @@ chrome test server on the host.
 """
 # pylint: disable=W0702
 
-import BaseHTTPServer
 import json
 import logging
 import os
@@ -19,7 +18,8 @@ import subprocess
 import sys
 import threading
 import time
-import urlparse
+
+from six.moves import BaseHTTPServer, urllib
 
 
 SERVER_TYPES = {
@@ -399,7 +399,7 @@ class SpawningServerRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       pass
 
   def do_POST(self):
-    parsed_path = urlparse.urlparse(self.path)
+    parsed_path = urllib.parse.urlparse(self.path)
     action = parsed_path.path
     _logger.info('Action for POST method is: %s.', action)
     if action == '/start':
@@ -409,9 +409,9 @@ class SpawningServerRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       _logger.info('Encounter unknown request: %s.', action)
 
   def do_GET(self):
-    parsed_path = urlparse.urlparse(self.path)
+    parsed_path = urllib.parse.urlparse(self.path)
     action = parsed_path.path
-    params = urlparse.parse_qs(parsed_path.query, keep_blank_values=1)
+    params = urllib.parse.parse_qs(parsed_path.query, keep_blank_values=1)
     _logger.info('Action for GET method is: %s.', action)
     for param in params:
       _logger.info('%s=%s', param, params[param][0])

@@ -7,8 +7,8 @@
 import boot_data
 import common
 import emu_target
+import hashlib
 import logging
-import md5
 import os
 import platform
 import qemu_image
@@ -195,7 +195,7 @@ class QemuTarget(emu_target.EmuTarget):
     return qemu_command
 
 def _ComputeFileHash(filename):
-  hasher = md5.new()
+  hasher = hashlib.md5()
   with open(filename, 'rb') as f:
     buf = f.read(4096)
     while buf:
