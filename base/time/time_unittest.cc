@@ -13,6 +13,8 @@
 #include "base/build_time.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/environment.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -24,7 +26,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#elif defined(OS_FUCHSIA)
+#elif defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
 #include "base/test/icu_test_util.h"
 #elif defined(OS_WIN)
 #include <windows.h>
@@ -41,6 +43,48 @@ const char kHonoluluTimeZoneId[] = "Pacific/Honolulu";
 const int kHonoluluOffsetHours = -10;
 const int kHonoluluOffsetSeconds = kHonoluluOffsetHours * 60 * 60;
 #endif
+
+#if defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
+// Timezone environment variable
+
+class ScopedLibcTZ {
+ public:
+  explicit ScopedLibcTZ(const std::string& timezone) {
+    auto env = base::Environment::Create();
+    std::string old_timezone_value;
+    if (env->GetVar(kTZ, &old_timezone_value)) {
+      old_timezone_ = old_timezone_value;
+    }
+    if (!env->SetVar(kTZ, timezone)) {
+      success_ = false;
+    }
+    tzset();
+  }
+
+  ~ScopedLibcTZ() {
+    auto env = base::Environment::Create();
+    if (old_timezone_.has_value()) {
+      CHECK(env->SetVar(kTZ, old_timezone_.value()));
+    } else {
+      CHECK(env->UnSetVar(kTZ));
+    }
+  }
+
+  ScopedLibcTZ(const ScopedLibcTZ& other) = delete;
+  ScopedLibcTZ& operator=(const ScopedLibcTZ& other) = delete;
+
+  bool is_success() const { return success_; }
+
+ private:
+  static constexpr char kTZ[] = "TZ";
+
+  bool success_ = true;
+  base::Optional<std::string> old_timezone_;
+};
+
+constexpr char ScopedLibcTZ::kTZ[];
+
+#endif  //  defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
 
 TEST(TimeTestOutOfBounds, FromExplodedOutOfBoundsTime) {
   // FromUTCExploded must set time to Time(0) and failure, if the day is set to
@@ -1085,6 +1129,67 @@ TEST_F(TimeTest, Explode_Y10KCompliance) {
     }
   }
 }
+
+#if defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
+// Regression test for https://crbug.com/1198313: base::Time::UTCExplode and
+// base::Time::LocalExplode should not be locale-dependent.
+TEST_F(TimeTest, ExplodedIsLocaleIndependent) {
+  // Time-to-Exploded could be using libc or ICU functions.
+  // Set the ICU locale and timezone and the libc timezone.
+  // We're not setting the libc locale because the libc time functions are
+  // locale-independent and the th_TH.utf8 locale was not available on all
+  // trybots at the time this test was added.
+  // th-TH maps to a non-gregorian calendar.
+  test::ScopedRestoreICUDefaultLocale scoped_icu_locale("th-TH");
+  test::ScopedRestoreDefaultTimezone scoped_timezone("Asia/Bangkok");
+  ScopedLibcTZ scoped_libc_tz("Asia/Bangkok");
+  ASSERT_TRUE(scoped_libc_tz.is_success());
+
+  Time::Exploded utc_exploded_orig;
+  utc_exploded_orig.year = 2020;
+  utc_exploded_orig.month = 7;
+  utc_exploded_orig.day_of_week = 5;  // Friday
+  utc_exploded_orig.day_of_month = 3;
+  utc_exploded_orig.hour = 12;
+  utc_exploded_orig.minute = 0;
+  utc_exploded_orig.second = 0;
+  utc_exploded_orig.millisecond = 0;
+
+  Time time;
+  ASSERT_TRUE(base::Time::FromUTCExploded(utc_exploded_orig, &time));
+
+  // Round trip to UTC Exploded should produce the exact same result.
+  Time::Exploded utc_exploded;
+  time.UTCExplode(&utc_exploded);
+  EXPECT_EQ(utc_exploded_orig.year, utc_exploded.year);
+  EXPECT_EQ(utc_exploded_orig.month, utc_exploded.month);
+  EXPECT_EQ(utc_exploded_orig.day_of_week, utc_exploded.day_of_week);
+  EXPECT_EQ(utc_exploded_orig.day_of_month, utc_exploded.day_of_month);
+  EXPECT_EQ(utc_exploded_orig.hour, utc_exploded.hour);
+  EXPECT_EQ(utc_exploded_orig.minute, utc_exploded.minute);
+  EXPECT_EQ(utc_exploded_orig.second, utc_exploded.second);
+  EXPECT_EQ(utc_exploded_orig.millisecond, utc_exploded.millisecond);
+
+  // "Local" exploded is also in Gregorian calendar, and also assumes that 0 is
+  // sunday. The only difference to UTCExplode is the time zone. In this
+  // particular example, the time zone difference between UTC and Asia/Bangkok
+  // is 7 hours. It can be assumed that it does not change because there is no
+  // daylight saving time in the Asia/Bangkok timezone. A difference of 7 hours
+  // does not lead to the local time showing a different day because the UTC
+  // time was chosen with utc_exploded_orign.hour = 12;
+  // TODO(https://crbug.com/1200769): Avoid the hard-coded time zone offset.
+  Time::Exploded local_exploded;
+  time.LocalExplode(&local_exploded);
+  EXPECT_EQ(utc_exploded_orig.year, local_exploded.year);
+  EXPECT_EQ(utc_exploded_orig.month, local_exploded.month);
+  EXPECT_EQ(utc_exploded_orig.day_of_week, local_exploded.day_of_week);
+  EXPECT_EQ(utc_exploded_orig.day_of_month, local_exploded.day_of_month);
+  EXPECT_EQ(utc_exploded_orig.hour, local_exploded.hour - 7);
+  EXPECT_EQ(utc_exploded_orig.minute, local_exploded.minute);
+  EXPECT_EQ(utc_exploded_orig.second, local_exploded.second);
+  EXPECT_EQ(utc_exploded_orig.millisecond, local_exploded.millisecond);
+}
+#endif  // defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
 
 TEST_F(TimeTest, FromExploded_MinMax) {
   Time::Exploded exploded = {0};

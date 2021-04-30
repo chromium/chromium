@@ -9,7 +9,9 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
+#include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -20,12 +22,17 @@ namespace {
 // and for GMT otherwise. Returns null on error.
 std::unique_ptr<icu::Calendar> CreateCalendar(bool is_local) {
   UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::Calendar> calendar =
-      base::WrapUnique(is_local ? icu::Calendar::createInstance(status)
-                                : icu::Calendar::createInstance(
-                                      *icu::TimeZone::getGMT(), status));
+  std::unique_ptr<icu::Calendar> calendar;
+  // Always use GregorianCalendar and US locale (relevant for day_of_week,
+  // Sunday is the first day) - that's what base::Time::Exploded assumes.
+  if (is_local) {
+    calendar =
+        std::make_unique<icu::GregorianCalendar>(icu::Locale::getUS(), status);
+  } else {
+    calendar = std::make_unique<icu::GregorianCalendar>(
+        *icu::TimeZone::getGMT(), icu::Locale::getUS(), status);
+  }
   CHECK(U_SUCCESS(status));
-
   return calendar;
 }
 
