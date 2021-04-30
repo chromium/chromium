@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/crostini/ansible/ansible_management_service.h"
-#include "chrome/browser/chromeos/crostini/ansible/ansible_management_test_helper.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"

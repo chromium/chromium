@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 #include "chrome/browser/chromeos/concierge_helper_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/crostini/throttle/crostini_active_window_throttle_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

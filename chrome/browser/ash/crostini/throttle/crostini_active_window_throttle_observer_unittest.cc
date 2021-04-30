@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crostini/throttle/crostini_active_window_throttle_observer.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 
 #include "ash/public/cpp/app_types.h"
 #include "base/test/task_environment.h"

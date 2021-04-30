@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
+
 #include <memory>
+
 #include "base/macros.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
