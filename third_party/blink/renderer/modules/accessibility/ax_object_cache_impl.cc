@@ -1893,7 +1893,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // Update parents' children.
     for (AXID parent_id : pending_children_changed_ids) {
       AXObject* parent = ObjectFromAXID(parent_id);
-      if (parent) {
+      if (parent && !parent->NeedsToUpdateChildren()) {
         // Invalidate the parent's children.
         ChildrenChangedWithCleanLayout(parent->GetNode(), parent);
         // Update children now.
