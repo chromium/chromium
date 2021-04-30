@@ -242,6 +242,8 @@ used when committed.
     hardware video decode codepaths on Linux
 
 ### Misc MacOS-Specific Docs
+*   [Mac Debugging Tips](mac/debugging.md) - An introduction to debugging on
+    Mac, as well as a collection of useful tips.
 *   [Using CCache on Mac](ccache_mac.md) - Speed up builds on Mac using ccache
     with clang/ninja
 *   [Cocoa tips and tricks](cocoa_tips_and_tricks.md) - A collection of idioms
