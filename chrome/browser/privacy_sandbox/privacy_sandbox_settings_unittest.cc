@@ -162,32 +162,18 @@ class PrivacySandboxSettingsTest : public testing::Test {
 };
 
 TEST_F(PrivacySandboxSettingsTest, PrivacySandboxSettingsFunctional) {
-  // Check that the settings are only reported as functional when at least one
-  // privacy sandbox API is enabled.
-  feature_list()->InitWithFeatures(
-      {features::kPrivacySandboxSettings, features::kConversionMeasurement},
-      {});
-  EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
-  feature_list()->Reset();
-
-  feature_list()->InitWithFeatures(
-      {features::kPrivacySandboxSettings,
-       blink::features::kInterestCohortAPIOriginTrial},
-      {features::kConversionMeasurement});
-  EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
-  feature_list()->Reset();
-
   feature_list()->InitWithFeatures(
       {features::kConversionMeasurement,
        blink::features::kInterestCohortAPIOriginTrial},
-      {features::kConversionMeasurement});
+      {features::kPrivacySandboxSettings});
   EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
   feature_list()->Reset();
 
-  feature_list()->InitWithFeatures({features::kPrivacySandboxSettings},
-                                   {features::kConversionMeasurement});
-  EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
-  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {features::kPrivacySandboxSettings},
+      {features::kConversionMeasurement,
+       blink::features::kInterestCohortAPIOriginTrial});
+  EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
 }
 
 TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
