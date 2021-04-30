@@ -21,6 +21,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="UserEligibilityTiming">
+<!--
+    Before M90, the base ("") variant was reported multiple times per search
+    and at other random points in time.
+
+    From M90 onwards, this is reported to exactly once per mic click.
+  -->
+
+  <variant name="" summary="when the mic button is pressed"/>
+  <variant name=".Startup" summary="on browser startup"/>
+</variants>
+
 <histogram name="Assistant.BetterOnboarding.Click"
     enum="AssistantBetterOnboardingType" expires_after="2021-09-19">
   <owner>xiaohuic@chromium.org</owner>
@@ -201,15 +213,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Assistant.VoiceSearch.AgsaVersion" units="Version"
+<histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
     expires_after="2021-08-29">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <summary>
     (Android only) Reports the current Agsa version on the device. The version
     is reported as described in GSAState#parseAgsaMajorMinorVersionAsInteger.
-    Reported when the mic button is pressed.
+
+    This is reported {Timing}.
   </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.ConsentOutcome"
@@ -222,28 +237,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Assistant.VoiceSearch.UserEligibility" enum="BooleanEligible"
-    expires_after="2021-08-22">
-  <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <summary>
-    (Android only) Reports user eligibility for the feature when the mic is
-    clicked. This is reported even when the feature is disabled.
-
-    Before M90, this histogram was reported to multiple times per-search and at
-    other random points in time.
-
-    From M90 onwards, this histogram is reported to exactly once per mic click.
-  </summary>
-</histogram>
-
-<histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason"
+<histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
     enum="EligibilityFailureReason" expires_after="2021-08-22">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <summary>
     (Android only) Reports why users failed the eligibility check for the
-    feature. This metric is reported every time the mic button is clicked.
+    feature.
 
     Before M90, this histogram only reported the FailureReason which failed the
     eligibility check. If a client failed for multiple reasons, some would be
@@ -251,7 +252,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     From M90 onwards, this will report all FailureReasons that effect
     eligibility.
+
+    This is reported {Timing}.
   </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
+</histogram>
+
+<histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
+    enum="BooleanEligible" expires_after="2021-08-22">
+  <owner>wylieb@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <summary>
+    (Android only) Reports user eligibility for Assistant voice search. This is
+    reported even when the feature is disabled.
+
+    This is reported {Timing}.
+  </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
 </histogram>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"

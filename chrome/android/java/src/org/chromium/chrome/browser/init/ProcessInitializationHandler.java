@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.offline.measurements.OfflineMeasurementsBackgroundTask;
+import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
@@ -432,6 +433,10 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineMeasurementsBackgroundTask.maybeScheduleTaskAndReportMetrics());
         deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNTP());
+        deferredStartupHandler.addDeferredTask(
+                ()
+                        -> AssistantVoiceSearchService.reportStartupUserEligibility(
+                                ContextUtils.getApplicationContext()));
     }
 
     private void initChannelsAsync() {

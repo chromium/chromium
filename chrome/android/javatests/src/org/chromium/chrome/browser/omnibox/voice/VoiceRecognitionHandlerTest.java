@@ -754,7 +754,7 @@ public class VoiceRecognitionHandlerTest {
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
         Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
         verify(mObserver).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -768,7 +768,7 @@ public class VoiceRecognitionHandlerTest {
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
         Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -782,7 +782,7 @@ public class VoiceRecognitionHandlerTest {
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
         Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
         verify(mObserver).onVoiceAvailabilityImpacted();
-        verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
     }
 
     @Test
@@ -797,7 +797,7 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
         Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
         Assert.assertEquals(VoiceIntentTarget.ASSISTANT, mHandler.getVoiceSearchStartEventTarget());
-        verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
         verify(mIntent).putExtra(
                 eq(VoiceRecognitionHandler.EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
         verify(mIntent).putExtra(
@@ -815,7 +815,7 @@ public class VoiceRecognitionHandlerTest {
         doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
 
-        verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
         // We check for the consent dialog when canRequestAssistantVoiceSearch() is true.
         verify(mAssistantVoiceSearchService).needsEnabledCheck();
         verify(mAssistantVoiceSearchService, times(0)).getAssistantVoiceSearchIntent();
