@@ -1,11 +1,18 @@
 const load = {
+  _cache_bust_value: Math.random().toString().substr(2),
+  cache_bust: path => {
+    let url = new URL(path, location.origin);
+    url.hash += `cache_bust=${load._cache_bust_value++}`;
+    return url.href;
+  },
+
   // Returns a promise that settles once the given path has been fetched as an
   // image resource.
   image: path => {
     return new Promise(resolve => {
       const img = new Image();
       img.onload = img.onerror = resolve;
-      img.src = path;
+      img.src = load.cache_bust(path);
     });
   },
 
@@ -17,7 +24,7 @@ const load = {
       <style>
       @font-face {
           font-family: ahem;
-          src: url('${path}');
+          src: url('${load.cache_bust(path)}');
       }
       </style>
       <div style="font-family: ahem;">This fetches ahem font.</div>
@@ -34,7 +41,7 @@ const load = {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = path;
+    link.href = load.cache_bust(path);
 
     const loaded = new Promise(resolve => {
       link.onload = link.onerror = resolve;
@@ -52,7 +59,7 @@ const load = {
     const loaded = new Promise(resolve => {
       frame.onload = frame.onerror = resolve;
     });
-    frame.src = path;
+    frame.src = load.cache_bust(path);
     document.body.appendChild(frame);
     await loaded;
     document.body.removeChild(frame);
@@ -65,7 +72,7 @@ const load = {
     const loaded = new Promise(resolve => {
       script.onload = script.onerror = resolve;
     });
-    script.src = path;
+    script.src = load.cache_bust(path);
     document.body.appendChild(script);
     await loaded;
     document.body.removeChild(script);
