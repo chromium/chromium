@@ -315,6 +315,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PIN_TITLE},
       {"networkSimEnterPuk", IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PUK},
       {"networkSimLockEnable", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE},
+      {"networkSimLockEnableSublabel",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE_SUBLABEL},
       {"networkSimLockedTitle", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE},
       {"networkSimPukDialogSubtitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE},

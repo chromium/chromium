@@ -26,6 +26,10 @@
         margin-inline-end: 10px;
       }
 
+      cr-toggle {
+        margin-inline-start: var(--cr-button-edge-spacing);
+      }
+
       .error {
         color: red;
         font-weight: 500;
@@ -39,8 +43,8 @@
         margin-inline-start: var(--cr-section-padding);
       }
 
-      cr-toggle {
-        margin-inline-start: var(--cr-button-edge-spacing);
+      .pin-required-subtext {
+        color: var(--google-grey-700);
       }
     </style>
 
@@ -74,8 +78,13 @@
     <!-- SIM unlocked -->
     <template is="dom-if" if="[[eq_(State.SIM_UNLOCKED, state_)]]" restamp>
       <div class="property-box two-line">
-        <div id="simLockToggleLabel" class="start">
-          [[i18n('networkSimLockEnable')]]
+        <div class="flex layout vertical"  aria-hidden="true">
+          <div id="pinRequiredLabel">
+            [[i18n('networkSimLockEnable')]]
+          </div>
+          <div id="pinRequiredSublabel" class="pin-required-subtext">
+            [[i18n('networkSimLockEnableSublabel')]]
+          </div>
         </div>
         <cr-button id="changePinButton" on-click="onChangePinTap_"
             hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]"
@@ -84,7 +93,7 @@
         </cr-button>
         <template is="dom-if" if="[[!isActiveSim_]]" restamp>
           <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
-              aria-labelledby="simLockToggleLabel inActiveSimLockTooltip">
+              aria-labelledby="pinRequiredLabel pinRequiredSublabel inActiveSimLockTooltip">
           </iron-icon>
           <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
               aria-hidden="true" fit-to-visible-bounds>
@@ -95,7 +104,7 @@
         <cr-toggle id="simLockButton"
             disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_)]]"
             on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
-            aria-labelledby="simLockToggleLabel">
+            aria-labelledby="pinRequiredLabel pinRequiredSublabel">
         </cr-toggle>
       </div>
     </template>

@@ -1943,8 +1943,11 @@
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CARD_LOCKED" desc="Settings > Internet > Network details > Lock/unlock SIM card: Message when SIM card is locked.">
     SIM card is locked
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for checkbox to enable SIM card locking.">
-    Enable SIM card locking (require PIN to use mobile data)
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for toggle to enable SIM card locking.">
+   Lock SIM card
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE_SUBLABEL" desc="Settings > Internet > Network details > Lock/unlock SIM card: Sublabel for toggle to enable SIM card locking.">
+    PIN is required to use mobile data
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_BUTTON_CHANGE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for dialog button to change a PIN.">
     Change
