@@ -39,11 +39,12 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
   EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension.get()));
 
   Testcase error_testcases[] = {
-    Testcase("init_invalid_platform_app_2.json",
-             errors::kBackgroundRequiredForPlatformApps),
-    Testcase("init_invalid_platform_app_3.json",
-             ErrorUtils::FormatErrorMessage(
-                 errors::kInvalidManifestVersionOld, "2", "apps")),
+      Testcase("init_invalid_platform_app_2.json",
+               errors::kBackgroundRequiredForPlatformApps),
+      Testcase("init_invalid_platform_app_3.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidManifestVersionUnsupported, "either 2 or 3",
+                   "apps")),
   };
   RunTestcases(error_testcases, base::size(error_testcases), EXPECT_TYPE_ERROR);
 

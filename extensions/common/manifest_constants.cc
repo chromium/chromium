@@ -489,12 +489,12 @@ const char kInvalidLinkedAppIcons[] =
     "Invalid 'app.linked_icons'. Must be an array";
 const char kInvalidManifest[] = "Manifest file is invalid";
 const char kInvalidManifestKey[] = "Invalid value for '*'.";
-const char kInvalidManifestVersion[] =
-    "Invalid value for 'manifest_version'. Must be an integer greater than "
-    "zero.";
-const char kInvalidManifestVersionOld[] =
-    "The 'manifest_version' key must be present and set to * (without quotes). "
-    "See developer.chrome.com/*/manifestVersion.html for details.";
+const char kInvalidManifestVersionMissingKey[] =
+    "Missing 'manifest_version' key. Its value must be an integer *. "
+    "See developer.chrome.com/*/manifestVersion for details.";
+const char kInvalidManifestVersionUnsupported[] =
+    "Invalid value for 'manifest_version'. Must be an integer *. "
+    "See developer.chrome.com/*/manifestVersion for details.";
 const char kInvalidMatch[] =
     "Invalid value for 'content_scripts[*].matches[*]': *";
 const char kInvalidMatchCount[] =

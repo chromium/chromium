@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -58,15 +57,18 @@ namespace errors = manifest_errors;
 
 namespace {
 
-const int kModernManifestVersion = 2;
-const int kPEMOutputColumns = 64;
+constexpr int kModernManifestVersion = 2;
+constexpr int kMaximumSupportedManifestVersion = 3;
+constexpr int kPEMOutputColumns = 64;
+static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
+              "The modern manifest version must be supported.");
 
 // KEY MARKERS
-const char kKeyBeginHeaderMarker[] = "-----BEGIN";
-const char kKeyBeginFooterMarker[] = "-----END";
-const char kKeyInfoEndMarker[] = "KEY-----";
-const char kPublic[] = "PUBLIC";
-const char kPrivate[] = "PRIVATE";
+constexpr char kKeyBeginHeaderMarker[] = "-----BEGIN";
+constexpr char kKeyBeginFooterMarker[] = "-----END";
+constexpr char kKeyInfoEndMarker[] = "KEY-----";
+constexpr char kPublic[] = "PUBLIC";
+constexpr char kPrivate[] = "PRIVATE";
 
 bool ContainsReservedCharacters(const base::FilePath& path) {
   // We should disallow backslash '\\' as file path separator even on Windows,
@@ -86,10 +88,6 @@ bool IsManifestSupported(int manifest_version,
                          Manifest::Type type,
                          int creation_flags,
                          std::string* warning) {
-  static constexpr int kMaximumSupportedManifestVersion = 3;
-  static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
-                "The modern manifest version must be supported.");
-
   // The ultimate short-circuit: If the feature for MV3 is disabled, it's not
   // supported.
   if (manifest_version == 3 &&
@@ -176,6 +174,26 @@ bool ComputeExtensionID(const base::DictionaryValue& manifest,
     return false;
   }
   return true;
+}
+
+std::u16string InvalidManifestVersionError(const char* manifest_version_error,
+                                           bool is_platform_app) {
+  std::string valid_version;
+  if (kModernManifestVersion == kMaximumSupportedManifestVersion) {
+    valid_version = base::NumberToString(kModernManifestVersion);
+  } else if (kMaximumSupportedManifestVersion - kModernManifestVersion == 1) {
+    valid_version = base::StrCat(
+        {"either ", base::NumberToString(kModernManifestVersion), " or ",
+         base::NumberToString(kMaximumSupportedManifestVersion)});
+  } else {
+    valid_version = base::StrCat(
+        {"between ", base::NumberToString(kModernManifestVersion), " and ",
+         base::NumberToString(kMaximumSupportedManifestVersion)});
+  }
+
+  return ErrorUtils::FormatErrorMessageUTF16(
+      manifest_version_error, valid_version,
+      is_platform_app ? "apps" : "extensions");
 }
 
 }  // namespace
@@ -760,11 +778,13 @@ bool Extension::LoadDescription(std::u16string* error) {
 bool Extension::LoadManifestVersion(std::u16string* error) {
   // Get the original value out of the dictionary so that we can validate it
   // more strictly.
-  if (manifest_->available_values().HasKey(keys::kManifestVersion)) {
+  bool key_exists =
+      manifest_->available_values().HasKey(keys::kManifestVersion);
+  if (key_exists) {
     int manifest_version = 1;
-    if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version) ||
-        manifest_version < 1) {
-      *error = base::ASCIIToUTF16(errors::kInvalidManifestVersion);
+    if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version)) {
+      *error = InvalidManifestVersionError(
+          errors::kInvalidManifestVersionUnsupported, is_platform_app());
       return false;
     }
   }
@@ -776,10 +796,10 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
     std::string json;
     base::JSONWriter::Write(*manifest_->value(), &json);
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidManifestVersionOld,
-        base::NumberToString(kModernManifestVersion),
-        is_platform_app() ? "apps" : "extensions");
+    *error = InvalidManifestVersionError(
+        key_exists ? errors::kInvalidManifestVersionUnsupported
+                   : errors::kInvalidManifestVersionMissingKey,
+        is_platform_app());
     return false;
   }
 
