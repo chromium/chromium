@@ -394,7 +394,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onCancelClick_(event) {
+  onCancel_(event) {
     event.stopPropagation();
     this.closeDialogs_();
   },
