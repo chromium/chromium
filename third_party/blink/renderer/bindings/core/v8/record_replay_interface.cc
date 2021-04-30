@@ -42,6 +42,10 @@ try {
 
 window.dump = dump;
 
+// Save these before page code potentially overwrites them.
+const JSON_stringify = JSON.stringify;
+const JSON_parse = JSON.parse;
+
 ///////////////////////////////////////////////////////////////////////////////
 // utils.js
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,7 +73,7 @@ let gCurrentMessageResult;
 function sendMessage(method, params) {
   const id = gNextMessageId++;
   gCurrentMessageId = id;
-  sendCDPMessage(JSON.stringify({ method, params, id }));
+  sendCDPMessage(JSON_stringify({ method, params, id }));
   gCurrentMessageId = undefined;
   return gCurrentMessageResult;
 }
@@ -82,7 +86,7 @@ function addEventListener(method, callback) {
 
 function messageCallback(message) {
   try {
-    message = JSON.parse(message);
+    message = JSON_parse(message);
 
     if (message.id) {
       assert(message.id == gCurrentMessageId);
