@@ -441,12 +441,8 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
 
 void FederatedAuthRequestImpl::OnLogoutCompleted(
     IdpNetworkRequestManager::LogoutResponse status) {
-  // Return an error overall for the call if any one request returns an error.
-  if (logout_status_ == blink::mojom::LogoutStatus::kSuccess &&
-      status != IdpNetworkRequestManager::LogoutResponse::kSuccess) {
-    logout_status_ = blink::mojom::LogoutStatus::kError;
-  }
-
+  // |status| is deliberately ignored because we don't want to tell the
+  // calling page whether this cross-origin load succeeded or not.
   if (logout_endpoints_.empty()) {
     CompleteLogoutRequest(logout_status_);
     return;

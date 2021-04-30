@@ -507,13 +507,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   // Expectations have to be set explicitly in advance using
   // logout_return_status() and logout_endpoints().
   void SetLogoutMockExpectations() {
-    static int count = 0;
+    logout_count_ = 0;
     EXPECT_CALL(*mock_request_manager_, SendLogout(_, _))
         .Times(logout_endpoints_.size())
         .WillRepeatedly(
             Invoke([&](const GURL& logout_endpoint,
                        IdpNetworkRequestManager::LogoutCallback callback) {
-              std::move(callback).Run(logout_return_status_[count++]);
+              std::move(callback).Run(logout_return_status_[logout_count_++]);
             }));
   }
 
@@ -535,6 +535,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   // Test case storage for Logout tests.
   std::vector<LogoutResponse> logout_return_status_;
   std::vector<std::string> logout_endpoints_;
+  int logout_count_;
 
   GURL provider_;
 };
@@ -603,7 +604,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSingleFailure) {
 
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
-  EXPECT_EQ(logout_response, LogoutStatus::kError);
+  EXPECT_EQ(logout_response, LogoutStatus::kSuccess);
 }
 
 // Test Logout method with an empty endpoint vector.
