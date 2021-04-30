@@ -609,6 +609,8 @@ class LtrRtlShelfViewTest : public ShelfViewTest,
   LtrRtlShelfViewTest& operator=(const LtrRtlShelfViewTest&) = delete;
   ~LtrRtlShelfViewTest() = default;
 
+  bool IsRtlEnabled() const { return GetParam(); }
+
  private:
   // Restores locale to the default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
@@ -1723,7 +1725,7 @@ TEST_P(LtrRtlShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
 
 // Tests that shelf items in always shown shelf can be dragged through gesture
 // events after context menu is shown.
-TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
+TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   ui::test::EventGenerator* generator = GetEventGenerator();
   const ShelfID first_app_id = AddAppShortcut();
@@ -1741,7 +1743,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
 
   const gfx::Point start = GetButtonCenter(first_app_id);
   // Drag the app long enough to ensure the drag can be triggered.
-  const gfx::Point end(start.x() + 100, start.y());
+  const gfx::Point end(start.x() + (IsRtlEnabled() ? -100 : 100), start.y());
   generator->set_current_screen_location(start);
   generator->PressTouch();
   ASSERT_TRUE(button->FireDragTimerForTest());
@@ -1787,7 +1789,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
 
 // Tests that shelf items in AUTO_HIDE_SHOWN shelf can be dragged through
 // gesture events after context menu is shown.
-TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
+TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   const ShelfID first_app_id = AddAppShortcut();
   const ShelfID second_app_id = AddAppShortcut();
@@ -1813,7 +1815,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
 
   const gfx::Point start = GetButtonCenter(first_app_id);
   // Drag the app long enough to ensure the drag can be triggered.
-  const gfx::Point end = gfx::Point(start.x() + 100, start.y());
+  const gfx::Point end(start.x() + (IsRtlEnabled() ? -100 : 100), start.y());
   generator->set_current_screen_location(start);
   generator->PressTouch();
   ASSERT_TRUE(button->FireDragTimerForTest());
