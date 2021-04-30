@@ -642,11 +642,12 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         << "]\nVisibleSelection: "
         << selected_frame->Selection()
                .ComputeVisibleSelectionInDOMTreeDeprecated();
-
-    // Store text selection when it happens as it might be cleared when the
-    // browser will request |TextFragmentHandler| to generate
-    // selector.
-    UpdateTextFragmentHandler(selected_frame);
+    if (!result.IsContentEditable()) {
+      // Store text selection when it happens as it might be cleared when the
+      // browser will request |TextFragmentHandler| to generate
+      // selector.
+      UpdateTextFragmentHandler(selected_frame);
+    }
   }
 
   // If there is a text fragment at the same location as the click indicate that

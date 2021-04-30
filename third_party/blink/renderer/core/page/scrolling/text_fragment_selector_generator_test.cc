@@ -221,6 +221,34 @@ TEST_P(TextFragmentSelectorGeneratorTest,
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 0);
 }
 
+// Check that selector is not generated for editable text.
+TEST_P(TextFragmentSelectorGeneratorTest, CheckNoPreemptiveGenerationEditable) {
+  if (!preemptive_generation_enabled_)
+    return;
+
+  SimRequest request("https://instagram.com/test.html", "text/html");
+  LoadURL("https://instagram.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <input type="text" id="input" value="default text in input">
+    )HTML");
+
+  Node* input_text =
+      FlatTreeTraversal::Next(*GetDocument().getElementById("input"))
+          ->firstChild();
+  const auto& selected_start = Position(input_text, 0);
+  const auto& selected_end = Position(input_text, 12);
+  ASSERT_EQ("default text",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GetDocument().GetFrame()->GetTextFragmentSelectorGenerator()->UpdateSelection(
+      ToEphemeralRangeInFlatTree(EphemeralRange(selected_start, selected_end)));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 0);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 0);
+}
+
 // Basic exact selector case.
 TEST_P(TextFragmentSelectorGeneratorTest, EmptySelection) {
   SimRequest request("https://example.com/test.html", "text/html");
