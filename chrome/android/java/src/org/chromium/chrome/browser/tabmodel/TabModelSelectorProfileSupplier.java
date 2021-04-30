@@ -56,12 +56,10 @@ public class TabModelSelectorProfileSupplier
         set(profile);
     }
 
-    @Override
     public void destroy() {
         if (mSelector != null) {
             mSelector.removeObserver(this);
             mSelector = null;
         }
-        super.destroy();
     }
 }

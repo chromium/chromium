@@ -105,14 +105,11 @@ public class TabModelSelectorProfileSupplierTest {
     }
 
     @Test
-    public void testDestroyPreInitialization() {
+    public void testDestroy() {
         mSupplier.destroy();
         // There's nothing to tear down before the tab model selector is initialized.
         verify(mTabModelSelector, never()).removeObserver(mSupplier);
-    }
 
-    @Test
-    public void testDestroyPostInitialization() {
         mTabModelSelectorSupplier.set(mTabModelSelector);
         mSupplier.destroy();
         verify(mTabModelSelector).removeObserver(mSupplier);
