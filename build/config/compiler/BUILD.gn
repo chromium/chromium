@@ -2341,15 +2341,8 @@ config("symbols") {
     # All configs using /DEBUG should include this:
     configs = [ ":win_pdbaltpath" ]
 
-    if (is_clang) {
-      # Use constructor debug mode. This option reduces debug info more than
-      # -fno-standalone-debug by emitting class type information only when
-      # constructors are emitted.
-      cflags += [
-        "-Xclang",
-        "-debug-info-kind=constructor",
-      ]
-    }
+    # TODO(crbug.com/1138553): Re-enable constructor homing on windows after
+    # libc++ fix is in.
   } else {
     cflags = []
     if (is_mac && enable_dsyms) {
