@@ -26,6 +26,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -71,6 +72,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
           RenderFrameProxyHostMap proxy_hosts,
           std::set<RenderViewHostImpl*> render_view_hosts);
     ~Entry();
+
+    void WriteIntoTrace(perfetto::TracedValue context);
 
     // The main document being stored.
     std::unique_ptr<RenderFrameHostImpl> render_frame_host;

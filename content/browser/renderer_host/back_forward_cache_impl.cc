@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -363,6 +364,12 @@ BackForwardCacheImpl::Entry::Entry(
 
 BackForwardCacheImpl::Entry::~Entry() = default;
 
+void BackForwardCacheImpl::Entry::WriteIntoTrace(
+    perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("render_frame_host", render_frame_host);
+}
+
 void BackForwardCacheImpl::RenderProcessBackgroundedChanged(
     RenderProcessHostImpl* host) {
   EnforceCacheSizeLimit();
@@ -641,7 +648,7 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
 
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
-  TRACE_EVENT0("navigation", "BackForwardCache::StoreEntry");
+  TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
   DCHECK(CanStorePageNow(entry->render_frame_host.get()));
 
 #if defined(OS_ANDROID)
@@ -723,6 +730,10 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
     return nullptr;
 
   std::unique_ptr<Entry> entry = std::move(*matching_entry);
+  TRACE_EVENT_INSTANT("navigation",
+                      "BackForwardCache::RestoreEntry_matched_entry", "entry",
+                      entry);
+
   entries_.erase(matching_entry);
   RemoveProcessesForEntry(*entry);
   entry->page_restore_params = std::move(page_restore_params);
