@@ -65,6 +65,8 @@ public final class WebFeedFollowIntroControllerTest {
     private Tracker mTracker;
     @Mock
     private WebFeedBridge mWebFeedBridge;
+    @Mock
+    private Tab mTab;
 
     private static final GURL sTestUrl = new GURL("https://www.example.com");
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
@@ -80,12 +82,15 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Before
     public void setUp() {
+        // TODO(harringtond): See if we can make this a robolectric test.
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
+        when(mTab.getUrl()).thenReturn(sTestUrl);
+        when(mTab.isIncognito()).thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
         mNumVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
@@ -249,8 +254,9 @@ public final class WebFeedFollowIntroControllerTest {
                 .when(mWebFeedBridge)
                 .getWebFeedMetadataForPage(eq(sTestUrl), any(Callback.class));
 
-        mEmptyTabObserver.onPageLoadStarted(mActivity.getActivityTab(), sTestUrl);
-        mEmptyTabObserver.onPageLoadFinished(mActivity.getActivityTab(), sTestUrl);
+        mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
+        mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
+        mEmptyTabObserver.onPageLoadFinished(mTab, sTestUrl);
     }
 
     private void performScrollUpAfterDelay(long delay) {

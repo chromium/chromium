@@ -108,12 +108,31 @@ public class WebFeedFollowIntroController {
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
         mTabObserver = new EmptyTabObserver() {
             @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                mPageLoadTime = mClock.currentTimeMillis();
-                if (tab.isIncognito()) {
-                    mIsRecommended = false;
+            public void onPageLoadStarted(Tab tab, GURL url) {
+                clearPageInfo();
+                mWebFeedFollowIntroView.dismissBubble();
+            }
+
+            @Override
+            public void onContentViewScrollOffsetChanged(int verticalScrollDelta) {
+                if (verticalScrollDelta > 0) {
+                    maybeShowFollowIntro();
+                }
+            }
+
+            @Override
+            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                // Note that we're using didFirstVisuallyNonEmptyPaint as a proxy for a page load
+                // event because some pages never fully load even though they are perfectly
+                // interactive.
+                GURL url = tab.getUrl();
+                if (tab.isIncognito()
+                        || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
                     return;
                 }
+
+                mPageLoadTime = mClock.currentTimeMillis();
+
                 webFeedBridge.getVisitCountsToHost(url,
                         result
                         -> mMeetsVisitRequirement = result.visits >= numVisitMin
@@ -132,29 +151,23 @@ public class WebFeedFollowIntroController {
                     mUrl = url;
                 });
             }
-
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                mIntroShown = false;
-                mIsRecommended = false;
-                mAcceleratorPressed = false;
-                mMeetsVisitRequirement = false;
-                mWebFeedFollowIntroView.dismissBubble();
-            }
-
-            @Override
-            public void onContentViewScrollOffsetChanged(int verticalScrollDelta) {
-                if (verticalScrollDelta > 0) {
-                    maybeShowFollowIntro();
-                }
-            }
         };
-        mCurrentTabObserver =
-                new CurrentTabObserver(tabSupplier, mTabObserver, /*swapCallback=*/null);
+        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver, this::swapTabs);
     }
 
     public void destroy() {
         mCurrentTabObserver.destroy();
+    }
+
+    private void swapTabs(Tab tab) {
+        clearPageInfo();
+    }
+
+    private void clearPageInfo() {
+        mIntroShown = false;
+        mIsRecommended = false;
+        mAcceleratorPressed = false;
+        mMeetsVisitRequirement = false;
     }
 
     private void maybeShowFollowIntro() {
