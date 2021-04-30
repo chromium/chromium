@@ -122,6 +122,7 @@ MultibufferDataSource::MultibufferDataSource(
       failed_(false),
       render_task_runner_(task_runner),
       url_data_(std::move(url_data_arg)),
+      lock_("MultibufferDataSource.lock_"),
       stop_signal_received_(false),
       media_has_played_(false),
       single_origin_(true),
