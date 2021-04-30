@@ -5144,8 +5144,8 @@ domain Network
   # Request pattern for interception.
   experimental type RequestPattern extends object
     properties
-      # Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is
-      # backslash. Omitting is equivalent to "*".
+      # Wildcards (`'*'` -> zero or more, `'?'` -> exactly one) are allowed. Escape character is
+      # backslash. Omitting is equivalent to `"*"`.
       optional string urlPattern
       # If set, only requests for matching resource types will be intercepted.
       optional ResourceType resourceType
@@ -8675,8 +8675,8 @@ domain Fetch
 
   type RequestPattern extends object
     properties
-      # Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is
-      # backslash. Omitting is equivalent to "*".
+      # Wildcards (`'*'` -> zero or more, `'?'` -> exactly one) are allowed. Escape character is
+      # backslash. Omitting is equivalent to `"*"`.
       optional string urlPattern
       # If set, only requests for matching resource types will be intercepted.
       optional Network.ResourceType resourceType
