@@ -32,7 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TEXT_AUTOSIZER_H_
 
 #include <unicode/uchar.h>
+
 #include <memory>
+
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"

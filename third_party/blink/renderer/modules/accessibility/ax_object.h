@@ -33,6 +33,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"

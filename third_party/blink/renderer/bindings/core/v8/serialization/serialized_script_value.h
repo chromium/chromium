@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"

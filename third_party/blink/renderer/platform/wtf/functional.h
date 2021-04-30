@@ -27,8 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FUNCTIONAL_H_
 
 #include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

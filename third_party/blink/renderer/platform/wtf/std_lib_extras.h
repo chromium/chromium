@@ -28,6 +28,7 @@
 
 #include <cstddef>
 
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"

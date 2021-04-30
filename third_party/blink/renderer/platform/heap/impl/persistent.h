@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_PERSISTENT_H_
 
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"

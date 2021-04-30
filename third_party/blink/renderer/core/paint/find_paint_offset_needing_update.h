@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIND_PAINT_OFFSET_NEEDING_UPDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIND_PAINT_OFFSET_NEEDING_UPDATE_H_
 
+#include "base/dcheck_is_on.h"
+
 #if DCHECK_IS_ON()
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"

@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"

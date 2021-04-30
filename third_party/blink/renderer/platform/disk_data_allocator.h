@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/receiver.h"

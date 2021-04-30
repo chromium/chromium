@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

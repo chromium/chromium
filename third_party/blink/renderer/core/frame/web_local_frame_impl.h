@@ -35,6 +35,7 @@
 #include <set>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"

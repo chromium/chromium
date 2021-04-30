@@ -30,6 +30,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"

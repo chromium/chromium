@@ -7,6 +7,8 @@
 
 #include <atomic>
 #include <memory>
+
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

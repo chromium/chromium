@@ -27,6 +27,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/template_util.h"
 #include "build/build_config.h"

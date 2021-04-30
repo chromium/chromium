@@ -25,6 +25,8 @@
 
 #include <memory>
 #include <type_traits>
+
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"

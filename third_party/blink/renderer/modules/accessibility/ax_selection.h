@@ -9,6 +9,7 @@
 
 #include <ostream>
 
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"

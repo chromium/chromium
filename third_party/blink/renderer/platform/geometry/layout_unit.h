@@ -36,6 +36,7 @@
 #include <limits>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"

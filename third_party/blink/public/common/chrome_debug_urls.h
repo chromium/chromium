@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_CHROME_DEBUG_URLS_H_
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/common_export.h"
 

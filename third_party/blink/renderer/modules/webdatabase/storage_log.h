@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_STORAGE_LOG_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_STORAGE_LOG_H_
 
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 // We can see logs with |--v=N| or |--vmodule=StorageLog=N| where N is a

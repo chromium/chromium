@@ -34,6 +34,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_job.h"

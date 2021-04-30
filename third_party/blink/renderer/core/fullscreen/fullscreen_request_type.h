@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FULLSCREEN_FULLSCREEN_REQUEST_TYPE_H_
 
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 #include <string>

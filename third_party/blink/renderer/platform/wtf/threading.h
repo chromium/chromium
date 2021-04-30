@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"

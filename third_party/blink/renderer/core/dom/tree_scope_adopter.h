@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 
 namespace blink {

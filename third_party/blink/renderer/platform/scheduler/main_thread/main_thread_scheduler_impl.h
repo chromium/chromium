@@ -11,6 +11,7 @@
 #include <stack>
 
 #include "base/atomicops.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

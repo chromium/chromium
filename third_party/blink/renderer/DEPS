@@ -11,6 +11,7 @@ include_rules = [
     "+base/containers/adapters.h",
     "+base/containers/contains.h",
     "+base/containers/span.h",
+    "+base/dcheck_is_on.h",
     "+base/debug",
     "+base/feature_list.h",
     "+base/format_macros.h",
