@@ -156,25 +156,25 @@
     {COUNT, plural, =1 {App} other {# apps}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_APPS" desc="Describes one or more apps being transfered via Nearby Share. Singular case is not capitalized, e.g. 'app'.">
-    {COUNT, plural, =1 {app} other {# apps}}
+    {COUNT, plural, =1 {an app} other {# apps}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_IMAGES" desc="Describes one or more images being transfered via Nearby Share. Singular case is capitalized, e.g. 'Image'.">
     {COUNT, plural, =1 {Image} other {# images}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES" desc="Describes one or more images being transfered via Nearby Share. Singular case is not capitalized, e.g. 'image'.">
-    {COUNT, plural, =1 {image} other {# images}}
+    {COUNT, plural, =1 {an image} other {# images}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_UNKNOWN" desc="Describes one or more files being transfered via Nearby Share. Singular case is capitalized, e.g. 'File'.">
     {COUNT, plural, =1 {File} other {# files}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN" desc="Describes one or more files being transfered via Nearby Share. Singular case is not capitalized, e.g. 'file'.">
-    {COUNT, plural, =1 {file} other {# files}}
+    {COUNT, plural, =1 {a file} other {# files}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_VIDEOS" desc="Describes one or more videos being transfered via Nearby Share. Singular case is capitalized, e.g. 'Video'.">
     {COUNT, plural, =1 {Video} other {# videos}}
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_VIDEOS" desc="Describes one or more videos being transfered via Nearby Share. Singular case is not capitalized, e.g. 'video'.">
-    {COUNT, plural, =1 {video} other {# videos}}
+    {COUNT, plural, =1 {a video} other {# videos}}
   </message>
   <message name="IDS_NEARBY_SECURE_CONNECTION_ID" desc="Description shown on both sender and receiver devices, to remind users to verify/compare tokens on both devices for security before sending/receiving data.">
     Secure connection ID: <ph name="TOKEN">$1<ex>1234</ex></ph>
@@ -183,19 +183,19 @@
     {COUNT, plural, =1 {Address} other {# addresses}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_ADDRESSES" desc="Describes one or more addresses being transfered via Nearby Share. Singular case is not capitalized, e.g. 'address'.">
-    {COUNT, plural, =1 {address} other {# addresses}}
+    {COUNT, plural, =1 {an address} other {# addresses}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_LINKS" desc="Describes one or more web links being transfered via Nearby Share. Singular case is capitalized, e.g. 'Link'.">
     {COUNT, plural, =1 {Link} other {# links}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_LINKS" desc="Describes one or more web links being transfered via Nearby Share. Singular case is not capitalized, e.g. 'link'.">
-    {COUNT, plural, =1 {link} other {# links}}
+    {COUNT, plural, =1 {a link} other {# links}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_PHONE_NUMBERS" desc="Describes one or more phone numbers being transfered via Nearby Share. Singular case is capitalized, e.g. 'Phone number'.">
     {COUNT, plural, =1 {Phone number} other {# phone numbers}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_PHONE_NUMBERS" desc="Describes one or more phone numbers being transfered via Nearby Share. Singular case is not capitalized, e.g. 'phone number'.">
-    {COUNT, plural, =1 {phone number} other {# phone numbers}}
+    {COUNT, plural, =1 {a phone number} other {# phone numbers}}
   </message>
   <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN" desc="Describes one or more pieces of text being transfered via Nearby Share. Singular case is capitalized, e.g. 'Text'.">
     {COUNT, plural, =1 {Text} other {# texts}}
@@ -207,7 +207,7 @@
     {COUNT, plural, =1 {Item} other {# items}}
   </message>
   <message name="IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS" desc="Describes one or more items being transfered via Nearby Share. Singular case is not capitalized, e.g. 'item'.">
-    {COUNT, plural, =1 {item} other {# items}}
+    {COUNT, plural, =1 {an item} other {# items}}
   </message>
 
   <!-- High Visibility Page Strings -->
