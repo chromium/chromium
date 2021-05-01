@@ -13,8 +13,9 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
@@ -24,6 +25,7 @@ namespace autofill {
 namespace {
 
 constexpr int kColumnSetId = 0;
+constexpr int kIconSize = 16;
 
 // New and old values appear in the update prompt in the same order as the order
 // of the types in this array.
@@ -59,7 +61,7 @@ std::unique_ptr<views::ImageView> CreateIconViewForType(ServerFieldType type,
       GetVectorIconForType(type),
       for_new_value ? ui::NativeTheme::kColorId_ProminentButtonColor
                     : ui::NativeTheme::kColorId_DefaultIconColor,
-      gfx::kFaviconSize));
+      kIconSize));
   return icon_view;
 }
 
@@ -109,7 +111,8 @@ std::unique_ptr<views::View> CreateValuesView(
 // which set of values from `differences` are displayed.
 void AddValuesRow(views::GridLayout* layout,
                   const std::vector<ProfileValueDifference>& differences,
-                  bool are_new_values) {
+                  views::Button::PressedCallback edit_button_callback) {
+  bool are_new_values = !!edit_button_callback;
   layout->StartRow(/*vertical_resize=*/views::GridLayout::kFixedSize,
                    kColumnSetId);
 
@@ -125,6 +128,17 @@ void AddValuesRow(views::GridLayout* layout,
                   /*row_span=*/1,
                   /*h_align=*/views::GridLayout::FILL,
                   /*v_align=*/views::GridLayout::FILL);
+  if (are_new_values) {
+    std::unique_ptr<views::ImageButton> edit_button =
+        views::CreateVectorImageButtonWithNativeTheme(
+            std::move(edit_button_callback), vector_icons::kEditIcon,
+            kIconSize);
+    // TODO(crbug.com/1167060): Use internationalized string.
+    edit_button->SetAccessibleName(u"Edit Address");
+    layout->AddView(std::move(edit_button), /*col_span=*/1, /*row_span=*/1,
+                    /*h_align=*/views::GridLayout::LEADING,
+                    /*v_align=*/views::GridLayout::LEADING);
+  }
 }
 
 }  // namespace
@@ -184,15 +198,25 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       /*resize_percent=*/1.0,
       /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
       /*fixed_width=*/0, /*min_width=*/0);
+  column_set->AddColumn(
+      /*h_align=*/views::GridLayout::LEADING,
+      /*v_align=*/views::GridLayout::LEADING,
+      /*resize_percent=*/views::GridLayout::kFixedSize,
+      /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
+      /*fixed_width=*/0, /*min_width=*/0);
 
-  AddValuesRow(layout, diff_vector, /*are_new_values=*/true);
+  AddValuesRow(
+      layout, diff_vector,
+      /*edit_button_callback=*/
+      base::BindRepeating(
+          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
+          base::Unretained(controller_)));
   layout->AddPaddingRow(views::GridLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             DISTANCE_CONTROL_LIST_VERTICAL));
-  AddValuesRow(layout, diff_vector, /*are_new_values=*/false);
+  AddValuesRow(layout, diff_vector, /*edit_button_callback=*/{});
 
   // TODO(crbug.com/1167060): Add support for dark mode.
-  // TODO(crbug.com/1167060): Add entry to the edit dialog.
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
