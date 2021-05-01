@@ -65,10 +65,6 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
                    const std::u16string& accessible_name);
 
     // views::ImageButton:
-    std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-    std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-        const override;
-    std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
     void OnThemeChanged() override;
 
    private:

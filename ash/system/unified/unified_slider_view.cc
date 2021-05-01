@@ -132,22 +132,6 @@ void UnifiedSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-std::unique_ptr<views::InkDrop> UnifiedSliderButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> UnifiedSliderButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-UnifiedSliderButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 void UnifiedSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!GetEnabled())
     return;

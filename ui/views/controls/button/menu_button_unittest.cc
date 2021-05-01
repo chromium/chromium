@@ -296,7 +296,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 
   EXPECT_TRUE(button()->clicked());
   gfx::Point inkdrop_center_point =
-      test::InkDropHostViewTestApi(button()).GetInkDropCenterBasedOnLastEvent();
+      button()->GetInkDropCenterBasedOnLastEvent();
   View::ConvertPointToScreen(button(), &inkdrop_center_point);
   EXPECT_EQ(click_point, inkdrop_center_point);
 }
@@ -312,8 +312,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClickWithPressedLock) {
                                                  false, &click_event);
 
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
-  EXPECT_EQ(click_point, test::InkDropHostViewTestApi(button())
-                             .GetInkDropCenterBasedOnLastEvent());
+  EXPECT_EQ(click_point, button()->GetInkDropCenterBasedOnLastEvent());
 }
 
 // Test that the MenuButton stays pressed while there are any PressedLocks.

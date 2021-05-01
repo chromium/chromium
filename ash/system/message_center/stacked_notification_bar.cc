@@ -46,7 +46,9 @@ class StackingBarLabelButton : public views::LabelButton {
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-    TrayPopupUtils::ConfigureTrayPopupButton(this);
+    TrayPopupUtils::ConfigureTrayPopupButton(
+        this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true,
+        /*highlight_on_focus=*/true);
   }
 
   ~StackingBarLabelButton() override = default;
@@ -75,13 +77,8 @@ class StackingBarLabelButton : public views::LabelButton {
     views::LabelButton::PaintButtonContents(canvas);
   }
 
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = TrayPopupUtils::CreateInkDrop(this);
-    ink_drop->SetShowHighlightOnFocus(true);
-    ink_drop->SetShowHighlightOnHover(true);
-    return ink_drop;
-  }
-
+  // TODO(crbug.com/1204653): Set these as callbacks in the constructor (after
+  // ConfigureTrayPopupButton, which does configure InkDrop callbacks).
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetInkDropCenterBasedOnLastEvent(),

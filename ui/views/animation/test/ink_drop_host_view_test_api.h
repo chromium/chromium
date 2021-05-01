@@ -42,9 +42,6 @@ class InkDropHostViewTestApi {
 
   bool HasInkdropEventHandler() const;
 
-  // Wrapper for InkDropHostView::GetInkDropCenterBasedOnLastEvent().
-  gfx::Point GetInkDropCenterBasedOnLastEvent() const;
-
   // Wrapper for InkDropHostView::AnimateInkDrop().
   void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
 

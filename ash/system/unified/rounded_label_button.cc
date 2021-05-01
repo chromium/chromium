@@ -60,22 +60,6 @@ int RoundedLabelButton::GetHeightForWidth(int width) const {
   return kTrayItemSize;
 }
 
-std::unique_ptr<views::InkDrop> RoundedLabelButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> RoundedLabelButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-RoundedLabelButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 const char* RoundedLabelButton::GetClassName() const {
   return "RoundedLabelButton";
 }

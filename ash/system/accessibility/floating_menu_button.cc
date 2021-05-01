@@ -137,22 +137,6 @@ void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                       : ax::mojom::CheckedState::kFalse);
 }
 
-std::unique_ptr<views::InkDrop> FloatingMenuButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> FloatingMenuButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-FloatingMenuButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 void FloatingMenuButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
   focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(

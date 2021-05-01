@@ -40,10 +40,6 @@ class SystemMenuButton : public views::ImageButton {
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
   // views::ImageButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   const char* GetClassName() const override;
 
  private:

@@ -91,6 +91,11 @@ class VIEWS_EXPORT InkDropHostView : public View {
   const base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>&
   GetCreateInkDropRippleCallback() const;
 
+  // Returns the point of the |last_ripple_triggering_event_| if it was a
+  // LocatedEvent, otherwise the center point of the local bounds is returned.
+  // This is nominally used by the InkDropRipple.
+  gfx::Point GetInkDropCenterBasedOnLastEvent() const;
+
   // Creates and returns the visual effect used for hover and focus. Used by
   // InkDropImpl instances.
   virtual std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
@@ -217,10 +222,6 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Returns true if an ink drop instance has been created.
   bool HasInkDrop() const;
-
-  // Returns the point of the |last_ripple_triggering_event_| if it was a
-  // LocatedEvent, otherwise the center point of the local bounds is returned.
-  gfx::Point GetInkDropCenterBasedOnLastEvent() const;
 
   // Initializes and sets a mask on |ink_drop_layer|. No-op if
   // CreateInkDropMask() returns null. This will not run if |AddInkDropClip()|

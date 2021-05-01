@@ -117,7 +117,7 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
 TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
   test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, nullptr);
-  EXPECT_EQ(gfx::Point(10, 10), test_api_.GetInkDropCenterBasedOnLastEvent());
+  EXPECT_EQ(gfx::Point(10, 10), host_view_.GetInkDropCenterBasedOnLastEvent());
 }
 
 // Verifies the return value of GetInkDropCenterBasedOnLastEvent() for a located
@@ -130,7 +130,7 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
 
   test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, &located_event);
-  EXPECT_EQ(gfx::Point(5, 6), test_api_.GetInkDropCenterBasedOnLastEvent());
+  EXPECT_EQ(gfx::Point(5, 6), host_view_.GetInkDropCenterBasedOnLastEvent());
 }
 
 TEST_F(InkDropHostViewTest, HasInkDrop) {

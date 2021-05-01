@@ -47,10 +47,6 @@ class FeaturePodIconButton : public views::ImageButton {
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
@@ -97,10 +93,6 @@ class FeaturePodLabelButton : public views::Button {
   // views::Button:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
 

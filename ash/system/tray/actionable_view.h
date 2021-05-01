@@ -59,7 +59,7 @@ class ASH_EXPORT ActionableView : public views::Button {
   // Used by ButtonPressed() to determine whether |this| has been destroyed as a
   // result of performing the associated action. This is necessary because in
   // the not-destroyed case ButtonPressed() uses member variables.
-  bool* destroyed_;
+  bool* destroyed_ = nullptr;
 
   // Defines the flavor of ink drop ripple/highlight that should be constructed.
   const TrayPopupInkDropStyle ink_drop_style_;

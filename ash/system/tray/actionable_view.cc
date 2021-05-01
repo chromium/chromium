@@ -24,7 +24,6 @@ const char ActionableView::kViewClassName[] = "tray/ActionableView";
 ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
     : views::Button(base::BindRepeating(&ActionableView::ButtonPressed,
                                         base::Unretained(this))),
-      destroyed_(nullptr),
       ink_drop_style_(ink_drop_style) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetHasInkDropActionOnClick(false);
@@ -71,8 +70,7 @@ std::unique_ptr<views::InkDrop> ActionableView::CreateInkDrop() {
 
 std::unique_ptr<views::InkDropRipple> ActionableView::CreateInkDropRipple()
     const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      ink_drop_style_, this, GetInkDropCenterBasedOnLastEvent());
+  return TrayPopupUtils::CreateInkDropRipple(ink_drop_style_, this);
 }
 
 std::unique_ptr<views::InkDropHighlight>

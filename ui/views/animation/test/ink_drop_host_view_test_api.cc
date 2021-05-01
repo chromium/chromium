@@ -38,10 +38,6 @@ InkDrop* InkDropHostViewTestApi::GetInkDrop() {
   return host_view_->GetInkDrop();
 }
 
-gfx::Point InkDropHostViewTestApi::GetInkDropCenterBasedOnLastEvent() const {
-  return host_view_->GetInkDropCenterBasedOnLastEvent();
-}
-
 void InkDropHostViewTestApi::AnimateInkDrop(InkDropState state,
                                             const ui::LocatedEvent* event) {
   host_view_->AnimateInkDrop(state, event);

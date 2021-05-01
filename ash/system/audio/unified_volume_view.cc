@@ -87,21 +87,6 @@ class UnifiedVolumeViewButton : public T {
 
   ~UnifiedVolumeViewButton() override = default;
 
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return TrayPopupUtils::CreateInkDrop(this);
-  }
-
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    return TrayPopupUtils::CreateInkDropRipple(
-        TrayPopupInkDropStyle::FILL_BOUNDS, this,
-        T::GetInkDropCenterBasedOnLastEvent());
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    return TrayPopupUtils::CreateInkDropHighlight(this);
-  }
-
   void OnThemeChanged() override {
     T::OnThemeChanged();
     auto* color_provider = AshColorProvider::Get();

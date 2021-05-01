@@ -33,7 +33,8 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
 
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
 
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  TrayPopupUtils::ConfigureTrayPopupButton(
+      this, TrayPopupInkDropStyle::HOST_CENTERED);
   TrayPopupUtils::InstallHighlightPathGenerator(
       this, TrayPopupInkDropStyle::HOST_CENTERED);
   focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
@@ -56,22 +57,6 @@ void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
 }
 
 SystemMenuButton::~SystemMenuButton() = default;
-
-std::unique_ptr<views::InkDrop> SystemMenuButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> SystemMenuButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::HOST_CENTERED, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-SystemMenuButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
 
 const char* SystemMenuButton::GetClassName() const {
   return "SystemMenuButton";

@@ -128,7 +128,11 @@ class TrayPopupUtils {
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
   // Common setup for various buttons in the system menu.
-  static void ConfigureTrayPopupButton(views::Button* button);
+  static void ConfigureTrayPopupButton(
+      views::Button* button,
+      TrayPopupInkDropStyle ink_drop_style = TrayPopupInkDropStyle::FILL_BOUNDS,
+      bool highlight_on_hover = false,
+      bool highlight_on_focus = false);
 
   // Sets up |view| to be a sticky header in a tray detail scroll view.
   static void ConfigureAsStickyHeader(views::View* view);
@@ -158,7 +162,9 @@ class TrayPopupUtils {
   // All targetable views in the system menu should delegate
   // InkDropHost::CreateInkDrop() calls here.
   static std::unique_ptr<views::InkDrop> CreateInkDrop(
-      views::InkDropHostView* host);
+      views::InkDropHostView* host,
+      bool highlight_on_hover = false,
+      bool highlight_on_focus = false);
 
   // Creates an InkDropRipple instance for |host| according to the
   // |ink_drop_style|. The ripple will be centered on |center_point|.
@@ -167,8 +173,7 @@ class TrayPopupUtils {
   // InkDropHost::CreateInkDropRipple() calls here.
   static std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
       TrayPopupInkDropStyle ink_drop_style,
-      const views::View* host,
-      const gfx::Point& center_point);
+      const views::InkDropHostView* host);
 
   // Creates in InkDropHighlight instance for |host|.
   //

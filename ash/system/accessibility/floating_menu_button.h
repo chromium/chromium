@@ -59,10 +59,6 @@ class FloatingMenuButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void OnThemeChanged() override;
 
  private:

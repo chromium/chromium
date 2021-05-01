@@ -116,22 +116,6 @@ void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-std::unique_ptr<views::InkDrop> FeaturePodIconButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple>
-FeaturePodIconButton::CreateInkDropRipple() const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-FeaturePodIconButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 void FeaturePodIconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
   node_data->SetName(GetTooltipText(gfx::Point()));
@@ -247,24 +231,6 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize() const {
   }
 
   return gfx::Size(width, height);
-}
-
-std::unique_ptr<views::InkDrop> FeaturePodLabelButton::CreateInkDrop() {
-  auto ink_drop = TrayPopupUtils::CreateInkDrop(this);
-  ink_drop->SetShowHighlightOnHover(true);
-  return ink_drop;
-}
-
-std::unique_ptr<views::InkDropRipple>
-FeaturePodLabelButton::CreateInkDropRipple() const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-FeaturePodLabelButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 const char* FeaturePodLabelButton::GetClassName() const {

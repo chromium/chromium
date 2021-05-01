@@ -37,10 +37,6 @@ class UnifiedSliderButton : public views::ImageButton {
   void SetToggled(bool toggled);
 
   // views::ImageButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;

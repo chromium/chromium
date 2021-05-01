@@ -112,6 +112,12 @@ InkDropHostView::GetCreateInkDropRippleCallback() const {
   return create_ink_drop_ripple_callback_;
 }
 
+gfx::Point InkDropHostView::GetInkDropCenterBasedOnLastEvent() const {
+  return GetEventHandler()->GetLastRippleTriggeringEvent()
+             ? GetEventHandler()->GetLastRippleTriggeringEvent()->location()
+             : GetMirroredRect(GetContentsBounds()).CenterPoint();
+}
+
 std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
     const {
   if (create_ink_drop_highlight_callback_)
@@ -289,12 +295,6 @@ std::unique_ptr<InkDropRipple> InkDropHostView::CreateSquareInkDropRipple(
 
 bool InkDropHostView::HasInkDrop() const {
   return !!ink_drop_;
-}
-
-gfx::Point InkDropHostView::GetInkDropCenterBasedOnLastEvent() const {
-  return GetEventHandler()->GetLastRippleTriggeringEvent()
-             ? GetEventHandler()->GetLastRippleTriggeringEvent()->location()
-             : GetMirroredRect(GetContentsBounds()).CenterPoint();
 }
 
 void InkDropHostView::InstallInkDropMask(ui::Layer* ink_drop_layer) {

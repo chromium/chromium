@@ -120,7 +120,8 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
   SetPreferredSize(kMediaButtonSize);
   SetAction(action, accessible_name);
 
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  TrayPopupUtils::ConfigureTrayPopupButton(
+      this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true);
   views::InstallCircleHighlightPathGenerator(this);
 }
 
@@ -131,25 +132,6 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
   set_tag(static_cast<int>(action));
   SetTooltipText(accessible_name);
   UpdateVectorIcon();
-}
-
-std::unique_ptr<views::InkDrop>
-UnifiedMediaControlsView::MediaActionButton::CreateInkDrop() {
-  auto ink_drop = TrayPopupUtils::CreateInkDrop(this);
-  ink_drop->SetShowHighlightOnHover(true);
-  return ink_drop;
-}
-
-std::unique_ptr<views::InkDropHighlight>
-UnifiedMediaControlsView::MediaActionButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
-std::unique_ptr<views::InkDropRipple>
-UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
 }
 
 void UnifiedMediaControlsView::MediaActionButton::OnThemeChanged() {

@@ -47,22 +47,6 @@ void TopShortcutButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-std::unique_ptr<views::InkDrop> TopShortcutButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> TopShortcutButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-TopShortcutButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 const char* TopShortcutButton::GetClassName() const {
   return "TopShortcutButton";
 }

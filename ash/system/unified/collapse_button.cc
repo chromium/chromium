@@ -48,22 +48,6 @@ void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
 }
 
-std::unique_ptr<views::InkDrop> CollapseButton::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> CollapseButton::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-CollapseButton::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(this);
-}
-
 const char* CollapseButton::GetClassName() const {
   return "CollapseButton";
 }
