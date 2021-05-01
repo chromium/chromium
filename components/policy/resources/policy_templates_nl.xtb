@@ -5667,7 +5667,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       '1412.24.34': alleen een update uitvoeren naar deze specifieke versie
 
       Waarschuwing: Het wordt niet aanbevolen versiebeperkingen te configureren, omdat gebruikers hierdoor mogelijk geen software-updates en essentiële beveiligingsoplossingen ontvangen. Als je updates beperkt tot een specifiek versievoorvoegsel, kunnen gebruikers gevaar lopen.</translation>
-<translation id="8510545352780142790">Hiermee zet je PCIe-tunneling uit. Alle mogelijkheden van ondersteunde Thunderbolt/USB4-randapparaten werken.</translation>
 <translation id="8519264904050090490">URL's van handmatige uitzonderingen voor beheerde gebruikers</translation>
 <translation id="8519516251436131647">Zet snelkoppelingen voor toegankelijkheidsfuncties aan.
 
@@ -5706,7 +5705,6 @@ Dit beleid wordt verwijderd in M75.</translation>
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden.</translation>
-<translation id="8599956038998209006">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor de apparaatmogelijkheden worden beperkt</translation>
 <translation id="8603454805657060638">Als je het beleid instelt, kan de beheerder het MAC-adres (Media Access Control) wijzigen als een apparaat wordt aangesloten op het dock. Bij sommige apparaatmodellen die op een dock zijn aangesloten, kan het MAC-adres van het toegewezen dock van het apparaat standaard worden gebruikt om het apparaat op ethernet te herkennen.
 
       Als DeviceDockMacAddress is geselecteerd of het beleid niet is ingesteld, wordt het toegewezen dock-MAC-adres van het apparaat gebruikt.

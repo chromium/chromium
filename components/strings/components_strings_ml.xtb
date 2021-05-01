@@ -1806,7 +1806,6 @@
 <translation id="7836231406687464395">പോസ്‌റ്റ്ഫിക്‌സ് (എൻവലപ്പ്)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7858035578849836010">ഫയൽ തര അസോസിയേഷനുകൾ ഉള്ള ഫയലുകൾ തുറക്കുക.</translation>
 <translation id="7862185352068345852">സൈറ്റ് വിടണോ?</translation>
 <translation id="7865448901209910068">ഏറ്റവും മികച്ച വേഗത</translation>
 <translation id="7874263914261512992">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, കൂടാതെ നിങ്ങൾ ഇപ്പോൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന മറ്റ് സൈറ്റുകൾ എന്നിവയ്‌ക്കായി നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>

@@ -5715,7 +5715,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       "1412.24.34": atualizar apenas para essa versão específica
 
       Aviso: não é recomendável configurar restrições de versão, porque elas podem impedir que os usuários recebam atualizações de software e correções de segurança críticas. Restringir as atualizações para um prefixo de versão específico pode colocar os usuários em risco.</translation>
-<translation id="8510545352780142790">Desativa o encapsulamento de PCIe. Dispositivos periféricos Thunderbolt/USB4 funcionarão perfeitamente</translation>
 <translation id="8519264904050090490">URLs de exceção manual do usuário gerenciado</translation>
 <translation id="8519516251436131647">Ative os atalhos de recursos de acessibilidade.
 
@@ -5754,7 +5753,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
-<translation id="8599956038998209006">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, limitando as capacidades do dispositivo</translation>
 <translation id="8603454805657060638">Se a política for definida, o administrador poderá mudar o endereço MAC (controle de acesso de mídia) ao conectar um dispositivo à base. Quando uma base estiver conectada a alguns modelos de dispositivo, por padrão, o endereço MAC designado da base para o dispositivo ajudará a identificá-lo na Ethernet.
 
       Se "DeviceDockMacAddress" for selecionada ou se a política não for definida, o endereço MAC designado da base para o dispositivo será usado.
