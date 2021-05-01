@@ -16,9 +16,13 @@ PooledSequencedTaskRunner::PooledSequencedTaskRunner(
       sequence_(MakeRefCounted<Sequence>(traits,
                                          this,
                                          TaskSourceExecutionMode::kSequenced)) {
+  recordreplay::RegisterPointer(this);
 }
 
-PooledSequencedTaskRunner::~PooledSequencedTaskRunner() = default;
+PooledSequencedTaskRunner::~PooledSequencedTaskRunner() {
+  recordreplay::Assert("~PooledSequencedTaskRunner %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
+}
 
 bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
                                                 OnceClosure closure,

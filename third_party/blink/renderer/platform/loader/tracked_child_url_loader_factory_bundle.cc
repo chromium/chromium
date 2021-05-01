@@ -138,11 +138,15 @@ HostChildURLLoaderFactoryBundle::HostChildURLLoaderFactoryBundle(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : observer_list_(std::make_unique<ObserverList>()),
       task_runner_(std::move(task_runner)) {
+  recordreplay::RegisterPointer(this);
   DCHECK(IsMainThread()) << "HostChildURLLoaderFactoryBundle should live "
                             "on the main renderer thread";
 }
 
-HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() = default;
+HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() {
+  recordreplay::Assert("~HostChildURLLoaderFactoryBundle %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
+}
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::Clone() {
