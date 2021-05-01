@@ -593,6 +593,8 @@ bool Animation::HasLowerCompositeOrdering(
       } else if (recordreplay::IsRecordingOrReplaying()) {
         int ida = recordreplay::PointerId(originating_element1);
         int idb = recordreplay::PointerId(originating_element2);
+        recordreplay::Diagnostic("Animation::HasLowerCompositeOrdering %d %d %p %p",
+                                 ida, idb, originating_element1, originating_element2);
         CHECK(ida && idb);
         return ida < idb;
       } else {
