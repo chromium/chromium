@@ -4,6 +4,7 @@
 
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 
+#include "base/record_replay.h"
 #include "base/sequence_token.h"
 
 namespace base {
