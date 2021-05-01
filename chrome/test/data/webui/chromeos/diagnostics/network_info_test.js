@@ -40,4 +40,11 @@ export function networkInfoTestSuite() {
           networkInfoElement.$$('#cardTitle'), 'Network');
     });
   });
+
+  test('WifiInfoPresent', () => {
+    return initializeNetworkInfo().then(() => {
+      const wifiInfoElement = networkInfoElement.$$('wifi-info');
+      assertTrue(!!wifiInfoElement);
+    });
+  });
 }

@@ -38,6 +38,7 @@ js_type_check("closure_compile") {
     ":routine_section_test",
     ":test_diagnostics_browser_proxy",
     ":text_badge_test",
+    ":wifi_info_test",
   ]
 }
 
@@ -307,5 +308,13 @@ js_library("text_badge_test") {
     "../..:chai_assert",
     "../..:test_util.m",
     "//chromeos/components/diagnostics_ui/resources:text_badge",
+  ]
+}
+
+js_library("wifi_info_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:wifi_info",
   ]
 }

@@ -38,6 +38,7 @@ js_type_check("closure_compile_module") {
     ":routine_result_list",
     ":routine_section",
     ":text_badge",
+    ":wifi_info",
   ]
 }
 
@@ -176,6 +177,7 @@ js_library("network_info") {
   deps = [
     ":diagnostics_card",
     ":diagnostics_types",
+    ":wifi_info",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -245,6 +247,12 @@ js_library("text_badge") {
   ]
 }
 
+js_library("wifi_info") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
@@ -266,5 +274,6 @@ html_to_js("web_components") {
     "routine_result_list.js",
     "routine_section.js",
     "text_badge.js",
+    "wifi_info.js",
   ]
 }

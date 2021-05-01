@@ -48,6 +48,7 @@
       <include name="IDR_DIAGNOSTICS_TEXT_BADGE_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/text_badge.js" resource_path="text_badge.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_TYPES_JS" file="diagnostics_types.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_UTILS_JS" file="diagnostics_utils.js" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_WIFI_INFO_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/wifi_info.js" resource_path="wifi_info.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_D3_SRC_D3_MIN_JS" file="../../../../third_party/d3/src/d3.min.js" resource_path="d3.min.js" type="BINDATA" />
     </includes>
   </release>
