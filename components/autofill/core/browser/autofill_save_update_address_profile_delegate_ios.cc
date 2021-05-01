@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -38,6 +39,23 @@ AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
              ? static_cast<AutofillSaveUpdateAddressProfileDelegateIOS*>(
                    delegate)
              : nullptr;
+}
+
+std::u16string
+AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress(
+    const std::string& ui_language_code) const {
+  return ::autofill::GetEnvelopeStyleAddress(profile_, ui_language_code,
+                                             /*include_country=*/true);
+}
+
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetPhoneNumber()
+    const {
+  return profile_.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
+}
+
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
+    const {
+  return profile_.GetRawInfo(EMAIL_ADDRESS);
 }
 
 std::u16string

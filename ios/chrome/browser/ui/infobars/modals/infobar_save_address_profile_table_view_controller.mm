@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
@@ -30,18 +31,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeNameHonorificPrefix = kItemTypeEnumZero,
-  ItemTypeNameFull,
-  ItemTypeCompanyName,
-  ItemTypeAddressHomeLine1,
-  ItemTypeAddressHomeLine2,
-  ItemTypeAddressHomeCity,
-  ItemTypeAddressHomeState,
-  ItemTypeAddressHomeZip,
-  ItemTypeAddressHomeCountry,
-  ItemTypePhoneHomeWholeNumber,
+  ItemTypeAddress = kItemTypeEnumZero,
+  ItemTypePhoneNumber,
   ItemTypeEmailAddress,
-  ItemTypeAddressProfileSave
+  ItemTypeAddressProfileSave,
 };
 
 @interface InfobarSaveAddressProfileTableViewController () <UITextFieldDelegate>
@@ -52,20 +45,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
 
-// Item for displaying and editing the name.
-@property(nonatomic, copy) NSString* name;
-// Item for displaying and editing the address line 1.
-@property(nonatomic, copy) NSString* addressline1;
-// Item for displaying and editing the address line 2.
-@property(nonatomic, copy) NSString* addressline2;
-// Item for displaying and editing the city.
-@property(nonatomic, copy) NSString* city;
-// Item for displaying and editing the state.
-@property(nonatomic, copy) NSString* state;
-// Item for displaying and editing the country.
-@property(nonatomic, copy) NSString* country;
-// Item for displaying and editing the zip code.
-@property(nonatomic, copy) NSString* zipCode;
+// Item for displaying and editing the address.
+@property(nonatomic, copy) NSString* address;
 // Item for displaying and editing the phone number.
 @property(nonatomic, copy) NSString* phoneNumber;
 // Item for displaying and editing the email address.
@@ -144,73 +125,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
 
-  // TODO(crbug.com/1167062): Update UI when mocks are ready.
+  // TODO(crbug.com/1167062): Add image icons for the fields.
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierFields];
 
-  TableViewTextEditItem* nameItem = [self textEditItemWithType:ItemTypeNameFull
-                                                 textFieldName:@""
-                                                textFieldValue:self.name
-                                              textFieldEnabled:NO];
-  [model addItem:nameItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* addressLine1Item =
-      [self textEditItemWithType:ItemTypeAddressHomeLine1
-                   textFieldName:@""
-                  textFieldValue:self.addressline1
-                textFieldEnabled:NO];
-  [model addItem:addressLine1Item
+  TableViewImageItem* addressImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeAddress];
+  addressImageItem.title = self.address;
+  [model addItem:addressImageItem
       toSectionWithIdentifier:SectionIdentifierFields];
 
-  TableViewTextEditItem* addressLine2Item =
-      [self textEditItemWithType:ItemTypeAddressHomeLine2
-                   textFieldName:@""
-                  textFieldValue:self.addressline2
-                textFieldEnabled:NO];
-  [model addItem:addressLine2Item
+  TableViewImageItem* emailImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeEmailAddress];
+  emailImageItem.title = self.emailAddress;
+  [model addItem:emailImageItem
       toSectionWithIdentifier:SectionIdentifierFields];
 
-  TableViewTextEditItem* cityItem =
-      [self textEditItemWithType:ItemTypeAddressHomeCity
-                   textFieldName:@""
-                  textFieldValue:self.city
-                textFieldEnabled:NO];
-  [model addItem:cityItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* stateItem =
-      [self textEditItemWithType:ItemTypeAddressHomeState
-                   textFieldName:@""
-                  textFieldValue:self.state
-                textFieldEnabled:NO];
-  [model addItem:stateItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* countryItem =
-      [self textEditItemWithType:ItemTypeAddressHomeCountry
-                   textFieldName:@""
-                  textFieldValue:self.country
-                textFieldEnabled:NO];
-  [model addItem:countryItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* zipItem =
-      [self textEditItemWithType:ItemTypeAddressHomeZip
-                   textFieldName:@""
-                  textFieldValue:self.zipCode
-                textFieldEnabled:NO];
-  [model addItem:zipItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* phoneItem =
-      [self textEditItemWithType:ItemTypePhoneHomeWholeNumber
-                   textFieldName:@""
-                  textFieldValue:self.phoneNumber
-                textFieldEnabled:NO];
-  [model addItem:phoneItem toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewTextEditItem* emailItem =
-      [self textEditItemWithType:ItemTypeEmailAddress
-                   textFieldName:@""
-                  textFieldValue:self.emailAddress
-                textFieldEnabled:NO];
-  [model addItem:emailItem toSectionWithIdentifier:SectionIdentifierFields];
+  TableViewImageItem* phoneImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypePhoneNumber];
+  phoneImageItem.title = self.phoneNumber;
+  [model addItem:phoneImageItem
+      toSectionWithIdentifier:SectionIdentifierFields];
 
   self.saveAddressProfileButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeAddressProfileSave];
@@ -237,6 +172,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeAddress) {
+    TableViewImageCell* managedcell =
+        base::mac::ObjCCastStrict<TableViewImageCell>(cell);
+    managedcell.textLabel.numberOfLines =
+        [[self.address componentsSeparatedByString:@"\n"] count];
   }
   return cell;
 }
@@ -244,13 +184,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - InfobarSaveAddressProfileModalConsumer
 
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
-  self.name = prefs[kNamePrefKey];
-  self.addressline1 = prefs[kAddressLine1PrefKey];
-  self.addressline2 = prefs[kAddressLine2PrefKey];
-  self.city = prefs[kCityPrefKey];
-  self.state = prefs[kStatePrefKey];
-  self.country = prefs[kCountryPrefKey];
-  self.zipCode = prefs[kZipPrefKey];
+  self.address = prefs[kAddressPrefKey];
   self.phoneNumber = prefs[kPhonePrefKey];
   self.emailAddress = prefs[kEmailPrefKey];
   self.currentAddressProfileSaved =

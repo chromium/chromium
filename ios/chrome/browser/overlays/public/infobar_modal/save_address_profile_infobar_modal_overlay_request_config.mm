@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 
@@ -25,50 +26,27 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
           infobar_->delegate());
-  profile_ = delegate->GetProfile();
+
+  address_ = delegate->GetEnvelopeStyleAddress(
+      GetApplicationContext()->GetApplicationLocale());
+  emailAddress_ = delegate->GetEmailAddress();
+  phoneNumber_ = delegate->GetPhoneNumber();
   current_address_profile_saved_ = infobar->accepted();
 }
 
 SaveAddressProfileModalRequestConfig::~SaveAddressProfileModalRequestConfig() =
     default;
 
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileName() const {
-  return profile_->GetRawInfo(autofill::NAME_FULL);
+std::u16string SaveAddressProfileModalRequestConfig::GetAddress() const {
+  return address_;
 }
 
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileAddressLine1()
-    const {
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE1);
+std::u16string SaveAddressProfileModalRequestConfig::GetPhoneNumber() const {
+  return phoneNumber_;
 }
 
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileAddressLine2()
-    const {
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE2);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileCity() const {
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_CITY);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileState() const {
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_STATE);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileCountry() const {
-  // TODO(crbug.com/1167062): Display country name instead of country code.
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileZip() const {
-  return profile_->GetRawInfo(autofill::ADDRESS_HOME_ZIP);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfilePhone() const {
-  return profile_->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER);
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetProfileEmail() const {
-  return profile_->GetRawInfo(autofill::EMAIL_ADDRESS);
+std::u16string SaveAddressProfileModalRequestConfig::GetEmailAddress() const {
+  return emailAddress_;
 }
 
 void SaveAddressProfileModalRequestConfig::CreateAuxiliaryData(

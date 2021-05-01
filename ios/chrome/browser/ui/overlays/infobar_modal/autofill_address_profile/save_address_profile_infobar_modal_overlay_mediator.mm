@@ -48,17 +48,9 @@ using save_address_profile_infobar_modal_responses::
     return;
 
   NSDictionary* prefs = @{
-    kNamePrefKey : base::SysUTF16ToNSString(config->GetProfileName()),
-    kAddressLine1PrefKey :
-        base::SysUTF16ToNSString(config->GetProfileAddressLine1()),
-    kAddressLine2PrefKey :
-        base::SysUTF16ToNSString(config->GetProfileAddressLine2()),
-    kCityPrefKey : base::SysUTF16ToNSString(config->GetProfileCity()),
-    kStatePrefKey : base::SysUTF16ToNSString(config->GetProfileState()),
-    kCountryPrefKey : base::SysUTF16ToNSString(config->GetProfileCountry()),
-    kZipPrefKey : base::SysUTF16ToNSString(config->GetProfileZip()),
-    kPhonePrefKey : base::SysUTF16ToNSString(config->GetProfilePhone()),
-    kEmailPrefKey : base::SysUTF16ToNSString(config->GetProfileEmail()),
+    kAddressPrefKey : base::SysUTF16ToNSString(config->GetAddress()),
+    kPhonePrefKey : base::SysUTF16ToNSString(config->GetPhoneNumber()),
+    kEmailPrefKey : base::SysUTF16ToNSString(config->GetEmailAddress()),
     kCurrentAddressProfileSavedPrefKey :
         @(config->current_address_profile_saved())
   };

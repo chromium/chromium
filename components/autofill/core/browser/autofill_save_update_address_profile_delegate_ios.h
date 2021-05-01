@@ -34,6 +34,10 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   static AutofillSaveUpdateAddressProfileDelegateIOS* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
+  std::u16string GetEnvelopeStyleAddress(
+      const std::string& ui_language_code) const;
+  std::u16string GetPhoneNumber() const;
+  std::u16string GetEmailAddress() const;
   std::u16string GetMessageDescriptionText() const;
   std::u16string GetMessageActionText() const;
   const autofill::AutofillProfile* GetProfile() const;

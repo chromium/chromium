@@ -10,10 +10,6 @@
 
 class InfoBarIOS;
 
-namespace autofill {
-class AutofillSaveAddressProfilePromptDelegateMobile;
-}
-
 namespace save_address_profile_infobar_overlays {
 
 // Configuration object for OverlayRequests for the modal UI for an infobar with
@@ -23,32 +19,14 @@ class SaveAddressProfileModalRequestConfig
  public:
   ~SaveAddressProfileModalRequestConfig() override;
 
-  // Returns full name stored in the |profile_|.
-  std::u16string GetProfileName() const;
-
-  // Returns address line 1 stored in the |profile_|.
-  std::u16string GetProfileAddressLine1() const;
-
-  // Returns address line 2 stored in the |profile_|.
-  std::u16string GetProfileAddressLine2() const;
-
-  // Returns city stored in the |profile_|.
-  std::u16string GetProfileCity() const;
-
-  // Returns state stored in the |profile_|.
-  std::u16string GetProfileState() const;
-
-  // Returns country stored in the |profile_|.
-  std::u16string GetProfileCountry() const;
-
-  // Returns zip code stored in the |profile_|.
-  std::u16string GetProfileZip() const;
+  // Returns the envelope style address from.
+  std::u16string GetAddress() const;
 
   // Returns phone number stored in the |profile_|.
-  std::u16string GetProfilePhone() const;
+  std::u16string GetPhoneNumber() const;
 
   // Returns email stored in the |profile_|.
-  std::u16string GetProfileEmail() const;
+  std::u16string GetEmailAddress() const;
 
   // Whether the current address profile is already saved.
   bool current_address_profile_saved() const {
@@ -65,8 +43,11 @@ class SaveAddressProfileModalRequestConfig
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
 
-  // Address Profile pointer.
-  const autofill::AutofillProfile* profile_ = nullptr;
+  // Configuration data extracted from |infobar_|'s save address profile
+  // delegate.
+  std::u16string address_;
+  std::u16string emailAddress_;
+  std::u16string phoneNumber_;
 
   // True if the address profile is saved.
   bool current_address_profile_saved_ = false;

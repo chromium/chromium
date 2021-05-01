@@ -9,13 +9,7 @@
 
 namespace {
 // Pref keys passed through setupModalViewControllerWithPrefs:.
-NSString* kNamePrefKey = @"NamePrefKey";
-NSString* kAddressLine1PrefKey = @"AddressLine1PrefKey";
-NSString* kAddressLine2PrefKey = @"AddressLine2PrefKey";
-NSString* kCityPrefKey = @"CityPrefKey";
-NSString* kStatePrefKey = @"StatePrefKey";
-NSString* kCountryPrefKey = @"CountryPrefKey";
-NSString* kZipPrefKey = @"ZipPrefKey";
+NSString* kAddressPrefKey = @"AddressPrefKey";
 NSString* kPhonePrefKey = @"PhonePrefKey";
 NSString* kEmailPrefKey = @"EmailPrefKey";
 NSString* kCurrentAddressProfileSavedPrefKey = @"currentAddressProfileSaved";
