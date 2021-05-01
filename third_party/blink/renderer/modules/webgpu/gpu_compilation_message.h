@@ -20,18 +20,24 @@ class GPUCompilationMessage : public ScriptWrappable {
       String message,
       WGPUCompilationMessageType type = WGPUCompilationMessageType_Error,
       uint64_t line_num = 0,
-      uint64_t line_pos = 0);
+      uint64_t line_pos = 0,
+      uint64_t offset = 0,
+      uint64_t length = 0);
 
   const String& message() const { return message_; }
   const String& type() const { return type_string_; }
   uint64_t lineNum() const { return line_num_; }
   uint64_t linePos() const { return line_pos_; }
+  uint64_t offset() const { return offset_; }
+  uint64_t length() const { return length_; }
 
  private:
   const String message_;
   String type_string_;
   const uint64_t line_num_;
   const uint64_t line_pos_;
+  const uint64_t offset_;
+  const uint64_t length_;
 
   DISALLOW_COPY_AND_ASSIGN(GPUCompilationMessage);
 };

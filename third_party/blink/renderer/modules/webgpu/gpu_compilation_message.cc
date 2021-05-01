@@ -9,8 +9,14 @@ namespace blink {
 GPUCompilationMessage::GPUCompilationMessage(String message,
                                              WGPUCompilationMessageType type,
                                              uint64_t line_num,
-                                             uint64_t line_pos)
-    : message_(message), line_num_(line_num), line_pos_(line_pos) {
+                                             uint64_t line_pos,
+                                             uint64_t offset,
+                                             uint64_t length)
+    : message_(message),
+      line_num_(line_num),
+      line_pos_(line_pos),
+      offset_(offset),
+      length_(length) {
   switch (type) {
     case WGPUCompilationMessageType_Error:
       type_string_ = "error";
