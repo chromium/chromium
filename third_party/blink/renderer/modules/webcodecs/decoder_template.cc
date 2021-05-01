@@ -303,10 +303,10 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     pending_request_ = request;
     initializing_sync_ = true;
 
-    SetHardwarePreference(pending_request_->hw_pref);
-
+    SetHardwarePreference(pending_request_->hw_pref.value());
     Traits::InitializeDecoder(
-        *decoder_, pending_request_->low_delay, *pending_request_->media_config,
+        *decoder_, pending_request_->low_delay.value(),
+        *pending_request_->media_config,
         WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
         WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
                            reset_generation_));
@@ -511,11 +511,12 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
     return;
   }
 
-  SetHardwarePreference(pending_request_->hw_pref);
+  if (!is_flush)
+    SetHardwarePreference(pending_request_->hw_pref.value());
 
   // Processing continues in OnInitializeDone().
   Traits::InitializeDecoder(
-      *decoder_, is_flush ? low_delay_ : pending_request_->low_delay,
+      *decoder_, is_flush ? low_delay_ : pending_request_->low_delay.value(),
       is_flush ? *active_config_ : *pending_request_->media_config,
       WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
       WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
@@ -554,7 +555,7 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
     Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
                              logger_->log());
 
-    low_delay_ = pending_request_->low_delay;
+    low_delay_ = pending_request_->low_delay.value();
     active_config_ = std::move(pending_request_->media_config);
     pending_request_.Release();
   }

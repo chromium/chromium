@@ -111,10 +111,11 @@ class MODULES_EXPORT DecoderTemplate
 
     Type type;
 
-    // For kConfigure Requests.
+    // For kConfigure Requests. Prefer base::Optional<> to ensure values are
+    // only accessed on the proper request type.
     std::unique_ptr<MediaConfigType> media_config;
-    HardwarePreference hw_pref = HardwarePreference::kAllow;
-    bool low_delay = false;
+    base::Optional<HardwarePreference> hw_pref;
+    base::Optional<bool> low_delay;
 
     // For kDecode Requests.
     scoped_refptr<media::DecoderBuffer> decoder_buffer;
