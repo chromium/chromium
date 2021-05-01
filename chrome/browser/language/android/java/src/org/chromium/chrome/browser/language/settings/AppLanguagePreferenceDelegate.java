@@ -144,6 +144,7 @@ public class AppLanguagePreferenceDelegate {
                                 mStackbarController, Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_TAB_CLOSE_UNDO)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
+        snackbar.setSingleLine(false);
         if (mSnackbarManager.canShowSnackbar()) {
             mSnackbarManager.showSnackbar(snackbar);
         } else {
