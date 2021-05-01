@@ -1303,7 +1303,7 @@ bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
                                          std::string* error) {
   // Cannot change tab highlight. This may for instance be due to user dragging
   // in progress.
-  if (!tabstrip->delegate()->CanHighlightTabs()) {
+  if (!tabstrip->delegate()->IsTabStripEditable()) {
     *error = tabs_constants::kCannotHighlightTabs;
     return false;
   }

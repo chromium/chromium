@@ -43,7 +43,7 @@ bool TestTabStripModelDelegate::CanDuplicateContentsAt(int index) {
   return false;
 }
 
-bool TestTabStripModelDelegate::CanHighlightTabs() {
+bool TestTabStripModelDelegate::IsTabStripEditable() {
   return true;
 }
 

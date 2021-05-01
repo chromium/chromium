@@ -904,7 +904,7 @@ void TabStripModel::ExtendSelectionTo(int index) {
 }
 
 bool TabStripModel::ToggleSelectionAt(int index) {
-  if (!delegate()->CanHighlightTabs())
+  if (!delegate()->IsTabStripEditable())
     return false;
   DCHECK(ContainsIndex(index));
   ui::ListSelectionModel new_model = selection_model();
