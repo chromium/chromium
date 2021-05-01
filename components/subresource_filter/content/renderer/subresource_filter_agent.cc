@@ -67,8 +67,8 @@ void SubresourceFilterAgent::Initialize() {
       SendSubframeWasCreatedByAdScript();
 
     // As this is the initial empty document, we won't have received any message
-    // from the browser and so we must calculate the ad status here.
-    SetIsAdSubframeIfNecessary();
+    // from the browser and so we must populate the ad evidence here.
+    SetAdEvidenceForInitialEmptySubframe();
   }
 
   // `render_frame()` can be null in unit tests.
@@ -156,9 +156,14 @@ bool SubresourceFilterAgent::IsAdSubframe() {
   return render_frame()->GetWebFrame()->IsAdSubframe();
 }
 
-void SubresourceFilterAgent::SetIsAdSubframe(
-    blink::mojom::AdFrameType ad_frame_type) {
-  render_frame()->GetWebFrame()->SetIsAdSubframe(ad_frame_type);
+void SubresourceFilterAgent::SetAdEvidence(
+    const blink::FrameAdEvidence& ad_evidence) {
+  render_frame()->GetWebFrame()->SetAdEvidence(ad_evidence);
+}
+
+const base::Optional<blink::FrameAdEvidence>&
+SubresourceFilterAgent::AdEvidence() {
+  return render_frame()->GetWebFrame()->AdEvidence();
 }
 
 // static
@@ -231,12 +236,13 @@ void SubresourceFilterAgent::OnSubresourceFilterAgentRequest(
 
 void SubresourceFilterAgent::ActivateForNextCommittedLoad(
     mojom::ActivationStatePtr activation_state,
-    blink::mojom::AdFrameType ad_frame_type) {
+    const base::Optional<blink::FrameAdEvidence>& ad_evidence) {
   activation_state_for_next_document_ = *activation_state;
   if (!IsMainFrame()) {
-    SetIsAdSubframe(ad_frame_type);
+    DCHECK(ad_evidence.has_value());
+    SetAdEvidence(ad_evidence.value());
   } else {
-    DCHECK_EQ(ad_frame_type, blink::mojom::AdFrameType::kNonAd);
+    DCHECK(!ad_evidence.has_value());
   }
 }
 
@@ -244,24 +250,19 @@ void SubresourceFilterAgent::OnDestruct() {
   delete this;
 }
 
-void SubresourceFilterAgent::SetIsAdSubframeIfNecessary() {
+void SubresourceFilterAgent::SetAdEvidenceForInitialEmptySubframe() {
   DCHECK(!IsAdSubframe());
+  DCHECK(!AdEvidence().has_value());
 
-  // TODO(alexmt): Store FrameAdEvidence on each frame, typically updated by the
-  // browser but also populated here when the browser has not informed the
-  // renderer.
   blink::FrameAdEvidence ad_evidence(IsParentAdSubframe());
   ad_evidence.set_created_by_ad_script(
       IsSubframeCreatedByAdScript()
           ? blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript
           : blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript);
   ad_evidence.set_is_complete();
+  SetAdEvidence(ad_evidence);
 
   if (ad_evidence.IndicatesAdSubframe()) {
-    blink::mojom::AdFrameType ad_frame_type =
-        ad_evidence.parent_is_ad() ? blink::mojom::AdFrameType::kChildAd
-                                   : blink::mojom::AdFrameType::kRootAd;
-    SetIsAdSubframe(ad_frame_type);
     SendFrameIsAdSubframe();
   }
 }

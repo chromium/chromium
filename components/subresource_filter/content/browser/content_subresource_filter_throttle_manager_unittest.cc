@@ -86,10 +86,10 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
       mojom::ActivationStatePtr activation_state,
-      blink::mojom::AdFrameType ad_frame_type =
-          blink::mojom::AdFrameType::kNonAd) override {
+      const base::Optional<blink::FrameAdEvidence>& ad_evidence) override {
     last_activation_ = std::move(activation_state);
-    is_ad_subframe_ = ad_frame_type != blink::mojom::AdFrameType::kNonAd;
+    is_ad_subframe_ =
+        ad_evidence.has_value() && ad_evidence->IndicatesAdSubframe();
   }
 
   // These methods reset state back to default when they are called.

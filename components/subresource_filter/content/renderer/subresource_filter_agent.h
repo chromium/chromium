@@ -87,18 +87,19 @@ class SubresourceFilterAgent
 
   // True if the frame has been heuristically determined to be an ad subframe.
   virtual bool IsAdSubframe();
-  virtual void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
 
-  // If the browser has not yet informed the renderer of the frame's ad status
-  // (i.e. due to an initial synchronous commit to about:blank), calculates
-  // whether the frame should be an ad by populating a temporary FrameAdEvidence
-  // object.
-  void SetIsAdSubframeIfNecessary();
+  virtual const base::Optional<blink::FrameAdEvidence>& AdEvidence();
+  virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence);
+
+  // The browser will not inform the renderer of the (sub)frame's ad status and
+  // evidence in the case of an initial synchronous commit to about:blank. We
+  // thus fill in the frame's ad evidence and, if necessary, tag it as an ad.
+  void SetAdEvidenceForInitialEmptySubframe();
 
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
       mojom::ActivationStatePtr activation_state,
-      blink::mojom::AdFrameType ad_frame_type) override;
+      const base::Optional<blink::FrameAdEvidence>& ad_evidence) override;
 
  private:
   // Returns the activation state for the `render_frame` to inherit. Main frames

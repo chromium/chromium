@@ -2412,6 +2412,21 @@ void LocalFrame::SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) {
   }
 }
 
+void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
+  DCHECK(!IsMainFrame());
+
+  if (ad_evidence_.has_value()) {
+    // Check that replacing with the new ad evidence doesn't violate invariants.
+    DCHECK_EQ(ad_evidence_->parent_is_ad(), ad_evidence.parent_is_ad());
+    DCHECK_LE(ad_evidence_->is_complete(), ad_evidence.is_complete());
+    DCHECK_LE(ad_evidence_->created_by_ad_script(),
+              ad_evidence.created_by_ad_script());
+    DCHECK_LE(ad_evidence_->most_restrictive_filter_list_result(),
+              ad_evidence.most_restrictive_filter_list_result());
+  }
+  ad_evidence_ = ad_evidence;
+}
+
 void LocalFrame::UpdateAdHighlight() {
   if (IsMainFrame())
     return;

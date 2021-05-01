@@ -60,6 +60,7 @@ class BLINK_COMMON_EXPORT FrameAdEvidence {
   // Should not be called once `is_complete()`.
   void set_created_by_ad_script(mojom::FrameCreationStackEvidence value) {
     DCHECK(!is_complete_);
+    DCHECK_LE(created_by_ad_script_, value);
     created_by_ad_script_ = value;
   }
 

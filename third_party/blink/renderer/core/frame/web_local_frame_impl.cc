@@ -846,10 +846,24 @@ bool WebLocalFrameImpl::IsAdSubframe() const {
   return GetFrame()->IsAdSubframe();
 }
 
-void WebLocalFrameImpl::SetIsAdSubframe(
-    blink::mojom::AdFrameType ad_frame_type) {
+void WebLocalFrameImpl::SetAdEvidence(
+    const blink::FrameAdEvidence& ad_evidence) {
   DCHECK(GetFrame());
+  GetFrame()->SetAdEvidence(ad_evidence);
+
+  // TODO(alexmt): Remove when AdFrameType is replaced.
+  blink::mojom::AdFrameType ad_frame_type = blink::mojom::AdFrameType::kNonAd;
+  if (ad_evidence.IndicatesAdSubframe()) {
+    ad_frame_type = ad_evidence.parent_is_ad()
+                        ? blink::mojom::AdFrameType::kChildAd
+                        : blink::mojom::AdFrameType::kRootAd;
+  }
   GetFrame()->SetIsAdSubframe(ad_frame_type);
+}
+
+const base::Optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
+  DCHECK(GetFrame());
+  return GetFrame()->AdEvidence();
 }
 
 bool WebLocalFrameImpl::IsSubframeCreatedByAdScript() {

@@ -34,6 +34,7 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace subresource_filter {
@@ -209,20 +210,22 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
       base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId());
   DCHECK(!is_ad_subframe || !navigation_handle->IsInMainFrame());
 
-  bool parent_is_ad =
-      frame_host->GetParent() &&
-      base::Contains(ad_frames_, frame_host->GetParent()->GetFrameTreeNodeId());
-
-  blink::mojom::AdFrameType ad_frame_type = blink::mojom::AdFrameType::kNonAd;
-  if (is_ad_subframe) {
-    ad_frame_type = parent_is_ad ? blink::mojom::AdFrameType::kChildAd
-                                 : blink::mojom::AdFrameType::kRootAd;
+  base::Optional<blink::FrameAdEvidence> ad_evidence;
+  if (!navigation_handle->IsInMainFrame()) {
+    ad_evidence = EnsureFrameAdEvidence(frame_host);
+    DCHECK_EQ(ad_evidence->IndicatesAdSubframe(), is_ad_subframe);
+    DCHECK_EQ(ad_evidence->parent_is_ad(),
+              base::Contains(ad_frames_,
+                             frame_host->GetParent()->GetFrameTreeNodeId()));
   }
 
   mojo::AssociatedRemote<mojom::SubresourceFilterAgent> agent;
   frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+
+  // TODO(crbug.com/1190189): Notify the renderer even when activation is
+  // disabled.
   agent->ActivateForNextCommittedLoad(filter->activation_state().Clone(),
-                                      ad_frame_type);
+                                      ad_evidence);
 }
 
 void ContentSubresourceFilterThrottleManager::DidFinishNavigation(

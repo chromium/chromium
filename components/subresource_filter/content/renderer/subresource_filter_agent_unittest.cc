@@ -78,9 +78,16 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
     OnSetSubresourceFilterForCurrentDocumentCalled();
   }
 
-  bool IsAdSubframe() override { return is_ad_subframe_; }
-  void SetIsAdSubframe(AdFrameType ad_frame_type) override {
-    is_ad_subframe_ = ad_frame_type != blink::mojom::AdFrameType::kNonAd;
+  bool IsAdSubframe() override {
+    return ad_evidence_ && ad_evidence_->is_complete() &&
+           ad_evidence_->IndicatesAdSubframe();
+  }
+
+  const base::Optional<blink::FrameAdEvidence>& AdEvidence() override {
+    return ad_evidence_;
+  }
+  void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override {
+    ad_evidence_ = ad_evidence;
   }
 
   blink::WebDocumentSubresourceFilter* filter() {
@@ -112,7 +119,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
 
   // Production can set this on the RenderFrame, which we intercept and store
   // here.
-  bool is_ad_subframe_ = false;
+  base::Optional<blink::FrameAdEvidence> ad_evidence_;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   mojom::ActivationState inherited_activation_state_for_new_document_;
 
@@ -222,7 +229,21 @@ class SubresourceFilterAgentTest : public ::testing::Test {
       AdFrameType ad_type = AdFrameType::kNonAd) {
     agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
     agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-    agent()->ActivateForNextCommittedLoad(state.Clone(), ad_type);
+
+    base::Optional<blink::FrameAdEvidence> ad_evidence;
+    if (!agent()->IsMainFrame()) {
+      // Generate an evidence object matching the `ad_type`.
+      ad_evidence = blink::FrameAdEvidence(ad_type == AdFrameType::kChildAd);
+      if (ad_type == AdFrameType::kRootAd) {
+        ad_evidence->set_created_by_ad_script(
+            blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+      }
+      ad_evidence->set_is_complete();
+    } else {
+      ASSERT_EQ(ad_type, AdFrameType::kNonAd);
+    }
+
+    agent()->ActivateForNextCommittedLoad(state.Clone(), ad_evidence);
     agent_as_rfo()->DidCreateNewDocument();
   }
 
@@ -511,8 +532,7 @@ TEST_F(SubresourceFilterAgentTest,
   mojom::ActivationStatePtr state = mojom::ActivationState::New();
   state->activation_level = mojom::ActivationLevel::kEnabled;
   state->measure_performance = true;
-  agent()->ActivateForNextCommittedLoad(std::move(state),
-                                        AdFrameType::kNonAd /* ad_type */);
+  agent()->ActivateForNextCommittedLoad(std::move(state), base::nullopt);
   agent_as_rfo()->DidFailProvisionalLoad();
   agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
   agent_as_rfo()->ReadyToCommitNavigation(nullptr);
@@ -827,24 +847,6 @@ TEST_F(
   agent()->Initialize();
   // SendSubframeWasCreatedByAdScript() is not sent from Initialize() since the
   // frame was not created by ad script.
-  ::testing::Mock::VerifyAndClearExpectations(agent());
-
-  // Call DidCreateNewDocument and verify that SendSubframeWasCreatedByAdScript
-  // is not called from there either.
-  EXPECT_CALL(*agent(), GetDocumentURL())
-      .WillOnce(::testing::Return(GURL("about:blank")));
-  agent_as_rfo()->DidCreateNewDocument();
-}
-
-TEST_F(SubresourceFilterAgentTest,
-       DryRun_SendSubframeWasCreatedByAdScriptNotSentFromMainFrame) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/true, /*is_provisional=*/false,
-                              /*is_parent_ad_subframe=*/false,
-                              /*is_subframe_created_by_ad_script=*/true);
-  ExpectSendSubframeWasCreatedByAdScript(0);
-  agent()->Initialize();
-  // SendSubframeWasCreatedByAdScript() is not sent from Initialize() since the
-  // frame is the main frame, even though it's created by ad script.
   ::testing::Mock::VerifyAndClearExpectations(agent());
 
   // Call DidCreateNewDocument and verify that SendSubframeWasCreatedByAdScript

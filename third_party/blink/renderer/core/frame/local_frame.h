@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
@@ -516,6 +517,17 @@ class CORE_EXPORT LocalFrame final
   // or, for LocalFrames created on behalf of OOPIF, just before commit
   // (ReadyToCommitNavigation time).
   void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
+
+  // Called by the embedder on creation of the initial empty document and, for
+  // all other documents, just before commit (ReadyToCommitNavigation time).
+  void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence);
+
+  // The evidence for or against a frame being an ad. `base::nullopt` if not yet
+  // set or if the frame is a top-level frame as only subframes can be tagged as
+  // ads.
+  const base::Optional<blink::FrameAdEvidence>& AdEvidence() const {
+    return ad_evidence_;
+  }
 
   bool IsSubframeCreatedByAdScript() const {
     return is_subframe_created_by_ad_script_;
@@ -1098,6 +1110,17 @@ class CORE_EXPORT LocalFrame final
 
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
+
+  // The evidence for or against a frame being an ad frame. `base::nullopt` if
+  // not yet set or if the frame is a top-level frame. (Only subframes can be
+  // tagged as ad frames.) This is per-frame (as opposed to per-document) as we
+  // want to decide whether a frame is an ad or not before commit, while the
+  // document has not yet been created.
+  //
+  // This is constructed directly in the renderer in the case of an initial
+  // synchronous commit and otherwise is signaled from the browser process at
+  // ready-to-commit time.
+  base::Optional<blink::FrameAdEvidence> ad_evidence_;
 
   // True if this frame is a subframe that had a script tagged as an ad on the
   // v8 stack at the time of creation. This is not currently propagated when a
