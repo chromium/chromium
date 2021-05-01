@@ -230,16 +230,16 @@ class InstallShortcutTest : public testing::Test {
     ASSERT_TRUE(fake_user_quick_launch_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_start_menu_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_common_start_menu_.CreateUniqueTempDir());
-    user_desktop_override_.reset(new base::ScopedPathOverride(
-        base::DIR_USER_DESKTOP, fake_user_desktop_.GetPath()));
-    common_desktop_override_.reset(new base::ScopedPathOverride(
-        base::DIR_COMMON_DESKTOP, fake_common_desktop_.GetPath()));
-    user_quick_launch_override_.reset(new base::ScopedPathOverride(
-        base::DIR_USER_QUICK_LAUNCH, fake_user_quick_launch_.GetPath()));
-    start_menu_override_.reset(new base::ScopedPathOverride(
-        base::DIR_START_MENU, fake_start_menu_.GetPath()));
-    common_start_menu_override_.reset(new base::ScopedPathOverride(
-        base::DIR_COMMON_START_MENU, fake_common_start_menu_.GetPath()));
+    user_desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_USER_DESKTOP, fake_user_desktop_.GetPath());
+    common_desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_COMMON_DESKTOP, fake_common_desktop_.GetPath());
+    user_quick_launch_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_USER_QUICK_LAUNCH, fake_user_quick_launch_.GetPath());
+    start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_START_MENU, fake_start_menu_.GetPath());
+    common_start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_COMMON_START_MENU, fake_common_start_menu_.GetPath());
 
     std::wstring shortcut_name(InstallUtil::GetShortcutName() +
                                installer::kLnkExt);

@@ -115,7 +115,7 @@ void InitialPreferences::InitializeFromCommandLine(
         cmd_line.GetSwitchValuePath(installer::switches::kInstallerData));
     InitializeFromFilePath(prefs_path);
   } else {
-    initial_dictionary_.reset(new base::DictionaryValue());
+    initial_dictionary_ = std::make_unique<base::DictionaryValue>();
   }
 
   DCHECK(initial_dictionary_.get());

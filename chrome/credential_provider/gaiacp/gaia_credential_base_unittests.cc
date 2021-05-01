@@ -7,6 +7,7 @@
 #include <sddl.h>  // For ConvertSidToStringSid()
 #include <wrl/client.h>
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "base/base64.h"
@@ -2674,10 +2675,10 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
   std::unique_ptr<base::WaitableEvent> generate_key_event;
 
   if (generate_public_key_result == 2)
-    get_key_event.reset(new base::WaitableEvent());
+    get_key_event = std::make_unique<base::WaitableEvent>();
 
   if (get_private_key_result == 2)
-    generate_key_event.reset(new base::WaitableEvent());
+    generate_key_event = std::make_unique<base::WaitableEvent>();
 
   if (get_key_event || generate_key_event) {
     fake_password_recovery_manager()->SetRequestTimeoutForTesting(
@@ -2725,7 +2726,7 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
   }
 
   if (generate_public_key_again_result == 2)
-    generate_key_event.reset(new base::WaitableEvent());
+    generate_key_event = std::make_unique<base::WaitableEvent>();
 
   if (generate_key_event) {
     fake_password_recovery_manager()->SetRequestTimeoutForTesting(
@@ -3186,7 +3187,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   std::unique_ptr<base::WaitableEvent> upload_device_details_key_event;
 
   if (fail_upload_device_details_timeout) {
-    upload_device_details_key_event.reset(new base::WaitableEvent());
+    upload_device_details_key_event = std::make_unique<base::WaitableEvent>();
 
     fake_gem_device_details_manager()->SetRequestTimeoutForTesting(
         base::TimeDelta::FromMilliseconds(50));

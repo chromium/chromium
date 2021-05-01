@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -68,7 +70,7 @@ void RawInputDataFetcher::StartMonitor() {
     return;
 
   if (!window_) {
-    window_.reset(new base::win::MessageWindow());
+    window_ = std::make_unique<base::win::MessageWindow>();
     if (!window_->Create(base::BindRepeating(
             &RawInputDataFetcher::HandleMessage, base::Unretained(this)))) {
       PLOG(ERROR) << "Failed to create the raw input window";

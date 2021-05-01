@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <wincodec.h>
 
+#include <memory>
 #include <thread>
 #include <utility>
 
@@ -947,8 +948,8 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
   }
 
   if (!photo_capabilities_.empty()) {
-    selected_photo_capability_.reset(
-        new CapabilityWin(photo_capabilities_.front()));
+    selected_photo_capability_ =
+        std::make_unique<CapabilityWin>(photo_capabilities_.front());
   }
 
   CapabilityList video_capabilities;
@@ -1065,8 +1066,8 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
     return;
   }
 
-  selected_video_capability_.reset(
-      new CapabilityWin(best_match_video_capability));
+  selected_video_capability_ =
+      std::make_unique<CapabilityWin>(best_match_video_capability);
 
   is_started_ = true;
 }
@@ -1309,7 +1310,7 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 
     const CapabilityWin best_match = GetBestMatchedPhotoCapability(
         current_source_media_type, requested_size, photo_capabilities_);
-    selected_photo_capability_.reset(new CapabilityWin(best_match));
+    selected_photo_capability_ = std::make_unique<CapabilityWin>(best_match);
   }
 
   if (camera_control_ && video_control_) {

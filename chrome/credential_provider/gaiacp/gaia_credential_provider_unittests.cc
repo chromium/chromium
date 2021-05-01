@@ -8,6 +8,7 @@
 #include <credentialprovider.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
@@ -50,9 +51,9 @@ void GcpCredentialProviderTest::SetCloudPoliciesForUser(
     const std::wstring& sid,
     const UserPolicies policies) {
   if (!fake_user_policies_manager_)
-    fake_user_policies_manager_.reset(new FakeUserPoliciesManager());
+    fake_user_policies_manager_ = std::make_unique<FakeUserPoliciesManager>();
   if (!fake_token_generator_)
-    fake_token_generator_.reset(new FakeTokenGenerator());
+    fake_token_generator_ = std::make_unique<FakeTokenGenerator>();
 
   // Ensure user has policies and valid GCPW token.
   fake_user_policies_manager_->SetUserPolicies(sid, policies);

@@ -163,9 +163,9 @@ TEST(ThirdParty, LogNotifications) {
   // Set up the required arguments for the test thread.
   NotificationHandlerArguments handler_data;
   handler_data.logs_expected = base::size(kTestLogs);
-  handler_data.notification_event.reset(
-      new base::WaitableEvent(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED));
+  handler_data.notification_event = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   // Register the event.
   ASSERT_TRUE(

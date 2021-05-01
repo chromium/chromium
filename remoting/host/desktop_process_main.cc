@@ -83,9 +83,10 @@ int DesktopProcessMain() {
   auto lock_workstation_closure = base::BindRepeating(
       &DesktopProcess::LockWorkstation, base::Unretained(&desktop_process));
 
-  desktop_environment_factory.reset(new SessionDesktopEnvironmentFactory(
-      ui_task_runner, video_capture_task_runner, input_task_runner,
-      ui_task_runner, inject_sas_closure, lock_workstation_closure));
+  desktop_environment_factory =
+      std::make_unique<SessionDesktopEnvironmentFactory>(
+          ui_task_runner, video_capture_task_runner, input_task_runner,
+          ui_task_runner, inject_sas_closure, lock_workstation_closure);
 #else  // !defined(OS_WIN)
   desktop_environment_factory.reset(new Me2MeDesktopEnvironmentFactory(
       ui_task_runner, video_capture_task_runner, input_task_runner,

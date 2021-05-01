@@ -660,11 +660,11 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     // The new process runs at an elevated level due to being granted uiAccess.
     // |parent_window_handle| can be used to position dialog windows but is not
     // currently used.
-    elevated_host_.reset(new ElevatedNativeMessagingHost(
+    elevated_host_ = std::make_unique<ElevatedNativeMessagingHost>(
         binary_path.DirName().Append(kElevatedHostBinaryName),
         /*parent_window_handle=*/0,
         /*elevate_process=*/false,
-        /*host_timeout=*/base::TimeDelta(), client_));
+        /*host_timeout=*/base::TimeDelta(), client_);
   }
 
   if (elevated_host_->EnsureElevatedHostCreated() ==

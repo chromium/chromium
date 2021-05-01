@@ -222,8 +222,8 @@ class ProcessSingletonTest : public base::MultiProcessTest {
 
     // The ready event has been signalled - the process singleton is held by
     // the hung sub process.
-    test_singleton_.reset(new ProcessSingleton(
-        user_data_dir(), base::BindRepeating(&NotificationCallback)));
+    test_singleton_ = std::make_unique<ProcessSingleton>(
+        user_data_dir(), base::BindRepeating(&NotificationCallback));
 
     test_singleton_->OverrideShouldKillRemoteProcessCallbackForTesting(
         base::BindRepeating(&ProcessSingletonTest::MockShouldKillRemoteProcess,

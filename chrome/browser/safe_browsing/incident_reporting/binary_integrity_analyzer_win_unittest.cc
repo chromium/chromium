@@ -68,8 +68,8 @@ BinaryIntegrityAnalyzerWinTest::BinaryIntegrityAnalyzerWinTest() {
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_))
     NOTREACHED();
 
-  exe_dir_override_.reset(
-      new base::ScopedPathOverride(base::DIR_EXE, temp_dir_.GetPath()));
+  exe_dir_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_EXE, temp_dir_.GetPath());
 }
 
 TEST_F(BinaryIntegrityAnalyzerWinTest, GetCriticalBinariesPath) {
@@ -124,7 +124,7 @@ TEST_F(BinaryIntegrityAnalyzerWinTest, VerifyBinaryIntegrity) {
   // Run check on an infected binary.
   ASSERT_TRUE(EraseFileContent(chrome_elf_path));
 
-  mock_receiver.reset(new StrictMock<MockIncidentReceiver>());
+  mock_receiver = std::make_unique<StrictMock<MockIncidentReceiver>>();
   std::unique_ptr<Incident> incident;
   EXPECT_CALL(*mock_receiver, DoAddIncidentForProcess(_))
       .WillOnce(TakeIncident(&incident));

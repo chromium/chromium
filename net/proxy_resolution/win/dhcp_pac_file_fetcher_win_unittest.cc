@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -200,8 +201,8 @@ TEST(DhcpPacFileFetcherWin, RealFetchWithDeferredCancel) {
   // introduces a guaranteed 20 ms delay on the worker threads so that
   // the cancel is called before they complete.
   RealFetchTester fetcher;
-  fetcher.fetcher_.reset(
-      new DelayingDhcpPacFileFetcherWin(fetcher.context_.get()));
+  fetcher.fetcher_ =
+      std::make_unique<DelayingDhcpPacFileFetcherWin>(fetcher.context_.get());
   fetcher.on_completion_is_error_ = true;
   fetcher.RunTestWithDeferredCancel();
   fetcher.WaitUntilDone();

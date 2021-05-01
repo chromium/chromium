@@ -67,7 +67,7 @@ bool GetTokenAppContainerSid(HANDLE token_handle,
           app_container_info.data());
   if (!info->TokenAppContainer)
     return false;
-  *app_container_sid = std::unique_ptr<Sid>(new Sid(info->TokenAppContainer));
+  *app_container_sid = std::make_unique<Sid>(info->TokenAppContainer);
   return true;
 }
 
@@ -299,9 +299,9 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
     return ret;
   }
 
-  ipc_server_.reset(new SharedMemIPCServer(
+  ipc_server_ = std::make_unique<SharedMemIPCServer>(
       sandbox_process_info_.process_handle(),
-      sandbox_process_info_.process_id(), thread_pool_, ipc_dispatcher));
+      sandbox_process_info_.process_id(), thread_pool_, ipc_dispatcher);
 
   if (!ipc_server_->Init(shared_memory, shared_IPC_size, kIPCChannelSize))
     return SBOX_ERROR_NO_SPACE;

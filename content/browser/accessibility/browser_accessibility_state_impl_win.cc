@@ -130,8 +130,8 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
       new WindowsAccessibilityEnabler());
 
-  singleton_hwnd_observer_.reset(
-      new gfx::SingletonHwndObserver(base::BindRepeating(&OnWndProc)));
+  singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+      base::BindRepeating(&OnWndProc));
 }
 
 void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {

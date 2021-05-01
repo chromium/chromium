@@ -85,8 +85,8 @@ StorageMonitorWinTest::~StorageMonitorWinTest() {
 
 void StorageMonitorWinTest::SetUp() {
   volume_mount_watcher_ = new TestVolumeMountWatcherWin;
-  monitor_.reset(new TestStorageMonitorWin(volume_mount_watcher_,
-                                           new TestPortableDeviceWatcherWin));
+  monitor_ = std::make_unique<TestStorageMonitorWin>(
+      volume_mount_watcher_, new TestPortableDeviceWatcherWin);
 
   monitor_->Init();
   content::RunAllTasksUntilIdle();
@@ -118,8 +118,8 @@ void StorageMonitorWinTest::PreAttachDevices() {
       expect_attach_calls++;
   }
 
-  monitor_.reset(new TestStorageMonitorWin(volume_mount_watcher_,
-                                           new TestPortableDeviceWatcherWin));
+  monitor_ = std::make_unique<TestStorageMonitorWin>(
+      volume_mount_watcher_, new TestPortableDeviceWatcherWin);
 
   monitor_->AddObserver(&observer_);
   monitor_->Init();

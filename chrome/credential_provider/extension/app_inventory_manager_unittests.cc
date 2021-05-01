@@ -4,6 +4,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/base_paths_win.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
@@ -203,7 +205,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
 
     if (has_app_data) {
       std::unique_ptr<base::Value> request_dict_1;
-      request_dict_1.reset(new base::Value(base::Value::Type::DICTIONARY));
+      request_dict_1 =
+          std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
       request_dict_1->SetStringKey(kAppDisplayName,
                                    base::WideToUTF8(kAppDisplayName1));
       request_dict_1->SetStringKey(kAppDisplayVersion,
@@ -216,7 +219,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
           base::Value::FromUniquePtrValue(std::move(request_dict_1)));
 
       std::unique_ptr<base::Value> request_dict_2;
-      request_dict_2.reset(new base::Value(base::Value::Type::DICTIONARY));
+      request_dict_2 =
+          std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
       request_dict_2->SetStringKey(kAppDisplayName,
                                    base::WideToUTF8(kAppDisplayName2));
       request_dict_2->SetStringKey(kAppDisplayVersion,

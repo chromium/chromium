@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/jumplist.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -269,7 +270,7 @@ JumpList::JumpList(Profile* profile)
   tab_restore_service->AddObserver(this);
 
   // kIncognitoModeAvailability is monitored for changes on Incognito mode.
-  pref_change_registrar_.reset(new PrefChangeRegistrar);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   // base::Unretained is safe since |this| is guaranteed to outlive
   // pref_change_registrar_.

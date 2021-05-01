@@ -402,9 +402,10 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
 
   if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    webgpu_gr_context_.reset(new skia_bindings::GrContextForWebGPUInterface(
-        webgpu_interface_.get(), ContextSupport(), ContextCapabilities(),
-        max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+    webgpu_gr_context_ =
+        std::make_unique<skia_bindings::GrContextForWebGPUInterface>(
+            webgpu_interface_.get(), ContextSupport(), ContextCapabilities(),
+            max_resource_cache_bytes, max_glyph_cache_texture_bytes);
     cache_controller_->SetGrContext(webgpu_gr_context_->get());
     return webgpu_gr_context_->get();
 #else

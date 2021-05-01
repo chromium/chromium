@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/base_paths.h"
@@ -48,7 +49,7 @@ class ProfileShortcutManagerTest : public testing::Test {
   void SetUp() override {
     TestingBrowserProcess* browser_process =
         TestingBrowserProcess::GetGlobal();
-    profile_manager_.reset(new TestingProfileManager(browser_process));
+    profile_manager_ = std::make_unique<TestingProfileManager>(browser_process);
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_attributes_storage_ =
         profile_manager_->profile_attributes_storage();

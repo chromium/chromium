@@ -4,6 +4,7 @@
 
 #include <wrl/event.h>
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -112,13 +113,11 @@ class OnScreenKeyboardTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip> CreateTabTip() {
-    return std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip>(
-        new OnScreenKeyboardDisplayManagerTabTip(nullptr));
+    return std::make_unique<OnScreenKeyboardDisplayManagerTabTip>(nullptr);
   }
 
   std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane> CreateInputPane() {
-    return std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane>(
-        new OnScreenKeyboardDisplayManagerInputPane(nullptr));
+    return std::make_unique<OnScreenKeyboardDisplayManagerInputPane>(nullptr);
   }
 
   void WaitForEventsWithTimeDelay(int64_t time_delta_ms = 10) {

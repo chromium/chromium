@@ -36,10 +36,10 @@ std::unique_ptr<base::win::ScopedCOMInitializer> CreateComInitializer(
     AutoThread::ComInitType type) {
   std::unique_ptr<base::win::ScopedCOMInitializer> initializer;
   if (type == AutoThread::COM_INIT_MTA) {
-    initializer.reset(new base::win::ScopedCOMInitializer(
-        base::win::ScopedCOMInitializer::kMTA));
+    initializer = std::make_unique<base::win::ScopedCOMInitializer>(
+        base::win::ScopedCOMInitializer::kMTA);
   } else if (type == AutoThread::COM_INIT_STA) {
-    initializer.reset(new base::win::ScopedCOMInitializer());
+    initializer = std::make_unique<base::win::ScopedCOMInitializer>();
   }
   return initializer;
 }

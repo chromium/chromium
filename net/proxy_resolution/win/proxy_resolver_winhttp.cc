@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <winhttp.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -223,7 +225,7 @@ int ProxyResolverFactoryWinHttp::CreateProxyResolver(
     std::unique_ptr<ProxyResolver>* resolver,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request) {
-  resolver->reset(new ProxyResolverWinHttp(pac_script));
+  *resolver = std::make_unique<ProxyResolverWinHttp>(pac_script);
   return OK;
 }
 

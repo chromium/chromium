@@ -14,6 +14,7 @@
 #include <userenv.h>
 #include <winspool.h>
 
+#include <memory>
 #include <string>
 
 #include "base/at_exit.h"
@@ -669,7 +670,7 @@ MONITOR2* WINAPI InitializePrintMonitor2(MONITORINIT*, HANDLE* handle) {
   *handle = monitor_data;
   if (!cloud_print::kIsUnittest) {
     // Unit tests set up their own AtExitManager
-    monitor_data->at_exit_manager.reset(new base::AtExitManager());
+    monitor_data->at_exit_manager = std::make_unique<base::AtExitManager>();
     // Single spooler.exe handles verbose users.
     base::PathService::DisableCache();
   }

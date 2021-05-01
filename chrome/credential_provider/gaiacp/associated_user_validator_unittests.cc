@@ -4,6 +4,7 @@
 
 #include "chrome/credential_provider/gaiacp/stdafx.h"
 
+#include <memory>
 #include <string>
 
 #include "base/guid.h"
@@ -101,9 +102,9 @@ void AssociatedUserValidatorTest::SetUp() {
 void AssociatedUserValidatorTest::CreateDefaultCloudPoliciesForUser(
     const std::wstring& sid) {
   if (!fake_user_policies_manager_)
-    fake_user_policies_manager_.reset(new FakeUserPoliciesManager());
+    fake_user_policies_manager_ = std::make_unique<FakeUserPoliciesManager>();
   if (!fake_token_generator_)
-    fake_token_generator_.reset(new FakeTokenGenerator());
+    fake_token_generator_ = std::make_unique<FakeTokenGenerator>();
 
   // Ensure user has policies and valid GCPW token.
   fake_user_policies_manager_->SetUserPolicyStaleOrMissing(sid, false);

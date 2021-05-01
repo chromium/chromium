@@ -1261,7 +1261,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   }
 
 #if defined(OS_WIN)
-  system_message_window_.reset(new media::SystemMessageWindowWin);
+  system_message_window_ = std::make_unique<media::SystemMessageWindowWin>();
 #elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
 #elif defined(OS_MAC)

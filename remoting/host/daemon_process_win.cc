@@ -243,7 +243,8 @@ void DaemonProcessWin::LaunchNetworkProcess() {
 
   std::unique_ptr<UnprivilegedProcessDelegate> delegate(
       new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));
-  network_launcher_.reset(new WorkerProcessLauncher(std::move(delegate), this));
+  network_launcher_ =
+      std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(

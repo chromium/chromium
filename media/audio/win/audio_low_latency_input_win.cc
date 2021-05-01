@@ -516,9 +516,9 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   // Create and start the thread that will drive the capturing by waiting for
   // capture events.
   DCHECK(!capture_thread_.get());
-  capture_thread_.reset(new base::DelegateSimpleThread(
+  capture_thread_ = std::make_unique<base::DelegateSimpleThread>(
       this, "wasapi_capture_thread",
-      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO)));
+      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO));
   capture_thread_->Start();
 
   // Start streaming data between the endpoint buffer and the audio engine.
@@ -787,8 +787,8 @@ void WASAPIAudioInputStream::Run() {
     ++buffers_required;
 
   DCHECK(!fifo_);
-  fifo_.reset(new AudioBlockFifo(input_format_.Format.nChannels,
-                                 packet_size_frames_, buffers_required));
+  fifo_ = std::make_unique<AudioBlockFifo>(
+      input_format_.Format.nChannels, packet_size_frames_, buffers_required);
   DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
 
   bool recording = true;
@@ -1439,7 +1439,7 @@ void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
                                output_layout, output_format_.nSamplesPerSec,
                                packet_size_frames_);
 
-  converter_.reset(new AudioConverter(input, output, false));
+  converter_ = std::make_unique<AudioConverter>(input, output, false);
   converter_->AddInput(this);
   converter_->PrimeWithSilence();
   convert_bus_ = AudioBus::Create(output);

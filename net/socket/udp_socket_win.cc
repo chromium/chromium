@@ -7,6 +7,8 @@
 #include <mstcpip.h>
 #include <winsock2.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -438,7 +440,7 @@ int UDPSocketWin::SendToOrWrite(IOBuffer* buf,
     return nwrite;
 
   if (address)
-    send_to_address_.reset(new IPEndPoint(*address));
+    send_to_address_ = std::make_unique<IPEndPoint>(*address);
   write_callback_ = std::move(callback);
   return ERR_IO_PENDING;
 }
@@ -480,7 +482,7 @@ int UDPSocketWin::InternalConnect(const IPEndPoint& address) {
   if (rv < 0)
     return MapSystemError(WSAGetLastError());
 
-  remote_address_.reset(new IPEndPoint(address));
+  remote_address_ = std::make_unique<IPEndPoint>(address);
 
   if (dscp_manager_)
     dscp_manager_->PrepareForSend(*remote_address_.get());

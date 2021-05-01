@@ -208,7 +208,7 @@ void TestLogCollector::SetUp() {
   if (!log_temp_dir_.CreateUniqueTempDir()) {
     LOG(ERROR) << "Failed to create temporary directory to hold log files.";
   } else {
-    file_logger_.reset(new FileLogger());
+    file_logger_ = std::make_unique<FileLogger>();
     file_logger_->Initialize();
   }
 }

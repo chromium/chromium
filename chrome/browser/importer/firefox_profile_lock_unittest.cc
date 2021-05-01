@@ -92,12 +92,12 @@ TEST_F(FirefoxProfileLockTest, ProfileLockContention) {
 
   std::unique_ptr<FirefoxProfileLock> lock1;
   EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock1.get());
-  lock1.reset(new FirefoxProfileLock(test_path));
+  lock1 = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_TRUE(lock1->HasAcquired());
 
   std::unique_ptr<FirefoxProfileLock> lock2;
   EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock2.get());
-  lock2.reset(new FirefoxProfileLock(test_path));
+  lock2 = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_FALSE(lock2->HasAcquired());
 
   lock1->Unlock();

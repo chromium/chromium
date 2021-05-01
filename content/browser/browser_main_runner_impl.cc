@@ -91,7 +91,7 @@ int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
     // Ole must be initialized before starting message pump, so that TSF
     // (Text Services Framework) module can interact with the message pump
     // on Windows 8 Metro mode.
-    ole_initializer_.reset(new ui::ScopedOleInitializer);
+    ole_initializer_ = std::make_unique<ui::ScopedOleInitializer>();
 #endif  // OS_WIN
 
     gfx::InitializeFonts();

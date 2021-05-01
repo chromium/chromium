@@ -83,7 +83,7 @@ class DeviceMonitorMessageWindow {
   }
 
   bool Init() {
-    window_.reset(new base::win::MessageWindow());
+    window_ = std::make_unique<base::win::MessageWindow>();
     if (!window_->CreateNamed(
             base::BindRepeating(&DeviceMonitorMessageWindow::HandleMessage,
                                 base::Unretained(this)),

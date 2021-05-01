@@ -2469,8 +2469,9 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
 #elif defined(OS_WIN)
     if (GetInputMethod()) {
       if (!virtual_keyboard_controller_win_) {
-        virtual_keyboard_controller_win_.reset(
-            new VirtualKeyboardControllerWin(this, GetInputMethod()));
+        virtual_keyboard_controller_win_ =
+            std::make_unique<VirtualKeyboardControllerWin>(this,
+                                                           GetInputMethod());
       }
       virtual_keyboard_controller_win_->UpdateTextInputState(state);
     }

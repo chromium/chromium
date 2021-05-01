@@ -76,8 +76,8 @@ class ChromeCleanerTestSuite : public base::TestSuite {
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
-    scoped_logging.reset(new chrome_cleaner::ScopedLogging(
-        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix : L""));
+    scoped_logging = std::make_unique<chrome_cleaner::ScopedLogging>(
+        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix : L"");
   }
 
  private:

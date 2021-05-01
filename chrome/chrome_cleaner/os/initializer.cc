@@ -4,6 +4,7 @@
 
 #include "chrome/chrome_cleaner/os/initializer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -35,8 +36,8 @@ std::unique_ptr<base::WaitableEvent> SignalInitializationDone() {
 
   std::unique_ptr<base::WaitableEvent> notifier_event;
   if (init_done_notifier.IsValid()) {
-    notifier_event.reset(
-        new base::WaitableEvent(std::move(init_done_notifier)));
+    notifier_event =
+        std::make_unique<base::WaitableEvent>(std::move(init_done_notifier));
 
     // Wake up the test that is waiting on this event.
     notifier_event->Signal();

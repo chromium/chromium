@@ -4,6 +4,8 @@
 
 #include "chrome/browser/themes/theme_helper_win.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/win/windows_version.h"
@@ -32,8 +34,8 @@ ThemeHelperWin::ThemeHelperWin() {
   // use, so that it will be correct if at any time the user switches to the
   // native frame.
   if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    dwm_key_.reset(new base::win::RegKey(
-        HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\DWM", KEY_READ));
+    dwm_key_ = std::make_unique<base::win::RegKey>(
+        HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\DWM", KEY_READ);
     if (dwm_key_->Valid())
       OnDwmKeyUpdated();
     else

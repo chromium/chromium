@@ -13,6 +13,7 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -66,7 +67,7 @@ bool AudioCapturerWin::Start(const PacketCapturedCallback& callback) {
   // be reset or restarted in ResetAndInitialize() function. Which means we
   // expect the audio_device_period_ is a system wide configuration, it would
   // not be changed with the default audio device.
-  capture_timer_.reset(new base::RepeatingTimer());
+  capture_timer_ = std::make_unique<base::RepeatingTimer>();
   capture_timer_->Start(FROM_HERE, audio_device_period_, this,
                         &AudioCapturerWin::DoCapture);
   return true;
@@ -109,8 +110,8 @@ bool AudioCapturerWin::Initialize() {
     return false;
   }
 
-  default_device_detector_.reset(
-      new DefaultAudioDeviceChangeDetector(mm_device_enumerator));
+  default_device_detector_ =
+      std::make_unique<DefaultAudioDeviceChangeDetector>(mm_device_enumerator);
 
   // Get the audio endpoint.
   hr = mm_device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole,

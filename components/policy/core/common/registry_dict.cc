@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/registry_dict.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -250,8 +251,8 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
     switch (it.Type()) {
       case REG_SZ:
       case REG_EXPAND_SZ:
-        SetValue(name, std::unique_ptr<base::Value>(
-                           new base::Value(base::WideToUTF8(it.Value()))));
+        SetValue(name,
+                 std::make_unique<base::Value>(base::WideToUTF8(it.Value())));
         continue;
       case REG_DWORD_LITTLE_ENDIAN:
       case REG_DWORD_BIG_ENDIAN:
@@ -261,8 +262,8 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
             dword_value = base::NetToHost32(dword_value);
           else
             dword_value = base::ByteSwapToLE32(dword_value);
-          SetValue(name, std::unique_ptr<base::Value>(
-                             new base::Value(static_cast<int>(dword_value))));
+          SetValue(name, std::make_unique<base::Value>(
+                             static_cast<int>(dword_value)));
           continue;
         }
         FALLTHROUGH;

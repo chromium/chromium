@@ -771,7 +771,7 @@ bool DnsConfigServiceWin::StartWatching() {
   if (!hosts_reader_)
     hosts_reader_ = base::MakeRefCounted<HostsReader>(*this);
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
-  watcher_.reset(new Watcher(*this));
+  watcher_ = std::make_unique<Watcher>(*this);
   return watcher_->Watch();
 }
 

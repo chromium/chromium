@@ -13,6 +13,8 @@
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -247,7 +249,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     }
   }
 
-  request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
+  request_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   request_dict_->SetStringKey(
       kUploadDeviceDetailsRequestSerialNumberParameterName,
       base::WideToUTF8(serial_number));

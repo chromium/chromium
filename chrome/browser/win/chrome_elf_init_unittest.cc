@@ -32,12 +32,12 @@ class ChromeBlacklistTrialTest : public testing::Test {
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 
-    blacklist_registry_key_.reset(
-        new base::win::RegKey(HKEY_CURRENT_USER,
-                              install_static::GetRegistryPath()
-                                  .append(blacklist::kRegistryBeaconKeyName)
-                                  .c_str(),
-                              KEY_QUERY_VALUE | KEY_SET_VALUE));
+    blacklist_registry_key_ = std::make_unique<base::win::RegKey>(
+        HKEY_CURRENT_USER,
+        install_static::GetRegistryPath()
+            .append(blacklist::kRegistryBeaconKeyName)
+            .c_str(),
+        KEY_QUERY_VALUE | KEY_SET_VALUE);
   }
 
   DWORD GetBlacklistState() {

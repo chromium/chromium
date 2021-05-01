@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -43,7 +44,8 @@ class AudioManagerHelper {
   // This should be called before creating an AudioManager in tests to ensure
   // that the creating thread is COM initialized.
   void InitializeCOMForTesting() {
-    com_initializer_for_testing_.reset(new base::win::ScopedCOMInitializer());
+    com_initializer_for_testing_ =
+        std::make_unique<base::win::ScopedCOMInitializer>();
   }
 #endif
 

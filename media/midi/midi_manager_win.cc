@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -633,7 +634,7 @@ MidiManagerWin::PortManager::HandleMidiInCallback(HMIDIIN hmi,
   if (IsRunningInsideMidiInGetNumDevs())
     GetTaskLock()->AssertAcquired();
   else
-    task_lock.reset(new base::AutoLock(*GetTaskLock()));
+    task_lock = std::make_unique<base::AutoLock>(*GetTaskLock());
   {
     base::AutoLock lock(*GetInstanceIdLock());
     if (instance_id != g_active_instance_id)

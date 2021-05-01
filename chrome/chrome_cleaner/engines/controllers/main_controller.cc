@@ -139,9 +139,10 @@ MainController::MainController(RebooterAPI* rebooter,
     // main controller object no longer exists.
     chrome_prompt_ipc->Initialize(new ChromePromptConnectionErrorHandler(
         weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get()));
-    main_dialog_.reset(new ChromeProxyMainDialog(this, chrome_prompt_ipc));
+    main_dialog_ =
+        std::make_unique<ChromeProxyMainDialog>(this, chrome_prompt_ipc);
   } else if (execution_mode == ExecutionMode::kCleanup) {
-    main_dialog_.reset(new SilentMainDialog(this));
+    main_dialog_ = std::make_unique<SilentMainDialog>(this);
   } else {
     NOTREACHED();
   }

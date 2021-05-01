@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <fstream>
+#include <memory>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -223,7 +224,7 @@ class InstallerStateCriticalVersionTest : public ::testing::Test {
                     : base::CommandLine::FromString(
                           L"setup.exe --critical-update-version=" +
                           base::ASCIIToWide(version.GetString()));
-    prefs_.reset(new InitialPreferences(cmd_line_));
+    prefs_ = std::make_unique<InitialPreferences>(cmd_line_);
     machine_state_.Initialize();
     installer_state_.Initialize(cmd_line_, *prefs_, machine_state_);
     return installer_state_;

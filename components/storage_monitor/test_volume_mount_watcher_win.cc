@@ -6,6 +6,8 @@
 
 #include "components/storage_monitor/test_volume_mount_watcher_win.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -116,9 +118,9 @@ void TestVolumeMountWatcherWin::DeviceCheckComplete(
 }
 
 void TestVolumeMountWatcherWin::BlockDeviceCheckForTesting() {
-  device_check_complete_event_.reset(
-      new base::WaitableEvent(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED));
+  device_check_complete_event_ = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
   devices_checked_.clear();
 }
 

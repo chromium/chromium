@@ -364,7 +364,7 @@ bool H264ConfigChangeDetector::DetectConfig(const uint8_t* stream,
   bool idr_seen = false;
 
   if (!parser_.get())
-    parser_.reset(new H264Parser);
+    parser_ = std::make_unique<H264Parser>();
 
   parser_->SetStream(stream, size);
   config_changed_ = false;
@@ -807,11 +807,11 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
       "Send MFT_MESSAGE_NOTIFY_START_OF_STREAM notification failed", false);
 
   if (codec_ == kCodecH264)
-    config_change_detector_.reset(new H264ConfigChangeDetector());
+    config_change_detector_ = std::make_unique<H264ConfigChangeDetector>();
   if (codec_ == kCodecVP8)
-    config_change_detector_.reset(new VP8ConfigChangeDetector());
+    config_change_detector_ = std::make_unique<VP8ConfigChangeDetector>();
   if (codec_ == kCodecVP9)
-    config_change_detector_.reset(new VP9ConfigChangeDetector());
+    config_change_detector_ = std::make_unique<VP9ConfigChangeDetector>();
 
   processing_config_changed_ = false;
   SetState(kNormal);

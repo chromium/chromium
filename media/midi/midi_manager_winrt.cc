@@ -22,6 +22,7 @@
 #include <wrl/event.h>
 
 #include <iomanip>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -828,8 +829,8 @@ void MidiManagerWinrt::InitializeOnComRunner() {
     return;
   }
 
-  port_manager_in_.reset(new MidiInPortManager(this));
-  port_manager_out_.reset(new MidiOutPortManager(this));
+  port_manager_in_ = std::make_unique<MidiInPortManager>(this);
+  port_manager_out_ = std::make_unique<MidiOutPortManager>(this);
 
   if (!(port_manager_in_->StartWatcher() &&
         port_manager_out_->StartWatcher())) {

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -197,7 +198,7 @@ void WorkerProcessLauncherTest::SetUp() {
                      base::Unretained(this)));
 
   // Set up process launcher delegate
-  launcher_delegate_.reset(new MockProcessLauncherDelegate());
+  launcher_delegate_ = std::make_unique<MockProcessLauncherDelegate>();
   EXPECT_CALL(*launcher_delegate_, Send(_))
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::SendToProcess));
@@ -321,8 +322,8 @@ void WorkerProcessLauncherTest::CrashWorker() {
 }
 
 void WorkerProcessLauncherTest::StartWorker() {
-  launcher_.reset(new WorkerProcessLauncher(std::move(launcher_delegate_),
-                                            &server_listener_));
+  launcher_ = std::make_unique<WorkerProcessLauncher>(
+      std::move(launcher_delegate_), &server_listener_);
 
   launcher_->SetKillProcessTimeoutForTest(
       base::TimeDelta::FromMilliseconds(100));

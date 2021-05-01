@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "remoting/host/pairing_registry_delegate_win.h"
 
 #include "base/guid.h"
@@ -110,7 +112,7 @@ TEST_F(PairingRegistryDelegateWinTest, Unprivileged) {
 
   // Strip the delegate from write access and validate that it still can be used
   // to read the pairings.
-  delegate.reset(new PairingRegistryDelegateWin());
+  delegate = std::make_unique<PairingRegistryDelegateWin>();
   delegate->SetRootKeys(nullptr, unprivileged_.Handle());
 
   PairingRegistry::Pairing unprivileged_pairing =

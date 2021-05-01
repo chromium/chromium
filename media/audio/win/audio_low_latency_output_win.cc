@@ -10,6 +10,7 @@
 #include <objbase.h>
 
 #include <climits>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -350,9 +351,9 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 
   // Create and start the thread that will drive the rendering by waiting for
   // render events.
-  render_thread_.reset(new base::DelegateSimpleThread(
+  render_thread_ = std::make_unique<base::DelegateSimpleThread>(
       this, "wasapi_render_thread",
-      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO)));
+      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO));
   render_thread_->Start();
   if (!render_thread_->HasBeenStarted()) {
     SendLogMessage("%s => (ERROR: Failed to start \"wasapi_render_thread\")",

@@ -652,7 +652,8 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   }
 
   // Create a launcher for the desktop process, using the per-session delegate.
-  launcher_.reset(new WorkerProcessLauncher(std::move(delegate), this));
+  launcher_ =
+      std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
   session_id_ = session_id;
 }
 

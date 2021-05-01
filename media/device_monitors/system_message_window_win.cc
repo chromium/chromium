@@ -7,6 +7,8 @@
 #include <dbt.h>
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -98,7 +100,7 @@ SystemMessageWindowWin::SystemMessageWindowWin() {
   window_ =
       CreateWindow(kWindowClassName, 0, 0, 0, 0, 0, 0, 0, 0, instance_, 0);
   SetWindowLongPtr(window_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-  device_notifications_.reset(new DeviceNotifications(window_));
+  device_notifications_ = std::make_unique<DeviceNotifications>(window_);
 }
 
 SystemMessageWindowWin::~SystemMessageWindowWin() {

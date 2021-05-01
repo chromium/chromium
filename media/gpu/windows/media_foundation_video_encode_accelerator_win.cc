@@ -14,6 +14,7 @@
 #include <objbase.h>
 
 #include <iterator>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -245,7 +246,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     }
   }
 
-  main_client_weak_factory_.reset(new base::WeakPtrFactory<Client>(client));
+  main_client_weak_factory_ =
+      std::make_unique<base::WeakPtrFactory<Client>>(client);
   main_client_ = main_client_weak_factory_->GetWeakPtr();
   input_visible_size_ = config.input_visible_size;
   if (config.initial_framerate.has_value())

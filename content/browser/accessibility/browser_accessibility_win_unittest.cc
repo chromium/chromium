@@ -4,6 +4,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_win.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -3026,9 +3027,9 @@ TEST_F(BrowserAccessibilityWinTest, UniqueIdWinInvalidAfterDeletingTree) {
   int32_t child_unique_id = GetUniqueId(child);
 
   // Now destroy that original tree and create a new tree.
-  manager.reset(new BrowserAccessibilityManagerWin(
+  manager = std::make_unique<BrowserAccessibilityManagerWin>(
       MakeAXTreeUpdate(root_node, child_node),
-      test_browser_accessibility_delegate_.get()));
+      test_browser_accessibility_delegate_.get());
   root = manager->GetRoot();
   int32_t root_unique_id_2 = GetUniqueId(root);
   child = root->PlatformGetChild(0);

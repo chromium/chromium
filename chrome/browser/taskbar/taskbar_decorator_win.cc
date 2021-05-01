@@ -7,6 +7,8 @@
 #include <objbase.h>
 #include <shobjidl.h>
 #include <wrl/client.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -180,8 +182,8 @@ void DrawTaskbarDecoration(gfx::NativeWindow window, const gfx::Image* image) {
   if (image) {
     // If `image` is an old avatar, then it's guaranteed to by 2x by code in
     // ProfileAttributesEntry::GetAvatarIcon().
-    bitmap.reset(new SkBitmap(
-        profiles::GetWin2xAvatarIconAsSquare(*image->ToSkBitmap())));
+    bitmap = std::make_unique<SkBitmap>(
+        profiles::GetWin2xAvatarIconAsSquare(*image->ToSkBitmap()));
   }
 
   PostSetOverlayIcon(hwnd, std::move(bitmap), "");

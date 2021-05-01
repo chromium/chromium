@@ -432,7 +432,7 @@ ResultCode InterceptionManager::PatchClientFunctions(
 
   std::unique_ptr<ServiceResolverThunk> thunk;
 #if defined(_WIN64)
-  thunk.reset(new ServiceResolverThunk(child_.Process(), relaxed_));
+  thunk = std::make_unique<ServiceResolverThunk>(child_.Process(), relaxed_);
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   base::win::Version real_os_version = os_info->Kernel32Version();

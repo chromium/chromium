@@ -988,8 +988,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   document_checker.CheckAccessible(GetRendererAccessible());
 
   // Set the active descendant of the radio group
-  waiter.reset(new AccessibilityNotificationWaiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus));
+  waiter = std::make_unique<AccessibilityNotificationWaiter>(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   ExecuteScript(
       u"document.body.children[0].setAttribute('aria-activedescendant', 'li')");
   waiter->WaitForNotification();

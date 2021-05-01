@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -154,8 +155,8 @@ bool SerialIoHandlerWin::PostOpen() {
   base::CurrentIOThread::Get()->RegisterIOHandler(file().GetPlatformFile(),
                                                   this);
 
-  read_context_.reset(new base::MessagePumpForIO::IOContext());
-  write_context_.reset(new base::MessagePumpForIO::IOContext());
+  read_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
+  write_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
 
   // Based on the MSDN documentation setting both ReadIntervalTimeout and
   // ReadTotalTimeoutMultiplier to MAXDWORD should cause ReadFile() to return

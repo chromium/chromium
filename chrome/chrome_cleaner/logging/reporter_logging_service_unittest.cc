@@ -60,7 +60,8 @@ class ReporterLoggingServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REPORTER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REPORTER);
 
     reporter_logging_service_ = ReporterLoggingService::GetInstance();
     reporter_logging_service_->Initialize(registry_logger_.get());

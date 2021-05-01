@@ -586,7 +586,8 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
         executable_path, &registry_logger, nullptr);
   }
 
-  rebooter.reset(new chrome_cleaner::Rebooter(PRODUCT_SHORTNAME_STRING));
+  rebooter =
+      std::make_unique<chrome_cleaner::Rebooter>(PRODUCT_SHORTNAME_STRING);
 
   shutdown_sequence.mojo_task_runner = chrome_cleaner::MojoTaskRunner::Create();
 

@@ -1379,9 +1379,9 @@ void CGaiaCredentialBase::TellOmahaDidRun() {
 
 void CGaiaCredentialBase::PreventDenyAccessUpdate() {
   if (!token_update_locker_) {
-    token_update_locker_.reset(
-        new AssociatedUserValidator::ScopedBlockDenyAccessUpdate(
-            AssociatedUserValidator::Get()));
+    token_update_locker_ =
+        std::make_unique<AssociatedUserValidator::ScopedBlockDenyAccessUpdate>(
+            AssociatedUserValidator::Get());
   }
 }
 

@@ -244,8 +244,8 @@ MockInstallerState* BuildChromeInstallerState(
 class InstallWorkerTest : public testing::Test {
  public:
   void SetUp() override {
-    current_version_.reset(new base::Version("1.0.0.0"));
-    new_version_.reset(new base::Version("42.0.0.0"));
+    current_version_ = std::make_unique<base::Version>("1.0.0.0");
+    new_version_ = std::make_unique<base::Version>("42.0.0.0");
 
     // Don't bother ensuring that these paths exist. Since we're just
     // building the work item lists and not running them, they shouldn't

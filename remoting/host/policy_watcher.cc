@@ -412,8 +412,8 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   // Chromium.
   std::unique_ptr<policy::AsyncPolicyLoader> policy_loader;
 #if defined(OS_WIN)
-  policy_loader.reset(new policy::PolicyLoaderWin(
-      file_task_runner, L"SOFTWARE\\Policies\\Google\\Chrome"));
+  policy_loader = std::make_unique<policy::PolicyLoaderWin>(
+      file_task_runner, L"SOFTWARE\\Policies\\Google\\Chrome");
 #elif defined(OS_APPLE)
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
   policy_loader = std::make_unique<policy::PolicyLoaderMac>(

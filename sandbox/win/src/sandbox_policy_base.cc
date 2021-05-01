@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -111,7 +113,7 @@ PolicyBase::PolicyBase()
       add_restricting_random_sid_(false),
       effective_token_(nullptr) {
   ::InitializeCriticalSection(&lock_);
-  dispatcher_.reset(new TopLevelDispatcher(this));
+  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
 PolicyBase::~PolicyBase() {

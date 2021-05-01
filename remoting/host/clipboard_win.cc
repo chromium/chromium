@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -141,7 +142,7 @@ void ClipboardWin::Start(
 
   client_clipboard_.swap(client_clipboard);
 
-  window_.reset(new base::win::MessageWindow());
+  window_ = std::make_unique<base::win::MessageWindow>();
   if (!window_->Create(base::BindRepeating(&ClipboardWin::HandleMessage,
                                            base::Unretained(this)))) {
     LOG(ERROR) << "Couldn't create clipboard window.";

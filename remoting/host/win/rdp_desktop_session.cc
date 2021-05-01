@@ -4,6 +4,8 @@
 
 #include "remoting/host/win/rdp_desktop_session.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/screen_resolution.h"
@@ -32,11 +34,11 @@ STDMETHODIMP RdpDesktopSession::Connect(
       ChromotingModule::task_runner();
   DCHECK(task_runner->BelongsToCurrentThread());
 
-  client_.reset(
-      new RdpClient(task_runner, task_runner,
-                    ScreenResolution(webrtc::DesktopSize(width, height),
-                                     webrtc::DesktopVector(dpi_x, dpi_y)),
-                    base::WideToUTF8(terminal_id), port_number, this));
+  client_ = std::make_unique<RdpClient>(
+      task_runner, task_runner,
+      ScreenResolution(webrtc::DesktopSize(width, height),
+                       webrtc::DesktopVector(dpi_x, dpi_y)),
+      base::WideToUTF8(terminal_id), port_number, this);
   return S_OK;
 }
 

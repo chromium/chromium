@@ -5,6 +5,7 @@
 #include "remoting/host/win/rdp_client.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -123,7 +124,7 @@ void RdpClientTest::SetUp() {
   task_runner_ = new AutoThreadTaskRunner(
       task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
-  module_.reset(new RdpClientModule());
+  module_ = std::make_unique<RdpClientModule>();
 }
 
 void RdpClientTest::TearDown() {
@@ -164,11 +165,11 @@ TEST_F(RdpClientTest, Basic) {
       .Times(AtMost(1))
       .WillOnce(InvokeWithoutArgs(this, &RdpClientTest::CloseRdpClient));
 
-  rdp_client_.reset(new RdpClient(
+  rdp_client_ = std::make_unique<RdpClient>(
       task_runner_, task_runner_,
       ScreenResolution(webrtc::DesktopSize(kDefaultWidth, kDefaultHeight),
                        webrtc::DesktopVector(kDefaultDpi, kDefaultDpi)),
-      terminal_id_, kDefaultRdpPort, &event_handler_));
+      terminal_id_, kDefaultRdpPort, &event_handler_);
   task_runner_ = nullptr;
 
   run_loop_.Run();

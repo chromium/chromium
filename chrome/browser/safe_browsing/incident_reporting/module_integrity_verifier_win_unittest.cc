@@ -80,13 +80,13 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
     LoadModule();
     HMODULE mem_handle;
     GetMemModuleHandle(&mem_handle);
-    mem_peimage_ptr_.reset(new base::win::PEImage(mem_handle));
+    mem_peimage_ptr_ = std::make_unique<base::win::PEImage>(mem_handle);
     ASSERT_TRUE(mem_peimage_ptr_->VerifyMagic());
 
     LoadDLLAsFile();
     HMODULE disk_handle;
     GetDiskModuleHandle(&disk_handle);
-    disk_peimage_ptr_.reset(new base::win::PEImageAsData(disk_handle));
+    disk_peimage_ptr_ = std::make_unique<base::win::PEImageAsData>(disk_handle);
     ASSERT_TRUE(disk_peimage_ptr_->VerifyMagic());
   }
 

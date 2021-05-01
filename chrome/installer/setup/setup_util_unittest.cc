@@ -386,7 +386,7 @@ class FindArchiveToPatchTest : public testing::Test {
 
     void set_version(const base::Version& version) {
       if (version.IsValid())
-        version_.reset(new base::Version(version));
+        version_ = std::make_unique<base::Version>(version);
       else
         version_.reset();
     }
@@ -408,13 +408,13 @@ class FindArchiveToPatchTest : public testing::Test {
     max_version_ = base::Version("47.0.1559.0");
 
     // Install the product according to the version.
-    original_state_.reset(new FakeInstallationState());
+    original_state_ = std::make_unique<FakeInstallationState>();
     InstallProduct();
 
     // Prepare to update the product in the temp dir.
-    installer_state_.reset(new installer::InstallerState(
+    installer_state_ = std::make_unique<installer::InstallerState>(
         kSystemInstall_ ? installer::InstallerState::SYSTEM_LEVEL
-                        : installer::InstallerState::USER_LEVEL));
+                        : installer::InstallerState::USER_LEVEL);
     installer_state_->set_target_path_for_testing(test_dir_.GetPath());
 
     // Create archives in the two version dirs.

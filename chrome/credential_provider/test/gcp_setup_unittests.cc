@@ -343,16 +343,16 @@ void GcpSetupTest::SetUp() {
   ASSERT_NE(nullptr, env.get());
 
   ASSERT_TRUE(scoped_temp_prog_dir_.CreateUniqueTempDir());
-  program_files_override_.reset(new base::ScopedPathOverride(
-      base::DIR_PROGRAM_FILES, scoped_temp_prog_dir_.GetPath()));
+  program_files_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_PROGRAM_FILES, scoped_temp_prog_dir_.GetPath());
 
   ASSERT_TRUE(scoped_temp_start_menu_dir_.CreateUniqueTempDir());
-  start_menu_override_.reset(new base::ScopedPathOverride(
-      base::DIR_COMMON_START_MENU, scoped_temp_start_menu_dir_.GetPath()));
+  start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_START_MENU, scoped_temp_start_menu_dir_.GetPath());
 
   ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
-  programdata_override_.reset(new base::ScopedPathOverride(
-      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath()));
+  programdata_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath());
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -360,9 +360,9 @@ void GcpSetupTest::SetUp() {
   // to base.dll because of the way CURRENT_MODULE works.  Therefore overriding
   // to point to gaia1_0.dll's destination path (i.e. after it is installed).
   // The actual file name is not important, just the directory.
-  dll_path_override_.reset(new base::ScopedPathOverride(
+  dll_path_override_ = std::make_unique<base::ScopedPathOverride>(
       base::FILE_MODULE, installed_path().Append(FILE_PATH_LITERAL("foo.dll")),
-      true /*=is_absolute*/, false /*=create*/));
+      true /*=is_absolute*/, false /*=create*/);
 
   base::FilePath startup_path =
       scoped_temp_start_menu_dir_.GetPath().Append(L"StartUp");

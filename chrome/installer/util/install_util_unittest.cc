@@ -109,8 +109,8 @@ class InstallUtilTest : public testing::Test {
   void SetUp() override { ASSERT_NO_FATAL_FAILURE(ResetRegistryOverrides()); }
 
   void ResetRegistryOverrides() {
-    registry_override_manager_.reset(
-        new registry_util::RegistryOverrideManager);
+    registry_override_manager_ =
+        std::make_unique<registry_util::RegistryOverrideManager>();
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_->OverrideRegistry(HKEY_CURRENT_USER));
     ASSERT_NO_FATAL_FAILURE(

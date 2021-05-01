@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <cstdint>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -147,8 +148,8 @@ void RdpClient::Core::Connect(const ScreenResolution& resolution,
                                   base::checked_cast<uint16_t>(port_number));
 
   // Create the ActiveX control window.
-  rdp_client_window_.reset(new RdpClientWindow(server_endpoint, terminal_id,
-                                               this));
+  rdp_client_window_ =
+      std::make_unique<RdpClientWindow>(server_endpoint, terminal_id, this);
   if (!rdp_client_window_->Connect(resolution)) {
     rdp_client_window_.reset();
 

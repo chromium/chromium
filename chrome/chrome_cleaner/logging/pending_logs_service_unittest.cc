@@ -51,7 +51,8 @@ class PendingLogsServiceTest : public testing::Test {
 
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     // The registry logger must be created after calling OverrideRegistry.
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REMOVER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REMOVER);
 
     // Make sure to clear any previous tests content, e.g., log lines.
     // Individual tests will enable it appropriately.

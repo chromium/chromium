@@ -4,6 +4,7 @@
 
 #include "chrome/chrome_cleaner/ipc/mojo_chrome_prompt_ipc.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -101,7 +102,8 @@ void MojoChromePromptIPC::InitializeChromePromptPtr() {
   mojo::ScopedMessagePipeHandle message_pipe_handle =
       incoming_invitation.ExtractMessagePipe(chrome_mojo_pipe_token_);
 
-  chrome_prompt_service_.reset(new chrome_cleaner::mojom::ChromePromptPtr);
+  chrome_prompt_service_ =
+      std::make_unique<chrome_cleaner::mojom::ChromePromptPtr>();
   chrome_prompt_service_->Bind(chrome_cleaner::mojom::ChromePromptPtrInfo(
       std::move(message_pipe_handle), 0));
   // No need to retain this object, since it will live until the process

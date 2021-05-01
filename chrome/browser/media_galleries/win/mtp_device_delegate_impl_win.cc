@@ -9,6 +9,7 @@
 #include <portabledevice.h>
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -127,8 +128,7 @@ CreateFileEnumeratorOnBlockingPoolThread(
     return nullptr;
   }
 
-  return std::unique_ptr<MTPDeviceObjectEnumerator>(
-      new MTPDeviceObjectEnumerator(entries));
+  return std::make_unique<MTPDeviceObjectEnumerator>(entries);
 }
 
 // Opens the device for communication on a blocking pool thread.

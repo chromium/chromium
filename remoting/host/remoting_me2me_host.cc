@@ -1612,8 +1612,8 @@ void HostProcess::StartHost() {
 
   // Set up reporting the host status notifications.
 #if defined(REMOTING_MULTI_PROCESS)
-  host_event_logger_.reset(
-      new IpcHostEventLogger(host_->status_monitor(), daemon_channel_.get()));
+  host_event_logger_ = std::make_unique<IpcHostEventLogger>(
+      host_->status_monitor(), daemon_channel_.get());
 #else  // !defined(REMOTING_MULTI_PROCESS)
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);

@@ -4,6 +4,8 @@
 
 #include "chrome/credential_provider/extension/app_inventory_manager.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -170,7 +172,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
     }
   }
 
-  request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
+  request_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   request_dict_->SetStringKey(kUploadAppInventoryRequestUserSidParameterName,
                               base::WideToUTF8(context.user_sid));
   request_dict_->SetStringKey(kDmToken, base::WideToUTF8(dm_token_value));
@@ -230,7 +232,8 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
   base::Value app_info_value_list(base::Value::Type::LIST);
   for (std::wstring regPath : app_path_list) {
     std::unique_ptr<base::Value> request_dict_;
-    request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
+    request_dict_ =
+        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
     wchar_t display_name[256];
     ULONG display_length = base::size(display_name);

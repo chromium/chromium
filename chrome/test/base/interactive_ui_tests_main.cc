@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chrome_test_launcher.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
@@ -52,7 +54,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
 #elif defined(OS_WIN)
-    com_initializer_.reset(new base::win::ScopedCOMInitializer());
+    com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     ui_controls::InstallUIControlsAura(
         aura::test::CreateUIControlsAura(nullptr));
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

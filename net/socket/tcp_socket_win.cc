@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <mstcpip.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -315,7 +316,7 @@ int TCPSocketWin::AdoptConnectedSocket(SocketDescriptor socket,
   }
 
   core_ = new Core(this);
-  peer_address_.reset(new IPEndPoint(peer_address));
+  peer_address_ = std::make_unique<IPEndPoint>(peer_address);
 
   return OK;
 }
@@ -425,7 +426,7 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
   if (!logging_multiple_connect_attempts_)
     LogConnectBegin(AddressList(address));
 
-  peer_address_.reset(new IPEndPoint(address));
+  peer_address_ = std::make_unique<IPEndPoint>(address);
 
   int rv = DoConnect();
   if (rv == ERR_IO_PENDING) {
