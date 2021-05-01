@@ -4654,9 +4654,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>sandersd@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>cassew@google.com</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), and the
     response is CORS cross-origin, this histogram records whether the response
@@ -4666,9 +4667,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin" enum="Boolean"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>sandersd@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>cassew@google.com</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), records
     whether the request was CORS cross-origin. These are cases that could not be
@@ -4678,9 +4680,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsMixedContent" enum="Boolean"
-    expires_after="2021-06-01">
+    expires_after="2022-06-01">
   <owner>sandersd@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>cassew@google.com</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), records
     whether the request would be mixed content. These are cases that could not
