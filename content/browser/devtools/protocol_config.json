@@ -105,6 +105,11 @@
                 "async": ["start", "getCategories", "requestMemoryDump"]
             },
             {
+                "domain": "VisualDebugger",
+                "include": ["filterStream", "startStream", "stopStream"],
+                "include_events": ["frameResponse"]
+            },
+            {
                 "domain": "Fetch",
                 "async": ["enable", "continueRequest", "failRequest", "fulfillRequest", "continueWithAuth", "getResponseBody", "takeResponseBodyAsStream"]
             },

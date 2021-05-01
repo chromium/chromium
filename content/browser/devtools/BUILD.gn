@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
@@ -38,20 +39,41 @@ if (!is_android && !is_fuchsia) {
   }
 }
 
+# Here we concatenate the viz_debugger.pdl into our browser protocol.
+# This technique is nearly identical to what is done for cros_protocol.pdl in chrome/browser/devtools
+_concatenated_protocol_path =
+    "$root_gen_dir/content/browser/devtools/protocol.json"
+action("concatenate_protocols") {
+  script = "//third_party/inspector_protocol/concatenate_protocols.py"
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  inputs = [ _blink_protocol_path ]
+  output_file = _concatenated_protocol_path
+  outputs = [ output_file ]
+
+  args = [ rebase_path(_blink_protocol_path, root_build_dir) ]
+  if (use_viz_debugger) {
+    _visual_debugger_pdl = "//components/viz/common/debugger/viz_debugger.pdl"
+    inputs += [ _visual_debugger_pdl ]
+    args += [ rebase_path(_visual_debugger_pdl, root_build_dir) ]
+  }
+
+  args += [ rebase_path(output_file, root_build_dir) ]
+}
+
 inspector_protocol_generate("protocol_sources") {
   visibility = [ "//content/browser" ]
-  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
-  _blink_protocol_path = rebase_path(
-          "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
-          root_build_dir)
-
+  deps = [ ":concatenate_protocols" ]
   inspector_protocol_dir = "//third_party/inspector_protocol"
   out_dir = target_gen_dir
   config_file = "protocol_config.json"
-  config_values = [ "protocol.path=$_blink_protocol_path" ]
+  protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
 
   inputs = [
-    "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+    _concatenated_protocol_path,
     config_file,
   ]
 
@@ -111,6 +133,13 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/web_authn.cc",
     "protocol/web_authn.h",
   ]
+
+  if (use_viz_debugger) {
+    outputs += [
+      "protocol/visual_debugger.cc",
+      "protocol/visual_debugger.h",
+    ]
+  }
 }
 
 proto_library("devtools_background_services_proto") {

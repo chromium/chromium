@@ -1060,6 +1060,7 @@ test("content_browsertests") {
     "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
     "../browser/devtools/protocol/devtools_protocol_test_support.cc",
     "../browser/devtools/protocol/devtools_protocol_test_support.h",
+    "../browser/devtools/protocol/visual_debugger_handler_unittest.cc",
     "../browser/devtools/render_frame_devtools_agent_host_browsertest.cc",
     "../browser/devtools/site_per_process_devtools_browsertest.cc",
     "../browser/display_cutout/display_cutout_browsertest.cc",

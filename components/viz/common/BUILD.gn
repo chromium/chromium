@@ -2,13 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 
+import("//third_party/inspector_protocol/inspector_protocol.gni")
+
 source_set("resource_format") {
   sources = [ "resources/resource_format.h" ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_VIZ_DEBUGGER=$use_viz_debugger" ]
 }
 
 viz_component("resource_format_utils") {
@@ -330,12 +339,14 @@ viz_component("common") {
   }
 
   public_deps = [
+    ":buildflags",
     ":resource_format_utils",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
     "//skia",
   ]
+
   if (enable_vulkan) {
     public_deps += [ ":vulkan_context_provider" ]
   }
