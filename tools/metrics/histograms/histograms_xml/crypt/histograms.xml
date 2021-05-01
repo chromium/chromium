@@ -939,6 +939,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="CryptAuth.GetLocalDeviceMetadata.HasId" enum="BooleanPresent"
+    expires_after="2022-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the loaded local-device has a non-trivial identifier.
+    We always expect a non-trivial ID. Emitted every time the DeviceSync client
+    tries to load local device data, typically during initialization, after an
+    Enrollment or after a DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.GetLocalDeviceMetadata.IsReady" enum="BooleanReady"
+    expires_after="2022-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the DeviceSync client is fully set up/ready when
+    GetLocalDeviceMetadata() is invoked. We always expect the client to be ready
+    when GetLocalDeviceMetadata() is called. Emitted every time the DeviceSync
+    client tries to load local device data, typically during initialization,
+    after an Enrollment or after a DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.GetLocalDeviceMetadata.Result" enum="BooleanSuccess"
+    expires_after="2022-02-02">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the local-device-data request to the DeviceSync
+    client was successful. We expect this to always be successful. Emitted every
+    time applications, e.g., Smart Lock, request the local device data.
+  </summary>
+</histogram>
+
 <histogram name="CryptAuth.InstanceId.DidInstanceIdChange"
     enum="BooleanChanged" expires_after="2021-10-06">
   <owner>nohle@chromium.org</owner>

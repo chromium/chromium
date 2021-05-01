@@ -173,9 +173,18 @@ void ConnectionPreserverImpl::SetPreservedConnection(
     return;
   }
 
+  base::Optional<multidevice::RemoteDeviceRef> local_device =
+      device_sync_client_->GetLocalDeviceMetadata();
+  if (!local_device) {
+    PA_LOG(ERROR) << "ConnectionPreserverImpl::" << __func__
+                  << ": Local device unexpectedly null.";
+    RemovePreservedConnectionIfPresent();
+    return;
+  }
+
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
-      *remote_device, *device_sync_client_->GetLocalDeviceMetadata(),
-      kTetherFeature, secure_channel::ConnectionMedium::kBluetoothLowEnergy,
+      *remote_device, *local_device, kTetherFeature,
+      secure_channel::ConnectionMedium::kBluetoothLowEnergy,
       secure_channel::ConnectionPriority::kLow);
   connection_attempt_->SetDelegate(this);
 

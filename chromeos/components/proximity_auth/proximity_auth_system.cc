@@ -65,7 +65,11 @@ void ProximityAuthSystem::SetRemoteDevicesForUser(
                   << (local_device.has_value() ? "present" : "absent") << "].";
 
   remote_devices_map_[account_id] = remote_devices;
-  local_device_map_.emplace(account_id, *local_device);
+  if (local_device) {
+    local_device_map_.emplace(account_id, *local_device);
+  } else {
+    local_device_map_.erase(account_id);
+  }
 
   if (started_) {
     const AccountId& focused_account_id =
