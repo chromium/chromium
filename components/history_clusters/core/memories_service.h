@@ -33,6 +33,15 @@ class MemoriesService : public KeyedService {
     virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
   };
 
+  struct QueryMemoriesResponse {
+    QueryMemoriesResponse(mojom::QueryParamsPtr query_params,
+                          std::vector<mojom::MemoryPtr> clusters);
+    QueryMemoriesResponse(QueryMemoriesResponse&& other);
+    ~QueryMemoriesResponse();
+    mojom::QueryParamsPtr query_params;
+    std::vector<mojom::MemoryPtr> clusters;
+  };
+
   explicit MemoriesService(
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -72,10 +81,8 @@ class MemoriesService : public KeyedService {
   // request to load older Memories.
   // Note: At the moment, this method asks |remote_model_helper_| to construct
   // Memories from |visits_|.
-  using QueryMemoriesCallback =
-      base::OnceCallback<void(mojom::QueryParamsPtr, Memories)>;
   void QueryMemories(mojom::QueryParamsPtr query_params,
-                     QueryMemoriesCallback callback);
+                     base::OnceCallback<void(QueryMemoriesResponse)> callback);
   // Removes all visits to the specified URLs in the specified time ranges in
   // |expire_list|. Calls |closure| when done.
   void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,

@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/memories.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -21,12 +20,11 @@
 
 namespace history_clusters {
 
-using Memories = std::vector<mojom::MemoryPtr>;
-using MemoriesCallback = base::OnceCallback<void(Memories)>;
 using DebugLoggerCallback = base::RepeatingCallback<void(const std::string&)>;
 
 // A helper class to communicate with the remote model. Forms requests from
-// |ClusterVisit|s and parses the response into |mojom::MemoryPtr|s.
+// `history::ClusterVisit`s and parses the response into
+// `history::Cluster`s.
 class MemoriesRemoteModelHelper {
  public:
   // Pass in a defined `debug_logger` to enable debug logging from this class.
@@ -35,8 +33,10 @@ class MemoriesRemoteModelHelper {
       base::Optional<DebugLoggerCallback> debug_logger);
   ~MemoriesRemoteModelHelper();
 
-  // POSTs |visits| to |endpoint_| and invokes |callback| with the retrieved
-  // |MemoryPtr|s.
+  // POSTs `visits` to the remote endpoint and invokes `callback` with the
+  // retrieved `Cluster`s.
+  using MemoriesCallback =
+      base::OnceCallback<void(std::vector<history::Cluster>)>;
   void GetMemories(MemoriesCallback callback,
                    const std::vector<history::ClusterVisit>& visits);
 

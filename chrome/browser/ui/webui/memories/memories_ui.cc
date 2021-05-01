@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/memories/memories_ui.h"
 
-#include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/memories/memories_handler.h"

@@ -207,7 +207,7 @@ class MemoriesServiceTest : public testing::Test {
 constexpr char MemoriesServiceTest::kFakeEndpoint[];
 
 TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
-  std::string experiment_name = "someexperiment";
+  std::string experiment_name = "someExperiment";
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
 
   AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
@@ -219,32 +219,37 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            ASSERT_EQ(memories.size(), 2u);
-            EXPECT_FALSE(memories[0]->id.is_empty());
-            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
-            EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
-            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
-            EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
-            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
-            EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
-            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
-            EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
-            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
-            ASSERT_EQ(memories[0]->keywords.size(), 2u);
-            EXPECT_EQ(memories[0]->keywords[0], u"keyword 1");
-            EXPECT_EQ(memories[0]->keywords[1], u"keyword 2");
-            EXPECT_FALSE(memories[1]->id.is_empty());
-            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
-            EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
-            EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
-            EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
-            EXPECT_EQ(memories[1]->top_visits[0]->page_title, "Github title");
-            EXPECT_TRUE(memories[1]->keywords.empty());
+            ASSERT_EQ(response.clusters.size(), 2u);
+            EXPECT_FALSE(response.clusters[0]->id.is_empty());
+            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 2);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
+                      "https://google.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, IntToTime(2));
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
+                      "Google title");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 4);
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
+                      "https://github.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, IntToTime(4));
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
+                      "Github title");
+            ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
+            EXPECT_EQ(response.clusters[0]->keywords[0], u"keyword 1");
+            EXPECT_EQ(response.clusters[0]->keywords[1], u"keyword 2");
+            EXPECT_FALSE(response.clusters[1]->id.is_empty());
+            ASSERT_EQ(response.clusters[1]->top_visits.size(), 1u);
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->id, 4);
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->url,
+                      "https://github.com/");
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->time, IntToTime(4));
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->page_title,
+                      "Github title");
+            EXPECT_TRUE(response.clusters[1]->keywords.empty());
             run_loop_quit_.Run();
           }));
 
@@ -270,25 +275,28 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            ASSERT_EQ(memories.size(), 1u);
-            EXPECT_FALSE(memories[0]->id.is_empty());
-            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
-            EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
-            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
-            EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
-            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
-            EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
-            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
-            EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
-            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
-            ASSERT_EQ(memories[0]->keywords.size(), 2u);
-            EXPECT_EQ(memories[0]->keywords[0], u"keyword 1");
-            EXPECT_EQ(memories[0]->keywords[1], u"keyword 2");
+            ASSERT_EQ(response.clusters.size(), 1u);
+            EXPECT_FALSE(response.clusters[0]->id.is_empty());
+            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 2);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
+                      "https://google.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, IntToTime(2));
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
+                      "Google title");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 4);
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
+                      "https://github.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, IntToTime(4));
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
+                      "Github title");
+            ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
+            EXPECT_EQ(response.clusters[0]->keywords[0], u"keyword 1");
+            EXPECT_EQ(response.clusters[0]->keywords[1], u"keyword 2");
             run_loop_quit_.Run();
           }));
 
@@ -306,12 +314,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              history_clusters::Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            EXPECT_TRUE(memories.empty());
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }));
 
@@ -332,12 +339,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              history_clusters::Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the empty response.
-            EXPECT_TRUE(memories.empty());
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }));
 
@@ -358,12 +364,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            EXPECT_TRUE(memories.empty());
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }));
 
@@ -389,12 +394,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            EXPECT_TRUE(memories.empty());
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }));
 
@@ -420,12 +424,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              history_clusters::Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            EXPECT_TRUE(memories.empty());
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }));
 
@@ -451,8 +454,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              history_clusters::Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify not reached.
             EXPECT_TRUE(false);
           }));
@@ -461,12 +463,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!continuation_query_params);
+            ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
-            EXPECT_EQ(memories.size(), 2u);
+            EXPECT_EQ(response.clusters.size(), 2u);
             run_loop_quit_.Run();
           }));
 
@@ -513,26 +514,31 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDb) {
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              Memories memories) {
+          [&](MemoriesService::QueryMemoriesResponse response) {
             // Verify the parsed response.
-            ASSERT_EQ(memories.size(), 2u);
-            EXPECT_FALSE(memories[0]->id.is_empty());
-            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
-            EXPECT_EQ(memories[0]->top_visits[0]->id, 1);
-            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
-            EXPECT_EQ(memories[0]->top_visits[0]->time, visit_time);
-            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
-            EXPECT_EQ(memories[0]->top_visits[1]->id, 2);
-            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
-            EXPECT_EQ(memories[0]->top_visits[1]->time, visit_time);
-            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
-            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
-            EXPECT_FALSE(memories[1]->id.is_empty());
-            EXPECT_EQ(memories[1]->top_visits[0]->id, 2);
-            EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
-            EXPECT_EQ(memories[1]->top_visits[0]->time, visit_time);
-            EXPECT_EQ(memories[1]->top_visits[0]->page_title, "Github title");
+            ASSERT_EQ(response.clusters.size(), 2u);
+            EXPECT_FALSE(response.clusters[0]->id.is_empty());
+            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 1);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
+                      "https://google.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, visit_time);
+            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
+                      "Google title");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 2);
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
+                      "https://github.com/");
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, visit_time);
+            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
+                      "Github title");
+            ASSERT_EQ(response.clusters[1]->top_visits.size(), 1u);
+            EXPECT_FALSE(response.clusters[1]->id.is_empty());
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->id, 2);
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->url,
+                      "https://github.com/");
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->time, visit_time);
+            EXPECT_EQ(response.clusters[1]->top_visits[0]->page_title,
+                      "Github title");
             run_loop_quit_.Run();
           }));
 

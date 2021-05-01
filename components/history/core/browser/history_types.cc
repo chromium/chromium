@@ -362,4 +362,8 @@ DeletionInfo::DeletionInfo(DeletionInfo&& other) noexcept = default;
 
 DeletionInfo& DeletionInfo::operator=(DeletionInfo&& rhs) noexcept = default;
 
+Cluster::Cluster() noexcept = default;
+Cluster::Cluster(const Cluster&) = default;
+Cluster::~Cluster() = default;
+
 }  // namespace history

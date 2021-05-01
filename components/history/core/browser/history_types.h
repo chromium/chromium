@@ -742,6 +742,15 @@ struct ClusterVisitRow {
   ClusterVisitContextSignals context_signals;
 };
 
+struct Cluster {
+  Cluster() noexcept;
+  Cluster(const Cluster&);
+  ~Cluster();
+
+  std::vector<std::u16string> keywords;
+  std::vector<ClusterVisit> cluster_visits;
+};
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_TYPES_H_

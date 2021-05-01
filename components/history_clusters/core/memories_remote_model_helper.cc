@@ -42,11 +42,6 @@ proto::GetClustersRequest CreateRequestProto(
     request_visit->set_page_transition(
         static_cast<int>(visit.visit_row.transition));
 
-    // TODO(manukh) fill out:
-    //  |foreground_time_secs|
-    //  |site_engagement_score|
-    //  |is_from_google_search|
-
     if (debug_logger) {
       base::DictionaryValue debug_visit;
       debug_visit.SetStringKey("visitId",
@@ -82,51 +77,30 @@ proto::GetClustersRequest CreateRequestProto(
   return request;
 }
 
-mojom::VisitPtr CreateVisitMojom(
+std::vector<history::Cluster> ParseResponseProto(
     const std::vector<history::ClusterVisit>& visits,
-    int64_t visit_id) {
-  auto visit = mojom::Visit::New();
-  visit->id = visit_id;
-  const auto memory_visit_it = base::ranges::find(
-      visits, visit->id,
-      [](const auto& visit) { return visit.visit_row.visit_id; });
-  if (memory_visit_it != visits.end()) {
-    visit->url = memory_visit_it->url_row.url();
-    visit->time = memory_visit_it->visit_row.visit_time;
-    visit->page_title = base::UTF16ToUTF8(memory_visit_it->url_row.title());
+    const proto::GetClustersResponse& response_proto,
+    base::Optional<DebugLoggerCallback> debug_logger) {
+  std::vector<history::Cluster> clusters;
+  for (const proto::Cluster& cluster_proto : response_proto.clusters()) {
+    history::Cluster cluster;
+    for (const std::string& keyword : cluster_proto.keywords())
+      cluster.keywords.push_back(base::UTF8ToUTF16(keyword));
+    for (int64_t visit_id : cluster_proto.visit_ids()) {
+      const auto visits_it = base::ranges::find(
+          visits, visit_id,
+          [](const auto& visit) { return visit.visit_row.visit_id; });
+      if (visits_it != visits.end())
+        cluster.cluster_visits.push_back(*visits_it);
+    }
+    clusters.push_back(cluster);
   }
 
-  // TODO(manukh) fill out:
-  //  |thumbnail_url|
-  //  |relative_date|
-  //  |time_of_day|
-  //  |num_duplicate_visits|
-  //  |related_visits|
-  //  |engagement_score|
-  return visit;
-}
-
-Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
-                            const proto::GetClustersResponse& response_proto,
-                            base::Optional<DebugLoggerCallback> debug_logger) {
-  Memories result;
-  base::ListValue debug_clusters_list;
-  for (const proto::Cluster& cluster : response_proto.clusters()) {
-    auto memory = mojom::Memory::New();
-    memory->id = base::UnguessableToken::Create();
-    for (const std::string& keyword : cluster.keywords()) {
-      memory->keywords.push_back(base::UTF8ToUTF16(keyword));
-    }
-
-    for (int64_t visit_id : cluster.visit_ids()) {
-      memory->top_visits.push_back(CreateVisitMojom(visits, visit_id));
-    }
-
-    // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
-
-    if (debug_logger) {
+  if (debug_logger) {
+    // TODO(manukh): `ListValue` is deprecated; replace with `std::vector`.
+    base::ListValue debug_clusters_list;
+    for (const proto::Cluster& cluster : response_proto.clusters()) {
       base::DictionaryValue debug_cluster;
-      debug_cluster.SetStringKey("id", memory->id.ToString());
 
       base::ListValue debug_keywords;
       for (const std::string& keyword : cluster.keywords()) {
@@ -143,10 +117,6 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
       debug_clusters_list.Append(std::move(debug_cluster));
     }
 
-    result.emplace_back(std::move(memory));
-  }
-
-  if (debug_logger) {
     debug_logger->Run("MemoriesRemoteModelHelper ParseResponseProto Clusters:");
 
     std::string debug_string;
@@ -157,7 +127,7 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
     }
   }
 
-  return result;
+  return clusters;
 }
 
 }  // namespace
@@ -209,7 +179,7 @@ void MemoriesRemoteModelHelper::GetMemories(
               if (debug_logger) {
                 debug_logger->Run("MemoriesRemoteModelHelper response nullptr");
               }
-              return history_clusters::Memories();
+              return std::vector<history::Cluster>{};
             }
             proto::GetClustersResponse response_proto;
             response_proto.ParseFromString(*response);

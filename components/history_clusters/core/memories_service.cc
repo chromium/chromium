@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/query_parser/query_parser.h"
@@ -18,33 +19,31 @@ namespace history_clusters {
 
 namespace {
 
-// Uses the bound |query_params| parameter to filter |memories|. Returns matched
-// memories and continuation query params meant to be used in a follow-up
-// request to get older memories.
-// TODO(mahmadi): At the moment, the recency threshold of |query_params| is
-//  ignored and |callback| is invoked with nullptr continuation query params as
-//  the service does not support paging.
-std::pair<mojom::QueryParamsPtr, Memories> FilterMemoriesMatchingQuery(
-    mojom::QueryParamsPtr query_params,
-    std::vector<mojom::MemoryPtr> memories) {
-  if (query_params->query.empty())
-    return {nullptr, std::move(memories)};
+// Filter `clusters` matching `query`. There are additional filters (e.g.
+// `recency_threshold`) used when requesting `QueryMemories()`, but this
+// function is only responsible for matching `query`.
+std::vector<history::Cluster> FilterClustersMatchingQuery(
+    std::string query,
+    std::vector<history::Cluster> clusters) {
+  if (query.empty())
+    return clusters;
 
   // Extract query nodes from the query string.
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(
-      base::UTF8ToUTF16(query_params->query),
+      base::UTF8ToUTF16(query),
       query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
 
-  std::vector<mojom::MemoryPtr> matching_memories;
-  std::copy_if(
-      std::make_move_iterator(memories.begin()),
-      std::make_move_iterator(memories.end()),
-      std::back_inserter(matching_memories), [&](const auto& memory) {
-        // Combine lowercase keywords into a string to extract query
-        // words from.
+  std::vector<history::Cluster> matching_clusters;
+  base::ranges::copy_if(
+      clusters, std::back_inserter(matching_clusters),
+      [&](const auto& cluster) {
+        // TODO(manukh): See if we can avoid concatenating keywords only to
+        //  break them up again immediately after. We currently do this to
+        //  construct a `QueryWordVector`.
+        // Combine lowercase keywords into a string to extract query word from.
         std::u16string keywords = std::accumulate(
-            memory->keywords.begin(), memory->keywords.end(), std::u16string(),
+            cluster.keywords.begin(), cluster.keywords.end(), std::u16string(),
             [](std::u16string accumulated, std::u16string str) {
               return accumulated + u" " + str;
             });
@@ -53,10 +52,65 @@ std::pair<mojom::QueryParamsPtr, Memories> FilterMemoriesMatchingQuery(
         return query_parser::QueryParser::DoesQueryMatch(query_words,
                                                          query_nodes);
       });
-  return {nullptr, std::move(matching_memories)};
+  return matching_clusters;
+}
+
+// TODO(manukh): Move mojom translation to `MemoriesHandler` once we've created
+//  a mirror cpp struct the `MemoryService` can return instead. There's no need
+//  to do this yet, since the `MemoriesHandler` is the only consumer of
+//  `MemoriesService`, but once the omnibox comes into play, we'll need a common
+//  non-mojom response.
+// TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
+// Translate a `ClusterVisit` to `mojom::VisitPtr`.
+history_clusters::mojom::VisitPtr VisitToMojom(
+    const history::ClusterVisit& visit) {
+  auto visit_mojom = history_clusters::mojom::Visit::New();
+  visit_mojom->id = visit.visit_row.visit_id;
+  visit_mojom->url = visit.url_row.url();
+  visit_mojom->time = visit.visit_row.visit_time;
+  visit_mojom->page_title = base::UTF16ToUTF8(visit.url_row.title());
+  return visit_mojom;
+}
+
+// Translate a vector of `Cluster`s to a vector of `mojom::MemoryPtr`s.
+std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
+    const std::vector<history::Cluster>& clusters) {
+  std::vector<history_clusters::mojom::MemoryPtr> clusters_mojom;
+  for (const auto& cluster : clusters) {
+    auto cluster_mojom = history_clusters::mojom::Memory::New();
+    cluster_mojom->id = base::UnguessableToken::Create();
+    for (const auto& keyword : cluster.keywords)
+      cluster_mojom->keywords.push_back(keyword);
+    for (const auto& visit : cluster.cluster_visits)
+      cluster_mojom->top_visits.push_back(VisitToMojom(visit));
+    clusters_mojom.emplace_back(std::move(cluster_mojom));
+  }
+  return clusters_mojom;
+}
+
+// Form a `QueryMemoriesResponse` containing `clusters` and continuation query
+// params meant to be used in a follow-up request. `query_params` are the params
+// used to get `clusters` from `QueryMemories()`.
+// TODO(mahmadi): At the moment, the recency threshold of |query_params| is
+//  ignored and continuation query params is set to nullptr. The service does
+//  not support paging.
+MemoriesService::QueryMemoriesResponse FormQueryMemoriesResponse(
+    mojom::QueryParamsPtr query_params,
+    std::vector<history::Cluster> clusters) {
+  return {nullptr, ClustersToMojom(clusters)};
 }
 
 }  // namespace
+
+MemoriesService::QueryMemoriesResponse::QueryMemoriesResponse(
+    mojom::QueryParamsPtr query_params,
+    std::vector<mojom::MemoryPtr> clusters)
+    : query_params(std::move(query_params)), clusters(std::move(clusters)) {}
+
+MemoriesService::QueryMemoriesResponse::QueryMemoriesResponse(
+    QueryMemoriesResponse&& other) = default;
+
+MemoriesService::QueryMemoriesResponse::~QueryMemoriesResponse() = default;
 
 MemoriesService::MemoriesService(
     history::HistoryService* history_service,
@@ -127,8 +181,9 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
   }
 }
 
-void MemoriesService::QueryMemories(mojom::QueryParamsPtr query_params,
-                                    QueryMemoriesCallback callback) {
+void MemoriesService::QueryMemories(
+    mojom::QueryParamsPtr query_params,
+    base::OnceCallback<void(QueryMemoriesResponse)> callback) {
   // |QueryMemories| has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
   //    from |visits_|.
@@ -136,17 +191,15 @@ void MemoriesService::QueryMemories(mojom::QueryParamsPtr query_params,
   // 3. Filter memories matching |query_params| and create.
   // 4. Run |callback| with the continuation query params and matched memories.
 
-  auto on_visits_callback = base::BindOnce(
-      &MemoriesRemoteModelHelper::GetMemories,
-      remote_model_helper_weak_factory_->GetWeakPtr(),
-      base::BindOnce(&FilterMemoriesMatchingQuery, std::move(query_params))
-          .Then(base::BindOnce(
-              [](QueryMemoriesCallback callback,
-                 std::pair<mojom::QueryParamsPtr, Memories> pair) {
-                std::move(callback).Run(std::move(pair.first),
-                                        std::move(pair.second));
-              },
-              std::move(callback))));
+  // Copy `query_params->query` because `query_params` is about to be moved.
+  auto query_string = query_params->query;
+  auto on_visits_callback =
+      base::BindOnce(&MemoriesRemoteModelHelper::GetMemories,
+                     remote_model_helper_weak_factory_->GetWeakPtr(),
+                     base::BindOnce(&FilterClustersMatchingQuery, query_string)
+                         .Then(base::BindOnce(&FormQueryMemoriesResponse,
+                                              std::move(query_params)))
+                         .Then(std::move(callback)));
 
   if (StoreVisitsInHistoryDb()) {
     history_service_->GetClusterVisits(

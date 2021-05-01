@@ -39,6 +39,7 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace {
+
 GURL GetRandomlySizedThumbnailUrl() {
   const std::vector<int> dimensions = {150, 160, 170, 180, 190, 200};
   auto random_dimension = [&dimensions]() {
@@ -47,6 +48,7 @@ GURL GetRandomlySizedThumbnailUrl() {
   return GURL(base::StringPrintf("https://via.placeholder.com/%dX%d",
                                  random_dimension(), random_dimension()));
 }
+
 }  // namespace
 #endif
 
@@ -92,8 +94,18 @@ void MemoriesHandler::QueryMemories(
   if (history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
     auto* memory_service =
         MemoriesServiceFactory::GetForBrowserContext(profile_);
-    memory_service->QueryMemories(std::move(query_params),
-                                  std::move(result_callback));
+    memory_service->QueryMemories(
+        std::move(query_params),
+        base::BindOnce(
+            [](base::OnceCallback<void(
+                   history_clusters::mojom::QueryParamsPtr,
+                   std::vector<history_clusters::mojom::MemoryPtr>)> callback,
+               history_clusters::MemoriesService::QueryMemoriesResponse
+                   response) {
+              std::move(callback).Run(std::move(response.query_params),
+                                      std::move(response.clusters));
+            },
+            std::move(result_callback)));
   } else {
 #if defined(CHROME_BRANDED)
     page_->OnMemoriesQueryResult(
@@ -258,7 +270,7 @@ void MemoriesHandler::OnHistoryQueryResults(
     } else {  // !is_valid_search_url
       // If the URL is not a search URL, try to add the visit to the top visits.
       auto visit = history_clusters::mojom::Visit::New();
-      // TOOD(mahmadi): URLResult does not contain visit_id.
+      // TODO(mahmadi): URLResult does not contain visit_id.
       visit->url = result.url();
       visit->page_title = base::UTF16ToUTF8(result.title());
       visit->thumbnail_url = GetRandomlySizedThumbnailUrl();
