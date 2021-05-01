@@ -16,7 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-using save_address_profile_infobar_overlays::
+using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;
 
 #pragma mark - InfobarBannerInteractionHandler

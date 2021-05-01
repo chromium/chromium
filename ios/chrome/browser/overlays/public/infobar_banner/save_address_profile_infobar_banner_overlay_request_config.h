@@ -14,7 +14,7 @@ namespace infobars {
 class InfoBar;
 }
 
-namespace save_address_profile_infobar_overlays {
+namespace autofill_address_profile_infobar_overlays {
 
 // Configuration object for OverlayRequests for the banner UI for an InfoBar
 // with a AutofillSaveUpdateAddressProfileDelegateIOS.
@@ -58,6 +58,6 @@ class SaveAddressProfileBannerRequestConfig
   bool is_update_banner_ = false;
 };
 
-}  // namespace save_address_profile_infobar_overlays
+}  // namespace autofill_address_profile_infobar_overlays
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_SAVE_ADDRESS_PROFILE_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_

@@ -16,7 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-namespace save_address_profile_infobar_overlays {
+namespace autofill_address_profile_infobar_overlays {
 
 OVERLAY_USER_DATA_SETUP_IMPL(SaveAddressProfileBannerRequestConfig);
 
@@ -43,4 +43,4 @@ void SaveAddressProfileBannerRequestConfig::CreateAuxiliaryData(
       InfobarOverlayType::kBanner, false);
 }
 
-}  // namespace save_address_profile_infobar_overlays
+}  // namespace autofill_address_profile_infobar_overlays

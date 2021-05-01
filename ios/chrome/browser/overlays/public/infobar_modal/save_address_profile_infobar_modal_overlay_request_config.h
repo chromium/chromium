@@ -10,7 +10,7 @@
 
 class InfoBarIOS;
 
-namespace save_address_profile_infobar_overlays {
+namespace autofill_address_profile_infobar_overlays {
 
 // Configuration object for OverlayRequests for the modal UI for an infobar with
 // a AutofillSaveAddressProfilePromptDelegateMobile.
@@ -53,6 +53,6 @@ class SaveAddressProfileModalRequestConfig
   bool current_address_profile_saved_ = false;
 };
 
-}  // namespace save_address_profile_infobar_overlays
+}  // namespace autofill_address_profile_infobar_overlays
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CONFIG_H_

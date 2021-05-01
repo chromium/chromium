@@ -26,9 +26,9 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 using save_card_infobar_overlays::SaveCardBannerRequestConfig;
 using save_card_infobar_overlays::SaveCardModalRequestConfig;
-using save_address_profile_infobar_overlays::
+using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;
-using save_address_profile_infobar_overlays::
+using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 
 InfobarOverlayRequestFactoryImpl::InfobarOverlayRequestFactoryImpl() {
