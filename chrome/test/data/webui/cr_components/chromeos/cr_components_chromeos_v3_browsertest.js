@@ -20,6 +20,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['NetworkConfigInput', 'network/network_config_input_test.m.js'],
  ['NetworkConfigSelect', 'network/network_config_select_test.m.js'],
  ['NetworkConfigToggle', 'network/network_config_toggle_test.m.js'],
+ ['NetworkIcon', 'network/network_icon_test.m.js'],
  ['NetworkIpConfig', 'network/network_ip_config_test.m.js'],
  ['NetworkList', 'network/network_list_test.m.js'],
  ['NetworkListItem', 'network/network_list_item_test.m.js'],
