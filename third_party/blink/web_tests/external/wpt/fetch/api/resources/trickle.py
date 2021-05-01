@@ -1,7 +1,5 @@
 import time
 
-from six.moves import xrange
-
 def main(request, response):
     delay = float(request.GET.first(b"ms", 500)) / 1E3
     count = int(request.GET.first(b"count", 50))
@@ -11,6 +9,6 @@ def main(request, response):
     response.headers.set(b"Content-type", b"text/plain")
     response.write_status_headers()
     time.sleep(delay)
-    for i in xrange(count):
+    for i in range(count):
         response.writer.write_content(b"TEST_TRICKLE\n")
         time.sleep(delay)

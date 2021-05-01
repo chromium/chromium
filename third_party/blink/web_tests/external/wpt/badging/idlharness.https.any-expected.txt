@@ -5,6 +5,7 @@ PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorBadge: member names are unique
+PASS WorkerNavigator includes NavigatorBadge: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
 PASS Navigator includes NavigatorOnLine: member names are unique
@@ -12,7 +13,6 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-PASS WorkerNavigator includes NavigatorBadge: member names are unique
 PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
@@ -27,6 +27,5 @@ FAIL Navigator interface: navigator must inherit property "clearClientBadge()" w
 PASS Navigator interface: navigator must inherit property "setAppBadge(optional unsigned long long)" with the proper type
 PASS Navigator interface: calling setAppBadge(optional unsigned long long) on navigator with too few arguments must throw TypeError
 PASS Navigator interface: navigator must inherit property "clearAppBadge()" with the proper type
-PASS WorkerNavigator interface: existence and properties of interface object
 Harness: the test ran to completion.
 

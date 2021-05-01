@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 307 tests; 195 PASS, 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 195 PASS, 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -160,6 +160,9 @@ PASS remote-inbound-rtp's id
 PASS remote-outbound-rtp's localId
 PASS remote-outbound-rtp's remoteTimestamp
 PASS remote-outbound-rtp's reportsSent
+FAIL remote-outbound-rtp's roundTripTime assert_true: Is roundTripTime present expected true got false
+FAIL remote-outbound-rtp's totalRoundTripTime assert_true: Is totalRoundTripTime present expected true got false
+FAIL remote-outbound-rtp's roundTripTimeMeasurements assert_true: Is roundTripTimeMeasurements present expected true got false
 PASS remote-outbound-rtp's packetsSent
 PASS remote-outbound-rtp's bytesSent
 PASS remote-outbound-rtp's ssrc

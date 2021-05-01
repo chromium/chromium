@@ -3,7 +3,7 @@ import json
 
 from six import text_type
 
-from six.moves.http_client import HTTPConnection
+from http.client import HTTPConnection
 
 
 class HTTPRequest(object):

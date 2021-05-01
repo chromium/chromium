@@ -1,9 +1,6 @@
-# Copyright (c) 2010 Philip Taylor
-# Released under the BSD license and W3C Test Suite License: see LICENSE.txt
-
 # Current code status:
 #
-# This was originally written for use at
+# This was originally written by Philip Taylor for use at
 # http://philip.html5.org/tests/canvas/suite/tests/
 #
 # It has been adapted for use with the Web Platform Test Suite suite at

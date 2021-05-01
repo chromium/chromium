@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+PASS e.style['rotate'] = "none" should set the property value
+PASS e.style['rotate'] = "0deg" should set the property value
+PASS e.style['rotate'] = "100 200 300 400grad" should set the property value
+PASS e.style['rotate'] = "400grad 100 200 300" should set the property value
+PASS e.style['rotate'] = "0 0 0 400grad" should set the property value
+PASS e.style['rotate'] = "x 400grad" should set the property value
+PASS e.style['rotate'] = "400grad x" should set the property value
+PASS e.style['rotate'] = "0.5 0 0 400grad" should set the property value
+PASS e.style['rotate'] = "1 0 0 400grad" should set the property value
+PASS e.style['rotate'] = "y 400grad" should set the property value
+PASS e.style['rotate'] = "400grad y" should set the property value
+PASS e.style['rotate'] = "0 0.5 0 400grad" should set the property value
+PASS e.style['rotate'] = "0 1 0 400grad" should set the property value
+PASS e.style['rotate'] = "400grad" should set the property value
+FAIL e.style['rotate'] = "400grad z" should set the property value assert_equals: serialization should be canonical expected "400grad" but got "z 400grad"
+FAIL e.style['rotate'] = "0 0 0.5 400grad" should set the property value assert_equals: serialization should be canonical expected "400grad" but got "z 400grad"
+FAIL e.style['rotate'] = "0 0 1 400grad" should set the property value assert_equals: serialization should be canonical expected "400grad" but got "z 400grad"
+Harness: the test ran to completion.
+

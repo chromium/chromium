@@ -125,8 +125,8 @@ dictionary AudioDecoderConfig {
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
+  unsigned long codedWidth;
+  unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -146,8 +146,8 @@ dictionary AudioEncoderConfig {
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
+  required unsigned long width;
+  required unsigned long height;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";

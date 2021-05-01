@@ -3,6 +3,7 @@ PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorStorage: member names are unique
+PASS WorkerNavigator includes NavigatorStorage: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
 PASS Navigator includes NavigatorOnLine: member names are unique
@@ -10,7 +11,6 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-PASS WorkerNavigator includes NavigatorStorage: member names are unique
 PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
@@ -29,7 +29,6 @@ PASS Stringification of navigator.storage
 PASS StorageManager interface: navigator.storage must inherit property "persisted()" with the proper type
 PASS StorageManager interface: navigator.storage must not have property "persist"
 PASS StorageManager interface: navigator.storage must inherit property "estimate()" with the proper type
-PASS Navigator interface: existence and properties of interface object
 PASS WorkerNavigator interface: attribute storage
 PASS WorkerNavigator interface: navigator must inherit property "storage" with the proper type
 Harness: the test ran to completion.

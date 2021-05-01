@@ -8,7 +8,7 @@ import webdriver
 
 from six import string_types
 
-from six.moves.urllib.parse import urlunsplit
+from urllib.parse import urlunsplit
 
 from tests.support import defaults
 from tests.support.helpers import cleanup_session, deep_update

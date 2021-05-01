@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 139 tests; 137 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 138 tests; 136 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
@@ -10,10 +10,10 @@ PASS Response includes Body: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Window includes AnimationFrameProvider: member names are unique
 PASS Window includes WindowSessionStorage: member names are unique
 PASS Window includes WindowLocalStorage: member names are unique
-PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Headers interface: existence and properties of interface object
 PASS Headers interface object length
 PASS Headers interface object name
@@ -135,7 +135,6 @@ PASS Response interface: new Response() must inherit property "blob()" with the 
 PASS Response interface: new Response() must inherit property "formData()" with the proper type
 PASS Response interface: new Response() must inherit property "json()" with the proper type
 PASS Response interface: new Response() must inherit property "text()" with the proper type
-PASS Window interface: existence and properties of interface object
 PASS WorkerGlobalScope interface: operation fetch(RequestInfo, optional RequestInit)
 PASS WorkerGlobalScope interface: self must inherit property "fetch(RequestInfo, optional RequestInit)" with the proper type
 PASS WorkerGlobalScope interface: calling fetch(RequestInfo, optional RequestInit) on self with too few arguments must throw TypeError

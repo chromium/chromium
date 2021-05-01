@@ -34,7 +34,7 @@ interface GPUAdapterLimits {
 
 [Exposed=Window]
 interface GPUSupportedFeatures {
-    readonly setlike<GPUFeatureName>;
+    readonly setlike<DOMString>;
 };
 
 interface mixin NavigatorGPU {
@@ -436,6 +436,17 @@ dictionary GPUPipelineLayoutDescriptor : GPUObjectDescriptorBase {
     required sequence<GPUBindGroupLayout> bindGroupLayouts;
 };
 
+[Exposed=Window, Serializable]
+interface GPUShaderModule {
+    Promise<GPUCompilationInfo> compilationInfo();
+};
+GPUShaderModule includes GPUObjectBase;
+
+dictionary GPUShaderModuleDescriptor : GPUObjectDescriptorBase {
+    required USVString code;
+    object sourceMap;
+};
+
 enum GPUCompilationMessageType {
     "error",
     "warning",
@@ -448,22 +459,13 @@ interface GPUCompilationMessage {
     readonly attribute GPUCompilationMessageType type;
     readonly attribute unsigned long long lineNum;
     readonly attribute unsigned long long linePos;
+    readonly attribute unsigned long long offset;
+    readonly attribute unsigned long long length;
 };
 
 [Exposed=Window, Serializable]
 interface GPUCompilationInfo {
     readonly attribute FrozenArray<GPUCompilationMessage> messages;
-};
-
-[Exposed=Window, Serializable]
-interface GPUShaderModule {
-    Promise<GPUCompilationInfo> compilationInfo();
-};
-GPUShaderModule includes GPUObjectBase;
-
-dictionary GPUShaderModuleDescriptor : GPUObjectDescriptorBase {
-    required USVString code;
-    object sourceMap;
 };
 
 dictionary GPUPipelineDescriptorBase : GPUObjectDescriptorBase {
@@ -765,8 +767,8 @@ dictionary GPUImageCopyTexture {
     GPUTextureAspect aspect = "all";
 };
 
-dictionary GPUImageCopyImageBitmap {
-    required ImageBitmap imageBitmap;
+dictionary GPUImageCopyExternalImage {
+    required (ImageBitmap or HTMLCanvasElement or OffscreenCanvas) source;
     GPUOrigin2D origin = {};
 };
 
@@ -923,8 +925,8 @@ interface GPUQueue {
       GPUImageDataLayout dataLayout,
       GPUExtent3D size);
 
-    undefined copyImageBitmapToTexture(
-        GPUImageCopyImageBitmap source,
+    undefined copyExternalImageToTexture(
+        GPUImageCopyExternalImage source,
         GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 };

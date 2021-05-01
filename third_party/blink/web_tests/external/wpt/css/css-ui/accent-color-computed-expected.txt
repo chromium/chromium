@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Property accent-color value 'initial' assert_equals: expected "auto" but got ""
+FAIL Property accent-color value 'inherit' assert_equals: expected "rgb(255, 0, 0)" but got ""
+FAIL Property accent-color value 'red' assert_equals: expected "rgb(255, 0, 0)" but got ""
+FAIL Property accent-color value 'blue' assert_equals: expected "rgb(0, 0, 255)" but got ""
+Harness: the test ran to completion.
+

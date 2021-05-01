@@ -253,7 +253,7 @@ interface SVGSVGElement : SVGGraphicsElement {
   DOMMatrix createSVGMatrix();
   DOMRect createSVGRect();
   SVGTransform createSVGTransform();
-  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix);
+  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix = {});
 
   Element getElementById(DOMString elementId);
 
@@ -354,7 +354,7 @@ interface SVGTransform {
   [SameObject] readonly attribute DOMMatrix matrix;
   readonly attribute float angle;
 
-  undefined setMatrix(optional DOMMatrix2DInit matrix);
+  undefined setMatrix(optional DOMMatrix2DInit matrix = {});
   undefined setTranslate(float tx, float ty);
   undefined setScale(float sx, float sy);
   undefined setRotate(float angle, float cx, float cy);
@@ -378,7 +378,7 @@ interface SVGTransformList {
   setter undefined (unsigned long index, SVGTransform newItem);
 
   // Additional methods not common to other list interfaces.
-  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix);
+  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix = {});
   SVGTransform? consolidate();
 };
 

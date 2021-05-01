@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 437 tests; 382 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 442 tests; 387 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -14,16 +14,17 @@ PASS Partial interface HTMLStyleElement: member names are unique
 PASS Partial interface Window[2]: member names are unique
 PASS ProcessingInstruction includes LinkStyle: member names are unique
 PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
-PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
-PASS HTMLElement includes ElementContentEditable: member names are unique
-PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS MathMLElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
 PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS SVGStyleElement includes LinkStyle: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
 PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
@@ -33,18 +34,21 @@ PASS Window includes AnimationFrameProvider: member names are unique
 PASS Window includes WindowSessionStorage: member names are unique
 PASS Window includes WindowLocalStorage: member names are unique
 PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes DocumentOrShadowRoot: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
 PASS DocumentFragment includes NonElementParentNode: member names are unique
-PASS DocumentFragment includes ParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
 PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
 PASS CharacterData includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
 PASS CharacterData includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS MathMLElement includes GlobalEventHandlers: member names are unique
+PASS MathMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS MathMLElement includes HTMLOrSVGElement: member names are unique
 PASS MediaList interface: existence and properties of interface object
 PASS MediaList interface object length
 PASS MediaList interface object name
@@ -439,5 +443,6 @@ PASS Document interface: new Document() must inherit property "styleSheets" with
 PASS ShadowRoot interface: attribute styleSheets
 PASS ProcessingInstruction interface: attribute sheet
 PASS ProcessingInstruction interface: xmlss_pi must inherit property "sheet" with the proper type
+PASS MathMLElement interface: attribute style
 Harness: the test ran to completion.
 

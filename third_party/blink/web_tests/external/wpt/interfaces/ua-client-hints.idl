@@ -19,12 +19,19 @@ dictionary UADataValues {
   DOMString uaFullVersion;
 };
 
+dictionary UALowEntropyJSON {
+  FrozenArray<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString platform;
+};
+
 [Exposed=(Window,Worker)]
 interface NavigatorUAData {
   readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   readonly attribute boolean mobile;
   readonly attribute DOMString platform;
   Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  UALowEntropyJSON toJSON();
 };
 
 interface mixin NavigatorUA {

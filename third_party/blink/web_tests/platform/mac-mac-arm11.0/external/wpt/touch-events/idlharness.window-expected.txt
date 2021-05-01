@@ -1,0 +1,127 @@
+This is a testharness.js-based test.
+Found 123 tests; 113 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface mixin GlobalEventHandlers: original interface mixin defined
+PASS Partial interface mixin GlobalEventHandlers: member names are unique
+PASS Partial interface UIEvent: member names are unique
+PASS Partial interface Document: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Touch interface: existence and properties of interface object
+PASS Touch interface object length
+PASS Touch interface object name
+PASS Touch interface: existence and properties of interface prototype object
+PASS Touch interface: existence and properties of interface prototype object's "constructor" property
+PASS Touch interface: existence and properties of interface prototype object's @@unscopables property
+PASS Touch interface: attribute identifier
+PASS Touch interface: attribute target
+PASS Touch interface: attribute screenX
+PASS Touch interface: attribute screenY
+PASS Touch interface: attribute clientX
+PASS Touch interface: attribute clientY
+PASS Touch interface: attribute pageX
+PASS Touch interface: attribute pageY
+PASS Touch interface: attribute radiusX
+PASS Touch interface: attribute radiusY
+PASS Touch interface: attribute rotationAngle
+PASS Touch interface: attribute force
+FAIL Touch interface: attribute altitudeAngle assert_true: The prototype object must have a property "altitudeAngle" expected true got false
+FAIL Touch interface: attribute azimuthAngle assert_true: The prototype object must have a property "azimuthAngle" expected true got false
+FAIL Touch interface: attribute touchType assert_true: The prototype object must have a property "touchType" expected true got false
+PASS Touch must be primary interface of new Touch({identifier: 1, target: document})
+PASS Stringification of new Touch({identifier: 1, target: document})
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "identifier" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "target" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "screenX" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "screenY" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "clientX" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "clientY" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "pageX" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "pageY" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "radiusX" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "radiusY" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "rotationAngle" with the proper type
+PASS Touch interface: new Touch({identifier: 1, target: document}) must inherit property "force" with the proper type
+FAIL Touch interface: new Touch({identifier: 1, target: document}) must inherit property "altitudeAngle" with the proper type assert_inherits: property "altitudeAngle" not found in prototype chain
+FAIL Touch interface: new Touch({identifier: 1, target: document}) must inherit property "azimuthAngle" with the proper type assert_inherits: property "azimuthAngle" not found in prototype chain
+FAIL Touch interface: new Touch({identifier: 1, target: document}) must inherit property "touchType" with the proper type assert_inherits: property "touchType" not found in prototype chain
+PASS TouchList interface: existence and properties of interface object
+PASS TouchList interface object length
+PASS TouchList interface object name
+PASS TouchList interface: existence and properties of interface prototype object
+PASS TouchList interface: existence and properties of interface prototype object's "constructor" property
+PASS TouchList interface: existence and properties of interface prototype object's @@unscopables property
+PASS TouchList interface: attribute length
+PASS TouchList interface: operation item(unsigned long)
+PASS TouchEvent interface: existence and properties of interface object
+PASS TouchEvent interface object length
+PASS TouchEvent interface object name
+PASS TouchEvent interface: existence and properties of interface prototype object
+PASS TouchEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS TouchEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS TouchEvent interface: attribute touches
+PASS TouchEvent interface: attribute targetTouches
+PASS TouchEvent interface: attribute changedTouches
+PASS TouchEvent interface: attribute altKey
+PASS TouchEvent interface: attribute metaKey
+PASS TouchEvent interface: attribute ctrlKey
+PASS TouchEvent interface: attribute shiftKey
+PASS TouchEvent must be primary interface of new TouchEvent("name")
+PASS Stringification of new TouchEvent("name")
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "touches" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "targetTouches" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "changedTouches" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "altKey" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "metaKey" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "ctrlKey" with the proper type
+PASS TouchEvent interface: new TouchEvent("name") must inherit property "shiftKey" with the proper type
+PASS HTMLElement interface: attribute ontouchstart
+PASS HTMLElement interface: attribute ontouchend
+PASS HTMLElement interface: attribute ontouchmove
+PASS HTMLElement interface: attribute ontouchcancel
+PASS Window interface: attribute ontouchstart
+PASS Window interface: attribute ontouchend
+PASS Window interface: attribute ontouchmove
+PASS Window interface: attribute ontouchcancel
+FAIL GlobalEventHandlers interface: window must inherit property "ontouchstart" with the proper type assert_inherits: property "ontouchstart" found on object expected in prototype chain
+FAIL GlobalEventHandlers interface: window must inherit property "ontouchend" with the proper type assert_inherits: property "ontouchend" found on object expected in prototype chain
+FAIL GlobalEventHandlers interface: window must inherit property "ontouchmove" with the proper type assert_inherits: property "ontouchmove" found on object expected in prototype chain
+FAIL GlobalEventHandlers interface: window must inherit property "ontouchcancel" with the proper type assert_inherits: property "ontouchcancel" found on object expected in prototype chain
+PASS GlobalEventHandlers interface: document must inherit property "ontouchstart" with the proper type
+PASS GlobalEventHandlers interface: document must inherit property "ontouchend" with the proper type
+PASS GlobalEventHandlers interface: document must inherit property "ontouchmove" with the proper type
+PASS GlobalEventHandlers interface: document must inherit property "ontouchcancel" with the proper type
+PASS GlobalEventHandlers interface: document.body must inherit property "ontouchstart" with the proper type
+PASS GlobalEventHandlers interface: document.body must inherit property "ontouchend" with the proper type
+PASS GlobalEventHandlers interface: document.body must inherit property "ontouchmove" with the proper type
+PASS GlobalEventHandlers interface: document.body must inherit property "ontouchcancel" with the proper type
+PASS Document interface: attribute ontouchstart
+PASS Document interface: attribute ontouchend
+PASS Document interface: attribute ontouchmove
+PASS Document interface: attribute ontouchcancel
+PASS Document interface: document must inherit property "ontouchstart" with the proper type
+PASS Document interface: document must inherit property "ontouchend" with the proper type
+PASS Document interface: document must inherit property "ontouchmove" with the proper type
+PASS Document interface: document must inherit property "ontouchcancel" with the proper type
+Harness: the test ran to completion.
+

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3736 tests; 3713 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3761 tests; 3738 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -79,17 +79,15 @@ PASS Partial interface Window: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot[2]: member names are unique
 PASS Partial interface UIEvent: member names are unique
+PASS Partial interface MouseEvent: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
+PASS Partial dictionary UIEventInit: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
 PASS Document includes DocumentAndElementEventHandlers: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes DocumentOrShadowRoot: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
 PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
@@ -131,9 +129,6 @@ PASS ElementInternals includes ARIAMixin: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
@@ -142,6 +137,7 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
 PASS DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
 PASS Worker includes AbstractWorker: member names are unique
 PASS SharedWorker includes AbstractWorker: member names are unique
@@ -149,27 +145,32 @@ PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
 PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
 PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
 PASS Element includes ARIAMixin: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
 PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
-PASS SVGElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGGraphicsElement includes SVGTests: member names are unique
 PASS SVGSVGElement includes SVGFitToViewBox: member names are unique
 PASS SVGSVGElement includes WindowEventHandlers: member names are unique
 PASS SVGImageElement includes SVGURIReference: member names are unique
 PASS SVGScriptElement includes SVGURIReference: member names are unique
-PASS SVGAElement includes SVGURIReference: member names are unique
-FAIL SVGAElement includes HTMLHyperlinkElementUtils: member names are unique assert_true: member href is unique expected true got false
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
+PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
 PASS DocumentFragment includes NonElementParentNode: member names are unique
-PASS DocumentFragment includes ParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
 PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
 PASS HTMLAllCollection interface: existence and properties of interface object
 PASS HTMLAllCollection interface object length
 PASS HTMLAllCollection interface object name
@@ -958,6 +959,27 @@ PASS HTMLIFrameElement interface: attribute frameBorder
 PASS HTMLIFrameElement interface: attribute longDesc
 PASS HTMLIFrameElement interface: attribute marginHeight
 PASS HTMLIFrameElement interface: attribute marginWidth
+PASS HTMLIFrameElement must be primary interface of document.createElement("iframe")
+PASS Stringification of document.createElement("iframe")
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "src" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "srcdoc" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "name" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "sandbox" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "allow" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "allowFullscreen" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "width" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "height" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "referrerPolicy" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "loading" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "contentDocument" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "contentWindow" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "getSVGDocument()" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "align" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "scrolling" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "frameBorder" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "longDesc" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "marginHeight" with the proper type
+PASS HTMLIFrameElement interface: document.createElement("iframe") must inherit property "marginWidth" with the proper type
 PASS HTMLEmbedElement interface: existence and properties of interface object
 PASS HTMLEmbedElement interface object length
 PASS HTMLEmbedElement interface object name
@@ -3576,6 +3598,7 @@ PASS HTMLSlotElement interface: existence and properties of interface prototype 
 PASS HTMLSlotElement interface: attribute name
 PASS HTMLSlotElement interface: operation assignedNodes(optional AssignedNodesOptions)
 PASS HTMLSlotElement interface: operation assignedElements(optional AssignedNodesOptions)
+FAIL HTMLSlotElement interface: operation assign((Element or Text)...) assert_equals: property has wrong .length expected 0 but got 1
 PASS HTMLSlotElement must be primary interface of document.createElement("slot")
 PASS Stringification of document.createElement("slot")
 PASS HTMLSlotElement interface: document.createElement("slot") must inherit property "name" with the proper type
@@ -3583,6 +3606,8 @@ PASS HTMLSlotElement interface: document.createElement("slot") must inherit prop
 PASS HTMLSlotElement interface: calling assignedNodes(optional AssignedNodesOptions) on document.createElement("slot") with too few arguments must throw TypeError
 PASS HTMLSlotElement interface: document.createElement("slot") must inherit property "assignedElements(optional AssignedNodesOptions)" with the proper type
 PASS HTMLSlotElement interface: calling assignedElements(optional AssignedNodesOptions) on document.createElement("slot") with too few arguments must throw TypeError
+PASS HTMLSlotElement interface: document.createElement("slot") must inherit property "assign((Element or Text)...)" with the proper type
+PASS HTMLSlotElement interface: calling assign((Element or Text)...) on document.createElement("slot") with too few arguments must throw TypeError
 PASS HTMLCanvasElement interface: existence and properties of interface object
 PASS HTMLCanvasElement interface object length
 PASS HTMLCanvasElement interface object name

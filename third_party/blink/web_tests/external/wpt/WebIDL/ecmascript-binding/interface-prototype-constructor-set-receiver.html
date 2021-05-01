@@ -6,42 +6,31 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
+const testValue = Object.freeze(function() {});
 
 test(() => {
-  window.constructor = null;
+  Location.prototype.constructor = testValue;
+  assert_false(Location.prototype.propertyIsEnumerable("constructor"));
+
+  HTMLDocument.prototype.constructor = testValue;
+  assert_false(HTMLDocument.prototype.propertyIsEnumerable("constructor"));
+
+  HTMLDivElement.prototype.constructor = testValue;
+  assert_false(HTMLDivElement.prototype.propertyIsEnumerable("constructor"));
+}, "Direct [[Set]] preserves [[Enumerable]]: false property attribute");
+
+test(() => {
+  window.constructor = testValue;
+  assert_equals(window.constructor, testValue);
   assert_equals(Window.prototype.constructor, Window);
 
-  location.constructor = false;
-  assert_equals(Location.prototype.constructor, Location);
-
-  navigator.constructor = 1;
+  navigator.constructor = testValue;
+  assert_equals(navigator.constructor, testValue);
   assert_equals(Navigator.prototype.constructor, Navigator);
 
-  document.constructor = {};
-  assert_equals(HTMLDocument.prototype.constructor, HTMLDocument);
-
-  document.head.constructor = [];
-  assert_equals(HTMLHeadElement.prototype.constructor, HTMLHeadElement);
-}, "Window, Location, Navigator, HTMLDocument, and HTMLHeadElement");
-
-test(() => {
-  for (let key of Object.getOwnPropertyNames(window)) {
-    if (!/^[A-Z]/.test(key)) continue;
-
-    let desc = Object.getOwnPropertyDescriptor(window, key);
-    if (!desc || desc.enumerable) continue;
-    let {value} = desc;
-    if (typeof value !== "function") continue;
-    let {prototype} = value;
-    if (!prototype) continue;
-
-    let heir = Object.create(prototype);
-    let newConstructor = function() {};
-    heir.constructor = newConstructor;
-
-    assert_not_equals(prototype.constructor, newConstructor, key);
-    assert_own_property(heir, "constructor", key);
-    assert_equals(heir.constructor, newConstructor, key);
-  }
-}, "All window.* constructors");
+  const span = document.createElement("span");
+  span.constructor = testValue;
+  assert_equals(span.constructor, testValue);
+  assert_equals(HTMLSpanElement.prototype.constructor, HTMLSpanElement);
+}, "Prototype chain [[Set]] creates property on receiver");
 </script>

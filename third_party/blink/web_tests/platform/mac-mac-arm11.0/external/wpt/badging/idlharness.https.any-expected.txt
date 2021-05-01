@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorBadge: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorBadge: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+FAIL Navigator interface: operation setClientBadge(optional unsigned long long) assert_own_property: interface prototype object missing non-static operation expected property "setClientBadge" missing
+FAIL Navigator interface: operation clearClientBadge() assert_own_property: interface prototype object missing non-static operation expected property "clearClientBadge" missing
+PASS Navigator interface: operation setAppBadge(optional unsigned long long)
+PASS Navigator interface: operation clearAppBadge()
+FAIL Navigator interface: navigator must inherit property "setClientBadge(optional unsigned long long)" with the proper type assert_inherits: property "setClientBadge" not found in prototype chain
+FAIL Navigator interface: calling setClientBadge(optional unsigned long long) on navigator with too few arguments must throw TypeError assert_inherits: property "setClientBadge" not found in prototype chain
+FAIL Navigator interface: navigator must inherit property "clearClientBadge()" with the proper type assert_inherits: property "clearClientBadge" not found in prototype chain
+PASS Navigator interface: navigator must inherit property "setAppBadge(optional unsigned long long)" with the proper type
+PASS Navigator interface: calling setAppBadge(optional unsigned long long) on navigator with too few arguments must throw TypeError
+PASS Navigator interface: navigator must inherit property "clearAppBadge()" with the proper type
+PASS WorkerNavigator interface: existence and properties of interface object
+Harness: the test ran to completion.
+

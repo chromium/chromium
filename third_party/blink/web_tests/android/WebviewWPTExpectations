@@ -2120,7 +2120,6 @@ crbug.com/1050754 external/wpt/feature-policy/feature-policy-for-sandbox/feature
 crbug.com/1050754 external/wpt/feature-policy/feature-policy-for-sandbox/sandbox-policies-in-allow-attribute.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/feature-policy/feature-policy-frame-policy-allowed-for-self.https.sub.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/feature-policy/feature-policy-frame-policy-allowed-for-some.https.sub.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/feature-policy/idlharness.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/feature-policy/payment-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/feature-policy/payment-allowed-by-feature-policy-attribute.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/feature-policy/payment-allowed-by-feature-policy.https.sub.html [ Failure ]

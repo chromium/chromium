@@ -44,6 +44,25 @@ def test_abort_by_user_prompt(session, dialog_type):
 
 
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
+def test_no_abort_by_user_prompt_in_other_tab(session, dialog_type):
+    original_handle = session.window_handle
+    new_handle = session.new_window()
+
+    session.execute_script("setTimeout(() => {}('foo'), 250);".format(dialog_type))
+
+    session.window_handle = new_handle
+    response = execute_async_script(
+        session,
+        "setTimeout(() => arguments[0](42), 1000);")
+    assert_success(response, 42)
+
+    session.window.close()
+
+    session.window_handle = original_handle
+    session.alert.accept()
+
+
+@pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
 def test_abort_by_user_prompt_twice(session, dialog_type):
     response = execute_async_script(
         session,

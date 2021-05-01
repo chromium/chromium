@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorUA: member names are unique
+PASS WorkerNavigator includes NavigatorUA: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS NavigatorUAData interface: existence and properties of interface object
+PASS NavigatorUAData interface object length
+PASS NavigatorUAData interface object name
+PASS NavigatorUAData interface: existence and properties of interface prototype object
+PASS NavigatorUAData interface: existence and properties of interface prototype object's "constructor" property
+PASS NavigatorUAData interface: existence and properties of interface prototype object's @@unscopables property
+PASS NavigatorUAData interface: attribute brands
+PASS NavigatorUAData interface: attribute mobile
+FAIL NavigatorUAData interface: attribute platform assert_true: The prototype object must have a property "platform" expected true got false
+PASS NavigatorUAData interface: operation getHighEntropyValues(sequence<DOMString>)
+FAIL NavigatorUAData interface: operation toJSON() assert_own_property: interface prototype object missing non-static operation expected property "toJSON" missing
+PASS NavigatorUAData must be primary interface of navigator.userAgentData
+PASS Stringification of navigator.userAgentData
+PASS NavigatorUAData interface: navigator.userAgentData must inherit property "brands" with the proper type
+PASS NavigatorUAData interface: navigator.userAgentData must inherit property "mobile" with the proper type
+FAIL NavigatorUAData interface: navigator.userAgentData must inherit property "platform" with the proper type assert_inherits: property "platform" not found in prototype chain
+PASS NavigatorUAData interface: navigator.userAgentData must inherit property "getHighEntropyValues(sequence<DOMString>)" with the proper type
+PASS NavigatorUAData interface: calling getHighEntropyValues(sequence<DOMString>) on navigator.userAgentData with too few arguments must throw TypeError
+FAIL NavigatorUAData interface: navigator.userAgentData must inherit property "toJSON()" with the proper type assert_inherits: property "toJSON" not found in prototype chain
+FAIL NavigatorUAData interface: toJSON operation on navigator.userAgentData memberHolderObject.toJSON is not a function
+PASS Navigator interface: attribute userAgentData
+PASS Navigator interface: navigator must inherit property "userAgentData" with the proper type
+Harness: the test ran to completion.
+
