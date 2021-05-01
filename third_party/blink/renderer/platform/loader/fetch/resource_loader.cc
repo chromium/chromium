@@ -1277,6 +1277,8 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   DCHECK(loader_);
   DCHECK_EQ(request.Priority(), ResourceLoadPriority::kHighest);
 
+  recordreplay::Assert("ResourceLoader::RequestSynchronously Start");
+
   auto network_resource_request = std::make_unique<network::ResourceRequest>();
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
@@ -1289,6 +1291,8 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   int64_t encoded_data_length = WebURLLoaderClient::kUnknownEncodedDataLength;
   int64_t encoded_body_length = 0;
   WebBlobInfo downloaded_blob;
+
+  recordreplay::Assert("ResourceLoader::RequestSynchronously #0");
 
   if (CanHandleDataURLRequestLocally(request)) {
     ResourceResponse response;
@@ -1310,26 +1314,33 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     // Don't do mime sniffing for fetch (crbug.com/2016)
     bool no_mime_sniffing = request.GetRequestContext() ==
                             blink::mojom::blink::RequestContextType::FETCH;
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #0.1");
     loader_->LoadSynchronously(
         std::move(network_resource_request), request.GetURLRequestExtraData(),
         request.RequestorID(), request.DownloadToBlob(), no_mime_sniffing,
         request.TimeoutInterval(), this, response_out, error_out, data_out,
         encoded_data_length, encoded_body_length, downloaded_blob,
         Context().CreateResourceLoadInfoNotifierWrapper());
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #0.2");
   }
   // A message dispatched while synchronously fetching the resource
   // can bring about the cancellation of this load.
-  if (!IsLoading())
+  if (!IsLoading()) {
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #1");
     return;
+  }
   int64_t decoded_body_length = data_out.size();
   if (error_out) {
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #2");
     DidFail(*error_out, base::TimeTicks::Now(), encoded_data_length,
             encoded_body_length, decoded_body_length);
     return;
   }
   DidReceiveResponse(response_out);
-  if (!IsLoading())
+  if (!IsLoading()) {
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #3");
     return;
+  }
   DCHECK_GE(response_out.ToResourceResponse().EncodedBodyLength(), 0);
 
   // Follow the async case convention of not calling DidReceiveData or
@@ -1337,8 +1348,10 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   // empty buffer is a noop in most cases, but is destructive in the case of
   // a 304, where it will overwrite the cached data we should be reusing.
   if (data_out.size()) {
+    recordreplay::Assert("ResourceLoader::RequestSynchronously #4");
     data_out.ForEachSegment([this](const char* segment, size_t segment_size,
                                    size_t segment_offset) {
+      recordreplay::Assert("ResourceLoader::RequestSynchronously #5");
       DidReceiveData(segment, SafeCast<int>(segment_size));
       return true;
     });
@@ -1352,6 +1365,8 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   }
   DidFinishLoading(base::TimeTicks::Now(), encoded_data_length,
                    encoded_body_length, decoded_body_length, false);
+
+  recordreplay::Assert("ResourceLoader::RequestSynchronously Done");
 }
 
 void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
