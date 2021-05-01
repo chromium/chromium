@@ -49,34 +49,24 @@ void SaveAddressProfileFlowManager::ShowSaveAddressProfileMessage(
     AutofillClient::AddressProfileSavePromptCallback callback) {
   save_address_profile_message_controller_.DisplayMessage(
       web_contents, profile, original_profile, std::move(callback),
-      base::BindOnce(&SaveAddressProfileFlowManager::OnMessageActionTriggered,
-                     // Passing base::Unretained(this) is safe since |this|
-                     // owns the controller.
-                     base::Unretained(this)));
+      base::BindOnce(
+          &SaveAddressProfileFlowManager::ShowSaveAddressProfileDetails,
+          // Passing base::Unretained(this) is safe since |this|
+          // owns the controller.
+          base::Unretained(this)));
 }
 
-void SaveAddressProfileFlowManager::OnMessageActionTriggered(
+void SaveAddressProfileFlowManager::ShowSaveAddressProfileDetails(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    AutofillClient::AddressProfileSavePromptCallback callback) {
-  if (original_profile) {
-    ShowUpdateAddressProfileDetails(web_contents, profile, original_profile,
-                                    std::move(callback));
-  } else {
-    ShowNewAddressProfileDetails(web_contents, profile, std::move(callback));
-  }
-}
-
-void SaveAddressProfileFlowManager::ShowNewAddressProfileDetails(
-    content::WebContents* web_contents,
-    const AutofillProfile& profile,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   auto prompt_view_android =
       std::make_unique<SaveAddressProfilePromptViewAndroid>(web_contents);
   save_address_profile_prompt_controller_ =
       std::make_unique<SaveAddressProfilePromptController>(
-          std::move(prompt_view_android), profile, std::move(callback),
+          std::move(prompt_view_android), profile, original_profile,
+          std::move(callback),
           /*dismissal_callback=*/
           base::BindOnce(
               &SaveAddressProfileFlowManager::OnSaveAddressProfileDetailsShown,
@@ -84,16 +74,6 @@ void SaveAddressProfileFlowManager::ShowNewAddressProfileDetails(
               // owns the controller.
               base::Unretained(this)));
   save_address_profile_prompt_controller_->DisplayPrompt();
-}
-
-void SaveAddressProfileFlowManager::ShowUpdateAddressProfileDetails(
-    content::WebContents* web_contents,
-    const AutofillProfile& profile,
-    const AutofillProfile* original_profile,
-    AutofillClient::AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/1167061): Show prompt with changes, for now just accept.
-  std::move(callback).Run(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile);
 }
 
 void SaveAddressProfileFlowManager::OnSaveAddressProfileDetailsShown() {

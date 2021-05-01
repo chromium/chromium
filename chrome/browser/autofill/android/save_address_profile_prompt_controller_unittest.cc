@@ -26,7 +26,8 @@ class MockSaveAddressProfilePromptView : public SaveAddressProfilePromptView {
   MOCK_METHOD(bool,
               Show,
               (SaveAddressProfilePromptController * controller,
-               const AutofillProfile& autofill_profile),
+               const AutofillProfile& autofill_profile,
+               bool is_update),
               (override));
 };
 
@@ -40,16 +41,12 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
         {});
 
     profile_ = test::GetFullProfile();
+    original_profile_ = test::GetFullProfile();
+    original_profile_.SetInfo(NAME_FULL, u"John Doe", GetLocale());
+    original_profile_.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"", GetLocale());
+    SetUpController(/*is_update=*/false);
 
-    auto prompt_view = std::make_unique<MockSaveAddressProfilePromptView>();
-    prompt_view_ = prompt_view.get();
-    controller_ = std::make_unique<SaveAddressProfilePromptController>(
-        std::move(prompt_view), profile_, decision_callback_.Get(),
-        dismissal_callback_.Get());
-    ON_CALL(*prompt_view_, Show(controller_.get(), profile_))
-        .WillByDefault(testing::Return(true));
-
-    CountryNames::SetLocaleString("en-US");
+    CountryNames::SetLocaleString(GetLocale());
   }
 
   // Profile with raw data as it is returned from Java.
@@ -65,9 +62,14 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   }
 
  protected:
+  void SetUpController(bool is_update);
+
+  std::string GetLocale() { return "en-US"; }
+
   base::test::ScopedFeatureList feature_list_;
   MockSaveAddressProfilePromptView* prompt_view_;
   AutofillProfile profile_;
+  AutofillProfile original_profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
@@ -76,14 +78,33 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 
-TEST_F(SaveAddressProfilePromptControllerTest, ShouldShowViewOnDisplayPrompt) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_));
+void SaveAddressProfilePromptControllerTest::SetUpController(bool is_update) {
+  auto prompt_view = std::make_unique<MockSaveAddressProfilePromptView>();
+  prompt_view_ = prompt_view.get();
+  controller_ = std::make_unique<SaveAddressProfilePromptController>(
+      std::move(prompt_view), profile_,
+      is_update ? &original_profile_ : nullptr, decision_callback_.Get(),
+      dismissal_callback_.Get());
+  ON_CALL(*prompt_view_, Show(controller_.get(), profile_, is_update))
+      .WillByDefault(testing::Return(true));
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldShowViewOnDisplayPrompt_Save) {
+  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false));
+  controller_->DisplayPrompt();
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldShowViewOnDisplayPrompt_Update) {
+  SetUpController(/*is_update=*/true);
+  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, true));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenShowReturnsFalse) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_))
+  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_, false))
       .WillOnce(testing::Return(false));
 
   EXPECT_CALL(dismissal_callback_, Run());
@@ -146,13 +167,27 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_.reset();
 }
 
-TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnProfileData) {
+TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnDataToDisplay_Save) {
+  EXPECT_EQ(u"Save address?", controller_->GetTitle());
   EXPECT_EQ(
       u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
       u"91111\nUnited States",
       controller_->GetAddress());
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
   EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
+  EXPECT_EQ(u"Save", controller_->GetPositiveButtonText());
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldReturnDataToDisplay_Update) {
+  SetUpController(/*is_update=*/true);
+  EXPECT_EQ(u"Update address?", controller_->GetTitle());
+  EXPECT_EQ(u"For John Doe — 666 Erebus St.", controller_->GetSubtitle());
+  std::pair<std::u16string, std::u16string> differences =
+      controller_->GetDiffFromOldToNewProfile();
+  EXPECT_EQ(u"John Doe", differences.first);
+  EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
+  EXPECT_EQ(u"Update", controller_->GetPositiveButtonText());
 }
 
 }  // namespace autofill

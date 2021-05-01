@@ -44,18 +44,7 @@ class SaveAddressProfileFlowManager {
       const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
-  void OnMessageActionTriggered(
-      content::WebContents* web_contents,
-      const AutofillProfile& profile,
-      const AutofillProfile* original_profile,
-      AutofillClient::AddressProfileSavePromptCallback callback);
-
-  void ShowNewAddressProfileDetails(
-      content::WebContents* web_contents,
-      const AutofillProfile& profile,
-      AutofillClient::AddressProfileSavePromptCallback callback);
-
-  void ShowUpdateAddressProfileDetails(
+  void ShowSaveAddressProfileDetails(
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,

@@ -32,7 +32,8 @@ class SaveAddressProfilePromptViewAndroid
   ~SaveAddressProfilePromptViewAndroid() override;
 
   bool Show(SaveAddressProfilePromptController* controller,
-            const AutofillProfile& profile) override;
+            const AutofillProfile& profile,
+            bool is_update) override;
 
  private:
   // The corresponding Java SaveAddressProfilePrompt owned by this class.

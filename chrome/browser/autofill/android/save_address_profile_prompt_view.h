@@ -17,7 +17,8 @@ class SaveAddressProfilePromptController;
 class SaveAddressProfilePromptView {
  public:
   virtual bool Show(SaveAddressProfilePromptController* controller,
-                    const AutofillProfile& autofill_profile) = 0;
+                    const AutofillProfile& autofill_profile,
+                    bool is_update) = 0;
 
   virtual ~SaveAddressProfilePromptView() = default;
 };

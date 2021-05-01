@@ -58,6 +58,20 @@ std::u16string GetDescriptionForProfileToUpdate(
     const AutofillProfile& profile,
     const std::string& ui_language_code);
 
+// Fields in order they should appear in differences for AutofillProfile update.
+static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
+    NAME_HONORIFIC_PREFIX,
+    NAME_FULL,
+    ADDRESS_HOME_STREET_ADDRESS,
+    ADDRESS_HOME_DEPENDENT_LOCALITY,
+    ADDRESS_HOME_CITY,
+    ADDRESS_HOME_STATE,
+    ADDRESS_HOME_ZIP,
+    ADDRESS_HOME_COUNTRY,
+    EMAIL_ADDRESS,
+    PHONE_HOME_WHOLE_NUMBER,
+    COMPANY_NAME};
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_ADDRESS_UTIL_H_

@@ -26,6 +26,7 @@ class SaveAddressProfilePromptController {
   SaveAddressProfilePromptController(
       std::unique_ptr<SaveAddressProfilePromptView> prompt_view,
       const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback decision_callback,
       base::OnceCallback<void()> dismissal_callback);
   SaveAddressProfilePromptController(
@@ -36,9 +37,19 @@ class SaveAddressProfilePromptController {
 
   void DisplayPrompt();
 
+  std::u16string GetTitle();
+  std::u16string GetPositiveButtonText();
+  // For save prompt:
   std::u16string GetAddress();
   std::u16string GetEmail();
   std::u16string GetPhoneNumber();
+  // For update prompt:
+  std::u16string GetSubtitle();
+  // Returns two newline-separated lists of field values for all fields that
+  // will change when the `original_profile_` is updated to `profile_`. The old
+  // values, which will be replaced, are the first value, and the new values,
+  // which will be saved, are the second value.
+  std::pair<std::u16string, std::u16string> GetDiffFromOldToNewProfile();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   void OnUserAccepted(JNIEnv* env,
@@ -65,6 +76,8 @@ class SaveAddressProfilePromptController {
   std::unique_ptr<SaveAddressProfilePromptView> prompt_view_;
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
+  // The profile (if exists) which will be updated if the user confirms.
+  base::Optional<AutofillProfile> original_profile_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.

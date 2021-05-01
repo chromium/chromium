@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +36,7 @@ public class SaveAddressProfilePrompt {
     private final SaveAddressProfilePromptController mController;
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
+    private final View mDialogView;
     private final EditorDialog mEditorDialog;
 
     /**
@@ -44,32 +44,29 @@ public class SaveAddressProfilePrompt {
      */
     public SaveAddressProfilePrompt(SaveAddressProfilePromptController controller,
             ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, String address, String email,
-            String phone) {
+            PersonalDataManager.AutofillProfile autofillProfile, String title,
+            String positiveButtonText, boolean isUpdate) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
         LayoutInflater inflater = LayoutInflater.from(activity);
-        View dialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
-        showTextIfNotEmpty(dialogView.findViewById(R.id.address), address);
-        showTextIfNotEmpty(dialogView.findViewById(R.id.email), email);
-        showTextIfNotEmpty(dialogView.findViewById(R.id.phone), phone);
+        mDialogView = inflater.inflate(isUpdate ? R.layout.autofill_update_address_profile_prompt
+                                                : R.layout.autofill_save_address_profile_prompt,
+                null);
 
-        Resources resources = activity.getResources();
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER,
                                 new SimpleModalDialogController(
                                         modalDialogManager, this::onDismiss))
-                        // TODO(crbug.com/1167061): Use proper localized string.
-                        .with(ModalDialogProperties.TITLE, "Save address?")
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.save)
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, activity.getResources(),
                                 R.string.no_thanks)
                         // TODO(crbug.com/1167061): Revisit whether the dialog should be modal.
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogView);
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
@@ -77,7 +74,7 @@ public class SaveAddressProfilePrompt {
                 /*saveToDisk=*/false);
         addressEditor.setEditorDialog(mEditorDialog);
         AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
-        dialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
+        mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
             addressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
                     /*cancelCallback=*/unused -> {});
         });
@@ -86,33 +83,64 @@ public class SaveAddressProfilePrompt {
     /**
      * Shows the dialog for saving an address.
      */
-    public void show() {
+    @CalledByNative
+    private void show() {
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     /**
-     * Creates and shows the prompt for saving an address.
+     * Creates the prompt for saving an address.
      *
      * @param windowAndroid the window to supply Android dependencies.
      * @param controller the controller to handle the interaction.
-     * @return instance of the SaveAddressProfilePrompt which is now being shown or null if the call
-     * failed.
+     * @param browserProfile the Chrome profile being used.
+     * @param autofillProfile the address data to be saved.
+     * @param title the title of the dialog.
+     * @param positiveButtonText the text on the positive button.
+     * @param isUpdate true if there's an existing profile which will be updated, false otherwise.
+     * @return instance of the SaveAddressProfilePrompt or null if the call failed.
      */
     @CalledByNative
     @Nullable
-    private static SaveAddressProfilePrompt show(WindowAndroid windowAndroid,
+    private static SaveAddressProfilePrompt create(WindowAndroid windowAndroid,
             SaveAddressProfilePromptController controller, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, String address, String email,
-            String phone) {
+            PersonalDataManager.AutofillProfile autofillProfile, String title,
+            String positiveButtonText, boolean isUpdate) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
-        SaveAddressProfilePrompt prompt =
-                new SaveAddressProfilePrompt(controller, modalDialogManager, activity,
-                        browserProfile, autofillProfile, address, email, phone);
-        prompt.show();
-        return prompt;
+        return new SaveAddressProfilePrompt(controller, modalDialogManager, activity,
+                browserProfile, autofillProfile, title, positiveButtonText, isUpdate);
+    }
+
+    /**
+     * Displays the details in case a new address to be saved.
+     *
+     * @param address the address details to be saved.
+     * @param email the email to be saved.
+     * @param phone the phone to be saved.
+     */
+    @CalledByNative
+    private void setSaveDetails(String address, String email, String phone) {
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.address), address);
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.email), email);
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.phone), phone);
+    }
+
+    /**
+     * Displays the details in case an existing address to be updated.
+     *
+     * @param subtitle the text to display below the title.
+     * @param oldDetails details in the existing profile that differ.
+     * @param newDetails details in the new profile that differ.
+     */
+    @CalledByNative
+    private void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
+        // TODO(crbug.com/1167061): Properly handle the case when oldDetails is empty.
+        ((TextView) mDialogView.findViewById(R.id.subtitle)).setText(subtitle);
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.details_old), oldDetails);
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.details_new), newDetails);
     }
 
     /**

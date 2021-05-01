@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+  <TextView
+      android:id="@+id/subtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="16dp"
+      android:paddingStart="@dimen/dialog_padding_sides"
+      android:paddingEnd="@dimen/dialog_padding_sides"
+      android:ellipsize="end"
+      android:maxLines="1"
+      tools:text="For Alex Park — 345 Spear street" />
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/dialog_padding_sides"
+      tools:ignore="RtlSymmetry">
+    <!-- TODO(crbug.com/1167061): Replace with proper localized string. -->
+    <TextView
+        android:id="@+id/header_new"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/edit_button"
+        android:text="New"
+        android:textAppearance="@style/TextAppearance.TextMedium.Blue"
+        tools:ignore="HardcodedText" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/details_new"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_below="@id/header_new"
+        android:layout_toStartOf="@id/edit_button"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        app:leading="@dimen/text_size_large_leading"
+        tools:text="Alex Johnson Park\n+1 858 230 4000" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/payments_edit_address"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/edit_icon"
+        app:tint="@color/default_icon_color_tint_list"
+        tools:src="@drawable/edit_icon" />
+  </RelativeLayout>
+
+  <View
+      android:id="@+id/details_separator"
+      style="@style/HorizontalDivider"
+      android:layout_marginStart="@dimen/dialog_padding_sides"
+      android:layout_marginEnd="@dimen/dialog_padding_sides" />
+
+  <!-- TODO(crbug.com/1167061): Replace with proper localized string. -->
+  <TextView
+      android:id="@+id/header_old"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:paddingStart="@dimen/dialog_padding_sides"
+      android:paddingEnd="@dimen/dialog_padding_sides"
+      android:text="Old"
+      tools:ignore="HardcodedText" />
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/details_old"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="12dp"
+      android:paddingStart="@dimen/dialog_padding_sides"
+      android:paddingEnd="@dimen/dialog_padding_sides"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      app:leading="@dimen/text_size_large_leading"
+      tools:text="Alex Park" />
+</LinearLayout>
