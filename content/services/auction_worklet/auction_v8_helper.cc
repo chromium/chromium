@@ -300,7 +300,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::Context> context,
     v8::Local<v8::UnboundScript> script,
     base::StringPiece script_name,
-    std::vector<v8::Local<v8::Value>> args) {
+    base::span<v8::Local<v8::Value>> args) {
   DCHECK_EQ(isolate(), context->GetIsolate());
 
   v8::Local<v8::String> v8_script_name;

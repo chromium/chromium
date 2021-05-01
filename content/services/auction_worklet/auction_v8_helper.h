@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "gin/public/isolate_holder.h"
@@ -121,11 +122,11 @@ class AuctionV8Helper {
   //
   // Running this multiple times in the same context will re-load the entire
   // script file in the context, and then run the script again.
-  v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
-                                      v8::Local<v8::UnboundScript> script,
-                                      base::StringPiece script_name,
-                                      std::vector<v8::Local<v8::Value>> args =
-                                          std::vector<v8::Local<v8::Value>>());
+  v8::MaybeLocal<v8::Value> RunScript(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::UnboundScript> script,
+      base::StringPiece script_name,
+      base::span<v8::Local<v8::Value>> args = {});
 
   void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
     script_timeout_ = script_timeout;
