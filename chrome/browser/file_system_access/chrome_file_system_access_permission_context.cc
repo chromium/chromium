@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/path_service.h"
@@ -446,14 +447,21 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    if (HasPersistedPermission() || AncestorHasPersistedPermission()) {
-      // TODO(https://crbug.com/1197304): Add histogram loggging to see how old
-      // the persisted permission was when we use it to auto-grant.
+    if (HasPersistedPermission(MetricsOptions::kRecord)) {
       SetStatus(PermissionStatus::GRANTED,
                 PersistedPermissionOptions::kUpdatePersistedPermission);
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback),
           PermissionRequestOutcome::kGrantedByPersistentPermission);
+      return;
+    }
+
+    if (AncestorHasPersistedPermission()) {
+      SetStatus(PermissionStatus::GRANTED,
+                PersistedPermissionOptions::kUpdatePersistedPermission);
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback),
+          PermissionRequestOutcome::kGrantedByAncestorPersistentPermission);
       return;
     }
 
@@ -547,14 +555,18 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         std::move(fullscreen_block));
   }
 
-  bool HasPersistedPermission() const { return HasPersistedPermission(type_); }
+  bool HasPersistedPermission(MetricsOptions options) const {
+    return context_->HasPersistedPermission(origin_, path_, handle_type_, type_,
+                                            options);
+  }
+
   bool AncestorHasPersistedPermission() const {
     for (base::FilePath parent = path_.DirName(); parent != parent.DirName();
          parent = parent.DirName()) {
       if (context_->HasPersistedPermission(origin_, parent,
-                                           HandleType::kDirectory, type_)) {
+                                           HandleType::kDirectory, type_,
+                                           MetricsOptions::kDoNotRecord))
         return true;
-      }
     }
     return false;
   }
@@ -699,17 +711,15 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // object. Figure out if the other grant type is already persisted.
     auto opposite_type =
         type_ == GrantType::kRead ? GrantType::kWrite : GrantType::kRead;
-    if (HasPersistedPermission(opposite_type))
+    if (context_->HasPersistedPermission(origin_, path_, handle_type_,
+                                         opposite_type,
+                                         MetricsOptions::kDoNotRecord))
       value.SetBoolKey(GetGrantKeyFromGrantType(opposite_type), true);
     value.SetKey(kPermissionLastUsedTimeKey,
                  util::TimeToValue(context_->clock_->Now()));
     return value;
   }
 
-  bool HasPersistedPermission(GrantType grant_type) const {
-    return context_->HasPersistedPermission(origin_, path_, handle_type_,
-                                            grant_type);
-  }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -738,12 +748,12 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
   std::unique_ptr<base::RetainingOneShotTimer> cleanup_timer;
 };
 
-// This long after the handle has last been used, revoke the persisted
-// permission.
 constexpr base::TimeDelta ChromeFileSystemAccessPermissionContext::
     kPersistentPermissionExpirationTimeoutNonPWA;
 constexpr base::TimeDelta ChromeFileSystemAccessPermissionContext::
     kPersistentPermissionExpirationTimeoutPWA;
+constexpr base::TimeDelta
+    ChromeFileSystemAccessPermissionContext::kPersistentPermissionGracePeriod;
 
 ChromeFileSystemAccessPermissionContext::
     ChromeFileSystemAccessPermissionContext(content::BrowserContext* context,
@@ -1401,10 +1411,13 @@ void ChromeFileSystemAccessPermissionContext::
 
 void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Storage.FileSystemAccess.PersistedPermissions.SweepTime.All");
   url::Origin origin;
   GURL origin_as_url;
   bool is_installed_pwa = false;
-  for (const auto& object : GetAllGrantedObjects()) {
+  auto objects = GetAllGrantedObjects();
+  for (const auto& object : objects) {
     // Checking whether an origin has an installed PWA may be expensive.
     // GetAllGrantedObjects() returns objects grouped by origin, so this should
     // only check once per origin.
@@ -1416,11 +1429,15 @@ void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
     MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
                                           is_installed_pwa);
   }
+  base::UmaHistogramCounts1000(
+      "Storage.FileSystemAccess.PersistedPermissions.Count", objects.size());
 }
 
 void ChromeFileSystemAccessPermissionContext::
     UpdatePersistedPermissionsForOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Storage.FileSystemAccess.PersistedPermissions.SweepTime.Origin");
   bool is_installed_pwa = OriginIsInstalledPWA(origin);
   for (const auto& object : GetGrantedObjects(origin)) {
     MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
@@ -1466,22 +1483,17 @@ void ChromeFileSystemAccessPermissionContext::
     value.SetKey(kPermissionLastUsedTimeKey, util::TimeToValue(clock_->Now()));
     GrantObjectPermission(origin, std::move(value));
   } else {
-    RevokePersistedPermissionIfExpired(origin, value, is_installed_pwa);
+    auto last_activity_time =
+        util::ValueToTime(value.FindKey(kPermissionLastUsedTimeKey))
+            .value_or(base::Time::Min());
+    // Allow a grace period before revoking permissions to allow for better
+    // metrics regarding permission timeouts.
+    if (PersistentPermissionIsExpired(
+            last_activity_time + kPersistentPermissionGracePeriod,
+            is_installed_pwa)) {
+      RevokeObjectPermission(origin, GetKeyForObject(value));
+    }
   }
-}
-
-bool ChromeFileSystemAccessPermissionContext::
-    RevokePersistedPermissionIfExpired(const url::Origin& origin,
-                                       const base::Value& value,
-                                       bool is_installed_pwa) {
-  auto last_activity_time =
-      util::ValueToTime(value.FindKey(kPermissionLastUsedTimeKey))
-          .value_or(base::Time::Min());
-  if (PersistentPermissionIsExpired(last_activity_time, is_installed_pwa)) {
-    RevokeObjectPermission(origin, GetKeyForObject(value));
-    return true;
-  }
-  return false;
 }
 
 base::Optional<base::Value>
@@ -1516,23 +1528,19 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermissionForTesting(
     const base::FilePath& path,
     HandleType handle_type,
     GrantType grant_type) {
-  return HasPersistedPermission(origin, path, handle_type, grant_type);
+  return HasPersistedPermission(origin, path, handle_type, grant_type,
+                                MetricsOptions::kDoNotRecord);
 }
 
 bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
     const url::Origin& origin,
     const base::FilePath& path,
     HandleType handle_type,
-    GrantType grant_type) {
+    GrantType grant_type,
+    MetricsOptions options) {
   const auto& grant = GetPersistedPermission(origin, path);
 
   if (!grant.has_value())
-    return false;
-
-  auto last_activity_time =
-      util::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
-  if (PersistentPermissionIsExpired(last_activity_time,
-                                    OriginIsInstalledPWA(origin)))
     return false;
 
   if (grant->FindBoolKey(kPermissionIsDirectoryKey).value() !=
@@ -1545,7 +1553,19 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
     return false;
   }
 
-  return true;
+  auto is_installed_pwa = OriginIsInstalledPWA(origin);
+  auto last_activity_time =
+      util::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
+
+  if (options == MetricsOptions::kRecord) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Storage.FileSystemAccess.PersistedPermissions.Age.",
+                      is_installed_pwa ? "PWA" : "NonPWA"}),
+        clock_->Now() - last_activity_time, base::TimeDelta::FromSeconds(1),
+        base::TimeDelta::FromDays(24), 60);
+  }
+
+  return !PersistentPermissionIsExpired(last_activity_time, is_installed_pwa);
 }
 
 bool ChromeFileSystemAccessPermissionContext::PersistentPermissionIsExpired(

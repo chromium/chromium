@@ -56,7 +56,8 @@ class CONTENT_EXPORT FileSystemAccessPermissionGrant
     kRequestAborted = 7,
     kGrantedByContentSetting = 8,
     kGrantedByPersistentPermission = 9,
-    kMaxValue = kGrantedByPersistentPermission
+    kGrantedByAncestorPersistentPermission = 10,
+    kMaxValue = kGrantedByAncestorPersistentPermission
   };
 
   // Passed to |RequestPermission| to indicate if for this particular permission

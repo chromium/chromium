@@ -12,7 +12,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -141,6 +144,11 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
         origin.GetURL(), origin.GetURL(), type, value);
   }
 
+  void ExpectUmaEntryPersistedPermissionAge(base::TimeDelta age, int count) {
+    histogram_tester_.ExpectTimeBucketCount(
+        "Storage.FileSystemAccess.PersistedPermissions.Age.NonPWA", age, count);
+  }
+
   ChromeFileSystemAccessPermissionContext* permission_context() {
     return permission_context_.get();
   }
@@ -178,6 +186,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest
@@ -840,6 +849,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
         loop.Quit();
       }));
   loop.Run();
+  ExpectUmaEntryPersistedPermissionAge(base::TimeDelta::FromSeconds(0), 1);
   EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
 }
 
@@ -1108,11 +1118,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   file_grant->RequestPermission(
       frame_id(), UserActivationState::kNotRequired,
       base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
-                  outcome);
+        EXPECT_EQ(
+            PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
+            outcome);
         loop2.Quit();
       }));
   loop2.Run();
+  // Age should not be recorded if granted via an ancestor's permission.
+  ExpectUmaEntryPersistedPermissionAge(base::TimeDelta::FromSeconds(0), 0);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, file_path, HandleType::kFile, GrantType::kRead));
@@ -1151,11 +1164,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   file_grant->RequestPermission(
       frame_id(), UserActivationState::kNotRequired,
       base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
-        EXPECT_EQ(PermissionRequestOutcome::kGrantedByPersistentPermission,
-                  outcome);
+        EXPECT_EQ(
+            PermissionRequestOutcome::kGrantedByAncestorPersistentPermission,
+            outcome);
         loop2.Quit();
       }));
   loop2.Run();
+  // Age should not be recorded if granted via an ancestor's permission.
+  ExpectUmaEntryPersistedPermissionAge(base::TimeDelta::FromSeconds(0), 0);
   EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, file_path, HandleType::kFile, GrantType::kWrite));
@@ -1307,9 +1323,16 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
 
-  // |grant| should now be expired and is revokable.
+  // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
               kPersistentPermissionExpirationTimeoutNonPWA +
+          base::TimeDelta::FromSeconds(1));
+  permission_context()->UpdatePersistedPermissionsForTesting();
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 1u);
+
+  Advance(ChromeFileSystemAccessPermissionContext::
+              kPersistentPermissionGracePeriod +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
   objects = permission_context()->GetAllGrantedObjects();
@@ -1348,9 +1371,16 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), advance_once);
 
-  // |grant| should now be expired and is revokable.
+  // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
               kPersistentPermissionExpirationTimeoutNonPWA +
+          base::TimeDelta::FromSeconds(1));
+  permission_context()->UpdatePersistedPermissionsForTesting();
+  objects = permission_context()->GetAllGrantedObjects();
+  EXPECT_EQ(objects.size(), 1u);
+
+  Advance(ChromeFileSystemAccessPermissionContext::
+              kPersistentPermissionGracePeriod +
           base::TimeDelta::FromSeconds(1));
   permission_context()->UpdatePersistedPermissionsForTesting();
   objects = permission_context()->GetAllGrantedObjects();
@@ -1359,6 +1389,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_UpdateWhenRequested) {
+  auto initial_time = Now();
+
   auto grant1 = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(PermissionStatus::GRANTED, grant1->GetStatus());
@@ -1396,9 +1428,17 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
         loop.Quit();
       }));
   loop.Run();
+  ExpectUmaEntryPersistedPermissionAge(Now() - initial_time, 1);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant2->GetStatus());
 
   // |grant1| should now be expired.
   Advance(base::TimeDelta::FromSeconds(2));
+  EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+
+  // |grant1| should not be revoked until after the grace period.
+  Advance(ChromeFileSystemAccessPermissionContext::
+              kPersistentPermissionGracePeriod);
 
   // Clean up |grant1|'s expired entry from HostContentSettingsMap.
   permission_context()->UpdatePersistedPermissionsForTesting();
@@ -1481,9 +1521,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(util::ValueToTime(objects[0]->value.FindKey("time")), initial_time);
 
-  // Permissions should now be expired
+  // Permissions should now be expired and can be revoked.
   Advance(ChromeFileSystemAccessPermissionContext::
               kPersistentPermissionExpirationTimeoutNonPWA +
+          ChromeFileSystemAccessPermissionContext::
+              kPersistentPermissionGracePeriod +
           base::TimeDelta::FromMinutes(1));
 
   // Resetting the permission context should kick off a sweep.
@@ -1494,6 +1536,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // The timestamp should not have been updated.
   objects = permission_context()->GetAllGrantedObjects();
   ASSERT_EQ(objects.size(), 0u);
+
+  // The two sweeps should have been recorded in UMA.
+  auto* uma_prefix = "Storage.FileSystemAccess.PersistedPermissions.";
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts[base::StrCat({uma_prefix, "SweepTime.All"})] = 2;
+  expected_counts[base::StrCat({uma_prefix, "Count"})] = 2;
+  EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(uma_prefix),
+              testing::ContainerEq(expected_counts));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

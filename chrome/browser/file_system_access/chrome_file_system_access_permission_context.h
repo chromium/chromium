@@ -153,6 +153,10 @@ class ChromeFileSystemAccessPermissionContext
           base::TimeDelta::FromHours(5);
   static constexpr base::TimeDelta kPersistentPermissionExpirationTimeoutPWA =
       base::TimeDelta::FromDays(30);
+  // Amount of time a persisted permission will remain persisted after its
+  // expiry. Used for metrics.
+  static constexpr base::TimeDelta kPersistentPermissionGracePeriod =
+      base::TimeDelta::FromDays(1);
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -166,6 +170,8 @@ class ChromeFileSystemAccessPermissionContext
   virtual bool OriginIsInstalledPWA(const url::Origin& origin);
 
  private:
+  enum class MetricsOptions { kRecord, kDoNotRecord };
+
   class PermissionGrantImpl;
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
@@ -208,10 +214,6 @@ class ChromeFileSystemAccessPermissionContext
   void MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
                                              base::Value grant,
                                              bool is_installed_pwa);
-  // Returns true if the permission was revoked.
-  bool RevokePersistedPermissionIfExpired(const url::Origin& origin,
-                                          const base::Value& grant,
-                                          bool is_installed_pwa);
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
@@ -222,7 +224,8 @@ class ChromeFileSystemAccessPermissionContext
   bool HasPersistedPermission(const url::Origin& origin,
                               const base::FilePath& path,
                               HandleType handle_type,
-                              GrantType grant_type);
+                              GrantType grant_type,
+                              MetricsOptions options);
   bool PersistentPermissionIsExpired(const base::Time& last_used,
                                      bool is_installed_pwa);
 
