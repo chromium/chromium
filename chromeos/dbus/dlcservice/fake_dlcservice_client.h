@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
       const dlcservice::DlcsWithContent& dlcs_with_content) {
     dlcs_with_content_ = dlcs_with_content;
   }
+  void set_dlc_state(
+      const dlcservice::DlcState& dlc_state) {
+    dlc_state_ = dlc_state;
+  }
 
  private:
   std::string install_err_ = dlcservice::kErrorNone;
