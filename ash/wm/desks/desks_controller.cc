@@ -488,8 +488,14 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   if (desk == active_desk_) {
     if (in_overview) {
       // Selecting the active desk's mini_view in overview mode is allowed and
-      // should just exit overview mode normally.
-      overview_controller->EndOverview();
+      // should just exit overview mode normally. Immediately exit overview if
+      // switching to a new user, otherwise the multi user switch animation will
+      // animate the same windows that overview watches to determine if the
+      // overview shutdown animation is complete. See https://crbug.com/1001586.
+      const bool immediate_exit = source == DesksSwitchSource::kUserSwitch;
+      overview_controller->EndOverview(
+          immediate_exit ? OverviewEnterExitType::kImmediateExit
+                         : OverviewEnterExitType::kNormal);
     }
     return;
   }
