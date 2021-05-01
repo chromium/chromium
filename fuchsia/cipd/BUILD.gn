@@ -287,13 +287,16 @@ cipd_archive("tests") {
 # Construct a consolidated directory of debugging symbols using the GNU
 # .build_id structure for CIPD archival.
 _build_ids_target = "debug_symbol_directory"
+_debug_symbols_archive_name = "debug_symbols"
+
 build_id_dir(_build_ids_target) {
   build_id_dirs = [
     "${root_gen_dir}/fuchsia/engine/web_engine",
     "${root_gen_dir}/fuchsia/runners/cast_runner",
     "${root_gen_dir}/fuchsia/runners/web_runner",
   ]
-  output_path = "${target_gen_dir}/${target_name}"
+  output_path =
+      "${target_gen_dir}/${_debug_symbols_archive_name}/${target_name}"
   deps = [
     "//fuchsia/engine:web_engine",
     "//fuchsia/runners:cast_runner_pkg",
@@ -301,19 +304,13 @@ build_id_dir(_build_ids_target) {
   ]
 }
 
-_debug_symbols_archive_name = "debug_symbols"
 cipd_archive(_debug_symbols_archive_name) {
-  copy("copy_debug_symbols") {
-    sources = [ "${target_gen_dir}/${_build_ids_target}" ]
-    outputs = [ "${target_gen_dir}/${target_name}/{{source_file_part}}" ]
-    deps = [ ":${_build_ids_target}" ]
-  }
   package_basename = "debug-symbols"
   package_definition_basename = _debug_symbols_archive_name
   description = "Debugging symbols for prebuilt binaries from Chromium."
 
   deps = [ ":${_build_ids_target}" ]
-  source_directories = [ "." ]
+  source_directories = [ "${_build_ids_target}" ]
 }
 
 cipd_archive("clear_key_cdm") {
