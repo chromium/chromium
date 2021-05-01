@@ -196,6 +196,11 @@ test("media_unittests") {
   }
 
   if (is_fuchsia) {
+    deps += [
+      "//media/fuchsia/audio:unittests",
+      "//media/fuchsia/cdm/service:unittests",
+    ]
+
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/audio_capabilities.test-cmx",
 
