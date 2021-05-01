@@ -3343,6 +3343,7 @@ python2_action("dbus_service_files") {
     "dbus/org.chromium.ComponentUpdaterService.conf",
     "dbus/org.chromium.CryptohomeKeyDelegate.conf",
     "dbus/org.chromium.DriveFileStreamService.conf",
+    "dbus/org.chromium.EncryptedReportingUploadService.conf",
     "dbus/org.chromium.KioskAppService.conf",
     "dbus/org.chromium.LibvdaService.conf",
     "dbus/org.chromium.LockToSingleUser.conf",

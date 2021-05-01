@@ -87,6 +87,7 @@
 #include "chrome/browser/chromeos/dbus/cryptohome_key_delegate_service_provider.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
 #include "chrome/browser/chromeos/dbus/drive_file_stream_service_provider.h"
+#include "chrome/browser/chromeos/dbus/encrypted_reporting_service_provider.h"
 #include "chrome/browser/chromeos/dbus/kiosk_info_service_provider.h"
 #include "chrome/browser/chromeos/dbus/libvda_service_provider.h"
 #include "chrome/browser/chromeos/dbus/lock_to_single_user_service_provider.h"
@@ -368,6 +369,12 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<CryptohomeKeyDelegateServiceProvider>()));
 
+    encrypted_reporting_service_ = CrosDBusService::Create(
+        system_bus, chromeos::kChromeReportingServiceName,
+        dbus::ObjectPath(chromeos::kChromeReportingServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<EncryptedReportingServiceProvider>()));
+
     smb_fs_service_ =
         CrosDBusService::Create(system_bus, smbfs::kSmbFsServiceName,
                                 dbus::ObjectPath(smbfs::kSmbFsServicePath),
@@ -446,6 +453,7 @@ class DBusServices {
     vm_permission_service_.reset();
     drive_file_stream_service_.reset();
     cryptohome_key_delegate_service_.reset();
+    encrypted_reporting_service_.reset();
     lock_to_single_user_service_.reset();
     mojo_connection_service_.reset();
     ProcessDataCollector::Shutdown();
@@ -473,6 +481,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> vm_permission_service_;
   std::unique_ptr<CrosDBusService> drive_file_stream_service_;
   std::unique_ptr<CrosDBusService> cryptohome_key_delegate_service_;
+  std::unique_ptr<CrosDBusService> encrypted_reporting_service_;
   std::unique_ptr<CrosDBusService> libvda_service_;
   std::unique_ptr<CrosDBusService> machine_learning_decision_service_;
   std::unique_ptr<CrosDBusService> smb_fs_service_;
