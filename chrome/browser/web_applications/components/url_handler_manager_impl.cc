@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -31,9 +29,6 @@ UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 // static
 std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
     const base::CommandLine& command_line) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
-    return {};
-
   // Return early to not interfere with switch based app launches.
   if (command_line.HasSwitch(switches::kApp) ||
       command_line.HasSwitch(switches::kAppId)) {
@@ -65,12 +60,6 @@ std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
 void UrlHandlerManagerImpl::RegisterUrlHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableUrlHandlers)) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
   // TODO(crbug/1072058): Only get associations for user-enabled url handlers.
   if (url_handlers.empty()) {
@@ -106,15 +95,6 @@ void UrlHandlerManagerImpl::UpdateUrlHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableUrlHandlers)) {
-    url_handler_prefs::RemoveWebApp(g_browser_process->local_state(), app_id,
-                                    profile()->GetPath());
-    std::move(callback).Run(false);
-    return;
-  }
-
   association_manager().GetWebAppOriginAssociations(
       registrar()->GetAppManifestUrl(app_id), std::move(url_handlers),
       base::BindOnce(&UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate,

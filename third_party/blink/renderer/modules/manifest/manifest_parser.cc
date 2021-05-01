@@ -987,7 +987,7 @@ bool ManifestParser::ParseFileHandlerAcceptExtension(const JSONValue* extension,
 Vector<mojom::blink::ManifestProtocolHandlerPtr>
 ManifestParser::ParseProtocolHandlers(const JSONObject* from) {
   Vector<mojom::blink::ManifestProtocolHandlerPtr> protocols;
-  bool feature_enabled =
+  const bool feature_enabled =
       base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableProtocolHandlers) ||
       RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled(feature_context_);
@@ -1085,9 +1085,10 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
 Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
     const JSONObject* from) {
   Vector<mojom::blink::ManifestUrlHandlerPtr> url_handlers;
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableUrlHandlers) ||
-      !from->Get("url_handlers")) {
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
+      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(feature_context_);
+  if (!feature_enabled || !from->Get("url_handlers")) {
     return url_handlers;
   }
   JSONArray* handlers_list = from->GetArray("url_handlers");

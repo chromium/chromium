@@ -1534,7 +1534,7 @@
     {
       // This flag enables the Manifest parser to handle URL Protocols.
       // Also enabled when blink::features::kWebAppEnableProtocolHandlers is
-      // overridden on the command line (or via edge://flags).
+      // overridden on the command line (or via chrome://flags).
       name: "ParseUrlProtocolHandler",
       status: "experimental",
       origin_trial_feature_name: "ParseUrlProtocolHandler",
@@ -2184,6 +2184,15 @@
     {
       name:"WebAppsLockScreen",
       status:"experimental",
+    },
+    {
+      // This flag enables the Manifest parser to handle URL Handlers.
+      // Also enabled when blink::features::kWebAppEnableUrlHandlers is
+      // overridden on the command line (or via chrome://flags).
+      name: "WebAppUrlHandling",
+      status: "experimental",
+      origin_trial_feature_name: "WebAppUrlHandling",
+      origin_trial_os: ["win", "mac", "linux"],
     },
     {
       name: "WebAppWindowControlsOverlay",

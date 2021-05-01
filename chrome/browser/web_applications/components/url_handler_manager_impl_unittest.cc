@@ -245,24 +245,6 @@ TEST_F(UrlHandlerManagerImplTest,
   }
 }
 
-TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Register) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(blink::features::kWebAppEnableUrlHandlers);
-
-  auto web_app = CreateWebAppWithUrlHandlers(app_url_1_,
-                                             {apps::UrlHandlerInfo(origin_1_)});
-  const AppId& app_id = web_app->app_id();
-  controller().RegisterApp(std::move(web_app));
-  base::RunLoop run_loop;
-  // Expect early return if feature is disabled.
-  url_handler_manager().RegisterUrlHandlers(
-      app_id, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
 TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Unregister) {
   AppId app_id = RegisterAppAndUrlHandlers();
 
@@ -274,36 +256,6 @@ TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Unregister) {
   }
 
   // Check that url handlers are no longer registered.
-  base::CommandLine cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
-  cmd.AppendArg(kOriginUrl1);
-  auto matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
-  ASSERT_EQ(matches.size(), 0u);
-}
-
-TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Update) {
-  AppId app_id = RegisterAppAndUrlHandlers();
-
-  // Disable feature and try to update url handlers.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(blink::features::kWebAppEnableUrlHandlers);
-
-    auto web_app = CreateWebAppWithUrlHandlers(
-        app_url_1_, {apps::UrlHandlerInfo(origin_2_)});
-    EXPECT_EQ(app_id, web_app->app_id());
-
-    controller().UnregisterApp(app_id);
-    controller().RegisterApp(std::move(web_app));
-
-    base::RunLoop run_loop;
-    url_handler_manager().UpdateUrlHandlers(
-        app_id, base::BindLambdaForTesting([&](bool success) {
-          EXPECT_FALSE(success);
-          run_loop.Quit();
-        }));
-  }
-
-  // Expect that url handlers have been removed.
   base::CommandLine cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
   cmd.AppendArg(kOriginUrl1);
   auto matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);

@@ -273,9 +273,8 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) &&
-      web_application_info_->url_handlers !=
-          registrar_.GetAppUrlHandlers(app_id_)) {
+  if (web_application_info_->url_handlers !=
+      registrar_.GetAppUrlHandlers(app_id_)) {
     return true;
   }
 
@@ -440,12 +439,7 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
   // If there are url handlers for the current app, associations need to be
   // revalidated.
   DCHECK(web_application_info_.has_value());
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) &&
-      !web_application_info_->url_handlers.empty()) {
-    return true;
-  }
-
-  return false;
+  return !web_application_info_->url_handlers.empty();
 }
 
 void ManifestUpdateTask::NoManifestUpdateRequired() {

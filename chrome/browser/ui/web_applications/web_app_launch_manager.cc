@@ -50,7 +50,6 @@
 #include "content/public/common/referrer.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -95,9 +94,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 base::Optional<GURL> GetUrlHandlingLaunchUrl(
     WebAppProvider& provider,
     const apps::AppLaunchParams& params) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableUrlHandlers) ||
-      !params.url_handler_launch_url.has_value()) {
+  if (!params.url_handler_launch_url.has_value()) {
     return base::nullopt;
   }
 

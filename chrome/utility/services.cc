@@ -29,7 +29,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/common/features.h"
 
 #if defined(OS_WIN)
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -325,9 +324,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunUnzipper);
   services.Add(RunLanguageDetectionService);
   services.Add(RunQRCodeGeneratorService);
-
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
-    services.Add(RunWebAppOriginAssociationParser);
+  services.Add(RunWebAppOriginAssociationParser);
 
 #if !defined(OS_ANDROID)
   services.Add(RunProfileImporter);

@@ -128,7 +128,6 @@
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
-#include "third_party/blink/public/common/features.h"
 #endif
 
 using content::BrowserThread;
@@ -524,9 +523,6 @@ bool MaybeLaunchUrlHandlerWebApp(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
-    return false;
-
   const std::vector<web_app::UrlHandlerLaunchParams> url_handler_matches =
       web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
 

@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "chrome/browser/web_applications/components/web_app_origin_association_task.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_service.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -25,9 +23,7 @@ void WebAppOriginAssociationManager::GetWebAppOriginAssociations(
     const GURL& manifest_url,
     apps::UrlHandlers url_handlers,
     OnDidGetWebAppOriginAssociations callback) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableUrlHandlers) ||
-      url_handlers.empty()) {
+  if (url_handlers.empty()) {
     std::move(callback).Run(apps::UrlHandlers());
     return;
   }
