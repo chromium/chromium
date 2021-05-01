@@ -36,5 +36,6 @@ js_modulizer("modulize") {
                          "cellular_setup.MockMetricsPrivate|MockMetricsPrivate",
                          "test_util.eventToPromise|eventToPromise",
                          "test_util.flushTasks|flushTasks",
+                         "test_util.waitAfterNextRender|waitAfterNextRender",
                        ]
 }

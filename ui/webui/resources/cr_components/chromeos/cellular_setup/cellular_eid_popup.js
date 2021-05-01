@@ -43,17 +43,56 @@ Polymer({
     if (!this.euicc) {
       return;
     }
+    this.addEventListeners_();
     this.euicc.getEidQRCode().then(this.updateQRCode_.bind(this));
     this.euicc.getProperties().then(this.updateEid_.bind(this));
   },
-
   /** @override */
   focus() {
     this.$$('.dialog').focus();
   },
 
+  /** @override */
+  detached() {
+    document.removeEventListener('keyup', this.onKeyup_.bind(this));
+    document.removeEventListener('click', this.onClick_.bind(this));
+  },
+
+  /** @private */
+  addEventListeners_() {
+    // Wait for all events to propagate before registering, this prevents
+    // popup from closing right after it has been created.
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      document.addEventListener('keyup', this.onKeyup_.bind(this));
+      document.addEventListener('click', this.onClick_.bind(this));
+    });
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onKeyup_(e) {
+    if (e.key === 'Escape') {
+      this.onClose_();
+    }
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onClick_(e) {
+    const popupElement =
+        e.path.find(element => element.tagName === 'CELLULAR-EID-POPUP');
+    // Only close eid popup when click event occurs outside cellular eid popup.
+    if (!popupElement) {
+      this.onClose_();
+    }
+  },
+
   /**@private */
-  onCloseTap_() {
+  onClose_() {
     this.fire('close-eid-popup');
   },
 
