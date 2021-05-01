@@ -218,7 +218,8 @@
   }
 
   /**
-   * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} device
+   * @param {?chromeos.networkConfig.mojom.DeviceStateProperties|undefined}
+   *     device
    * @return {boolean}
    */
   static deviceIsInhibited(device) {

@@ -101,6 +101,9 @@ Polymer({
     if (this.shouldShowLockedWarningMessage_(this.deviceState)) {
       return this.i18n('networkSimLockedSubtitle');
     }
+    if (OncMojo.deviceIsInhibited(this.deviceState)) {
+      return this.i18n('internetDeviceBusy');
+    }
 
     const stateText =
         this.getConnectionStateText_(this.activeNetworkState, this.deviceState);
@@ -111,7 +114,8 @@ Polymer({
     const deviceState = this.deviceState;
     if (deviceState) {
       // Type specific scanning or initialization states.
-      if (deviceState.type === mojom.NetworkType.kCellular) {
+      if (deviceState.type === mojom.NetworkType.kCellular &&
+          !this.isUpdatedCellularUiEnabled_) {
         if (deviceState.scanning) {
           return this.i18n('internetMobileSearching');
         }
@@ -121,21 +125,21 @@ Polymer({
         if (deviceState.deviceState === mojom.DeviceStateType.kDisabling) {
           return this.i18n('internetDeviceDisabling');
         }
-        if (OncMojo.deviceIsInhibited(deviceState)) {
-          return this.i18n('internetDeviceBusy');
-        }
-      } else if (deviceState.type === mojom.NetworkType.kTether) {
+      }
+
+      if (deviceState.type === mojom.NetworkType.kTether) {
         if (deviceState.deviceState === mojom.DeviceStateType.kUninitialized) {
           return this.i18n('tetherEnableBluetooth');
         }
       }
+
       // Enabled or enabling states.
       if (deviceState.deviceState === mojom.DeviceStateType.kEnabled) {
-        if (this.networkStateList.length > 0) {
-          return this.i18n('networkListItemNotConnected');
-        }
-        return this.i18n('networkListItemNoNetwork');
+        return this.networkStateList.length > 0 ?
+            this.i18n('networkListItemNotConnected') :
+            this.i18n('networkListItemNoNetwork');
       }
+
       if (deviceState.deviceState === mojom.DeviceStateType.kEnabling) {
         return this.i18n('internetDeviceEnabling');
       }
@@ -168,11 +172,11 @@ Polymer({
       return name ? this.i18n('networkListItemConnectingTo', name) :
                     this.i18n('networkListItemConnecting');
     }
-    if (networkState.type === mojom.NetworkType.kCellular && deviceState) {
+    if (networkState.type === mojom.NetworkType.kCellular && deviceState &&
+        !this.isUpdatedCellularUiEnabled_) {
       // If there is no cellular SIM and the updated UI flag is disabled,
       // simply display 'Off'. See b/162564761 for details.
-      if (deviceState.simAbsent &&
-          !loadTimeData.getBoolean('updatedCellularActivationUi')) {
+      if (deviceState.simAbsent) {
         return this.i18n('deviceOff');
       }
       if (deviceState.scanning) {

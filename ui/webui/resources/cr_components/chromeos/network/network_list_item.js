@@ -534,19 +534,17 @@ Polymer({
     }
 
     if (this.networkState.type === mojom.NetworkType.kCellular) {
-      if (this.networkState.typeState.cellular.simLocked &&
-          !this.isUpdatedCellularUiEnabled_) {
-        return this.i18n('networkListItemSimCardLocked');
+      if (this.networkState.typeState.cellular.simLocked) {
+        return this.isUpdatedCellularUiEnabled_ ?
+            this.i18n('networkListItemUpdatedCellularSimCardLocked') :
+            this.i18n('networkListItemSimCardLocked');
       }
-      if (this.networkState.typeState.cellular.simLocked &&
-          this.isUpdatedCellularUiEnabled_) {
-        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
-      }
-
-      if (this.shouldShowNotAvailableText_()) {
+      if (!this.isUpdatedCellularUiEnabled_ &&
+          this.shouldShowNotAvailableText_()) {
         return this.i18n('networkListItemNotAvailable');
       }
-      if (this.isCellularNetworkScanning_()) {
+      if (!this.isUpdatedCellularUiEnabled_ &&
+          this.isCellularNetworkScanning_()) {
         return this.i18n('networkListItemScanning');
       }
       if (this.isPSimUnavailableNetwork_) {

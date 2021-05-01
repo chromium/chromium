@@ -210,6 +210,9 @@ suite('NetworkSummaryItem', function() {
     Polymer.dom.flush();
     assertTrue(netSummaryItem.$$('#deviceEnabledButton').checked);
     assertTrue(netSummaryItem.$$('#deviceEnabledButton').disabled);
+    assertEquals(
+        netSummaryItem.getNetworkStateText_(),
+        netSummaryItem.i18n('internetDeviceBusy'));
   });
 
   test('Not inhibited device on cellular network, flag on', function() {

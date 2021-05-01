@@ -37,22 +37,31 @@ suite('NetworkListItemTest', function() {
   let eventTriggered;
 
   setup(function() {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
+  });
+
+  /** @param {boolean=} opt_cellularFlagValue */
+  function init(opt_cellularFlagValue) {
+    let cellularFlagValue = true;
+    if (opt_cellularFlagValue === false) {
+      cellularFlagValue = opt_cellularFlagValue;
+    }
+
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: cellularFlagValue,
+    });
+
     listItem = document.createElement('network-list-item');
     listItem.showButtons = true;
     setEventListeners();
     eventTriggered = false;
     document.body.appendChild(listItem);
     Polymer.dom.flush();
-  });
+  }
 
   function initCellularNetwork(iccid, eid, simLocked) {
     const properties = OncMojo.getDefaultManagedProperties(
@@ -90,6 +99,8 @@ suite('NetworkListItemTest', function() {
   }
 
   test('Network icon visibility', function() {
+    init();
+
     // The network icon is not shown if there is no network state.
     let networkIcon = listItem.$$('network-icon');
     assertFalse(!!networkIcon);
@@ -108,6 +119,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Network provider name visibilty', async () => {
+    init();
+
     const getTitle = () => listItem.$$('#itemTitle');
 
     const properties = OncMojo.getDefaultManagedProperties(
@@ -133,6 +146,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Network title is escaped', async () => {
+    init();
+
     listItem.item = {
       customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
       customItemName: '<a>Bad Name</a>',
@@ -148,6 +163,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Pending activation pSIM UI visibility', async () => {
+    init();
+
     const networkStateText = listItem.$.networkStateText;
     assertTrue(!!networkStateText);
     assertTrue(networkStateText.hidden);
@@ -234,6 +251,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Unavailable pSIM UI visibility', async () => {
+    init();
+
     const networkStateText = listItem.$.networkStateText;
     assertTrue(!!networkStateText);
     assertTrue(networkStateText.hidden);
@@ -353,6 +372,8 @@ suite('NetworkListItemTest', function() {
   test(
       'Pending eSIM profile name, provider, install button visibilty',
       async () => {
+        init();
+
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {
@@ -388,6 +409,8 @@ suite('NetworkListItemTest', function() {
 
   test(
       'Installing eSIM profile name, provider, spinner visibilty', async () => {
+        init();
+
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {
@@ -413,6 +436,8 @@ suite('NetworkListItemTest', function() {
       });
 
   test('Only active SIMs should show scanning subtext', async () => {
+    init(/*opt_cellularFlagValue=*/ false);
+
     const kTestIccid1 = '00000000000000000000';
     const kTestIccid2 = '11111111111111111111';
     const kTestEid = '1';
@@ -446,6 +471,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Show sim lock dialog when cellular network is locked', async () => {
+    init();
+
     const iccid = '11111111111111111111';
     const eid = '1';
     eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
@@ -491,6 +518,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Disable sim lock button when device is inhibited', async () => {
+    init();
+
     const iccid = '11111111111111111111';
     const eid = '1';
     eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
@@ -508,6 +537,8 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Network disabled, Pending eSIM, install button visible', async () => {
+    init();
+
     const itemName = 'Item Name';
     const itemSubtitle = 'Item Subtitle';
     listItem.item = {
@@ -550,6 +581,8 @@ suite('NetworkListItemTest', function() {
   test(
       'Network disabled, no arrow and enter and click does not fire events',
       async () => {
+        init();
+
         const properties = OncMojo.getDefaultManagedProperties(
             mojom.NetworkType.kCellular, 'cellular');
         mojoApi_.setManagedPropertiesForTest(properties);
@@ -574,6 +607,8 @@ suite('NetworkListItemTest', function() {
       });
 
   test('Show locked sublabel when cellular network is locked', async () => {
+    init();
+
     const iccid = '11111111111111111111';
     const eid = '1';
     eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
@@ -591,6 +626,8 @@ suite('NetworkListItemTest', function() {
   test(
       'Show locked sublabel when cellular network is locked and scanning',
       async () => {
+        init();
+
         const iccid = '11111111111111111111';
         const eid = '1';
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
