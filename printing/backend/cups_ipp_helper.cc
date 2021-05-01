@@ -15,7 +15,6 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/cups_printer.h"
@@ -25,19 +24,19 @@
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "printing/backend/ipp_handler_map.h"
 #include "printing/printing_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 namespace printing {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 constexpr int kPinMinimumLength = 4;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -257,7 +256,7 @@ bool CollateDefault(const CupsOptionProvider& printer) {
   return name && !base::StringPiece(name).compare(kCollated);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 bool PinSupported(const CupsOptionProvider& printer) {
   ipp_attribute_t* attr = printer.GetSupportedOptionValues(kIppPin);
   if (!attr)
@@ -312,7 +311,7 @@ void ExtractAdvancedCapabilities(const CupsOptionProvider& printer,
   attr_count += AddAttributes(printer, kIppDocumentAttributes, options);
   base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesCount", attr_count);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -335,10 +334,10 @@ void CapsAndDefaultsFromPrinter(const CupsOptionProvider& printer,
   printer_info->default_paper = DefaultPaper(printer);
   printer_info->papers = SupportedPapers(printer);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   printer_info->pin_supported = PinSupported(printer);
   ExtractAdvancedCapabilities(printer, printer_info);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   ExtractCopies(printer, printer_info);
   ExtractColor(printer, printer_info);

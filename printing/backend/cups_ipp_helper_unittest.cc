@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_printer.h"
+#include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,6 +115,12 @@ ipp_attribute_t* MakeStringCollection(ipp_t* ipp,
                                       const std::vector<const char*>& strings) {
   return ippAddStrings(ipp, IPP_TAG_PRINTER, IPP_TAG_KEYWORD, "TEST_DATA",
                        strings.size(), nullptr, strings.data());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, DefaultPaper) {
+  EXPECT_EQ(ParsePaper(""), DefaultPaper(*printer_));
+  printer_->SetOptionDefault("media", MakeString(ipp_, "iso_a4_210x297mm"));
+  EXPECT_EQ(ParsePaper("iso_a4_210x297mm"), DefaultPaper(*printer_));
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
@@ -282,7 +289,7 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSpecialVendorIds) {
                          "iso b0")));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST_F(PrintBackendCupsIppHelperTest, PinSupported) {
   printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
   printer_->SetSupportedOptions("job-password-encryption",
@@ -363,6 +370,6 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
   histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace printing
