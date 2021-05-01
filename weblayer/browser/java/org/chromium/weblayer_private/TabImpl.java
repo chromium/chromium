@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
@@ -1191,7 +1192,14 @@ public final class TabImpl extends ITab.Stub {
 
                     @Override
                     public InsetObserverView getInsetObserverView() {
-                        return mBrowser.getViewController().getInsetObserverView();
+                        BrowserViewController controller = mBrowser.getPossiblyNullViewController();
+                        return controller != null ? controller.getInsetObserverView() : null;
+                    }
+
+                    @Override
+                    public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
+                        // No activity-wide display cutout mode override.
+                        return null;
                     }
 
                     @Override

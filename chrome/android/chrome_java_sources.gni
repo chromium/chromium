@@ -511,6 +511,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/directactions/GoBackDirectActionHandler.java",
   "java/src/org/chromium/chrome/browser/directactions/MenuDirectActionHandler.java",
   "java/src/org/chromium/chrome/browser/directactions/SimpleDirectActionHandler.java",
+  "java/src/org/chromium/chrome/browser/display_cutout/ActivityDisplayCutoutModeSupplier.java",
   "java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
   "java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/document/DocumentWebContentsDelegate.java",

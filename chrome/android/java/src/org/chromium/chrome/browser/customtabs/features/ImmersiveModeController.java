@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features;
 
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+
 import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
 import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE;
 import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
@@ -18,9 +20,11 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
+import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Inject;
 
@@ -33,6 +37,8 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
 
     private final Activity mActivity;
+    private final ActivityDisplayCutoutModeSupplier mCutoutSupplier =
+            new ActivityDisplayCutoutModeSupplier();
     private final Handler mHandler = new Handler();
     private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
 
@@ -40,9 +46,11 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
 
     @Inject
     public ImmersiveModeController(ActivityLifecycleDispatcher lifecycleDispatcher,
-            Activity activity) {
+            Activity activity, WindowAndroid window) {
         mActivity = activity;
         lifecycleDispatcher.register(this);
+
+        mCutoutSupplier.attach(window.getUnownedUserDataHost());
     }
 
     /**
@@ -80,7 +88,10 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
                 newFlags -> postSetImmersiveFlags(RESTORE_IMMERSIVE_MODE_DELAY_MILLIS));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // In order to avoid a flicker during launch, set the display cutout mode now (vs
+            // waiting for DisplayCutoutController to set the mode).
             window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
+            mCutoutSupplier.set(layoutInDisplayCutoutMode);
         }
 
         postSetImmersiveFlags(0);
@@ -95,6 +106,7 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         mInImmersiveMode = false;
         mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
         updateImmersiveFlags();
+        mCutoutSupplier.set(LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     private void postSetImmersiveFlags(int delayInMills) {
@@ -132,5 +144,6 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     @Override
     public void onDestroy() {
         mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
+        mCutoutSupplier.destroy();
     }
 }

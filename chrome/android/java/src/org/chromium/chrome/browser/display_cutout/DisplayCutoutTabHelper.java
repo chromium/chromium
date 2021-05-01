@@ -12,6 +12,7 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -89,6 +90,11 @@ public class DisplayCutoutTabHelper implements UserData {
         public InsetObserverView getInsetObserverView() {
             Activity activity = getAttachedActivity();
             return activity == null ? null : ((ChromeActivity) activity).getInsetObserverView();
+        }
+        @Override
+        public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
+            WindowAndroid window = mTab.getWindowAndroid();
+            return window == null ? null : ActivityDisplayCutoutModeSupplier.from(window);
         }
         @Override
         public boolean isInteractable() {

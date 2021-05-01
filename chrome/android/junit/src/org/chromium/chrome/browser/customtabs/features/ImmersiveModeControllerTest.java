@@ -27,7 +27,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Tests for {@link ImmersiveModeController}.
@@ -48,10 +50,13 @@ public class ImmersiveModeControllerTest {
     @Mock
     public Activity mActivity;
     @Mock
+    public WindowAndroid mWindowAndroid;
+    @Mock
     public Window mWindow;
     @Mock
     public View mDecorView;
     private WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
+    public UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     private ImmersiveModeController mController;
     private int mSystemUiVisibility;
@@ -72,7 +77,9 @@ public class ImmersiveModeControllerTest {
             return null;
         }).when(mDecorView).setSystemUiVisibility(anyInt());
 
-        mController = new ImmersiveModeController(mLifecycleDispatcher, mActivity);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
+
+        mController = new ImmersiveModeController(mLifecycleDispatcher, mActivity, mWindowAndroid);
     }
 
     @Test
