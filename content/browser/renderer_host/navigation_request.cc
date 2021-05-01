@@ -2530,13 +2530,8 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
 }
 
 bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
-  // Don't isolate if the master COOP isolation feature is turned off.  The
-  // feature is expected to only be needed on platforms where strict site
-  // isolation isn't used, such as Android.
-  if (!base::FeatureList::IsEnabled(
-          features::kSiteIsolationForCrossOriginOpenerPolicy)) {
+  if (!SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled())
     return false;
-  }
 
   // COOP headers are only served once a response is available.
   if (state_ < WILL_PROCESS_RESPONSE)
@@ -2545,11 +2540,6 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
   // COOP isolation can only be triggered from main frames.  COOP headers
   // aren't honored in subframes.
   if (!IsInMainFrame())
-    return false;
-
-  // Don't apply COOP isolation if site isolation has been disabled (e.g., due
-  // to memory thresholds).
-  if (!SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
     return false;
 
   // Check the COOP header value. All same-origin values are considered to be
