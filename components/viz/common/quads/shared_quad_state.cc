@@ -25,7 +25,9 @@ void RecordReplayAssertSharedQuadContents(const SharedQuadState* state) {
   recordreplay::Assert("SharedQuadContents #1 %d %d %.2f %d %d",
                        state->is_clipped, state->are_contents_opaque, state->opacity,
                        state->blend_mode, state->sorting_context_id);
-  recordreplay::Assert("SharedQuadContents #2 %s", state->quad_to_target_transform.ToString().c_str());
+  recordreplay::Assert("SharedQuadContents #2 %d %s",
+                       state->quad_to_target_transform.IsIdentity(),
+                       state->quad_to_target_transform.ToString().c_str());
   recordreplay::Assert("SharedQuadContents #3 %s", state->quad_layer_rect.ToString().c_str());
   recordreplay::Assert("SharedQuadContents #4 %s", state->visible_quad_layer_rect.ToString().c_str());
   recordreplay::Assert("SharedQuadContents #5 %s", state->clip_rect.ToString().c_str());
