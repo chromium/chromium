@@ -85,7 +85,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     run_return_code = benchmark_class().Run(self.options)
     self.assertEqual(run_return_code, 0)
 
-    process_return_code = results_processor.ProcessResults(self.options)
+    process_return_code = results_processor.ProcessResults(self.options,
+                                                           is_unittest=True)
     self.assertEqual(process_return_code, 0)
 
     histograms_file = os.path.join(self.options.output_dir, 'histograms.json')

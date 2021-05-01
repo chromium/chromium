@@ -95,6 +95,10 @@ def ArgumentParser(standalone=False):
       help=('Compute an extra metric on the test results. Metric should have '
             'the form "version:name", e.g. "tbmv3:power_rails_metric". '
             'Can be used multiple times.'))
+  group.add_argument(
+      '--is-unittest',
+      action='store_true',
+      help='Is running inside a unittest.')
   return parser
 
 

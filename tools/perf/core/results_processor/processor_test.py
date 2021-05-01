@@ -101,6 +101,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir])
@@ -142,6 +143,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir])
@@ -175,6 +177,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     exit_code = processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
@@ -211,6 +214,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
       cloud_patch.return_value = processor.cloud_storage.CloudFilepath(
           bucket='bucket', remote_path='trace.html')
       processor.main([
+          '--is-unittest',
           '--output-format', 'histograms',
           '--output-dir', self.output_dir,
           '--intermediate-dir', self.intermediate_dir,
@@ -255,6 +259,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -262,6 +267,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -292,6 +298,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -299,6 +306,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -334,6 +342,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -370,6 +379,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -428,6 +438,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'html',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -467,6 +478,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'html',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -474,6 +486,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'html',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -504,6 +517,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'html',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -511,6 +525,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'html',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -550,6 +565,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'csv',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -582,6 +598,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'csv',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -589,6 +606,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'csv',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -612,6 +630,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'csv',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -619,6 +638,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     ])
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'csv',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -637,6 +657,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     exit_code = processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir])
@@ -650,6 +671,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     exit_code = processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir])
@@ -663,6 +685,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     exit_code = processor.main([
+        '--is-unittest',
         '--output-format', 'json-test-results',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir])
@@ -686,6 +709,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -733,6 +757,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -793,6 +818,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
@@ -831,6 +857,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     )
 
     processor.main([
+        '--is-unittest',
         '--output-format', 'histograms',
         '--output-dir', self.output_dir,
         '--intermediate-dir', self.intermediate_dir,
