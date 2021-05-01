@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,6 +42,7 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_entry.h"
@@ -2222,4 +2225,194 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
   ui_test_utils::NavigateToURL(browser(), saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("https://saved.com"));
+}
+
+// This test class turns on the feature to dynamically isolate sites where the
+// user logs in via OAuth. This also requires enabling OAuth login detection
+// (which is used by other features as well) and disabling strict site
+// isolation (so that OAuth isolation can be observed on desktop platforms).
+class SiteIsolationForOAuthSitesBrowserTest
+    : public ChromeNavigationBrowserTest {
+ public:
+  SiteIsolationForOAuthSitesBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {login_detection::kLoginDetection,
+         site_isolation::features::kSiteIsolationForOAuthSites},
+        {features::kSitePerProcess});
+  }
+
+  using IsolatedOriginSource =
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeNavigationBrowserTest::SetUpCommandLine(command_line);
+
+    // Allow HTTPS server to be used on sites other than localhost.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  void SetUp() override {
+    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    ChromeNavigationBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.StartAcceptingConnections();
+    ChromeNavigationBrowserTest::SetUpOnMainThread();
+  }
+
+  // Login detection only works for HTTPS sites.
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+// Simulate a popup-based OAuth login flow, where a client opens a popup to log
+// in via OAuth.  Ensure that the client's site becomes isolated when the OAuth
+// login completes.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, PopupFlow) {
+  // Navigate to the OAuth requestor.  It shouldn't be isolated yet.
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("www.oauthclient.com", "/title1.html"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(contents->GetMainFrame()
+                   ->GetProcess()
+                   ->IsProcessLockedToSiteForTesting());
+
+  using IsolatedOriginSource =
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource;
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  EXPECT_FALSE(policy->IsIsolatedSiteFromSource(
+      url::Origin::Create(GURL("https://oauthclient.com")),
+      IsolatedOriginSource::USER_TRIGGERED));
+
+  // Create a popup that emulates an OAuth sign-in flow.
+  content::WebContentsAddedObserver web_contents_added_observer;
+  content::TestNavigationObserver navigation_observer(nullptr, 1);
+  navigation_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::JsReplace(
+          "window.open($1, 'oauth_window', 'width=10,height=10');",
+          https_server()->GetURL("www.oauthprovider.com",
+                                 "/title2.html?client_id=123"))));
+  auto* popup_contents = web_contents_added_observer.GetWebContents();
+  navigation_observer.WaitForNavigationFinished();
+
+  // When the popup is closed, it will be detected as an OAuth login.
+  content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
+  EXPECT_TRUE(ExecJs(popup_contents, "window.close()"));
+  destroyed_watcher.Wait();
+
+  // oauthclient.com should now be isolated. Check that it's now registered
+  // with ChildProcessSecurityPolicy (with its eTLD+1).
+  EXPECT_TRUE(policy->IsIsolatedSiteFromSource(
+      url::Origin::Create(GURL("https://oauthclient.com")),
+      IsolatedOriginSource::USER_TRIGGERED));
+
+  // Check that oauthclient.com navigations are site-isolated in future
+  // BrowsingInstances. Note that because there are no other window references
+  // at this point, a new navigation in the main window should force a
+  // BrowsingInstance swap to apply the new isolation.
+  ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL("www2.oauthclient.com", "/title1.html"));
+  EXPECT_TRUE(contents->GetMainFrame()
+                  ->GetProcess()
+                  ->IsProcessLockedToSiteForTesting());
+}
+
+// Similar to previous test, but simulate a same-window OAuth login flow, where
+// a client navigates directly to the OAuth provider, which will
+// navigate/redirect back to the client when the login flow completes.
+//
+// Part 2 of this test also verifies that OAuth site isolation persists across
+// restarts.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest,
+                       PRE_RedirectFlow) {
+  // Navigate to the OAuth requestor.
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("oauthclient.com", "/title1.html"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(contents->GetMainFrame()
+                   ->GetProcess()
+                   ->IsProcessLockedToSiteForTesting());
+
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  EXPECT_FALSE(policy->IsIsolatedSiteFromSource(
+      url::Origin::Create(GURL("https://oauthclient.com")),
+      IsolatedOriginSource::USER_TRIGGERED));
+
+  // Use an interceptor to allow referencing arbitrary paths on
+  // oauthprovider.com without worrying that corresponding test files exist.
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "oauthprovider.com") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/title2.html", params->client.get());
+          return true;
+        }
+        // Not handled by us.
+        return false;
+      }));
+
+  // Simulate start of OAuth login.
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("oauthprovider.com",
+                                        "/authenticate?client_id=123"));
+
+  // Simulate another OAuth login step.
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("oauthprovider.com",
+                                        "/another_stage?client_id=123"));
+
+  // Simulate completion of OAuth login.
+  ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL("oauthclient.com", "/title2.html?code=secret"));
+
+  // oauthclient.com should now be isolated. Check that it's now registered
+  // with ChildProcessSecurityPolicy.
+  EXPECT_TRUE(policy->IsIsolatedSiteFromSource(
+      url::Origin::Create(GURL("https://oauthclient.com")),
+      IsolatedOriginSource::USER_TRIGGERED));
+
+  // Check that oauthclient.com navigations are site-isolated in future
+  // BrowsingInstances. Open a new unrelated window, which forces a new
+  // BrowsingInstance.
+  AddBlankTabAndShow(browser());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* new_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(new_contents, contents);
+
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("oauthclient.com", "/title1.html"));
+  EXPECT_TRUE(new_contents->GetMainFrame()
+                  ->GetProcess()
+                  ->IsProcessLockedToSiteForTesting());
+}
+
+// See part 1 of the test above.  This is part 2, which verifies that OAuth
+// site isolation persists across restarts.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, RedirectFlow) {
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  EXPECT_TRUE(policy->IsIsolatedSiteFromSource(
+      url::Origin::Create(GURL("https://oauthclient.com")),
+      IsolatedOriginSource::USER_TRIGGERED));
+
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("oauthclient.com", "/title1.html"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(contents->GetMainFrame()
+                  ->GetProcess()
+                  ->IsProcessLockedToSiteForTesting());
 }

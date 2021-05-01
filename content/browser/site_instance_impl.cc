@@ -1776,14 +1776,8 @@ bool SiteInstanceImpl::IsCoopCoepCrossOriginIsolated() const {
 
 // static
 void SiteInstance::StartIsolatingSite(BrowserContext* context,
-                                      const GURL& url) {
-  SiteInstanceImpl::StartIsolatingSite(context, url, true /* should_persist */);
-}
-
-// static
-void SiteInstanceImpl::StartIsolatingSite(BrowserContext* context,
-                                          const GURL& url,
-                                          bool should_persist) {
+                                      const GURL& url,
+                                      bool should_persist) {
   if (!SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
     return;
 

@@ -7,8 +7,16 @@
 
 #include "base/macros.h"
 
+#include <vector>
+
+class GURL;
+
 namespace content {
 class BrowserContext;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace site_isolation {
@@ -24,6 +32,10 @@ class SiteIsolationPolicy {
   // enter passwords is enabled.
   static bool IsIsolationForPasswordSitesEnabled();
 
+  // Returns true if the site isolation mode for isolating sites where users
+  // log in via OAuth, as determined by runtime heuristics.
+  static bool IsIsolationForOAuthSitesEnabled();
+
   // Returns true if Site Isolation related enterprise policies should take
   // effect (e.g. such policies might not be applicable to low-end Android
   // devices because of 1) performance impact and 2) infeasibility of
@@ -35,6 +47,21 @@ class SiteIsolationPolicy {
   // prefs have been loaded.
   static void ApplyPersistedIsolatedOrigins(
       content::BrowserContext* browser_context);
+
+  // Helper to register all passed-in `logged_in_sites` as isolated sites in
+  // the provided `browser_context`. Should be called on startup before any
+  // navigations in `browser_context`.
+  static void IsolateStoredOAuthSites(
+      content::BrowserContext* browser_context,
+      const std::vector<url::Origin>& logged_in_sites);
+
+  // Called when runtime heuristics have determined a user logging in via
+  // OAuth on `signed_in_url`, so that site isolation can be applied to the
+  // corresponding site (i.e., scheme + eTLD+1).  Used only when site isolation
+  // for OAuth sites is enabled (see IsIsolationForOAuthSitesEnabled() above),
+  // which is typically on Android.
+  static void IsolateNewOAuthURL(content::BrowserContext* browser_context,
+                                 const GURL& signed_in_url);
 
   // Determines whether Site Isolation should be disabled because the device
   // does not have the minimum required amount of memory.

@@ -40,6 +40,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
+#include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
@@ -330,6 +331,7 @@ void ChromeBrowserMainExtraPartsProfiles::
           permissions::features::kOneTimeGeolocationPermission)) {
     LastTabStandingTrackerFactory::GetInstance();
   }
+  login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
   LoginUIServiceFactory::GetInstance();
   ManagedConfigurationAPIFactory::GetInstance();

@@ -76,6 +76,16 @@ bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   return false;
 }
 
+std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service) {
+  std::vector<url::Origin> sites;
+  if (auto* dict = pref_service->GetDictionary(kOAuthSignedInSitesPref)) {
+    for (const auto& site_entry : dict->DictItems()) {
+      sites.push_back(url::Origin::Create(GURL(site_entry.first)));
+    }
+  }
+  return sites;
+}
+
 }  // namespace prefs
 
 }  // namespace login_detection

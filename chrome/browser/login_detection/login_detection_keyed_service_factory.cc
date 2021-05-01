@@ -18,12 +18,6 @@ namespace login_detection {
 // static
 LoginDetectionKeyedService* LoginDetectionKeyedServiceFactory::GetForProfile(
     Profile* profile) {
-  if (profile->IsOffTheRecord())
-    return nullptr;
-
-  if (!IsLoginDetectionFeatureEnabled())
-    return nullptr;
-
   return static_cast<LoginDetectionKeyedService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -47,9 +41,29 @@ LoginDetectionKeyedServiceFactory::LoginDetectionKeyedServiceFactory()
 LoginDetectionKeyedServiceFactory::~LoginDetectionKeyedServiceFactory() =
     default;
 
+content::BrowserContext*
+LoginDetectionKeyedServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  if (context->IsOffTheRecord())
+    return nullptr;
+
+  if (!IsLoginDetectionFeatureEnabled())
+    return nullptr;
+
+  return context;
+}
+
 KeyedService* LoginDetectionKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new LoginDetectionKeyedService(Profile::FromBrowserContext(context));
+}
+
+bool LoginDetectionKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  // Required, since the service's constructor applies site isolation for saved
+  // login sites, which needs to happen at profile initialization time, before
+  // any navigations happen in it.
+  return true;
 }
 
 }  // namespace login_detection

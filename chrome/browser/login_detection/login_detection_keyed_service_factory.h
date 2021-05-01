@@ -39,8 +39,11 @@ class LoginDetectionKeyedServiceFactory
   ~LoginDetectionKeyedServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace login_detection

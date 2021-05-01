@@ -50,6 +50,10 @@ class LoginDetectionTabHelper
                            bool renderer_initiated) override;
   void WebContentsDestroyed() override;
 
+  // Called when a new signed-in site has just been discovered from one of the
+  // supported OAuth login flows.
+  void ProcessNewSignedInSite(const GURL& signedin_site);
+
   // Detects successful OAuth login flows.
   std::unique_ptr<OAuthLoginDetector> oauth_login_detector_;
 

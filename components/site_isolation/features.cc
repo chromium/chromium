@@ -26,6 +26,20 @@ const base::Feature kSiteIsolationForPasswordSites {
 #endif
 };
 
+// Controls a mode for dynamically process-isolating sites where the user has
+// logged in via OAuth.  These sites are determined by runtime heuristics.
+//
+// This is intended to be used primarily when full site isolation is turned
+// off.  To check whether this mode is enabled, use
+// SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() rather than
+// checking the feature directly, since that decision is influenced by other
+// factors as well.
+//
+// This feature does not affect Android Webview, which does not include this
+// code.
+const base::Feature kSiteIsolationForOAuthSites{
+    "site-isolation-for-oauth-sites", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // kSitePerProcessOnlyForHighMemoryClients is checked before kSitePerProcess,
 // and (if enabled) can restrict if kSitePerProcess feature is checked at all -
 // no check will be made on devices with low memory (these devices will have no

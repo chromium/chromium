@@ -14,6 +14,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 
 namespace site_isolation {
@@ -44,6 +45,32 @@ bool SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled() {
   // activates the field trial and assigns the client either to a control or an
   // experiment group - such assignment should be final.
   return base::FeatureList::IsEnabled(features::kSiteIsolationForPasswordSites);
+}
+
+// static
+bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
+  // If the user has explicitly enabled site isolation for OAuth sites from the
+  // command line, honor this regardless of policies that may disable site
+  // isolation.
+  if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kSiteIsolationForOAuthSites.name,
+          base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+    return true;
+  }
+
+  // Don't isolate anything when site isolation is turned off by the user or
+  // policy. This includes things like the switches::kDisableSiteIsolation
+  // command-line switch, the corresponding "Disable site isolation" entry in
+  // chrome://flags, enterprise policy controlled via
+  // switches::kDisableSiteIsolationForPolicy, and memory threshold checks in
+  // ShouldDisableSiteIsolationDueToMemoryThreshold().
+  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
+    return false;
+
+  // The feature needs to be checked last, because checking the feature
+  // activates the field trial and assigns the client either to a control or an
+  // experiment group - such assignment should be final.
+  return base::FeatureList::IsEnabled(features::kSiteIsolationForOAuthSites);
 }
 
 // static
@@ -128,6 +155,35 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
 
   UMA_HISTOGRAM_COUNTS_1000(
       "SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size", origins.size());
+}
+
+// static
+void SiteIsolationPolicy::IsolateStoredOAuthSites(
+    content::BrowserContext* browser_context,
+    const std::vector<url::Origin>& logged_in_sites) {
+  // Only isolate logged-in sites if the corresponding feature is enabled and
+  // other isolation requirements (such as memory threshold) are satisfied.
+  // Note that we don't clear logged-in sites from prefs if site isolation is
+  // disabled so that they can be used if isolation is re-enabled later.
+  if (!IsIsolationForOAuthSitesEnabled())
+    return;
+
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      logged_in_sites,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource::USER_TRIGGERED,
+      browser_context);
+}
+
+// static
+void SiteIsolationPolicy::IsolateNewOAuthURL(
+    content::BrowserContext* browser_context,
+    const GURL& signed_in_url) {
+  if (!IsIsolationForOAuthSitesEnabled())
+    return;
+
+  content::SiteInstance::StartIsolatingSite(browser_context, signed_in_url,
+                                            false /* should_persist */);
 }
 
 // static

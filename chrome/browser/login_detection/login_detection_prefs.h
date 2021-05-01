@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
 
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -27,6 +28,10 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url);
 // Returns whether the site of the url exists in the list of OAuth signed-in
 // sites. The effective TLD+1 of the URL is used as the site.
 bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url);
+
+// Returns a list of url::Origins representing saved OAuth signed-in sites.
+// Note that entries in this list consist of sites (i.e., scheme and eTLD+1).
+std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service);
 
 }  // namespace prefs
 

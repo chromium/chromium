@@ -212,22 +212,27 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // Starts requiring a dedicated process for |url|'s site.  On platforms where
   // strict site isolation is disabled, this may be used as a runtime signal
   // that a certain site should become process-isolated, because its security
-  // is important to the user (e.g., if the user has typed a password on that
-  // site).  The site will be determined from |url|'s scheme and eTLD+1. If
-  // |context| is non-null, the site will be isolated only within that
-  // BrowserContext; if |context| is null, the site will be isolated globally
-  // for all BrowserContexts.
+  // is important to the user (e.g., if the user has typed a password or logged
+  // in via OAuth on that site).  The site will be determined from |url|'s
+  // scheme and eTLD+1. If |context| is non-null, the site will be isolated
+  // only within that BrowserContext; if |context| is null, the site will be
+  // isolated globally for all BrowserContexts.
   //
   // Note that this has no effect if site isolation is turned off, such as via
   // the kDisableSiteIsolation cmdline flag or enterprise policy -- see also
   // SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled().
   //
-  // Currently this function assumes that the site is added *persistently*: it
-  // will ask the embedder to save the site as part of profile data for
-  // |context|, so that it survives restarts.  The site will be cleared from
-  // profile data if the user clears browsing data.  Future uses of this
-  // function may want to avoid persistence by passing in a new flag.
-  static void StartIsolatingSite(BrowserContext* context, const GURL& url);
+  // The |should_persist| parameter controls whether the site is added
+  // *persistently*.  When true (this is the default), this function will ask
+  // the embedder to save the site as part of profile data for |context|, so
+  // that it survives restarts. The site will be cleared from profile data if
+  // the user clears browsing data.  When false, the isolation will last only
+  // until the end of the current browsing session.  This is appropriate if the
+  // site's persistence is not desired or is managed separately (e.g., sites
+  // isolated due to OAuth logins are saved and in another component).
+  static void StartIsolatingSite(BrowserContext* context,
+                                 const GURL& url,
+                                 bool should_persist = true);
 
  protected:
   friend class base::RefCounted<SiteInstance>;
