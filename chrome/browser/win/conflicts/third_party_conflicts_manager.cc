@@ -281,7 +281,7 @@ void ThirdPartyConflictsManager::OnModuleListComponentRegistered(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(module_list_component_id_.empty());
-  module_list_component_id_ = component_id.as_string();
+  module_list_component_id_ = std::string(component_id);
 
   if (component_version == base::Version("0.0.0.0")) {
     // The module list component is currently not installed. An update is

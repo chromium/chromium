@@ -184,7 +184,7 @@ SHA1Digest SHA1HashSpan(span<const uint8_t> data) {
 
 std::string SHA1HashString(StringPiece str) {
   char hash[kSHA1Length];
-  SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.as_string().c_str()),
+  SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.data()),
                 str.length(), reinterpret_cast<unsigned char*>(hash));
   return std::string(hash, kSHA1Length);
 }

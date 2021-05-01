@@ -22,7 +22,7 @@ proto::UrlRule CreateSubstringRule(base::StringPiece substring) {
   rule.set_url_pattern_type(proto::URL_PATTERN_TYPE_SUBSTRING);
   rule.set_anchor_left(proto::ANCHOR_TYPE_NONE);
   rule.set_anchor_right(proto::ANCHOR_TYPE_NONE);
-  rule.set_url_pattern(substring.as_string());
+  rule.set_url_pattern(std::string(substring));
 
   return rule;
 }

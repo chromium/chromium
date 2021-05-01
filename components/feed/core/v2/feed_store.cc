@@ -97,7 +97,7 @@ bool IsAnyStreamRecordKey(const std::string& key) {
 class StreamKeyMatcher {
  public:
   explicit StreamKeyMatcher(const StreamType& stream_type) {
-    stream_id_ = feedstore::StreamId(stream_type).as_string();
+    stream_id_ = std::string(feedstore::StreamId(stream_type));
     stream_id_plus_slash_ = stream_id_ + '/';
   }
 
@@ -237,19 +237,19 @@ MakeUpdatesForStreamModelUpdateRequest(
   base::StringPiece stream_id = feedstore::StreamId(stream_type);
   auto updates = std::make_unique<
       std::vector<std::pair<std::string, feedstore::Record>>>();
-  update_request->stream_data.set_stream_id(stream_id.as_string());
+  update_request->stream_data.set_stream_id(std::string(stream_id));
   updates->push_back(MakeKeyAndRecord(std::move(update_request->stream_data)));
   for (feedstore::Content& content : update_request->content) {
-    content.set_stream_id(stream_id.as_string());
+    content.set_stream_id(std::string(stream_id));
     updates->push_back(MakeKeyAndRecord(std::move(content)));
   }
   for (feedstore::StreamSharedState& shared_state :
        update_request->shared_states) {
-    shared_state.set_stream_id(stream_id.as_string());
+    shared_state.set_stream_id(std::string(stream_id));
     updates->push_back(MakeKeyAndRecord(std::move(shared_state)));
   }
   feedstore::StreamStructureSet stream_structure_set;
-  stream_structure_set.set_stream_id(stream_id.as_string());
+  stream_structure_set.set_stream_id(std::string(stream_id));
   stream_structure_set.set_sequence_number(structure_set_sequence_number);
   for (feedstore::StreamStructure& structure :
        update_request->stream_structures) {
@@ -498,12 +498,12 @@ void FeedStore::WriteOperations(
     *structure_set.add_structures() = std::move(*operation.mutable_structure());
     if (operation.has_content()) {
       feedstore::Record record;
-      operation.mutable_content()->set_stream_id(stream_id.as_string());
+      operation.mutable_content()->set_stream_id(std::string(stream_id));
       record.set_allocated_content(operation.release_content());
       records.push_back(std::move(record));
     }
   }
-  structure_set.set_stream_id(feedstore::StreamId(stream_type).as_string());
+  structure_set.set_stream_id(std::string(feedstore::StreamId(stream_type)));
   structure_set.set_sequence_number(sequence_number);
 
   records.push_back(std::move(structures_record));

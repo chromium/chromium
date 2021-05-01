@@ -75,14 +75,13 @@ TEST_F(NtpBackgroundServiceTest, CorrectCollectionRequest) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
-  std::string request_body = test_url_loader_factory()
-                                 ->pending_requests()
-                                 ->at(0)
-                                 .request.request_body->elements()
-                                 ->at(0)
-                                 .As<network::DataElementBytes>()
-                                 .AsStringPiece()
-                                 .as_string();
+  std::string request_body(test_url_loader_factory()
+                               ->pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
   ntp::background::GetCollectionsRequest collection_request;
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());

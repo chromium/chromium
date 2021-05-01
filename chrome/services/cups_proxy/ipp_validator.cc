@@ -124,12 +124,12 @@ base::Optional<HttpRequestLine> IppValidator::ValidateHttpRequestLine(
 
   // Empty endpoint is allowed.
   if (endpoint == "/") {
-    return HttpRequestLine{method.as_string(), endpoint.as_string(),
-                           http_version.as_string()};
+    return HttpRequestLine{std::string(method), std::string(endpoint),
+                           std::string(http_version)};
   }
 
   // Ensure endpoint is a known printer.
-  auto printer_id = ParseEndpointForPrinterId(endpoint.as_string());
+  auto printer_id = ParseEndpointForPrinterId(std::string(endpoint));
   if (!printer_id.has_value()) {
     return base::nullopt;
   }
@@ -139,8 +139,8 @@ base::Optional<HttpRequestLine> IppValidator::ValidateHttpRequestLine(
     return base::nullopt;
   }
 
-  return HttpRequestLine{method.as_string(), endpoint.as_string(),
-                         http_version.as_string()};
+  return HttpRequestLine{std::string(method), std::string(endpoint),
+                         std::string(http_version)};
 }
 
 base::Optional<std::vector<ipp_converter::HttpHeader>>

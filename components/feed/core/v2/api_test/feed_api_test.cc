@@ -177,10 +177,10 @@ void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
 }
 void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
                                             base::StringPiece data) {
-  data_store_entries_[key.as_string()] = data.as_string();
+  data_store_entries_[std::string(key)] = std::string(data);
 }
 void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
-  data_store_entries_.erase(key.as_string());
+  data_store_entries_.erase(std::string(key));
 }
 
 void TestSurfaceBase::Clear() {

@@ -425,7 +425,7 @@ class RendererSandboxedProcessLauncherDelegateWin
       std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
           js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       for (const auto& js_flag : js_flag_list) {
-        if (js_flag.as_string() == "--jitless") {
+        if (js_flag == "--jitless") {
           // If v8 is running jitless then there is no need for the ability to
           // mark writable pages as executable to be available to the process.
           dynamic_code_can_be_disabled_ = true;

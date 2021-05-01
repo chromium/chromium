@@ -34,7 +34,7 @@ BindingsManagerCast::~BindingsManagerCast() = default;
 void BindingsManagerCast::AddBinding(base::StringPiece binding_name,
                                      base::StringPiece binding_script) {
   cast_web_contents_->script_injector()->AddScriptForAllOrigins(
-      binding_name.as_string(), binding_script);
+      std::string(binding_name), binding_script);
 }
 
 void BindingsManagerCast::OnPageStateChanged(

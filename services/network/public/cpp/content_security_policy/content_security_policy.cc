@@ -677,7 +677,7 @@ mojom::CSPSourceListPtr ParseSourceList(
     parsing_errors.emplace_back(base::StringPrintf(
         "The source list for the Content Security Policy directive '%s' "
         "contains an invalid source: '%s'. It will be ignored.",
-        ToString(directive_name).c_str(), expression.as_string().c_str()));
+        ToString(directive_name).c_str(), std::string(expression).c_str()));
   }
 
   return directive;
@@ -803,7 +803,7 @@ void ParseReportDirective(const GURL& request_url,
             "The Content Security Policy directive 'report-uri' specifies as "
             "endpoint '%s'. This endpoint will be ignored since it violates "
             "the policy for Mixed Content.",
-            uri.as_string().c_str()));
+            std::string(uri).c_str()));
         continue;
       }
 
@@ -811,7 +811,7 @@ void ParseReportDirective(const GURL& request_url,
         parsing_errors.emplace_back(base::StringPrintf(
             "The Content Security Policy directive 'report-uri' specifies an "
             "invalid endpoint '%s'. It will be ignored.",
-            uri.as_string().c_str()));
+            std::string(uri).c_str()));
         continue;
       }
       report_endpoints->push_back(url.spec());
@@ -946,7 +946,7 @@ void AddContentSecurityPolicyFromHeader(
       out->parsing_errors.emplace_back(
           base::StringPrintf("The Content Security Policy directive '%s' is "
                              "ignored when delivered via a <meta> element.",
-                             directive.first.as_string().c_str()));
+                             std::string(directive.first).c_str()));
       continue;
     }
 

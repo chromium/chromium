@@ -377,7 +377,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
 
     auto key_str = ConvertWatchTimeKeyToStringForUma(key);
     SCOPED_TRACE(key_str.empty() ? base::NumberToString(i)
-                                 : key_str.as_string());
+                                 : std::string(key_str));
 
     // Values for |is_background| and |is_muted| don't matter in this test since
     // they don't prevent the muted or background keys from being recorded.
@@ -631,7 +631,7 @@ TEST_F(WatchTimeRecorderTest, TestDiscardMetricsMediaStream) {
   // No watch time and no discard metrics should be logged.
   ExpectWatchTime({}, base::TimeDelta());
   for (auto key : discard_keys_) {
-    histogram_tester_->ExpectTotalCount(key.as_string(), 0);
+    histogram_tester_->ExpectTotalCount(key, 0);
   }
 
   // UKM watch time won't be logged because we aren't sending "All" keys.

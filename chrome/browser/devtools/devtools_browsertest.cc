@@ -212,9 +212,8 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
                             const char* panel_name) {
   // The full name is the concatenation of the extension URL (stripped of its
   // trailing '/') and the |panel_name| that was passed to panels.create().
-  std::string prefix = base::TrimString(devtools_extension->url().spec(), "/",
-                                        base::TRIM_TRAILING)
-                           .as_string();
+  std::string prefix(base::TrimString(devtools_extension->url().spec(), "/",
+                                      base::TRIM_TRAILING));
   SwitchToPanel(window, (prefix + panel_name).c_str());
 }
 

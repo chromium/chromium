@@ -100,7 +100,7 @@ Metadata::StreamMetadata& MetadataForStream(Metadata& metadata,
   if (existing)
     return *const_cast<Metadata::StreamMetadata*>(existing);
   Metadata::StreamMetadata* sm = metadata.add_stream_metadata();
-  sm->set_stream_id(StreamId(stream_type).as_string());
+  sm->set_stream_id(std::string(StreamId(stream_type)));
   return *sm;
 }
 

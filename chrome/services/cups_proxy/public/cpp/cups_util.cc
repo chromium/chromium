@@ -107,7 +107,7 @@ base::Optional<std::string> GetPrinterId(ipp_t* ipp) {
     return base::nullopt;
   }
 
-  return uuid.substr(uuid_start + 1).as_string();
+  return std::string(uuid.substr(uuid_start + 1));
 }
 
 base::Optional<std::string> ParseEndpointForPrinterId(
@@ -118,7 +118,7 @@ base::Optional<std::string> ParseEndpointForPrinterId(
     return base::nullopt;
   }
 
-  return endpoint.substr(last_path + 1).as_string();
+  return std::string(endpoint.substr(last_path + 1));
 }
 
 std::vector<chromeos::Printer> FilterPrintersForPluginVm(

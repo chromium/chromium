@@ -117,7 +117,7 @@ bool GetEnrollmentTokenFromFile(std::string* enrollment_token) {
     return false;
   }
   *enrollment_token =
-      base::TrimWhitespaceASCII(*enrollment_token, base::TRIM_ALL).as_string();
+      std::string(base::TrimWhitespaceASCII(*enrollment_token, base::TRIM_ALL));
   return true;
 }
 
@@ -142,7 +142,7 @@ base::Optional<bool> IsEnrollmentMandatoryByFile() {
                               &options)) {
     return base::Optional<bool>();
   }
-  return base::TrimWhitespaceASCII(options, base::TRIM_ALL).as_string() ==
+  return std::string(base::TrimWhitespaceASCII(options, base::TRIM_ALL)) ==
          kEnrollmentMandatoryOption;
 }
 
@@ -181,7 +181,7 @@ std::string BrowserDMTokenStorageMac::InitDMToken() {
   if (!base::ReadFileToString(token_file_path, &token))
     return std::string();
 
-  return base::TrimWhitespaceASCII(token, base::TRIM_ALL).as_string();
+  return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageMac::InitEnrollmentErrorOption() {

@@ -59,7 +59,7 @@ WebState::InterfaceBinder::~InterfaceBinder() = default;
 
 void WebState::InterfaceBinder::AddInterface(base::StringPiece interface_name,
                                              Callback callback) {
-  callbacks_.emplace(interface_name.as_string(), std::move(callback));
+  callbacks_.emplace(std::string(interface_name), std::move(callback));
 }
 
 void WebState::InterfaceBinder::BindInterface(

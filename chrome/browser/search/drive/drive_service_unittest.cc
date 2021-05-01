@@ -57,13 +57,12 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
-  auto request_body = test_url_loader_factory_.pending_requests()
-                          ->at(0)
-                          .request.request_body->elements()
-                          ->at(0)
-                          .As<network::DataElementBytes>()
-                          .AsStringPiece()
-                          .as_string();
+  std::string request_body(test_url_loader_factory_.pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
   auto body_value = base::JSONReader::Read(request_body);
   EXPECT_EQ("en-US", *body_value->FindStringPath("client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(

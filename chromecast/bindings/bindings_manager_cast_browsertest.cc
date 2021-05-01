@@ -71,10 +71,10 @@ class TitleChangeObserver : public CastWebContents::Observer {
   // Spins a Runloop until the title of the page matches the |expected_title|
   // that have been set.
   void RunUntilTitleEquals(base::StringPiece expected_title) {
-    expected_title_ = expected_title.as_string();
+    expected_title_ = std::string(expected_title);
     // Spin the runloop until the expected conditions are met.
     if (current_title_ != expected_title_) {
-      expected_title_ = expected_title.as_string();
+      expected_title_ = std::string(expected_title);
       base::RunLoop run_loop;
       quit_closure_ = run_loop.QuitClosure();
       run_loop.Run();

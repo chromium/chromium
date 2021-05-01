@@ -78,7 +78,7 @@ bool LoadTokenFromFile(const base::FilePath& token_file_path,
     return false;
   }
 
-  *token = base::TrimWhitespaceASCII(token_value, base::TRIM_ALL).as_string();
+  *token = std::string(base::TrimWhitespaceASCII(token_value, base::TRIM_ALL));
   return true;
 }
 

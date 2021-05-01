@@ -284,9 +284,8 @@ std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
   std::string seed;
   CHECK(ui::ResourceBundle::HasSharedInstance());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  seed = ui::ResourceBundle::GetSharedInstance()
-             .GetRawDataResource(IDR_PREF_HASH_SEED_BIN)
-             .as_string();
+  seed = std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+      IDR_PREF_HASH_SEED_BIN));
 #endif
   return std::make_unique<ProfilePrefStoreManager>(profile_path, seed,
                                                    legacy_device_id);

@@ -152,7 +152,7 @@ std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
           &spki_bytes)) {
     return {};
   }
-  return spki_bytes.as_string();
+  return std::string(spki_bytes);
 }
 
 }  // namespace

@@ -48,8 +48,8 @@ GURL WebUIPageUrlWithHost(const std::string& host) {
 // and returns true if it was found or false on timeout. Strips trailing URL
 // slash if present as the omnibox does not display them.
 bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {
-  const std::string trimmed_URL =
-      base::TrimString(URL, "/", TrimPositions::TRIM_TRAILING).as_string();
+  const std::string trimmed_URL(
+      base::TrimString(URL, "/", TrimPositions::TRIM_TRAILING));
 
   // TODO(crbug.com/642207): Unify with the omniboxText matcher or move to the
   // same location with the omniboxText matcher.

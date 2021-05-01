@@ -284,10 +284,10 @@ void ChromiumHttpConnection::OnDataReceived(base::StringPiece string_piece,
     // notification to the delegate and cache the response part.
     on_resume_callback_ = std::move(resume);
     DCHECK(partial_response_cache_.empty());
-    partial_response_cache_ = string_piece.as_string();
+    partial_response_cache_ = std::string(string_piece);
   } else {
     DCHECK(partial_response_cache_.empty());
-    delegate_->OnPartialResponse(string_piece.as_string());
+    delegate_->OnPartialResponse(std::string(string_piece));
     std::move(resume).Run();
   }
 }

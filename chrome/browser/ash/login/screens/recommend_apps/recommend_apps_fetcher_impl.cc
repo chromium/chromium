@@ -311,7 +311,7 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
 
   for (const base::StringPiece& gl_extension : GetGLExtensions()) {
     if (!gl_extension.empty())
-      device_config_.add_gl_extension(gl_extension.as_string());
+      device_config_.add_gl_extension(std::string(gl_extension));
   }
 }
 

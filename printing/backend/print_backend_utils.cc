@@ -98,7 +98,7 @@ PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value) {
   base::StringPiece dimensions = pieces.back();
 
   PrinterSemanticCapsAndDefaults::Paper paper;
-  paper.vendor_id = value.as_string();
+  paper.vendor_id = std::string(value);
   paper.size_um = DimensionsToMicrons(dimensions);
   // Omits the final token describing the media dimensions.
   pieces.pop_back();

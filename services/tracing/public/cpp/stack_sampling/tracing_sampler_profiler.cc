@@ -290,7 +290,7 @@ struct FrameDetails {
       return std::string(build_id, build_id_length);
     }());
     if (library_name) {
-      module_name = library_name->as_string();
+      module_name = std::string(*library_name);
     }
     module_id = *chrome_debug_id;
   }

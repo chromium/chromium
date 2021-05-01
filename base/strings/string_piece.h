@@ -175,17 +175,8 @@ class BasicStringPiece {
     length_ -= n;
   }
 
-  // This is the style of conversion preferred by std::string_view in C++17.
   explicit operator std::basic_string<CharT>() const {
     return std::basic_string<CharT>(data(), size());
-  }
-
-  // Deprecated, use operator std::basic_string<CharT>() instead.
-  // TODO(crbug.com/1049498): Remove for all CharTs.
-  template <typename ValueT = CharT,
-            typename = std::enable_if_t<std::is_same<ValueT, char>::value>>
-  std::basic_string<CharT> as_string() const {
-    return std::basic_string<CharT>(*this);
   }
 
   constexpr const_iterator begin() const noexcept { return ptr_; }

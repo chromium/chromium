@@ -85,9 +85,8 @@ std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {
       raw_policies[base::SysUTF8ToNSString(kEnrollmentTokenPolicyName)];
 
   if (token) {
-    return base::TrimWhitespaceASCII(base::SysNSStringToUTF8(token),
-                                     base::TRIM_ALL)
-        .as_string();
+    return std::string(base::TrimWhitespaceASCII(base::SysNSStringToUTF8(token),
+                                                 base::TRIM_ALL));
   }
 
   return std::string();
@@ -102,7 +101,7 @@ std::string BrowserDMTokenStorageIOS::InitDMToken() {
   if (!base::ReadFileToString(token_file_path, &token))
     return std::string();
 
-  return base::TrimWhitespaceASCII(token, base::TRIM_ALL).as_string();
+  return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageIOS::InitEnrollmentErrorOption() {

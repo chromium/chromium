@@ -99,8 +99,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
       // Don't treat '${url}' as an environment variable, leave it as is.
       out.append(kUrlVarName);
     } else {
-      std::string var_name =
-          (submatch[1].empty() ? submatch[2] : submatch[1]).as_string();
+      std::string var_name((submatch[1].empty() ? submatch[2] : submatch[1]));
       const char* var_value = getenv(var_name.c_str());
       if (var_value != NULL)
         out.append(var_value);

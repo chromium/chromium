@@ -67,7 +67,7 @@ class DlpContentManagerTest : public testing::Test {
             [this](base::StringPiece record, reporting::Priority priority,
                    reporting::ReportQueue::EnqueueCallback callback) {
               DlpPolicyEvent event;
-              event.ParseFromString(record.as_string());
+              event.ParseFromString(std::string(record));
               // Don't use this code in a multithreaded env as it can course
               // concurrency issues with the events in the vector.
               events_.push_back(event);

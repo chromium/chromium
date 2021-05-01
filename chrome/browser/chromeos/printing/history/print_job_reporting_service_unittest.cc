@@ -288,7 +288,7 @@ class PrintJobReportingServiceTest : public ::testing::Test {
             [this](base::StringPiece record, reporting::Priority priority,
                    reporting::ReportQueue::EnqueueCallback callback) {
               em::PrintJobEvent event;
-              event.ParseFromString(record.as_string());
+              event.ParseFromString(std::string(record));
               events_.push_back(event);
               priorities_.push_back(priority);
             });

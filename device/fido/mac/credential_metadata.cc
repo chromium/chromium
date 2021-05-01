@@ -273,8 +273,8 @@ static base::Optional<CredentialMetadata> UnsealLegacyCredentialId(
     return base::nullopt;
   }
   return CredentialMetadata(array[0].GetBytestring(),
-                            array[1].GetBytestringAsString().as_string(),
-                            array[2].GetBytestringAsString().as_string(),
+                            std::string(array[1].GetBytestringAsString()),
+                            std::string(array[2].GetBytestringAsString()),
                             /*is_resident=*/false);
 }
 
@@ -311,8 +311,8 @@ base::Optional<CredentialMetadata> UnsealCredentialId(
     return base::nullopt;
   }
   return CredentialMetadata(
-      array[0].GetBytestring(), array[1].GetBytestringAsString().as_string(),
-      array[2].GetBytestringAsString().as_string(), array[3].GetBool());
+      array[0].GetBytestring(), std::string(array[1].GetBytestringAsString()),
+      std::string(array[2].GetBytestringAsString()), array[3].GetBool());
 }
 
 std::string EncodeRpIdAndUserId(const std::string& secret,

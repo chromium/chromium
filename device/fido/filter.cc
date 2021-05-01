@@ -241,7 +241,7 @@ bool MaybeParseFilter(base::StringPiece json) {
     return false;
   }
 
-  current_filter->json = json.as_string();
+  current_filter->json = std::string(json);
   return true;
 }
 
