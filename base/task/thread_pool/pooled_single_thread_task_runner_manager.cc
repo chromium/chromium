@@ -397,6 +397,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
             MakeRefCounted<Sequence>(traits,
                                      this,
                                      TaskSourceExecutionMode::kSingleThread)) {
+    recordreplay::RegisterPointer(this);
     DCHECK(outer_);
     DCHECK(worker_);
   }
@@ -454,6 +455,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
 
  private:
   ~PooledSingleThreadTaskRunner() override {
+    recordreplay::Assert("~PooledSingleThreadTaskRunner %lu", recordreplay::PointerId(this));
+    recordreplay::UnregisterPointer(this);
+
     // Only unregister if this is a DEDICATED SingleThreadTaskRunner. SHARED
     // task runner WorkerThreads are managed separately as they are reused.
     // |g_manager_is_alive| avoids a use-after-free should this
@@ -476,6 +480,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
         thread_mode_ == SingleThreadTaskRunnerThreadMode::DEDICATED) {
       outer_->UnregisterWorkerThread(worker_);
     }
+
+    recordreplay::Assert("~PooledSingleThreadTaskRunner Done");
   }
 
   WorkerThreadDelegate* GetDelegate() const {
