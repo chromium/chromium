@@ -2028,6 +2028,7 @@ try_.chromium_win_builder(
     goma_jobs = goma.jobs.J150,
     use_clang_coverage = True,
     builderless = False,
+    cores = 16,
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
