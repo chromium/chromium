@@ -117,9 +117,12 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(bool is_active) {
   visibility_ = QuickAnswersVisibility::kClosed;
   MaybeDismissQuickAnswersNotice();
   bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
-  quick_answers_client_->OnQuickAnswersDismissed(
-      quick_answer_ ? quick_answer_->result_type : ResultType::kNoResult,
-      is_active && closed);
+  // |quick_answer_| could be null before we receive the result from the server.
+  // Do not send the signal since the quick answer is dismissed before ready.
+  if (quick_answer_) {
+    quick_answers_client_->OnQuickAnswersDismissed(quick_answer_->result_type,
+                                                   is_active && closed);
+  }
 }
 
 chromeos::quick_answers::QuickAnswersDelegate*
