@@ -2241,7 +2241,8 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   return diff;
 }
 
-void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style) {
+void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
+                                         bool match_parent_size) {
   NOT_DESTROYED();
   DCHECK(pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
@@ -2262,6 +2263,11 @@ void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style) {
     ComputedStyle* style =
         GetDocument().GetStyleResolver().CreateComputedStyle();
     style->InheritFrom(*pseudo_style);
+    if (match_parent_size) {
+      DCHECK(IsImage());
+      style->SetWidth(Length::Percent(100));
+      style->SetHeight(Length::Percent(100));
+    }
     SetStyle(std::move(style));
     return;
   }

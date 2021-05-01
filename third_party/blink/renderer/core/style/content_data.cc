@@ -59,7 +59,8 @@ LayoutObject* ImageContentData::CreateLayoutObject(
     const ComputedStyle& pseudo_style,
     LegacyLayout) const {
   LayoutImage* image = LayoutImage::CreateAnonymous(pseudo);
-  image->SetPseudoElementStyle(&pseudo_style);
+  bool match_parent_size = image_ && image_->IsGeneratedImage();
+  image->SetPseudoElementStyle(&pseudo_style, match_parent_size);
   if (image_) {
     image->SetImageResource(
         MakeGarbageCollected<LayoutImageResourceStyleImage>(image_.Get()));
