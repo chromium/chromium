@@ -770,6 +770,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_CANCEL},
       {"esimRemoveProfileDialogTitle",
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_TITLE},
+      {"eSimRemoveProfileDialogDescription",
+       IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_DESCRIPTION},
       {"eSimRemoveProfileDialogRemove",
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_REMOVE},
       {"eSimRemoveProfileDialogError",

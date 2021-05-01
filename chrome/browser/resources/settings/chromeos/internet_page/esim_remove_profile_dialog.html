@@ -21,6 +21,7 @@
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         font-size: smaller;
+        margin-top: 20px;
       }
 
       #warningMessage iron-icon {
@@ -34,6 +35,7 @@
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
       <div slot="body">
+        <div>$i18n{eSimRemoveProfileDialogDescription}</div>
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
           $i18n{eSimDialogConnectionWarning}
