@@ -338,8 +338,9 @@ def make_factory_methods(cg_context):
     # 12.13. if there is an entry in S that has ... a string type ...
     # 12.14. if there is an entry in S that has ... a numeric type ...
     # 12.15. if there is an entry in S that has ... boolean ...
-    member = find_by_type(lambda t: t.is_enumeration or t.is_string or t.
-                          is_numeric or t.is_boolean)
+    member = (find_by_type(lambda t: t.is_enumeration or t.is_string)
+              or find_by_type(lambda t: t.is_numeric)
+              or find_by_type(lambda t: t.is_boolean))
     if member:
         dispatch_if(True)
     else:
