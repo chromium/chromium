@@ -132,6 +132,34 @@ TEST_F(PaletteTrayTest, StylusSeenPrefInitiallySet) {
   EXPECT_TRUE(palette_tray_->GetVisible());
 }
 
+// Verify if the kEnableStylusTools pref was never set the stylus
+// should become visible after a stylus event. Even if kHasSeenStylus
+// has been previously set.
+TEST_F(PaletteTrayTest, PaletteTrayVisibleIfEnableStylusToolsNotSet) {
+  local_state()->SetBoolean(prefs::kHasSeenStylus, true);
+  ASSERT_FALSE(palette_tray_->GetVisible());
+
+  // Send a stylus event.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->EnterPenPointerMode();
+  generator->PressTouch();
+  generator->ReleaseTouch();
+  generator->ExitPenPointerMode();
+
+  EXPECT_TRUE(palette_tray_->GetVisible());
+
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, false);
+  EXPECT_FALSE(palette_tray_->GetVisible());
+
+  // Send a stylus event.
+  generator->EnterPenPointerMode();
+  generator->PressTouch();
+  generator->ReleaseTouch();
+  generator->ExitPenPointerMode();
+
+  EXPECT_FALSE(palette_tray_->GetVisible());
+}
+
 // Verify taps on the palette tray button results in expected behaviour.
 TEST_F(PaletteTrayTest, PaletteTrayWorkflow) {
   // Verify the palette tray button is not active, and the palette tray bubble
