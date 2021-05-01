@@ -94,6 +94,9 @@ bool IsArcVmEnabled();
 // device.
 bool IsArcVmRtVcpuEnabled(uint32_t cpus);
 
+// Returns true if ARC VM advised to use Huge Pages for guest memory.
+bool IsArcVmUseHugePages();
+
 // Returns true if all development configuration directives in the
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();

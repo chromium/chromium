@@ -188,6 +188,11 @@ bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
   return false;
 }
 
+bool IsArcVmUseHugePages() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kArcVmUseHugePages);
+}
+
 bool IsArcVmDevConfIgnored() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       chromeos::switches::kIgnoreArcVmDevConf);

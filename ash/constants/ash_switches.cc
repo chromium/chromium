@@ -276,6 +276,9 @@ const char kEnableArcVm[] = "enable-arcvm";
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
+// Madvises the kernel to use Huge Pages for guest memory.
+const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
+
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
 

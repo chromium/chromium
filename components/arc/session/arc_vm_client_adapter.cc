@@ -366,6 +366,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   // Add enable_rt_vcpu.
   request.set_enable_rt_vcpu(IsArcVmRtVcpuEnabled(cpus));
+
+  // Add hugepages.
+  request.set_use_hugepages(IsArcVmUseHugePages());
   return request;
 }
 

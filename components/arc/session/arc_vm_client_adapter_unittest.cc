@@ -1814,6 +1814,24 @@ TEST_F(ArcVmClientAdapterTest, TrimVmMemory_EmptyUserIdHash) {
   EXPECT_FALSE(reason.empty());
 }
 
+TEST_F(ArcVmClientAdapterTest, ArcVmUseHugePagesEnabled) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arcvm-use-hugepages"});
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.use_hugepages());
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcVmUseHugePagesDisabled) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.use_hugepages());
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

@@ -301,6 +301,14 @@ TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
   }
 }
 
+TEST_F(ArcUtilTest, IsArcVmUseHugePages) {
+  EXPECT_FALSE(IsArcVmUseHugePages());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arcvm-use-hugepages"});
+  EXPECT_TRUE(IsArcVmUseHugePages());
+}
+
 TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_FALSE(IsArcVmDevConfIgnored());
 
