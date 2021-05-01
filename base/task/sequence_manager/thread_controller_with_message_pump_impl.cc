@@ -43,6 +43,7 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
     : associated_thread_(AssociatedThreadId::CreateUnbound()),
+      task_runner_lock_("ThreadControllerWithMessagePumpImpl.task_runner_lock_"),
       work_deduplicator_(associated_thread_),
       time_source_(settings.clock) {
 }
