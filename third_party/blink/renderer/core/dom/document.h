@@ -599,6 +599,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void IncLayoutCallsCounterNG() { ++layout_calls_counter_ng_; }
   void IncLayoutBlockCounter() { ++layout_blocks_counter_; }
   void IncLayoutBlockCounterNG() { ++layout_blocks_counter_ng_; }
+  void IncLayoutFlexboxCounterNG() { ++layout_flexbox_counter_ng_; }
+  void IncLayoutGridCounterNG() { ++layout_grid_counter_ng_; }
 
   const ComputedStyle* StyleForPage(int32_t page_index);
 
@@ -2143,6 +2145,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // The number of LayoutNGMixin<LayoutBlock> instances
   uint32_t layout_blocks_counter_ng_ = 0;
+
+  // The number of LayoutNGFlexibleBox instances
+  uint32_t layout_flexbox_counter_ng_ = 0;
+
+  // The number of LayoutNGGrid instances
+  uint32_t layout_grid_counter_ng_ = 0;
 
   bool deferred_compositor_commit_is_allowed_ = false;
 

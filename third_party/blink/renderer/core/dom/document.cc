@@ -2434,9 +2434,11 @@ void Document::LayoutUpdated() {
 
     frame->Client()->DidObserveLayoutNg(
         layout_blocks_counter_, layout_blocks_counter_ng_,
-        layout_calls_counter_, layout_calls_counter_ng_);
+        layout_calls_counter_, layout_calls_counter_ng_,
+        layout_flexbox_counter_ng_, layout_grid_counter_ng_);
     layout_blocks_counter_ = layout_blocks_counter_ng_ = layout_calls_counter_ =
-        layout_calls_counter_ng_ = 0;
+        layout_calls_counter_ng_ = layout_flexbox_counter_ng_ =
+            layout_grid_counter_ng_ = 0;
   }
 
   Markers().InvalidateRectsForAllTextMatchMarkers();
