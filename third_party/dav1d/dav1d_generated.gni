@@ -62,6 +62,7 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/cdef.S",
   "libdav1d/src/arm/64/cdef16.S",
   "libdav1d/src/arm/64/cdef_tmpl.S",
+  "libdav1d/src/arm/64/film_grain.S",
   "libdav1d/src/arm/64/ipred.S",
   "libdav1d/src/arm/64/ipred16.S",
   "libdav1d/src/arm/64/itx.S",
@@ -80,6 +81,7 @@ arm64_asm_sources = [
 
 arm_template_sources = [
   "libdav1d/src/arm/cdef_init_tmpl.c",
+  "libdav1d/src/arm/film_grain_init_tmpl.c",
   "libdav1d/src/arm/ipred_init_tmpl.c",
   "libdav1d/src/arm/itx_init_tmpl.c",
   "libdav1d/src/arm/loopfilter_init_tmpl.c",
