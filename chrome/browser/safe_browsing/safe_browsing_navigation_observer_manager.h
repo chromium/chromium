@@ -95,9 +95,6 @@ struct NavigationEventList {
   // Finds the the navigation event in the |pending_navigation_events_| map that
   // has the same destination URL as the |target_url|. If there are multiple
   // matches, returns the one with the latest updated time.
-  // TODO(crbug.com/1161342): This function is currently only called in tests.
-  // It will be used when a new API IdentifyPendingReferrerChainByEventURL is
-  // added.
   NavigationEvent* FindPendingNavigationEvent(const GURL& target_url);
 
   // Finds the most recent retargeting NavigationEvent that satisfies the
@@ -122,14 +119,12 @@ struct NavigationEventList {
   // Removes stale NavigationEvents and return the number of items removed.
   std::size_t CleanUpNavigationEvents();
 
-  // TODO(crbug.com/1161342): Rename this function to NavigationEventsSize.
-  std::size_t Size() { return navigation_events_.size(); }
+  std::size_t NavigationEventsSize() { return navigation_events_.size(); }
   std::size_t PendingNavigationEventsSize() {
     return pending_navigation_events_.size();
   }
 
-  // TODO(crbug.com/1161342): Rename this function to GetNavigationEvent.
-  NavigationEvent* Get(std::size_t index) {
+  NavigationEvent* GetNavigationEvent(std::size_t index) {
     return navigation_events_[index].get();
   }
 

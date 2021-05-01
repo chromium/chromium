@@ -170,7 +170,6 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     ReferrerChain* referrer_chain) {
   for (ReferrerChainEntry& entry : *referrer_chain) {
-    // TODO(crbug.com/1161342): Also set the is_subframe_url_removed field after
     // is_subframe_url_removed is added in the proto.
     // If the entry sets main_frame_url, that means the url is triggered in a
     // subframe. Thus replace the url with the main_frame_url and clear

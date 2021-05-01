@@ -115,7 +115,7 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
                          base::Time::Now(), GURL("http://invalid.com"), GURL(),
                          SessionID::InvalidValue()));
   EXPECT_EQ(0U, events.CleanUpNavigationEvents());
-  EXPECT_EQ(0U, events.Size());
+  EXPECT_EQ(0U, events.NavigationEventsSize());
 
   // Add 2 events to the list.
   base::Time now = base::Time::Now();
@@ -125,7 +125,7 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
       CreateNavigationEventUniquePtr(GURL("http://foo1.com"), one_hour_ago));
   events.RecordNavigationEvent(
       CreateNavigationEventUniquePtr(GURL("http://foo1.com"), now));
-  EXPECT_EQ(2U, events.Size());
+  EXPECT_EQ(2U, events.NavigationEventsSize());
   // FindNavigationEvent should return the latest matching event.
   EXPECT_EQ(now,
             events
@@ -134,7 +134,7 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
                 ->last_updated);
   // One event should get removed.
   EXPECT_EQ(1U, events.CleanUpNavigationEvents());
-  EXPECT_EQ(1U, events.Size());
+  EXPECT_EQ(1U, events.NavigationEventsSize());
 
   // Add 3 more events, previously recorded events should be overridden.
   events.RecordNavigationEvent(
@@ -143,12 +143,15 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
       CreateNavigationEventUniquePtr(GURL("http://foo4.com"), one_hour_ago));
   events.RecordNavigationEvent(
       CreateNavigationEventUniquePtr(GURL("http://foo5.com"), now));
-  ASSERT_EQ(3U, events.Size());
-  EXPECT_EQ(GURL("http://foo3.com"), events.Get(0)->original_request_url);
-  EXPECT_EQ(GURL("http://foo4.com"), events.Get(1)->original_request_url);
-  EXPECT_EQ(GURL("http://foo5.com"), events.Get(2)->original_request_url);
+  ASSERT_EQ(3U, events.NavigationEventsSize());
+  EXPECT_EQ(GURL("http://foo3.com"),
+            events.GetNavigationEvent(0)->original_request_url);
+  EXPECT_EQ(GURL("http://foo4.com"),
+            events.GetNavigationEvent(1)->original_request_url);
+  EXPECT_EQ(GURL("http://foo5.com"),
+            events.GetNavigationEvent(2)->original_request_url);
   EXPECT_EQ(2U, events.CleanUpNavigationEvents());
-  EXPECT_EQ(1U, events.Size());
+  EXPECT_EQ(1U, events.NavigationEventsSize());
 }
 
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
@@ -163,7 +166,7 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
   SessionID tab_id =
       sessions::SessionTabHelper::IdForTab(controller->GetWebContents());
   auto* nav_list = navigation_event_list();
-  ASSERT_EQ(1U, nav_list->Size());
+  ASSERT_EQ(1U, nav_list->NavigationEventsSize());
   VerifyNavigationEvent(GURL(),                // source_url
                         GURL(),                // source_main_frame_url
                         GURL("http://foo/1"),  // original_request_url
@@ -173,7 +176,7 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
                         ReferrerChainEntry::BROWSER_INITIATED,
                         true,   // has_committed
                         false,  // has_server_redirect
-                        nav_list->Get(0U));
+                        nav_list->GetNavigationEvent(0U));
 }
 
 TEST_F(SBNavigationObserverTest, ServerRedirect) {
@@ -224,7 +227,7 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
   // The pending navigation event should be removed because the navigation is
   // completed.
   ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
-  ASSERT_EQ(1U, nav_list->Size());
+  ASSERT_EQ(1U, nav_list->NavigationEventsSize());
   VerifyNavigationEvent(
       GURL("http://foo/0"),       // source_url
       GURL("http://foo/0"),       // source_main_frame_url
@@ -235,7 +238,7 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       true,  // has_committed
       true,  // has_server_redirect
-      nav_list->Get(0U));
+      nav_list->GetNavigationEvent(0U));
 }
 
 TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
@@ -271,14 +274,14 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       &handle_1, CreateNavigationEventUniquePtr(url_1, one_hour_ago));
   navigation_event_list()->RecordPendingNavigationEvent(
       &handle_0, CreateNavigationEventUniquePtr(url_0, now));
-  ASSERT_EQ(6U, navigation_event_list()->Size());
+  ASSERT_EQ(6U, navigation_event_list()->NavigationEventsSize());
   ASSERT_EQ(2U, navigation_event_list()->PendingNavigationEventsSize());
 
   // Cleans up navigation events.
   CleanUpNavigationEvents();
 
   // Verifies all stale and invalid navigation events are removed.
-  ASSERT_EQ(2U, navigation_event_list()->Size());
+  ASSERT_EQ(2U, navigation_event_list()->NavigationEventsSize());
   ASSERT_EQ(1U, navigation_event_list()->PendingNavigationEventsSize());
   EXPECT_EQ(nullptr,
             navigation_event_list()->FindNavigationEvent(
