@@ -20,6 +20,7 @@ class NGInlineChildLayoutContext;
 class NGLayoutResult;
 class NGOffsetMapping;
 struct NGInlineItemsData;
+struct SVGTextPathRange;
 
 // Represents an anonymous block box to be laid out, that contains consecutive
 // inline nodes and their descendants.
@@ -113,9 +114,11 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
       bool first_line,
       const LayoutBlockFlow* block_flow);
 
-  // This function is available after Layout().
+  // This function is available after PrepareLayout(), only for SVG <text>.
   const Vector<std::pair<unsigned, NGSVGCharacterData>>& SVGCharacterDataList()
       const;
+  // This function is available after PrepareLayout(), only for SVG <text>.
+  const HeapVector<SVGTextPathRange>& SVGTextPathRangeList() const;
 
   String ToString() const;
 

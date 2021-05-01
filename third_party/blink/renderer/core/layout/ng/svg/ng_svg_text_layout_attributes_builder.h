@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -34,6 +35,8 @@ class NGSVGTextLayoutAttributesBuilder final {
 
   // This function can be called just once after Build().
   Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
+  // This function can be called just once after Build().
+  HeapVector<SVGTextPathRange> TextPathRangeList();
 
  private:
   LayoutBlockFlow* block_flow_;
@@ -43,6 +46,12 @@ class NGSVGTextLayoutAttributesBuilder final {
   // NGSVGCharacterData. This is named 'resolved' because this is
   // the outcome of '3. Resolve character positioning'.
   Vector<std::pair<unsigned, NGSVGCharacterData>> resolved_;
+
+  // The result of Build().
+  // A list of a pair of start addressable character index and end
+  // addressable character index (inclusive) for a <textPath>.
+  // This is used in "8. Position on path".
+  HeapVector<SVGTextPathRange> text_path_range_list_;
 };
 
 }  // namespace blink

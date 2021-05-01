@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
@@ -1007,7 +1008,10 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
     svg_attr_builder.Build(items_builder.ToString(), items);
 
-    data->svg_character_data_list_ = svg_attr_builder.CharacterDataList();
+    auto* svg_data = MakeGarbageCollected<SVGInlineNodeData>();
+    svg_data->character_data_list = svg_attr_builder.CharacterDataList();
+    svg_data->text_path_range_list = svg_attr_builder.TextPathRangeList();
+    data->svg_node_data_ = svg_data;
 
     // TODO(tkent): Pass "text chunk" information to NGInlineItemsBuilder.
   }
@@ -1857,7 +1861,12 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
 const Vector<std::pair<unsigned, NGSVGCharacterData>>&
 NGInlineNode::SVGCharacterDataList() const {
   DCHECK(IsSVGText());
-  return Data().svg_character_data_list_;
+  return Data().svg_node_data_->character_data_list;
+}
+
+const HeapVector<SVGTextPathRange>& NGInlineNode::SVGTextPathRangeList() const {
+  DCHECK(IsSVGText());
+  return Data().svg_node_data_->text_path_range_list;
 }
 
 bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {

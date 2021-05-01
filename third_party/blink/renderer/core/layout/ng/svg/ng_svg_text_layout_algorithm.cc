@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -122,7 +123,7 @@ void NGSVGTextLayoutAlgorithm::Layout(
   ApplyAnchoring(items);
 
   // 8. Position on path
-  // TODO(crbug.com/1179585): Implement this step.
+  PositionOnPath();
 
   // Write back the result to NGFragmentItems.
   for (const NGSVGPerCharacterInfo& info : result_) {
@@ -621,6 +622,14 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
     }
     i = j + 1;
   }
+}
+
+void NGSVGTextLayoutAlgorithm::PositionOnPath() {
+  const auto& ranges = inline_node_.SVGTextPathRangeList();
+  if (ranges.IsEmpty())
+    return;
+
+  // TODO(tkent): Implement this step.
 }
 
 float NGSVGTextLayoutAlgorithm::ScalingFactorAt(

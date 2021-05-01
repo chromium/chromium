@@ -7,13 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 template <typename OffsetMappingBuilder>
 class NGInlineItemsBuilderTemplate;
+struct SVGInlineNodeData;
 
 // Data which is required for inline nodes.
 struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
@@ -35,10 +34,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
                : *first_line_items_;
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(first_line_items_);
-    NGInlineItemsData::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
  private:
   void SetBaseDirection(TextDirection direction) {
@@ -60,7 +56,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // different.
   Member<NGInlineItemsData> first_line_items_;
 
-  Vector<std::pair<unsigned, NGSVGCharacterData>> svg_character_data_list_;
+  Member<SVGInlineNodeData> svg_node_data_;
 
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection

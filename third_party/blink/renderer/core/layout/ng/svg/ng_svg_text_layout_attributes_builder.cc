@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 
 #include "base/containers/adapters.h"
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
@@ -203,6 +204,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
   LayoutAttributesStack attr_stack;
   unsigned addressable_index = 0;
   bool in_text_path = false;
+  base::Optional<unsigned> text_path_start;
   bool first_char_in_text_path = false;
   const bool horizontal =
       IsHorizontalWritingMode(block_flow_->StyleRef().GetWritingMode());
@@ -219,6 +221,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
         first_char_in_text_path = true;
         // 2.3. Set in_text_path flag true.
         in_text_path = true;
+        text_path_start = addressable_index;
       }
 
     } else if (item.Type() == NGInlineItem::kCloseTag) {
@@ -229,6 +232,13 @@ void NGSVGTextLayoutAttributesBuilder::Build(
         // According to the specification, <textPath> can't be nested.
         in_text_path = false;
         first_char_in_text_path = false;
+        DCHECK(text_path_start);
+        if (addressable_index != *text_path_start) {
+          text_path_range_list_.push_back(
+              SVGTextPathRange{To<LayoutSVGTextPath>(object), *text_path_start,
+                               addressable_index - 1});
+        }
+        text_path_start.reset();
       }
 
     } else if (item.Type() != NGInlineItem::kText) {
@@ -292,6 +302,11 @@ void NGSVGTextLayoutAttributesBuilder::Build(
 Vector<std::pair<unsigned, NGSVGCharacterData>>
 NGSVGTextLayoutAttributesBuilder::CharacterDataList() {
   return std::move(resolved_);
+}
+
+HeapVector<SVGTextPathRange>
+NGSVGTextLayoutAttributesBuilder::TextPathRangeList() {
+  return std::move(text_path_range_list_);
 }
 
 }  // namespace blink
