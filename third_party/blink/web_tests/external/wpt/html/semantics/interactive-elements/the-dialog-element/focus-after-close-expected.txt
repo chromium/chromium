@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Focus should be moved to the previously focused element(Simple dialog usage) assert_equals: expected Element node <input></input> but got Element node <button id="button1">This is a button1</button>
+FAIL Focus should be moved to the previously focused element(Complex dialog usage) promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'focus' of null"
+FAIL Focus should be moved to the body if the previously focused element is removed assert_equals: expected Element node <body>
+
+<dialog>
+    <button id="button1">This is a butto... but got Element node <button id="button1">This is a button1</button>
+FAIL Focus should be moved to the shadow DOM host if the previouly focused element is a shadow DOM node assert_equals: expected Element node <div></div> but got Element node <button id="button1">This is a button1</button>
+FAIL Focus should not scroll if the previously focused element is outside the viewport assert_equals: expected Element node <button style="top: 610px; position: absolute;"></button> but got Element node <button id="button1">This is a button1</button>
+Harness: the test ran to completion.
+

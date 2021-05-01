@@ -1,10 +1,7 @@
 This is a testharness.js-based test.
-Found 112 tests; 109 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 108 tests; 105 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
-PASS Partial interface URL: original interface defined
-PASS Partial interface URL: valid exposure set
-PASS Partial interface URL: member names are unique
 PASS Partial interface AudioTrack: original interface defined
 PASS Partial interface AudioTrack: member names are unique
 PASS Partial interface VideoTrack: original interface defined
@@ -111,6 +108,5 @@ PASS SourceBufferList interface: mediaSource.sourceBuffers must inherit property
 PASS AudioTrack interface: attribute sourceBuffer
 PASS VideoTrack interface: attribute sourceBuffer
 FAIL TextTrack interface: attribute sourceBuffer assert_true: The prototype object must have a property "sourceBuffer" expected true got false
-PASS URL interface: operation createObjectURL(MediaSource)
 Harness: the test ran to completion.
 

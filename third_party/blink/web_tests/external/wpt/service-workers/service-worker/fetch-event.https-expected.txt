@@ -22,6 +22,7 @@ PASS FetchEvent#body is a string
 FAIL FetchEvent#body is a ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 PASS FetchEvent#body is a string and is passed to network fallback
 FAIL FetchEvent#body is a ReadableStream and is passed to network fallback promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS FetchEvent#body is a none Uint8Array ReadableStream and is passed to a service worker
 PASS FetchEvent#body is a string, used and passed to network fallback
 PASS FetchEvent#body is a ReadableStream, used and passed to network fallback
 PASS FetchEvent#body is a string, cloned and passed to network fallback

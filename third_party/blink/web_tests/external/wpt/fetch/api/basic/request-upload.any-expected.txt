@@ -10,7 +10,6 @@ PASS Fetch with POST with Float32Array body
 PASS Fetch with POST with Float64Array body
 PASS Fetch with POST with DataView body
 PASS Fetch with POST with Blob body with mime type
-FAIL Fetch with POST with ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 PASS Fetch with POST with ReadableStream containing String
 PASS Fetch with POST with ReadableStream containing null
 PASS Fetch with POST with ReadableStream containing number
