@@ -213,6 +213,9 @@ IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_CrashTest) {
 // This is disabled due to flakiness: https://crbug.com/1086372
 #if defined(OS_WIN)
 #define MAYBE_RunMockTests DISABLED_RunMockTests
+#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+// This is disabled because it fails on bionic: https://crbug.com/1202220
+#define MAYBE_RunMockTests DISABLED_RunMockTests
 #else
 #define MAYBE_RunMockTests RunMockTests
 #endif
