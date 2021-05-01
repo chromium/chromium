@@ -18,6 +18,9 @@ extern const base::Feature kMessagesForAndroidPopupBlocked{
 extern const base::Feature kMessagesForAndroidSafetyTip{
     "MessagesForAndroidSafetyTip", base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kMessagesForAndroidSaveCard{
+    "MessagesForAndroidSaveCard", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsPasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPasswords);
@@ -31,6 +34,11 @@ bool IsPopupBlockedMessagesUiEnabled() {
 bool IsSafetyTipMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidSafetyTip);
+}
+
+bool IsSaveCardMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
 }
 
 }  // namespace messages

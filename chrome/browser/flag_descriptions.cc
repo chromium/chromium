@@ -3117,6 +3117,10 @@ const char kMessagesForAndroidSafetyTipName[] = "Safety Tip Messages UI";
 const char kMessagesForAndroidSafetyTipDescription[] =
     "When enabled, safety tip infobars will use the new Messages UI.";
 
+extern const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
+extern const char kMessagesForAndroidSaveCardDescription[] =
+    "When enabled, save card infobars will use the new Messages UI.";
+
 const char kOfflineIndicatorAlwaysHttpProbeName[] = "Always http probe";
 const char kOfflineIndicatorAlwaysHttpProbeDescription[] =
     "Always do http probe to detect network connectivity for offline indicator "

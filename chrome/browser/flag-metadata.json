@@ -3597,6 +3597,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "messages-for-android-save-card",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "messages-save-card-infobar",
     "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 83

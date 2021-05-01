@@ -46662,6 +46662,7 @@ from previous Chrome versions.
   <int value="-57383646" label="UseSearchClickForRightClick:disabled"/>
   <int value="-56235502" label="WebRtcHideLocalIpsWithMdns:enabled"/>
   <int value="-55944747" label="disable-child-account-detection"/>
+  <int value="-55890693" label="MessagesForAndroidSaveCard:disabled"/>
   <int value="-55592344" label="SyncPseudoUSSDictionary:disabled"/>
   <int value="-54796636" label="kids-management-url-classification:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
@@ -47542,6 +47543,7 @@ from previous Chrome versions.
   <int value="717827121" label="ChromeSharingHub:disabled"/>
   <int value="719267310"
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
+  <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
   <int value="723619383" label="TopSitesFromSiteEngagement:enabled"/>
   <int value="724052572" label="EnableFilesystemInIncognito"/>
