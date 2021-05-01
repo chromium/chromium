@@ -2022,28 +2022,27 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 }
 
-// For one window display, tests that alt-tab does not show up if there is only
-// one window to be shown, but would continue to show a window in alt-tab if
-// switching from the all-desks mode with multiple windows.
+// For one window in the current-desk mode, if there are other windows in other
+// desk, tests that alt-tab view always shows up, so the user can switch mode
+// and select other windows.
 TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
 
-  // Create two windows for desk1 and one window for desk2.
+  // Create two desks with a window each.
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
   const Desk* desk_2 = desks_controller->desks()[1].get();
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
-  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
 
   // Starting alt-tab should shows all desks.
   cycle_controller->StartCycling();
   auto cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
 
   // Switching to an active desk mode should shows a single window in desk2.
@@ -2052,14 +2051,54 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(1u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
   CompleteCycling(cycle_controller);
 
-  // Closing alt-tab and trying to re-open again in the current-desk mode
-  // should not work because there's only one window.
+  // Re-opening alt-tab again in the current-desk mode should work because the
+  // user should be able to switch to the window in other desks.
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(1u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  CompleteCycling(cycle_controller);
+}
+
+// For one window in the current-desk mode, if there is no other window in
+// other desks, tests that alt-tab does not show up, but still activates the
+// window properly.
+TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowTotalInActiveDesk) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two desk with only one window in the current desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+
+  // Starting alt-tab should not show the view and only activate the window.
   cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_FALSE(CycleViewExists());
+  EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
+  EXPECT_TRUE(WindowState::Get(win0.get())->IsActive());
+  CompleteCycling(cycle_controller);
+
+  // Tests that the same behavior for an inactive window.
+  WindowState::Get(win0.get())->Minimize();
+  EXPECT_FALSE(wm::IsActiveWindow(win0.get()));
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_FALSE(CycleViewExists());
+  EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
+  EXPECT_TRUE(WindowState::Get(win0.get())->IsActive());
   CompleteCycling(cycle_controller);
 }
 

@@ -993,7 +993,21 @@ aura::Window* WindowCycleList::GetWindowAtPoint(const ui::LocatedEvent* event) {
 }
 
 bool WindowCycleList::ShouldShowUi() {
-  return windows_.size() > 1u;
+  // Show alt-tab when there are at least two windows to pick from alt-tab, or
+  // when there is at least a window to switch to by switching to the different
+  // mode.
+  if (!Shell::Get()
+           ->window_cycle_controller()
+           ->IsInteractiveAltTabModeAllowed()) {
+    return windows_.size() > 1u;
+  }
+  int total_window_in_all_desks =
+      Shell::Get()
+          ->mru_window_tracker()
+          ->BuildWindowForCycleWithPipList(kAllDesks)
+          .size();
+  return windows_.size() > 1u ||
+         (windows_.size() == 1 && total_window_in_all_desks > 1);
 }
 
 void WindowCycleList::OnModePrefsChanged() {
@@ -1141,7 +1155,6 @@ void WindowCycleList::Scroll(int offset) {
       !Shell::Get()->window_cycle_controller()->IsSwitchingMode()) {
     ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     SelectWindow(windows_[0]);
-    return;
   }
 
   DCHECK(static_cast<size_t>(current_index_) < windows_.size());
