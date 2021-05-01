@@ -131,6 +131,14 @@ js_library("diagnostics_utils_test") {
   ]
 }
 
+js_library("ethernet_info_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:ethernet_info",
+  ]
+}
+
 js_library("fake_method_provider_test") {
   deps = [
     "../..:chai_assert",

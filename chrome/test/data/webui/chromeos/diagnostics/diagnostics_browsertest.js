@@ -51,6 +51,7 @@ const debug_suites_list = [
   'CpuCard',
   'DataPoint',
   'DiagnosticsUtils',
+  'EthernetInfo',
   'FakeMethodProvider',
   'FakeMojoInterface',
   'FakeNetworkHealthProvider',

@@ -19,6 +19,7 @@ js_type_check("closure_compile_module") {
     ":diagnostics_card",
     ":diagnostics_types",
     ":diagnostics_utils",
+    ":ethernet_info",
     ":fake_data",
     ":fake_method_resolver",
     ":fake_network_health_provider",
@@ -112,6 +113,12 @@ js_library("diagnostics_types") {
 }
 
 js_library("diagnostics_utils") {
+}
+
+js_library("ethernet_info") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("fake_data") {
@@ -263,6 +270,7 @@ html_to_js("web_components") {
     "diagnostics_card.js",
     "diagnostics_fonts_css.js",
     "diagnostics_shared_css.js",
+    "ethernet_info.js",
     "icons.js",
     "memory_card.js",
     "network_info.js",

@@ -47,4 +47,11 @@ export function networkInfoTestSuite() {
       assertTrue(!!wifiInfoElement);
     });
   });
+
+  test('EthernetInfoPresent', () => {
+    return initializeNetworkInfo().then(() => {
+      const ethernetInfoElement = networkInfoElement.$$('ethernet-info');
+      assertTrue(!!ethernetInfoElement);
+    });
+  });
 }
