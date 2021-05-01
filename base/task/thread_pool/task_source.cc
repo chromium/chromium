@@ -100,6 +100,7 @@ scoped_refptr<TaskSource> RegisteredTaskSource::Unregister() {
 #if DCHECK_IS_ON()
   DCHECK_EQ(run_step_, State::kInitial);
 #endif  // DCHECK_IS_ON()
+  recordreplay::Assert("RegisteredTaskSource::Unregister %d %d", !!task_source_, !!task_tracker_);
   if (task_source_ && task_tracker_)
     return task_tracker_->UnregisterTaskSource(std::move(task_source_));
   return std::move(task_source_);
