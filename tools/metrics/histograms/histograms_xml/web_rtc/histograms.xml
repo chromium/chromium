@@ -1634,9 +1634,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SslCipherSuite{WebRTCMediaType}"
-    enum="SSLCipherSuite" expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
+    enum="SSLCipherSuite" expires_after="never">
+<!-- expires-never: This is useful for deprecating old cipher suites; the
+       need for this can occur at long intervals. -->
+
+  <owner>hta@google.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counters on the type of SSL cipher suites used by WebRTC. This is collected
     whenever the transport signals the OnCompleted event. {WebRTCMediaType}
