@@ -98,7 +98,9 @@ void HeapObjectHeader::Finalize(Address object, size_t object_size) {
   if (gc_info.finalize) {
     gLastFinalizerCall = reinterpret_cast<void*>(gc_info.finalize);
     gLastFinalizerObject = object;
+    recordreplay::Diagnostic("CallFinalizer %p", gc_info.finalize);
     gc_info.finalize(object);
+    recordreplay::Diagnostic("CallFinalizer Done");
   }
 
   ASAN_RETIRE_CONTAINER_ANNOTATION(object, object_size);

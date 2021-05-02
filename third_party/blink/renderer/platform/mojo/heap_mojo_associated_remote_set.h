@@ -86,6 +86,10 @@ class HeapMojoAssociatedRemoteSet {
    public:
     explicit Wrapper(ContextLifecycleNotifier* notifier) {
       SetContextLifecycleNotifier(notifier);
+
+      if (recordreplay::IsRecordingOrReplaying()) {
+        new Persistent<Wrapper>(this);
+      }
     }
 
     void Trace(Visitor* visitor) const override {

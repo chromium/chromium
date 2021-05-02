@@ -90,6 +90,10 @@ class HeapMojoRemoteSet {
    public:
     explicit Wrapper(ContextLifecycleNotifier* notifier) {
       SetContextLifecycleNotifier(notifier);
+
+      if (recordreplay::IsRecordingOrReplaying()) {
+        new Persistent<Wrapper>(this);
+      }
     }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;

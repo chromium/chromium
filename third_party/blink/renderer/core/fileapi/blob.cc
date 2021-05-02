@@ -107,7 +107,13 @@ class BlobFileReaderClient : public blink::FileReaderLoaderClient {
 };
 
 Blob::Blob(scoped_refptr<BlobDataHandle> data_handle)
-    : blob_data_handle_(std::move(data_handle)) {}
+    : blob_data_handle_(std::move(data_handle)) {
+  // Destroying the data handle interacts with the recording, so never collect
+  // blobs when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    new Persistent<Blob>(this);
+  }
+}
 
 Blob::~Blob() = default;
 
