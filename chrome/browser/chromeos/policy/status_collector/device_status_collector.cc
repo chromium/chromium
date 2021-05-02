@@ -1273,6 +1273,37 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         }
       }
     }
+
+    // Process StatefulPartition result.
+    const auto& stateful_partition_result =
+        probe_result->stateful_partition_result;
+    if (!stateful_partition_result.is_null()) {
+      switch (stateful_partition_result->which()) {
+        case cros_healthd::StatefulPartitionResult::Tag::ERROR: {
+          LOG(ERROR) << "cros_healthd: Error getting Stateful Partition info: "
+                     << stateful_partition_result->get_error()->msg;
+          break;
+        }
+
+        case cros_healthd::StatefulPartitionResult::Tag::PARTITION_INFO: {
+          const auto& partition_info =
+              stateful_partition_result->get_partition_info();
+          if (partition_info.is_null()) {
+            LOG(ERROR) << "Null PartitionInfo from cros_healthd";
+            break;
+          }
+
+          em::StatefulPartitionInfo* partition_info_out =
+              response_params_.device_status->mutable_stateful_partition_info();
+          partition_info_out->set_available_space(
+              partition_info->available_space);
+          partition_info_out->set_total_space(partition_info->total_space);
+          partition_info_out->set_filesystem(partition_info->filesystem);
+          partition_info_out->set_mount_source(partition_info->mount_source);
+          break;
+        }
+      }
+    }
   }
 
   void OnEMMCLifetimeReceived(const em::DiskLifetimeEstimation& est) {

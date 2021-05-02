@@ -436,6 +436,10 @@ struct StatefulPartitionInfo {
   uint64 available_space;
   // Total space for user data storage in the device in bytes.
   uint64 total_space;
+  // File system on stateful partition. e.g. ext4.
+  string filesystem;
+  // Source of stateful partition. e.g. /dev/mmcblk0p1.
+  string mount_source;
 };
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo

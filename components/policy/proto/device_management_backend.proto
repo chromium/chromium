@@ -988,6 +988,10 @@ message StatefulPartitionInfo {
   optional int64 available_space = 1;
   // Total space for user data storage in the device in bytes.
   optional int64 total_space = 2;
+  // File system on stateful partition. e.g. ext4.
+  optional string filesystem = 3;
+  // Source of stateful partition. e.g. /dev/mmcblk0p1.
+  optional string mount_source = 4;
 }
 
 // Chrome release channel, shared for different reports.

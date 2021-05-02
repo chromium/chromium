@@ -218,6 +218,11 @@ constexpr uint32_t kFakeMaxBrightness = 769;
 constexpr uint32_t kFakeBrightness = 124;
 // Fan test values:
 constexpr uint32_t kFakeSpeedRpm = 1225;
+// Stateful partition test values:
+constexpr uint64_t kAvailableSpace = 777;
+constexpr uint64_t kTotalSpace = 999;
+constexpr char kFilesystem[] = "ext4";
+constexpr char kMountSource[] = "/dev/mmcblk0p1";
 // Bluetooth test values:
 constexpr char kFakeBluetoothAdapterName[] = "Marty Byrde's BT Adapter";
 constexpr char kFakeBluetoothAdapterAddress[] = "aa:bb:cc:dd:ee:ff";
@@ -598,6 +603,12 @@ cros_healthd::FanResultPtr CreateFanResult() {
   return cros_healthd::FanResult::NewFanInfo(std::move(fan_vector));
 }
 
+cros_healthd::StatefulPartitionResultPtr CreateStatefulPartitionResult() {
+  return cros_healthd::StatefulPartitionResult::NewPartitionInfo(
+      cros_healthd::StatefulPartitionInfo::New(kAvailableSpace, kTotalSpace,
+                                               kFilesystem, kMountSource));
+}
+
 cros_healthd::FanResultPtr CreateEmptyFanResult() {
   std::vector<cros_healthd::FanInfoPtr> fan_vector;
   return cros_healthd::FanResult::NewFanInfo(std::move(fan_vector));
@@ -666,6 +677,7 @@ void FetchFakeFullCrosHealthdData(
       fake_info.memory_result = CreateMemoryResult();
       fake_info.backlight_result = CreateBacklightResult();
       fake_info.fan_result = CreateFanResult();
+      fake_info.stateful_partition_result = CreateStatefulPartitionResult();
       fake_info.bluetooth_result = CreateBluetoothResult();
       std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
       return;
@@ -3411,6 +3423,14 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   ASSERT_EQ(device_status_.fan_info_size(), 1);
   const auto& fan = device_status_.fan_info(0);
   EXPECT_EQ(fan.speed_rpm(), kFakeSpeedRpm);
+
+  // Verify the stateful partition info.
+  ASSERT_TRUE(device_status_.has_stateful_partition_info());
+  const auto& partition = device_status_.stateful_partition_info();
+  EXPECT_EQ(partition.available_space(), kAvailableSpace);
+  EXPECT_EQ(partition.total_space(), kTotalSpace);
+  EXPECT_EQ(partition.filesystem(), kFilesystem);
+  EXPECT_EQ(partition.mount_source(), kMountSource);
 
   // Verify the Bluetooth info.
   ASSERT_EQ(device_status_.bluetooth_adapter_info_size(), 1);
