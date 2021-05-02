@@ -559,21 +559,11 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 // Definitions for DCHECK et al.
 
-#if DCHECK_IS_ON()
-
 #if defined(DCHECK_IS_CONFIGURABLE)
 BASE_EXPORT extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
-
-#else  // DCHECK_IS_ON()
-
-// There may be users of LOGGING_DCHECK that are enabled independently
-// of DCHECK_IS_ON(), so default to FATAL logging for those.
-constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
-
-#endif  // DCHECK_IS_ON()
 
 // Redefine the standard assert to use our nice log files
 #undef assert
