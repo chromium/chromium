@@ -109,12 +109,7 @@ class BlobFileReaderClient : public blink::FileReaderLoaderClient {
 Blob::Blob(scoped_refptr<BlobDataHandle> data_handle)
     : blob_data_handle_(std::move(data_handle)) {}
 
-Blob::~Blob() {
-  if (recordreplay::IsRecordingOrReplaying()) {
-    // Leak to avoid releasing resources non-deterministically during GC.
-    (void)blob_data_handle_.release();
-  }
-}
+Blob::~Blob() = default;
 
 // static
 Blob* Blob::Create(

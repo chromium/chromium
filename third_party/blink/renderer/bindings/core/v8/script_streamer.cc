@@ -751,13 +751,7 @@ void ScriptStreamer::OnDataPipeReadable(MojoResult result,
   watcher_->ArmOrNotify();
 }
 
-ScriptStreamer::~ScriptStreamer() {
-  // When recording/replaying we leak the handle to avoid closing it at a
-  // non-deterministic point.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    (void)data_pipe_.release();
-  }
-}
+ScriptStreamer::~ScriptStreamer() = default;
 
 void ScriptStreamer::Prefinalize() {
   // Reset and cancel the watcher. This has to be called in the prefinalizer,
