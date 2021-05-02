@@ -20,10 +20,6 @@ extern void FunctionCallbackRecordReplayIgnoreScript(const FunctionCallbackInfo<
 
 namespace blink {
 
-bool RecordReplayLeakHeapMojoAssociatedRemotes() {
-  return false;
-}
-
 const char* gRecordReplayScript = R""""(
 
 const {

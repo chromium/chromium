@@ -16,8 +16,6 @@
 
 namespace blink {
 
-bool RecordReplayLeakHeapMojoAssociatedRemotes();
-
 // HeapMojoAssociatedRemote is a wrapper for mojo::AssociatedRemote to be owned
 // by a garbage-collected object. Blink is expected to use
 // HeapMojoAssociatedRemote by default. HeapMojoAssociatedRemote must be
@@ -91,11 +89,6 @@ class HeapMojoAssociatedRemote {
     explicit Wrapper(ContextLifecycleNotifier* notifier) {
       SetContextLifecycleNotifier(notifier);
     }
-    ~Wrapper() {
-      if (RecordReplayLeakHeapMojoAssociatedRemotes()) {
-        associated_remote_.leak();
-      }
-    }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;
@@ -111,9 +104,6 @@ class HeapMojoAssociatedRemote {
 
     // ContextLifecycleObserver methods
     void ContextDestroyed() override {
-      if (RecordReplayLeakHeapMojoAssociatedRemotes()) {
-        return;
-      }
       if (Mode == HeapMojoWrapperMode::kWithContextObserver)
         associated_remote_.reset();
     }
