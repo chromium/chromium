@@ -426,7 +426,7 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
     dict->SetStringPath("window_class", "[Error]");
   }
 
-  if (SUCCEEDED(node->get_accValue(variant_self, bstr.Receive())))
+  if (SUCCEEDED(node->get_accValue(variant_self, bstr.Receive())) && bstr.Get())
     dict->SetStringPath("value", base::WideToUTF8(bstr.Get()));
   bstr.Reset();
 
@@ -445,25 +445,25 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
     dict->SetPath("states", base::Value(std::move(states)));
   }
 
-  if (SUCCEEDED(node->get_accDescription(variant_self, bstr.Receive()))) {
+  if (S_OK == node->get_accDescription(variant_self, bstr.Receive())) {
     dict->SetStringPath("description", base::WideToUTF8(bstr.Get()));
   }
   bstr.Reset();
 
   // |get_accDefaultAction| returns a localized string.
-  if (SUCCEEDED(node->get_accDefaultAction(variant_self, bstr.Receive()))) {
+  if (S_OK == node->get_accDefaultAction(variant_self, bstr.Receive())) {
     dict->SetStringPath("default_action", base::WideToUTF8(bstr.Get()));
   }
   bstr.Reset();
 
-  if (SUCCEEDED(node->get_accKeyboardShortcut(variant_self, bstr.Receive()))) {
+  if (S_OK == node->get_accKeyboardShortcut(variant_self, bstr.Receive())) {
     dict->SetStringPath("keyboard_shortcut", base::WideToUTF8(bstr.Get()));
   }
   bstr.Reset();
 
-  if (SUCCEEDED(node->get_accHelp(variant_self, bstr.Receive())))
+  if (S_OK == node->get_accHelp(variant_self, bstr.Receive())) {
     dict->SetStringPath("help", base::WideToUTF8(bstr.Get()));
-
+  }
   bstr.Reset();
 
   LONG x, y, width, height;
@@ -559,7 +559,7 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
     dict->SetIntPath("position_in_group", position_in_group);
   }
 
-  if (SUCCEEDED(ia2->get_localizedExtendedRole(bstr.Receive()))) {
+  if (SUCCEEDED(ia2->get_localizedExtendedRole(bstr.Receive())) && bstr.Get()) {
     dict->SetStringPath("localized_extended_role",
                         base::WideToUTF8(bstr.Get()));
   }
@@ -577,7 +577,8 @@ void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
 
   // |IAccessibleAction::get_name| returns a localized string.
   base::win::ScopedBstr name;
-  if (SUCCEEDED(ia2action->get_name(0 /* action_index */, name.Receive()))) {
+  if (SUCCEEDED(ia2action->get_name(0 /* action_index */, name.Receive())) &&
+      name.Get()) {
     dict->SetStringPath("action_name", base::WideToUTF8(name.Get()));
   }
 }

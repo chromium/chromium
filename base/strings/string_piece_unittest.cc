@@ -296,8 +296,6 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find(c.data(), 9, 0), 9U);
   ASSERT_EQ(a.find(c.data(), Piece::npos, 0), Piece::npos);
   ASSERT_EQ(b.find(c.data(), Piece::npos, 0), Piece::npos);
-  ASSERT_EQ(a.find(d.data(), 12, 0), 12U);
-  ASSERT_EQ(a.find(e.data(), 17, 0), 17U);
   // empty string nonsense
   ASSERT_EQ(d.find(b.data(), 4, 0), Piece::npos);
   ASSERT_EQ(e.find(b.data(), 7, 0), Piece::npos);
@@ -306,20 +304,9 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find(c.data(), 9), 23U);
   ASSERT_EQ(a.find(c.data(), Piece::npos), Piece::npos);
   ASSERT_EQ(b.find(c.data(), Piece::npos), Piece::npos);
-  ASSERT_EQ(a.find(d.data(), 12), 12U);
-  ASSERT_EQ(a.find(e.data(), 17), 17U);
   // empty string nonsense
   ASSERT_EQ(d.find(b.data(), 4), Piece::npos);
   ASSERT_EQ(e.find(b.data(), 7), Piece::npos);
-
-  ASSERT_EQ(d.find(d.data(), 4, 0),
-            std::string().find(std::string().data(), 4, 0));
-  ASSERT_EQ(d.find(e.data(), 4, 1),
-            std::string().find(std::string().data(), 4, 1));
-  ASSERT_EQ(e.find(d.data(), 4, 2),
-            std::string().find(std::string().data(), 4, 2));
-  ASSERT_EQ(e.find(e.data(), 4, 3),
-            std::string().find(std::string().data(), 4, 3));
 
   ASSERT_EQ(a.rfind(b), 0U);
   ASSERT_EQ(a.rfind(b, 1), 0U);
@@ -374,16 +361,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.rfind(c.data(), 1U, 0), 1U);
   ASSERT_EQ(a.rfind(c.data(), 0U, 0), 0U);
   ASSERT_EQ(b.rfind(c.data(), 0U, 0), 0U);
-  ASSERT_EQ(a.rfind(d.data(), 12, 0), 12U);
-  ASSERT_EQ(a.rfind(e.data(), 17, 0), 17U);
   ASSERT_EQ(d.rfind(b.data(), 4, 0), 0U);
   ASSERT_EQ(e.rfind(b.data(), 7, 0), 0U);
-
-  // empty string nonsense
-  ASSERT_EQ(d.rfind(d.data(), 4), std::string().rfind(std::string()));
-  ASSERT_EQ(e.rfind(d.data(), 7), std::string().rfind(std::string()));
-  ASSERT_EQ(d.rfind(e.data(), 4), std::string().rfind(std::string()));
-  ASSERT_EQ(e.rfind(e.data(), 7), std::string().rfind(std::string()));
 
   std::basic_string<TypeParam> one_two_three_four(
       TestFixture::as_string("one,two:three;four"));

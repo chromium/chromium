@@ -116,12 +116,13 @@ class BasicStringPiece {
       default;
   constexpr BasicStringPiece(const CharT* s, size_type count)
       : ptr_(s), length_(count) {}
-  // TODO(crbug.com/1049498): Construction from nullptr is not allowed for
-  // std::basic_string_view, so CHECK that here.
   // Note: This doesn't just use traits_type::length(), since that
   // isn't constexpr until C++17.
   constexpr BasicStringPiece(const CharT* s)
-      : ptr_(s), length_(s ? CharTraits<CharT>::length(s) : 0) {}
+      : ptr_(s), length_(s ? CharTraits<CharT>::length(s) : 0) {
+    // Intentional STL deviation: Null-check instead of UB.
+    CHECK(s);
+  }
   // Explicitly disallow construction from nullptr. Note that this does not
   // catch construction from runtime strings that might be null.
   // Note: The following is just a more elaborate way of spelling

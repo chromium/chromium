@@ -4148,7 +4148,7 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
           }},
          {blink::features::kLightweightNoStatePrefetch, {}},
          {blink::features::kSpeculationRulesPrefetchProxy, {}}},
-        {{features::kLazyImageLoading, {}}});
+        {{features::kLazyImageLoading}});
   }
 
  private:
