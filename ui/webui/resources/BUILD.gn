@@ -67,8 +67,14 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//third_party/web-animations-js:build_grdp" ]
-    grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
+    deps += [
+      "//ash/content/common/resources:build_grdp",
+      "//third_party/web-animations-js:build_grdp",
+    ]
+    grdp_files += [
+      "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
+      "$root_gen_dir/ash/content/common/resources/ash_common_resources.grdp",
+    ]
   }
 
   if (!is_android && !is_ios) {

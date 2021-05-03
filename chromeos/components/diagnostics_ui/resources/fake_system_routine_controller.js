@@ -4,9 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunner, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
-import {FakeMethodResolver} from './fake_method_resolver.js';
+
 
 /**
  * @fileoverview
@@ -16,7 +17,6 @@ import {FakeMethodResolver} from './fake_method_resolver.js';
 /** @implements {SystemRoutineControllerInterface} */
 export class FakeSystemRoutineController {
   constructor() {
-    /** @private {!FakeMethodResolver} */
     this.methods_ = new FakeMethodResolver();
 
     /** private !Map<!RoutineType, !RoutineResult> */

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js';
-import {FakeObservables} from './fake_observables.js';
+import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
 // Method names.
 const ON_NETWORK_LIST_CHANGED_METHOD_NAME =
@@ -17,7 +17,6 @@ const ON_NETWORK_LIST_CHANGED_METHOD_NAME =
 /** @implements {NetworkHealthProviderInterface} */
 export class FakeNetworkHealthProvider {
   constructor() {
-    /** @private {!FakeObservables} */
     this.observables_ = new FakeObservables();
 
     this.registerObservables();

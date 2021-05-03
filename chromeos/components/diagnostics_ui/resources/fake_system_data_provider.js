@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, MemoryUsage, MemoryUsageObserver, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
-import {FakeMethodResolver} from './fake_method_resolver.js';
-import {FakeObservables} from './fake_observables.js';
+import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
 /**
  * @fileoverview
@@ -14,10 +14,7 @@ import {FakeObservables} from './fake_observables.js';
 /** @implements {SystemDataProviderInterface} */
 export class FakeSystemDataProvider {
   constructor() {
-    /** @private {!FakeMethodResolver} */
     this.methods_ = new FakeMethodResolver();
-
-    /** @private {!FakeObservables} */
     this.observables_ = new FakeObservables();
 
     this.registerMethods();
