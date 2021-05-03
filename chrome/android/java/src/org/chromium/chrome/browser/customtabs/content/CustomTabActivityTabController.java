@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -406,10 +407,6 @@ public class CustomTabActivityTabController implements InflationObserver {
                                 mConnection.getClientPackageNameForSession(mSession)));
         // clang-format on
 
-        if (!tab.isIncognito()) {
-            mConnection.setClientDataHeaderForNewTab(mSession, webContents);
-        }
-
         initializeTab(tab);
 
         if (mIntentDataProvider.getTranslateLanguage() != null) {
@@ -469,6 +466,19 @@ public class CustomTabActivityTabController implements InflationObserver {
         if (!mIntentDataProvider.isWebappOrWebApkActivity()) {
             RedirectHandlerTabHelper.updateIntentInTab(tab, mIntent);
             tab.getView().requestFocus();
+        }
+
+        if (!tab.isIncognito()) {
+            TabObserver observer = new EmptyTabObserver() {
+                @Override
+                public void onContentChanged(Tab tab) {
+                    if (tab.getWebContents() != null) {
+                        mConnection.setClientDataHeaderForNewTab(mSession, tab.getWebContents());
+                    }
+                }
+            };
+            tab.addObserver(observer);
+            observer.onContentChanged(tab);
         }
 
         // TODO(pshmakov): invert these dependencies.
