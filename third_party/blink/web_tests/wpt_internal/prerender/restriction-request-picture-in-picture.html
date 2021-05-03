@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* startPrerendering() usage is replaced with a WebDriver API
+-->
+<title>Prerendering cannot invoke
+       HTMLVideoElement.requestPictureInPicture</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const bc = new BroadcastChannel('prerender-channel');
+  t.add_cleanup(_ => bc.close());
+
+  const gotMessage = new Promise(resolve => {
+    bc.addEventListener('message', e => {
+      resolve(e.data);
+    }, {
+      once: true
+    });
+  });
+
+  // Start prerendering a page that attempts to invoke
+  // HTMLVideoElement.requestPictureInPicture. This API needs
+  // transient activation. So it's expected to fail.
+  startPrerendering(`resources/request-picture-in-picture.html`);
+
+  const result = await gotMessage;
+  assert_equals(result, 'request failed for a user gesture');
+}, 'prerendering page cannot invoke' +
+   'HTMLVideoElement.requestPictureInPicture');
+</script>
+</body>
