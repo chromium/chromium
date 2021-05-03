@@ -12265,6 +12265,16 @@ histogram as enum -->
   <int value="3" label="Virtual Keyboard"/>
 </enum>
 
+<enum name="ClipboardPastedImageUrls">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Image with local file urls"/>
+  <int value="2" label="Image with http(s) urls"/>
+  <int value="3" label="Image with cid urls"/>
+  <int value="4" label="Image with other urls"/>
+  <int value="5" label="Base64 encoded image"/>
+  <int value="6" label="Image with local file urls and RTF"/>
+</enum>
+
 <enum name="ClockdriftLevel">
   <int value="0" label="None"/>
   <int value="1" label="Probable"/>

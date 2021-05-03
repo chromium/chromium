@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
@@ -18,10 +19,13 @@
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -34,6 +38,20 @@ namespace {
 String NonNullString(const String& string) {
   return string.IsNull() ? g_empty_string16_bit : string;
 }
+
+// This enum is used in UMA. Do not delete or re-order entries. New entries
+// should only be added at the end. Please keep in sync with
+// "ClipboardPastedImageUrls" in //tools/metrics/histograms/enums.xml.
+enum class ClipboardPastedImageUrls {
+  kUnknown = 0,
+  kLocalFileUrls = 1,
+  kHttpUrls = 2,
+  kCidUrls = 3,
+  kOtherUrls = 4,
+  kBase64EncodedImage = 5,
+  kLocalFileUrlWithRtf = 6,
+  kMaxValue = kLocalFileUrlWithRtf,
+};
 
 }  // namespace
 
@@ -57,21 +75,11 @@ void SystemClipboard::SetSelectionMode(bool selection_mode) {
                            : mojom::ClipboardBuffer::kStandard;
 }
 
-bool SystemClipboard::CanSmartReplace() {
+bool SystemClipboard::IsFormatAvailable(blink::mojom::ClipboardFormat format) {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
     return false;
   bool result = false;
-  clipboard_->IsFormatAvailable(mojom::ClipboardFormat::kSmartPaste, buffer_,
-                                &result);
-  return result;
-}
-
-bool SystemClipboard::IsHTMLAvailable() {
-  if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
-    return false;
-  bool result = false;
-  clipboard_->IsFormatAvailable(mojom::ClipboardFormat::kHtml, buffer_,
-                                &result);
+  clipboard_->IsFormatAvailable(format, buffer_, &result);
   return result;
 }
 
@@ -269,6 +277,59 @@ void SystemClipboard::CopyToFindPboard(const String& text) {
 #if defined(OS_MAC)
   clipboard_->WriteStringToFindPboard(text);
 #endif
+}
+
+void SystemClipboard::RecordClipboardImageUrls(
+    DocumentFragment* pasting_fragment) {
+  if (!pasting_fragment)
+    return;
+  bool rtf_format_available =
+      IsFormatAvailable(blink::mojom::ClipboardFormat::kRtf);
+  for (Element& element : ElementTraversal::DescendantsOf(*pasting_fragment)) {
+    if (!IsA<HTMLImageElement>(&element))
+      continue;
+
+    AttributeCollection attributes = element.Attributes();
+    for (const auto& attribute : attributes) {
+      if (element.IsURLAttribute(attribute) && !attribute.Value().IsEmpty()) {
+        static constexpr char kFilePrefix[] = "file:";
+        static constexpr char kCidPrefix[] = "cid:";
+        static constexpr char kHttpPrefix[] = "http:";
+        static constexpr char kHttpsPrefix[] = "https:";
+        static constexpr char kDataPrefix[] = "data:";
+        static constexpr char kBase64[] = "base64,";
+        const AtomicString& filename = attribute.Value();
+        ClipboardPastedImageUrls image_src_url_prefix =
+            ClipboardPastedImageUrls::kUnknown;
+        if (filename.StartsWithIgnoringCase(kFilePrefix)) {
+          // Record local file urls.
+          image_src_url_prefix = ClipboardPastedImageUrls::kLocalFileUrls;
+        } else if (filename.StartsWithIgnoringCase(kCidPrefix)) {
+          // Record cid prefix.
+          image_src_url_prefix = ClipboardPastedImageUrls::kCidUrls;
+        } else if (filename.StartsWithIgnoringCase(kHttpPrefix) ||
+                   filename.StartsWithIgnoringCase(kHttpsPrefix)) {
+          // Record http prefix.
+          image_src_url_prefix = ClipboardPastedImageUrls::kHttpUrls;
+        } else if (filename.StartsWithIgnoringCase(kDataPrefix) &&
+                   filename.Contains(kBase64)) {
+          // Record base64 encoded image.
+          image_src_url_prefix = ClipboardPastedImageUrls::kBase64EncodedImage;
+        } else {
+          image_src_url_prefix = ClipboardPastedImageUrls::kOtherUrls;
+        }
+        base::UmaHistogramEnumeration("Blink.Clipboard.Paste.Image",
+                                      image_src_url_prefix);
+        // Check if RTF is present in the clipboard.
+        if (image_src_url_prefix == ClipboardPastedImageUrls::kLocalFileUrls &&
+            rtf_format_available) {
+          image_src_url_prefix = ClipboardPastedImageUrls::kLocalFileUrlWithRtf;
+          base::UmaHistogramEnumeration("Blink.Clipboard.Paste.Image",
+                                        image_src_url_prefix);
+        }
+      }
+    }
+  }
 }
 
 void SystemClipboard::Trace(Visitor* visitor) const {

@@ -16,6 +16,7 @@
 namespace blink {
 
 class DataObject;
+class DocumentFragment;
 class Image;
 class KURL;
 class LocalFrame;
@@ -38,9 +39,8 @@ class CORE_EXPORT SystemClipboard final
   uint64_t SequenceNumber();
   bool IsSelectionMode() const;
   void SetSelectionMode(bool);
-  bool CanSmartReplace();
-  bool IsHTMLAvailable();
   Vector<String> ReadAvailableTypes();
+  bool IsFormatAvailable(mojom::ClipboardFormat format);
 
   String ReadPlainText();
   String ReadPlainText(mojom::ClipboardBuffer buffer);
@@ -81,6 +81,8 @@ class CORE_EXPORT SystemClipboard final
   void CommitWrite();
 
   void CopyToFindPboard(const String& text);
+
+  void RecordClipboardImageUrls(DocumentFragment* pasting_fragment);
 
   void Trace(Visitor*) const;
 

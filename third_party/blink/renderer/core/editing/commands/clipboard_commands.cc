@@ -83,7 +83,8 @@ bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
 
 bool ClipboardCommands::CanSmartReplaceInClipboard(LocalFrame& frame) {
   return frame.GetEditor().SmartInsertDeleteEnabled() &&
-         frame.GetSystemClipboard()->CanSmartReplace();
+         frame.GetSystemClipboard()->IsFormatAvailable(
+             blink::mojom::ClipboardFormat::kSmartPaste);
 }
 
 Element* ClipboardCommands::FindEventTargetForClipboardEvent(
@@ -365,7 +366,8 @@ void ClipboardCommands::PasteAsPlainTextFromClipboard(
 ClipboardCommands::FragmentAndPlainText
 ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
   DocumentFragment* fragment = nullptr;
-  if (frame.GetSystemClipboard()->IsHTMLAvailable()) {
+  if (frame.GetSystemClipboard()->IsFormatAvailable(
+          blink::mojom::ClipboardFormat::kHtml)) {
     unsigned fragment_start = 0;
     unsigned fragment_end = 0;
     KURL url;
@@ -406,7 +408,8 @@ void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
 
   if (!fragment_and_plain_text.first)
     return;
-
+  frame.GetSystemClipboard()->RecordClipboardImageUrls(
+      fragment_and_plain_text.first);
   PasteAsFragment(frame, fragment_and_plain_text.first,
                   CanSmartReplaceInClipboard(frame),
                   fragment_and_plain_text.second, source);

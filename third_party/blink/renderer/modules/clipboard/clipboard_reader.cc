@@ -176,6 +176,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
         *frame->GetDocument(), html_string, fragment_start,
         html_string.length(), url);
+    system_clipboard()->RecordClipboardImageUrls(fragment);
     String sanitized_html =
         CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
 

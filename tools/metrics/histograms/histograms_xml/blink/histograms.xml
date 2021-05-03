@@ -485,6 +485,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Clipboard.Paste.Image" enum="ClipboardPastedImageUrls"
+    expires_after="2021-09-05">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>snianu@microsoft.com</owner>
+  <summary>
+    When HTML is parsed during a paste operation, image elements may have a
+    source attribute pointing to a local file url, http(s) url, cid or other url
+    type which doesn't render the image when it's pasted inside a content
+    editable region. This metric will help us determine how many paste
+    operations have an image with a src url attribute containing the url types
+    mentioned above and whether there is an RTF format in the clipboard along
+    with HTML or not. The RTF format data will help us decide whether we need to
+    support paste for images that are in RTF format types when it's available on
+    the clipboard along with HTML format so the apps can use it to insert the
+    images which then can be used by the Browser to replace the src urls of the
+    images in the HTML markup with a Blob url. This would enable the site to
+    store the images when it's pasted inside a content editable region.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ColorGamut.Destination" enum="Gamut" expires_after="M85">
   <owner>brianosman@chromium.org</owner>
   <owner>mcasas@google.com</owner>

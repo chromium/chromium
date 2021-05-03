@@ -71,6 +71,9 @@ void MockClipboardHost::IsFormatAvailable(
     case mojom::ClipboardFormat::kBookmark:
       result = false;
       break;
+    case mojom::ClipboardFormat::kRtf:
+      result = false;
+      break;
   }
   std::move(callback).Run(result);
 }
