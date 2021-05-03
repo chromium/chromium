@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.feed.followmanagement;
 
+import static org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus.SUCCESS;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -17,10 +18,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
@@ -50,34 +48,6 @@ class FollowManagementMediator {
      */
     class ClickListener {
         private final byte[] mId;
-        private boolean mSubscribed;
-        private CheckBox mCheckbox;
-
-        /** Callback from the WebFeedBridge's followFromId method */
-        class FollowCallback implements Callback<FollowResults> {
-            /** Report reesults of follow operation. */
-            @Override
-            public void onResult(FollowResults results) {
-                if (results.requestStatus != WebFeedSubscriptionRequestStatus.SUCCESS) {
-                    // If the operation failed, re-uncheck the checkbox.
-                    mCheckbox.setChecked(false);
-                }
-                mCheckbox.setClickable(true);
-            }
-        }
-
-        /** Callback from WebFeedBridge's unfollow operation. */
-        class UnfollowCallback implements Callback<UnfollowResults> {
-            /** Report results of unfollow operation. */
-            @Override
-            public void onResult(UnfollowResults results) {
-                if (results.requestStatus != WebFeedSubscriptionRequestStatus.SUCCESS) {
-                    // If the operation failed, re-check the checkbox.
-                    mCheckbox.setChecked(true);
-                }
-                mCheckbox.setClickable(true);
-            }
-        }
 
         ClickListener(byte[] id) {
             mId = id;
@@ -94,16 +64,21 @@ class FollowManagementMediator {
          * Click handler for clicks on the checkbox.  Follows or unfollows as needed.
          */
         void clickHandler(View view) {
-            mCheckbox = (CheckBox) view;
-            // Disable the button until we get a callback to prevent duplicate events.
-            mCheckbox.setClickable(false);
-            // If we were subscribed, unfollow, and vice versa.  The checkbox is already in its new
-            // state, so make the reality match the checkbox state.
-            if (mCheckbox.isChecked()) {
-                mWebFeedBridge.followFromId(mId, new FollowCallback());
+            FollowManagementItemView itemView = (FollowManagementItemView) view.getParent();
+
+            // If we were subscribed, unfollow, and vice versa.  The checkbox is already in its
+            // intended new state, so make the reality match the checkbox state.
+            if (itemView.isSubscribed()) {
+                // The lambda will set the item as subscribed if the follow operation succeeds.
+                mWebFeedBridge.followFromId(
+                        mId, results -> itemView.setSubscribed(results.requestStatus == SUCCESS));
             } else {
-                mWebFeedBridge.unfollow(mId, new UnfollowCallback());
+                // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
+                mWebFeedBridge.unfollow(
+                        mId, results -> itemView.setSubscribed(results.requestStatus != SUCCESS));
             }
+
+            itemView.setTransitioning();
         }
     }
 
