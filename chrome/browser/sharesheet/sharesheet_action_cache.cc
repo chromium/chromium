@@ -29,18 +29,6 @@ SharesheetActionCache::SharesheetActionCache(Profile* profile) {
     AddShareAction(std::make_unique<NearbyShareAction>());
   }
   AddShareAction(std::make_unique<DriveShareAction>());
-  // Add 9 example actions to show expanded view
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
