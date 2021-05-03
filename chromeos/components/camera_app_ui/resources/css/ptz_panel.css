@@ -344,7 +344,7 @@ body:is(:not(.has-pan-support), :not(.has-tilt-support), :not(.has-zoom-support)
 }
 
 #ptz-zoom-divider {
-  height: 36px;
+  height: 16px;
   left: 50%;
   top: 50%;
   transform: translateY(-50%);
