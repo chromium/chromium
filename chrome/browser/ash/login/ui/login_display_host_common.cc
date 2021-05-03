@@ -416,7 +416,10 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
-  GetWizardController()->SetAuthSessionForOnboarding(user_context);
+
+  // WizardController may not be initialized in the WebUI login display host.
+  if (GetWizardController())
+    GetWizardController()->SetAuthSessionForOnboarding(user_context);
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(
