@@ -157,6 +157,10 @@ public class CableAuthenticatorUI
 
         Log.i(TAG, "Starting in mode " + mMode.toString());
 
+        if (mMode == Mode.ERROR) {
+            return;
+        }
+
         final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
         final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
