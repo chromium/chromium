@@ -22,9 +22,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -268,30 +268,14 @@ public class ActivityTabProviderTest {
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
     private void setTabSwitcherModeAndWait(boolean inSwitcher) throws TimeoutException {
-        final CallbackHelper sceneChangeHelper = new CallbackHelper();
-        SceneChangeObserver observer = new SceneChangeObserver() {
-            @Override
-            public void onTabSelectionHinted(int tabId) {}
-
-            @Override
-            public void onSceneChange(Layout layout) {
-                sceneChangeHelper.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (inSwitcher) {
+                mActivity.getLayoutManager().showOverview(true);
+            } else {
+                mActivity.getLayoutManager().hideOverviewWithNextTab(true, mLastValidTabId);
             }
-        };
-        mActivity.getCompositorViewHolder().getLayoutManager().addSceneChangeObserver(observer);
+        });
 
-        int sceneChangeCount = sceneChangeHelper.getCallCount();
-        if (inSwitcher) {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mActivity.getLayoutManager().showOverview(true));
-        } else {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mActivity.getLayoutManager().hideOverviewWithNextTab(true, mLastValidTabId);
-                    });
-        }
-        sceneChangeHelper.waitForCallback(sceneChangeCount);
-
-        mActivity.getCompositorViewHolder().getLayoutManager().removeSceneChangeObserver(observer);
+        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 }

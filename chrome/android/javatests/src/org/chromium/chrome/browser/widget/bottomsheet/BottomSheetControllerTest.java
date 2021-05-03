@@ -31,7 +31,8 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -692,15 +693,6 @@ public class BottomSheetControllerTest {
      * @throws TimeoutException
      */
     private void setTabSwitcherState(boolean shown) throws TimeoutException {
-        CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
-        LayoutStateObserver observer = new LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                finishedShowingCallbackHelper.notifyCalled();
-            }
-        };
-        mActivity.getLayoutManager().addObserver(observer);
-
         ThreadUtils.runOnUiThreadBlocking(() -> {
             if (shown) {
                 mActivity.getLayoutManager().showOverview(false);
@@ -709,8 +701,7 @@ public class BottomSheetControllerTest {
             }
         });
 
-        finishedShowingCallbackHelper.waitForFirst();
-        mActivity.getLayoutManager().removeObserver(observer);
+        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
         ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 
