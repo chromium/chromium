@@ -287,11 +287,21 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // To enter the back-forward cache, the main document URL's must match one of
   // the field trial parameter "allowed_websites". This is represented here by a
-  // set of host and path prefix.
+  // set of host and path prefix. When |allowed_urls_| is empty, it means there
+  // are no restrictions on URLs.
   std::map<std::string,              // URL's host,
            std::vector<std::string>  // URL's path prefix
            >
       allowed_urls_;
+
+  // This is an emergency kill switch per url to stop BFCache. The data will be
+  // provided via the field trial parameter "blocked_websites".
+  // "blocked_websites" have priority over "allowed_websites". This is
+  // represented here by a set of host and path prefix.
+  std::map<std::string,              // URL's host,
+           std::vector<std::string>  // URL's path prefix
+           >
+      blocked_urls_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
 

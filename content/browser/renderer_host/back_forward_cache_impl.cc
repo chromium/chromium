@@ -265,18 +265,26 @@ std::string GetAllowedURLList() {
                                                 "allowed_websites");
 }
 
-// To enter the BackForwardCache the URL of a document must have a host and a
-// path matching with at least one URL in this map. We represent/format the
-// string associated with parameter as comma separated urls.
-std::map<std::string, std::vector<std::string>> GetAllowedURLs() {
-  std::map<std::string, std::vector<std::string>> allowed_urls;
+// This function returns the blocked URL list.
+std::string GetBlockedURLList() {
+  return IsBackForwardCacheEnabled()
+             ? base::GetFieldTrialParamValueByFeature(
+                   features::kBackForwardCache, "blocked_websites")
+             : "";
+}
+
+// Parses the “allowed_websites” and "blocked_websites" field trial parameters
+// and creates a map to represent hosts and corresponding path prefixes.
+std::map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
+    base::StringPiece comma_separated_urls) {
+  std::map<std::string, std::vector<std::string>> urls;
   for (auto& it :
-       base::SplitString(GetAllowedURLList(), ",", base::TRIM_WHITESPACE,
+       base::SplitString(comma_separated_urls, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_ALL)) {
     GURL url = GURL(it);
-    allowed_urls[url.host()].emplace_back(url.path());
+    urls[url.host()].push_back(url.path());
   }
-  return allowed_urls;
+  return urls;
 }
 
 BackForwardCacheTestDelegate* g_bfcache_disabled_test_observer = nullptr;
@@ -388,7 +396,9 @@ BackForwardCacheTestDelegate::~BackForwardCacheTestDelegate() {
 }
 
 BackForwardCacheImpl::BackForwardCacheImpl()
-    : allowed_urls_(GetAllowedURLs()), weak_factory_(this) {}
+    : allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
+      blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
+      weak_factory_(this) {}
 
 BackForwardCacheImpl::~BackForwardCacheImpl() {
   Shutdown();
@@ -880,6 +890,16 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
 }
 
 bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
+  // If the current_url matches the blocked host and path, current_url is
+  // not allowed to be cached.
+  const auto& it = blocked_urls_.find(current_url.host());
+  if (it != blocked_urls_.end()) {
+    for (const std::string& blocked_path : it->second) {
+      if (base::StartsWith(current_url.path_piece(), blocked_path))
+        return false;
+    }
+  }
+
   // By convention, when |allowed_urls_| is empty, it means there are no
   // restrictions about what RenderFrameHost can enter the BackForwardCache.
   if (allowed_urls_.empty())
@@ -891,7 +911,7 @@ bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
   // scheme here.
   const auto& entry = allowed_urls_.find(current_url.host());
   if (entry != allowed_urls_.end()) {
-    for (auto allowed_path : entry->second) {
+    for (const std::string& allowed_path : entry->second) {
       if (base::StartsWith(current_url.path_piece(), allowed_path))
         return true;
     }
