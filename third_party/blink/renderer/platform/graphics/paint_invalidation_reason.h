@@ -14,7 +14,6 @@ namespace blink {
 enum class PaintInvalidationReason : uint8_t {
   kNone,
   kIncremental,
-  kRectangle,
   // Hit test changes do not require raster invalidation.
   kHitTest,
   // The following reasons will all cause full paint invalidation.

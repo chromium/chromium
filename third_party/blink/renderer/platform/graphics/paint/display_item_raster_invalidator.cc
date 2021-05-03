@@ -182,10 +182,6 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
   DCHECK_EQ(old_visual_rect.Location(), new_visual_rect.Location());
   GenerateIncrementalRasterInvalidation(client, old_visual_rect,
                                         new_visual_rect);
-
-  IntRect partial_rect = client.PartialInvalidationVisualRect();
-  if (!partial_rect.IsEmpty())
-    AddRasterInvalidation(client, partial_rect, reason, kClientIsNew);
 }
 
 static IntRect ComputeRightDelta(const IntPoint& location,

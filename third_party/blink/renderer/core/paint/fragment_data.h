@@ -54,33 +54,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   PaintLayer* Layer() const { return rare_data_ ? rare_data_->layer : nullptr; }
   void SetLayer(PaintLayer*);
 
-  // Covers the sub-rectangles of the object that need to be re-rastered, in the
-  // object's local coordinate space.  During PrePaint, the rect mapped into
-  // visual rect space will be added into PartialInvalidationVisualRect(), and
-  // cleared.
-  PhysicalRect PartialInvalidationLocalRect() const {
-    return rare_data_ ? rare_data_->partial_invalidation_local_rect
-                      : PhysicalRect();
-  }
-  // LayoutObject::InvalidatePaintRectangle() calls this method to accumulate
-  // the sub-rectangles needing re-rasterization.
-  void SetPartialInvalidationLocalRect(const PhysicalRect& r) {
-    if (rare_data_ || !r.IsEmpty())
-      EnsureRareData().partial_invalidation_local_rect = r;
-  }
-
-  // Covers the sub-rectangles of the object that need to be re-rastered, in
-  // visual rect space (see VisualRect()). It will be cleared after the raster
-  // invalidation is issued after paint.
-  IntRect PartialInvalidationVisualRect() const {
-    return rare_data_ ? rare_data_->partial_invalidation_visual_rect
-                      : IntRect();
-  }
-  void SetPartialInvalidationVisualRect(const IntRect& r) {
-    if (rare_data_ || !r.IsEmpty())
-      EnsureRareData().partial_invalidation_visual_rect = r;
-  }
-
   LayoutUnit LogicalTopInFlowThread() const {
     return rare_data_ ? rare_data_->logical_top_in_flow_thread : LayoutUnit();
   }
@@ -245,8 +218,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     // avoid separate data structure for them.
     Member<PaintLayer> layer;
     UniqueObjectId unique_id;
-    PhysicalRect partial_invalidation_local_rect;
-    IntRect partial_invalidation_visual_rect;
 
     // Fragment specific data.
     PhysicalOffset legacy_pagination_offset;

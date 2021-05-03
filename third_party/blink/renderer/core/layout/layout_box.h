@@ -115,8 +115,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   // true.
   PhysicalRect previous_physical_content_box_rect_;
 
-  PhysicalRect partial_invalidation_rect_;
-
   // Used by CSSLayoutDefinition::Instance::Layout. Represents the script
   // object for this box that web developers can query style, and perform
   // layout upon. Only created if IsCustomItem() is true.
@@ -2058,15 +2056,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Make it public.
   using LayoutObject::BackgroundIsKnownToBeObscured;
 
-  // Invalidate the raster of a specific sub-rectangle within the object. The
-  // rect is in the object's local coordinate space. This is useful e.g. when
-  // a small region of a canvas changes.
-  void InvalidatePaintRectangle(const PhysicalRect&);
-  bool HasPartialInvalidationRect() const {
-    NOT_DESTROYED();
-    return rare_data_ && !rare_data_->partial_invalidation_rect_.IsEmpty();
-  }
-
   // Sets the coordinates of find-in-page scrollbar tickmarks, bypassing
   // DocumentMarkerController.  This is used by the PDF plugin.
   void OverrideTickmarks(Vector<IntRect> tickmarks);
@@ -2326,10 +2315,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         container_box->Size().Width() - Size().Width() - Location().X(),
         Location().Y());
   }
-
-  // DisplayItemClient methods.
-  void ClearPartialInvalidationVisualRect() const final;
-  IntRect PartialInvalidationVisualRect() const final;
 
   // The CSS border box rect for this box.
   //

@@ -17,24 +17,12 @@ class FakeDisplayItemClient : public DisplayItemClient {
       : name_(name) {}
 
   String DebugName() const final { return name_; }
-  IntRect PartialInvalidationVisualRect() const override {
-    return partial_invalidation_visual_rect_;
-  }
-  void ClearPartialInvalidationVisualRect() const override {
-    partial_invalidation_visual_rect_ = IntRect();
-  }
-
-  void SetPartialInvalidationVisualRect(const IntRect& r) {
-    Invalidate(PaintInvalidationReason::kRectangle);
-    partial_invalidation_visual_rect_ = r;
-  }
 
   // This simulates a paint without needing a PaintController.
   using DisplayItemClient::Validate;
 
  private:
   String name_;
-  mutable IntRect partial_invalidation_visual_rect_;
 };
 
 }  // namespace blink

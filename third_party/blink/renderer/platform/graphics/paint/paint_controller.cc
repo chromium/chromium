@@ -607,7 +607,6 @@ void PaintController::FinishCycle() {
       client.Validate();
 
     for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i)) {
-      item.Client().ClearPartialInvalidationVisualRect();
       if (item.Client().IsCacheable())
         item.Client().Validate();
     }

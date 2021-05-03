@@ -58,13 +58,6 @@ class PLATFORM_EXPORT DisplayItemClient {
     return RasterEffectOutset::kNone;
   }
 
-  // The rect that needs to be invalidated partially for rasterization in this
-  // client. It's in the same coordinate space as VisualRect().
-  virtual IntRect PartialInvalidationVisualRect() const { return IntRect(); }
-
-  // Called by PaintController::FinishCycle() for all clients after painting.
-  virtual void ClearPartialInvalidationVisualRect() const {}
-
   // Indicates that the client will paint display items different from the ones
   // cached by PaintController. However, PaintController allows a client to
   // paint new display items that are not cached or to no longer paint some
