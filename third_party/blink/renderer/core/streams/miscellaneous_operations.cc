@@ -460,7 +460,10 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState* script_state,
                                                int argc,
                                                v8::Local<v8::Value> argv[]) {
   DCHECK_GE(argc, 0);
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch trycatch(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // https://streams.spec.whatwg.org/#promise-call
   // 4. Let returnValue be Call(F, V, args).

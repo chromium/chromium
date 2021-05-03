@@ -222,9 +222,11 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
 
   auto underlying_sink_value = ScriptValue::From(script_state, underlying_sink);
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "WritableStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto* stream = MakeGarbageCollected<WritableStream>();
   stream->InitInternal(script_state, underlying_sink_value, strategy_value,
                        exception_state);
