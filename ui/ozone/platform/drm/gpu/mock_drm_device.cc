@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,6 +182,24 @@ void MockDrmDevice::UpdateState(
   connector_properties_ = connector_properties;
   plane_properties_ = plane_properties;
   property_names_ = property_names;
+
+  // Props IDs shouldn't change throughout a DRM state. Grab it once at
+  // UpdateState.
+  plane_crtc_id_prop_id_ = 0;
+  for (const PlaneProperties& plane_props : plane_properties) {
+    const std::vector<DrmDevice::Property>& props = plane_props.properties;
+    auto it = std::find_if(
+        props.begin(), props.end(),
+        [&names = property_names_](const DrmDevice::Property& prop) {
+          return names.at(prop.id) == "CRTC_ID";
+        });
+    if (it != props.end()) {
+      plane_crtc_id_prop_id_ = it->id;
+      // all planes should have the same prop ID for the name. Break right after
+      // the first one is found.
+      break;
+    }
+  }
 }
 
 void MockDrmDevice::SetModifiersOverhead(
@@ -468,14 +487,22 @@ bool MockDrmDevice::CommitPropertiesInternal(
   }
 
   uint64_t requested_resources = 0;
+  base::flat_map<uint64_t, int> crtc_planes_counter;
+
   for (uint32_t i = 0; i < request->cursor; ++i) {
-    const auto& item = request->items[i];
+    const drmModeAtomicReqItem& item = request->items[i];
     if (!ValidatePropertyValue(item.property_id, item.value))
       return false;
 
     if (fb_props_.find(item.value) != fb_props_.end()) {
       const FramebufferProps& props = fb_props_[item.value];
       requested_resources += modifiers_overhead_[props.modifier];
+    }
+
+    if (item.property_id == plane_crtc_id_prop_id_) {
+      if (++crtc_planes_counter[item.value] > 1 &&
+          !modeset_with_overlays_expectation_)
+        return false;
     }
   }
 
@@ -499,6 +526,12 @@ bool MockDrmDevice::CommitPropertiesInternal(
     if (!res)
       return false;
   }
+
+  // Count all committed planes at the end just before returning true to reflect
+  // the number of planes that have successfully been committed.
+  last_planes_committed_count_ = 0;
+  for (const auto& planes_counter : crtc_planes_counter)
+    last_planes_committed_count_ += planes_counter.second;
 
   return true;
 }
