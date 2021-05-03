@@ -5,20 +5,11 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_CONTAINERS_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_CONTAINERS_IMPL_H_
 
-#include <functional>
-#include <unordered_map>
-#include <unordered_set>
+#include <memory>
+#include <vector>
 
-#include "base/containers/queue.h"
-#include "base/containers/small_map.h"
-#include "net/third_party/quiche/src/common/simple_linked_hash_map.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/btree_set.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/node_hash_set.h"
 
 namespace quic {
 
@@ -27,27 +18,7 @@ template <typename Key>
 using QuicDefaultHasherImpl = absl::Hash<Key>;
 
 template <typename Key, typename Value, typename Hash>
-using QuicUnorderedMapImpl = absl::node_hash_map<Key, Value, Hash>;
-
-template <typename Key, typename Value, typename Hash>
-using QuicHashMapImpl = absl::flat_hash_map<Key, Value, Hash>;
-
-template <typename Key, typename Hash>
-using QuicUnorderedSetImpl = absl::node_hash_set<Key, Hash>;
-
-template <typename Key, typename Hash>
-using QuicHashSetImpl = absl::flat_hash_set<Key, Hash>;
-
-// A map which offers insertion-ordered iteration.
-template <typename Key, typename Value, typename Hash>
-using QuicLinkedHashMapImpl = quiche::SimpleLinkedHashMap<Key, Value, Hash>;
-
-// Represents a simple queue which may be backed by a list or
-// a flat circular buffer.
-//
-// DOES NOT GUARANTEE POINTER STABILITY!
-template <typename T>
-using QuicQueueImpl = base::queue<T>;
+using QuicLinkedHashMapImpl = quiche::QuicheLinkedHashMap<Key, Value, Hash>;
 
 // TODO(wub): Switch to absl::InlinedVector once it is allowed.
 template <typename T, size_t N, typename A = std::allocator<T>>

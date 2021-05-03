@@ -5,11 +5,12 @@
 #ifndef NET_QUIC_QUIC_CONNECTIVITY_MONITOR_H_
 #define NET_QUIC_QUIC_CONNECTIVITY_MONITOR_H_
 
+#include <set>
+
 #include "base/containers/flat_set.h"
 #include "base/numerics/clamped_math.h"
 #include "net/base/network_change_notifier.h"
 #include "net/quic/quic_chromium_client_session.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_containers.h"
 
 namespace net {
 
@@ -96,9 +97,9 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   // NetworkChangeNotifier::kInvalidNetworkHandle.
   NetworkChangeNotifier::NetworkHandle default_network_;
   // Sessions that are currently degrading on the |default_network_|.
-  quic::QuicHashSet<QuicChromiumClientSession*> degrading_sessions_;
+  std::set<QuicChromiumClientSession*> degrading_sessions_;
   // Sessions that are currently active on the |default_network_|.
-  quic::QuicHashSet<QuicChromiumClientSession*> active_sessions_;
+  std::set<QuicChromiumClientSession*> active_sessions_;
 
   // Number of sessions that have been active or created during the period of
   // a speculative connectivity failure.

@@ -10,12 +10,12 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "net/third_party/quiche/src/common/simple_linked_hash_map.h"
+#include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 
 template <class Key, class Value>
 class ScopedPtrExpiringCache {
  private:
-  typedef quiche::SimpleLinkedHashMap<Key, Value*> LinkedHashMap;
+  typedef quiche::QuicheLinkedHashMap<Key, Value*> LinkedHashMap;
 
  public:
   typedef typename LinkedHashMap::iterator iterator;

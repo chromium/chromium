@@ -10,12 +10,12 @@
 
 #include "base/containers/small_map.h"
 #include "base/strings/string_piece.h"
-#include "net/third_party/quiche/src/common/simple_linked_hash_map.h"
+#include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 
 namespace spdy {
 
 template <typename Key, typename Value, typename Hash, typename Eq>
-using SpdyLinkedHashMapImpl = quiche::SimpleLinkedHashMap<Key, Value, Hash, Eq>;
+using SpdyLinkedHashMapImpl = quiche::QuicheLinkedHashMap<Key, Value, Hash, Eq>;
 
 template <typename T, size_t N, typename A = std::allocator<T>>
 using SpdyInlinedVectorImpl = std::vector<T, A>;
