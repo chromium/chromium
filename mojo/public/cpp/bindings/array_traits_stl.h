@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 
 namespace mojo {
@@ -110,6 +111,24 @@ struct ArrayTraits<std::set<T>> {
   static const T& GetValue(ConstIterator& iterator) {
     return *iterator;
   }
+};
+
+// This ArrayTraits specialization is used only for serialization.
+template <typename T>
+struct ArrayTraits<base::flat_set<T>> {
+  using Element = T;
+  using ConstIterator = typename base::flat_set<T>::const_iterator;
+
+  static bool IsNull(const base::flat_set<T>& input) {
+    // base::flat_set<> is always converted to non-null mojom array.
+    return false;
+  }
+  static size_t GetSize(const base::flat_set<T>& input) { return input.size(); }
+  static ConstIterator GetBegin(const base::flat_set<T>& input) {
+    return input.begin();
+  }
+  static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
+  static const T& GetValue(ConstIterator& iterator) { return *iterator; }
 };
 
 template <typename K, typename V>

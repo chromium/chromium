@@ -50,26 +50,30 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   return a == Container(b);
 }
 
-#define EXPECT_STL_EQ(a, ...)                 \
-  do {                                        \
-    EXPECT_TRUE(StlEquals(a, {__VA_ARGS__})); \
+#define EXPECT_STL_EQ(container, ...)                            \
+  do {                                                           \
+    EXPECT_THAT(container, ::testing::ElementsAre(__VA_ARGS__)); \
   } while (false)
 
 #define EXPECT_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(capability_->video_codecs, __VA_ARGS__)
+  EXPECT_STL_EQ(capability_->sw_secure_capability->video_codecs, __VA_ARGS__)
 
-#define EXPECT_ENCRYPTION_SCHEMES(...) \
-  EXPECT_STL_EQ(capability_->encryption_schemes, __VA_ARGS__)
+#define EXPECT_ENCRYPTION_SCHEMES(...)                                 \
+  EXPECT_STL_EQ(capability_->sw_secure_capability->encryption_schemes, \
+                __VA_ARGS__)
 
 #define EXPECT_SESSION_TYPES(...) \
-  EXPECT_STL_EQ(capability_->session_types, __VA_ARGS__)
+  EXPECT_STL_EQ(capability_->sw_secure_capability->session_types, __VA_ARGS__)
 
 #define EXPECT_HW_SECURE_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(capability_->hw_secure_video_codecs, __VA_ARGS__)
+  EXPECT_STL_EQ(capability_->hw_secure_capability->video_codecs, __VA_ARGS__)
 
-#define EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(...) \
-  EXPECT_STL_EQ(capability_->hw_secure_encryption_schemes, __VA_ARGS__)
+#define EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(...)                       \
+  EXPECT_STL_EQ(capability_->hw_secure_capability->encryption_schemes, \
+                __VA_ARGS__)
 
+#define EXPECT_HW_SECURE_SESSION_TYPES(...) \
+  EXPECT_STL_EQ(capability_->hw_secure_capability->session_types, __VA_ARGS__)
 }  // namespace
 
 class KeySystemSupportImplTest : public testing::Test {
@@ -139,6 +143,8 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
   Register("KeySystem", TestCdmCapability());
 
   EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_TRUE(capability_->sw_secure_capability);
+  EXPECT_FALSE(capability_->hw_secure_capability);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
@@ -158,11 +164,13 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_FALSE(capability_->sw_secure_capability);
+  EXPECT_TRUE(capability_->hw_secure_capability);
   EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc,
                                       EncryptionScheme::kCbcs);
-  // TODO(xhwang): Support hardware secure session types.
-  EXPECT_TRUE(capability_->session_types.empty());
+  EXPECT_HW_SECURE_SESSION_TYPES(CdmSessionType::kTemporary,
+                                 CdmSessionType::kPersistentLicense);
 }
 
 TEST_F(KeySystemSupportImplTest, MultipleKeySystems) {
