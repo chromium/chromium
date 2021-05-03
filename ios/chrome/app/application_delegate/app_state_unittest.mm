@@ -527,9 +527,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   [[appStateObserverMock expect] appStateDidExitSafeMode:appState];
   [[browserLauncherMock expect]
       startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
-  id applicationDelegateMock = getApplicationDelegateMock();
-  [[applicationDelegateMock expect]
-      applicationDidBecomeActive:[UIApplication sharedApplication]];
 
   swizzleSafeModeShouldStart(YES);
 
@@ -553,7 +550,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   EXPECT_OCMOCK_VERIFY(windowMock);
   EXPECT_OCMOCK_VERIFY(browserLauncherMock);
   EXPECT_OCMOCK_VERIFY(appStateObserverMock);
-  EXPECT_OCMOCK_VERIFY(applicationDelegateMock);
 
   EXPECT_EQ(InitStageFinal, appState.initStage);
 }
@@ -579,10 +575,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
                                      InitStageStart, InitStageFinal);
 
   [appState addObserver:appStateObserverMock];
-
-  id applicationDelegateMock = getApplicationDelegateMock();
-  [[applicationDelegateMock expect]
-      applicationDidBecomeActive:[UIApplication sharedApplication]];
 
   id browserLauncherMock = getBrowserLauncherMock();
   BrowserInitializationStageType stageForeground =

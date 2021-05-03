@@ -671,8 +671,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // Complete the transition out of safe mode if the app was really in safe
     // mode.
     [self.observers appStateDidExitSafeMode:self];
-    [_mainApplicationDelegate
-        applicationDidBecomeActive:[UIApplication sharedApplication]];
   }
 
   if (EnableSyntheticCrashReportsForUte()) {
