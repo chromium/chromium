@@ -35,6 +35,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+namespace system {
+namespace {
+// TODO(https://crbug.com/1164001): remove when moved to ash::
+using ::chromeos::system::kRlzBrandCodeKey;
+using ::chromeos::system::ScopedFakeStatisticsProvider;
+}  // namespace
+}  // namespace system
 namespace {
 
 // TODO(https://crbug.com/1164001): remove when moved to ash::
