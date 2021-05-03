@@ -467,6 +467,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPI) {
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 // Tests the sign-in flow when the credentials passing API is used w/o 'confirm'
@@ -503,6 +504,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPIWithoutConfirm) {
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 // Tests the single password scraped flow.
@@ -543,6 +545,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedSingle) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       1, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 // Tests password scraping from a dynamically created password field.
@@ -605,6 +608,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedMultiple) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       2, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 // Tests the no password scraped flow.
@@ -639,6 +643,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedNone) {
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
                                       0, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 // Types the second user e-mail into the GAIA login form but then authenticates

@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/login/saml/saml_metric_utils.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
@@ -768,6 +769,17 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     return;
   }
 
+  // Record amount of time from the moment screen was shown till
+  // completeAuthentication signal come. Only for no SAML flow and only during
+  // first run in OOBE.
+  if (elapsed_timer_ && !using_saml &&
+      session_manager::SessionManager::Get()->session_state() ==
+          session_manager::SessionState::OOBE) {
+    base::UmaHistogramMediumTimes("OOBE.GaiaLoginTime",
+                                  elapsed_timer_->Elapsed());
+    elapsed_timer_.reset();
+  }
+
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
@@ -1111,6 +1123,7 @@ void GaiaScreenHandler::SetSAMLPrincipalsAPIUsed(bool is_third_party_idp,
 
 void GaiaScreenHandler::Show() {
   ShowScreen(GaiaView::kScreenId);
+  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   hidden_ = false;
 }
 
