@@ -1742,6 +1742,7 @@ ci.chromiumos_builder(
         category = "simple|release",
         short_name = "arm",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )

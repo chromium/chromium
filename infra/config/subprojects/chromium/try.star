@@ -773,6 +773,7 @@ try_.chromium_chromiumos_builder(
     branch_selector = branches.ALL_BRANCHES,
     builderless = not settings.is_main,
     main_list_view = "try",
+    os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
