@@ -38,9 +38,25 @@ void ArcGhostWindowDelegate::OnGeometryChanged(const gfx::Rect& geometry) {}
 void ArcGhostWindowDelegate::OnStateChanged(
     chromeos::WindowStateType old_state_type,
     chromeos::WindowStateType new_state) {
+  if (old_state_type == new_state)
+    return;
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface_->GetWidget()->GetNativeWindow());
+
+  if (!window_state || !shell_surface_->host_window()->GetRootWindow())
+    return;
+
+  display::Display display;
+  const display::Screen* screen = display::Screen::GetScreen();
+  auto display_existed = screen->GetDisplayWithDisplayId(display_id_, &display);
+  DCHECK(display_existed);
+
   switch (new_state) {
     case chromeos::WindowStateType::kNormal:
     case chromeos::WindowStateType::kDefault:
+      // Reset geometry for previous bounds.
+      shell_surface_->SetBounds(display_id_, bounds_);
       shell_surface_->SetRestored();
       break;
     case chromeos::WindowStateType::kMinimized:
@@ -48,8 +64,11 @@ void ArcGhostWindowDelegate::OnStateChanged(
       break;
     case chromeos::WindowStateType::kMaximized:
       shell_surface_->SetMaximized();
+      // Update geometry for showing overlay as maximized bounds.
+      shell_surface_->SetBounds(display_id_, display.bounds());
       break;
     case chromeos::WindowStateType::kFullscreen:
+      // TODO(sstan): Adjust bounds like maximized state.
       shell_surface_->SetFullscreen(true);
       break;
     default:
