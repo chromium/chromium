@@ -145,7 +145,7 @@ Polymer({
     cellularSetupDialogPageName_: String,
 
     /** @private {boolean} */
-    hasActivePSimNetwork_: {
+    hasActiveCellularNetwork_: {
       type: Boolean,
       value: false,
     },
@@ -360,8 +360,8 @@ Polymer({
 
   /** NetworkListenerBehavior override */
   onNetworkStateListChanged() {
-    hasActivePSimNetwork().then((hasActive) => {
-      this.hasActivePSimNetwork_ = hasActive;
+    hasActiveCellularNetwork().then((hasActive) => {
+      this.hasActiveCellularNetwork_ = hasActive;
     });
     this.updateIsConnectedToNonCellularNetwork_();
   },

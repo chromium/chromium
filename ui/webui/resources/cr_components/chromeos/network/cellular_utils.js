@@ -8,10 +8,11 @@
 // clang-format on
 
 /**
- * Checks if the device has a currently active pSIM network.
+ * Checks if the device has a cellular network with connectionState not
+ * kNotConnected.
  * @return {!Promise<boolean>}
  */
-/* #export */ function hasActivePSimNetwork() {
+/* #export */ function hasActiveCellularNetwork() {
   const mojom = chromeos.networkConfig.mojom;
   const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                             .getMojoServiceRemote();
@@ -22,32 +23,11 @@
         limit: mojom.NO_LIMIT,
       })
       .then((response) => {
-        // Filter out non-connected networks and check the remaining if they are
-        // pSIM.
-        return Promise.all(response.result
-                               .filter(network => {
-                                 return network.connectionState !==
-                                     mojom.ConnectionStateType.kNotConnected;
-                               })
-                               .map(networkIsPSim_));
-      })
-      .then((networkIsPSimResults) => {
-        return networkIsPSimResults.some((isPSimNetwork) => isPSimNetwork);
+        return response.result.some(network => {
+          return network.connectionState !==
+              mojom.ConnectionStateType.kNotConnected;
+        });
       });
-}
-
-/**
- * Returns whether a network is a pSIM network or not.
- * @private
- * @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network
- * @return {!Promise<boolean>}
- */
-function networkIsPSim_(network) {
-  const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
-                            .getMojoServiceRemote();
-  return networkConfig.getManagedProperties(network.guid).then((response) => {
-    return !response.result.typeProperties.cellular.eid;
-  });
 }
 
 /**

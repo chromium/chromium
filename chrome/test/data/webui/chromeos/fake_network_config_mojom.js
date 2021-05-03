@@ -184,6 +184,7 @@
     } else {
       this.networkStates_.push(networkState);
     }
+    this.onNetworkStateListChanged();
   }
 
   /**

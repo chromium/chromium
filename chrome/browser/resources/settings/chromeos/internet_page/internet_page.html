@@ -184,7 +184,7 @@
       <esim-rename-dialog id="esimRenameDialog"
           on-close="onCloseESimProfileRenameDialog_"
           network-state="[[eSimNetworkState_]]"
-          show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
+          show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
       </esim-rename-dialog>
     </template>
 
@@ -193,7 +193,7 @@
           on-close="onCloseESimRemoveProfileDialog_"
           on-show-error-toast="onShowErrorToast_"
           network-state="[[eSimNetworkState_]]"
-          show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
+          show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
       </esim-remove-profile-dialog>
     </template>
 

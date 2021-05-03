@@ -133,7 +133,7 @@ cr.define('cellular_setup', function() {
       },
 
       /** @private */
-      hasHadActivePSimNetwork_: {
+      hasHadActiveCellularNetwork_: {
         type: Boolean,
         value: false,
       },
@@ -646,12 +646,12 @@ cr.define('cellular_setup', function() {
 
     /** NetworkListenerBehavior override */
     onNetworkStateListChanged() {
-      hasActivePSimNetwork().then((hasActive) => {
-        // If hasHadActivePSimNetwork_ has been set to true, don't set to false
-        // again as we should show the cellular disconnect warning for the
+      hasActiveCellularNetwork().then((hasActive) => {
+        // If hasHadActiveCellularNetwork_ has been set to true, don't set to
+        // false again as we should show the cellular disconnect warning for the
         // duration of the flow's lifecycle.
         if (hasActive) {
-          this.hasHadActivePSimNetwork_ = hasActive;
+          this.hasHadActiveCellularNetwork_ = hasActive;
         }
       });
     },
@@ -664,11 +664,11 @@ cr.define('cellular_setup', function() {
     },
 
     /**
-     * @param {boolean} hasActivePSimNetwork
+     * @param {boolean} hasActiveCellularNetwork
      * @private
      */
-    getLoadingPageState_(hasActivePSimNetwork) {
-      return hasActivePSimNetwork ?
+    getLoadingPageState_(hasActiveCellularNetwork) {
+      return hasActiveCellularNetwork ?
           LoadingPageState.CELLULAR_DISCONNECT_WARNING :
           LoadingPageState.LOADING;
     },
