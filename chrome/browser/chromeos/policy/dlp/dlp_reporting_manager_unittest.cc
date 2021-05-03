@@ -64,11 +64,10 @@ class DlpReportingManagerTest : public testing::Test {
 
 TEST_F(DlpReportingManagerTest, IsPrintingRestricted) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  manager_.ReportPrintingEvent(web_contents.get(),
-                               DlpRulesManager::Level::kBlock);
+  auto src_pattern = web_contents->GetLastCommittedURL().spec();
+  manager_.ReportPrintingEvent(src_pattern, DlpRulesManager::Level::kBlock);
 
-  EXPECT_THAT(
-      events_[0],
-      IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(web_contents.get())));
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
 }
 }  // namespace policy

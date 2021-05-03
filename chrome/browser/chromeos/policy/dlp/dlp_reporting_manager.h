@@ -11,16 +11,12 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/statusor.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class DlpPolicyEvent;
 
 namespace policy {
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
-DlpPolicyEvent* CreateDlpPolicyEvent(content::WebContents* source,
+DlpPolicyEvent* CreateDlpPolicyEvent(const std::string& src_pattern,
                                      DlpRulesManager::Level level,
                                      DlpRulesManager::Restriction restriction);
 
@@ -41,7 +37,7 @@ class DlpReportingManager {
 
   // The different methods that cause report events from the specific
   // restrictions.
-  void ReportPrintingEvent(content::WebContents* contents,
+  void ReportPrintingEvent(const std::string& src_pattern,
                            DlpRulesManager::Level level) const;
 
   ReportQueueSetterCallback GetReportQueueSetter();

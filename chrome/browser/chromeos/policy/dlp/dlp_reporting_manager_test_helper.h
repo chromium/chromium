@@ -7,14 +7,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class DlpPolicyEvent;
 
 ::testing::Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(
     const DlpPolicyEvent& event);
-DlpPolicyEvent CreatePrintingRestrictedDlpEvent(content::WebContents* contents);
+DlpPolicyEvent CreatePrintingRestrictedDlpEvent(const std::string& src_pattern);
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_REPORTING_MANAGER_TEST_HELPER_H_

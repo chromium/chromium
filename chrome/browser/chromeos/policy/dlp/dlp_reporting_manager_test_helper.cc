@@ -9,7 +9,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::Matcher;
@@ -44,8 +43,8 @@ Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
 }
 
 DlpPolicyEvent CreatePrintingRestrictedDlpEvent(
-    content::WebContents* contents) {
+    const std::string& src_pattern) {
   return *policy::CreateDlpPolicyEvent(
-      contents, policy::DlpRulesManager::Level::kBlock,
+      src_pattern, policy::DlpRulesManager::Level::kBlock,
       policy::DlpRulesManager::Restriction::kPrinting);
 }

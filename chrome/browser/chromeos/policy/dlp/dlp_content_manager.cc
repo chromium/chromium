@@ -4,11 +4,13 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/syslog_logging.h"
@@ -35,6 +37,26 @@ namespace {
 // a quick switch from one confidential data to another.
 const base::TimeDelta kPrivacyScreenOffDelay =
     base::TimeDelta::FromMilliseconds(500);
+
+// Reports events to `reporting_manager`.
+void ReportEvent(content::WebContents* web_contents,
+                 DlpRulesManager::Restriction restriction,
+                 DlpRulesManager::Level level,
+                 const DlpReportingManager* reporting_manager) {
+  DCHECK(reporting_manager);
+
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager)
+    return;
+
+  const std::string src_url = rules_manager->GetSourceUrlPattern(
+      web_contents->GetLastCommittedURL(), restriction, level);
+
+  if (restriction == DlpRulesManager::Restriction::kPrinting)
+    reporting_manager->ReportPrintingEvent(src_url, level);
+}
+
 }  // namespace
 
 static DlpContentManager* g_dlp_content_manager = nullptr;
@@ -102,10 +124,9 @@ bool DlpContentManager::IsPrintingRestricted(
   if (level == DlpRulesManager::Level::kBlock ||
       level == DlpRulesManager::Level::kReport) {
     SYSLOG(INFO) << "DLP blocked printing";
-
     if (reporting_manager_)
-      reporting_manager_->ReportPrintingEvent(web_contents,
-                                              DlpRulesManager::Level::kBlock);
+      ReportEvent(web_contents, DlpRulesManager::Restriction::kPrinting, level,
+                  reporting_manager_);
   }
 
   return level == DlpRulesManager::Level::kBlock;

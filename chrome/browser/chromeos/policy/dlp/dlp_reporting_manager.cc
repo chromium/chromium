@@ -16,7 +16,6 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -54,13 +53,13 @@ DlpPolicyEvent_Restriction DlpRulesManagerRestriction2DlpEventRestriction(
   }
 }
 
-DlpPolicyEvent* CreateDlpPolicyEvent(content::WebContents* source,
+DlpPolicyEvent* CreateDlpPolicyEvent(const std::string& src_pattern,
                                      DlpRulesManager::Level level,
                                      DlpRulesManager::Restriction restriction) {
   DlpPolicyEvent* event = new DlpPolicyEvent();
 
   DlpPolicyEventSource* event_source = new DlpPolicyEventSource();
-  event_source->set_url(source->GetURL().spec());
+  event_source->set_url(src_pattern);
   event->set_allocated_source(event_source);
 
   // TODO(1187479, marcgrimme): add proper destination as soon as available
@@ -94,7 +93,7 @@ void DlpReportingManager::SetReportQueue(
 }
 
 void DlpReportingManager::ReportPrintingEvent(
-    content::WebContents* web_contents,
+    const std::string& src_pattern,
     DlpRulesManager::Level level) const {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
@@ -106,7 +105,7 @@ void DlpReportingManager::ReportPrintingEvent(
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
   report_queue_->Enqueue(
-      CreateDlpPolicyEvent(web_contents, level,
+      CreateDlpPolicyEvent(src_pattern, level,
                            DlpRulesManager::Restriction::kPrinting),
       reporting::Priority::IMMEDIATE, std::move(callback));
 }
