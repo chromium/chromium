@@ -235,10 +235,9 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
       const base::Value* extension_pref,
       std::string* error,
       bool* bad_message) override {
-    bool bool_value = false;
-    const bool pref_found = extension_pref->GetAsBoolean(&bool_value);
-    DCHECK(pref_found) << "Preference not found.";
-    if (bool_value) {
+    if (!extension_pref->is_bool()) {
+      DCHECK(false) << "Preference not found.";
+    } else if (extension_pref->GetBool()) {
       return std::make_unique<base::Value>(
           chrome_browser_net::NETWORK_PREDICTION_DEFAULT);
     }

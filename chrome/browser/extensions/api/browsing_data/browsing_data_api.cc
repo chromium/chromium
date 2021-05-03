@@ -504,10 +504,9 @@ bool BrowsingDataRemoveFunction::GetRemovalMask(uint64_t* removal_mask) {
   for (base::DictionaryValue::Iterator i(*data_to_remove);
        !i.IsAtEnd();
        i.Advance()) {
-    bool selected = false;
-    if (!i.value().GetAsBoolean(&selected))
+    if (!i.value().is_bool())
       return false;
-    if (selected)
+    if (i.value().GetBool())
       *removal_mask |= MaskForKey(i.key().c_str());
   }
 
