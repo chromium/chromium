@@ -5185,9 +5185,11 @@
                     "name": "NonAdaptiveMic_Actions_20210423",
                     "params": {
                         "colorful_mic": "true",
+                        "experiment_id": "47453836",
                         "min_agsa_version": "12.15"
                     },
                     "enable_features": [
+                        "AssistantIntentExperimentId",
                         "AssistantIntentPageUrl",
                         "AssistantIntentTranslateInfo",
                         "OmniboxAssistantVoiceSearch",
