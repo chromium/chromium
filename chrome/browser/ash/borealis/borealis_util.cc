@@ -9,6 +9,7 @@
 namespace borealis {
 
 const char kBorealisAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
+const char kBorealisMainAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
 const char kBorealisDlcName[] = "borealis-dlc";
 // TODO(b/174282035): Potentially update regex when other strings
 // are updated.
