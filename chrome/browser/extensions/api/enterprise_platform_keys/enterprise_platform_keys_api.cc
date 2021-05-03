@@ -32,7 +32,7 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
       profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
   DCHECK_NE(list, nullptr);
   base::Value value(extension->id());
-  return list->Find(value) != list->end();
+  return std::find(list->begin(), list->end(), value) != list->end();
 }
 
 }  // namespace platform_keys
