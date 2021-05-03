@@ -105,7 +105,7 @@ class WaylandWindow : public PlatformWindow,
   WaylandWindow* child_window() const { return child_window_; }
 
   int32_t buffer_scale() const { return root_surface_->buffer_scale(); }
-  int32_t ui_scale() const { return ui_scale_; }
+  float ui_scale() const { return ui_scale_; }
 
   // A preferred output is the one with the largest scale. This is needed to
   // properly render contents as it seems like an expectation of Wayland.
@@ -239,7 +239,7 @@ class WaylandWindow : public PlatformWindow,
   // Sets bounds in dip.
   void SetBoundsDip(const gfx::Rect& bounds_dip);
 
-  void set_ui_scale(int32_t ui_scale) { ui_scale_ = ui_scale; }
+  void set_ui_scale(float ui_scale) { ui_scale_ = ui_scale; }
 
   // Calls set_opaque_region for this window.
   virtual void UpdateWindowMask();
@@ -322,7 +322,7 @@ class WaylandWindow : public PlatformWindow,
   // The UI scale may be forced through the command line, which means that it
   // replaces the default value that is equal to the natural device scale.
   // We need it to place and size the menus properly.
-  float ui_scale_ = 1.0;
+  float ui_scale_ = 1.0f;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;
