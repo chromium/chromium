@@ -115,7 +115,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
     ```
 
     > Note: `avd.py start` will start an emulator instance and then terminate.
-    > To shut down the emulator, use `adb emu stop`.
+    > To shut down the emulator, use `adb emu kill`.
 
  * `--emulator-window`
 
