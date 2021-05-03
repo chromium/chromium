@@ -54,17 +54,6 @@ def parse_build(build_log):
   INCLUDE_RE = re.compile(r'(\.+) (.*)$')
 
   for line in build_log:
-    m = ENTER_DIR_RE.match(line)
-    if m:
-      build_dir = m.group(1)
-
-    m = COMPILE_RE.match(line)
-    if m:
-      filename = m.group(1)
-      roots.add(filename)
-      file_stack = [filename]
-      includes.setdefault(filename, set())
-
     m = INCLUDE_RE.match(line)
     if m:
       prev_depth = len(file_stack) - 1
@@ -80,6 +69,20 @@ def parse_build(build_log):
 
       includes[file_stack[-1]].add(filename)
       file_stack.append(filename)
+      continue
+
+    m = COMPILE_RE.match(line)
+    if m:
+      filename = m.group(1)
+      roots.add(filename)
+      file_stack = [filename]
+      includes.setdefault(filename, set())
+      continue
+
+    m = ENTER_DIR_RE.match(line)
+    if m:
+      build_dir = m.group(1)
+      continue
 
   # Normalize paths.
   normalized = {}
