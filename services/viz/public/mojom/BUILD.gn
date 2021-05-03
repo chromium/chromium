@@ -274,6 +274,7 @@ mojom("mojom") {
           cpp = "::cc::FilterOperation"
         },
       ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.cc" ]
       traits_headers = [
         "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
       ]
