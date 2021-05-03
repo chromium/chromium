@@ -290,11 +290,6 @@ void TranslatePrefs::RemoveFromLanguageList(base::StringPiece input_language) {
   const auto& it = std::find(user_selected_languages.begin(),
                              user_selected_languages.end(), chrome_language);
   if (it != user_selected_languages.end()) {
-    // If the language being removed is the most recent language, erase that
-    // data so that Chrome won't try to translate to it next time Translate is
-    // triggered.
-    if (chrome_language == GetRecentTargetLanguage())
-      ResetRecentTargetLanguage();
 
     user_selected_languages.erase(it);
     PurgeUnsupportedLanguagesInLanguageFamily(chrome_language,
@@ -306,6 +301,14 @@ void TranslatePrefs::RemoveFromLanguageList(base::StringPiece input_language) {
     GetLanguageList(&languages);
     if (!ContainsSameBaseLanguage(languages, chrome_language)) {
       UnblockLanguage(input_language);
+      // If the recent translate target matches the last language of a family
+      // being removed, reset the most recent target language so it will not be
+      // used the next time Translate is triggered.
+      std::string translate_language(input_language);
+      language::ToTranslateLanguageSynonym(&translate_language);
+      if (translate_language == GetRecentTargetLanguage()) {
+        ResetRecentTargetLanguage();
+      }
     }
   }
 }
@@ -865,7 +868,10 @@ bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece original_language,
 
 void TranslatePrefs::SetRecentTargetLanguage(
     const std::string& target_language) {
-  prefs_->SetString(kPrefTranslateRecentTarget, target_language);
+  // Get translate version of language code.
+  std::string translate_target_language(target_language);
+  language::ToTranslateLanguageSynonym(&translate_target_language);
+  prefs_->SetString(kPrefTranslateRecentTarget, translate_target_language);
 }
 
 void TranslatePrefs::ResetRecentTargetLanguage() {

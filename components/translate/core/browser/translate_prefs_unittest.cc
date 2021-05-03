@@ -524,20 +524,24 @@ TEST_F(TranslatePrefsTest, RemoveFromLanguageListRemovesRemainingUnsupported) {
 }
 
 TEST_F(TranslatePrefsTest, RemoveFromLanguageListClearsRecentLanguage) {
+  // Unset the recent target language when the last language of the target
+  // language family is removed
   std::vector<std::string> languages;
+  languages = {"en", "en-US", "es-AR"};
 
-  // Unblock last language of a family.
-  languages = {"en-US", "es-AR"};
   accept_languages_tester_->SetLanguagePrefs(languages);
-  translate_prefs_->SetRecentTargetLanguage("en-US");
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  translate_prefs_->SetRecentTargetLanguage("es-AR");
+  EXPECT_EQ("es", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->RemoveFromLanguageList("es-AR");
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  EXPECT_EQ("", translate_prefs_->GetRecentTargetLanguage());
 
   accept_languages_tester_->SetLanguagePrefs(languages);
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  translate_prefs_->SetRecentTargetLanguage("en-US");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
 
+  translate_prefs_->RemoveFromLanguageList("en");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
   translate_prefs_->RemoveFromLanguageList("en-US");
   EXPECT_EQ("", translate_prefs_->GetRecentTargetLanguage());
 }
@@ -1057,6 +1061,31 @@ TEST_F(TranslatePrefsTest, DefaultBlockedLanguages) {
   // resources match.
   std::vector<std::string> blocked_languages_expected = {"en"};
   ExpectBlockedLanguageListContent(blocked_languages_expected);
+}
+
+TEST_F(TranslatePrefsTest, SetRecentTargetLanguage) {
+  // Make sure setting the recent target language uses the Translate synonym.
+  translate_prefs_->SetRecentTargetLanguage("en-US");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("en-412");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("fil");
+  EXPECT_EQ("tl", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("nb");
+  EXPECT_EQ("no", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("jv");
+  EXPECT_EQ("jw", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("he");
+  EXPECT_EQ("iw", translate_prefs_->GetRecentTargetLanguage());
+
+  // The only translate languages to have a country code are variants of "zh".
+  translate_prefs_->SetRecentTargetLanguage("zh-TW");
+  EXPECT_EQ("zh-TW", translate_prefs_->GetRecentTargetLanguage());
 }
 
 // Series of tests for the AlwaysTranslateLanguagesList manipulation functions.

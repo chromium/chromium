@@ -173,7 +173,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
         // Setup target language preference.
         LanguageItemPickerPreference targetLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
-        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguage());
+        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguageForChromium());
         setSelectLanguageLauncher(targetLanguagePreference,
                 AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,

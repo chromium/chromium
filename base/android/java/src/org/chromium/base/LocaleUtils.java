@@ -39,7 +39,8 @@ public class LocaleUtils {
      */
     public static String getUpdatedLanguageForChromium(String language) {
         // IMPORTANT: Keep in sync with the mapping found in:
-        // build/android/gyp/util/resource_utils.py
+        // build/android/gyp/util/resource_utils.py (Yiddish and Javanese are not possible Android
+        // languages but are possible Chromium languages, they do not need to be kept in sync).
         switch (language) {
             case "iw":
                 return "he"; // Hebrew
@@ -49,6 +50,8 @@ public class LocaleUtils {
                 return "id"; // Indonesian
             case "tl":
                 return "fil"; // Filipino
+            case "jw":
+                return "jv"; // Javanese
             default:
                 return language;
         }

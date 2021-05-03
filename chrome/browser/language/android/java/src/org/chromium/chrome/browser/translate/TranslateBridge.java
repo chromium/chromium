@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.translate;
 
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
@@ -106,6 +107,16 @@ public class TranslateBridge {
      */
     public static String getTargetLanguage() {
         return TranslateBridgeJni.get().getTargetLanguage();
+    }
+
+    /**
+     * The target language is stored in Translate format, which uses the old deprecated Java codes
+     * for several languages (Hebrew, Indonesian), and uses "tl" while Chromium uses "fil" for
+     * Tagalog/Filipino. This converts the target language into the correct Chromium format.
+     * @return The Chrome version of the users translate target language.
+     */
+    public static String getTargetLanguageForChromium() {
+        return LocaleUtils.getUpdatedLanguageForChromium(getTargetLanguage());
     }
 
     /**
