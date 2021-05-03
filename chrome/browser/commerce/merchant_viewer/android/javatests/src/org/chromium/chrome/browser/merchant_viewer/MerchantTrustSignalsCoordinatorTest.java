@@ -55,6 +55,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,7 @@ import java.util.concurrent.TimeUnit;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
+@DisableIf.Device(type = {UiDisableIf.TABLET})
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
