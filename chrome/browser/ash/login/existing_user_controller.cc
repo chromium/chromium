@@ -1513,8 +1513,14 @@ void ExistingUserController::StartAutoLoginTimer() {
 void ExistingUserController::ShowError(SigninError error,
                                        const std::string& details) {
   VLOG(1) << details;
-  GetLoginDisplayHost()->GetSigninUI()->ShowSigninError(error, details,
-                                                        num_login_attempts_);
+  auto* signin_ui = GetLoginDisplayHost()->GetSigninUI();
+  if (!signin_ui) {
+    DCHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen());
+    // Silently ignore the error on the secondary login screen. The screen is
+    // being deprecated anyway.
+    return;
+  }
+  signin_ui->ShowSigninError(error, details, num_login_attempts_);
 }
 
 void ExistingUserController::SendAccessibilityAlert(
@@ -1614,9 +1620,8 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
     // If the `cros_settings_` are permanently untrusted, show an error message
     // and refuse to log in.
-    GetLoginDisplayHost()->GetSigninUI()->ShowSigninError(
-        SigninError::kOwnerKeyLost, /*details=*/std::string(),
-        /*login_attempts=*/1);
+    ++num_login_attempts_;
+    ShowError(SigninError::kOwnerKeyLost, /*details=*/std::string());
 
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. Without trusted `cros_settings_`, no auto-login

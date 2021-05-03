@@ -222,7 +222,8 @@ class LoginDisplayHost {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Return sign-in UI instance, guaranteed to be non-null
-  // during sign-in process. Result should not be stored.
+  // during OOBE/Login process. Returns nullptr on the secondary login screen.
+  // Result should not be stored.
   virtual SigninUI* GetSigninUI() = 0;
 
  protected:

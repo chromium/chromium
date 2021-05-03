@@ -401,6 +401,8 @@ bool LoginDisplayHostCommon::HandleAccelerator(
 }
 
 SigninUI* LoginDisplayHostCommon::GetSigninUI() {
+  if (!GetWizardController())
+    return nullptr;
   return this;
 }
 
