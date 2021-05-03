@@ -5999,14 +5999,16 @@
                         "mv_tile_click_threshold": "0",
                         "small_screen_height_threshold_dp": "700"
                     },
-                    "disable_features": [
+                    "enable_features": [
                         "QueryTiles",
-                        "QueryTilesEnableQueryEditing",
                         "QueryTilesInNTP",
-                        "QueryTilesInOmnibox",
                         "QueryTilesLocalOrdering",
                         "QueryTilesRemoveTrendingAfterInactivity",
                         "QueryTilesSegmentation"
+                    ],
+                    "disable_features": [
+                        "QueryTilesEnableQueryEditing",
+                        "QueryTilesInOmnibox"
                     ]
                 },
                 {
