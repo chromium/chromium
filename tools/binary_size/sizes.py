@@ -139,9 +139,14 @@ def main_mac(output_directory, results_collector, size_path):
           re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
 
       # Collect the whole size of the App bundle on disk (include the framework)
-      result, stdout = run_process(result, ['du', '-s', '-k', chromium_app_dir])
-      du_s = re.search(r'(\d+)', stdout).group(1)
-      print_dict['app_bundle_size'] = (int(du_s) * 1024)
+      whole_size = 0
+      for root_dir, _, filenames in os.walk(chromium_app_dir,
+                                            followlinks=False):
+        for filename in filenames:
+          full_path = os.path.join(root_dir, filename)
+          if not os.path.islink(full_path):
+            whole_size += get_size(full_path)
+      print_dict['app_bundle_size'] = whole_size
 
       results_collector.add_result(print_dict['app_name'],
                                    print_dict['app_name'],
