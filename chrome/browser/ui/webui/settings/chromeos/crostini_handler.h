@@ -30,7 +30,6 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                         public crostini::CrostiniDialogStatusObserver,
                         public crostini::CrostiniExportImport::Observer,
                         public crostini::CrostiniContainerPropertiesObserver,
-                        public crostini::CrostiniMicSharingEnabledObserver,
                         public crostini::CrostiniPortForwarder::Observer,
                         public crostini::ContainerStartedObserver,
                         public crostini::ContainerShutdownObserver {
@@ -111,8 +110,6 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleResizeCrostiniDisk(const base::ListValue* args);
   void ResolveResizeCrostiniDiskCallback(const std::string& callback_id,
                                          bool succeeded);
-  // Checks if a restart is required to update mic sharing settings.
-  void HandleCheckCrostiniMicSharingStatus(const base::ListValue* args);
   // Returns a list of currently forwarded ports.
   void HandleGetCrostiniActivePorts(const base::ListValue* args);
   // Checks if Crostini is running.
@@ -123,12 +120,6 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnContainerShutdown(const crostini::ContainerId& container_id) override;
   // Handles a request to shut down Crostini.
   void HandleShutdownCrostini(const base::ListValue* args);
-  // crostini::CrostiniMicSharingEnabledObserver
-  void OnCrostiniMicSharingEnabledChanged(bool enabled) override;
-  // Handles a request for setting the permissions for Crostini Mic access.
-  void HandleSetCrostiniMicSharingEnabled(const base::ListValue* args);
-  // Handles a request for getting the permissions for Crostini Mic access.
-  void HandleGetCrostiniMicSharingEnabled(const base::ListValue* args);
   // Handle a request for checking permission for changing ARC adb sideloading.
   void HandleCanChangeArcAdbSideloadingRequest(const base::ListValue* args);
   // Get permission of changing ARC adb sideloading

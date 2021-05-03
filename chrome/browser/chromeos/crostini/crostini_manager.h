@@ -146,12 +146,6 @@ class ContainerShutdownObserver : public base::CheckedObserver {
   virtual void OnContainerShutdown(const ContainerId& container_id) = 0;
 };
 
-class CrostiniMicSharingEnabledObserver : public base::CheckedObserver {
- public:
-  // Called when changes are made to the Crostini mic settings.
-  virtual void OnCrostiniMicSharingEnabledChanged(bool enabled) = 0;
-};
-
 class CrostiniFileChangeObserver : public base::CheckedObserver {
  public:
   // Called when a path registered via AddFileWatch() is changed.
@@ -636,14 +630,6 @@ class CrostiniManager : public KeyedService,
   void DeallocateForwardedPortsCallback(Profile* profile,
                                         const ContainerId& container_id);
 
-  void SetCrostiniMicSharingEnabled(bool enabled);
-  bool crostini_mic_sharing_enabled() const {
-    return crostini_mic_sharing_enabled_;
-  }
-  void AddCrostiniMicSharingEnabledObserver(
-      CrostiniMicSharingEnabledObserver* observer);
-  void RemoveCrostiniMicSharingEnabledObserver(
-      CrostiniMicSharingEnabledObserver* observer);
   void CallRestarterStartLxdContainerFinishedForTesting(
       CrostiniManager::RestartId id,
       CrostiniResult result);
@@ -916,18 +902,12 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<ContainerStartedObserver> container_started_observers_;
   base::ObserverList<ContainerShutdownObserver> container_shutdown_observers_;
 
-  base::ObserverList<CrostiniMicSharingEnabledObserver>
-      crostini_mic_sharing_enabled_observers_;
-
   base::ObserverList<CrostiniFileChangeObserver> file_change_observers_;
 
   // Contains the types of crostini dialogs currently open. It is generally
   // invalid to show more than one. e.g. uninstalling and installing are
   // mutually exclusive.
   base::flat_set<DialogType> open_crostini_dialogs_;
-
-  // Tracks if Crostini has access to the microphone.
-  bool crostini_mic_sharing_enabled_ = false;
 
   bool dbus_observers_removed_ = false;
 

@@ -3554,25 +3554,6 @@ void CrostiniManager::DeallocateForwardedPortsCallback(
       ->DeactivateAllActivePorts(container_id);
 }
 
-void CrostiniManager::AddCrostiniMicSharingEnabledObserver(
-    CrostiniMicSharingEnabledObserver* observer) {
-  crostini_mic_sharing_enabled_observers_.AddObserver(observer);
-}
-
-void CrostiniManager::RemoveCrostiniMicSharingEnabledObserver(
-    CrostiniMicSharingEnabledObserver* observer) {
-  crostini_mic_sharing_enabled_observers_.RemoveObserver(observer);
-}
-
-void CrostiniManager::SetCrostiniMicSharingEnabled(bool enabled) {
-  if (crostini_mic_sharing_enabled_ == enabled)
-    return;
-  crostini_mic_sharing_enabled_ = enabled;
-  for (auto& observer : crostini_mic_sharing_enabled_observers_) {
-    observer.OnCrostiniMicSharingEnabledChanged(crostini_mic_sharing_enabled_);
-  }
-}
-
 void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
   if ((time_of_last_disk_type_metric_ + base::TimeDelta::FromHours(12)) >
       base::Time::Now()) {
