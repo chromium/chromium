@@ -277,7 +277,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     // so is ignored. TODO: remove it from WebViewProvider.
     public void init(final Map<String, Object> javaScriptInterfaces,
             final boolean privateBrowsing) {
-        long startTime = SystemClock.elapsedRealtime();
+        long startTime = SystemClock.uptimeMillis();
         boolean isFirstWebViewInit = !mFactory.hasStarted();
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
@@ -381,11 +381,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                        SystemClock.elapsedRealtime() - startTime);
+                        SystemClock.uptimeMillis() - startTime);
             } else {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                        SystemClock.elapsedRealtime() - startTime);
+                        SystemClock.uptimeMillis() - startTime);
             }
         }
     }

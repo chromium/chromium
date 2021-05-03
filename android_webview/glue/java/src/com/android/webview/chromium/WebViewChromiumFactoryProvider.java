@@ -247,7 +247,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @SuppressWarnings("NoContextGetApplicationContext")
     private void initialize(WebViewDelegate webViewDelegate) {
-        long startTime = SystemClock.elapsedRealtime();
+        long startTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent e1 =
                         ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
             PackageInfo packageInfo;
@@ -404,14 +404,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.Stage1.FactoryInit",
-                SystemClock.elapsedRealtime() - startTime);
+                SystemClock.uptimeMillis() - startTime);
 
         if (BuildInfo.isAtLeastS()) {
             // TODO: Use the framework constants as indices in timestamps array.
             startTime = mWebViewDelegate.getTimestamps()[0];
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
-                    SystemClock.elapsedRealtime() - startTime);
+                    SystemClock.uptimeMillis() - startTime);
         }
     }
 
