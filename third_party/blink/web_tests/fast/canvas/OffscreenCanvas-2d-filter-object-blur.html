@@ -1,0 +1,56 @@
+<head>
+<link rel="match" href="canvas-filter-object-blur-expected.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-tests.js"></script>
+</head>
+<body>
+  <canvas id="canvas" width="300" height="300"></canvas>
+</body>
+
+<body>
+  <script id="workerCode">
+    self.onmessage = function(event) {
+      const offscreenCanvas = new OffscreenCanvas(300, 300);
+      const ctx = offscreenCanvas.getContext("2d");
+      ctx.filter = new CanvasFilter({blur: {stdDeviation: 2}});
+      ctx.fillStyle = 'yellow';
+      ctx.fillRect(10,10,100,100);
+      ctx.filter = new CanvasFilter({blur: {stdDeviation: 5}});
+      ctx.fillStyle = 'magenta';
+      ctx.fillRect(120, 10, 100, 100);
+      ctx.filter = new CanvasFilter([{
+        blur: {stdDeviation: 5}}, {blur: {stdDeviation: 10}}]);
+      ctx.fillStyle = 'cyan';
+      ctx.fillRect(10, 120, 100, 100);
+      ctx.filter = 'none';
+      ctx.fillStyle = 'black';
+      ctx.fillRect(120, 120, 100, 100);
+      var img = offscreenCanvas.transferToImageBitmap();
+      self.postMessage(img, img);
+    }
+  </script>
+
+  <script>
+    if (window.testRunner)
+      testRunner.waitUntilDone();
+
+    function test() {
+      const workerCode = document.querySelector("#workerCode").textContent;
+      const blob = new Blob([workerCode], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      const worker = new Worker(url);
+      const canvas = document.getElementById("canvas");
+      const outputCtx = canvas.getContext("bitmaprenderer");
+      worker.postMessage({msg: "go"});
+      worker.addEventListener('message', (event) => {
+        outputCtx.transferFromImageBitmap(event.data);
+        if (window.testRunner)
+          testRunner.notifyDone();
+      });
+    };
+    test();
+  </script>
+</body>
+
+</html>
