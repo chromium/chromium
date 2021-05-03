@@ -47,7 +47,6 @@ PredictionModelFetcher::~PredictionModelFetcher() = default;
 
 bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
     const std::vector<proto::ModelInfo>& models_request_info,
-    const std::vector<std::string>& hosts,
     const std::vector<proto::FieldTrial>& active_field_trials,
     proto::RequestContext request_context,
     const std::string& locale,
@@ -62,8 +61,8 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
   if (url_loader_)
     return false;
 
-  // If there are no hosts or models to request, do not make a GetModelsRequest.
-  if (hosts.size() == 0 && models_request_info.size() == 0) {
+  // If there are no models to request, do not make a GetModelsRequest.
+  if (models_request_info.empty()) {
     std::move(models_fetched_callback).Run(base::nullopt);
     return false;
   }
@@ -76,20 +75,6 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
 
   *pending_models_request_->mutable_active_field_trials() = {
       active_field_trials.begin(), active_field_trials.end()};
-
-  // Limit the number of hosts to fetch features for, the list of hosts
-  // is assumed to be ordered from most to least important by the top
-  // host provider.
-  for (const auto& host : hosts) {
-    // Skip over localhosts, IP addresses, and invalid hosts.
-    if (!IsHostValidToFetchFromRemoteOptimizationGuide(host))
-      continue;
-    pending_models_request_->add_hosts(host);
-    if (static_cast<size_t>(pending_models_request_->hosts_size()) >=
-        features::MaxHostsForOptimizationGuideServiceModelsFetch()) {
-      break;
-    }
-  }
 
   for (const auto& model_request_info : models_request_info)
     *pending_models_request_->add_requested_models() = model_request_info;
@@ -141,11 +126,6 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
   url_loader_->AttachStringForUpload(serialized_request,
                                      "application/x-protobuf");
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "OptimizationGuide.PredictionModelFetcher."
-      "GetModelsRequest.HostCount",
-      pending_models_request_->hosts_size());
-
   // |url_loader_| should not retry on 5xx errors since the server may already
   // be overloaded.  |url_loader_| should retry on network changes since the
   // network stack may receive the connection change event later than |this|.
@@ -183,10 +163,6 @@ void PredictionModelFetcher::HandleResponse(
 
   if (net_status == net::OK && response_code == net::HTTP_OK &&
       get_models_response->ParseFromString(get_models_response_data)) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "OptimizationGuide.PredictionModelFetcher."
-        "GetModelsResponse.HostModelFeatureCount",
-        get_models_response->host_model_features_size());
     std::move(models_fetched_callback_).Run(std::move(get_models_response));
   } else {
     std::move(models_fetched_callback_).Run(base::nullopt);

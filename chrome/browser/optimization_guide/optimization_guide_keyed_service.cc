@@ -209,8 +209,8 @@ void OptimizationGuideKeyedService::Initialize() {
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      prediction_model_and_features_store, top_host_provider_.get(),
-      url_loader_factory, profile->GetPrefs(), profile);
+      prediction_model_and_features_store, url_loader_factory,
+      profile->GetPrefs(), profile);
 
   // The previous store paths were written in incorrect locations. Delete the
   // old paths. Remove this code in 04/2022 since it should be assumed that all

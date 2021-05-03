@@ -47,7 +47,6 @@ class PredictionModel;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class PredictionModelFile;
-class TopHostProvider;
 
 using HostModelFeaturesMRUCache =
     base::HashingMRUCache<std::string, base::flat_map<std::string, float>>;
@@ -65,7 +64,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
  public:
   PredictionManager(
       OptimizationGuideStore* model_and_features_store,
-      TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
       Profile* profile);
@@ -202,21 +200,17 @@ class PredictionManager : public PredictionModelDownloadObserver {
       content::NavigationHandle* navigation_handle,
       const base::flat_set<std::string>& model_features);
 
-  // Called to make a request to fetch models and host model features from the
-  // remote Optimization Guide Service. Used to fetch models for the registered
-  // optimization targets as well as the host model features for top hosts
-  // needed to evaluate these models.
-  void FetchModelsAndHostModelFeatures();
+  // Called to make a request to fetch models from the remote Optimization Guide
+  // Service. Used to fetch models for the registered optimization targets.
+  void FetchModels();
 
-  // Callback when the models and host model features have been fetched from the
-  // remote Optimization Guide Service and are ready for parsing. Processes the
-  // prediction models and the host model features in the response and stores
-  // them for use. The metadata entry containing the time that updates should be
-  // fetched from the remote Optimization Guide Service is updated, even when
-  // the response is empty.
-  void OnModelsAndHostFeaturesFetched(
-      base::Optional<std::unique_ptr<proto::GetModelsResponse>>
-          get_models_response_data);
+  // Callback when the models have been fetched from the remote Optimization
+  // Guide Service and are ready for parsing. Processes the prediction models in
+  // the response and stores them for use. The metadata entry containing the
+  // time that updates should be fetched from the remote Optimization Guide
+  // Service is updated, even when the response is empty.
+  void OnModelsFetched(base::Optional<std::unique_ptr<proto::GetModelsResponse>>
+                           get_models_response_data);
 
   // Callback run after the model and host model features store is fully
   // initialized. The prediction manager can load models from
@@ -291,13 +285,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
   bool ProcessAndStoreHostModelFeatures(
       const proto::HostModelFeatures& host_model_features);
 
-  // Return the time when a prediction model and host model features fetch was
-  // last attempted.
+  // Return the time when a prediction model fetch was last attempted.
   base::Time GetLastFetchAttemptTime() const;
 
-  // Set the last time when a prediction model and host model features fetch
-  // was last attempted to |last_attempt_time|.
-  void SetLastModelAndFeaturesFetchAttemptTime(base::Time last_attempt_time);
+  // Set the last time when a prediction model fetch was last attempted to
+  // |last_attempt_time|.
+  void SetLastModelFetchAttemptTime(base::Time last_attempt_time);
 
   // Return the time when a prediction model fetch was last successfully
   // completed.
@@ -307,14 +300,14 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |last_success_time|.
   void SetLastModelFetchSuccessTime(base::Time last_success_time);
 
-  // Determine whether to schedule fetching new prediction models and host model
-  // features or fetch immediately due to override.
-  void MaybeScheduleModelAndHostModelFeaturesFetch();
+  // Determine whether to schedule fetching new prediction models or fetch
+  // immediately due to override.
+  void MaybeScheduleModelFetch();
 
   // Schedule |fetch_timer_| to fire based on:
-  // 1. The update time for host model features in the store and
+  // 1. The update time for models in the store and
   // 2. The last time a fetch attempt was made.
-  void ScheduleModelsAndHostModelFeaturesFetch();
+  void ScheduleModelsFetch();
 
   // Notifies observers of |optimization_target| that the model file has been
   // updated to |file_path|.
@@ -356,9 +349,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // models. Can be null if model downloading is disabled.
   std::unique_ptr<PredictionModelDownloadManager>
       prediction_model_download_manager_;
-
-  // The top host provider that can be queried. Not owned.
-  TopHostProvider* top_host_provider_ = nullptr;
 
   // The optimization guide store that contains prediction models and host
   // model features from the remote Optimization Guide Service. Not owned and

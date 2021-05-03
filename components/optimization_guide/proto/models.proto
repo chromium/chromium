@@ -151,10 +151,10 @@ message DoubleValue {
 
 // Requests prediction models to be used for a set of optimization targets.
 message GetModelsRequest {
+  reserved 2;
+
   // Information about the requested models.
   repeated ModelInfo requested_models = 1;
-  // The set of hosts to get additional metadata for, if applicable.
-  repeated string hosts = 2;
   // Context in which this request is made.
   //
   // If the context matches one that requires more urgency (i.e.

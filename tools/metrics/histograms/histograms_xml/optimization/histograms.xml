@@ -615,6 +615,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsRequest.HostCount"
     units="total host count" expires_after="M94">
+  <obsolete>
+    Obsolete as of 04/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -627,6 +630,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.HostModelFeatureCount"
     units="units" expires_after="M94">
+  <obsolete>
+    Obsolete as of 04/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

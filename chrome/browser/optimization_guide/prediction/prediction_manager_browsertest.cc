@@ -151,20 +151,10 @@ CreatePredictionModel() {
 }
 
 std::unique_ptr<optimization_guide::proto::GetModelsResponse>
-BuildGetModelsResponse(const std::vector<std::string>& hosts) {
+BuildGetModelsResponse() {
   std::unique_ptr<optimization_guide::proto::GetModelsResponse>
       get_models_response =
           std::make_unique<optimization_guide::proto::GetModelsResponse>();
-
-  for (const auto& host : hosts) {
-    optimization_guide::proto::HostModelFeatures* host_model_features =
-        get_models_response->add_host_model_features();
-    host_model_features->set_host(host);
-    optimization_guide::proto::ModelFeature* model_feature =
-        host_model_features->add_model_features();
-    model_feature->set_feature_name("agg1");
-    model_feature->set_double_value(2.0);
-  }
 
   std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
       CreatePredictionModel();
@@ -331,10 +321,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     expected_field_trial_name_hashes_ = expected_field_trial_name_hashes;
   }
 
-  void SetExpectedHostsSentInRequest(bool expected_hosts_sent_in_request) {
-    expected_hosts_sent_in_request_ = expected_hosts_sent_in_request;
-  }
-
   GURL https_url_with_content() { return https_url_with_content_; }
   GURL https_url_without_content() { return https_url_without_content_; }
 
@@ -372,14 +358,9 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(seen_field_trial_name_hashes.size(),
               expected_field_trial_name_hashes_.size());
 
-    EXPECT_EQ(expected_hosts_sent_in_request_, !models_request.hosts().empty());
-    std::vector<std::string> hosts;
-    if (expected_hosts_sent_in_request_) {
-      hosts = {"example1.com", https_server_->GetURL("/").host()};
-    }
     response->set_code(net::HTTP_OK);
     std::unique_ptr<optimization_guide::proto::GetModelsResponse>
-        get_models_response = BuildGetModelsResponse(hosts);
+        get_models_response = BuildGetModelsResponse();
     if (response_type_ == PredictionModelsFetcherRemoteResponseType::
                               kSuccessfulWithFeaturesAndNoModels) {
       get_models_response->clear_models();
@@ -414,7 +395,6 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
           kSuccessfulWithModelsAndFeatures;
   std::unique_ptr<OptimizationGuideConsumerWebContentsObserver> consumer_;
   base::flat_set<uint32_t> expected_field_trial_name_hashes_;
-  bool expected_hosts_sent_in_request_ = true;
 };
 
 class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
@@ -533,49 +513,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       HostModelFeaturesClearedOnHistoryClear) {
-  base::HistogramTester histogram_tester;
-
-  RegisterWithKeyedService();
-
-  // Wait until histograms have been updated before performing checks for
-  // correct behavior based on the response.
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-
-  SetCallbackOnConsumer(base::DoNothing());
-  ui_test_utils::NavigateToURL(browser(), https_url_with_content());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", true,
-      1);
-
-  // Wipe the browser history - clears all the host model features.
-  browser()->profile()->Wipe();
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ClearHostModelFeatures.StoreAvailable", true, 1);
-
-  SetCallbackOnConsumer(base::DoNothing());
-  ui_test_utils::NavigateToURL(browser(), https_url_with_content());
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", false,
-      1);
-}
-
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithModelsAndFeatures);
@@ -597,11 +534,11 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
       &histogram_tester,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
 
-  // Set up incognito browser.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-
   // Register with off the record profile and wait until model is loaded.
   {
+    // Set up incognito browser.
+    CreateIncognitoBrowser(browser()->profile());
+
     base::HistogramTester otr_histogram_tester;
 
     OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -612,31 +549,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
         &otr_histogram_tester,
         "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
   }
-
-  // Set up an OptimizationGuideKeyedService consumer.
-  auto otr_consumer =
-      std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
-          otr_browser->tab_strip_model()->GetActiveWebContents());
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  otr_consumer->set_callback(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         optimization_guide::OptimizationGuideDecision decision) {
-        // We should have the model on the client so we have everything to make
-        // a decision.
-        EXPECT_NE(decision,
-                  optimization_guide::OptimizationGuideDecision::kUnknown);
-        run_loop->Quit();
-      },
-      run_loop.get()));
-
-  // Navigate to a URL with a host model feature in incognito.
-  ui_test_utils::NavigateToURL(otr_browser, https_url_with_content());
-  run_loop->Run();
-
-  // The store should still be able to be read.
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", true,
-      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
@@ -655,10 +567,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
           {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
   // Wait until logic finishes running.
   base::RunLoop().RunUntilIdle();
-
-  // Ensure that GetModelsRequest did not go out.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelFetcher.GetModelsRequest.HostCount", 0);
 
   // Set up an OptimizationGuideKeyedService consumer.
   auto otr_consumer =
@@ -687,8 +595,7 @@ class PredictionManagerNoUserPermissionsTest
     : public PredictionManagerBrowserTest {
  public:
   PredictionManagerNoUserPermissionsTest() {
-    // Hosts and field trials should not be sent.
-    SetExpectedHostsSentInRequest(false);
+    // Field trials should not be sent.
     SetExpectedFieldTrialNames({});
   }
 
@@ -719,7 +626,7 @@ class PredictionManagerNoUserPermissionsTest
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
-                       HostsAndFieldTrialsNotPassedWhenNoUserPermissions) {
+                       FieldTrialsNotPassedWhenNoUserPermissions) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -728,24 +635,11 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
-      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-
-  SetCallbackOnConsumer(base::DoNothing());
-  ui_test_utils::NavigateToURL(browser(), https_url_with_content());
-
-  // Expect that we did not fetch for host and that we did not get any host
-  // model features.
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", false,
-      1);
 }
 
 class ModelFileObserver : public OptimizationTargetModelObserver {
