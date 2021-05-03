@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -161,7 +162,9 @@ FileResult::FileResult(
     const std::string& schema,
     const base::FilePath& filepath,
     ResultType result_type,
-    base::Optional<chromeos::string_matching::TokenizedString>& query,
+    const std::u16string& query,
+    const base::Optional<chromeos::string_matching::TokenizedString>&
+        tokenized_query,
     Type type,
     Profile* profile)
     : FileResult(schema,
@@ -170,10 +173,12 @@ FileResult::FileResult(
                  DisplayType::kList,
                  type,
                  profile) {
-  const double relevance = CalculateRelevance(query, title());
+  const double relevance = CalculateRelevance(tokenized_query, title());
   DCHECK((relevance >= 0) && (relevance <= 1));
   set_relevance(relevance);
   LogRelevance(result_type, relevance);
+
+  SetTitleTags(CalculateTags(query, title()));
 
   // Launcher search results UI is light by default, so use icons for light
   // background if dark/light mode feature is not enabled.

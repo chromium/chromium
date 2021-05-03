@@ -113,6 +113,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
   if (query.empty())
     return;
 
+  last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -140,9 +141,9 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const std::pair<base::FilePath, bool>& path) {
   const auto type =
       path.second ? FileResult::Type::kDirectory : FileResult::Type::kFile;
-  return std::make_unique<FileResult>(kFileSearchSchema, path.first,
-                                      ash::AppListSearchResultType::kFileSearch,
-                                      last_tokenized_query_, type, profile_);
+  return std::make_unique<FileResult>(
+      kFileSearchSchema, path.first, ash::AppListSearchResultType::kFileSearch,
+      last_query_, last_tokenized_query_, type, profile_);
 }
 
 }  // namespace app_list

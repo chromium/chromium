@@ -26,7 +26,8 @@ namespace app_list {
 class ArcAppDataSearchResult : public ChromeSearchResult {
  public:
   ArcAppDataSearchResult(arc::mojom::AppDataResultPtr data,
-                         AppListControllerDelegate* list_controller);
+                         AppListControllerDelegate* list_controller,
+                         const std::u16string& query);
   ~ArcAppDataSearchResult() override;
 
   // ChromeSearchResult:

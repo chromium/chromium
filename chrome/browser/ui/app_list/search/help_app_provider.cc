@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
@@ -104,17 +105,20 @@ HelpAppResult::HelpAppResult(
     const float& relevance,
     Profile* profile,
     const chromeos::help_app::mojom::SearchResultPtr& result,
-    const gfx::ImageSkia& icon)
+    const gfx::ImageSkia& icon,
+    const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   DCHECK(profile_);
   set_id(chromeos::kChromeUIHelpAppURL + url_path_);
   set_relevance(relevance);
   SetTitle(result->title);
+  SetTitleTags(CalculateTags(query, result->title));
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::HELP_APP);
   SetIcon(icon);
   SetDetails(result->main_category);
+  SetDetailsTags(CalculateTags(query, result->main_category));
 }
 
 HelpAppResult::~HelpAppResult() = default;
@@ -241,8 +245,8 @@ void HelpAppProvider::OnSearchReturned(
     // difference between each result's score keeps the help app results grouped
     // together.
     const float score = 0.95f - i * kScoreEps;
-    search_results.emplace_back(
-        std::make_unique<HelpAppResult>(score, profile_, result, icon_));
+    search_results.emplace_back(std::make_unique<HelpAppResult>(
+        score, profile_, result, icon_, last_query_));
     ++i;
   }
 

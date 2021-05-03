@@ -50,6 +50,7 @@ void ArcAppDataSearchProvider::Start(const std::u16string& query) {
     ClearResults();
     return;
   }
+  last_query_ = query;
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   app_instance->GetIcingGlobalQueryResults(
@@ -75,7 +76,7 @@ void ArcAppDataSearchProvider::OnResults(
     }
 
     new_results.emplace_back(std::make_unique<ArcAppDataSearchResult>(
-        std::move(result), list_controller_));
+        std::move(result), list_controller_, last_query_));
   }
   SwapResults(&new_results);
 }

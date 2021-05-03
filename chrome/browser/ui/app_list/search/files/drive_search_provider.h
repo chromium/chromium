@@ -45,6 +45,7 @@ class DriveSearchProvider : public SearchProvider {
                                          FileResult::Type type);
 
   base::TimeTicks query_start_time_;
+  std::u16string last_query_;
   base::Optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
 

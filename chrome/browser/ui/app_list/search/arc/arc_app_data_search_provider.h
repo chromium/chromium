@@ -31,6 +31,7 @@ class ArcAppDataSearchProvider : public SearchProvider {
                  std::vector<arc::mojom::AppDataResultPtr> results);
 
   const int max_results_;
+  std::u16string last_query_;
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
   base::WeakPtrFactory<ArcAppDataSearchProvider> weak_ptr_factory_{this};
 

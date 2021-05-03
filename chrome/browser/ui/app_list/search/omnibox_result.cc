@@ -189,7 +189,8 @@ OmniboxResult::OmniboxResult(Profile* profile,
         *match_.search_terms_args, &match_);
   }
   set_id(match_.stripped_destination_url.spec());
-  SetResultType(ash::AppListSearchResultType::kOmnibox);
+  SetDisplayType(DisplayType::kList);
+  SetResultType(ResultType::kOmnibox);
   set_result_subtype(static_cast<int>(match_.type));
   SetMetricsType(GetSearchResultType());
 

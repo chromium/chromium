@@ -30,7 +30,7 @@ namespace settings {
 class Hierarchy;
 class OsSettingsManager;
 class SearchHandler;
-}
+}  // namespace settings
 }  // namespace chromeos
 
 namespace gfx {
@@ -45,7 +45,8 @@ class OsSettingsResult : public ChromeSearchResult {
   OsSettingsResult(Profile* profile,
                    const chromeos::settings::mojom::SearchResultPtr& result,
                    float relevance_score,
-                   const gfx::ImageSkia& icon);
+                   const gfx::ImageSkia& icon,
+                   const std::u16string& query);
   ~OsSettingsResult() override;
 
   OsSettingsResult(const OsSettingsResult&) = delete;

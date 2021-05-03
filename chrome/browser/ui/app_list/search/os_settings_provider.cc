@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
@@ -114,11 +115,13 @@ OsSettingsResult::OsSettingsResult(
     Profile* profile,
     const chromeos::settings::mojom::SearchResultPtr& result,
     const float relevance_score,
-    const gfx::ImageSkia& icon)
+    const gfx::ImageSkia& icon,
+    const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   set_id(kOsSettingsResultPrefix + url_path_);
   set_relevance(relevance_score);
   SetTitle(result->canonical_result_text);
+  SetTitleTags(CalculateTags(query, result->canonical_result_text));
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
@@ -134,6 +137,7 @@ OsSettingsResult::OsSettingsResult(
     LogError(Error::kHierarchyEmpty);
   } else if (result->type != SettingsResultType::kSection) {
     SetDetails(hierarchy.back());
+    SetDetailsTags(CalculateTags(query, hierarchy.back()));
   }
 
   // Manually build the accessible name for the search result, in a way that
@@ -272,8 +276,8 @@ void OsSettingsProvider::OnSearchReturned(
   int i = 0;
   for (const auto& result : FilterResults(query, sorted_results, hierarchy_)) {
     const float score = 1.0f - i * kScoreEps;
-    search_results.emplace_back(
-        std::make_unique<OsSettingsResult>(profile_, result, score, icon_));
+    search_results.emplace_back(std::make_unique<OsSettingsResult>(
+        profile_, result, score, icon_, last_query_));
     ++i;
   }
 

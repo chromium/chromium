@@ -46,7 +46,8 @@ class HelpAppResult : public ChromeSearchResult {
   HelpAppResult(const float& relevance,
                 Profile* profile,
                 const chromeos::help_app::mojom::SearchResultPtr& result,
-                const gfx::ImageSkia& icon);
+                const gfx::ImageSkia& icon,
+                const std::u16string& query);
 
   ~HelpAppResult() override;
 

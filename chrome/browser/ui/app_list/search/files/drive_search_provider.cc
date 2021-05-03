@@ -71,6 +71,7 @@ void DriveSearchProvider::Start(const std::u16string& query) {
     return;
   }
 
+  last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
   // New scores will be assigned for sorting purposes so use the default
@@ -132,8 +133,8 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
 
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveSearch, last_tokenized_query_, type,
-      profile_);
+      ash::AppListSearchResultType::kDriveSearch, last_query_,
+      last_tokenized_query_, type, profile_);
 }
 
 }  // namespace app_list
