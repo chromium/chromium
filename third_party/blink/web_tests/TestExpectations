@@ -7070,3 +7070,6 @@ crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass 
 
 # Sheriff 2021-04-30
 crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Pass Failure ]
+
+# Sheriff 2021-05-03
+crbug.com/1161155 [ Mac ] paint/invalidation/image/canvas-composite-repaint-by-all-imagesource.html [ Failure ]
