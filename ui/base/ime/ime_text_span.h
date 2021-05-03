@@ -28,6 +28,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
     kMisspellingSuggestion,
     // Creates an autocorrect marker that isn't cleared by itself.
     kAutocorrect,
+    // Creates a grammar marker that isn't cleared by itself.
+    kGrammarSuggestion,
   };
 
   enum class Thickness {

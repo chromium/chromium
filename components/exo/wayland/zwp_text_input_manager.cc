@@ -76,6 +76,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
           break;
         case ui::ImeTextSpan::Type::kMisspellingSuggestion:
         case ui::ImeTextSpan::Type::kAutocorrect:
+        case ui::ImeTextSpan::Type::kGrammarSuggestion:
           style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT;
           break;
       }

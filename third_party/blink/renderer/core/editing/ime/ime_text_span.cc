@@ -20,6 +20,8 @@ ImeTextSpan::Type ConvertUiTypeToType(ui::ImeTextSpan::Type type) {
       return ImeTextSpan::Type::kMisspellingSuggestion;
     case ui::ImeTextSpan::Type::kAutocorrect:
       return ImeTextSpan::Type::kAutocorrect;
+    case ui::ImeTextSpan::Type::kGrammarSuggestion:
+      return ImeTextSpan::Type::kGrammarSuggestion;
   }
 
   NOTREACHED();
@@ -68,6 +70,16 @@ Vector<String> ConvertStdVectorOfStdStringsToVectorOfStrings(
   return output;
 }
 
+std::vector<std::string> ConvertVectorOfStringsToStdVectorOfStdStrings(
+    const Vector<String>& input) {
+  std::vector<std::string> output;
+  output.reserve(input.size());
+  for (const String& val : input) {
+    output.push_back(val.Utf8());
+  }
+  return output;
+}
+
 ui::mojom::ImeTextSpanThickness ConvertUiThicknessToThickness(
     ui::ImeTextSpan::Thickness thickness) {
   switch (thickness) {
@@ -108,6 +120,8 @@ ui::ImeTextSpan::Type ConvertImeTextSpanTypeToUiType(ImeTextSpan::Type type) {
       return ui::ImeTextSpan::Type::kAutocorrect;
     case ImeTextSpan::Type::kComposition:
       return ui::ImeTextSpan::Type::kComposition;
+    case ImeTextSpan::Type::kGrammarSuggestion:
+      return ui::ImeTextSpan::Type::kGrammarSuggestion;
     case ImeTextSpan::Type::kMisspellingSuggestion:
       return ui::ImeTextSpan::Type::kMisspellingSuggestion;
     case ImeTextSpan::Type::kSuggestion:
@@ -133,8 +147,11 @@ ImeTextSpan::ImeTextSpan(const ui::ImeTextSpan& ime_text_span)
                       ime_text_span.suggestions)) {}
 
 ui::ImeTextSpan ImeTextSpan::ToUiImeTextSpan() {
-  return ui::ImeTextSpan(ConvertImeTextSpanTypeToUiType(GetType()),
-                         StartOffset(), EndOffset());
+  auto span = ui::ImeTextSpan(ConvertImeTextSpanTypeToUiType(GetType()),
+                              StartOffset(), EndOffset());
+  span.suggestions =
+      ConvertVectorOfStringsToStdVectorOfStdStrings(Suggestions());
+  return span;
 }
 
 }  // namespace blink
