@@ -60,8 +60,10 @@ public class PlayerFrameBitmapState {
 
         // Each tile is as big as the initial view port. Here we determine the number of
         // columns and rows for the current scale factor.
-        int rows = (int) Math.ceil((contentSize.getHeight() * scaleFactor) / tileHeight);
-        int cols = (int) Math.ceil((contentSize.getWidth() * scaleFactor) / tileWidth);
+        int rows = (int) Math.max(
+                1.0, Math.ceil((contentSize.getHeight() * scaleFactor) / tileHeight));
+        int cols =
+                (int) Math.max(1.0, Math.ceil((contentSize.getWidth() * scaleFactor) / tileWidth));
 
         mBitmapMatrix = new CompressibleBitmap[rows][cols];
         mPendingBitmapRequests = new BitmapRequestHandler[rows][cols];
