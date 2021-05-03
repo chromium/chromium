@@ -917,7 +917,6 @@ void MetricsService::LogCleanShutdown(bool end_completed) {
   // Redundant setting to assure that we always reset this value at shutdown
   // (and that we don't use some alternate path, and not call LogCleanShutdown).
   clean_shutdown_status_ = CLEANLY_SHUTDOWN;
-  client_->OnLogCleanShutdown();
   state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
   StabilityMetricsProvider(local_state_).MarkSessionEndCompleted(end_completed);
 }

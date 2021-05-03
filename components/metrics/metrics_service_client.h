@@ -78,9 +78,6 @@ class MetricsServiceClient {
   // ownership.
   virtual void OnEnvironmentUpdate(std::string* serialized_environment) {}
 
-  // Called by the metrics service to record a clean shutdown.
-  virtual void OnLogCleanShutdown() {}
-
   // Called prior to a metrics log being closed, allowing the client to collect
   // extra histograms that will go in that log. Asynchronous API - the client
   // implementation should call |done_callback| when complete.
