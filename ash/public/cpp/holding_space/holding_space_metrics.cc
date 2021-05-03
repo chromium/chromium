@@ -89,14 +89,16 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "ArcDownload";
     case HoldingSpaceItem::Type::kDownload:
       return "Download";
-    case HoldingSpaceItem::Type::kPinnedFile:
-      return "PinnedFile";
-    case HoldingSpaceItem::Type::kScreenshot:
-      return "Screenshot";
     case HoldingSpaceItem::Type::kNearbyShare:
       return "NearbyShare";
+    case HoldingSpaceItem::Type::kPinnedFile:
+      return "PinnedFile";
+    case HoldingSpaceItem::Type::kPrintedPdf:
+      return "PrintedPdf";
     case HoldingSpaceItem::Type::kScreenRecording:
       return "ScreenRecording";
+    case HoldingSpaceItem::Type::kScreenshot:
+      return "Screenshot";
   }
   NOTREACHED();
   return std::string();

@@ -880,7 +880,8 @@ INSTANTIATE_TEST_SUITE_P(
     HoldingSpaceTrayDownloadsSectionTest,
     ::testing::Values(HoldingSpaceItem::Type::kArcDownload,
                       HoldingSpaceItem::Type::kDownload,
-                      HoldingSpaceItem::Type::kNearbyShare));
+                      HoldingSpaceItem::Type::kNearbyShare,
+                      HoldingSpaceItem::Type::kPrintedPdf));
 
 // Tests how download chips are updated during item addition, removal and
 // initialization.

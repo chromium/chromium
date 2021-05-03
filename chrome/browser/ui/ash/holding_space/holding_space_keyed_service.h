@@ -71,11 +71,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
-  // Adds a screenshot item backed by the provided absolute file path.
-  // The path is expected to be under a mount point path recognized by the file
-  // manager app (otherwise, the item will be dropped silently).
-  void AddScreenshot(const base::FilePath& screenshot_path);
-
   // Adds a download item of the specified `type` backed by the provided
   // absolute file path. Note that `type` must refer to a download type.
   void AddDownload(HoldingSpaceItem::Type type,
@@ -84,14 +79,25 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a printed PDF item backed by the provided absolute file path.
+  void AddPrintedPdf(const base::FilePath& printed_pdf_path);
+
   // Adds a screen recording item backed by the provided absolute file path.
   void AddScreenRecording(const base::FilePath& screen_recording_path);
+
+  // Adds a screenshot item backed by the provided absolute file path.
+  void AddScreenshot(const base::FilePath& screenshot_path);
 
   // Adds the specified `item` to the holding space model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
 
   // Adds multiple `items` to the holding space model.
   void AddItems(std::vector<std::unique_ptr<HoldingSpaceItem>> items);
+
+  // Adds an item of the specified `type` backed by the provided absolute
+  // `file_path` to the holding space model.
+  void AddItemOfType(HoldingSpaceItem::Type type,
+                     const base::FilePath& file_path);
 
   const HoldingSpaceClient* client_for_testing() const {
     return &holding_space_client_;

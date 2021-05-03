@@ -214,75 +214,32 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-void HoldingSpaceKeyedService::AddScreenshot(
-    const base::FilePath& screenshot_file) {
-  const bool already_exists = holding_space_model_.ContainsItem(
-      HoldingSpaceItem::Type::kScreenshot, screenshot_file);
-  if (already_exists)
-    return;
-
-  GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile_, screenshot_file);
-  if (file_system_url.is_empty())
-    return;
-
-  AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
-}
-
 void HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
     const base::FilePath& download_file) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
-  const bool already_exists = holding_space_model_.ContainsItem(
-      HoldingSpaceItem::Type::kDownload, download_file);
-  if (already_exists)
-    return;
-
-  GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile_, download_file);
-  if (file_system_url.is_empty())
-    return;
-
-  AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      type, download_file, file_system_url,
-      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
+  AddItemOfType(type, download_file);
 }
 
 void HoldingSpaceKeyedService::AddNearbyShare(
     const base::FilePath& nearby_share_path) {
-  const bool already_exists = holding_space_model_.ContainsItem(
-      HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
-  if (already_exists)
-    return;
+  AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
+}
 
-  GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile_, nearby_share_path);
-  if (file_system_url.is_empty())
-    return;
-
-  AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kNearbyShare, nearby_share_path, file_system_url,
-      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
+void HoldingSpaceKeyedService::AddPrintedPdf(
+    const base::FilePath& printed_pdf_path) {
+  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
 }
 
 void HoldingSpaceKeyedService::AddScreenRecording(
     const base::FilePath& screen_recording_file) {
-  const bool already_exists = holding_space_model_.ContainsItem(
-      HoldingSpaceItem::Type::kScreenRecording, screen_recording_file);
-  if (already_exists)
-    return;
+  AddItemOfType(HoldingSpaceItem::Type::kScreenRecording,
+                screen_recording_file);
+}
 
-  GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile_, screen_recording_file);
-  if (file_system_url.is_empty())
-    return;
-
-  AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kScreenRecording, screen_recording_file,
-      file_system_url,
-      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
+void HoldingSpaceKeyedService::AddScreenshot(
+    const base::FilePath& screenshot_file) {
+  AddItemOfType(HoldingSpaceItem::Type::kScreenshot, screenshot_file);
 }
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
@@ -293,7 +250,13 @@ void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
 
 void HoldingSpaceKeyedService::AddItems(
     std::vector<std::unique_ptr<HoldingSpaceItem>> items) {
-  DCHECK(!items.empty());
+  // Ignore any `items` that already exist in the `holding_space_model_`.
+  base::EraseIf(items, [&](const std::unique_ptr<HoldingSpaceItem>& item) {
+    return holding_space_model_.ContainsItem(item->type(), item->file_path());
+  });
+
+  if (items.empty())
+    return;
 
   // Mark the time when the user's first item was added to holding space. Note
   // that true is returned iff this is in fact the user's first add and, if so,
@@ -302,6 +265,18 @@ void HoldingSpaceKeyedService::AddItems(
     RecordTimeFromFirstAvailabilityToFirstAdd(profile_);
 
   holding_space_model_.AddItems(std::move(items));
+}
+
+void HoldingSpaceKeyedService::AddItemOfType(HoldingSpaceItem::Type type,
+                                             const base::FilePath& file_path) {
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, file_path);
+  if (file_system_url.is_empty())
+    return;
+
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
+      type, file_path, file_system_url,
+      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
 void HoldingSpaceKeyedService::Shutdown() {

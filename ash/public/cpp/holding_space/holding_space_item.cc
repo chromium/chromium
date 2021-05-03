@@ -63,6 +63,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
       return true;
     case Type::kNearbyShare:
     case Type::kPinnedFile:
+    case Type::kPrintedPdf:
     case Type::kScreenRecording:
     case Type::kScreenshot:
       return false;
@@ -166,6 +167,7 @@ bool HoldingSpaceItem::IsScreenCapture() const {
     case Type::kDownload:
     case Type::kNearbyShare:
     case Type::kPinnedFile:
+    case Type::kPrintedPdf:
       return false;
   }
 }

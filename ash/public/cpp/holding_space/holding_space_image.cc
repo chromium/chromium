@@ -118,6 +118,7 @@ gfx::Size HoldingSpaceImage::GetMaxSizeForType(HoldingSpaceItem::Type type) {
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPinnedFile:
+    case HoldingSpaceItem::Type::kPrintedPdf:
       size = gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;
     case HoldingSpaceItem::Type::kScreenRecording:

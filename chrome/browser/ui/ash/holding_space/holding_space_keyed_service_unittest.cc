@@ -465,95 +465,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests adding a screenshot item. Verifies that adding a screenshot creates a
-// holding space item with a file system URL that can be accessed by the file
-// manager app.
-TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
-  // Create a test downloads mount point.
-  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
-      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
-  ASSERT_TRUE(downloads_mount->IsValid());
-
-  // Wait for the holding space model.
-  HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
-
-  // Verify that the holding space model gets set even if the holding space
-  // keyed service is not explicitly created.
-  HoldingSpaceModel* const initial_model =
-      HoldingSpaceController::Get()->model();
-  EXPECT_TRUE(initial_model);
-
-  HoldingSpaceKeyedService* const holding_space_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
-  const base::FilePath item_1_virtual_path("Screenshot 1.png");
-  // Create a fake screenshot file on the local file system - later parts of the
-  // test will try to resolve the file's file system URL, which fails if the
-  // file does not exist.
-  const base::FilePath item_1_full_path =
-      downloads_mount->CreateFile(item_1_virtual_path, "red");
-  ASSERT_FALSE(item_1_full_path.empty());
-
-  holding_space_service->AddScreenshot(item_1_full_path);
-
-  const base::FilePath item_2_virtual_path =
-      base::FilePath("Alt/Screenshot 2.png");
-  // Create a fake screenshot file on the local file system - later parts of the
-  // test will try to resolve the file's file system URL, which fails if the
-  // file does not exist.
-  const base::FilePath item_2_full_path =
-      downloads_mount->CreateFile(item_2_virtual_path, "blue");
-  ASSERT_FALSE(item_2_full_path.empty());
-  holding_space_service->AddScreenshot(item_2_full_path);
-
-  EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
-  EXPECT_EQ(HoldingSpaceController::Get()->model(),
-            holding_space_service->model_for_testing());
-
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(2u, model->items().size());
-
-  const HoldingSpaceItem* item_1 = model->items()[0].get();
-  EXPECT_EQ(item_1_full_path, item_1->file_path());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *holding_space_util::ResolveImage(
-           holding_space_service->thumbnail_loader_for_testing(),
-           HoldingSpaceItem::Type::kScreenshot, item_1_full_path)
-           ->GetImageSkia()
-           .bitmap(),
-      *item_1->image().GetImageSkia().bitmap()));
-  // Verify the item file system URL resolves to the correct file in the file
-  // manager's context.
-  EXPECT_EQ(item_1_virtual_path,
-            GetVirtualPathFromUrl(item_1->file_system_url(),
-                                  downloads_mount->name()));
-  EXPECT_EQ(u"Screenshot 1.png", item_1->text());
-
-  const HoldingSpaceItem* item_2 = model->items()[1].get();
-  EXPECT_EQ(item_2_full_path, item_2->file_path());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *holding_space_util::ResolveImage(
-           holding_space_service->thumbnail_loader_for_testing(),
-           HoldingSpaceItem::Type::kScreenshot, item_2_full_path)
-           ->GetImageSkia()
-           .bitmap(),
-      *item_2->image().GetImageSkia().bitmap()));
-  // Verify the item file system URL resolves to the correct file in the file
-  // manager's context.
-  EXPECT_EQ(item_2_virtual_path,
-            GetVirtualPathFromUrl(item_2->file_system_url(),
-                                  downloads_mount->name()));
-  EXPECT_EQ(u"Screenshot 2.png", item_2->text());
-
-  // Attempt to add an already added screenshot to the model.
-  EXPECT_EQ(model->items()[1]->file_path(), item_2_full_path);
-  holding_space_service->AddScreenshot(item_2_full_path);
-
-  // Attempts to add already added screenshots should be ignored.
-  ASSERT_EQ(model->items().size(), 2u);
-  EXPECT_EQ(model->items()[0].get(), item_1);
-  EXPECT_EQ(model->items()[1].get(), item_2);
-}
-
 TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
   // Construct a guest session profile.
   TestingProfile::Builder guest_profile_builder;
@@ -1671,6 +1582,109 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   EXPECT_EQ(download_item_virtual_path,
             GetVirtualPathFromUrl(download_item->file_system_url(),
                                   downloads_mount->name()));
+}
+
+// Base class for tests which verify adding items to holding space works as
+// intended, parameterized by holding space item type.
+class HoldingSpaceKeyedServiceAddItemTest
+    : public HoldingSpaceKeyedServiceTest,
+      public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
+ public:
+  // Returns the holding space service associated with the specified `profile`.
+  HoldingSpaceKeyedService* GetService(Profile* profile) {
+    return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+  }
+
+  // Returns the type of holding space item under test.
+  HoldingSpaceItem::Type GetType() const { return GetParam(); }
+
+  // Adds an item of `type` to the holding space belonging to `profile`, backed
+  // by the file at the specified absolute `file_path`.
+  void AddItem(Profile* profile,
+               HoldingSpaceItem::Type type,
+               const base::FilePath& file_path) {
+    auto* const holding_space_service = GetService(profile);
+    ASSERT_TRUE(holding_space_service);
+
+    switch (type) {
+      case HoldingSpaceItem::Type::kArcDownload:
+      case HoldingSpaceItem::Type::kDownload:
+        holding_space_service->AddDownload(type, file_path);
+        break;
+      case HoldingSpaceItem::Type::kNearbyShare:
+        holding_space_service->AddNearbyShare(file_path);
+        break;
+      case HoldingSpaceItem::Type::kPinnedFile:
+        holding_space_service->AddPinnedFiles(
+            {file_manager::util::GetFileSystemContextForExtensionId(
+                 profile, file_manager::kFileManagerAppId)
+                 ->CrackURL(holding_space_util::ResolveFileSystemUrl(
+                     profile, file_path))});
+        break;
+      case HoldingSpaceItem::Type::kPrintedPdf:
+        holding_space_service->AddPrintedPdf(file_path);
+        break;
+      case HoldingSpaceItem::Type::kScreenRecording:
+        holding_space_service->AddScreenRecording(file_path);
+        break;
+      case HoldingSpaceItem::Type::kScreenshot:
+        holding_space_service->AddScreenshot(file_path);
+        break;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServiceAddItemTest,
+                         ::testing::ValuesIn(GetHoldingSpaceItemTypes()));
+
+TEST_P(HoldingSpaceKeyedServiceAddItemTest, AddItem) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test mount point.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(mount_point->IsValid());
+
+  // Create a file on the file system.
+  const base::FilePath file_path = mount_point->CreateFile(
+      /*relative_path=*/base::FilePath("foo"), /*content=*/"foo");
+
+  // Add a holding space item of the type under test.
+  AddItem(profile, GetType(), file_path);
+
+  // Verify a holding space item has been added to the model.
+  ASSERT_EQ(model->items().size(), 1u);
+
+  // Verify holding space `item` metadata.
+  HoldingSpaceItem* const item = model->items()[0].get();
+  EXPECT_EQ(item->type(), GetType());
+  EXPECT_EQ(item->text(), file_path.BaseName().LossyDisplayName());
+  EXPECT_EQ(item->file_path(), file_path);
+  EXPECT_EQ(item->file_system_url(),
+            holding_space_util::ResolveFileSystemUrl(profile, file_path));
+
+  // Verify holding space `item` image.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           GetService(profile)->thumbnail_loader_for_testing(), GetType(),
+           file_path)
+           ->GetImageSkia()
+           .bitmap(),
+      *item->image().GetImageSkia().bitmap()));
+
+  // Attempt to add a holding space item of the same type and `file_path`.
+  AddItem(profile, GetType(), file_path);
+
+  // Attempts to add already represented items should be ignored.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0].get(), item);
 }
 
 class HoldingSpaceKeyedServiceArcIntegrationTest
