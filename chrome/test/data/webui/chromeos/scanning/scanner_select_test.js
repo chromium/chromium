@@ -4,11 +4,13 @@
 
 import 'chrome://scanning/scanner_select.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
+import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {waitAfterNextRender} from '../../test_util.m.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 
@@ -29,6 +31,7 @@ export function scannerSelectTest() {
         document.createElement('scanner-select'));
     assertTrue(!!scannerSelect);
     scannerSelect.loaded = false;
+    scannerSelect.scannerInfoMap = new Map();
     document.body.appendChild(scannerSelect);
   });
 
@@ -72,5 +75,53 @@ export function scannerSelectTest() {
         scannerSelect.scanners, (scanner) => getScannerDisplayName(scanner));
     assertEquals(
         tokenToString(firstScannerId), scannerSelect.selectedScannerId);
+  });
+
+  // Verify the last used scanner is selected if available.
+  test('selectLastUsedScanner', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const secondScannerIdString = tokenToString(secondScannerId);
+    const secondScannerInfo = /** @type {!ScannerInfo} */ ({
+      token: secondScannerId,
+      displayName: secondScannerName,
+    });
+    const scanners = [
+      createScanner(firstScannerId, firstScannerName),
+      createScanner(secondScannerId, secondScannerName),
+    ];
+
+    scannerSelect.scannerInfoMap.set(secondScannerIdString, secondScannerInfo);
+    scannerSelect.lastUsedScannerId = secondScannerIdString;
+    scannerSelect.scanners = scanners;
+
+    return waitAfterNextRender(scannerSelect).then(() => {
+      assertEquals(secondScannerIdString, scannerSelect.selectedScannerId);
+      assertEquals(secondScannerIdString, scannerSelect.$$('select').value);
+    });
+  });
+
+  // Verify the first scanner in the dropdown is selected when the last used
+  // scanner is not set.
+  test('selectFirtScanner', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const scanners = [
+      createScanner(secondScannerId, secondScannerName),
+      createScanner(firstScannerId, firstScannerName),
+    ];
+
+    scannerSelect.lastUsedScannerId = '';
+    scannerSelect.scanners = scanners;
+
+    const firstScannerIdString = tokenToString(firstScannerId);
+    return waitAfterNextRender(scannerSelect).then(() => {
+      assertEquals(firstScannerIdString, scannerSelect.selectedScannerId);
+      assertEquals(firstScannerIdString, scannerSelect.$$('select').value);
+    });
   });
 }

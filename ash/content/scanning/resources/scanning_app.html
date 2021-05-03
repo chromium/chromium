@@ -191,7 +191,9 @@
           <template is="dom-if" if="[[!showDoneSection_]]">
             <scanner-select id="scannerSelect" scanners="[[scanners_]]"
                 disabled="[[settingsDisabled_]]"
-                selected-scanner-id="{{selectedScannerId}}"></scanner-select>
+                selected-scanner-id="{{selectedScannerId}}"
+                last-used-scanner-id="[[lastUsedScannerId_]]"
+                scanner-info-map="[[scannerInfoMap_]]"></scanner-select>
             <source-select id="sourceSelect" options="[[capabilities_.sources]]"
                 disabled="[[settingsDisabled_]]"
                 selected-option="{{selectedSource}}"></source-select>

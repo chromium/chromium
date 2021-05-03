@@ -1203,4 +1203,36 @@ export function scanningAppTest() {
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
         });
   });
+
+  // Verify the last used scanner is selected from saved settings.
+  test('selectLastUsedScanner', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const scanSavedSettings = {
+      lastUsedScannerName: secondScannerName,
+      scanToPath: 'scan/to/path',
+      scanners: [{
+        name: secondScannerName,
+        lastScanDate: new Date(),
+        sourceName: ADF_DUPLEX,
+        fileType: ash.scanning.mojom.FileType.kPng,
+        colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+        pageSize: ash.scanning.mojom.PageSize.kMax,
+        resolutionDpi: 75,
+      }],
+    };
+    testBrowserProxy.setSavedSettings(JSON.stringify(scanSavedSettings));
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          assertEquals(
+              tokenToString(secondScannerId),
+              scanningApp.$$('#scannerSelect').$$('select').value);
+        });
+  });
 }

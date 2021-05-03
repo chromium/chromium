@@ -284,6 +284,9 @@ Polymer({
 
     /** @private {?ScanSettings} */
     savedScanSettings_: Object,
+
+    /** @private {string} */
+    lastUsedScannerId_: String,
   },
 
   observers:
@@ -438,6 +441,9 @@ Polymer({
 
     for (const scanner of response.scanners) {
       this.setScannerInfo_(scanner);
+      if (this.isLastUsedScanner_(scanner)) {
+        this.lastUsedScannerId_ = tokenToString(scanner.id);
+      }
     }
 
     this.setAppState_(AppState.GOT_SCANNERS);
@@ -791,6 +797,17 @@ Polymer({
   setScannerInfo_(scanner) {
     this.scannerInfoMap_.set(
         tokenToString(scanner.id), this.createScannerInfo_(scanner));
+  },
+
+  /**
+   * @param {!ash.scanning.mojom.Scanner} scanner
+   * @return {boolean}
+   * @private
+   */
+  isLastUsedScanner_(scanner) {
+    return this.savedScanSettings_ !== undefined &&
+        this.savedScanSettings_.lastUsedScannerName ===
+        getScannerDisplayName(scanner);
   },
 
   /**

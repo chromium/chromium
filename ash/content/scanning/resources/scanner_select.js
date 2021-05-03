@@ -10,9 +10,9 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ScannerArr} from './scanning_app_types.js';
+import {ScannerArr, ScannerInfo} from './scanning_app_types.js';
 import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scanning_app_util.js';
 
 /**
@@ -41,6 +41,12 @@ Polymer({
       type: String,
       notify: true,
     },
+
+    /** @type {!Map<string, !ScannerInfo>} */
+    scannerInfoMap: Object,
+
+    /** @type {string} */
+    lastUsedScannerId: String,
   },
 
   observers: ['onScannersChange_(scanners.*)'],
@@ -78,9 +84,33 @@ Polymer({
       });
     }
 
-    // If it exists, select the first option in the sorted array as the default.
+    // Either select the last used scanner or default to the first scanner in
+    // the dropdown.
     if (this.scanners.length > 0) {
-      this.selectedScannerId = tokenToString(this.scanners[0].id);
+      if (!this.lastUsedScannerId) {
+        this.selectedScannerId = tokenToString(this.scanners[0].id);
+        return;
+      }
+
+      this.selectedScannerId = this.lastUsedScannerId;
+
+      // After the dropdown renders with the scanner options, set the selected
+      // scanner.
+      afterNextRender(this, () => {
+        this.$$('#scannerSelect').selectedIndex =
+            this.getSelectedScannerIndex_();
+      });
     }
+  },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  getSelectedScannerIndex_() {
+    const selectedScannerToken =
+        this.scannerInfoMap.get(this.selectedScannerId).token;
+    return this.scanners.findIndex(
+        scanner => scanner.id === selectedScannerToken);
   },
 });
