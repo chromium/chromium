@@ -7,6 +7,7 @@
 2d.pattern:                           "fill-and-stroke-styles"
 2d.strokeStyle:                       "fill-and-stroke-styles"
 2d.shadow:                            "shadows"
+2d.filter:                            "filters"
 2d.clearRect:                         "drawing-rectangles-to-the-canvas"
 2d.fillRect:                          "drawing-rectangles-to-the-canvas"
 2d.strokeRect:                        "drawing-rectangles-to-the-canvas"
