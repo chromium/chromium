@@ -31,12 +31,12 @@ void ForceYouTubeSafetyModePolicyHandler::ApplyPolicySettings(
     return;
 
   const base::Value* value = policies.GetValue(policy_name());
-  bool enabled;
-  if (value && value->GetAsBoolean(&enabled)) {
+  if (value && value->is_bool()) {
     prefs->SetValue(
         prefs::kForceYouTubeRestrict,
-        base::Value(enabled ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
-                            : safe_search_util::YOUTUBE_RESTRICT_OFF));
+        base::Value(value->GetBool()
+                        ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
+                        : safe_search_util::YOUTUBE_RESTRICT_OFF));
   }
 }
 
