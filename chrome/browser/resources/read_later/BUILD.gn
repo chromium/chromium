@@ -35,13 +35,14 @@ generate_grd("build_grd") {
   input_files = [
     "read_later.html",
     "side_panel/side_panel.html",
-    "side_panel/side_panel.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
+  grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
   deps = [
     ":preprocess",
     ":preprocess_mojo",
     ":preprocess_web_components",
+    "side_panel:build_grdp",
   ]
   manifest_files = [
     "$target_gen_dir/$preprocess_manifest",
@@ -80,7 +81,14 @@ preprocess_if_expr("preprocess_web_components") {
   ]
 }
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  deps = [
+    ":closure_compile_main",
+    "side_panel:closure_compile",
+  ]
+}
+
+js_type_check("closure_compile_main") {
   is_polymer3 = true
   deps = [
     ":app",

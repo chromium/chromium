@@ -1,0 +1,31 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 12px 16px 14px 12px;
+  }
+
+  cr-tabs {
+    --cr-tabs-height: 40px;
+    --cr-tabs-font-size: 13px;
+  }
+</style>
+
+<header>
+  <h1>Lists</h1>
+  <cr-tabs tab-names="[[tabs_]]" selected="{{selectedTab_}}"></cr-tabs>
+</header>
+
+<iron-pages selected="[[selectedTab_]]">
+  <read-later-app></read-later-app>
+  <div><!-- Bookmarks! --></div>
+</iron-pages>
