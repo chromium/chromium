@@ -81,6 +81,8 @@ TEST_F(NotificationUIManagerTest, AddNotificationOnShutdown) {
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
   notification_manager()->Add(GetANotification("test2"), &profile);
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(NotificationUIManagerTest, UpdateNotification) {
@@ -91,6 +93,8 @@ TEST_F(NotificationUIManagerTest, UpdateNotification) {
   ASSERT_TRUE(
       notification_manager()->Update(GetANotification("test"), &profile));
   EXPECT_TRUE(message_center()->NotificationCount() == 1);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 // Regression test for crbug.com/767868
