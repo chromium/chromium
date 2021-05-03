@@ -92,8 +92,7 @@ suite(destination_settings_test_cros.suiteName, function() {
     destinationSettings.appKioskMode = false;
     destinationSettings.init(
         '' /* printerName */, false, isDriveMounted,
-        '' /* serializedDefaultDestinationSelectionRulesStr */,
-        [] /* accounts */, true /* syncAvailable */);
+        '' /* serializedDefaultDestinationSelectionRulesStr */);
     destinationSettings.state = State.READY;
     destinationSettings.disabled = false;
   }
