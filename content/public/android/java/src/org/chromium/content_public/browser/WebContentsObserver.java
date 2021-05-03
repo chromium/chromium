@@ -178,10 +178,17 @@ public abstract class WebContentsObserver {
     public void didChangeThemeColor() {}
 
     /**
-     * Called when the Web Contents leaves or enters fullscreen mode.
+     * Called when Media in the Web Contents leaves or enters fullscreen mode.
      * @param isFullscreen whether fullscreen is being entered or left.
      */
     public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {}
+
+    /**
+     * Called when the Web Contents is toggled into or out of fullscreen mode by the renderer.
+     * @param enteredFullscreen whether fullscreen is being entered or left.
+     * @param willCauseResize whether the change to fullscreen will cause the contents to resize.
+     */
+    public void didToggleFullscreenModeForTab(boolean enteredFullscreen, boolean willCauseResize) {}
 
     /**
      * The Viewport Fit Type passed to viewportFitChanged. This is mirrored

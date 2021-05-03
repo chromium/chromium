@@ -208,14 +208,15 @@ public class ArImmersiveOverlay
 
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
-                public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
+                public void didToggleFullscreenModeForTab(
+                        boolean enteredFullscreen, boolean willCauseResize) {
                     if (DEBUG_LOGS) {
                         Log.i(TAG,
-                                "hasEffectivelyFullscreenVideoChange(), isFullscreen="
-                                        + isFullscreen);
+                                "didToggleFullscreenModeForTab(), enteredFullscreen="
+                                        + enteredFullscreen);
                     }
 
-                    if (!isFullscreen) {
+                    if (!enteredFullscreen) {
                         cleanupAndExit();
                     }
                 }
