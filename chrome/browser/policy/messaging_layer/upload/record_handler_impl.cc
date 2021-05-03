@@ -47,8 +47,16 @@ base::Optional<Priority> GetPriorityProtoFromSequencingInformationValue(
 
   const std::string* str_priority_result =
       sequencing_information.FindStringKey("priority");
+  if (!str_priority_result) {
+    LOG(ERROR) << "Field priority is missing from SequencingInformation: "
+               << sequencing_information;
+    return base::nullopt;
+  }
+
   Priority priority;
   if (!Priority_Parse(*str_priority_result, &priority)) {
+    LOG(ERROR) << "Unable to parse field priority in SequencingInformation: "
+               << sequencing_information;
     return base::nullopt;
   }
   return priority;
