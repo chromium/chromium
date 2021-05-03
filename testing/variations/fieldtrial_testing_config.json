@@ -3722,6 +3722,18 @@
                     },
                     "enable_features": [
                         "DiscoverFeedInNtp",
+                        "InterestFeedNoticeCardAutoDismiss",
+                        "RefactoredNTP"
+                    ]
+                },
+                {
+                    "name": "EnabledM2FullSetNoAutodismiss",
+                    "params": {
+                        "DiscoverFeedIsNativeUIEnabled": "true",
+                        "RefactoredNTPLoggingEnabled": "true"
+                    },
+                    "enable_features": [
+                        "DiscoverFeedInNtp",
                         "RefactoredNTP"
                     ]
                 }
