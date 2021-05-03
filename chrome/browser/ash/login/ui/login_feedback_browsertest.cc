@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -43,16 +45,25 @@ void TestFeedback() {
   base::RunLoop run_loop;
   login_feedback->Request("Test feedback", run_loop.QuitClosure());
 
-  extensions::AppWindow* feedback_window =
-      apps::AppWindowWaiter(extensions::AppWindowRegistry::Get(profile),
-                            extension_misc::kFeedbackExtensionId)
-          .WaitForShown();
-  ASSERT_NE(nullptr, feedback_window);
-  EXPECT_FALSE(feedback_window->is_hidden());
+  if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
+    FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
+    ASSERT_NE(nullptr, feedback_dialog);
+    EXPECT_TRUE(feedback_dialog->GetWidget()->IsVisible());
+    EXPECT_TRUE(feedback_dialog->GetWidget()->IsActive());
 
-  EXPECT_TRUE(feedback_window->GetBaseWindow()->IsActive());
+    feedback_dialog->GetWidget()->Close();
+  } else {
+    extensions::AppWindow* feedback_window =
+        apps::AppWindowWaiter(extensions::AppWindowRegistry::Get(profile),
+                              extension_misc::kFeedbackExtensionId)
+            .WaitForShown();
+    ASSERT_NE(nullptr, feedback_window);
+    EXPECT_FALSE(feedback_window->is_hidden());
 
-  feedback_window->GetBaseWindow()->Close();
+    EXPECT_TRUE(feedback_window->GetBaseWindow()->IsActive());
+
+    feedback_window->GetBaseWindow()->Close();
+  }
   run_loop.Run();
 }
 

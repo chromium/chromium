@@ -39,6 +39,11 @@ using extensions::api::feedback_private::FeedbackInfo;
 FeedbackDialog* FeedbackDialog::current_instance_ = nullptr;
 
 // static
+FeedbackDialog* FeedbackDialog::GetInstanceForTest() {
+  return current_instance_;
+}
+
+// static
 void FeedbackDialog::CreateOrShow(
     const extensions::api::feedback_private::FeedbackInfo& info) {
   // Focus the window hosting the dialog that has already been created.

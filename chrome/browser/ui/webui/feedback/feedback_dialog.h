@@ -10,11 +10,8 @@
 #include <vector>
 
 #include "extensions/common/api/feedback_private.h"
+#include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
-
-namespace views {
-class Widget;
-}
 
 class FeedbackDialog : public ui::WebDialogDelegate {
  public:
@@ -28,6 +25,9 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   // Show this web dialog
   void Show() const;
   views::Widget* GetWidget() const;
+
+  // Use for test. It could return a nullptr.
+  static FeedbackDialog* GetInstanceForTest();
 
  private:
   explicit FeedbackDialog(
