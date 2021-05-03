@@ -23,6 +23,8 @@ class ASH_EXPORT BatteryNotification {
       PowerNotificationController::NotificationState notification_state);
   ~BatteryNotification();
 
+  static const char kNotificationId[];
+
   // Updates the notification if it still exists.
   void Update(
       PowerNotificationController::NotificationState notification_state);

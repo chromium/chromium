@@ -246,11 +246,11 @@ TEST_F(DetachableBaseNotificationControllerTest, NotificationOnUpdateRequired) {
 TEST_F(DetachableBaseNotificationControllerTest,
        NotificationOnUpdateRequiredBeforeLogin) {
   // Update requirement detected before login - expect the update required
-  // notification to be shown.
+  // notification to be hidden.
   detachable_base_handler()->BaseFirmwareUpdateNeeded();
-  EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
+  EXPECT_FALSE(IsBaseRequiresUpdateNotificationVisible());
 
-  // Login, expect the notification to still be there.
+  // Login, expect the notification to be shown.
   CreateUserSessions(1);
   EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
 

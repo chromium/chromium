@@ -27,7 +27,6 @@ namespace ash {
 
 namespace {
 
-const char kBatteryNotificationId[] = "battery";
 const char kNotifierBattery[] = "ash.battery";
 
 const gfx::VectorIcon& GetBatteryImageMD(
@@ -96,8 +95,9 @@ std::unique_ptr<Notification> CreateNotification(
     message = message + u"\n" + time_message;
 
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kBatteryNotificationId,
-      std::u16string(), message, std::u16string(), GURL(),
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      BatteryNotification::kNotificationId, std::u16string(), message,
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierBattery),
       message_center::RichNotificationData(), nullptr,
@@ -113,6 +113,9 @@ std::unique_ptr<Notification> CreateNotification(
 
 }  // namespace
 
+// static
+const char BatteryNotification::kNotificationId[] = "battery";
+
 BatteryNotification::BatteryNotification(
     MessageCenter* message_center,
     PowerNotificationController::NotificationState notification_state)
@@ -121,14 +124,14 @@ BatteryNotification::BatteryNotification(
 }
 
 BatteryNotification::~BatteryNotification() {
-  if (message_center_->FindVisibleNotificationById(kBatteryNotificationId))
-    message_center_->RemoveNotification(kBatteryNotificationId, false);
+  if (message_center_->FindVisibleNotificationById(kNotificationId))
+    message_center_->RemoveNotification(kNotificationId, false);
 }
 
 void BatteryNotification::Update(
     PowerNotificationController::NotificationState notification_state) {
-  if (message_center_->FindVisibleNotificationById(kBatteryNotificationId)) {
-    message_center_->UpdateNotification(kBatteryNotificationId,
+  if (message_center_->FindVisibleNotificationById(kNotificationId)) {
+    message_center_->UpdateNotification(kNotificationId,
                                         CreateNotification(notification_state));
   }
 }

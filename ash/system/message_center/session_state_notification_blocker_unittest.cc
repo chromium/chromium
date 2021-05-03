@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/session/test_session_controller_client.h"
+#include "ash/system/power/battery_notification.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -58,9 +59,9 @@ class SessionStateNotificationBlockerTest
 
   bool ShouldShowNotification(const message_center::NotifierId& notifier_id) {
     message_center::Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "chromeos-id",
-        u"chromeos-title", u"chromeos-message", gfx::Image(),
-        u"chromeos-source", GURL(), notifier_id,
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
+        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -85,6 +86,12 @@ class SessionStateNotificationBlockerTest
   }
 
  private:
+  std::string GetNotificationId(const message_center::NotifierId& notifier_id) {
+    return notifier_id.id == kNotifierSystemPriority
+               ? BatteryNotification::kNotificationId
+               : "chromeos-id";
+  }
+
   int state_changed_count_ = 0;
   std::unique_ptr<message_center::NotificationBlocker> blocker_;
 
@@ -98,26 +105,31 @@ TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, "test-notifier");
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Login screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
   SimulateUserLogin("user@test.com");
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
+  EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Lock.
   SetLockedState(true);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Unlock.
   SetLockedState(false);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
 TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
@@ -129,26 +141,31 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Login screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Logged in as a normal user.
   SimulateUserLogin("user@test.com");
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
+  EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Lock.
   SetLockedState(true);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   // Unlock.
   SetLockedState(false);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
 TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
@@ -195,9 +212,11 @@ TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
+  EXPECT_FALSE(ShouldShowNotification(notifier_id));
 }
 
 TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {

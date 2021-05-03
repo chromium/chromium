@@ -215,7 +215,7 @@ class NightLightTest : public NoSessionAshTestBase {
     CreateTestUserSessions();
 
     // Simulate user 1 login.
-    SwitchActiveUser(kUser1Email);
+    SimulateNewUserFirstLogin(kUser1Email);
 
     // Start with ambient color pref disabled.
     SetAmbientColorPrefEnabled(false);
@@ -1717,6 +1717,7 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   EXPECT_TRUE(controller->GetAutoNightLightNotificationForTesting());
 }
 TEST_F(AutoNightLightTest, CannotDisableNotificationWhenSessionIsBlocked) {
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   EXPECT_TRUE(Shell::Get()->session_controller()->IsUserSessionBlocked());
 
   // Simulate reaching sunset.

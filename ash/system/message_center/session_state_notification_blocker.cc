@@ -7,6 +7,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/power/battery_notification.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -28,7 +29,18 @@ bool CalculateShouldShowNotification() {
   SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
-  return !session_controller->IsRunningInAppMode();
+  SessionState state = session_controller->GetSessionState();
+  static const SessionState kNotificationBlockedStates[] = {
+      SessionState::OOBE, SessionState::LOGIN_PRIMARY,
+      SessionState::LOGIN_SECONDARY, SessionState::LOGGED_IN_NOT_ACTIVE};
+
+  // Do not show notifications in kiosk mode or before session starts.
+  if (session_controller->IsRunningInAppMode() ||
+      base::Contains(kNotificationBlockedStates, state)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool CalculateShouldShowPopup() {
@@ -85,6 +97,13 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
       login_delay_timer_.IsRunning()) {
     return false;
   }
+
+  // Never show notifications in kiosk mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+    return false;
+
+  if (notification.id() == BatteryNotification::kNotificationId)
+    return true;
 
   return should_show_notification_;
 }
