@@ -331,11 +331,6 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(NSString*)identifier
                       completionHandler:(void (^)(void))completionHandler {
-  if (_appState.initStage <= InitStageSafeMode)
-    return;
-  // This initialization to BACKGROUND stage may not be necessary, but is
-  // preserved in case somewhere there is a dependency on this.
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_BACKGROUND];
   completionHandler();
 }
 
