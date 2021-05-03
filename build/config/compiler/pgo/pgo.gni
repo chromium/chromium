@@ -15,7 +15,8 @@ declare_args() {
   if (is_official_build &&
       # TODO(crbug.com/1052397): Remove chromeos_is_browser_only once
       # target_os switch for lacros-chrome is completed.
-      (is_mac || (is_linux && !chromeos_is_browser_only && !is_chromecast))) {
+      (is_win || is_mac ||
+       (is_linux && !chromeos_is_browser_only && !is_chromecast))) {
     chrome_pgo_phase = 2
   }
 
