@@ -133,7 +133,7 @@ crbug.com/856601 [ Linux ] fast/forms/color/color-picker-manual-color-change-inv
 crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.tentative.any.serviceworker.html [ Pass Timeout ]
 
 # Sheriff 2020-01-10
-crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filters/offscreencanvas.filter.w.html [ Timeout ]
+crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Timeout ]
 crbug.com/1041052 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Timeout ]
 
 # Sheriff 2020-02-10
