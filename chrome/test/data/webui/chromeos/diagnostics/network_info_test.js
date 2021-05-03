@@ -54,4 +54,11 @@ export function networkInfoTestSuite() {
       assertTrue(!!ethernetInfoElement);
     });
   });
+
+  test('CellularInfoPresent', () => {
+    return initializeNetworkInfo().then(() => {
+      const cellularInfoElement = networkInfoElement.$$('cellular-info');
+      assertTrue(!!cellularInfoElement);
+    });
+  });
 }

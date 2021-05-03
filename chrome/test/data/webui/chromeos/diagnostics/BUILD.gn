@@ -55,6 +55,14 @@ js_library("battery_status_card_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("cellular_info_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:cellular_info",
+  ]
+}
+
 js_library("connectivity_card_test") {
   deps = [
     "../..:chai_assert",

@@ -47,6 +47,7 @@ this['DiagnosticsApp'] = class extends PolymerTest {
 const debug_suites_list = [
   'App',
   'BatteryStatusCard',
+  'CellularInfo',
   'ConnectivityCard',
   'CpuCard',
   'DataPoint',
