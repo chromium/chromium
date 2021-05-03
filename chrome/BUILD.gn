@@ -1791,9 +1791,7 @@ if (is_chromeos_ash) {
     buildtype = "dev"
     arch = "64bit"
     files_file = "//chrome/tools/build/chromeos/FILES.cfg"
-
-    # TODO(crbug.com/1196133): Change to an official location when it's ready.
-    package = "experimental/svenzheng_at_google.com/chromium/testing/linux-ash-chromium/x86_64/ash.zip"
+    package = "chromium/testing/linux-ash-chromium/x86_64/ash.zip"
     description = "Prebuilt test binary."
     install_mode = "copy"
     deps = [ ":chrome" ]
