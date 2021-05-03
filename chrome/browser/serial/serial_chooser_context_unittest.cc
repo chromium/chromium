@@ -577,19 +577,19 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrlsDescriptionStrings) {
   auto unknown_vendor_objects = context()->GetGrantedObjects(
       url::Origin::Create(GURL("https://unknown-vendor.com")));
   EXPECT_EQ(1u, unknown_vendor_objects.size());
-  EXPECT_EQ(u"USB devices from vendor 0x18D2",
+  EXPECT_EQ(u"USB devices from vendor 18D2",
             context()->GetObjectDisplayName(unknown_vendor_objects[0]->value));
 
   auto unknown_product_objects = context()->GetGrantedObjects(
       url::Origin::Create(GURL("https://unknown-product.google.com")));
   EXPECT_EQ(1u, unknown_product_objects.size());
-  EXPECT_EQ(u"USB devices with product ID 0x162E from Google Inc.",
+  EXPECT_EQ(u"USB device from Google Inc. (product 162E)",
             context()->GetObjectDisplayName(unknown_product_objects[0]->value));
 
   auto unknown_product_and_vendor_objects = context()->GetGrantedObjects(
       url::Origin::Create(GURL("https://unknown-product.unknown-vendor.com")));
   EXPECT_EQ(1u, unknown_product_and_vendor_objects.size());
-  EXPECT_EQ(u"USB devices with product ID 0x162E from vendor 0x18D2",
+  EXPECT_EQ(u"USB device (18D2:162E)",
             context()->GetObjectDisplayName(
                 unknown_product_and_vendor_objects[0]->value));
 }

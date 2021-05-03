@@ -10427,13 +10427,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Finding serial devices...
       </message>
       <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME" desc="String describing a USB device permission granted by enterprise policy to a site when the vendor name is available by a numeric product ID must be used.">
-        USB devices with product ID <ph name="PRODUCT_ID">$1<ex>0x12AB</ex></ph> from <ph name="VENDOR_NAME">$2<ex>Google</ex></ph>
+        USB device from <ph name="VENDOR_NAME">$2<ex>Google</ex></ph> (product <ph name="PRODUCT_ID">$1<ex>0x12AB</ex></ph>)
       </message>
       <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID" desc="String describing a USB device permission granted by enterprise policy to a site when only the numeric product ID and vendor ID are available.">
-        USB devices with product ID <ph name="PRODUCT_ID">$1<ex>0x12AB</ex></ph> from vendor <ph name="VENDOR_ID">$2<ex>0x12AB</ex></ph>
+        USB device (<ph name="VENDOR_ID">$2<ex>12AB</ex></ph>:<ph name="PRODUCT_ID">$1<ex>12AB</ex></ph>)
       </message>
       <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID" desc="String describing a USB device permission granted by enterprise policy to a site for all devices from a single vendor when only the numeric vendor ID is available.">
-        USB devices from vendor <ph name="VENDOR_ID">$1<ex>123</ex></ph>
+        USB devices from vendor <ph name="VENDOR_ID">$1<ex>12AB</ex></ph>
       </message>
       <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME" desc="String describing a USB device permission granted by enterprise policy to a site for all devices from a single vendor.">
         USB devices from <ph name="VENDOR_NAME">$1<ex>Google</ex></ph>

@@ -588,8 +588,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
   EXPECT_EQ(4u, children.size());
 
   views::Label* label = static_cast<views::Label*>(children[1]);
-  EXPECT_EQ(u"USB devices with product ID 0x162E from Google Inc.",
-            label->GetText());
+  EXPECT_EQ(u"USB device from Google Inc. (product 162E)", label->GetText());
 
   views::Button* button = static_cast<views::Button*>(children[2]);
   EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);

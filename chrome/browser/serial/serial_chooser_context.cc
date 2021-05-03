@@ -104,15 +104,15 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME,
-              base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
+              base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
               base::UTF8ToUTF16(vendor_name)));
     } else {
       object.SetStringKey(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID,
-              base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
-              base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id))));
+              base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
+              base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
     }
   }
   return object;
@@ -131,7 +131,7 @@ base::Value VendorIdToValue(uint16_t vendor_id) {
         kPortNameKey,
         l10n_util::GetStringFUTF16(
             IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
-            base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id))));
+            base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
   }
   return object;
 }
