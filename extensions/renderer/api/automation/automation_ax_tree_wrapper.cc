@@ -187,6 +187,14 @@ bool AutomationAXTreeWrapper::IsDesktopTree() const {
                       : false;
 }
 
+bool AutomationAXTreeWrapper::HasDeviceScaleFactor() const {
+  return tree_.root() ?
+                      // These are views-backed trees.
+             tree_.root()->data().role != ax::mojom::Role::kDesktop &&
+                 tree_.root()->data().role != ax::mojom::Role::kClient
+                      : true;
+}
+
 bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
   if (tree()->data().focus_id != node_id)
     return false;

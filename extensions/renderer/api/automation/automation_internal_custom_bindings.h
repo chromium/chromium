@@ -160,13 +160,13 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                        const std::string& attribute_name));
   void RouteNodeIDPlusRangeFunction(
       const std::string& name,
-      void (*callback)(v8::Isolate* isolate,
-                       v8::ReturnValue<v8::Value> result,
-                       AutomationAXTreeWrapper* tree_wrapper,
-                       ui::AXNode* node,
-                       int start,
-                       int end,
-                       bool clipped));
+      std::function<void(v8::Isolate* isolate,
+                         v8::ReturnValue<v8::Value> result,
+                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AXNode* node,
+                         int start,
+                         int end,
+                         bool clipped)> callback);
   void RouteNodeIDPlusStringBoolFunction(
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
@@ -177,14 +177,14 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                          bool boolVal)> callback);
   void RouteNodeIDPlusDimensionsFunction(
       const std::string& name,
-      void (*callback)(v8::Isolate* isolate,
-                       v8::ReturnValue<v8::Value> result,
-                       AutomationAXTreeWrapper* tree_wrapper,
-                       ui::AXNode* node,
-                       int start,
-                       int end,
-                       int width,
-                       int height));
+      std::function<void(v8::Isolate* isolate,
+                         v8::ReturnValue<v8::Value> result,
+                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AXNode* node,
+                         int start,
+                         int end,
+                         int width,
+                         int height)> callback);
   void RouteNodeIDPlusEventFunction(
       const std::string& name,
       void (*callback)(v8::Isolate* isolate,
@@ -245,6 +245,18 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       ui::AXNode* node,
       bool start_boundary);
 
+  // Adjust the bounding box of a node from local to global coordinates,
+  // walking up the parent hierarchy to offset by frame offsets and
+  // scroll offsets.
+  // If |clip_bounds| is false, the bounds of the node will not be clipped
+  // to the ancestors bounding boxes if needed. Regardless of clipping, results
+  // are returned in global coordinates.
+  gfx::Rect ComputeGlobalNodeBounds(AutomationAXTreeWrapper* tree_wrapper,
+                                    ui::AXNode* node,
+                                    gfx::RectF local_bounds = gfx::RectF(),
+                                    bool* offscreen = nullptr,
+                                    bool clip_bounds = true) const;
+
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   std::map<ui::AXTree*, AutomationAXTreeWrapper*> axtree_to_tree_wrapper_map_;
@@ -268,6 +280,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   // Keeps track  of the single desktop tree, if it exists.
   ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
+
+  base::Optional<float> device_scale_factor_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationInternalCustomBindings);
 };
