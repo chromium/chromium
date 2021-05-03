@@ -6333,6 +6333,25 @@
             ]
         }
     ],
+    "RequestDesktopSiteForTablets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_768dp",
+                    "params": {
+                        "enabled": "true",
+                        "screen_width_dp": "768"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteForTablets"
+                    ]
+                }
+            ]
+        }
+    ],
     "SCTAuditingPhase1": [
         {
             "platforms": [
