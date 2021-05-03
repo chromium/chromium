@@ -295,8 +295,7 @@ build_id_dir(_build_ids_target) {
     "${root_gen_dir}/fuchsia/runners/cast_runner",
     "${root_gen_dir}/fuchsia/runners/web_runner",
   ]
-  output_path =
-      "${target_gen_dir}/${_debug_symbols_archive_name}/${target_name}"
+  output_path = "${target_gen_dir}/${_debug_symbols_archive_name}"
   deps = [
     "//fuchsia/engine:web_engine",
     "//fuchsia/runners:cast_runner_pkg",
@@ -310,7 +309,7 @@ cipd_archive(_debug_symbols_archive_name) {
   description = "Debugging symbols for prebuilt binaries from Chromium."
 
   deps = [ ":${_build_ids_target}" ]
-  source_directories = [ "${_build_ids_target}" ]
+  source_directories = [ "." ]
 }
 
 cipd_archive("clear_key_cdm") {
