@@ -6,6 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 
 source_set("memory_pressure") {
   sources = [
+    "memory_pressure_level_reporter.cc",
+    "memory_pressure_level_reporter.h",
     "memory_pressure_voter.cc",
     "memory_pressure_voter.h",
     "multi_source_memory_pressure_monitor.cc",
@@ -56,6 +58,7 @@ source_set("unittests") {
   testonly = true
 
   sources = [
+    "memory_pressure_level_reporter_unittest.cc",
     "memory_pressure_voter_unittest.cc",
     "multi_source_memory_pressure_monitor_unittest.cc",
   ]

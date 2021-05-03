@@ -8,6 +8,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/util/memory_pressure/memory_pressure_level_reporter.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
 
 namespace util {
@@ -75,6 +76,8 @@ class MultiSourceMemoryPressureMonitor
 
   // The timestamp of the last pressure change event.
   base::TimeTicks last_pressure_change_timestamp_;
+
+  MemoryPressureLevelReporter level_reporter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

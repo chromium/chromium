@@ -24,8 +24,8 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE),
       dispatch_callback_(base::BindRepeating(
           &base::MemoryPressureListener::NotifyMemoryPressure)),
-      aggregator_(this) {
-}
+      aggregator_(this),
+      level_reporter_(current_pressure_level_) {}
 
 MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
   // Destroy system evaluator early while the remaining members of this class
@@ -86,6 +86,8 @@ void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_pressure_level_, level);
 
+  level_reporter_.OnMemoryPressureLevelChanged(level);
+
   TRACE_EVENT_INSTANT(
       "base", "MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged",
       [&](perfetto::EventContext ctx) {
@@ -94,52 +96,6 @@ void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
         data->set_level(
             base::trace_event::MemoryPressureLevelToTraceEnum(level));
       });
-
-  // Records the duration of the latest pressure session, there are 4
-  // transitions of interest:
-  //   - Moderate -> None
-  //   - Moderate -> Critical
-  //   - Critical -> Moderate
-  //   - Critical -> None
-
-  base::TimeTicks now = base::TimeTicks::Now();
-
-  if (current_pressure_level_ !=
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
-    DCHECK(!last_pressure_change_timestamp_.is_null());
-    std::string histogram_name = "Memory.PressureWindowDuration.";
-    switch (current_pressure_level_) {
-      // From:
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE: {
-        // To:
-        if (level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
-          histogram_name += "ModerateToNone";
-        } else {  // MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL
-          histogram_name += "ModerateToCritical";
-        }
-        break;
-      }
-      // From:
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL: {
-        // To:
-        if (level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
-          histogram_name += "CriticalToNone";
-        } else {  // MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE
-          histogram_name += "CriticalToModerate";
-        }
-        break;
-      }
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE:
-      default:
-        break;
-    }
-
-    base::UmaHistogramCustomTimes(
-        histogram_name, now - last_pressure_change_timestamp_,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(10), 50);
-  }
-
-  last_pressure_change_timestamp_ = now;
 
   current_pressure_level_ = level;
 }

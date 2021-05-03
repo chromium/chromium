@@ -2340,6 +2340,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.PressureLevel2" enum="MemoryPressureLevel"
+    expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time spent in each memory pressure state, in seconds. Recorded when the
+    memory pressure state changes, at shutdown, or when it hasn't been recorded
+    in the last 5 minutes.
+
+    The values from this histogram shouldn't be used directly, users of this
+    metric should look at the percentage of samples in each bucket to understand
+    the average time that Chrome spend in each pressure state.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PressureLevelChanges" enum="MemoryPressureLevelChanges"
     expires_after="M85">
   <owner>chrisha@chromium.org</owner>
