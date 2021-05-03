@@ -20,7 +20,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
     const mockFeedback = this.createMockFeedback();
     chrome.automation.getDesktop((desktop) => {
       desktop.addEventListener(
-          chrome.automation.EventType.LOAD_COMPLETE, (evt) => {
+          EventType.LOAD_COMPLETE, (evt) => {
             if (evt.target.docUrl.indexOf('options/options.html') === -1 ||
                 !evt.target.docLoaded) {
               return;
@@ -42,10 +42,8 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
 
 TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
   this.runOnOptionsPage((mockFeedback, evt) => {
-    const numberStyleSelect = evt.target.find({
-      role: chrome.automation.RoleType.POP_UP_BUTTON,
-      attributes: {name: 'Read numbers as:'}
-    });
+    const numberStyleSelect = evt.target.find(
+        {role: RoleType.POP_UP_BUTTON, attributes: {name: 'Read numbers as:'}});
     assertNotNullNorUndefined(numberStyleSelect);
     mockFeedback.call(numberStyleSelect.focus.bind(numberStyleSelect))
         .expectSpeech('Read numbers as:', 'Words', 'Collapsed')
@@ -78,7 +76,7 @@ TEST_F(
         const PUNCTUATION_ECHO_SOME = '1';
         const PUNCTUATION_ECHO_ALL = '2';
         const punctuationEchoSelect = evt.target.find({
-          role: chrome.automation.RoleType.POP_UP_BUTTON,
+          role: RoleType.POP_UP_BUTTON,
           attributes: {name: 'Punctuation echo:'}
         });
         assertNotNullNorUndefined(punctuationEchoSelect);
@@ -122,7 +120,7 @@ TEST_F(
 TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', function() {
   this.runOnOptionsPage((mockFeedback, evt) => {
     const smartStickyModeCheckbox = evt.target.find({
-      role: chrome.automation.RoleType.CHECK_BOX,
+      role: RoleType.CHECK_BOX,
       attributes:
           {name: 'Turn off sticky mode when editing text (Smart Sticky Mode)'}
     });
@@ -153,14 +151,14 @@ TEST_F(
     'ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', function() {
       this.runOnOptionsPage((mockFeedback, evt) => {
         const pitchChangesCheckbox = evt.target.find({
-          role: chrome.automation.RoleType.CHECK_BOX,
+          role: RoleType.CHECK_BOX,
           attributes: {
             name: 'Change pitch when speaking element types and quoted, ' +
                 'deleted, bolded, parenthesized, or capitalized text.'
           }
         });
         const capitalStrategySelect = evt.target.find({
-          role: chrome.automation.RoleType.POP_UP_BUTTON,
+          role: RoleType.POP_UP_BUTTON,
           attributes: {name: 'When reading capitals:'}
         });
         assertNotNullNorUndefined(pitchChangesCheckbox);
@@ -189,7 +187,7 @@ TEST_F(
 
               // Open the menu first in order to assert this.
               // const increasePitchOption = evt.target.find({
-              //  role: chrome.automation.RoleType.MENU_LIST_OPTION,
+              //  role: RoleType.MENU_LIST_OPTION,
               //  attributes: {name: 'Increase pitch'}
               //});
               // assertNotNullNorUndefined(increasePitchOption);
@@ -213,7 +211,7 @@ TEST_F(
 
               // Open the menu first in order to assert this.
               // const increasePitchOption = evt.target.find({
-              //  role: chrome.automation.RoleType.MENU_LIST_OPTION,
+              //  role: RoleType.MENU_LIST_OPTION,
               //  attributes: {name: 'Increase pitch'}
               //});
               // assertNotNullNorUndefined(increasePitchOption);
