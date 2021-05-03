@@ -3878,6 +3878,21 @@
             ]
         }
     ],
+    "IOSSharedHighlightingColorChange": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSSharedHighlightingColorChange"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [
@@ -7247,6 +7262,25 @@
                     "name": "Enabled_20191216",
                     "enable_features": [
                         "TextFragmentAnchor"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TextFragmentColorChange": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TextFragmentColorChange"
                     ]
                 }
             ]
