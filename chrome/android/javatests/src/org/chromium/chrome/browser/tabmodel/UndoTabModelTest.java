@@ -732,6 +732,7 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
+    @DisabledTest(message = "https://crbug.com/1196572")
     public void testReverseOrderRestore() throws TimeoutException {
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
