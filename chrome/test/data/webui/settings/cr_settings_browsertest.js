@@ -148,6 +148,13 @@ TEST_F(
           .grep(languages_subpage_details_tests.TestNames.AlwaysTranslateDialog)
           .run();
     });
+
+TEST_F(
+    'CrSettingsLanguagesSubpageDetailedV3Test', 'NeverTranslateDialog',
+    function() {
+      mocha.grep(languages_subpage_details_tests.TestNames.NeverTranslateDialog)
+          .run();
+    });
 GEN('#endif');
 
 // eslint-disable-next-line no-var
