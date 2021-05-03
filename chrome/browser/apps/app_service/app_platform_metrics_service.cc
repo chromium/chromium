@@ -18,12 +18,12 @@ constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(10);
 
 // Returns the number of days since the origin.
 int GetDayId(base::Time time) {
-  return time.LocalMidnight().since_origin().InDaysFloored();
+  return time.UTCMidnight().since_origin().InDaysFloored();
 }
 
 }  // namespace
 
-const char kAppPlatformMetricsDayId[] = "app_platform_metrics.day_id";
+constexpr char kAppPlatformMetricsDayId[] = "app_platform_metrics.day_id";
 
 AppPlatformMetricsService::AppPlatformMetricsService(Profile* profile)
     : profile_(profile) {
@@ -38,6 +38,7 @@ AppPlatformMetricsService::~AppPlatformMetricsService() {
 void AppPlatformMetricsService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAppPlatformMetricsDayId, 0);
+  registry->RegisterDictionaryPref(kAppRunningDuration);
 }
 
 // static
@@ -46,9 +47,10 @@ int AppPlatformMetricsService::GetDayIdForTesting(base::Time time) {
 }
 
 void AppPlatformMetricsService::Start(
-    apps::AppRegistryCache& app_registry_cache) {
-  app_platform_app_metrics_ =
-      std::make_unique<AppPlatformMetrics>(profile_, app_registry_cache);
+    apps::AppRegistryCache& app_registry_cache,
+    InstanceRegistry& instance_registry) {
+  app_platform_app_metrics_ = std::make_unique<AppPlatformMetrics>(
+      profile_, app_registry_cache, instance_registry);
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();
@@ -61,8 +63,9 @@ void AppPlatformMetricsService::Start(
 void AppPlatformMetricsService::CheckForNewDay() {
   base::Time now = base::Time::Now();
 
-  // The OnNewDay() event can fire sooner or later than 24 hours due to clock or
-  // time zone changes.
+  DCHECK(app_platform_app_metrics_);
+  app_platform_app_metrics_->OnTenMinutes();
+
   if (day_id_ < GetDayId(now)) {
     day_id_ = GetDayId(now);
     app_platform_app_metrics_->OnNewDay();

@@ -460,7 +460,8 @@ void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
 
 void AppServiceProxyChromeOs::InitAppPlatformMetrics() {
   if (app_platform_metrics_service_) {
-    app_platform_metrics_service_->Start(app_registry_cache_);
+    app_platform_metrics_service_->Start(app_registry_cache_,
+                                         instance_registry_);
   }
 }
 

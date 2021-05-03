@@ -16,6 +16,7 @@ class PrefRegistrySimple;
 namespace apps {
 
 class AppRegistryCache;
+class InstanceRegistry;
 
 extern const char kAppPlatformMetricsDayId[];
 
@@ -35,7 +36,8 @@ class AppPlatformMetricsService {
   static int GetDayIdForTesting(base::Time time);
 
   // Start the timer and check if a new day has arrived.
-  void Start(apps::AppRegistryCache& app_registry_cache);
+  void Start(AppRegistryCache& app_registry_cache,
+             InstanceRegistry& instance_registry);
 
  private:
   // Helper function to check if a new day has arrived.
