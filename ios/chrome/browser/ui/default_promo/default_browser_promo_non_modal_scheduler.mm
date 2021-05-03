@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -91,6 +92,20 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 
 - (void)logPopupMenuEntered {
   [self dismissPromoAnimated:YES];
+}
+
+- (void)logUserPerformedPromoAction {
+  if (NonModalPromosInstructionsEnabled()) {
+    id<ApplicationSettingsCommands> handler =
+        HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
+    [handler showDefaultBrowserSettingsFromViewController:nil];
+  } else {
+    NSURL* settingsURL =
+        [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    [[UIApplication sharedApplication] openURL:settingsURL
+                                       options:{}
+                             completionHandler:nil];
+  }
 }
 
 - (void)dismissPromoAnimated:(BOOL)animated {

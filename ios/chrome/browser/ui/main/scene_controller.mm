@@ -1858,6 +1858,26 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                  completion:nil];
 }
 
+- (void)showDefaultBrowserSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  if (!baseViewController) {
+    baseViewController = self.currentInterface.viewController;
+  }
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController
+        showDefaultBrowserSettingsFromViewController:baseViewController];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+
+  self.settingsNavigationController =
+      [SettingsNavigationController defaultBrowserControllerForBrowser:browser
+                                                              delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - UserFeedbackDataSource
 
 - (BOOL)currentPageIsIncognito {

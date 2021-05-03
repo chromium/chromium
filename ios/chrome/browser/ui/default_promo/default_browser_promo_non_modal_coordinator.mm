@@ -7,9 +7,12 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
+#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -70,6 +73,12 @@
   }
 }
 
+// Overrides the superclass's implementation because that requires an
+// infobarDelegate, which this class doesn't have.
+- (void)bannerInfobarButtonWasPressed:(id)sender {
+  [self performInfobarAction];
+}
+
 #pragma mark - InfobarCoordinatorImplementation
 
 - (BOOL)configureModalViewController {
@@ -103,6 +112,11 @@
 
 - (void)performInfobarAction {
   self.infobarAccepted = YES;
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  DefaultBrowserSceneAgent* agent =
+      [DefaultBrowserSceneAgent agentFromScene:sceneState];
+  [agent.nonModalScheduler logUserPerformedPromoAction];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {

@@ -63,6 +63,11 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)showCreditCardSettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the settings page informing the user how to set Chrome as the default
+// browser.
+- (void)showDefaultBrowserSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

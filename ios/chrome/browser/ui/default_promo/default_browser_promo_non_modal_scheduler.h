@@ -42,6 +42,9 @@ class WebStateList;
 // Handles presenting the popup menu, dismissing the promo.
 - (void)logPopupMenuEntered;
 
+// Handles the user performing the promo action.
+- (void)logUserPerformedPromoAction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_
