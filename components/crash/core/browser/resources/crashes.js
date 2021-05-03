@@ -178,7 +178,7 @@ function fileBug(crashId, os, version) {
     // TODO(scottmg): Use add_labels to add 'User-Submitted' rather than
     // duplicating the template's labels (the first two) once
     // https://bugs.chromium.org/p/monorail/issues/detail?id=1488 is done.
-    labels: 'Restrict-View-EditIssue,Stability-Crash,User-Submitted',
+    labels: 'Restrict-View-EditIssue,Stability-Crash,User-Submitted,Pri-3,Type-Bug',
   };
   let href = 'https://bugs.chromium.org/p/chromium/issues/entry';
   for (const param in params) {
