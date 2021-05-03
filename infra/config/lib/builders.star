@@ -59,6 +59,10 @@ os = struct(
     ANDROID = os_enum("Android", os_category.ANDROID),
     LINUX_TRUSTY = os_enum("Ubuntu-14.04", os_category.LINUX),
     LINUX_XENIAL = os_enum("Ubuntu-16.04", os_category.LINUX),
+    LINUX_XENIAL_OR_BIONIC = os_enum(
+        "Ubuntu-16.04|Ubuntu-18.04",
+        os_category.LINUX,
+    ),
     LINUX_BIONIC = os_enum("Ubuntu-18.04", os_category.LINUX),
     LINUX_DEFAULT = os_enum("Ubuntu-16.04", os_category.LINUX),
     MAC_10_12 = os_enum("Mac-10.12", os_category.MAC),
