@@ -294,7 +294,7 @@ Polymer({
         this.subpageType_ = OncMojo.getNetworkTypeFromString(type);
       }
 
-      if (queryParams.get('showCellularSetup') === 'true') {
+      if (!oldRoute && queryParams.get('showCellularSetup') === 'true') {
         const pageName = queryParams.get('showPsimFlow') === 'true' ?
             cellularSetup.CellularSetupPageName.PSIM_FLOW_UI :
             cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
@@ -305,7 +305,8 @@ Polymer({
         this.pendingShowCellularSetupDialogAttemptPageName_ = pageName;
       }
 
-      this.showSimLockDialog_ = !!queryParams.get('showSimLockDialog') &&
+      this.showSimLockDialog_ = !oldRoute &&
+          !!queryParams.get('showSimLockDialog') &&
           this.subpageType_ === mojom.NetworkType.kCellular &&
           loadTimeData.getBoolean('updatedCellularActivationUi');
     } else if (route === settings.routes.KNOWN_NETWORKS) {

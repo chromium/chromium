@@ -75,8 +75,13 @@ suite('InternetPage', function() {
     if (showPSimFlow) {
       params.append('showPsimFlow', 'true');
     }
+
+    // Pretend that we initially started on the INTERNET_NETWORKS route with the
+    // params.
     settings.Router.getInstance().navigateTo(
         settings.routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(
+        settings.routes.INTERNET_NETWORKS, undefined);
 
     // Update the device state here to trigger an
     // attemptShowCellularSetupDialog_() call.
@@ -488,8 +493,13 @@ suite('InternetPage', function() {
     params.append(
         'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
     params.append('showSimLockDialog', true);
+
+    // Pretend that we initially started on the INTERNET_NETWORKS route with the
+    // params.
     settings.Router.getInstance().navigateTo(
         settings.routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(
+        settings.routes.INTERNET_NETWORKS, undefined);
 
     await flushAsync();
 
