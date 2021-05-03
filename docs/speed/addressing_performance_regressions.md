@@ -18,6 +18,8 @@ Each test has an owner, named in
 [this spreadsheet](https://docs.google.com/spreadsheets/d/1xaAo0_SU3iDfGdqDJZX_jRV0QtkufwHUKH3kQKF3YQs/edit#gid=0),
 who you can cc on a performance bug if you have questions.
 
+(Googlers only) For broad overview of various performance tools available for Chrome and where lab perf fits in, see [go/chrome-performance-how](http://go/chrome-performance-how).
+
 ## Understanding the bisect results
 
 ### The bug comment
