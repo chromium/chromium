@@ -16,6 +16,7 @@ class SelectorFilterParentScopeTest : public testing::Test {
  protected:
   void SetUp() override {
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
   }
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
@@ -29,6 +30,8 @@ class SelectorFilterParentScopeTest : public testing::Test {
 TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   GetDocument().body()->setAttribute(html_names::kClassAttr, "match");
   GetDocument().documentElement()->SetIdAttribute("myId");
+  auto* div = GetDocument().CreateRawElement(html_names::kDivTag);
+  GetDocument().body()->appendChild(div);
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
@@ -37,19 +40,24 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   {
     SelectorFilterParentScope body_scope(*GetDocument().body());
     SelectorFilterParentScope::EnsureParentStackIsPushed();
+    {
+      SelectorFilterParentScope div_scope(*div);
+      SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-    CSSSelectorList selectors = CSSParser::ParseSelector(
-        MakeGarbageCollected<CSSParserContext>(
-            kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, "html, body, .match, #myId");
+      CSSSelectorList selectors = CSSParser::ParseSelector(
+          MakeGarbageCollected<CSSParserContext>(
+              kHTMLStandardMode, SecureContextMode::kInsecureContext),
+          nullptr, "html *, body *, .match *, #myId *");
 
-    for (const CSSSelector* selector = selectors.First(); selector;
-         selector = CSSSelectorList::Next(*selector)) {
-      unsigned selector_hashes[max_identifier_hashes];
-      filter.CollectIdentifierHashes(*selector, selector_hashes,
-                                     max_identifier_hashes);
-      EXPECT_FALSE(
-          filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+      for (const CSSSelector* selector = selectors.First(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        unsigned selector_hashes[max_identifier_hashes];
+        filter.CollectIdentifierHashes(*selector, selector_hashes,
+                                       max_identifier_hashes);
+        EXPECT_NE(selector_hashes[0], 0u);
+        EXPECT_FALSE(
+            filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+      }
     }
   }
 }
@@ -69,13 +77,14 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   CSSSelectorList selectors = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      nullptr, "html, body, div, span, .x, #y");
+      nullptr, "html *, body *, div *, span *, .x *, #y *");
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     unsigned selector_hashes[max_identifier_hashes];
     filter.CollectIdentifierHashes(*selector, selector_hashes,
                                    max_identifier_hashes);
+    EXPECT_NE(selector_hashes[0], 0u);
     EXPECT_FALSE(
         filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
   }
