@@ -107,9 +107,11 @@ void WaylandWindow::UpdateBufferScale(bool update_bounds) {
 
   auto* output =
       connection_->wayland_output_manager()->GetOutput(preferred_outputs_id);
-  // Sanity check. WaylandConnection always waits for at least one output to
-  // become ready. See WaylandConnection::Initialize.
-  DCHECK(output);
+  // There can be a race between sending leave output event and destroying
+  // wl_outputs. Thus, explicitly check if the output exist.
+  if (!output)
+    return;
+
   int32_t new_scale = output->scale_factor();
   ui_scale_ = output->GetUIScaleFactor();
 
