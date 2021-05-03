@@ -241,9 +241,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(kCallbackId, callback_id);
 
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2()->GetBool());
 
     const base::DictionaryValue* default_value = nullptr;
     ASSERT_TRUE(data.arg3()->GetAsDictionary(&default_value));
@@ -271,9 +270,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     std::string callback_id;
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(kCallbackId, callback_id);
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2()->GetBool());
 
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
@@ -307,9 +305,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(kCallbackId, callback_id);
 
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2()->GetBool());
 
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
@@ -328,9 +325,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(kCallbackId, callback_id);
 
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2()->GetBool());
 
     const base::DictionaryValue* result = nullptr;
     ASSERT_TRUE(data.arg3()->GetAsDictionary(&result));
@@ -355,9 +351,8 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ("onIncognitoStatusChanged", callback_id);
 
-    bool incognito;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&incognito));
-    EXPECT_EQ(expected_incognito, incognito);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_EQ(expected_incognito, data.arg2()->GetBool());
   }
 
   void ValidateZoom(const std::string& expected_host,

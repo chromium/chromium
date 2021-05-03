@@ -91,9 +91,8 @@ TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
   ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
   EXPECT_EQ(kCallbackId, callback_id);
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
@@ -111,13 +110,11 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
   ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
   EXPECT_EQ(kCallbackId, callback_id);
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 
-  bool is_valid = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&is_valid));
-  EXPECT_TRUE(is_valid);
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_TRUE(data.arg3()->GetBool());
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
@@ -135,13 +132,11 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
   ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
   EXPECT_EQ(kCallbackId, callback_id);
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 
-  bool is_valid = false;
-  ASSERT_TRUE(data.arg3()->GetAsBoolean(&is_valid));
-  EXPECT_FALSE(is_valid);
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
 }
 
 }  // namespace settings
