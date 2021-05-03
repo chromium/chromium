@@ -204,6 +204,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3131206671572504478">Block all</translation>
+<translation id="313283613037595347">Create new Incognito tab.</translation>
 <translation id="3153862085237805241">Save Card</translation>
 <translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
@@ -498,6 +499,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
+<translation id="6232329973559504466">Incognito search</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
@@ -562,6 +564,9 @@ Try to use a unique password for every site.</translation>
 <translation id="6656103420185847513">Edit Folder</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6668619169535738264">Edit bookmark</translation>
+<translation id="6672241253012342409">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
+
+While in Incognito, sites can't use cookies to see your browsing activity across different sites; for example, to personalise ads.</translation>
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Manage synced data on Google Dashboard</translation>
@@ -573,6 +578,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6785453220513215166">Sending crash report...</translation>
 <translation id="6797885426782475225">Voice Search</translation>
+<translation id="6801927553864092214">To browse privately, open an Incognito tab</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -715,6 +721,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
+<translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
 <translation id="83100941411593607">Sign-in is disabled</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>

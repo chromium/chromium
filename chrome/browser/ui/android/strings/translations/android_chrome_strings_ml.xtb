@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യാൻ, "അക്കൗണ്ട് മാനേജ് ചെയ്യുക" ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1549000191223877751">മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
+<translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1569387923882100876">കണക്റ്റ് ചെയ്‌തിരിക്കുന്ന ഉപകരണം</translation>
 <translation id="1571304935088121812">ഉപയോക്തൃനാമം പകർത്തുക</translation>
 <translation id="1592864538817356322">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2518590038762162553">ലൈറ്റ് മോഡിൽ Chrome, പേജുകൾ വേഗത്തിൽ ലോഡ് ചെയ്യുകയും 60 ശതമാനം വരെ കുറവ് ഡാറ്റ ഉപയോഗിക്കുകയും ചെയ്യുന്നു. നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകൾ ഓപ്‌റ്റിമൈസ് ചെയ്യാൻ Chrome നിങ്ങളുടെ വെബ് ട്രാഫിക് Google-ന് അയയ്ക്കുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Google-ൽ നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ അയയ്ക്കുന്നു</translation>
+<translation id="2527497042232966453">അദൃശ്യ ടാബുകളിലേക്ക് മാറി</translation>
 <translation id="2527779675047087889">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ മറയ്ക്കുക</translation>
 <translation id="2532336938189706096">വെബ് കാഴ്‌ച</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കി</translation>
@@ -424,11 +426,13 @@
 <translation id="3810838688059735925">വീഡിയോ</translation>
 <translation id="3810973564298564668">മാനേജ് ചെയ്യുക</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ ഇല്ലാതാക്കി</translation>
+<translation id="3845098929839618392">അദൃശ്യ ടാബിൽ തുറക്കുക</translation>
 <translation id="3856096718352044181">ഇത് സാധുതയുള്ളൊരു ദാതാവാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക അല്ലെങ്കിൽ പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3861633093716975811">ജനപ്രിയ വീഡിയോകൾ</translation>
 <translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="3894427358181296146">ഫോൾഡർ ചേർക്കുക</translation>
 <translation id="3895926599014793903">നിർബന്ധിത സൂം പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="3899682235662194879">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കുക</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3912508018559818924">വെബിൽ നിന്നുള്ള ഏറ്റവും മികച്ചത് കണ്ടെത്തുന്നു…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ഓണാണ്</translation>
@@ -482,6 +486,7 @@
 <translation id="4263656433980196874">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പൂർണ്ണ ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="4290281343757112331">പകരം പിന്നീട് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
+<translation id="4296252229500326964">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4298388696830689168">ലിങ്ക് ചെയ്‌ത സൈറ്റുകൾ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">അടിസ്ഥാനങ്ങള്‍</translation>
@@ -573,6 +578,7 @@
 <translation id="4865987431642283918">ഡിഫോൾട്ട് ഉപകരണ ഭാഷ</translation>
 <translation id="4866368707455379617">Chrome-നായി <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല</translation>
 <translation id="4875775213178255010">ഉള്ളടക്ക നിർദ്ദേശങ്ങൾ</translation>
+<translation id="4877678010818027629">അദൃശ്യ മോഡിലേക്ക് പോകുക</translation>
 <translation id="4878404682131129617">പ്രോക്‌സി സെർവർ മുഖേന ഒരു ടണൽ രൂപപ്പെടുത്താനായില്ല</translation>
 <translation id="4880127995492972015">വിവർത്തനം ചെയ്യുക…</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
@@ -899,6 +905,7 @@
 <translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6864459304226931083">ചിത്രം ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
+<translation id="6867400383614725881">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
 <translation id="688738109438487280">നിലവിലുള്ള വിവരങ്ങളെ <ph name="TO_ACCOUNT" /> അക്കൗണ്ടിലേക്ക് ചേർക്കുക</translation>
 <translation id="6891726759199484455">പാസ്‍വേഡ് പകർത്താൻ അൺലോക്ക് ചെയ്യുക</translation>
@@ -914,6 +921,7 @@
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6955535239952325894">മാനേജ് ചെയ്യപ്പെടുന്ന ബ്രൗസറുകളിൽ ഈ ക്രമീകരണം പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="6963766334940102469">ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കുക</translation>
+<translation id="696447261358045621">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="6989267951144302301">ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
