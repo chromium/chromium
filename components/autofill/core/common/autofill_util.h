@@ -62,10 +62,6 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
                              const std::u16string& field_contents,
                              bool case_sensitive);
 
-// Returns true if running on a desktop platform. Any platform that is not
-// Android or iOS is considered desktop.
-bool IsDesktopPlatform();
-
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
 void SetCheckStatus(FormFieldData* form_field_data,

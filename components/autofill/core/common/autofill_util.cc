@@ -117,14 +117,6 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
   return std::u16string::npos;
 }
 
-bool IsDesktopPlatform() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
   return check_status != FormFieldData::CheckStatus::kNotCheckable;
 }
