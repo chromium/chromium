@@ -4,8 +4,6 @@
 
 #include "chrome/installer/setup/setup_util_unittest.h"
 
-#include <aclapi.h>
-#include <sddl.h>
 #include <shlobj.h>
 #include <windows.h>
 
@@ -875,115 +873,6 @@ TEST_F(LegacyCleanupsTest, Do) {
   EXPECT_FALSE(HasAppLauncherVersionKey());
   EXPECT_FALSE(HasInstallExtensionCommand());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-namespace {
-
-constexpr wchar_t kBaseDacl[] = L"D:P(A;;FA;;;WD)";
-constexpr wchar_t kTest1Dacl[] = L"D:PAI(A;;FR;;;AU)(A;;FA;;;WD)";
-constexpr wchar_t kTest2Dacl[] = L"D:PAI(A;;FA;;;BA)(A;;FA;;;AU)(A;;FA;;;WD)";
-
-constexpr wchar_t kBaseDirDacl[] = L"D:P(A;OICI;FA;;;WD)";
-constexpr wchar_t kTest1InheritedDacl[] = L"D:(A;ID;FA;;;WD)";
-constexpr wchar_t kBaseDir2Dacl[] = L"D:PAI(A;OICI;FR;;;AU)(A;OICI;FA;;;WD)";
-constexpr wchar_t kTest2InheritedDacl[] = L"D:AI(A;ID;FR;;;AU)(A;ID;FA;;;WD)";
-
-constexpr wchar_t kNoWriteDacDacl[] = L"D:(D;;WD;;;OW)(A;;FRSD;;;WD)";
-
-constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
-
-struct LocalFreeDeleter {
-  void operator()(void* ptr) const { ::LocalFree(ptr); }
-};
-
-std::wstring GetFileDacl(const base::FilePath& path) {
-  PSECURITY_DESCRIPTOR sd;
-  if (::GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
-                             DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                             nullptr, nullptr, &sd) != ERROR_SUCCESS) {
-    return std::wstring();
-  }
-  auto sd_ptr = std::unique_ptr<void, LocalFreeDeleter>(sd);
-  LPWSTR sddl;
-  if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
-          sd, SDDL_REVISION_1, DACL_SECURITY_INFORMATION, &sddl, nullptr)) {
-    return std::wstring();
-  }
-  auto sddl_ptr = std::unique_ptr<void, LocalFreeDeleter>(sddl);
-  return sddl;
-}
-
-bool CreateWithDacl(const base::FilePath& path,
-                    const wchar_t* sddl,
-                    bool directory) {
-  PSECURITY_DESCRIPTOR sd;
-  if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
-          sddl, SDDL_REVISION_1, &sd, nullptr)) {
-    return false;
-  }
-  auto sd_ptr = std::unique_ptr<void, LocalFreeDeleter>(sd);
-  SECURITY_ATTRIBUTES security_attr = {};
-  security_attr.nLength = sizeof(security_attr);
-  security_attr.lpSecurityDescriptor = sd;
-  if (directory)
-    return !!::CreateDirectory(path.value().c_str(), &security_attr);
-
-  return base::win::ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL,
-                                              0, &security_attr, CREATE_ALWAYS,
-                                              0, nullptr))
-      .IsValid();
-}
-
-}  // namespace
-
-TEST(SetupUtilTest, GrantAccessToPathErrorCase) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath path = temp_dir.GetPath().Append(L"test");
-  EXPECT_FALSE(GrantAccessToPath(path, {kAuthenticatedUsersSid},
-                                 FILE_GENERIC_READ, NO_INHERITANCE));
-  ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
-  EXPECT_TRUE(GrantAccessToPath(path, {kAuthenticatedUsersSid},
-                                FILE_GENERIC_READ, NO_INHERITANCE));
-  EXPECT_FALSE(
-      GrantAccessToPath(path, {L"X-1-2-3"}, FILE_GENERIC_READ, NO_INHERITANCE));
-  path = temp_dir.GetPath().Append(L"test_nowritedac");
-  ASSERT_TRUE(CreateWithDacl(path, kNoWriteDacDacl, false));
-  EXPECT_FALSE(GrantAccessToPath(path, {kAuthenticatedUsersSid},
-                                 FILE_GENERIC_READ, NO_INHERITANCE));
-}
-
-TEST(SetupUtilTest, GrantAccessToPathFile) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath path = temp_dir.GetPath().Append(L"test");
-  ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
-  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
-  EXPECT_TRUE(GrantAccessToPath(path, {kAuthenticatedUsersSid},
-                                FILE_GENERIC_READ, NO_INHERITANCE));
-  EXPECT_EQ(kTest1Dacl, GetFileDacl(path));
-  EXPECT_TRUE(GrantAccessToPath(path, {L"S-1-5-11", L"BA"}, GENERIC_ALL,
-                                NO_INHERITANCE));
-  EXPECT_EQ(kTest2Dacl, GetFileDacl(path));
-}
-
-TEST(SetupUtilTest, GrantAccessToPathDirectory) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath path = temp_dir.GetPath().Append(L"testdir");
-  ASSERT_TRUE(CreateWithDacl(path, kBaseDirDacl, true));
-  EXPECT_EQ(kBaseDirDacl, GetFileDacl(path));
-  base::FilePath file_path = path.Append(L"test");
-  base::File file(file_path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  ASSERT_TRUE(file.IsValid());
-  file.Close();
-  EXPECT_EQ(kTest1InheritedDacl, GetFileDacl(file_path));
-  EXPECT_TRUE(GrantAccessToPath(path, {kAuthenticatedUsersSid},
-                                FILE_GENERIC_READ,
-                                OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE));
-  EXPECT_EQ(kBaseDir2Dacl, GetFileDacl(path));
-  EXPECT_EQ(kTest2InheritedDacl, GetFileDacl(file_path));
 }
 
 }  // namespace installer

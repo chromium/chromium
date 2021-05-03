@@ -6,9 +6,7 @@
 
 #include "chrome/installer/setup/setup_util.h"
 
-#include <aclapi.h>
 #include <objbase.h>
-#include <sddl.h>
 #include <stddef.h>
 #include <windows.h>
 #include <wtsapi32.h>
@@ -20,7 +18,6 @@
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -190,12 +187,6 @@ void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-
-struct LocalFreeDeleter {
-  void operator()(void* ptr) const { ::LocalFree(ptr); }
-};
-
-typedef std::unique_ptr<void, LocalFreeDeleter> LocalFreeUniquePtr;
 
 }  // namespace
 
@@ -833,68 +824,6 @@ void AddUpdateDowngradeVersionItem(HKEY root,
     list->AddDeleteRegValueWorkItem(root, client_state_key, KEY_WOW64_32KEY,
                                     kRegDowngradeVersion);
   }
-}
-
-bool GrantAccessToPath(const base::FilePath& path,
-                       const std::vector<const wchar_t*>& sids,
-                       ACCESS_MASK access_mask,
-                       DWORD inheritance) {
-  DCHECK(!path.empty());
-  if (sids.empty())
-    return true;
-
-  std::wstring object_name = path.value();
-  PSECURITY_DESCRIPTOR sd = nullptr;
-  PACL dacl = nullptr;
-
-  // Get the existing DACL.
-  DWORD error = ::GetNamedSecurityInfo(object_name.c_str(), SE_FILE_OBJECT,
-                                       DACL_SECURITY_INFORMATION, nullptr,
-                                       nullptr, &dacl, nullptr, &sd);
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed getting DACL for path \"" << path.value() << "\"";
-    return false;
-  }
-  LocalFreeUniquePtr sd_ptr(sd);
-
-  std::vector<LocalFreeUniquePtr> sid_lifetime;
-  sid_lifetime.reserve(sids.size());
-  std::vector<EXPLICIT_ACCESS> access_entries(sids.size());
-  auto entries_interator = access_entries.begin();
-  for (const wchar_t* sid : sids) {
-    EXPLICIT_ACCESS& new_access = *entries_interator++;
-    new_access.grfAccessMode = GRANT_ACCESS;
-    new_access.grfAccessPermissions = access_mask;
-    new_access.grfInheritance = inheritance;
-    PSID psid;
-    if (!::ConvertStringSidToSid(sid, &psid))
-      return false;
-    sid_lifetime.emplace_back(psid);
-    ::BuildTrusteeWithSid(&new_access.Trustee, psid);
-  }
-
-  PACL new_dacl = nullptr;
-  error = ::SetEntriesInAcl(access_entries.size(), access_entries.data(), dacl,
-                            &new_dacl);
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed adding ACEs to DACL for path \"" << path.value()
-                 << "\"";
-    return false;
-  }
-  LocalFreeUniquePtr new_dacl_ptr(new_dacl);
-
-  error = ::SetNamedSecurityInfo(&object_name[0], SE_FILE_OBJECT,
-                                 DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                                 new_dacl, nullptr);
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed setting DACL for path \"" << path.value() << "\"";
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace installer

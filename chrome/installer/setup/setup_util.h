@@ -163,13 +163,6 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& new_version,
                                    WorkItemList* list);
 
-// Adds allowed ACE entries to a file or directory |path| from a list of SIDs
-// with allowed |access_mask| and |inheritance| flags.
-bool GrantAccessToPath(const base::FilePath& path,
-                       const std::vector<const wchar_t*>& sids,
-                       ACCESS_MASK access_mask,
-                       DWORD inheritance);
-
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_SETUP_SETUP_UTIL_H_

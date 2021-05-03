@@ -29,6 +29,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
@@ -71,7 +73,6 @@ constexpr wchar_t kChromeInstallFilesCapabilitySid[] =
 constexpr wchar_t kLpacChromeInstallFilesCapabilitySid[] =
     L"S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-"
     L"4240214049-4028510897-3317428798";
-constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
 
 void AddInstallerCopyTasks(const InstallParams& install_params,
                            WorkItemList* install_list) {
@@ -704,17 +705,20 @@ void AddInstallWorkItems(const InstallParams& install_params,
       base::BindOnce(
           [](const base::FilePath& target_path, const base::FilePath& temp_path,
              const CallbackWorkItem& work_item) {
-            std::vector<const wchar_t*> sids = {
-                kChromeInstallFilesCapabilitySid,
-                kLpacChromeInstallFilesCapabilitySid};
-            bool success_target = GrantAccessToPath(
-                target_path, sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-                CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
-            bool success_temp = GrantAccessToPath(
-                temp_path, sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-                CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+            auto sids = base::win::Sid::FromSddlStringVector(
+                {kChromeInstallFilesCapabilitySid,
+                 kLpacChromeInstallFilesCapabilitySid});
+            bool success = false;
+            if (sids) {
+              bool success_target = base::win::GrantAccessToPath(
+                  target_path, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+                  CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+              bool success_temp = base::win::GrantAccessToPath(
+                  temp_path, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+                  CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+              success = success_target && success_temp;
+            }
 
-            bool success = (success_target && success_temp);
             base::UmaHistogramBoolean("Setup.Install.AddAppContainerAce",
                                       success);
             return success;
@@ -735,8 +739,14 @@ void AddInstallWorkItems(const InstallParams& install_params,
             base::BindOnce(
                 [](const base::FilePath& histogram_storage_dir,
                    const CallbackWorkItem& work_item) {
-                  return GrantAccessToPath(
-                      histogram_storage_dir, {kAuthenticatedUsersSid},
+                  auto sid = base::win::Sid::FromKnownSid(
+                      base::win::WellKnownSid::kAuthenticatedUser);
+                  if (!sid)
+                    return false;
+                  std::vector<base::win::Sid> sids;
+                  sids.push_back(std::move(*sid));
+                  return base::win::GrantAccessToPath(
+                      histogram_storage_dir, sids,
                       FILE_GENERIC_READ | FILE_DELETE_CHILD,
                       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
                 },
