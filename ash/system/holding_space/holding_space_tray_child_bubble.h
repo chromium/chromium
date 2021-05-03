@@ -58,7 +58,7 @@ class HoldingSpaceTrayChildBubble : public views::View,
       const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
  protected:
   // Invoked to create the `sections_` for this child bubble.

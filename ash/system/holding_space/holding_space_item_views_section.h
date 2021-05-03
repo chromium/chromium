@@ -63,7 +63,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   // view if, for example, its parent is animating out.
   void OnHoldingSpaceItemsAdded(const std::vector<const HoldingSpaceItem*>&);
   void OnHoldingSpaceItemsRemoved(const std::vector<const HoldingSpaceItem*>&);
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item);
 
   // Removes all holding space item views from this section. This method is
   // expected to only be called:
@@ -73,7 +73,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   void RemoveAllHoldingSpaceItemViews();
 
   // Returns whether this section has a placeholder to show in lieu of item
-  // views when the model contains no finalized items of supported types.
+  // views when the model contains no initialized items of supported types.
   bool has_placeholder() const { return !!placeholder_; }
 
   // Returns the types of holding space items supported by this section.

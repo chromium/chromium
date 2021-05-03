@@ -65,7 +65,7 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
-              OnHoldingSpaceItemFinalized,
+              OnHoldingSpaceItemInitialized,
               (const HoldingSpaceItem* item),
               (override));
 };
@@ -193,9 +193,9 @@ void WaitForItemRemoval(const std::string& item_id) {
 }
 
 // Waits for a holding space item matching the provided `predicate` to be added
-// to the holding space model and finalized. Returns immediately if the item
-// already exists and is finalized.
-void WaitForItemFinalization(
+// to the holding space model and initialized. Returns immediately if the item
+// already exists and is initialized.
+void WaitForItemInitialization(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
   WaitForItemAddition(predicate);
 
@@ -205,7 +205,7 @@ void WaitForItemFinalization(
       [&predicate](const auto& item) { return predicate.Run(item.get()); });
 
   DCHECK(item_it != model->items().end());
-  if (item_it->get()->IsFinalized())
+  if (item_it->get()->IsInitialized())
     return;
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
@@ -214,7 +214,7 @@ void WaitForItemFinalization(
   observer.Observe(model);
 
   base::RunLoop run_loop;
-  ON_CALL(mock, OnHoldingSpaceItemFinalized)
+  ON_CALL(mock, OnHoldingSpaceItemInitialized)
       .WillByDefault([&](const HoldingSpaceItem* item) {
         if (item == item_it->get())
           run_loop.Quit();
@@ -233,10 +233,10 @@ void WaitForItemFinalization(
 }
 
 // Waits for a holding space item with the provided `item_id` to be added to the
-// holding space model and finalized. Returns immediately if the item already
-// exists and is finalized.
-void WaitForItemFinalization(const std::string& item_id) {
-  WaitForItemFinalization(
+// holding space model and initialized. Returns immediately if the item already
+// exists and is initialized.
+void WaitForItemInitialization(const std::string& item_id) {
+  WaitForItemInitialization(
       base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
         return item->id() == item_id;
       }));
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // Verify that holding space model gets restored on resume.
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 
-  WaitForItemFinalization(item_id);
+  WaitForItemInitialization(item_id);
   EXPECT_TRUE(holding_space_model->GetItem(item_id));
 }
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
                        RestoreItemsOnRestart) {
-  WaitForItemFinalization(
+  WaitForItemInitialization(
       base::BindLambdaForTesting([this](const HoldingSpaceItem* item) {
         return item->type() == HoldingSpaceItem::Type::kDownload &&
                item->file_path() == GetPredefinedTestFile(0);

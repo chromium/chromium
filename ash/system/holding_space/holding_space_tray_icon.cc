@@ -264,7 +264,7 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
   std::set<std::string> item_ids;
   for (size_t index = 0; index < items.size(); ++index) {
     const HoldingSpaceItem* item = items[index];
-    DCHECK(item->IsFinalized());
+    DCHECK(item->IsInitialized());
 
     item_ids.insert(item->id());
     item_ids_.push_back(item->id());

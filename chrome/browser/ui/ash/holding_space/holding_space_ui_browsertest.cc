@@ -284,7 +284,7 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
-              OnHoldingSpaceItemFinalized,
+              OnHoldingSpaceItemInitialized,
               (const HoldingSpaceItem* item),
               (override));
 };

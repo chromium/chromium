@@ -52,11 +52,11 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
       serialized_holding_space_item,
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  EXPECT_FALSE(deserialized_holding_space_item->IsFinalized());
+  EXPECT_FALSE(deserialized_holding_space_item->IsInitialized());
   EXPECT_TRUE(deserialized_holding_space_item->file_system_url().is_empty());
 
-  deserialized_holding_space_item->Finalize(file_system_url);
-  EXPECT_TRUE(deserialized_holding_space_item->IsFinalized());
+  deserialized_holding_space_item->Initialize(file_system_url);
+  EXPECT_TRUE(deserialized_holding_space_item->IsInitialized());
   EXPECT_EQ(*deserialized_holding_space_item, *holding_space_item);
 }
 

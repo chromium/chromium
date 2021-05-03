@@ -45,16 +45,17 @@ DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
       base::Passed(std::move(callback)));
 }
 
-// Returns whether the given holding space `model` contains any finalized items
-// which are supported by the specified holding space item views `section`.
-bool ModelContainsFinalizedItemsForSection(
+// Returns whether the given holding space `model` contains any initialized
+// items which are supported by the specified holding space item views
+// `section`.
+bool ModelContainsInitializedItemsForSection(
     const HoldingSpaceModel* model,
     const HoldingSpaceItemViewsSection* section) {
   const auto& supported_types = section->supported_types();
   return std::any_of(
       supported_types.begin(), supported_types.end(),
       [&model](HoldingSpaceItem::Type supported_type) {
-        return model->ContainsFinalizedItemOfType(supported_type);
+        return model->ContainsInitializedItemOfType(supported_type);
       });
 }
 
@@ -201,14 +202,14 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
   DCHECK(model);
 
   // This child bubble should animate out if the attached model does not
-  // contain finalized items supported by any of its sections. The exception is
-  // if a section has a placeholder to show in lieu of holding space items. If
-  // a placeholder exists, the child bubble should persist.
+  // contain initialized items supported by any of its sections. The exception
+  // is if a section has a placeholder to show in lieu of holding space items.
+  // If a placeholder exists, the child bubble should persist.
   const bool animate_out = std::none_of(
       sections_.begin(), sections_.end(),
       [&model](const HoldingSpaceItemViewsSection* section) {
         return section->has_placeholder() ||
-               ModelContainsFinalizedItemsForSection(model, section);
+               ModelContainsInitializedItemsForSection(model, section);
       });
 
   if (animate_out) {
@@ -220,14 +221,14 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
     section->OnHoldingSpaceItemsRemoved(items);
 }
 
-void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemFinalized(
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
-  // Ignore item finalization while the bubble is animating out. The bubble
+  // Ignore item initialized while the bubble is animating out. The bubble
   // content will be updated to match the model after the out animation
   // completes.
   if (!is_animating_out_) {
     for (HoldingSpaceItemViewsSection* section : sections_)
-      section->OnHoldingSpaceItemFinalized(item);
+      section->OnHoldingSpaceItemInitialized(item);
   }
 }
 
@@ -395,7 +396,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
     item_ptrs.push_back(item.get());
 
   // Populating a `section` may cause it's visibility to change if the `model`
-  // contains finalized items of types which it supports. This, in turn, will
+  // contains initialized items of types which it supports. This, in turn, will
   // cause visibility of this child bubble to update and animate in if needed.
   for (HoldingSpaceItemViewsSection* section : sections_)
     section->OnHoldingSpaceItemsAdded(item_ptrs);

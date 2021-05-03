@@ -636,15 +636,15 @@ TEST_F(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
-  // Finalize one item, and verify the tray button gets shown.
-  model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
+  // Initialize one item, and verify the tray button gets shown.
+  model()->InitializeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
   EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
-  // Remove the finalized item - the shelf button should get hidden.
+  // Remove the initialized item - the shelf button should get hidden.
   model()->RemoveItem(item_2->id());
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
@@ -883,7 +883,7 @@ INSTANTIATE_TEST_SUITE_P(
                       HoldingSpaceItem::Type::kNearbyShare));
 
 // Tests how download chips are updated during item addition, removal and
-// finalization.
+// initialization.
 TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   StartSession();
 
@@ -927,9 +927,9 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Finalize partially initialized item, and verify it gets added to the
-  // section, in the order of addition, replacing the oldest item.
-  model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
+  // Fully initialize partially initialized item, and verify it gets added to
+  // the section, in the order of addition, replacing the oldest item.
+  model()->InitializeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -971,13 +971,13 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
 }
 
 // Verifies the downloads section is shown and orders items as expected when the
-// model contains a number of finalized items prior to showing UI.
+// model contains a number of initialized items prior to showing UI.
 TEST_P(HoldingSpaceTrayDownloadsSectionTest,
-       DownloadsSectionWithFinalizedItemsOnly) {
+       DownloadsSectionWithInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
-  // Add a number of finalized download items.
+  // Add a number of initialized download items.
   std::deque<HoldingSpaceItem*> items;
   for (size_t i = 0; i < kMaxDownloads; ++i) {
     items.push_back(AddItem(
@@ -1003,7 +1003,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 }
 
 TEST_P(HoldingSpaceTrayDownloadsSectionTest,
-       FinalizingDownloadItemThatShouldBeInvisible) {
+       InitializingDownloadItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -1026,9 +1026,9 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Finalize partially initialized item, and verify it's not added to the
-  // section.
-  model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
+  // Fully initialize partially initialized item, and verify it's not added to
+  // the section.
+  model()->InitializeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -1090,7 +1090,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 }
 
 // Tests how screen captures section is updated during item addition, removal
-// and finalization.
+// and initialization.
 TEST_F(HoldingSpaceTrayTest, ScreenCapturesSection) {
   StartSession();
   test_api()->Show();
@@ -1138,9 +1138,9 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesSection) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
-  // Finalize partially initialized item, and verify it gets added to the
-  // section, in the order of addition, replacing the oldest item.
-  model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
+  // Fully initialize partially initialized item, and verify it gets added to
+  // the section, in the order of addition, replacing the oldest item.
+  model()->InitializeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -1190,12 +1190,12 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesSection) {
 }
 
 // Verifies the screen captures section is shown and orders items as expected
-// when the model contains a number of finalized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
+// when the model contains a number of initialized items prior to showing UI.
+TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
-  // Add a number of finalized screen capture items.
+  // Add a number of initialized screen capture items.
   std::deque<HoldingSpaceItem*> items;
   for (size_t i = 0; i < kMaxScreenCaptures; ++i) {
     items.push_back(
@@ -1221,7 +1221,8 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
   test_api()->Close();
 }
 
-TEST_F(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
+TEST_F(HoldingSpaceTrayTest,
+       InitializingScreenCaptureItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -1258,9 +1259,9 @@ TEST_F(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
-  // Finalize partially initialized item, and verify it's not added to the
-  // section.
-  model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
+  // Fully initialize partially initialized item, and verify it's not added to
+  // the section.
+  model()->InitializeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -1337,7 +1338,7 @@ TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
 }
 
 // Tests how the pinned item section is updated during item addition, removal
-// and finalization.
+// and initialization.
 TEST_F(HoldingSpaceTrayTest, PinnedFilesSection) {
   MarkTimeOfFirstPin();
   StartSession();
@@ -1383,8 +1384,8 @@ TEST_F(HoldingSpaceTrayTest, PinnedFilesSection) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(pinned_files[1])->item()->id());
 
-  // Finalize partially initialized item, and verify it gets shown.
-  model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
+  // Full initialize partially initialized item, and verify it gets shown.
+  model()->InitializeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -1473,9 +1474,9 @@ TEST_F(HoldingSpaceTrayTest,
             HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
   EXPECT_TRUE(HoldingSpaceItemView::Cast(pinned_files[0])->GetVisible());
 
-  // Finalize a partially initialized item with an empty URL - it should get
-  // removed.
-  model()->FinalizeOrRemoveItem(item_2->id(), GURL());
+  // Fully initialize a partially initialized item with an empty URL - it should
+  // get removed.
+  model()->InitializeOrRemoveItem(item_2->id(), GURL());
 
   pinned_files = test_api()->GetPinnedFileChips();
   ASSERT_EQ(1u, pinned_files.size());
@@ -1484,12 +1485,12 @@ TEST_F(HoldingSpaceTrayTest,
 }
 
 // Verifies the pinned items section is shown and orders items as expected when
-// the model contains a number of finalized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, PinnedFilesSectionWithFinalizedItemsOnly) {
+// the model contains a number of initialized items prior to showing UI.
+TEST_F(HoldingSpaceTrayTest, PinnedFilesSectionWithInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
-  // Add a number of finalized pinned items.
+  // Add a number of initialized pinned items.
   std::deque<HoldingSpaceItem*> items;
   for (int i = 0; i < 10; ++i) {
     items.push_back(
@@ -1548,7 +1549,7 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
   // Add a screen recording item and verify recent files section gets shown.
   HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kScreenRecording,
                                      base::FilePath("/tmp/fake_1"));
-  ASSERT_TRUE(item_1->IsFinalized());
+  ASSERT_TRUE(item_1->IsInitialized());
 
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
@@ -1586,7 +1587,7 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
 }
 
 // Tests that a partially initialized screen recording item shows in the UI in
-// the reverse order from added time rather than finalization time.
+// the reverse order from added time rather than initialization time.
 TEST_F(HoldingSpaceTrayTest,
        PartialScreenRecordingItemWithExistingScreenshotItems) {
   StartSession();
@@ -1623,9 +1624,9 @@ TEST_F(HoldingSpaceTrayTest,
   EXPECT_EQ(screenshot_item_1->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
 
-  // Finalize the screen recording item and verify it is not shown.
-  model()->FinalizeOrRemoveItem(screen_recording_item->id(),
-                                GURL("filesystem:screen_recording"));
+  // Initialize the screen recording item and verify it is not shown.
+  model()->InitializeOrRemoveItem(screen_recording_item->id(),
+                                  GURL("filesystem:screen_recording"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -1639,7 +1640,7 @@ TEST_F(HoldingSpaceTrayTest,
             HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
 
   // Remove one of the fully initialized items, and verify the screen recording
-  // item that was finalized late is shown.
+  // item that was initialized late is shown.
   model()->RemoveItem(screenshot_item_1->id());
 
   screen_capture_chips = test_api()->GetScreenCaptureViews();
@@ -1665,9 +1666,9 @@ TEST_F(HoldingSpaceTrayTest,
   EXPECT_EQ(screen_recording_item->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
 
-  // Finalize the screen recording item and verify it is shown first.
-  model()->FinalizeOrRemoveItem(screen_recording_item_last->id(),
-                                GURL("filesystem:screen_recording"));
+  // Initialize the screen recording item and verify it is shown first.
+  model()->InitializeOrRemoveItem(screen_recording_item_last->id(),
+                                  GURL("filesystem:screen_recording"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -1684,7 +1685,7 @@ TEST_F(HoldingSpaceTrayTest,
 }
 
 // Tests that partially initialized screenshot item shows in the UI in the
-// reverse order from added time rather than finalization time.
+// reverse order from added time rather than initialization time.
 TEST_F(HoldingSpaceTrayTest,
        PartialScreenshotItemWithExistingScreenRecordingItems) {
   StartSession();
@@ -1720,9 +1721,9 @@ TEST_F(HoldingSpaceTrayTest,
   EXPECT_EQ(screen_recording_item_1->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
 
-  // Finalize the screenshot item and verify it is not shown.
-  model()->FinalizeOrRemoveItem(screenshot_item->id(),
-                                GURL("filesystem:fake_1"));
+  // Initialize the screenshot item and verify it is not shown.
+  model()->InitializeOrRemoveItem(screenshot_item->id(),
+                                  GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());

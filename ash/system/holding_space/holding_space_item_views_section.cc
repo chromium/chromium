@@ -279,7 +279,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update = std::any_of(
       items.begin(), items.end(), [this](const HoldingSpaceItem* item) {
-        return item->IsFinalized() &&
+        return item->IsInitialized() &&
                base::Contains(supported_types_, item->type());
       });
   if (needs_update)
@@ -296,7 +296,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsSection::OnHoldingSpaceItemFinalized(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
   if (base::Contains(supported_types_, item->type()))
     MaybeAnimateOut();
@@ -407,7 +407,7 @@ void HoldingSpaceItemViewsSection::AnimateOut(
       disable_animations ? base::TimeDelta() : kAnimationDuration;
 
   // If this section does not have a `placeholder_` and the model does not
-  // contain any associated and finalized items, then this section is becoming
+  // contain any associated and initialized items, then this section is becoming
   // invisible to the user and the `header_` needs to be animated out alongside
   // any content.
   bool animate_out_header = !placeholder_;
@@ -417,7 +417,7 @@ void HoldingSpaceItemViewsSection::AnimateOut(
       animate_out_header = std::none_of(
           supported_types_.begin(), supported_types_.end(),
           [&model](HoldingSpaceItem::Type supported_type) {
-            return model->ContainsFinalizedItemOfType(supported_type);
+            return model->ContainsInitializedItemOfType(supported_type);
           });
     }
   }
@@ -489,7 +489,8 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     return;
 
   for (const auto& item : model->items()) {
-    if (item->IsFinalized() && base::Contains(supported_types_, item->type())) {
+    if (item->IsInitialized() &&
+        base::Contains(supported_types_, item->type())) {
       DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
       // Remove the last holding space item view if already at max capacity.

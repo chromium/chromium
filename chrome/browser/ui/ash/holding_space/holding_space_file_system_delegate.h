@@ -30,8 +30,8 @@ namespace ash {
 
 // A delegate of `HoldingSpaceKeyedService` tasked with verifying validity of
 // files backing holding space items. The delegate:
-// *  Finalizes partially initialized items loaded from persistent storage once
-//    the validity of the backing file path was verified.
+// *  Fully initializes partially initialized items loaded from persistent
+//    storage once the validity of the backing file path was verified.
 // *  Monitors the file system for removal, rename, and move of files backing
 //    holding space items.
 class HoldingSpaceFileSystemDelegate
@@ -58,7 +58,7 @@ class HoldingSpaceFileSystemDelegate
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // file_manager::VolumeManagerObserver:
   void OnVolumeMounted(chromeos::MountError error_code,
@@ -116,10 +116,10 @@ class HoldingSpaceFileSystemDelegate
   // holding space model.
   void RemoveItemsParentedByPath(const base::FilePath& parent_path);
 
-  // Clears all non-finalized items from holding space model - runs with a delay
-  // after profile initialization to clean up items from volumes that have not
-  // been mounted during startup.
-  void ClearNonFinalizedItems();
+  // Clears all non-initialized items from holding space model - runs with a
+  // delay after profile initialization to clean up items from volumes that have
+  // not been mounted during startup.
+  void ClearNonInitializedItems();
 
   // The `file_system_watcher_` is tasked with watching the file system for
   // changes on behalf of the delegate. It does so on a non-UI sequence. As
@@ -137,10 +137,10 @@ class HoldingSpaceFileSystemDelegate
   // `pending_file_path_validity_checks_` is scheduled.
   bool file_path_validity_checks_scheduled_ = false;
 
-  // A timer to run clean-up task for items that have not been finalized within
-  // a reasonable amount of time from start-up. (E.g. if the volume they belong
-  // to has not been yet mounted).
-  base::OneShotTimer clear_non_finalized_items_timer_;
+  // A timer to run clean-up task for items that have not been initialized
+  // within a reasonable amount of time from start-up. (E.g. if the volume they
+  // belong to has not been yet mounted).
+  base::OneShotTimer clear_non_initialized_items_timer_;
 
   base::ScopedObservation<
       arc::ConnectionHolder<arc::mojom::FileSystemInstance,

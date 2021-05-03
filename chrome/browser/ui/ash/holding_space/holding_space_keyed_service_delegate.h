@@ -49,7 +49,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
       const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // Invoked when holding space persistence has been restored.
   virtual void OnPersistenceRestored();

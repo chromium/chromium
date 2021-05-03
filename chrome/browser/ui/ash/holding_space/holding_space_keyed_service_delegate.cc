@@ -40,7 +40,7 @@ void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsAdded(
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {}
 
-void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemFinalized(
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {}
 
 void HoldingSpaceKeyedServiceDelegate::OnPersistenceRestored() {}

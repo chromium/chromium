@@ -151,10 +151,10 @@ bool IsPreviewsEnabled() {
   return prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
 }
 
-// Returns whether the holding space model contains any finalized items.
-bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
+// Returns whether the holding space model contains any initialized items.
+bool ModelContainsInitializedItems(HoldingSpaceModel* model) {
   for (const auto& item : model->items()) {
-    if (item->IsFinalized())
+    if (item->IsInitialized())
       return true;
   }
   return false;
@@ -508,9 +508,9 @@ void HoldingSpaceTray::UpdateVisibility() {
   // the holding space tray will continue to be visible until the user has
   // pinned their first file. After the user has pinned their first file, the
   // holding space tray will only be visible in the shelf if their holding space
-  // contains finalized items.
+  // contains initialized items.
   SetVisiblePreferred((has_ever_added_item && !has_ever_pinned_item) ||
-                      ModelContainsFinalizedItems(model));
+                      ModelContainsInitializedItems(model));
 }
 
 std::u16string HoldingSpaceTray::GetAccessibleNameForBubble() {
@@ -546,14 +546,14 @@ void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
 
 void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  // If a finalized holding space item is added to the model mid-session, the
+  // If an initialized holding space item is added to the model mid-session, the
   // holding space tray should bounce in (if it isn't already visible) and
   // previews should be animated.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_finalized_item = std::any_of(
+    const bool has_initialized_item = std::any_of(
         items.begin(), items.end(),
-        [](const HoldingSpaceItem* item) { return item->IsFinalized(); });
-    if (has_finalized_item)
+        [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
+    if (has_initialized_item)
       SetShouldAnimate(true);
   }
 
@@ -563,13 +563,13 @@ void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  // If a finalized holding space item is removed from the model mid-session,
+  // If an initialized holding space item is removed from the model mid-session,
   // the holding space tray should animate updates.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_finalized_item = std::any_of(
+    const bool has_initialized_item = std::any_of(
         items.begin(), items.end(),
-        [](const HoldingSpaceItem* item) { return item->IsFinalized(); });
-    if (has_finalized_item)
+        [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
+    if (has_initialized_item)
       SetShouldAnimate(true);
   }
 
@@ -577,7 +577,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
   UpdatePreviewsState();
 }
 
-void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
+void HoldingSpaceTray::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
   UpdateVisibility();
   UpdatePreviewsState();
@@ -711,7 +711,7 @@ void HoldingSpaceTray::UpdatePreviewsState() {
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
   const bool show_previews =
       IsPreviewsEnabled() && HoldingSpaceController::Get()->model() &&
-      ModelContainsFinalizedItems(HoldingSpaceController::Get()->model());
+      ModelContainsInitializedItems(HoldingSpaceController::Get()->model());
 
   if (PreviewsShown() == show_previews)
     return;
@@ -749,7 +749,7 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
   std::set<base::FilePath> paths_with_previews;
   for (const auto& item :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (!item->IsFinalized())
+    if (!item->IsInitialized())
       continue;
     if (base::Contains(paths_with_previews, item->file_path()))
       continue;

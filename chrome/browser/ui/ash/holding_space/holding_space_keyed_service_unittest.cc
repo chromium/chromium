@@ -179,24 +179,24 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
       model_observer_{this};
 };
 
-class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
+class ItemsInitializedWaiter : public HoldingSpaceModelObserver {
  public:
   // Predicate that determines whether the waiter should wait for an item to be
-  // finalized.
+  // initialized.
   using ItemFilter =
       base::RepeatingCallback<bool(const HoldingSpaceItem* item)>;
 
-  explicit ItemsFinalizedWaiter(HoldingSpaceModel* model) : model_(model) {}
-  ItemsFinalizedWaiter(const ItemsFinalizedWaiter&) = delete;
-  ItemsFinalizedWaiter& operator=(const ItemsFinalizedWaiter&) = delete;
-  ~ItemsFinalizedWaiter() override = default;
+  explicit ItemsInitializedWaiter(HoldingSpaceModel* model) : model_(model) {}
+  ItemsInitializedWaiter(const ItemsInitializedWaiter&) = delete;
+  ItemsInitializedWaiter& operator=(const ItemsInitializedWaiter&) = delete;
+  ~ItemsInitializedWaiter() override = default;
 
   // NOTE: The filter defaults to all items.
   void Wait(const ItemFilter& filter = ItemFilter()) {
     ASSERT_FALSE(wait_loop_);
 
     filter_ = filter;
-    if (FilteredItemsFinalized())
+    if (FilteredItemsInitialized())
       return;
 
     base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
@@ -211,21 +211,21 @@ class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
 
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override {
-    if (FilteredItemsFinalized())
+    if (FilteredItemsInitialized())
       wait_loop_->Quit();
   }
 
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override {
-    if (FilteredItemsFinalized())
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
+    if (FilteredItemsInitialized())
       wait_loop_->Quit();
   }
 
  private:
-  bool FilteredItemsFinalized() const {
+  bool FilteredItemsInitialized() const {
     for (auto& item : model_->items()) {
       if (filter_ && !filter_.Run(item.get()))
         continue;
-      if (!item->IsFinalized())
+      if (!item->IsInitialized())
         return false;
     }
     return true;
@@ -1040,7 +1040,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
   ASSERT_EQ(secondary_holding_space_model,
             secondary_holding_space_service->model_for_testing());
 
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
   ASSERT_EQ(secondary_holding_space_model->items().size(),
             restored_holding_space_items.size());
 
@@ -1077,7 +1077,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
-  std::vector<std::string> finalized_items_before_delayed_mount;
+  std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
   base::ListValue persisted_holding_space_items_after_restoration;
   base::ListValue persisted_holding_space_items_after_delayed_mount;
@@ -1135,7 +1135,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           // the persistent storage.
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
-          finalized_items_before_delayed_mount.push_back(
+          initialized_items_before_delayed_mount.push_back(
               fresh_holding_space_item->id());
           persisted_holding_space_items_after_restoration.Append(
               fresh_holding_space_item->Serialize());
@@ -1163,7 +1163,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_EQ(secondary_holding_space_model,
             secondary_holding_space_service->model_for_testing());
 
-  ItemsFinalizedWaiter(secondary_holding_space_model)
+  ItemsInitializedWaiter(secondary_holding_space_model)
       .Wait(
           /*filter=*/base::BindLambdaForTesting(
               [&downloads_mount](const HoldingSpaceItem* item) -> bool {
@@ -1171,12 +1171,12 @@ TEST_F(HoldingSpaceKeyedServiceTest,
                     item->file_path());
               }));
 
-  std::vector<std::string> finalized_items;
+  std::vector<std::string> initialized_items;
   for (const auto& item : secondary_holding_space_model->items()) {
-    if (item->IsFinalized())
-      finalized_items.push_back(item->id());
+    if (item->IsInitialized())
+      initialized_items.push_back(item->id());
   }
-  EXPECT_EQ(finalized_items_before_delayed_mount, finalized_items);
+  EXPECT_EQ(initialized_items_before_delayed_mount, initialized_items);
 
   // Verify persisted holding space items.
   EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
@@ -1186,7 +1186,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   delayed_mount->CreateFile(delayed_mount_file_name, "fake");
   delayed_mount->Mount(secondary_profile);
 
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
 
   EXPECT_EQ(secondary_holding_space_model->items().size(),
             restored_holding_space_items.size());
@@ -1197,7 +1197,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
     const auto& restored_item = restored_holding_space_items[i];
     SCOPED_TRACE(testing::Message() << "Item at index " << i);
 
-    EXPECT_TRUE(item->IsFinalized());
+    EXPECT_TRUE(item->IsInitialized());
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
@@ -1314,7 +1314,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_EQ(secondary_holding_space_model,
             secondary_holding_space_service->model_for_testing());
 
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
   ASSERT_EQ(secondary_holding_space_model->items().size(),
             restored_holding_space_items.size());
 
@@ -1324,7 +1324,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
     const auto& restored_item = restored_holding_space_items[i];
     SCOPED_TRACE(testing::Message() << "Item at index " << i);
 
-    EXPECT_TRUE(item->IsFinalized());
+    EXPECT_TRUE(item->IsInitialized());
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
@@ -1362,7 +1362,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
-  std::vector<std::string> finalized_items_before_delayed_mount;
+  std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
   base::ListValue persisted_holding_space_items_after_restoration;
   base::ListValue persisted_holding_space_items_after_delayed_mount;
@@ -1388,7 +1388,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           // the persistent storage.
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
-          finalized_items_before_delayed_mount.push_back(
+          initialized_items_before_delayed_mount.push_back(
               fresh_holding_space_item->id());
           persisted_holding_space_items_after_restoration.Append(
               fresh_holding_space_item->Serialize());
@@ -1417,14 +1417,14 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_EQ(secondary_holding_space_model,
             secondary_holding_space_service->model_for_testing());
 
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
 
-  std::vector<std::string> finalized_items;
+  std::vector<std::string> initialized_items;
   for (const auto& item : secondary_holding_space_model->items()) {
-    if (item->IsFinalized())
-      finalized_items.push_back(item->id());
+    if (item->IsInitialized())
+      initialized_items.push_back(item->id());
   }
-  EXPECT_EQ(finalized_items_before_delayed_mount, finalized_items);
+  EXPECT_EQ(initialized_items_before_delayed_mount, initialized_items);
 
   // Verify persisted holding space items.
   EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
@@ -1432,7 +1432,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
             persisted_holding_space_items_after_restoration);
 
   delayed_mount_2->Mount(secondary_profile);
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
 
   EXPECT_EQ(secondary_holding_space_model->items().size(),
             restored_holding_space_items.size());
@@ -1443,7 +1443,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
     const auto& restored_item = restored_holding_space_items[i];
     SCOPED_TRACE(testing::Message() << "Item at index " << i);
 
-    EXPECT_TRUE(item->IsFinalized());
+    EXPECT_TRUE(item->IsInitialized());
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
@@ -1589,7 +1589,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
   ASSERT_EQ(secondary_holding_space_model,
             secondary_holding_space_service->model_for_testing());
 
-  ItemsFinalizedWaiter(secondary_holding_space_model).Wait();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
 
   ASSERT_EQ(secondary_holding_space_model->items().size(),
             restored_holding_space_items.size());

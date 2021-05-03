@@ -63,7 +63,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
-  // The item should be finalized using `Finalize()`.
+  // The item should be fully initialized using `Initialize()`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
       const base::DictionaryValue& dict,
       ImageResolver image_resolver);
@@ -81,14 +81,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   base::CallbackListSubscription AddDeletionCallback(
       base::RepeatingClosureList::CallbackType callback) const;
 
-  // Indicates whether the item has been finalized. This will be false for items
-  // created using `Deserialize()` for which `Finalize()` has not yet been
-  // called.
-  // Non-finalized items should not be shown in the holding space UI.
-  bool IsFinalized() const;
+  // Indicates whether the item has been initialized. This will be false for
+  // items created using `Deserialize()` for which `Initialize()` has not yet
+  // been called. Non-initialized items should not be shown in holding space UI.
+  bool IsInitialized() const;
 
-  // Used to finalize partially initialized items created by `Deserialize()`.
-  void Finalize(const GURL& file_system_url);
+  // Used to fully initialize partially initialized items created by
+  // `Deserialize()`.
+  void Initialize(const GURL& file_system_url);
 
   // Updates the file backing the item to `file_path` and `file_system_url`.
   void UpdateBackingFile(const base::FilePath& file_path,

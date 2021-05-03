@@ -48,7 +48,7 @@ bool IsArcFileSystemDisconnected(Profile* profile) {
 }
 
 // Returns whether the item is backed by an Android file. Can be used with
-// non-finalized items.
+// non-initialized items.
 bool ItemBackedByAndroidFile(const HoldingSpaceItem* item) {
   return file_manager::util::GetAndroidFilesPath().IsParent(item->file_path());
 }
@@ -242,9 +242,9 @@ void HoldingSpaceFileSystemDelegate::Init() {
   // mounted in a reasonable amount of time. The primary goal of handling the
   // delayed volume mount is to support volumes that are mounted asynchronously
   // during the startup.
-  clear_non_finalized_items_timer_.Start(
+  clear_non_initialized_items_timer_.Start(
       FROM_HERE, base::TimeDelta::FromMinutes(1),
-      base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems,
+      base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonInitializedItems,
                      base::Unretained(this)));
 }
 
@@ -255,20 +255,20 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
   const bool arc_file_system_disconnected =
       IsArcFileSystemDisconnected(profile());
   for (const HoldingSpaceItem* item : items) {
-    if (item->IsFinalized()) {
+    if (item->IsInitialized()) {
       // Watch the directory containing `item`'s backing file. If the directory
       // is already being watched, this will no-op.
       AddWatchForParent(item->file_path());
       continue;
     }
 
-    // If the item has not yet been finalized, check whether it's path can be
+    // If the item has not yet been initialized, check whether it's path can be
     // resolved to a file system URL - failure to do so may indicate that the
     // volume to which it path belongs is not mounted there. If the file system
     // URL cannot be resolved, leave the item in partially initialized state.
     // Validity will be checked when the associated mount point is mounted.
     // NOTE: Items will not be kept in partially initialized state indefinitely
-    // - see `clear_non_finalized_items_timer_`.
+    // - see `clear_non_initialized_items_timer_`.
     // NOTE: This does not work well for removable devices, as all removable
     // devices have the same top level "external" mount point (media/removable),
     // so a removable device path will be successfully resolved even if the
@@ -280,8 +280,8 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     if (file_system_url.is_empty())
       continue;
 
-    // Defer validity checks (and finalization) for android files if the
-    // ARC file system connection is not yet ready.
+    // Defer validity checks (and initialization) for android files if the ARC
+    // file system connection is not yet ready.
     if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
       continue;
 
@@ -306,7 +306,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
   AddWatchForParent(item->file_path());
 }
 
-void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
+void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AddWatchForParent(item->file_path());
@@ -321,7 +321,7 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
   // Check validity of partially initialized items under the volume's mount
   // path.
   for (auto& item : model()->items()) {
-    if (item->IsFinalized())
+    if (item->IsInitialized())
       continue;
     if (!volume.mount_path().IsParent(item->file_path()))
       continue;
@@ -514,21 +514,21 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
       },
       arc_file_system_disconnected, &invalid_paths));
 
-  std::vector<const HoldingSpaceItem*> items_to_finalize;
+  std::vector<const HoldingSpaceItem*> items_to_initialize;
   for (auto& item : model()->items()) {
-    // Defer finalization of items backed by android files if the connection to
-    // ARC file system service has been lost.
+    // Defer initialization of items backed by android files if the connection
+    // to ARC file system service has been lost.
     if (arc_file_system_disconnected && ItemBackedByAndroidFile(item.get()))
       continue;
 
-    if (!item->IsFinalized() &&
+    if (!item->IsInitialized() &&
         base::Contains(valid_paths, item->file_path())) {
-      items_to_finalize.push_back(item.get());
+      items_to_initialize.push_back(item.get());
     }
   }
 
-  for (auto* item : items_to_finalize) {
-    model()->FinalizeOrRemoveItem(
+  for (auto* item : items_to_initialize) {
+    model()->InitializeOrRemoveItem(
         item->id(),
         holding_space_util::ResolveFileSystemUrl(profile(), item->file_path()));
   }
@@ -547,11 +547,12 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The watch for `file_path` should only be removed if no holding space items
   // exist in the model which are backed by files it directly parents.
-  const bool remove_watch = std::none_of(
-      model()->items().begin(), model()->items().end(),
-      [&file_path](const auto& item) {
-        return item->IsFinalized() && item->file_path().DirName() == file_path;
-      });
+  const bool remove_watch =
+      std::none_of(model()->items().begin(), model()->items().end(),
+                   [&file_path](const auto& item) {
+                     return item->IsInitialized() &&
+                            item->file_path().DirName() == file_path;
+                   });
 
   if (!remove_watch)
     return;
@@ -571,17 +572,17 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
       parent_path));
 }
 
-void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {
+void HoldingSpaceFileSystemDelegate::ClearNonInitializedItems() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](Profile* profile, const HoldingSpaceItem* item) {
-        if (item->IsFinalized())
+        if (item->IsInitialized())
           return false;
 
         // Do not remove items whose path can be resolved to a file system URL.
         // In this case, the associated mount point has been mounted, but the
-        // finalization may have been delayed - for example due to issues/delays
-        // with initializing ARC.
+        // initialization may have been delayed - for example due to
+        // issues/delays with initializing ARC.
         const GURL url = holding_space_util::ResolveFileSystemUrl(
             profile, item->file_path());
         return url.is_empty();
