@@ -2323,7 +2323,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(pref_names::kPinnedExtensions,
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterIntegerPref(pref_names::kToolbarSize, -1);
   registry->RegisterListPref(pref_names::kDeletedComponentExtensions);
   registry->RegisterDictionaryPref(kExtensionsBlocklistUpdate);
   registry->RegisterListPref(pref_names::kInstallAllowList);

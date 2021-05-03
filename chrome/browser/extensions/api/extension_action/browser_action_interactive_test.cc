@@ -247,9 +247,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
         content::OpenURLParams(GURL("about:blank"), content::Referrer(),
                                WindowOpenDisposition::NEW_WINDOW,
                                ui::PAGE_TRANSITION_TYPED, false)));
-    // Hide all the buttons to test that it opens even when the browser action
-    // is in the overflow bucket.
-    ToolbarActionsModel::Get(profile())->SetVisibleIconCount(0);
+    // Pin the extension to test that it opens when the action is on the
+    // toolbar.
+    ToolbarActionsModel::Get(profile())->SetActionVisibility(
+        last_loaded_extension_id(), true);
     frame_observer.Wait();
   }
 

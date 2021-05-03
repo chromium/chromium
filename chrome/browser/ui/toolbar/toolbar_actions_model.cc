@@ -58,8 +58,6 @@ ToolbarActionsModel::ToolbarActionsModel(
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ToolbarActionsModel::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-  visible_icon_count_ =
-      prefs_->GetInteger(extensions::pref_names::kToolbarSize);
 
   // We only care about watching toolbar-order prefs if not in incognito mode.
   const bool watch_toolbar_order = !profile_->IsOffTheRecord();
@@ -128,20 +126,6 @@ void ToolbarActionsModel::MoveActionIcon(const ActionId& id, size_t index) {
   UpdatePrefs();
 }
 
-void ToolbarActionsModel::SetVisibleIconCount(size_t count) {
-  visible_icon_count_ = (count >= action_ids_.size()) ? -1 : count;
-
-  // Only set the prefs if the profile is not incognito - we don't store
-  // anything in incognito.
-  if (!profile_->IsOffTheRecord()) {
-    prefs_->SetInteger(extensions::pref_names::kToolbarSize,
-                       visible_icon_count_);
-  }
-
-  for (Observer& observer : observers_)
-    observer.OnToolbarVisibleCountChanged();
-}
-
 void ToolbarActionsModel::OnExtensionActionUpdated(
     extensions::ExtensionAction* extension_action,
     content::WebContents* web_contents,
@@ -167,15 +151,7 @@ void ToolbarActionsModel::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  bool was_visible_and_has_overflow =
-      IsActionVisible(extension->id()) && !all_icons_visible();
   RemoveExtension(extension);
-  // If the extension was previously visible and there are overflowed
-  // extensions, and this extension is being uninstalled, we reduce the visible
-  // count so that we don't pop out a previously-hidden extension.
-  if (was_visible_and_has_overflow &&
-      reason == extensions::UnloadedExtensionReason::UNINSTALL)
-    SetVisibleIconCount(visible_icon_count() - 1);
 }
 
 void ToolbarActionsModel::OnExtensionUninstalled(
@@ -261,7 +237,7 @@ size_t ToolbarActionsModel::FindNewPositionFromLastKnownGood(
     }
   }
 
-  // Position not found.
+  // Position not found. Place the action at the end.
   return action_ids_.size();
 }
 
@@ -288,69 +264,20 @@ void ToolbarActionsModel::AddAction(const ActionId& action_id) {
   // We only use AddAction() once the system is initialized.
   CHECK(actions_initialized_);
 
-  // See if we have a last known good position for this extension.
-  bool is_new_extension = !base::Contains(last_known_positions_, action_id);
-
-  // New extensions go at the right (end) of the visible extensions. Other
-  // extensions go at their previous position.
   size_t new_index = 0;
-  if (is_new_extension) {
-    new_index = visible_icon_count();
-    // For the last-known position, we use the index of the extension that is
-    // just before this extension, plus one. (Note that this isn't the same
-    // as new_index + 1, because last_known_positions_ can include disabled
-    // extensions.)
-    int new_last_known_index = new_index == 0
-                                   ? 0
-                                   : std::find(last_known_positions_.begin(),
-                                               last_known_positions_.end(),
-                                               action_ids_[new_index - 1]) -
-                                         last_known_positions_.begin() + 1;
-    // In theory, the extension before this one should always
-    // be in last known positions, but if something funny happened with prefs,
-    // make sure we handle it.
-    // TODO(devlin): Track down these cases so we can CHECK this.
-    new_last_known_index =
-        std::min<int>(new_last_known_index, last_known_positions_.size());
-    last_known_positions_.insert(
-        last_known_positions_.begin() + new_last_known_index, action_id);
-    UpdatePrefs();
-  } else {
+  if (base::Contains(last_known_positions_, action_id)) {
     new_index = FindNewPositionFromLastKnownGood(action_id);
+  } else {
+    // New extensions go at the end.
+    new_index = action_ids_.size();
+    last_known_positions_.push_back(action_id);
+    UpdatePrefs();
   }
 
   action_ids_.insert(action_ids_.begin() + new_index, action_id);
 
   for (Observer& observer : observers_)
     observer.OnToolbarActionAdded(action_id, new_index);
-
-  int visible_count_delta = 0;
-  if (is_new_extension && !all_icons_visible()) {
-    // If this is a new extension (and not all extensions are visible), we
-    // expand the toolbar out so that the new one can be seen.
-    visible_count_delta = 1;
-  } else if (profile_->IsOffTheRecord()) {
-    // If this is an incognito profile, we also have to check to make sure the
-    // overflow matches the main bar's status.
-    ToolbarActionsModel* main_model =
-        ToolbarActionsModel::Get(profile_->GetOriginalProfile());
-    // Find what the index will be in the main bar. Because Observer calls are
-    // nondeterministic, we can't just assume the main bar will have the
-    // extension and look it up.
-    size_t main_index = main_model->FindNewPositionFromLastKnownGood(action_id);
-    bool visible =
-        is_new_extension || main_index < main_model->visible_icon_count();
-    // We may need to adjust the visible count if the incognito bar isn't
-    // showing all icons and this one is visible, or if it is showing all
-    // icons and this is hidden.
-    if (visible && !all_icons_visible())
-      visible_count_delta = 1;
-    else if (!visible && all_icons_visible())
-      visible_count_delta = -1;
-  }
-
-  if (visible_count_delta)
-    SetVisibleIconCount(visible_icon_count() + visible_count_delta);
 
   UpdatePinnedActionIds();
 }
@@ -360,10 +287,6 @@ void ToolbarActionsModel::RemoveAction(const ActionId& action_id) {
 
   if (pos == action_ids_.end())
     return;
-
-  // If our visible count is set to the current size, we need to decrement it.
-  if (visible_icon_count_ == static_cast<int>(action_ids_.size()))
-    SetVisibleIconCount(action_ids_.size() - 1);
 
   action_ids_.erase(pos);
 
@@ -534,13 +457,11 @@ void ToolbarActionsModel::Populate() {
                            action_ids_.size());
 
   if (!action_ids_.empty()) {
-    // Visible count can be -1, meaning: 'show all'. Since UMA converts negative
-    // values to 0, this would be counted as 'show none' unless we convert it to
-    // max.
+    // If all actions are pinned, report kSampleType_MAX.
     UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsVisible",
-                             visible_icon_count_ == -1
+                             pinned_action_ids_.size() == action_ids_.size()
                                  ? base::HistogramBase::kSampleType_MAX
-                                 : visible_icon_count_);
+                                 : pinned_action_ids_.size());
   }
 }
 
@@ -553,25 +474,14 @@ void ToolbarActionsModel::IncognitoPopulate() {
   const ToolbarActionsModel* original_model =
       ToolbarActionsModel::Get(profile_->GetOriginalProfile());
 
-  // Find the absolute value of the original model's count.
-  int original_visible = original_model->visible_icon_count();
-
-  // In incognito mode, we show only those actions that are incognito-enabled
-  // Further, any actions that were overflowed in regular mode are still
-  // overflowed. Order is the same as in regular mode.
-  visible_icon_count_ = 0;
-
-  for (auto iter = original_model->action_ids_.begin();
-       iter != original_model->action_ids_.end(); ++iter) {
-    // We should never have an uninitialized action in the model.
-    DCHECK(!iter->empty());
-    // The extension might not be shown in incognito mode.
-    if (!ShouldAddExtension(GetExtensionById(*iter)))
-      continue;
-    action_ids_.push_back(*iter);
-    if (iter - original_model->action_ids_.begin() < original_visible)
-      ++visible_icon_count_;
-  }
+  // Only extensions enabled in incognito mode are added to the incognito mode
+  // toolbar. The order of extensions is the same in incognito mode as in
+  // on-the-record, modulo the gaps from extensions that aren't shown.
+  std::vector<ActionId> incognito_ids = original_model->action_ids_;
+  base::EraseIf(incognito_ids, [this](const ActionId& id) {
+    return !ShouldAddExtension(GetExtensionById(id));
+  });
+  action_ids_ = std::move(incognito_ids);
 }
 
 void ToolbarActionsModel::UpdatePrefs() {
@@ -653,13 +563,6 @@ void ToolbarActionsModel::OnActionToolbarPrefChange() {
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(
     const ActionId& action_id) const {
   return extension_registry_->enabled_extensions().GetByID(action_id);
-}
-
-bool ToolbarActionsModel::IsActionVisible(const ActionId& action_id) const {
-  size_t index = 0u;
-  while (action_ids().size() > index && action_ids()[index] != action_id)
-    ++index;
-  return index < visible_icon_count();
 }
 
 void ToolbarActionsModel::UpdatePinnedActionIds() {

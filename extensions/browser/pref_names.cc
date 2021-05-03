@@ -46,7 +46,6 @@ const char kNativeMessagingUserLevelHosts[] =
 const char kPinnedExtensions[] = "extensions.pinned_extensions";
 const char kStorageGarbageCollect[] = "extensions.storage.garbagecollect";
 const char kToolbar[] = "extensions.toolbar";
-const char kToolbarSize[] = "extensions.toolbarsize";
 const char kDeletedComponentExtensions[] =
     "extensions.deleted_component_extensions";
 

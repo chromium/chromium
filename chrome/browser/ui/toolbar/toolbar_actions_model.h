@@ -104,27 +104,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Moves the given action with |id|'s icon to the given |index|.
   void MoveActionIcon(const ActionId& id, size_t index);
 
-  // Sets the number of action icons that should be visible.
-  // If count == size(), this will set the visible icon count to -1, meaning
-  // "show all actions".
-  void SetVisibleIconCount(size_t count);
-
-  // Note that this (and all_icons_visible()) are the global default, but are
-  // inappropriate for determining a specific window's state - for that, use
-  // the ToolbarActionsBar.
-  size_t visible_icon_count() const {
-    // We have guards around this because |visible_icon_count_| can be set by
-    // prefs/sync, and we want to ensure that the icon count returned is within
-    // bounds.
-    return visible_icon_count_ == -1
-               ? action_ids().size()
-               : std::min(static_cast<size_t>(visible_icon_count_),
-                          action_ids().size());
-  }
-  bool all_icons_visible() const {
-    return visible_icon_count() == action_ids().size();
-  }
-
   bool actions_initialized() const { return actions_initialized_; }
 
   const std::vector<ActionId>& action_ids() const { return action_ids_; }
@@ -225,9 +204,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // enabled extensions.
   const extensions::Extension* GetExtensionById(const ActionId& id) const;
 
-  // Returns true if the action is visible on the toolbar.
-  bool IsActionVisible(const ActionId& action_id) const;
-
   // Updates |pinned_action_ids_| per GetFilteredPinnedActionIds() and notifies
   // observers if they have changed.
   void UpdatePinnedActionIds();
@@ -266,14 +242,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // A list of action ids ordered to correspond with their last known
   // positions.
   std::vector<ActionId> last_known_positions_;
-
-  // The number of icons visible (the rest should be hidden in the overflow
-  // chevron). A value of -1 indicates that all icons should be visible.
-  // Instead of using this variable directly, use visible_icon_count() if
-  // possible.
-  // TODO(devlin): Make a new variable to indicate that all icons should be
-  // visible, instead of overloading this one.
-  int visible_icon_count_;
 
   // Whether or not there is an active ExtensionMessageBubbleController
   // associated with the profile. There should only be one at a time.

@@ -99,10 +99,6 @@ extern const char kStorageGarbageCollect[];
 // object stored in the Preferences file. The extensions are stored by ID.
 extern const char kToolbar[];
 
-// Integer pref that tracks the number of browser actions visible in the browser
-// actions toolbar.
-extern const char kToolbarSize[];
-
 // A preference for a list of Component extensions that have been
 // uninstalled/removed and should not be reloaded.
 extern const char kDeletedComponentExtensions[];
