@@ -126,9 +126,11 @@ class CORE_EXPORT ScriptPromiseResolver
     // resolveOrReject shouldn't be called inside a ScriptForbiddenScope.
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      value_.Set(script_state_->GetIsolate(),
-                 ToV8(value, script_state_->GetContext()->Global(),
-                      script_state_->GetIsolate()));
+      v8::Isolate* isolate = script_state_->GetIsolate();
+      v8::MicrotasksScope microtasks_scope(
+          isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      value_.Set(isolate, ToV8(value, script_state_->GetContext()->Global(),
+                               script_state_->GetIsolate()));
     }
 
     if (GetExecutionContext()->IsContextPaused()) {
