@@ -115,14 +115,14 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
     EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()));
   }
 
-  // Single mailbox shared images should be supported except on Android.
+  // Single mailbox shared images should be supported on most platforms.
   {
     auto shared_image_frame = CreateTestFrame(
         kTestSize, gfx::Rect(kTestSize), kTestSize,
         media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB);
     EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
     EXPECT_TRUE(shared_image_frame->mailbox_holder(0).mailbox.IsSharedImage());
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_MAC)
     EXPECT_FALSE(
         WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
 #else
@@ -132,8 +132,8 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
   }
 }
 
-// Android doesn't support zero copy images.
-#if !defined(OS_ANDROID)
+// Some platforms don't support zero copy images.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
 TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   auto shared_image_frame = CreateTestFrame(

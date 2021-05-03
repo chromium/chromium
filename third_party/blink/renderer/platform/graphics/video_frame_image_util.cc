@@ -44,7 +44,9 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
   // frames, which would violate ImageBitmap requirements.
   // TODO(sandersd): Handle YUV pixel formats.
   // TODO(sandersd): Handle high bit depth formats.
-#if defined(OS_ANDROID)
+  // TODO(crbug.com/1203713): Figure out why macOS zero copy ends up with y-flip
+  // images in zero copy mode.
+#if defined(OS_ANDROID) || defined(OS_MAC)
   return false;
 #else
   return frame.NumTextures() == 1 &&
