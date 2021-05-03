@@ -107,4 +107,40 @@ TEST_F(SelectorFilterParentScopeTest, ReentrantSVGImageLoading) {
   GetDocument().UpdateStyleAndLayoutTree();
 }
 
+TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
+  GetDocument().body()->setInnerHTML(
+      R"HTML(<div ATTR><svg VIewBox></svg></div>)HTML");
+  auto* outer = To<Element>(GetDocument().body()->firstChild());
+  auto* svg = To<Element>(outer->firstChild());
+  auto* inner = GetDocument().CreateRawElement(html_names::kDivTag);
+  svg->appendChild(inner);
+
+  ASSERT_TRUE(outer->hasAttributes());
+  EXPECT_EQ("attr", outer->Attributes()[0].GetName().LocalName());
+
+  ASSERT_TRUE(svg->hasAttributes());
+  EXPECT_EQ("viewBox", svg->Attributes()[0].GetName().LocalName());
+
+  SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+
+  SelectorFilterRootScope span_scope(inner);
+  SelectorFilterParentScope::EnsureParentStackIsPushed();
+
+  CSSSelectorList selectors = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, SecureContextMode::kInsecureContext),
+      nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *");
+
+  for (const CSSSelector* selector = selectors.First(); selector;
+       selector = CSSSelectorList::Next(*selector)) {
+    unsigned selector_hashes[max_identifier_hashes];
+    filter.CollectIdentifierHashes(*selector, selector_hashes,
+                                   max_identifier_hashes);
+    EXPECT_NE(selector_hashes[0], 0u);
+    EXPECT_FALSE(
+        filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+  }
+}
+
 }  // namespace blink
