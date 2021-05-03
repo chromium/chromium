@@ -62,6 +62,10 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  if (@available(iOS 13.4, *)) {
+    self.modalInPresentation = !self.canDismissScreen;
+  }
+
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   // Create a layout guide for the margin between the subtitle and the screen-
@@ -383,6 +387,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
         kFirstRunPrimaryActionAccessibilityIdentifier;
     _primaryActionButton.titleEdgeInsets =
         UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
+    _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -433,6 +438,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.accessibilityIdentifier = accessibilityIdentifier;
+  button.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;

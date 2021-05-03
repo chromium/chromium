@@ -51,6 +51,10 @@
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
+// When set to YES, the screen can be dismissed by the user by swiping the view
+// down. Defaults to NO. Has no effect on iOS 12.
+@property(nonatomic, assign) BOOL canDismissScreen;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_
