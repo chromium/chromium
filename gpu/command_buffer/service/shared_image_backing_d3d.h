@@ -42,7 +42,7 @@ struct Mailbox;
 class GPU_GLES2_EXPORT SharedImageBackingD3D
     : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingD3D(
+  static std::unique_ptr<SharedImageBackingD3D> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -50,13 +50,42 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      scoped_refptr<gles2::TexturePassthrough> texture,
-      scoped_refptr<gl::GLImage> image,
-      size_t buffer_index,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      base::win::ScopedHandle shared_handle,
-      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex);
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+      size_t buffer_index);
+
+  static std::unique_ptr<SharedImageBackingD3D> CreateFromSharedHandle(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      base::win::ScopedHandle shared_handle);
+
+  // TODO(sunnyps): Remove this after migrating DXVA decoder to EGLImage.
+  static std::unique_ptr<SharedImageBackingD3D> CreateFromGLTexture(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      scoped_refptr<gles2::TexturePassthrough> gl_texture);
+
+  static std::vector<std::unique_ptr<SharedImageBackingD3D>>
+  CreateFromVideoTexture(
+      base::span<const Mailbox> mailboxes,
+      DXGI_FORMAT dxgi_format,
+      const gfx::Size& size,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      unsigned array_slice,
+      base::win::ScopedHandle shared_handle = base::win::ScopedHandle());
 
   ~SharedImageBackingD3D() override;
 
@@ -100,29 +129,64 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  uint32_t GetAllowedDawnUsages() const;
+  class SharedState : public base::RefCountedThreadSafe<SharedState> {
+   public:
+    explicit SharedState(
+        base::win::ScopedHandle shared_handle = base::win::ScopedHandle(),
+        Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex = nullptr);
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
-  scoped_refptr<gles2::TexturePassthrough> texture_;
-  scoped_refptr<gl::GLImage> image_;
-  const size_t buffer_index_;
+    bool BeginAccessD3D11();
+    void EndAccessD3D11();
+
+    bool BeginAccessD3D12(uint64_t* acquire_key);
+    void EndAccessD3D12();
+
+    HANDLE GetSharedHandle() const;
+
+   private:
+    friend class base::RefCountedThreadSafe<SharedState>;
+    ~SharedState();
+
+    // If |d3d11_texture_| has a keyed mutex, it will be stored in
+    // |dxgi_keyed_mutex_|. The keyed mutex is used to synchronize D3D11 and
+    // D3D12 Chromium components. |dxgi_keyed_mutex_| is the D3D11 side of the
+    // keyed mutex. To create the corresponding D3D12 interface, pass the handle
+    // stored in |shared_handle_| to ID3D12Device::OpenSharedHandle. Only one
+    // component is allowed to read/write to the texture at a time.
+    // |acquire_key_| is incremented on every Acquire/Release usage.
+    base::win::ScopedHandle shared_handle_;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
+    uint64_t acquire_key_ = 0;
+    bool acquired_for_d3d12_ = false;
+    int acquired_for_d3d11_count_ = 0;
+  };
+
+  SharedImageBackingD3D(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      scoped_refptr<gles2::TexturePassthrough> gl_texture,
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
+      size_t buffer_index = 0,
+      scoped_refptr<SharedState> shared_state =
+          base::MakeRefCounted<SharedState>());
+
+  uint32_t GetAllowedDawnUsages() const;
 
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+  scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
-  // If d3d11_texture_ has a keyed mutex, it will be stored in
-  // dxgi_keyed_mutex. The keyed mutex is used to synchronize
-  // D3D11 and D3D12 Chromium components.
-  // dxgi_keyed_mutex_ is the D3D11 side of the keyed mutex.
-  // To create the corresponding D3D12 interface, pass the handle
-  // stored in shared_handle_ to ID3D12Device::OpenSharedHandle.
-  // Only one component is allowed to read/write to the texture
-  // at a time. keyed_mutex_acquire_key_ is incremented on every
-  // Acquire/Release usage.
-  base::win::ScopedHandle shared_handle_;
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
-  uint64_t keyed_mutex_acquire_key_ = 0;
-  bool keyed_mutex_acquired_ = false;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
+
+  const size_t buffer_index_;
+
+  scoped_refptr<SharedState> shared_state_;
 
   // If external_image_ exists, it means Dawn produced the D3D12 side of the
   // D3D11 texture created by ID3D12Device::OpenSharedHandle.

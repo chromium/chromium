@@ -18,24 +18,6 @@ namespace gpu {
 
 namespace {
 
-class ScopedRestoreTexture2D {
- public:
-  explicit ScopedRestoreTexture2D(gl::GLApi* api) : api_(api) {
-    GLint binding = 0;
-    api->glGetIntegervFn(GL_TEXTURE_BINDING_2D, &binding);
-    prev_binding_ = binding;
-  }
-
-  ~ScopedRestoreTexture2D() {
-    api_->glBindTextureFn(GL_TEXTURE_2D, prev_binding_);
-  }
-
- private:
-  gl::GLApi* const api_;
-  GLuint prev_binding_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture2D);
-};
-
 bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
                      Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
@@ -106,80 +88,6 @@ SharedImageBackingFactoryD3D::SwapChainBackings::operator=(
 bool SharedImageBackingFactoryD3D::IsSwapChainSupported() {
   return gl::DirectCompositionSurfaceWin::IsDirectCompositionSupported() &&
          gl::DirectCompositionSurfaceWin::IsSwapChainTearingSupported();
-}
-
-std::unique_ptr<SharedImageBacking> SharedImageBackingFactoryD3D::MakeBacking(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    size_t buffer_index,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    base::win::ScopedHandle shared_handle) {
-  gl::GLApi* const api = gl::g_current_gl_context;
-  ScopedRestoreTexture2D scoped_restore(api);
-
-  const GLenum target = GL_TEXTURE_2D;
-  GLuint service_id = 0;
-  api->glGenTexturesFn(1, &service_id);
-  api->glBindTextureFn(target, service_id);
-  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
-
-  if (swap_chain) {
-    DCHECK(!d3d11_texture);
-    DCHECK(!shared_handle.IsValid());
-    const HRESULT hr =
-        swap_chain->GetBuffer(buffer_index, IID_PPV_ARGS(&d3d11_texture));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "GetBuffer failed with error " << std::hex;
-      return nullptr;
-    }
-  } else if (shared_handle.IsValid()) {
-    // Keyed mutexes are required for Dawn interop but are not used
-    // for XR composition where fences are used instead.
-    d3d11_texture.As(&dxgi_keyed_mutex);
-  }
-  DCHECK(d3d11_texture);
-
-  // The GL internal format can differ from the underlying swap chain format
-  // e.g. RGBA8 or RGB8 instead of BGRA8.
-  const GLenum internal_format = viz::GLInternalFormat(format);
-  const GLenum data_type = viz::GLDataType(format);
-  const GLenum data_format = viz::GLDataFormat(format);
-  auto image = base::MakeRefCounted<gl::GLImageD3D>(
-      size, internal_format, data_type, d3d11_texture, swap_chain);
-  DCHECK_EQ(image->GetDataFormat(), data_format);
-  if (!image->Initialize()) {
-    DLOG(ERROR) << "GLImageD3D::Initialize failed";
-    return nullptr;
-  }
-  if (!image->BindTexImage(target)) {
-    DLOG(ERROR) << "GLImageD3D::BindTexImage failed";
-    return nullptr;
-  }
-
-  scoped_refptr<gles2::TexturePassthrough> texture =
-      base::MakeRefCounted<gles2::TexturePassthrough>(service_id, target);
-  texture->SetLevelImage(target, 0, image.get());
-  GLint texture_memory_size = 0;
-  api->glGetTexParameterivFn(target, GL_MEMORY_SIZE_ANGLE,
-                             &texture_memory_size);
-  texture->SetEstimatedSize(texture_memory_size);
-
-  return std::make_unique<SharedImageBackingD3D>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(swap_chain), std::move(texture), std::move(image), buffer_index,
-      std::move(d3d11_texture), std::move(shared_handle),
-      std::move(dxgi_keyed_mutex));
 }
 
 SharedImageBackingFactoryD3D::SwapChainBackings
@@ -263,18 +171,30 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
   if (!ClearBackBuffer(swap_chain, d3d11_device_))
     return {nullptr, nullptr};
 
-  auto back_buffer_backing = MakeBacking(
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
+  hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_texture));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "GetBuffer failed with error " << std::hex;
+    return {nullptr, nullptr};
+  }
+  auto back_buffer_backing = SharedImageBackingD3D::CreateFromSwapChainBuffer(
       back_buffer_mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, swap_chain, 0 /* buffer_index */,
-      nullptr /* d3d11_texture */, base::win::ScopedHandle());
+      alpha_type, usage, std::move(back_buffer_texture), swap_chain,
+      /*buffer_index=*/0);
   if (!back_buffer_backing)
     return {nullptr, nullptr};
   back_buffer_backing->SetCleared();
 
-  auto front_buffer_backing = MakeBacking(
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
+  hr = swap_chain->GetBuffer(1, IID_PPV_ARGS(&front_buffer_texture));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "GetBuffer failed with error " << std::hex;
+    return {nullptr, nullptr};
+  }
+  auto front_buffer_backing = SharedImageBackingD3D::CreateFromSwapChainBuffer(
       front_buffer_mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, swap_chain, 1 /* buffer_index */,
-      nullptr /* d3d11_texture */, base::win::ScopedHandle());
+      alpha_type, usage, std::move(front_buffer_texture), swap_chain,
+      /*buffer_index=*/1);
   if (!front_buffer_backing)
     return {nullptr, nullptr};
   front_buffer_backing->SetCleared();
@@ -345,14 +265,12 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
                 << std::hex << hr;
     return nullptr;
   }
-
   // Put the shared handle into an RAII object as quickly as possible to
   // ensure we do not leak it.
   base::win::ScopedHandle scoped_shared_handle(shared_handle);
-
-  return MakeBacking(mailbox, format, size, color_space, surface_origin,
-                     alpha_type, usage, nullptr, 0, std::move(d3d11_texture),
-                     std::move(scoped_shared_handle));
+  return SharedImageBackingD3D::CreateFromSharedHandle(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(d3d11_texture), std::move(scoped_shared_handle));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -427,11 +345,10 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
-  auto backing =
-      MakeBacking(mailbox, viz::GetResourceFormat(format), size, color_space,
-                  surface_origin, alpha_type, usage, /*swap_chain=*/nullptr,
-                  /*buffer_index=*/0, std::move(d3d11_texture),
-                  std::move(handle.dxgi_handle));
+  auto backing = SharedImageBackingD3D::CreateFromSharedHandle(
+      mailbox, viz::GetResourceFormat(format), size, color_space,
+      surface_origin, alpha_type, usage, std::move(d3d11_texture),
+      std::move(handle.dxgi_handle));
   if (backing)
     backing->SetCleared();
   return backing;
