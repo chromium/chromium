@@ -200,6 +200,9 @@ crbug.com/1164553 [ Linux ] http/tests/devtools/runtime/runtime-es6-setSymbolPro
 crbug.com/1199904 [ Linux ] http/tests/devtools/editor/text-editor-accessibility.js [ Pass Failure ]
 crbug.com/1199904 [ Linux ] virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass Failure ]
 
+# Sheriff 2021-05-03
+crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
