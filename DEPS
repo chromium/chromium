@@ -368,7 +368,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'resultdb_version': 'git_revision:65b41c1a56b49e7b33de8efb9d8fc993ff03851c',
+  'resultdb_version': 'git_revision:860c34e2db00ad8d59b9cd4482366083b51fa705',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
