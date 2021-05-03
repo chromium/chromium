@@ -3900,6 +3900,20 @@ hooks = [
                '--bucket', 'chromium-webrtc-resources',
                '-d', 'src/third_party/opus/tests/resources'],
   },
+  # Pull order files for the win/clang build.
+  {
+    'name': 'orderfiles_win',
+    'pattern': '.',
+    'condition': 'checkout_win',
+    'action': [ 'python',
+                'src/third_party/depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--no_auth',
+                '--num_threads=4',
+                '--bucket', 'chromium-browser-clang/orderfiles',
+                '-d', 'src/chrome/build',
+    ],
+  },
   {
     'name': 'apache_mac',
     'pattern': '\\.sha1',

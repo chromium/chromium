@@ -378,6 +378,8 @@ if (is_win) {
       "//content/public/app",
       "//headless:headless_renderer",
     ]
+
+    configs += [ "//build/config/compiler:chrome_orderfile_config" ]
   }
 
   copy("copy_first_run") {
