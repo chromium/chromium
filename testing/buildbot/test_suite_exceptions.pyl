@@ -234,12 +234,26 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
+        # TODO(crbug/1200134): Remove it once blink tests is fixed on
+        # bionic bots.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
           '--debug',
         ],
         'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
           'shards': 25,
         },
       },
@@ -604,9 +618,25 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
+      # TODO(crbug/1200334): Remove it once interactive_ui_tests is fixed on
+      # bionic bots.
+      'Linux Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
+      },
       'Linux Tests (dbg)(1)': {
         # crbug.com/1066161
         'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
           'shards': 20,
         },
       },
@@ -1194,25 +1224,6 @@
           'shards': 15,
         },
       },
-      # TODO(crbug/1199425): Remove it once bionic is the default option.
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
-      },
       'Lollipop Phone Tester': {
         'swarming': {
           'shards': 10,
@@ -1792,6 +1803,26 @@
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
+      # TODO(crbug/1199425): Remove it once interactive_ui_tests is fixed on
+      # bionic bots.
+      'Linux Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
+      },
+      'Linux Tests (dbg)(1)': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
+      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
@@ -2253,6 +2284,24 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
+        # TODO(crbug/1200134): Remove it once blink tests is fixed on
+        # bionic bots.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
+      },
+      'Linux Tests (dbg)(1)': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
       },
       'linux-code-coverage': {
         'args': [
@@ -2727,28 +2776,12 @@
           '--xvfb',
           '--jobs=1',
         ],
-        # TODO(crbug/1199425): Remove it once bionic is the default option.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
           '--xvfb',
           '--jobs=1',
         ],
-        # TODO(crbug/1199425): Remove it once bionic is the default option.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
       },
       # TODO crbug.com/1143924: Remove when experimentation is complete
       'Linux Tests Robocrop': {
@@ -2831,25 +2864,6 @@
   },
   'telemetry_unittests': {
     'modifications': {
-      # TODO(crbug/1199425): Remove it once bionic is the default option.
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
-        },
-      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
       },
