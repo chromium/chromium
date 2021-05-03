@@ -103,9 +103,7 @@ void AnimationExample::CreateExampleView(View* container) {
   container->layer()->SetFillsBoundsOpaquely(true);
 
   container->SetLayoutManager(std::make_unique<AnimatingLayoutManager>())
-      ->SetBoundsAnimationMode(
-          AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes)
-      .SetAnimationDuration(base::TimeDelta::FromSeconds(1))
+      ->SetAnimationDuration(base::TimeDelta::FromSeconds(1))
       .SetTweenType(gfx::Tween::EASE_IN_OUT)
       .SetTargetLayoutManager(std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i)

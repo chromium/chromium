@@ -529,11 +529,13 @@ void AnimatingLayoutManager::LayoutImpl() {
   const gfx::Size host_size = host_view()->size();
 
   if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds) {
-    if (!cached_layout_size() || host_size != *cached_layout_size()) {
-      // Host size changed, so reset the layout.
+    if (!cached_layout_size()) {
+      // No previous layout, so snap to the target.
       ResetLayoutToTargetSize();
+    } else if (host_size != *cached_layout_size()) {
+      // Host size changed, so animate.
+      RecalculateTarget();
     }
-
   } else {
     const SizeBounds available_size = GetAvailableHostSize();
 
@@ -554,8 +556,8 @@ void AnimatingLayoutManager::LayoutImpl() {
       const int current_main =
           GetMainAxis(orientation(), current_layout_.host_size);
       if ((current_main > host_main) || (current_main > bounds_main)) {
-        // Reset the layout immediately if the current or target layout exceeds
-        // the host size or the available space.
+        // Reset the layout immediately if the current layout exceeds the host
+        // size or the available space.
         last_available_host_size_ = available_size;
         ResetLayoutToSize(host_size);
       } else if (available_size != last_available_host_size_) {
@@ -619,19 +621,6 @@ bool AnimatingLayoutManager::RecalculateTarget() {
   }
 
   const gfx::Size target_size = GetAvailableTargetLayoutSize();
-
-  // For layouts that are confined to available space, changing the available
-  // space causes a fresh layout, not an animation.
-  // TODO(dfried): define a way for views to animate into and out of empty
-  // space as adjacent child views appear/disappear. This will be useful in
-  // animating tab titles, which currently slide over when the favicon
-  // disappears.
-  if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds &&
-      *cached_layout_size() != target_size) {
-    ResetLayoutToSize(target_size);
-    return true;
-  }
-
   set_cached_layout_size(target_size);
 
   // If there has been no appreciable change in layout, there's no reason to
