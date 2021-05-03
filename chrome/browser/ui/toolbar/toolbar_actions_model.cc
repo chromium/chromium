@@ -321,29 +321,71 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
-  auto new_pinned_action_ids = pinned_action_ids_;
+  // If pinned actions are empty, we're going to have a real bad time (with
+  // out-of-bounds access, size_t wraps, etc). Keep this a hard CHECK (not a
+  // DCHECK).
+  CHECK(!pinned_action_ids_.empty());
 
-  auto current_position = std::find(new_pinned_action_ids.begin(),
-                                    new_pinned_action_ids.end(), action_id);
-  DCHECK(current_position != new_pinned_action_ids.end());
+  auto current_position_on_toolbar = std::find(
+      pinned_action_ids_.begin(), pinned_action_ids_.end(), action_id);
+  DCHECK(current_position_on_toolbar != pinned_action_ids_.end());
+  size_t current_index_on_toolbar =
+      current_position_on_toolbar - pinned_action_ids_.begin();
 
-  const bool move_to_end = size_t{target_index} >= new_pinned_action_ids.size();
-  auto target_position =
-      move_to_end ? std::prev(new_pinned_action_ids.end())
-                  : std::next(new_pinned_action_ids.begin(), target_index);
+  if (current_index_on_toolbar == target_index)
+    return;
 
-  // Rotate |action_id| to be in the target position.
-  if (target_position < current_position) {
-    std::rotate(target_position, current_position, std::next(current_position));
-  } else {
-    std::rotate(current_position, std::next(current_position),
-                std::next(target_position));
+  bool is_left_to_right_move = target_index > current_index_on_toolbar;
+
+  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
+  auto target_position = stored_pinned_actions.end();
+
+  // Moving pinned actions is a bit tricky (unless we move it to the end - in
+  // which case it's trivial). We need to store the updated state in prefs, but
+  // the prefs also contain pin state information for unloaded (but still
+  // installed) extensions. Thus, we can't just reorder the pinned_action_ids_
+  // (which only include loaded extensions), and set those directly.
+  //
+  // Instead, we look at the destination of the action in the toolbar, and
+  // find the ID of the action to its right (if any). Then in the stored prefs,
+  // find that action, and insert the moved action to its left.
+  //
+  // For example:
+  // Consider the pinned extension order in prefs is "A [B C] D E", where
+  // B and C are unloaded extensions. Assume we want to A to index 1 on the
+  // toolbar (swapping A and D). We would look for the new action to its
+  // right (E), and insert it in prefs to the left of it. Thus, the new pref
+  // order would be "[B C] D A E".
+
+  const bool move_to_end = target_index >= pinned_action_ids_.size() - 1;
+  if (!move_to_end) {
+    size_t new_index_to_right =
+        is_left_to_right_move ? target_index + 1 : target_index;
+    DCHECK_LT(new_index_to_right, pinned_action_ids_.size());
+
+    target_position =
+        std::find(stored_pinned_actions.begin(), stored_pinned_actions.end(),
+                  pinned_action_ids_[new_index_to_right]);
+    DCHECK(target_position != stored_pinned_actions.end());
   }
 
-  extension_prefs_->SetPinnedExtensions(new_pinned_action_ids);
+  auto current_position_in_prefs = std::find(
+      stored_pinned_actions.begin(), stored_pinned_actions.end(), action_id);
+  DCHECK(current_position_in_prefs != stored_pinned_actions.end());
+
+  // Rotate |action_id| to be in the target position.
+  if (is_left_to_right_move) {
+    std::rotate(current_position_in_prefs, std::next(current_position_in_prefs),
+                target_position);
+  } else {
+    std::rotate(target_position, current_position_in_prefs,
+                std::next(current_position_in_prefs));
+  }
+
+  extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
-  DCHECK(pinned_action_ids_ == new_pinned_action_ids);
+  DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 }
 
 void ToolbarActionsModel::RemoveExtension(

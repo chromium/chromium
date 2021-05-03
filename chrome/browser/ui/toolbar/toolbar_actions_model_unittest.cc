@@ -1129,17 +1129,19 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToPinnedOrderSavedInExtensionPrefs) {
                            browser_action_c()->id()));
 
   // Verify that moving an action left to right is reflected in preferences.
-  toolbar_model()->MovePinnedAction(browser_action_b()->id(), 2);
-  EXPECT_THAT(
-      extension_prefs->GetPinnedExtensions(),
-      testing::ElementsAre(browser_action_a()->id(), browser_action_c()->id(),
-                           browser_action_b()->id()));
-
-  // Verify that moving an action right to left is reflected in preferences.
-  toolbar_model()->MovePinnedAction(browser_action_b()->id(), 0);
+  // Note: Use index 1 (instead of 2) because moving to the end of the list
+  // is handled differently.
+  toolbar_model()->MovePinnedAction(browser_action_a()->id(), 1);
   EXPECT_THAT(
       extension_prefs->GetPinnedExtensions(),
       testing::ElementsAre(browser_action_b()->id(), browser_action_a()->id(),
+                           browser_action_c()->id()));
+
+  // Verify that moving an action right to left is reflected in preferences.
+  toolbar_model()->MovePinnedAction(browser_action_a()->id(), 0);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
                            browser_action_c()->id()));
 
   // Verify that moving an action to index greater than rightmost index is
@@ -1149,6 +1151,55 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToPinnedOrderSavedInExtensionPrefs) {
       extension_prefs->GetPinnedExtensions(),
       testing::ElementsAre(browser_action_a()->id(), browser_action_c()->id(),
                            browser_action_b()->id()));
+
+  // "Moving" an icon to its current position should be a no-op.
+  toolbar_model()->MovePinnedAction(browser_action_c()->id(), 1);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(browser_action_a()->id(), browser_action_c()->id(),
+                           browser_action_b()->id()));
+
+  // Repeat the above tests, but add in extra IDs into prefs (representing
+  // extensions that could be installed, but not loaded). These unloaded
+  // extensions' states should be preserved.
+  constexpr char kExtraId1[] = "extra1";
+  constexpr char kExtraId2[] = "extra2";
+  extension_prefs->SetPinnedExtensions({browser_action_a()->id(), kExtraId1,
+                                        kExtraId2, browser_action_c()->id(),
+                                        browser_action_b()->id()});
+
+  EXPECT_THAT(
+      toolbar_model()->pinned_action_ids(),
+      testing::ElementsAre(browser_action_a()->id(), browser_action_c()->id(),
+                           browser_action_b()->id()));
+
+  // Move right to left.
+  toolbar_model()->MovePinnedAction(browser_action_c()->id(), 0);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(browser_action_c()->id(), browser_action_a()->id(),
+                           kExtraId1, kExtraId2, browser_action_b()->id()));
+
+  // Move left to right.
+  toolbar_model()->MovePinnedAction(browser_action_c()->id(), 1);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(browser_action_a()->id(), kExtraId1, kExtraId2,
+                           browser_action_c()->id(), browser_action_b()->id()));
+
+  // Move past the right-most index (of the visible actions).
+  toolbar_model()->MovePinnedAction(browser_action_a()->id(), 4);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(kExtraId1, kExtraId2, browser_action_c()->id(),
+                           browser_action_b()->id(), browser_action_a()->id()));
+
+  // "Move" to the current position.
+  toolbar_model()->MovePinnedAction(browser_action_b()->id(), 1);
+  EXPECT_THAT(
+      extension_prefs->GetPinnedExtensions(),
+      testing::ElementsAre(kExtraId1, kExtraId2, browser_action_c()->id(),
+                           browser_action_b()->id(), browser_action_a()->id()));
 }
 
 TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
@@ -1217,4 +1268,76 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
   EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
   auto* prefs = extensions::ExtensionPrefs::Get(profile());
   EXPECT_FALSE(base::Contains(prefs->GetPinnedExtensions(), extension_id));
+}
+
+// Tests that the pin state (and position) for extensions that are unloaded
+// (but *not* uninstalled) is preserved, even if the pinning order was modified
+// while they were unloaded.
+// Regression test for crbug.com/1203899.
+TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
+  Init();
+  ASSERT_TRUE(AddBrowserActionExtensions());
+
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(browser_action_a()->id(),
+                                              browser_action_b()->id(),
+                                              browser_action_c()->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+  // Pin all of them.
+  toolbar_model()->SetActionVisibility(browser_action_a()->id(), true);
+  toolbar_model()->SetActionVisibility(browser_action_b()->id(), true);
+  toolbar_model()->SetActionVisibility(browser_action_c()->id(), true);
+
+  EXPECT_THAT(
+      toolbar_model()->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
+                             browser_action_c()->id()));
+
+  // Disable extension A. It should no longer be reflected in the pinned
+  // extensions (or the actions at all).
+  service()->DisableExtension(browser_action_a()->id(),
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(browser_action_b()->id(),
+                                              browser_action_c()->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_b()->id(),
+                                     browser_action_c()->id()));
+
+  // Re-enable extension A. It should retain it's pinned status (and position,
+  // at index 0).
+  service()->EnableExtension(browser_action_a()->id());
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(browser_action_a()->id(),
+                                              browser_action_b()->id(),
+                                              browser_action_c()->id()));
+  EXPECT_THAT(
+      toolbar_model()->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
+                             browser_action_c()->id()));
+
+  // Repeat the unload, reload flow, but move a pinned action between the
+  // unload and the reload.
+  service()->DisableExtension(browser_action_a()->id(),
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  toolbar_model()->MovePinnedAction(browser_action_b()->id(), 1u);
+
+  // Interim: state should be C, B.
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(browser_action_b()->id(),
+                                              browser_action_c()->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_c()->id(),
+                                     browser_action_b()->id()));
+
+  // Reload - state should be A, C, B.
+  service()->EnableExtension(browser_action_a()->id());
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(browser_action_a()->id(),
+                                              browser_action_b()->id(),
+                                              browser_action_c()->id()));
+  EXPECT_THAT(
+      toolbar_model()->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_a()->id(), browser_action_c()->id(),
+                             browser_action_b()->id()));
 }
