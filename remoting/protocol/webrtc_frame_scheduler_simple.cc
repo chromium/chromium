@@ -110,6 +110,14 @@ void WebrtcFrameSchedulerSimple::OnRttUpdate(base::TimeDelta rtt) {
   rtt_estimate_ = rtt;
 }
 
+void WebrtcFrameSchedulerSimple::OnTopOffActive(bool active) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  top_off_is_active_ = active;
+  if (active) {
+    ScheduleNextFrame();
+  }
+}
+
 void WebrtcFrameSchedulerSimple::Start(
     const base::RepeatingClosure& capture_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());

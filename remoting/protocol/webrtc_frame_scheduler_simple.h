@@ -37,6 +37,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;
+  void OnTopOffActive(bool active) override;
   void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
                       WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
   void OnEncodedFrameSent(

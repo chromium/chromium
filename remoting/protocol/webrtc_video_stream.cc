@@ -201,6 +201,11 @@ void WebrtcVideoStream::OnRttUpdate(base::TimeDelta rtt) {
   scheduler_->OnRttUpdate(rtt);
 }
 
+void WebrtcVideoStream::OnTopOffActive(bool active) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  scheduler_->OnTopOffActive(active);
+}
+
 void WebrtcVideoStream::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
