@@ -188,9 +188,9 @@ void AssistantClientImpl::OnExtendedAccountInfoUpdated(
 }
 
 void AssistantClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
-  if (!assistant_state_observer_.IsObservingSources() && !initialized_ &&
+  if (!assistant_state_observation_.IsObserving() && !initialized_ &&
       ash::AssistantState::Get()) {
-    assistant_state_observer_.Add(ash::AssistantState::Get());
+    assistant_state_observation_.Observe(ash::AssistantState::Get());
   }
 }
 

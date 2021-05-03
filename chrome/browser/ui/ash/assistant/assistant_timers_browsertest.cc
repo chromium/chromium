@@ -13,7 +13,7 @@
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
@@ -52,8 +52,9 @@ constexpr int kVersion = 1;
       return;                                                                 \
     }                                                                         \
     MockMessageCenterObserver mock;                                           \
-    ScopedObserver<MessageCenter, MessageCenterObserver> observer_{&mock};    \
-    observer_.Add(MessageCenter::Get());                                      \
+    base::ScopedObservation<MessageCenter, MessageCenterObserver>             \
+        observation_{&mock};                                                  \
+    observation_.Observe(MessageCenter::Get());                               \
                                                                               \
     base::RunLoop run_loop;                                                   \
     EXPECT_CALL(mock, OnNotificationAdded)                                    \
@@ -289,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
                        ShouldTickNotificationsAtRegularIntervals) {
   // Observe notifications.
   MockMessageCenterObserver mock;
-  ScopedObserver<MessageCenter, MessageCenterObserver> scoped_observer{&mock};
-  scoped_observer.Add(MessageCenter::Get());
+  base::ScopedObservation<MessageCenter, MessageCenterObserver>
+      scoped_observation{&mock};
+  scoped_observation.Observe(MessageCenter::Get());
 
   // Show Assistant UI (once ready).
   tester()->StartAssistantAndWaitForReady();

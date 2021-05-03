@@ -218,8 +218,8 @@ void DeviceActions::AddAndFireAppListEventSubscriber(
 
   app_list_subscribers_.AddObserver(subscriber);
 
-  if (prefs && !scoped_prefs_observer_.IsObserving(prefs))
-    scoped_prefs_observer_.Add(prefs);
+  if (prefs && !scoped_prefs_observations_.IsObservingSource(prefs))
+    scoped_prefs_observations_.AddObservation(prefs);
 }
 
 void DeviceActions::RemoveAppListEventSubscriber(

@@ -10,7 +10,7 @@
 #include "ash/public/cpp/assistant/assistant_web_view.h"
 #include "ash/public/cpp/assistant/assistant_web_view_factory.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -37,26 +37,28 @@ constexpr int kVersion = 1;
 
 // Macros ----------------------------------------------------------------------
 
-#define EXPECT_PREFERRED_SIZE(web_view_, expected_preferred_size_)       \
-  {                                                                      \
-    MockViewObserver mock;                                               \
-    ScopedObserver<views::View, views::ViewObserver> observer{&mock};    \
-    observer.Add(static_cast<views::View*>(web_view_));                  \
-                                                                         \
-    base::RunLoop run_loop;                                              \
-    EXPECT_CALL(mock, OnViewPreferredSizeChanged)                        \
-        .WillOnce(testing::Invoke([&](views::View* view) {               \
-          EXPECT_EQ(expected_preferred_size_, view->GetPreferredSize()); \
-          run_loop.QuitClosure().Run();                                  \
-        }));                                                             \
-    run_loop.Run();                                                      \
+#define EXPECT_PREFERRED_SIZE(web_view_, expected_preferred_size_)         \
+  {                                                                        \
+    MockViewObserver mock;                                                 \
+    base::ScopedObservation<views::View, views::ViewObserver> observation{ \
+        &mock};                                                            \
+    observation.Observe(static_cast<views::View*>(web_view_));             \
+                                                                           \
+    base::RunLoop run_loop;                                                \
+    EXPECT_CALL(mock, OnViewPreferredSizeChanged)                          \
+        .WillOnce(testing::Invoke([&](views::View* view) {                 \
+          EXPECT_EQ(expected_preferred_size_, view->GetPreferredSize());   \
+          run_loop.QuitClosure().Run();                                    \
+        }));                                                               \
+    run_loop.Run();                                                        \
   }
 
 #define EXPECT_DID_STOP_LOADING(web_view_)                                     \
   {                                                                            \
     MockAssistantWebViewObserver mock;                                         \
-    ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock};   \
-    obs.Add(web_view_);                                                        \
+    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
+        &mock};                                                                \
+    obs.Observe(web_view_);                                                    \
                                                                                \
     base::RunLoop run_loop;                                                    \
     EXPECT_CALL(mock, DidStopLoading).WillOnce(testing::Invoke([&run_loop]() { \
@@ -65,40 +67,42 @@ constexpr int kVersion = 1;
     run_loop.Run();                                                            \
   }
 
-#define EXPECT_DID_SUPPRESS_NAVIGATION(web_view_, expected_url_,             \
-                                       expected_disposition_,                \
-                                       expected_from_user_gesture_)          \
-  {                                                                          \
-    MockAssistantWebViewObserver mock;                                       \
-    ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock}; \
-    obs.Add(web_view_);                                                      \
-                                                                             \
-    base::RunLoop run_loop;                                                  \
-    EXPECT_CALL(mock, DidSuppressNavigation)                                 \
-        .WillOnce(testing::Invoke([&](const GURL& url,                       \
-                                      WindowOpenDisposition disposition,     \
-                                      bool from_user_gesture) {              \
-          EXPECT_EQ(expected_url_, url);                                     \
-          EXPECT_EQ(expected_disposition_, disposition);                     \
-          EXPECT_EQ(expected_from_user_gesture_, from_user_gesture);         \
-          run_loop.QuitClosure().Run();                                      \
-        }));                                                                 \
-    run_loop.Run();                                                          \
+#define EXPECT_DID_SUPPRESS_NAVIGATION(web_view_, expected_url_,               \
+                                       expected_disposition_,                  \
+                                       expected_from_user_gesture_)            \
+  {                                                                            \
+    MockAssistantWebViewObserver mock;                                         \
+    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
+        &mock};                                                                \
+    obs.Observe(web_view_);                                                    \
+                                                                               \
+    base::RunLoop run_loop;                                                    \
+    EXPECT_CALL(mock, DidSuppressNavigation)                                   \
+        .WillOnce(testing::Invoke([&](const GURL& url,                         \
+                                      WindowOpenDisposition disposition,       \
+                                      bool from_user_gesture) {                \
+          EXPECT_EQ(expected_url_, url);                                       \
+          EXPECT_EQ(expected_disposition_, disposition);                       \
+          EXPECT_EQ(expected_from_user_gesture_, from_user_gesture);           \
+          run_loop.QuitClosure().Run();                                        \
+        }));                                                                   \
+    run_loop.Run();                                                            \
   }
 
-#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)      \
-  {                                                                          \
-    MockAssistantWebViewObserver mock;                                       \
-    ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock}; \
-    obs.Add(web_view_);                                                      \
-                                                                             \
-    base::RunLoop run_loop;                                                  \
-    EXPECT_CALL(mock, DidChangeCanGoBack)                                    \
-        .WillOnce(testing::Invoke([&](bool can_go_back) {                    \
-          EXPECT_EQ(expected_can_go_back_, can_go_back);                     \
-          run_loop.QuitClosure().Run();                                      \
-        }));                                                                 \
-    run_loop.Run();                                                          \
+#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)        \
+  {                                                                            \
+    MockAssistantWebViewObserver mock;                                         \
+    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
+        &mock};                                                                \
+    obs.Observe(web_view_);                                                    \
+                                                                               \
+    base::RunLoop run_loop;                                                    \
+    EXPECT_CALL(mock, DidChangeCanGoBack)                                      \
+        .WillOnce(testing::Invoke([&](bool can_go_back) {                      \
+          EXPECT_EQ(expected_can_go_back_, can_go_back);                       \
+          run_loop.QuitClosure().Run();                                        \
+        }));                                                                   \
+    run_loop.Run();                                                            \
   }
 
 // Helpers ---------------------------------------------------------------------
