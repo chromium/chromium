@@ -1192,6 +1192,15 @@
     'linux_seccomp_bpf': {
       'filepath': 'content/common/sandbox.*linux.cc',
     },
+    'lookalikes': {
+      'filepath': 'chrome/browser/component_updater/safety_tips_.*'\
+                  '|chrome/browser/lookalikes/'\
+                  '|chrome/browser/reputation/'\
+                  '|chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.*'\
+                  '|components/lookalikes/'\
+                  '|components/site_engagement/'\
+                  '|components/url_formatter/',
+    },
     'mac': {
       'filepath': '(_|/)(cocoa|mac)(_|\.)|/(cocoa|mac)/|^((?!ios\/).)*\.mm?$',
     },
@@ -1601,12 +1610,6 @@
     'safe_browsing': {
       'filepath': 'chrome/(browser|common|renderer)/safe_browsing/|'\
                   'components/safe_browsing/',
-    },
-    'safety_tips': {
-      'filepath': 'chrome/browser/component_updater/safety_tips_.*'\
-                  '|chrome/browser/lookalikes/'\
-                  '|chrome/browser/reputation/'\
-                  '|chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.*',
     },
     'sampling_profiler': {
       'filepath': 'base/profiler/'\
@@ -2537,6 +2540,7 @@
     'linux_seccomp_bpf': ['jln+watch@chromium.org',
                           'mpdenton+watch@chromium.org',
                           'rsesek+watch@chromium.org'],
+    'lookalikes': ['jdeblasio+watch@chromium.org'],
     'mac' : ['mac-reviews@chromium.org'],
     'manifest': ['dominickn+watch-manifest@chromium.org',
                  'dmurph+watching-manifest@chromium.org',
@@ -2680,7 +2684,6 @@
                       'timvolodine@chromium.org',
                       'vakh+safe_browsing_watch@chromium.org',
                       'xinghuilu+watch@chromium.org'],
-    'safety_tips': ['jdeblasio+watch@chromium.org'],
     'sampling_profiler': ['wittman+watch@chromium.org'],
     'scanning': ['gavinwill+scanning-watch@chromium.org',
                  'zentaro+scanning-watch@chromium.org'],
