@@ -78,6 +78,18 @@ void SetTabHelperAppId(content::WebContents* web_contents,
 
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
+  Browser* browser = nav_params.browser;
+  const base::Optional<web_app::SystemAppType> capturing_system_app_type =
+      web_app::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
+  // TODO(crbug.com/1201820): This block creates conditions where Navigate()
+  // returns early and causes a crash. Fail gracefully instead. Further
+  // debugging state will be implemented via Chrometto UMA traces.
+  if (capturing_system_app_type &&
+      (!browser || !web_app::IsBrowserForSystemWebApp(
+                       browser, capturing_system_app_type.value()))) {
+    return nullptr;
+  }
+
   Navigate(&nav_params);
 
   content::WebContents* const web_contents =
