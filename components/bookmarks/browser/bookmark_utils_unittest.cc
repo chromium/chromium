@@ -276,7 +276,7 @@ TEST_F(BookmarkUtilsTest, DISABLED_PasteBookmarkFromURL) {
 }
 
 // TODO(https://crbug.com/1010182): Fix flakes and re-enable this test.
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_CopyPaste DISABLED_CopyPaste
 #else
 #define MAYBE_CopyPaste CopyPaste
@@ -372,7 +372,7 @@ TEST_F(BookmarkUtilsTest, DISABLED_CopyPasteMetaInfo) {
   EXPECT_EQ("someothervalue", value);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 // http://crbug.com/396472
 #define MAYBE_CutToClipboard DISABLED_CutToClipboard
 #else

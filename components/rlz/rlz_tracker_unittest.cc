@@ -409,7 +409,7 @@ const char kOmniboxFirstSearchPhone[] = "CDF";
 const char kOmniboxInstallTablet[] = "C9I";
 const char kOmniboxSetToGoogleTablet[] = "C9S";
 const char kOmniboxFirstSearchTablet[] = "C9F";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 const char kOmniboxInstall[] = "C5I";
 const char kOmniboxSetToGoogle[] = "C5S";
 const char kOmniboxFirstSearch[] = "C5F";

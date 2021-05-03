@@ -31,7 +31,7 @@ TEST(NativeLibraryTest, GetNativeLibraryName) {
       "mylib.dll";
 #elif defined(OS_IOS)
       "mylib";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
       "libmylib.dylib";
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
       "libmylib.so";
@@ -45,7 +45,7 @@ TEST(NativeLibraryTest, GetLoadableModuleName) {
       "mylib.dll";
 #elif defined(OS_IOS)
       "mylib";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
       "mylib.so";
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
       "libmylib.so";
@@ -61,7 +61,7 @@ TEST(NativeLibraryTest, GetLoadableModuleName) {
 const char kTestLibraryName[] =
 #if defined(OS_WIN)
     "test_shared_library.dll";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
     "libtest_shared_library.dylib";
 #elif defined(OS_ANDROID) && defined(COMPONENT_BUILD)
     "libtest_shared_library.cr.so";

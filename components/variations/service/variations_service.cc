@@ -104,7 +104,7 @@ std::string GetPlatformString() {
   return "win";
 #elif defined(OS_IOS)
   return "ios";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   return "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "chromeos";

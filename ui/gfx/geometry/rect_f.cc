@@ -15,7 +15,7 @@
 
 #if defined(OS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 

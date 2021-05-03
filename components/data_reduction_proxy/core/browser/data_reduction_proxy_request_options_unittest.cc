@@ -54,7 +54,7 @@ const char kClientStr[] = "android";
 #elif defined(OS_IOS)
 const Client kClient = Client::CHROME_IOS;
 const char kClientStr[] = "ios";
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 const Client kClient = Client::CHROME_MAC;
 const char kClientStr[] = "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)

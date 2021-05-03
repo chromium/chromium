@@ -52,13 +52,13 @@ Image ResizedImageForSearchByImage(const Image& image) {
 }
 
 // The MacOS implementation of this function is in image_utils_mac.mm.
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 bool JPEG1xEncodedDataFromImage(const Image& image,
                                 int quality,
                                 std::vector<unsigned char>* dst) {
   return JPEG1xEncodedDataFromSkiaRepresentation(image, quality, dst);
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !defined(OS_MAC)
 
 bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
                                              int quality,

@@ -18,7 +18,7 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
   return Study::PLATFORM_WINDOWS;
 #elif defined(OS_IOS)
   return Study::PLATFORM_IOS;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   return Study::PLATFORM_MAC;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return Study::PLATFORM_CHROMEOS;

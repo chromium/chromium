@@ -20,7 +20,7 @@ namespace test {
 
 #if defined(OS_IOS)
 typedef UIImage* PlatformImage;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 typedef NSImage* PlatformImage;
 #else
 typedef gfx::ImageSkia PlatformImage;

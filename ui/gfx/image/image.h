@@ -70,7 +70,7 @@ class GFX_EXPORT Image {
 #if defined(OS_IOS)
   // Retains |image|.
   explicit Image(UIImage* image);
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   // Retains |image|.
   explicit Image(NSImage* image);
 #endif
@@ -120,7 +120,7 @@ class GFX_EXPORT Image {
   const ImageSkia* ToImageSkia() const;
 #if defined(OS_IOS)
   UIImage* ToUIImage() const;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   NSImage* ToNSImage() const;
 #endif
 

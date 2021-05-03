@@ -81,7 +81,7 @@ sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
              ? sync_pb::SyncEnums_DeviceType_TYPE_TABLET
              : sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   return sync_pb::SyncEnums_DeviceType_TYPE_MAC;
 #elif defined(OS_WIN)
   return sync_pb::SyncEnums_DeviceType_TYPE_WIN;

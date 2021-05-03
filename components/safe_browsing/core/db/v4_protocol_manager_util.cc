@@ -120,7 +120,7 @@ PlatformType GetCurrentPlatformType() {
   return LINUX_PLATFORM;
 #elif defined(OS_IOS)
   return IOS_PLATFORM;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   return OSX_PLATFORM;
 #else
   // TODO(crbug.com/1030487): This file is, in fact, intended to be compiled on

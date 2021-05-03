@@ -22,7 +22,7 @@
 #if defined(OS_IOS)
 #include "base/mac/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -84,7 +84,7 @@ class ImageRep {
     return const_cast<ImageRepCocoaTouch*>(
         static_cast<const ImageRep*>(this)->AsImageRepCocoaTouch());
   }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   const ImageRepCocoa* AsImageRepCocoa() const {
     CHECK_EQ(type_, Image::kImageRepCocoa);
     return reinterpret_cast<const ImageRepCocoa*>(this);
@@ -195,7 +195,7 @@ class ImageRepCocoaTouch : public ImageRep {
 
   DISALLOW_COPY_AND_ASSIGN(ImageRepCocoaTouch);
 };
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 class ImageRepCocoa : public ImageRep {
  public:
   explicit ImageRepCocoa(NSImage* image)
@@ -223,7 +223,7 @@ class ImageRepCocoa : public ImageRep {
 
   DISALLOW_COPY_AND_ASSIGN(ImageRepCocoa);
 };
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
 // The Storage class acts similarly to the pixels in a SkBitmap: the Image
 // class holds a refptr instance of Storage, which in turn holds all the
@@ -352,7 +352,7 @@ Image::Image(UIImage* image) {
     AddRepresentation(std::make_unique<internal::ImageRepCocoaTouch>(image));
   }
 }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 Image::Image(NSImage* image) {
   if (image) {
     storage_ = new internal::ImageStorage(Image::kImageRepCocoa);
@@ -428,7 +428,7 @@ const ImageSkia* Image::ToImageSkia() const {
             ImageSkia(ImageSkiaFromUIImage(native_rep->image())));
         break;
       }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
       case kImageRepCocoa: {
         const internal::ImageRepCocoa* native_rep =
             GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
@@ -474,7 +474,7 @@ UIImage* Image::ToUIImage() const {
   }
   return rep->AsImageRepCocoaTouch()->image();
 }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 NSImage* Image::ToNSImage() const {
   const internal::ImageRep* rep = GetRepresentation(kImageRepCocoa, false);
   if (!rep) {
@@ -535,7 +535,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
           cocoa_touch_rep->image());
       break;
     }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
     case kImageRepCocoa: {
       const internal::ImageRepCocoa* cocoa_rep =
           GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();

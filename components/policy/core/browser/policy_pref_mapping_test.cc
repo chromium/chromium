@@ -273,7 +273,7 @@ class PolicyTestCase {
     const std::string os("win");
 #elif defined(OS_IOS)
     const std::string os("ios");
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
     const std::string os("mac");
 #elif defined(OS_CHROMEOS)
     const std::string os("chromeos");

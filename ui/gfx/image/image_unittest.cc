@@ -18,7 +18,7 @@
 #if defined(OS_IOS)
 #include "base/mac/foundation_util.h"
 #include "skia/ext/skia_utils_ios.h"
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif

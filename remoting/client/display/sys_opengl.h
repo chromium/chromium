@@ -13,7 +13,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 #define GL_GLEXT_PROTOTYPES
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>

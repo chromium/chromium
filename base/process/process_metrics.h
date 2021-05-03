@@ -281,14 +281,12 @@ class BASE_EXPORT ProcessMetrics {
   uint64_t last_energy_impact_time_;
 #endif
 
-#if !defined(OS_IOS)
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Queries the port provider if it's set.
   mach_port_t TaskForPid(ProcessHandle process) const;
 
   PortProvider* port_provider_;
-#endif  // defined(OS_APPLE)
-#endif  // !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMetrics);
 };

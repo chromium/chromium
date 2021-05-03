@@ -111,7 +111,7 @@ std::string GetMachineName() {
 #elif defined(OS_IOS)
   // Use the Vendor ID as the machine name.
   return ios::device_util::GetVendorId();
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0, NULL, NULL, NULL};
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
