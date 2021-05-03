@@ -2474,6 +2474,9 @@ extern const char kNewDragSpecInLauncherDescription[];
 extern const char kEnableNeuralStylusPalmRejectionName[];
 extern const char kEnableNeuralStylusPalmRejectionDescription[];
 
+extern const char kEnableOsFeedbackName[];
+extern const char kEnableOsFeedbackDescription[];
+
 extern const char kEnableNewShortcutMappingName[];
 extern const char kEnableNewShortcutMappingDescription[];
 

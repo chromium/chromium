@@ -520,6 +520,13 @@ const base::Feature kNoteTakingForEnabledWebApps{
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the feedback tool new UX on Chrome OS.
+// This tool under development will be rolled out via Finch.
+// Enabling this flag will use the new feedback tool instead of the current
+// tool on CrOS.
+const base::Feature kOsFeedback{"OsFeedback",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",

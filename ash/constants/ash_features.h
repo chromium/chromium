@@ -229,6 +229,8 @@ extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNewOobeLayout;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kOsFeedback;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPhoneHub;

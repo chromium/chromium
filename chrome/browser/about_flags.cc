@@ -5494,6 +5494,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNeuralStylusPalmRejectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmDetectionFilter)},
 
+    {"enable-os-feedback", flag_descriptions::kEnableOsFeedbackName,
+     flag_descriptions::kEnableOsFeedbackDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOsFeedback)},
+
     {"enable-palm-max-touch-major",
      flag_descriptions::kEnablePalmOnMaxTouchMajorName,
      flag_descriptions::kEnablePalmOnMaxTouchMajorDescription, kOsCrOS,

@@ -2174,6 +2174,11 @@
     "expiry_milestone": 87
   },
   {
+    "name": "enable-os-feedback",
+    "owners": [ "xiangdongkong", "cros-telemetry@google.com" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "enable-palm-max-touch-major",
     "owners": [ "robsc", "napper", "adlr" ],
     // Added feature to possibly disable/enable this functionality, combined
