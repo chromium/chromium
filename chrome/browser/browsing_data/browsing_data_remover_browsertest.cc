@@ -86,7 +86,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/leveldb_features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
@@ -304,8 +303,7 @@ class BrowsingDataRemoverBrowserTest
     : public BrowsingDataRemoverBrowserTestBase {
  public:
   BrowsingDataRemoverBrowserTest() {
-    std::vector<base::Feature> enabled_features = {
-        leveldb::kLevelDBRewriteFeature};
+    std::vector<base::Feature> enabled_features = {};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif

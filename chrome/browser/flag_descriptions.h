@@ -1220,9 +1220,6 @@ extern const char kReadLaterNewBadgePromoDescription[];
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 
-extern const char kRewriteLevelDBOnDeletionName[];
-extern const char kRewriteLevelDBOnDeletionDescription[];
-
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 

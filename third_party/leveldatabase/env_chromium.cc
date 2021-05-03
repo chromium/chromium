@@ -37,7 +37,6 @@
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "third_party/leveldatabase/chromium_logger.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
-#include "third_party/leveldatabase/leveldb_features.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -1416,8 +1415,6 @@ leveldb::Status RewriteDB(const leveldb_env::Options& options,
                           const std::string& name,
                           std::unique_ptr<leveldb::DB>* dbptr) {
   DCHECK(options.create_if_missing);
-  if (!base::FeatureList::IsEnabled(leveldb::kLevelDBRewriteFeature))
-    return Status::OK();
   if (leveldb_chrome::IsMemEnv(options.env))
     return Status::OK();
   TRACE_EVENT1("leveldb", "ChromiumEnv::RewriteDB", "name", name);

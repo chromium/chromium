@@ -177,7 +177,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/leveldatabase/leveldb_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ui_base_features.h"
@@ -3982,10 +3981,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImmersiveFullscreenDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kImmersiveFullscreen)},
 #endif  // OS_MAC
-    {"rewrite-leveldb-on-deletion",
-     flag_descriptions::kRewriteLevelDBOnDeletionName,
-     flag_descriptions::kRewriteLevelDBOnDeletionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(leveldb::kLevelDBRewriteFeature)},
     {"passive-listener-default",
      flag_descriptions::kPassiveEventListenerDefaultName,
      flag_descriptions::kPassiveEventListenerDefaultDescription, kOsAll,

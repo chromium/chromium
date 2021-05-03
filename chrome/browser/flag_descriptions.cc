@@ -2109,11 +2109,6 @@ const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://internals/web-app";
 
-const char kRewriteLevelDBOnDeletionName[] =
-    "Rewrite LevelDB instances after full deletions";
-const char kRewriteLevelDBOnDeletionDescription[] =
-    "Rewrite LevelDB instances to remove traces of deleted data from disk.";
-
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "

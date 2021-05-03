@@ -14,7 +14,6 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -22,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
-#include "third_party/leveldatabase/leveldb_features.h"
 #include "third_party/leveldatabase/src/include/leveldb/cache.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -658,9 +656,7 @@ TEST(ChromiumLevelDB, DeleteInMemoryDB) {
 
 class ChromiumLevelDBRebuildTest : public ::testing::Test {
  protected:
-  ChromiumLevelDBRebuildTest() {
-    feature_list_.InitAndEnableFeature(leveldb::kLevelDBRewriteFeature);
-  }
+  ChromiumLevelDBRebuildTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -670,7 +666,6 @@ class ChromiumLevelDBRebuildTest : public ::testing::Test {
   const base::FilePath& temp_path() const { return scoped_temp_dir_.GetPath(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedAllowBlockingForTesting allow_blocking_;
   base::ScopedTempDir scoped_temp_dir_;
 };

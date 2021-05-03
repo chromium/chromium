@@ -315,7 +315,6 @@ LEVELDB_EXPORT leveldb::Status OpenDB(const leveldb_env::Options& options,
 // an identical copy. |dbptr| will be replaced with the new database on success.
 // If the rewrite fails e.g. because we can't write to the temporary location,
 // the old db is returned if possible, otherwise |*dbptr| can become NULL.
-// The rewrite will only be performed if |kLevelDBRewriteFeature| is enabled.
 LEVELDB_EXPORT leveldb::Status RewriteDB(const leveldb_env::Options& options,
                                          const std::string& name,
                                          std::unique_ptr<leveldb::DB>* dbptr);

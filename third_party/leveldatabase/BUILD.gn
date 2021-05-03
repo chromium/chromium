@@ -21,8 +21,6 @@ leveldb_sources = [
   "env_chromium.h",
   "leveldb_chrome.cc",
   "leveldb_chrome.h",
-  "leveldb_features.cc",
-  "leveldb_features.h",
   "port/port_chromium.cc",
   "port/port_chromium.h",
   "src/db/builder.cc",

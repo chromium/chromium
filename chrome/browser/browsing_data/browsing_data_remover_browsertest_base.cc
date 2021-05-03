@@ -26,7 +26,6 @@
 #include "content/public/test/download_test_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/leveldatabase/leveldb_features.h"
 #include "ui/base/models/tree_model.h"
 
 namespace {
