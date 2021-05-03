@@ -410,6 +410,12 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_browsing_context_group_navigation) {
   DCHECK(frame_);
 
+  // Never collect document loaders when recording/replaying to avoid interacting
+  // with the recording.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    new Persistent<DocumentLoader>(this);
+  }
+
   // See `archive_` attribute documentation.
   if (!frame_->IsMainFrame()) {
     if (auto* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent()))

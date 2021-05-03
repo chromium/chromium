@@ -405,6 +405,11 @@ Frame::Frame(FrameClient* client,
       is_loading_(false),
       devtools_frame_token_(devtools_frame_token),
       frame_token_(frame_token) {
+  // Never collect frames when recording/replaying to avoid interacting with the recording.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    new Persistent<Frame>(this);
+  }
+
   InstanceCounters::IncrementCounter(InstanceCounters::kFrameCounter);
   if (parent_ && insert_type == FrameInsertType::kInsertInConstructor) {
     parent_->InsertAfter(this, previous_sibling);
