@@ -61,9 +61,9 @@ class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
 };
 
-class SyncUserSettingsTest : public testing::Test {
+class SyncUserSettingsImplTest : public testing::Test {
  protected:
-  SyncUserSettingsTest() {
+  SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
 
@@ -88,7 +88,7 @@ class SyncUserSettingsTest : public testing::Test {
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
 };
 
-TEST_F(SyncUserSettingsTest, PreferredTypesSyncEverything) {
+TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -106,7 +106,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesSyncEverything) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncUserSettingsTest, PreferredTypesSyncAllOsTypes) {
+TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
 
@@ -123,7 +123,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesSyncAllOsTypes) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
+TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -158,7 +158,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncUserSettingsTest, PreferredTypesNotAllOsTypesSynced) {
+TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
 
@@ -189,7 +189,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotAllOsTypesSynced) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Device info should always be enabled.
-TEST_F(SyncUserSettingsTest, DeviceInfo) {
+TEST_F(SyncUserSettingsImplTest, DeviceInfo) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(DEVICE_INFO));
@@ -214,7 +214,7 @@ TEST_F(SyncUserSettingsTest, DeviceInfo) {
 }
 
 // User Consents should always be enabled.
-TEST_F(SyncUserSettingsTest, UserConsents) {
+TEST_F(SyncUserSettingsImplTest, UserConsents) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
@@ -239,7 +239,7 @@ TEST_F(SyncUserSettingsTest, UserConsents) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncUserSettingsTest, AlwaysPreferredTypes_ChromeOS) {
+TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
 
@@ -262,7 +262,7 @@ TEST_F(SyncUserSettingsTest, AlwaysPreferredTypes_ChromeOS) {
   EXPECT_TRUE(preferred_types.Has(USER_CONSENTS));
 }
 
-TEST_F(SyncUserSettingsTest, AppsAreHandledByOsSettings) {
+TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
 
@@ -305,7 +305,7 @@ TEST_F(SyncUserSettingsTest, AppsAreHandledByOsSettings) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(SyncUserSettingsTest, ShouldMutePassphrasePrompt) {
+TEST_F(SyncUserSettingsImplTest, ShouldMutePassphrasePrompt) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -322,7 +322,7 @@ TEST_F(SyncUserSettingsTest, ShouldMutePassphrasePrompt) {
       sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
 }
 
-TEST_F(SyncUserSettingsTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
+TEST_F(SyncUserSettingsImplTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
   // Mimic an old product version being written to prefs.
   sync_prefs_->SetPassphrasePromptMutedProductVersion(/*major_version=*/73);
 

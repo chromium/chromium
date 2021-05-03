@@ -150,7 +150,7 @@ source_set("unit_tests") {
     "driver/sync_service_utils_unittest.cc",
     "driver/sync_session_durations_metrics_recorder_unittest.cc",
     "driver/sync_stopped_reporter_unittest.cc",
-    "driver/sync_user_settings_unittest.cc",
+    "driver/sync_user_settings_impl_unittest.cc",
     "engine/backoff_delay_provider_unittest.cc",
     "engine/bookmark_update_preprocessing_unittest.cc",
     "engine/cancelation_signal_unittest.cc",
