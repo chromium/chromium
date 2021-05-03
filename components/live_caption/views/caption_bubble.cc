@@ -228,6 +228,7 @@ class CaptionBubbleLabel : public views::Label {
     auto& ax_lines = GetViewAccessibility().virtual_children();
     if (text.empty() && !ax_lines.empty()) {
       GetViewAccessibility().RemoveAllVirtualChildViews();
+      NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
       return;
     }
 
@@ -248,9 +249,8 @@ class CaptionBubbleLabel : public views::Label {
     size_t num_ax_lines = ax_lines.size();
     for (size_t i = num_lines; i < num_ax_lines; ++i) {
       GetViewAccessibility().RemoveVirtualChildView(ax_lines.back().get());
+      NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
     }
-
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }
 
  private:
@@ -265,6 +265,7 @@ class CaptionBubbleLabel : public views::Label {
       auto ax_line = std::make_unique<views::AXVirtualView>();
       ax_line->GetCustomData().role = ax::mojom::Role::kStaticText;
       GetViewAccessibility().AddVirtualChildView(std::move(ax_line));
+      NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
     }
 
     // Set the virtual child's name as line text.
@@ -274,6 +275,8 @@ class CaptionBubbleLabel : public views::Label {
       ax_node_data.SetName(line_text);
       std::vector<gfx::Rect> bounds = GetSubstringBounds(text_range);
       ax_node_data.relative_bounds.bounds = gfx::RectF(bounds[0]);
+      ax_lines[line_index]->NotifyAccessibilityEvent(
+          ax::mojom::Event::kTextChanged);
     }
   }
 };
