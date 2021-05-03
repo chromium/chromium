@@ -28,8 +28,7 @@ struct BASE_EXPORT PendingTask {
   PendingTask(const Location& posted_from,
               OnceClosure task,
               TimeTicks queue_time,
-              TimeTicks delayed_run_time,
-              Nestable nestable = Nestable::kNestable);
+              TimeTicks delayed_run_time);
   PendingTask(PendingTask&& other);
   ~PendingTask();
 
@@ -77,12 +76,6 @@ struct BASE_EXPORT PendingTask {
   int sequence_num = 0;
 
   bool task_backtrace_overflow = false;
-
-  // OK to dispatch from a nested loop.
-  Nestable nestable;
-
-  // Needs high resolution timers.
-  bool is_high_res = false;
 };
 
 }  // namespace base

@@ -24,8 +24,7 @@ Task::Task(const Location& posted_from,
     : PendingTask(posted_from,
                   std::move(task),
                   queue_time,
-                  delay.is_zero() ? TimeTicks() : queue_time + delay,
-                  Nestable::kNonNestable) {
+                  delay.is_zero() ? TimeTicks() : queue_time + delay) {
   // ThreadPoolImpl doesn't use |sequence_num| but tracing (toplevel.flow)
   // relies on it being unique. While this subtle dependency is a bit
   // overreaching, ThreadPoolImpl is the only task system that doesn't use

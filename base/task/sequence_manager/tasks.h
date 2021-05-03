@@ -109,6 +109,12 @@ struct BASE_EXPORT Task : public PendingTask {
 
   bool enqueue_order_set() const { return enqueue_order_; }
 
+  // OK to dispatch from a nested loop.
+  Nestable nestable = Nestable::kNonNestable;
+
+  // Needs high resolution timers.
+  bool is_high_res = false;
+
   TaskType task_type;
 
   // The task runner this task is running on. Can be used by task runners that

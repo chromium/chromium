@@ -15,13 +15,11 @@ PendingTask::PendingTask(const Location& posted_from, OnceClosure task)
 PendingTask::PendingTask(const Location& posted_from,
                          OnceClosure task,
                          TimeTicks queue_time,
-                         TimeTicks delayed_run_time,
-                         Nestable nestable)
+                         TimeTicks delayed_run_time)
     : task(std::move(task)),
       posted_from(posted_from),
       queue_time(queue_time),
-      delayed_run_time(delayed_run_time),
-      nestable(nestable) {}
+      delayed_run_time(delayed_run_time) {}
 
 PendingTask::PendingTask(PendingTask&& other) = default;
 
