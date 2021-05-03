@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/variations/variations_crash_keys_chromeos.h"
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
+
+namespace variations {
+
+namespace {
+
+// Path where we put variations in cryptohome.
+constexpr char kCrashVariantFileName[] = ".variant-list.txt";
+
+void WriteVariationsToFile(ExperimentListInfo info) {
+  std::string combined_string =
+      base::StrCat({"upload_var_", kNumExperimentsKey, "=",
+                    base::NumberToString(info.num_experiments),
+                    "\n"
+                    "upload_var_",
+                    kExperimentListKey, "=", info.experiment_list, "\n"});
+
+  base::FilePath path = base::PathService::CheckedGet(base::DIR_HOME);
+  if (path == base::FilePath("/")) {
+    // Fallback to /home/chronos if DIR_HOME is not overridden and
+    // no user has signed in.
+    path = base::FilePath("/home/chronos");
+  }
+
+  path = path.Append(kCrashVariantFileName);
+
+  if (!base::WriteFile(path, combined_string)) {
+    VLOG(1) << "Failed to write " << path.value();
+  }
+}
+
+}  // namespace
+
+void ReportVariationsToChromeOs(ExperimentListInfo info) {
+  // On a thread in the background, write variants to a file.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&WriteVariationsToFile, info));
+}
+
+}  // namespace variations

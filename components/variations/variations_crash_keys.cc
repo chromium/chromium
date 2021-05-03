@@ -11,10 +11,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "build/buildflag.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/buildflags.h"
 #include "components/variations/synthetic_trials.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/variations/variations_crash_keys_chromeos.h"
+#endif
 
 namespace variations {
 
@@ -169,6 +174,10 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   }
 
   g_variations_crash_key.Set(info.experiment_list);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ReportVariationsToChromeOs(info);
+#endif  // IS_CHROMEOS_ASH
 }
 
 void VariationsCrashKeys::OnSyntheticTrialsChanged(

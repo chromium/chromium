@@ -42,7 +42,7 @@ class VariationsCrashKeysTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysTest);
 };

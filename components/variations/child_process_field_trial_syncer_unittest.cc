@@ -53,7 +53,7 @@ std::pair<std::string, std::string> MakeStringPair(const std::string& a,
 }  // namespace
 
 TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   // We don't use the descriptor here anyways so it's ok to pass -1.
   base::FieldTrialList::CreateTrialsFromCommandLine(
