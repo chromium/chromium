@@ -318,6 +318,8 @@ const int kMainIntentCheckDelay = 1;
           if (!appStartupFromExternalIntent) {
             base::RecordAction(
                 base::UserMetricsAction("IOSOpenByMainIntent"));
+          } else {
+            base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
           }
         });
     [_appState applicationWillEnterForeground:UIApplication.sharedApplication
