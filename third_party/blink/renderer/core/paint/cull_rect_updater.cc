@@ -73,12 +73,18 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   if (root_layer_.GetLayoutObject().GetFrameView()->ShouldThrottleRendering())
     return;
 
+  bool should_use_infinite =
+      PaintLayerPainter(root_layer_).ShouldUseInfiniteCullRect();
   auto& fragment =
       root_layer_.GetLayoutObject().GetMutableForPainting().FirstFragment();
-  SetFragmentCullRect(root_layer_, fragment, input_cull_rect);
+  SetFragmentCullRect(
+      root_layer_, fragment,
+      should_use_infinite ? CullRect::Infinite() : input_cull_rect);
   bool force_update_children = SetFragmentContentsCullRect(
       root_layer_, fragment,
-      ComputeFragmentContentsCullRect(root_layer_, fragment, input_cull_rect));
+      should_use_infinite ? CullRect::Infinite()
+                          : ComputeFragmentContentsCullRect(
+                                root_layer_, fragment, input_cull_rect));
   UpdateForDescendants(root_layer_, force_update_children);
 }
 
