@@ -2981,6 +2981,33 @@
             ]
         }
     ],
+    "DownloadLater": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDateTimePicker",
+                    "params": {
+                        "show_date_time_picker": "true"
+                    },
+                    "enable_features": [
+                        "DownloadLater"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutDateTimePicker",
+                    "params": {
+                        "show_date_time_picker": "false"
+                    },
+                    "enable_features": [
+                        "DownloadLater"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadOfflineContentProvider": [
         {
             "platforms": [
