@@ -17,13 +17,18 @@
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/native_theme/native_theme_features.h"
 
 namespace paint_preview {
 
 namespace {
+
+constexpr char kCompositeAfterPaint[] = "CompositeAfterPaint";
 
 // Checks that |status| == |expected_status| and loads |response| into
 // |out_response| if |expected_status| == kOk. If |expected_status| != kOk
@@ -37,22 +42,39 @@ void OnCaptureFinished(mojom::PaintPreviewStatus expected_status,
     *out_response = std::move(response);
 }
 
+std::string CompositeAfterPaintToString(
+    const ::testing::TestParamInfo<bool>& cap_enabled) {
+  if (cap_enabled.param) {
+    return "WithCompositeAfterPaint";
+  }
+  return "NoCompositeAfterPaint";
+}
+
 }  // namespace
 
-class PaintPreviewRecorderRenderViewTest : public content::RenderViewTest {
+class PaintPreviewRecorderRenderViewTest
+    : public content::RenderViewTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  PaintPreviewRecorderRenderViewTest() {}
-  ~PaintPreviewRecorderRenderViewTest() override {}
-
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
+  PaintPreviewRecorderRenderViewTest() {
+    std::vector<base::Feature> enabled;
     // TODO(crbug/1022398): This is required to bypass a seemingly unrelated
     // DCHECK for |use_overlay_scrollbars_| in NativeThemeAura on ChromeOS when
     // painting scrollbars when first calling LoadHTML().
     feature_list_.InitAndDisableFeature(features::kOverlayScrollbar);
+    blink::WebTestingSupport::SaveRuntimeFeatures();
+  }
 
+  ~PaintPreviewRecorderRenderViewTest() override {
+    // Restore blink runtime features to their original values.
+    blink::WebTestingSupport::ResetRuntimeFeatures();
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     RenderViewTest::SetUp();
+    blink::WebRuntimeFeatures::EnableFeatureFromString(kCompositeAfterPaint,
+                                                       GetParam());
   }
 
   content::RenderFrame* GetFrame() { return view_->GetMainRenderFrame(); }
@@ -93,7 +115,7 @@ class PaintPreviewRecorderRenderViewTest : public content::RenderViewTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
   LoadHTML(
       "<!doctype html>"
       "<body>"
@@ -158,19 +180,20 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
             0xFFFFFFFFU);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
   LoadHTML(
       "<!doctype html>"
       "<body>"
-      "  <div style='width: 600px; height: 80vh; "
+      "  <div style='width: 600px; height: 200px; "
       "              background-color: #ff0000'>&nbsp;</div>"
-      "  <div style='width: 600px; height: 1200px; "
+      "  <div style='width: 600px; height: 5000px; "
       "              background-color: #00ff00'>&nbsp;</div>"
       "</body>");
 
   // Scroll to bottom of page to ensure scroll position has no effect on
   // capture.
   ExecuteJavaScriptForTests("window.scrollTo(0,document.body.scrollHeight);");
+  content::RunAllTasksUntilIdle();
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   content::RenderFrame* frame = GetFrame();
@@ -204,7 +227,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
   EXPECT_EQ(bitmap.getColor(50, pic->cullRect().height() - 100), 0xFF00FF00U);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFragment) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureFragment) {
   // Use position absolute position to check that the captured link dimensions
   // match what is specified.
   LoadHTML(
@@ -232,7 +255,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFragment) {
   EXPECT_EQ(out_response->links[0]->rect.height(), 30);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   LoadHTML("<body></body>");
 
   mojom::PaintPreviewCaptureParamsPtr params =
@@ -255,7 +278,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   content::RunAllTasksUntilIdle();
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
   LoadHTML("<body></body>");
 
   mojom::PaintPreviewCaptureParamsPtr params =
@@ -280,7 +303,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
   content::RunAllTasksUntilIdle();
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
   LoadHTML(
       "<!doctype html>"
       "<body style='min-height:1000px;'>"
@@ -299,7 +322,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
   LoadHTML(
       "<!doctype html>"
       "<body style='min-height:1000px;'>"
@@ -318,7 +341,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
   LoadHTML(
       "<!doctype html>"
       "<body style='min-height:1000px;'>"
@@ -360,7 +383,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
   EXPECT_EQ(bitmap.getColor(50, 800), 0xFFFF0000U);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
   LoadHTML(
       "<!doctype html>"
       "<body>"
@@ -406,7 +429,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
   EXPECT_EQ(out_response->links[0]->rect.height(), 30);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
   LoadHTML(
       "<!doctype html>"
       "<body>"
@@ -440,7 +463,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
   EXPECT_LT(pic->cullRect().width(), kLarge);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
   LoadHTML(
       "<!doctype html>"
       "<body>"
@@ -473,7 +496,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
   EXPECT_GT(pic->cullRect().width(), 0U);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {
+TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {
   // URLs should be annotated correctly when a CSS transform is applied.
   LoadHTML(
       R"(
@@ -513,7 +536,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {
   EXPECT_NEAR(out_response->links[0]->rect.height(), 20, 3);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslateThenRotate) {
+TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithTranslateThenRotate) {
   // URLs should be annotated correctly when a CSS transform is applied.
   LoadHTML(
       R"(
@@ -555,7 +578,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslateThenRotate) {
 #endif
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithRotateThenTranslate) {
+TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithRotateThenTranslate) {
   // URLs should be annotated correctly when a CSS transform is applied.
   LoadHTML(
       R"(
@@ -597,7 +620,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithRotateThenTranslate) {
 #endif
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithScale) {
+TEST_P(PaintPreviewRecorderRenderViewTest, CaptureWithScale) {
   // URLs should be annotated correctly when a CSS transform is applied.
   LoadHTML(
       R"(
@@ -637,7 +660,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithScale) {
   EXPECT_NEAR(out_response->links[0]->rect.height(), 20, 3);
 }
 
-TEST_F(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
+TEST_P(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
   // URLs should be annotated correctly when a CSS transform is applied.
   LoadHTML(
       R"(
@@ -693,5 +716,10 @@ TEST_F(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
   EXPECT_NEAR(out_response->links[1]->rect.width(), 70, 3);
   EXPECT_NEAR(out_response->links[1]->rect.height(), 20, 3);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintPreviewRecorderRenderViewTest,
+                         testing::Values(true, false),
+                         CompositeAfterPaintToString);
 
 }  // namespace paint_preview
