@@ -118,6 +118,7 @@ suite('manager tests', function() {
     flush();
     const list = manager.$$('iron-list');
     assertTrue(list.hidden);
+    assertTrue(toastManager.isToastOpen);
   });
 
   test('toolbar hasClearableDownloads set correctly', async () => {

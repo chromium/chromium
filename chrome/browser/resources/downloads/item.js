@@ -617,8 +617,11 @@ Polymer({
     }
   },
 
-  /** @private */
-  onRemoveTap_() {
+  /**
+   * @private
+   * @param {Event} e
+   */
+  onRemoveTap_(e) {
     this.mojoHandler_.remove(this.data.id);
     const pieces = loadTimeData.getSubstitutedStringPieces(
         loadTimeData.getString('toastRemovedFromList'), this.data.fileName);
@@ -634,6 +637,10 @@ Polymer({
          *                 arg: (string|null)}>}
          */
         (pieces), /* hideSlotted= */ !canUndo);
+
+    // Stop propagating a click to the document to remove toast.
+    e.stopPropagation();
+    e.preventDefault();
   },
 
   /** @private */
