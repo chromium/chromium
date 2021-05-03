@@ -5,6 +5,7 @@
 #include "ash/keyboard/ui/keyboard_layout_manager.h"
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
