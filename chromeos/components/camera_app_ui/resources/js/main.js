@@ -242,7 +242,18 @@ export class App {
       await filesystem.initialize();
       const cameraDir = filesystem.getCameraDirectory();
       assert(cameraDir !== null);
-      this.galleryButton_.initialize(cameraDir);
+
+      // There are three possible cases:
+      // 1. Regular instance
+      //      (intent === null)
+      // 2. STILL_CAPTURE_CAMREA and VIDEO_CAMERA intents
+      //      (intent !== null && shouldHandleResult === false)
+      // 3. Other intents
+      //      (intent !== null && shouldHandleResult === true)
+      // Only (1) and (2) will show gallery button on the UI.
+      if (this.intent_ === null || !this.intent_.shouldHandleResult) {
+        this.galleryButton_.initialize(cameraDir);
+      }
     } catch (error) {
       console.error(error);
       nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
