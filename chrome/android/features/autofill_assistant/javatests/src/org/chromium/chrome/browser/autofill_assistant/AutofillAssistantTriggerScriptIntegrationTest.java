@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -46,10 +47,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
-import org.chromium.chrome.browser.autofill_assistant.proto.DrawableProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.Empty;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -59,9 +57,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto.TriggerScriptAction;
-import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto.TriggerChip;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -150,63 +145,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    /**
-     * Creates a default UI, similar to the intended experience. It comprises three chips:
-     * 'Preferences', 'Not now', 'Continue'. 'Preferences' opens the cancel popup containing 'Not
-     * for this session' and 'Never show again'. Optionally, a blue message bubble and a default
-     * progress bar are shown.
-     */
-    private TriggerScriptUIProto.Builder createDefaultUI(
-            String statusMessage, String bubbleMessage, boolean withProgressBar) {
-        TriggerScriptUIProto.Builder builder =
-                TriggerScriptUIProto.newBuilder()
-                        .setStatusMessage(statusMessage)
-                        .setCalloutMessage(bubbleMessage)
-                        .addLeftAlignedChips(
-                                TriggerChip.newBuilder()
-                                        .setChip(ChipProto.newBuilder()
-                                                         .setType(ChipType.NORMAL_ACTION)
-                                                         .setIcon(ChipIcon.ICON_OVERFLOW))
-                                        .setAction(TriggerScriptAction.SHOW_CANCEL_POPUP))
-                        .addRightAlignedChips(
-                                TriggerChip.newBuilder()
-                                        .setChip(ChipProto.newBuilder()
-                                                         .setType(ChipType.NORMAL_ACTION)
-                                                         .setText("Not now"))
-                                        .setAction(TriggerScriptAction.NOT_NOW))
-                        .addRightAlignedChips(
-                                TriggerChip.newBuilder()
-                                        .setChip(ChipProto.newBuilder()
-                                                         .setType(ChipType.HIGHLIGHTED_ACTION)
-                                                         .setText("Continue"))
-                                        .setAction(TriggerScriptAction.ACCEPT))
-                        .setCancelPopup(
-                                TriggerScriptUIProto.Popup.newBuilder()
-                                        .addChoices(
-                                                TriggerScriptUIProto.Popup.Choice.newBuilder()
-                                                        .setText("Not for this session")
-                                                        .setAction(
-                                                                TriggerScriptAction.CANCEL_SESSION))
-                                        .addChoices(TriggerScriptUIProto.Popup.Choice.newBuilder()
-                                                            .setText("Never show again")
-                                                            .setAction(TriggerScriptAction
-                                                                               .CANCEL_FOREVER)));
-        if (withProgressBar) {
-            builder.setProgressBar(
-                    TriggerScriptUIProto.ProgressBar.newBuilder()
-                            .addStepIcons(DrawableProto.newBuilder().setIcon(
-                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_INITIAL_STEP))
-                            .addStepIcons(DrawableProto.newBuilder().setIcon(
-                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_DATA_COLLECTION))
-                            .addStepIcons(DrawableProto.newBuilder().setIcon(
-                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_PAYMENT))
-                            .addStepIcons(DrawableProto.newBuilder().setIcon(
-                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_FINAL_STEP))
-                            .setActiveStep(1));
-        }
-        return builder;
-    }
-
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
@@ -219,7 +157,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .setTriggerCondition(
                                 TriggerScriptConditionProto.newBuilder().setIsFirstTimeUser(
                                         Empty.newBuilder()))
-                        .setUserInterface(createDefaultUI("First time user",
+                        .setUserInterface(createDefaultTriggerScriptUI("First time user",
                                 /* bubbleMessage = */ "First time message",
                                 /* withProgressBar = */ true));
 
@@ -229,7 +167,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 TriggerScriptConditionsProto.newBuilder().addConditions(
                                         TriggerScriptConditionProto.newBuilder().setIsFirstTimeUser(
                                                 Empty.newBuilder()))))
-                        .setUserInterface(createDefaultUI("Returning user",
+                        .setUserInterface(createDefaultTriggerScriptUI("Returning user",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
@@ -258,7 +196,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Hello world",
+                        .setUserInterface(createDefaultTriggerScriptUI("Hello world",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
@@ -295,7 +233,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto.newBuilder()
                         .setTriggerCondition(TriggerScriptConditionProto.newBuilder().setSelector(
                                 touch_area_four))
-                        .setUserInterface(createDefaultUI("Area visible",
+                        .setUserInterface(createDefaultTriggerScriptUI("Area visible",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ true));
 
@@ -305,7 +243,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 TriggerScriptConditionsProto.newBuilder().addConditions(
                                         TriggerScriptConditionProto.newBuilder().setSelector(
                                                 touch_area_four))))
-                        .setUserInterface(createDefaultUI("Area invisible",
+                        .setUserInterface(createDefaultTriggerScriptUI("Area invisible",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
@@ -337,7 +275,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ true)
                                                   .setRegularScriptLoadingStatusMessage(
@@ -391,7 +329,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false)
                                                   .setRegularScriptLoadingStatusMessage(
@@ -443,7 +381,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
@@ -468,7 +406,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ true)
                                                   .setRegularScriptLoadingStatusMessage(
@@ -521,7 +459,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false)
                                                   .setRegularScriptLoadingStatusMessage(
@@ -568,7 +506,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Hello world",
+                        .setUserInterface(createDefaultTriggerScriptUI("Hello world",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
 
@@ -603,10 +541,11 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 TriggerScriptProto
                                         .newBuilder()
                                         /* no trigger condition */
-                                        .setUserInterface(createDefaultUI("Trigger script",
-                                                /* bubbleMessage = */ "",
-                                                /* withProgressBar = */ false)
-                                                                  .setScrollToHide(true)))
+                                        .setUserInterface(
+                                                createDefaultTriggerScriptUI("Trigger script",
+                                                        /* bubbleMessage = */ "",
+                                                        /* withProgressBar = */ false)
+                                                        .setScrollToHide(true)))
                         .build();
 
         setupTriggerScripts(triggerScripts);
@@ -679,7 +618,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ true)
                                                   .setRegularScriptLoadingStatusMessage(
@@ -743,7 +682,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 TriggerScriptProto
                         .newBuilder()
                         /* no trigger condition */
-                        .setUserInterface(createDefaultUI("Trigger script",
+                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ true)
                                                   .setRegularScriptLoadingStatusMessage(
