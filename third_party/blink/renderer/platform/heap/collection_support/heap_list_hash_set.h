@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 

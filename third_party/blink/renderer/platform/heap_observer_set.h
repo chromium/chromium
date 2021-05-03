@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_SET_H_
 
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_TABLE_BACKING_H_
 
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 #if BUILDFLAG(USE_V8_OILPAN)
