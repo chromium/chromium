@@ -168,7 +168,8 @@ SavedPasswordsPresenter::GetSavedPasswords() const {
   return passwords_;
 }
 
-std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswords() const {
+std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
+    const {
   std::vector<PasswordForm> forms;
 
   auto it = sort_key_to_password_forms.begin();
@@ -243,11 +244,6 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStore* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  // Ignore blocked or federated credentials.
-  base::EraseIf(results, [](const auto& form) {
-    return form->blocked_by_user || form->IsFederatedCredential();
-  });
-
   // Profile store passwords are always stored first in `passwords_`.
   auto account_passwords_it = base::ranges::partition_point(
       passwords_,
@@ -278,6 +274,11 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   base::ranges::for_each(passwords_, [&](const auto& result) {
     sort_key_to_password_forms.insert(
         std::make_pair(CreateSortKey(result, IgnoreStore(true)), result));
+  });
+
+  // Remove blocked or federated credentials.
+  base::EraseIf(passwords_, [](const auto& form) {
+    return form.blocked_by_user || form.IsFederatedCredential();
   });
 
   NotifySavedPasswordsChanged();

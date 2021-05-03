@@ -386,6 +386,41 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   presenter().RemoveObserver(&observer);
 }
 
+TEST_F(SavedPasswordsPresenterTest,
+       GetUniquePasswordFormsShouldReturnBlockedAndFederatedForms) {
+  PasswordForm form;
+  form.signon_realm = "https://example.com";
+  form.username_value = u"example@gmail.com";
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm blocked_form;
+  blocked_form.signon_realm = "https://example.com";
+  blocked_form.blocked_by_user = true;
+  blocked_form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm federated_form;
+  federated_form.signon_realm = "https://federated.com";
+  federated_form.username_value = u"example@gmail.com";
+  federated_form.federation_origin =
+      url::Origin::Create(GURL(u"federatedOrigin.com"));
+  federated_form.in_store = PasswordForm::Store::kProfileStore;
+
+  store().AddLogin(form);
+  store().AddLogin(blocked_form);
+  store().AddLogin(federated_form);
+  RunUntilIdle();
+
+  ASSERT_THAT(
+      store().stored_passwords(),
+      UnorderedElementsAre(
+          Pair(form.signon_realm, UnorderedElementsAre(form, blocked_form)),
+          Pair(federated_form.signon_realm, ElementsAre(federated_form))));
+
+  EXPECT_THAT(presenter().GetUniquePasswordForms(),
+              UnorderedElementsAre(form, blocked_form, federated_form));
+}
+
 namespace {
 
 class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
@@ -686,7 +721,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, GetUniquePasswords) {
   expected_form.in_store =
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
 
-  EXPECT_THAT(presenter().GetUniquePasswords(), ElementsAre(expected_form));
+  EXPECT_THAT(presenter().GetUniquePasswordForms(), ElementsAre(expected_form));
 }
 
 // Prefixes like [m, mobile, www] are considered as "same-site".
@@ -724,7 +759,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, GetUniquePasswords2) {
   expected_form.in_store =
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
 
-  EXPECT_THAT(presenter().GetUniquePasswords(), ElementsAre(expected_form));
+  EXPECT_THAT(presenter().GetUniquePasswordForms(), ElementsAre(expected_form));
 }
 
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {

@@ -92,12 +92,13 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
 
-  // Returns a list of unique credentials. If a same password is present both on
+  // Returns a list of unique password forms which includes normal credentials,
+  // federated credentials and blocked forms. If a same form is present both on
   // account and profile stores it will be represented as a single entity.
   // Uniqueness is determined using site name, username, password. For Android
   // credentials package name is also taken into account and for Federated
   // credentials federation origin.
-  std::vector<PasswordForm> GetUniquePasswords() const;
+  std::vector<PasswordForm> GetUniquePasswordForms() const;
 
   // Returns all the usernames for credentials saved for `signon_realm`. If
   // `is_using_account_store` is true, this method will only consider
