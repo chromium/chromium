@@ -286,10 +286,6 @@ class ScopedAllowThreadJoinForWebRtcTransport;
 }
 }
 
-namespace resource_coordinator {
-class TabManagerDelegate;
-}
-
 namespace service_manager {
 class ServiceProcessLauncher;
 }
@@ -420,7 +416,6 @@ class BASE_EXPORT ScopedAllowBlocking {
 #endif
   friend class printing::PrintJobWorker;
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
-  friend class resource_coordinator::TabManagerDelegate;  // crbug.com/778703
   friend class web::WebSubThread;
   friend class weblayer::BrowserContextImpl;
   friend class weblayer::ContentBrowserClientImpl;
