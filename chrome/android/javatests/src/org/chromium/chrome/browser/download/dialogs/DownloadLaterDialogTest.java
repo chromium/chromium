@@ -37,7 +37,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -233,9 +232,8 @@ public class DownloadLaterDialogTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1201066")
     public void testHideDateTimePicker() {
-        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_LATER,
+        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_NOW,
                 DownloadLaterPromptStatus.SHOW_INITIAL, null, false);
         showDialog();
         onView(withId(R.id.choose_date_time)).check(matches(not(isDisplayed())));
