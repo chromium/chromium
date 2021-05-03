@@ -169,7 +169,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
   // width * 4.
   // Round down bitmap size to width * 4, it makes more fuzzer inputs
   // acceptable and incresease fuzzing penetration.
-  if (proto.bitmap_width() > 0)
+  if (proto.bitmap_width() > 0 && proto.bitmap_width() < bitmap_size)
     bitmap_size -= bitmap_size % (proto.bitmap_width() * kBytesPerPixel);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
       reinterpret_cast<const unsigned char*>(proto.rgb_bitmap().data()),
