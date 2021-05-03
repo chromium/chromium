@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="target"></div>
+<script>
+
+assert_true(document.prerendering);
+
+window.onbeforeunload = function(e) {
+  // Call preventDefault() or set `returnValue` to trigger the prompt
+  // on beforeunload event.
+  e.preventDefault();
+  e.returnValue = 'You have a return value.';
+}
+
+function changeWindowLocation() {
+  window.location.href = "about:blank";
+  return new Promise(resolve => {
+    window.onunload = function(e) {
+      // Unload event should be triggered since changing the page
+      // location is not blocked by the prompt on beforeunload in the
+      // prerenderer.
+      resolve();
+    }
+  });
+}
+
+async function asyncPromptOnBeforeUnload() {
+  const bc = new BroadcastChannel('prerender-channel');
+  try {
+    await changeWindowLocation();
+    bc.postMessage('unloaded without the prompt by beforeunload.');
+  } catch (err) {
+    bc.postMessage(err);
+  } finally {
+    bc.close();
+  }
+}
+
+asyncPromptOnBeforeUnload();
+</script>
