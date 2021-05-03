@@ -577,6 +577,10 @@ const base::Feature kIncognitoBrandConsistencyForDesktop{
     "IncognitoBrandConsistencyForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// When enabled, removes any entry points to the history UI from Incognito mode.
+const base::Feature kUpdateHistoryEntryPointsInIncognito{
+    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if !defined(OS_ANDROID)
 // Support sharing in Chrome OS intent handling.
 const base::Feature kIntentHandlingSharing{"IntentHandlingSharing",

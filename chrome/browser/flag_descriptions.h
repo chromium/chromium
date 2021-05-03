@@ -829,6 +829,9 @@ extern const char kIncognitoBrandConsistencyForAndroidDescription[];
 extern const char kIncognitoBrandConsistencyForDesktopName[];
 extern const char kIncognitoBrandConsistencyForDesktopDescription[];
 
+extern const char kUpdateHistoryEntryPointsInIncognitoName[];
+extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
+
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 

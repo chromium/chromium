@@ -377,6 +377,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoBrandConsistencyForDesktop;
 #endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
+
 #if !defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIntentHandlingSharing;

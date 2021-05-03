@@ -44493,6 +44493,8 @@ from previous Chrome versions.
   <int value="-1937077699" label="http-form-warning"/>
   <int value="-1936032607" label="enable-experimental-webassembly-features"/>
   <int value="-1935787681" label="SystemNotifications:disabled"/>
+  <int value="-1935230557"
+      label="UpdateHistoryEntryPointsInIncognito:disabled"/>
   <int value="-1935055754" label="WebShare:enabled"/>
   <int value="-1934661084" label="ForceUnifiedConsentBump:disabled"/>
   <int value="-1933425042" label="OfflinePreviews:enabled"/>
@@ -46955,6 +46957,7 @@ from previous Chrome versions.
   <int value="209792775" label="TabGroupsAndroid:enabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
+  <int value="214935999" label="UpdateHistoryEntryPointsInIncognito:enabled"/>
   <int value="215328738" label="ImprovedGeoLanguageData:disabled"/>
   <int value="215528151" label="NearbySharingWebRtc:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>

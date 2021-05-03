@@ -1414,6 +1414,13 @@ const char kIncognitoBrandConsistencyForDesktopDescription[] =
     "When enabled, removes any theme or background customization done by the "
     "user on the Incognito UI.";
 
+const char kUpdateHistoryEntryPointsInIncognitoName[] =
+    "Update history entry points in Incongito.";
+const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
+    "When enabled, the entry points to history UI from Incognito mode will be "
+    "removed for iOS and Desktop. An educative placeholder will be shown for "
+    "Android history page.";
+
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "

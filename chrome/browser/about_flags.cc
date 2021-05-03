@@ -7278,6 +7278,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kLauncherQueryHighlighting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"update-history-entry-points-in-incognito",
+     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoName,
+     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kUpdateHistoryEntryPointsInIncognito)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

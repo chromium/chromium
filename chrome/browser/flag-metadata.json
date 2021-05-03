@@ -5127,6 +5127,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "update-history-entry-points-in-incognito",
+    "owners": [ "sideyilmaz", "rhalavati", "chrome-privacy-core@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "update-menu-item-custom-summary",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which
