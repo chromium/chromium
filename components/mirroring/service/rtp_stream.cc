@@ -73,6 +73,7 @@ void VideoRtpStream::InsertVideoFrame(
   }
 
   if (!(video_frame->format() == media::PIXEL_FORMAT_I420 ||
+        video_frame->format() == media::PIXEL_FORMAT_NV12 ||
         video_frame->format() == media::PIXEL_FORMAT_YV12 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A)) {
     client_->OnError("Incompatible video frame format.");
