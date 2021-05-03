@@ -1350,9 +1350,6 @@ extern const char kWebOTPCrossDeviceDescription[];
 extern const char kSplitCacheByNetworkIsolationKeyName[];
 extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 
-extern const char kStopInBackgroundName[];
-extern const char kStopInBackgroundDescription[];
-
 extern const char kStoragePressureEventName[];
 extern const char kStoragePressureEventDescription[];
 

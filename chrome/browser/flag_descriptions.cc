@@ -2344,11 +2344,6 @@ const char kStrictOriginIsolationDescription[] =
     "Controls whether site isolation should use origins instead of scheme and "
     "eTLD+1.";
 
-const char kStopInBackgroundName[] = "Stop in background";
-const char kStopInBackgroundDescription[] =
-    "Stop scheduler task queues, in the background, "
-    " after a grace period.";
-
 const char kStorageAccessAPIName[] = "Storage Access API";
 const char kStorageAccessAPIDescription[] =
     "Enables the Storage Access API, allowing websites to request storage "

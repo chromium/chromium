@@ -4904,11 +4904,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "stop-in-background",
-    "owners": [ "chrome-catan@google.com" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "storage-access-api",
     "owners": [ "brandm@microsoft.com" ],
     "expiry_milestone": 90

@@ -4754,10 +4754,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabHoverCardImagesVariations,
                                     "TabHoverCardImages")},
 
-    {"stop-in-background", flag_descriptions::kStopInBackgroundName,
-     flag_descriptions::kStopInBackgroundDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kStopInBackground)},
-
     {"enable-storage-pressure-event",
      flag_descriptions::kStoragePressureEventName,
      flag_descriptions::kStoragePressureEventDescription, kOsAll,
