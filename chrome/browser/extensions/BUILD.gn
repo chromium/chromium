@@ -1044,10 +1044,6 @@ static_library("extensions") {
       "api/input_ime/input_ime_event_router_base.h",
       "api/media_perception_private/media_perception_api_delegate_chromeos.cc",
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
-      "api/networking_cast_private/chrome_networking_cast_private_delegate.cc",
-      "api/networking_cast_private/chrome_networking_cast_private_delegate.h",
-      "api/networking_cast_private/networking_cast_private_api.cc",
-      "api/networking_cast_private/networking_cast_private_api.h",
       "api/networking_private/networking_private_ui_delegate_chromeos.cc",
       "api/networking_private/networking_private_ui_delegate_chromeos.h",
       "api/platform_keys/platform_keys_api_ash.cc",
@@ -1222,26 +1218,6 @@ static_library("extensions") {
         "//ui/events/platform/x11",
       ]
     }
-  }
-
-  if (is_win || is_mac) {
-    sources += [
-      "api/networking_cast_private/chrome_networking_cast_private_delegate.cc",
-      "api/networking_cast_private/chrome_networking_cast_private_delegate.h",
-      "api/networking_cast_private/networking_cast_private_api.cc",
-      "api/networking_cast_private/networking_cast_private_api.h",
-    ]
-    deps += [ "//components/wifi" ]
-  }
-
-  if (is_win || is_mac || is_chromeos_ash) {
-    sources += [
-      "api/networking_private/networking_private_crypto.cc",
-      "api/networking_private/networking_private_crypto.h",
-    ]
-
-    # networking_private_crypto.cc depends on boringssl.
-    public_deps += [ "//third_party/boringssl" ]
   }
 
   if (is_win) {

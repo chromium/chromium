@@ -89,19 +89,5 @@ chrome.test.runTests([
           chrome.test.callbackFail(expectedError));
       chrome.networking.onc.getEnabledNetworkTypes(
           chrome.test.callbackFail(expectedError));
-      var stubVerificationProperties = {
-        certificate: '',
-        publicKey: '',
-        nonce: '',
-        signedData: '',
-        deviceSerial: '',
-        deviceSsid: '',
-        deviceBssid: ''
-      };
-      chrome.networking.onc.verifyDestination(
-          stubVerificationProperties, chrome.test.callbackFail(expectedError));
-      chrome.networking.onc.verifyAndEncryptData(
-          stubVerificationProperties, '',
-          chrome.test.callbackFail(expectedError));
     }
 ]);

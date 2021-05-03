@@ -19,7 +19,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -86,7 +85,6 @@ using chromeos::ShillProfileClient;
 using chromeos::ShillServiceClient;
 using chromeos::UserDataAuthClient;
 
-using extensions::ChromeNetworkingCastPrivateDelegate;
 using extensions::NetworkingPrivateDelegate;
 using extensions::NetworkingPrivateDelegateFactory;
 using extensions::NetworkingPrivateChromeOS;
@@ -102,46 +100,6 @@ const char kIPConfigPath[] = "/ipconfig/ipconfig1";
 const char kWifi1ServicePath[] = "stub_wifi1";
 const char kWifi2ServicePath[] = "stub_wifi2";
 const char kCellular1ServicePath[] = "stub_cellular1";
-
-// Stub Verify* methods implementation to satisfy expectations of
-// networking_private_apitest.
-class TestNetworkingCastPrivateDelegate
-    : public ChromeNetworkingCastPrivateDelegate {
- public:
-  TestNetworkingCastPrivateDelegate() = default;
-  ~TestNetworkingCastPrivateDelegate() override = default;
-
-  // VerifyDelegate
-  void VerifyDestination(std::unique_ptr<Credentials> credentials,
-                         VerifiedCallback success_callback,
-                         FailureCallback failure_callback) override {
-    AssertCredentials(*credentials);
-    std::move(success_callback).Run(true);
-  }
-
-  void VerifyAndEncryptData(const std::string& data,
-                            std::unique_ptr<Credentials> credentials,
-                            DataCallback success_callback,
-                            FailureCallback failure_callback) override {
-    AssertCredentials(*credentials);
-    std::move(success_callback).Run("encrypted_data");
-  }
-
- private:
-  void AssertCredentials(const Credentials& credentials) {
-    ASSERT_EQ("certificate", credentials.certificate());
-    ASSERT_EQ("ica1,ica2,ica3",
-              base::JoinString(credentials.intermediate_certificates(), ","));
-    ASSERT_EQ("cHVibGljX2tleQ==", credentials.public_key());
-    ASSERT_EQ("00:01:02:03:04:05", credentials.device_bssid());
-    ASSERT_EQ("c2lnbmVkX2RhdGE=", credentials.signed_data());
-    ASSERT_EQ(
-        "Device 0123,device_serial,00:01:02:03:04:05,cHVibGljX2tleQ==,nonce",
-        credentials.unsigned_data());
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkingCastPrivateDelegate);
-};
 
 class UIDelegateStub : public NetworkingPrivateDelegate::UIDelegate {
  public:
@@ -339,16 +297,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     return result;
   }
 
-  void SetUp() override {
-    networking_cast_delegate_factory_ = base::BindRepeating(
-        &NetworkingPrivateChromeOSApiTest::CreateNetworkingCastPrivateDelegate,
-        base::Unretained(this));
-    ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(
-        &networking_cast_delegate_factory_);
-
-    extensions::ExtensionApiTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
@@ -487,16 +435,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     content::RunAllPendingInMessageLoop();
   }
 
-  void TearDown() override {
-    extensions::ExtensionApiTest::TearDown();
-    ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(nullptr);
-  }
-
-  std::unique_ptr<ChromeNetworkingCastPrivateDelegate>
-  CreateNetworkingCastPrivateDelegate() {
-    return std::make_unique<TestNetworkingCastPrivateDelegate>();
-  }
-
  protected:
   ShillManagerClient::TestInterface* manager_test_;
   ShillProfileClient::TestInterface* profile_test_;
@@ -508,9 +446,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   std::string userhash_;
 
  private:
-  ChromeNetworkingCastPrivateDelegate::FactoryCallback
-      networking_cast_delegate_factory_;
-
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateChromeOSApiTest);
 };
 
@@ -789,14 +724,6 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
       }));
   EXPECT_TRUE(RunNetworkingSubtest("onCertificateListsChangedEvent"))
       << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, VerifyDestination) {
-  EXPECT_TRUE(RunNetworkingSubtest("verifyDestination")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, VerifyAndEncryptData) {
-  EXPECT_TRUE(RunNetworkingSubtest("verifyAndEncryptData")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,

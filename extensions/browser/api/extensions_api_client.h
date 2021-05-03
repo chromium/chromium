@@ -52,7 +52,6 @@ class MessagingDelegate;
 class MetricsPrivateDelegate;
 class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
-class NetworkingCastPrivateDelegate;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
 class SettingsObserver;
@@ -187,9 +186,6 @@ class ExtensionsAPIClient {
   // If supported by the embedder, returns a delegate for embedder-dependent
   // MetricsPrivateAPI behavior.
   virtual MetricsPrivateDelegate* GetMetricsPrivateDelegate();
-
-  // Creates a delegate for networking.castPrivate's API behavior.
-  virtual NetworkingCastPrivateDelegate* GetNetworkingCastPrivateDelegate();
 
   // Returns a delegate for embedder-specific chrome.fileSystem behavior.
   virtual FileSystemDelegate* GetFileSystemDelegate();

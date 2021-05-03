@@ -75,10 +75,6 @@ if (!is_android) {
   schema_sources_ += [ "processes.idl" ]
 }
 
-if (is_chromeos_ash || is_mac || is_win) {
-  schema_sources_ += [ "networking_cast_private.idl" ]
-}
-
 if (is_chromeos_ash || is_chromeos_lacros) {
   schema_sources_ += [
     "enterprise_device_attributes.idl",

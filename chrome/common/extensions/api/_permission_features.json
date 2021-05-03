@@ -523,19 +523,6 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/891460
     ]
   },
-  "networking.castPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "mac", "win"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // http://crbug.com/588179
-      "FA01E0B81978950F2BC5A50512FD769725F57510",  // http://crbug.com/588179
-      "B11A93E7E5B541F8010245EBDE2C74647D6C14B9",  // http://crbug.com/588179
-      "F155646B5D1CA545F7E1E4E20D573DFDD44C2540",  // http://crbug.com/588179
-      "16CA7A47AAE4BE49B1E75A6B960C3875E945B264",  // http://crbug.com/588179
-      "226CF815E39A363090A1E547D53063472B8279FA"   // http://crbug.com/588179
-    ]
-  },
   "management": [
     {
       "channel": "stable",

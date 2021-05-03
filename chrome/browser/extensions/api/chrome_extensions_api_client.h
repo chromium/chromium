@@ -77,7 +77,6 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;
   MetricsPrivateDelegate* GetMetricsPrivateDelegate() override;
-  NetworkingCastPrivateDelegate* GetNetworkingCastPrivateDelegate() override;
   FileSystemDelegate* GetFileSystemDelegate() override;
   MessagingDelegate* GetMessagingDelegate() override;
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() override;
@@ -101,8 +100,6 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 
  private:
   std::unique_ptr<ChromeMetricsPrivateDelegate> metrics_private_delegate_;
-  std::unique_ptr<NetworkingCastPrivateDelegate>
-      networking_cast_private_delegate_;
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
   std::unique_ptr<FeedbackPrivateDelegate> feedback_private_delegate_;

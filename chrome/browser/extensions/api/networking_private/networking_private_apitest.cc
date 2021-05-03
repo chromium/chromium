@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/onc/onc_constants.h"
@@ -272,55 +271,10 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   DISALLOW_COPY_AND_ASSIGN(TestNetworkingPrivateDelegate);
 };
 
-class TestNetworkingCastPrivateDelegate
-    : public ChromeNetworkingCastPrivateDelegate {
- public:
-  explicit TestNetworkingCastPrivateDelegate(bool test_failure)
-      : fail_(test_failure) {}
-
-  ~TestNetworkingCastPrivateDelegate() override {}
-
-  void VerifyDestination(std::unique_ptr<Credentials> credentials,
-                         VerifiedCallback success_callback,
-                         FailureCallback failure_callback) override {
-    if (fail_) {
-      std::move(failure_callback).Run(kFailure);
-    } else {
-      std::move(success_callback).Run(true);
-    }
-  }
-
-  void VerifyAndEncryptData(const std::string& data,
-                            std::unique_ptr<Credentials> credentials,
-                            DataCallback success_callback,
-                            FailureCallback failure_callback) override {
-    if (fail_) {
-      std::move(failure_callback).Run(kFailure);
-    } else {
-      std::move(success_callback).Run("encrypted_data");
-    }
-  }
-
- private:
-  bool fail_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkingCastPrivateDelegate);
-};
-
 class NetworkingPrivateApiTest : public ExtensionApiTest {
  public:
   NetworkingPrivateApiTest() = default;
   ~NetworkingPrivateApiTest() override = default;
-
-  void SetUp() override {
-    networking_cast_delegate_factory_ = base::BindRepeating(
-        &NetworkingPrivateApiTest::CreateTestNetworkingCastPrivateDelegate,
-        base::Unretained(this), test_failure_);
-    ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(
-        &networking_cast_delegate_factory_);
-
-    ExtensionApiTest::SetUp();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -337,12 +291,6 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
         base::BindRepeating(
             &NetworkingPrivateApiTest::CreateTestNetworkingPrivateDelegate,
             base::Unretained(this), test_failure_));
-  }
-
-  void TearDown() override {
-    ExtensionApiTest::TearDown();
-
-    ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(nullptr);
   }
 
   bool GetEnabled(const std::string& type) {
@@ -366,11 +314,6 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  std::unique_ptr<ChromeNetworkingCastPrivateDelegate>
-  CreateTestNetworkingCastPrivateDelegate(bool test_failure) {
-    return std::make_unique<TestNetworkingCastPrivateDelegate>(test_failure);
-  }
-
   std::unique_ptr<KeyedService> CreateTestNetworkingPrivateDelegate(
       bool test_failure,
       content::BrowserContext* /*context*/) {
@@ -387,10 +330,6 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool test_failure_ = false;
-
- private:
-  ChromeNetworkingCastPrivateDelegate::FactoryCallback
-      networking_cast_delegate_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
@@ -470,14 +409,6 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTest, StartDisconnect) {
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTest, StartActivate) {
   EXPECT_TRUE(RunNetworkingSubtest("startActivate")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTest, VerifyDestination) {
-  EXPECT_TRUE(RunNetworkingSubtest("verifyDestination")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTest, VerifyAndEncryptData) {
-  EXPECT_TRUE(RunNetworkingSubtest("verifyAndEncryptData")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTest, GetCaptivePortalStatus) {
@@ -571,14 +502,6 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTestFail, StartDisconnect) {
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTestFail, StartActivate) {
   EXPECT_FALSE(RunNetworkingSubtest("startActivate")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTestFail, VerifyDestination) {
-  EXPECT_FALSE(RunNetworkingSubtest("verifyDestination")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTestFail, VerifyAndEncryptData) {
-  EXPECT_FALSE(RunNetworkingSubtest("verifyAndEncryptData")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateApiTestFail, GetCaptivePortalStatus) {

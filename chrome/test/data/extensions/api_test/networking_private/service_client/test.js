@@ -12,18 +12,6 @@ var assertTrue = chrome.test.assertTrue;
 var assertFalse = chrome.test.assertFalse;
 var assertEq = chrome.test.assertEq;
 
-// Test properties for the verification API.
-var verificationProperties = {
-  "certificate": "certificate",
-  "intermediateCertificates": ["ica1", "ica2", "ica3"],
-  "publicKey": "cHVibGljX2tleQ==",  // Base64("public_key")
-  "nonce": "nonce",
-  "signedData": "c2lnbmVkX2RhdGE=",  // Base64("signed_data")
-  "deviceSerial": "device_serial",
-  "deviceSsid": "Device 0123",
-  "deviceBssid": "00:01:02:03:04:05"
-};
-
 var privateHelpers = {
   // Watches for the states |expectedStates| in reverse order. If all states
   // were observed in the right order, succeeds and calls |done|. If any
@@ -427,21 +415,6 @@ var availableTests = [
       listener.listenForChanges);
     var network = "stub_wifi2_guid";
     chrome.networkingPrivate.startConnect(network, callbackPass());
-  },
-  function verifyDestination() {
-    chrome.networkingPrivate.verifyDestination(
-      verificationProperties,
-      callbackPass(function(isValid) {
-        assertTrue(isValid);
-      }));
-  },
-  function verifyAndEncryptData() {
-    chrome.networkingPrivate.verifyAndEncryptData(
-      verificationProperties,
-      "data",
-      callbackPass(function(result) {
-        assertEq("encrypted_data", result);
-      }));
   },
   function getCaptivePortalStatus() {
     var networks = [['stub_wifi1_guid', 'Offline'],

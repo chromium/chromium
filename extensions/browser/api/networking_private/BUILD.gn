@@ -13,8 +13,6 @@ import("//build/config/features.gni")
 source_set("networking_private") {
   # Sources that will be added if a non-stub implementation is chosen.
   default_sources = [
-    "networking_cast_private_delegate.cc",
-    "networking_cast_private_delegate.h",
     "networking_private_api.cc",
     "networking_private_api.h",
     "networking_private_delegate.cc",

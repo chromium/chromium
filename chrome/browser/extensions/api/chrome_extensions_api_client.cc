@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/api/messaging/chrome_messaging_delegate.h"
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
-#include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -377,16 +376,6 @@ MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
     metrics_private_delegate_ =
         std::make_unique<ChromeMetricsPrivateDelegate>();
   return metrics_private_delegate_.get();
-}
-
-NetworkingCastPrivateDelegate*
-ChromeExtensionsAPIClient::GetNetworkingCastPrivateDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
-  if (!networking_cast_private_delegate_)
-    networking_cast_private_delegate_ =
-        ChromeNetworkingCastPrivateDelegate::Create();
-#endif
-  return networking_cast_private_delegate_.get();
 }
 
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {

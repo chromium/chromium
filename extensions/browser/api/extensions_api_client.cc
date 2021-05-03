@@ -141,11 +141,6 @@ MetricsPrivateDelegate* ExtensionsAPIClient::GetMetricsPrivateDelegate() {
   return nullptr;
 }
 
-NetworkingCastPrivateDelegate*
-ExtensionsAPIClient::GetNetworkingCastPrivateDelegate() {
-  return nullptr;
-}
-
 FileSystemDelegate* ExtensionsAPIClient::GetFileSystemDelegate() {
   return nullptr;
 }

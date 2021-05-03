@@ -637,11 +637,6 @@
     "channel": "stable",
     "matches": ["<all_urls>"]
   },
-  "networking.castPrivate": {
-    "channel": "stable",
-    "contexts": ["blessed_extension"],
-    "dependencies": ["permission:networking.castPrivate"]
-  },
   "notifications": {
     "dependencies": ["permission:notifications"],
     "contexts": ["blessed_extension"]

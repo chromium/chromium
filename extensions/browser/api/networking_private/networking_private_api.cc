@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/onc/onc_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/networking_private/networking_cast_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -103,17 +102,6 @@ bool CanChangeSharedConfig(const Extension* extension,
 #else
   return true;
 #endif
-}
-
-std::unique_ptr<NetworkingCastPrivateDelegate::Credentials> AsCastCredentials(
-    api::networking_private::VerificationProperties& properties) {
-  return std::make_unique<NetworkingCastPrivateDelegate::Credentials>(
-      properties.certificate,
-      properties.intermediate_certificates
-          ? *properties.intermediate_certificates
-          : std::vector<std::string>(),
-      properties.signed_data, properties.device_ssid, properties.device_serial,
-      properties.device_bssid, properties.public_key, properties.nonce);
 }
 
 std::string InvalidPropertiesError(const std::vector<std::string>& properties) {
@@ -689,128 +677,6 @@ void NetworkingPrivateStartActivateFunction::Success() {
 
 void NetworkingPrivateStartActivateFunction::Failure(const std::string& error) {
   Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateVerifyDestinationFunction
-
-NetworkingPrivateVerifyDestinationFunction::
-    ~NetworkingPrivateVerifyDestinationFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateVerifyDestinationFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-
-  std::unique_ptr<private_api::VerifyDestination::Params> params =
-      private_api::VerifyDestination::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  NetworkingCastPrivateDelegate* delegate =
-      ExtensionsAPIClient::Get()->GetNetworkingCastPrivateDelegate();
-  if (!delegate)
-    return RespondNow(Error("Not supported."));
-
-  delegate->VerifyDestination(
-      AsCastCredentials(params->properties),
-      base::BindOnce(&NetworkingPrivateVerifyDestinationFunction::Success,
-                     this),
-      base::BindOnce(&NetworkingPrivateVerifyDestinationFunction::Failure,
-                     this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateVerifyDestinationFunction::Success(bool result) {
-  Respond(
-      ArgumentList(private_api::VerifyDestination::Results::Create(result)));
-}
-
-void NetworkingPrivateVerifyDestinationFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateVerifyAndEncryptDataFunction
-
-NetworkingPrivateVerifyAndEncryptDataFunction::
-    ~NetworkingPrivateVerifyAndEncryptDataFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateVerifyAndEncryptDataFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-  std::unique_ptr<private_api::VerifyAndEncryptData::Params> params =
-      private_api::VerifyAndEncryptData::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  NetworkingCastPrivateDelegate* delegate =
-      ExtensionsAPIClient::Get()->GetNetworkingCastPrivateDelegate();
-  if (!delegate)
-    return RespondNow(Error("Not supported."));
-
-  delegate->VerifyAndEncryptData(
-      params->data, AsCastCredentials(params->properties),
-      base::BindOnce(&NetworkingPrivateVerifyAndEncryptDataFunction::Success,
-                     this),
-      base::BindOnce(&NetworkingPrivateVerifyAndEncryptDataFunction::Failure,
-                     this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateVerifyAndEncryptDataFunction::Success(
-    const std::string& result) {
-  Respond(
-      ArgumentList(private_api::VerifyAndEncryptData::Results::Create(result)));
-}
-
-void NetworkingPrivateVerifyAndEncryptDataFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateSetWifiTDLSEnabledStateFunction
-
-NetworkingPrivateSetWifiTDLSEnabledStateFunction::
-    ~NetworkingPrivateSetWifiTDLSEnabledStateFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateSetWifiTDLSEnabledStateFunction::Run() {
-  return RespondNow(Error("Not supported"));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateGetWifiTDLSStatusFunction
-
-NetworkingPrivateGetWifiTDLSStatusFunction::
-    ~NetworkingPrivateGetWifiTDLSStatusFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateGetWifiTDLSStatusFunction::Run() {
-  return RespondNow(Error("Not supported"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
