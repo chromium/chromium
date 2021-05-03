@@ -769,6 +769,7 @@ class ExtensionService : public ExtensionServiceInterface,
                            AcknowledgedStateBackFilled);
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
+  friend class BlocklistStatesInteractionUnitTest;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionService);
 };

@@ -5397,6 +5397,7 @@ test("unit_tests") {
       "../browser/extensions/blocklist_check_unittest.cc",
       "../browser/extensions/blocklist_extension_prefs_unittest.cc",
       "../browser/extensions/blocklist_state_fetcher_unittest.cc",
+      "../browser/extensions/blocklist_states_interaction_unittest.cc",
       "../browser/extensions/chrome_app_icon_unittest.cc",
       "../browser/extensions/chrome_app_sorting_unittest.cc",
       "../browser/extensions/chrome_component_extension_resource_manager_unittest.cc",
