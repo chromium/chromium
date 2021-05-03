@@ -1489,7 +1489,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       std::set<RenderWidgetHostView*>& result);
 
   // Called with the result of a DownloadImage() request.
-  void OnDidDownloadImage(ImageDownloadCallback callback,
+  void OnDidDownloadImage(base::WeakPtr<RenderFrameHostImpl> rfh,
+                          ImageDownloadCallback callback,
                           int id,
                           const GURL& image_url,
                           int32_t http_status_code,

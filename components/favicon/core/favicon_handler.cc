@@ -507,6 +507,8 @@ void FaviconHandler::OnDidDownloadFavicon(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& original_bitmap_sizes) {
+  DCHECK_EQ(bitmaps.size(), original_bitmap_sizes.size());
+
   // Mark download as finished.
   image_download_request_.Cancel();
 
