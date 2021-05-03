@@ -52,10 +52,6 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     return 'welcome-app';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       modulesInitialized_: Boolean,
@@ -180,6 +176,10 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
             }
           });
         });
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(WelcomeAppElement.is, WelcomeAppElement as any);

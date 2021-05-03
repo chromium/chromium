@@ -52,10 +52,6 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     return 'nux-google-apps';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       indicatorModel: Object,
@@ -286,6 +282,10 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
    */
   private getAriaPressed_(value: boolean): string {
     return value ? 'true' : 'false';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(NuxGoogleAppsElement.is, NuxGoogleAppsElement as any);

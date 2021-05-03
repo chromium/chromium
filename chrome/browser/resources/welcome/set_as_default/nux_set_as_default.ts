@@ -30,10 +30,6 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     return 'nux-set-as-default';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       indicatorModel: Object,
@@ -137,6 +133,10 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   private finished_() {
     this.finalized_ = true;
     this.navigateToNextStep_();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement as any);

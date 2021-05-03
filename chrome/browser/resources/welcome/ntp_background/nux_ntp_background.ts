@@ -35,10 +35,6 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     return 'nux-ntp-background';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       indicatorModel: Object,
@@ -228,6 +224,10 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     if (this.hasValidSelectedBackground_()) {
       this.announceA11y_(this.i18n('ntpBackgroundReset'));
     }
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(

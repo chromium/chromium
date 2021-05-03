@@ -26,10 +26,6 @@ export class LandingViewElement extends LandingViewElementBase {
     return 'landing-view';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       signinAllowed_: {
@@ -81,6 +77,10 @@ export class LandingViewElement extends LandingViewElementBase {
     this.finalized_ = true;
     this.landingViewProxy_.recordNewUser();
     navigateTo(Routes.NEW_USER, 1);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(LandingViewElement.is, LandingViewElement as any);

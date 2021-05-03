@@ -22,10 +22,6 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     return 'step-indicator';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       model: Object,
@@ -51,6 +47,10 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
 
   private getActiveClass_(index: number): string {
     return index === this.model.active ? 'active' : '';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(StepIndicatorElement.is, StepIndicatorElement as any);

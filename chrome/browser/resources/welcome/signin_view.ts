@@ -26,10 +26,6 @@ export class SigninViewElement extends SigninViewElementBase {
     return 'signin-view';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   private finalized_: boolean = false;
   private welcomeBrowserProxy_: WelcomeBrowserProxy|null = null;
   private signinViewProxy_: SigninViewProxy|null = null;
@@ -79,6 +75,10 @@ export class SigninViewElement extends SigninViewElementBase {
     this.finalized_ = true;
     this.signinViewProxy_.recordSkip();
     this.welcomeBrowserProxy_.handleUserDecline();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(SigninViewElement.is, SigninViewElement as any);

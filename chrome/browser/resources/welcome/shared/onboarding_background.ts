@@ -15,10 +15,6 @@ export class OnboardingBackgroundElement extends PolymerElement {
     return 'onboarding-background';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   private animations_: Animation[] = [];
 
   connectedCallback() {
@@ -111,6 +107,10 @@ export class OnboardingBackgroundElement extends PolymerElement {
 
   play() {
     this.animations_.forEach(animation => animation.play());
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 customElements.define(
