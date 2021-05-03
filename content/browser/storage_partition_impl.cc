@@ -2225,10 +2225,13 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
             // being called.
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                 CreateTaskCompletionClosure(TracingDataType::kCookies))));
+  }
 
+  if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
     if (interest_group_manager) {
       interest_group_manager->DeleteInterestGroupData(
-          url::Origin::Create(storage_origin));
+          CreateGenericOriginMatcher(storage_origin, origin_matcher,
+                                     storage_policy_ref));
     }
   }
 

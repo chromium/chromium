@@ -241,7 +241,10 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   EXPECT_EQ(ad1_json, interest_groups[0]->signals->prev_wins[1]->ad_json);
 
   // Try delete
-  storage->DeleteInterestGroupData(test_origin);
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&test_origin](const url::Origin& candidate) {
+        return candidate == test_origin;
+      }));
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
@@ -297,12 +300,15 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
 
-  storage->DeleteInterestGroupData(test_origins[0]);
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&test_origins](const url::Origin& origin) {
+        return origin == test_origins[0];
+      }));
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(2u, origins.size());
 
-  storage->DeleteInterestGroupData(::url::Origin());
+  storage->DeleteInterestGroupData({});
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());

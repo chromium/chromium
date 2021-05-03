@@ -67,9 +67,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
   GetInterestGroupsForOwner(const url::Origin& owner);
 
-  // Clear out storage for the specified owning origin. If the origin is opaque
+  // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
-  void DeleteInterestGroupData(const url::Origin& owner);
+  void DeleteInterestGroupData(
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
 
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
   GetAllInterestGroupsUnfilteredForTesting();

@@ -67,9 +67,10 @@ void InterestGroupManager::GetInterestGroupsForOwner(
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::DeleteInterestGroupData(const ::url::Origin& owner) {
+void InterestGroupManager::DeleteInterestGroupData(
+    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher) {
   impl_.AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)
-      .WithArgs(std::move(owner));
+      .WithArgs(std::move(origin_matcher));
 }
 
 }  // namespace content

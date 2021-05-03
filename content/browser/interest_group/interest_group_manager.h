@@ -61,9 +61,10 @@ class CONTENT_EXPORT InterestGroupManager {
           void(std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>)>
           callback);
 
-  // Clear out storage for the specified owning origin. If the origin is opaque
-  // or empty, apply to all origins.
-  void DeleteInterestGroupData(const url::Origin& owner);
+  // Clear out storage for the matching owning origin. If the callback is empty
+  // then apply to all origins.
+  void DeleteInterestGroupData(
+      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher);
 
  private:
   // Remote for accessing the interest group storage from the browser UI thread.

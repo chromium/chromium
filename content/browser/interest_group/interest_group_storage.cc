@@ -697,7 +697,9 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   return result;
 }
 
-bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
+bool DoDeleteInterestGroupData(
+    sql::Database& db,
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher) {
   base::Time infinite_past = base::Time::Min();
   sql::Transaction transaction(&db);
 
@@ -705,14 +707,14 @@ bool DoDeleteInterestGroupData(sql::Database& db, const url::Origin& owner) {
     return false;
 
   std::vector<url::Origin> affected_origins;
-  if (owner.opaque()) {
-    base::Optional<std::vector<url::Origin>> maybe_affected_origins =
-        DoGetAllInterestGroupOwners(db, infinite_past);
-    if (!maybe_affected_origins)
-      return false;
-    affected_origins = std::move(maybe_affected_origins.value());
-  } else {
-    affected_origins.push_back(owner);
+  base::Optional<std::vector<url::Origin>> maybe_all_origins =
+      DoGetAllInterestGroupOwners(db, infinite_past);
+  if (!maybe_all_origins)
+    return false;
+  for (const url::Origin& origin : maybe_all_origins.value()) {
+    if (origin_matcher.is_null() || origin_matcher.Run(origin)) {
+      affected_origins.push_back(origin);
+    }
   }
 
   for (const auto& affected_origin : affected_origins) {
@@ -1022,12 +1024,13 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   return std::move(maybe_result.value());
 }
 
-void InterestGroupStorage::DeleteInterestGroupData(const url::Origin& owner) {
+void InterestGroupStorage::DeleteInterestGroupData(
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoDeleteInterestGroupData(*db_, owner)) {
+  if (!DoDeleteInterestGroupData(*db_, origin_matcher)) {
     DLOG(ERROR) << "Could not delete interest group data: "
                 << db_->GetErrorMessage();
   }
