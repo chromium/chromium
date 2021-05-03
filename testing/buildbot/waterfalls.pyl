@@ -2705,7 +2705,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'linux_viz_gtests',
-          'isolated_scripts': 'skia_renderer_isolated_scripts',
+          'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
         },
       },
       'Mac Builder Next': {
