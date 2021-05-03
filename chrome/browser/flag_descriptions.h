@@ -598,6 +598,9 @@ extern const char kDownloadLaterDescription[];
 extern const char kDownloadLaterDebugOnWifiName[];
 extern const char kDownloadLaterDebugOnWifiNameDescription[];
 
+extern const char kEnableFencedFramesName[];
+extern const char kEnableFencedFramesDescription[];
+
 extern const char kEnableLoginDetectionName[];
 extern const char kEnableLoginDetectionDescription[];
 

@@ -3340,6 +3340,11 @@ interface HTMLEmbedElement : HTMLElement
     setter src
     setter type
     setter width
+interface HTMLFencedFrameElement : HTMLElement
+    attribute @@toStringTag
+    getter src
+    method constructor
+    setter src
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
     getter disabled

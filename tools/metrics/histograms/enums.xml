@@ -32367,6 +32367,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3887" label="ServiceWorkerSubresourceFilter"/>
   <int value="3888" label="WebGPU"/>
   <int value="3889" label="CSSFilterColorMatrix"/>
+  <int value="3890" label="HTMLFencedFrameElement"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -45292,6 +45293,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:disabled"/>
   <int value="-1286038936"
       label="AutofillEnableCardNicknameManagement:enabled"/>
+  <int value="-1285790931" label="FencedFrames:disabled"/>
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
@@ -48226,6 +48228,7 @@ from previous Chrome versions.
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
   <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
+  <int value="1311579438" label="FencedFrames:enabled"/>
   <int value="1311860720" label="ChromeHomeNtpRedesign:disabled"/>
   <int value="1312025202" label="NTPOfflinePageSuggestions:disabled"/>
   <int value="1313476409" label="ReportFeedUserActions:disabled"/>

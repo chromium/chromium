@@ -169,6 +169,13 @@ const base::Feature kPortals {
 const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
+// this feature does not automatically expose this element to the web, it only
+// allows the element to be enabled by the runtime enabled feature, for origin
+// trials.
+const base::Feature kFencedFrames{"FencedFrames",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable the prerender2. https://crbug.com/1126305.
 const base::Feature kPrerender2{"Prerender2",
                                 base::FEATURE_DISABLED_BY_DEFAULT};

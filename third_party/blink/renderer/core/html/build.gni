@@ -280,6 +280,8 @@ blink_core_sources_html = [
   "html_element.h",
   "html_embed_element.cc",
   "html_embed_element.h",
+  "html_fenced_frame_element.cc",
+  "html_fenced_frame_element.h",
   "html_font_element.cc",
   "html_font_element.h",
   "html_frame_element.cc",

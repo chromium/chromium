@@ -262,6 +262,7 @@ core_interface_idl_files_core_only =
                     "html/html_dlist_element.idl",
                     "html/html_document.idl",
                     "html/html_embed_element.idl",
+                    "html/html_fenced_frame_element.idl",
                     "html/html_font_element.idl",
                     "html/html_frame_element.idl",
                     "html/html_frame_set_element.idl",

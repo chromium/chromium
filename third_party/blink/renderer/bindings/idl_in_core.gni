@@ -383,6 +383,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/html/html_document.idl",
           "//third_party/blink/renderer/core/html/html_element.idl",
           "//third_party/blink/renderer/core/html/html_embed_element.idl",
+          "//third_party/blink/renderer/core/html/html_fenced_frame_element.idl",
           "//third_party/blink/renderer/core/html/html_font_element.idl",
           "//third_party/blink/renderer/core/html/html_frame_element.idl",
           "//third_party/blink/renderer/core/html/html_frame_set_element.idl",

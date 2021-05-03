@@ -5597,6 +5597,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kShortcutCustomizationApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,
+     flag_descriptions::kEnableFencedFramesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
+
     {"enable-portals", flag_descriptions::kEnablePortalsName,
      flag_descriptions::kEnablePortalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPortals)},

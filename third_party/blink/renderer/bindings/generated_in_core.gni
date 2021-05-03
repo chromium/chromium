@@ -813,6 +813,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_embed_element.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_embed_element.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_fenced_frame_element.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_fenced_frame_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_field_set_element.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_field_set_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_font_element.cc",

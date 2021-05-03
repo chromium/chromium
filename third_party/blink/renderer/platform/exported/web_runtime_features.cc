@@ -206,6 +206,14 @@ void WebRuntimeFeatures::EnableRemoveMobileViewportDoubleTap(bool enable) {
   RuntimeEnabledFeatures::SetRemoveMobileViewportDoubleTapEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableFencedFrames(bool enable) {
+  RuntimeEnabledFeatures::SetFencedFramesEnabled(enable);
+}
+
+bool WebRuntimeFeatures::IsFencedFramesEnabled() {
+  return RuntimeEnabledFeatures::FencedFramesEnabledByRuntimeFlag();
+}
+
 void WebRuntimeFeatures::EnableFileSystem(bool enable) {
   RuntimeEnabledFeatures::SetFileSystemEnabled(enable);
 }

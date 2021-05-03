@@ -244,6 +244,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDocumentTransition, features::kDocumentTransition},
     {wf::EnableExpensiveBackgroundTimerThrottling,
      features::kExpensiveBackgroundTimerThrottling},
+    {wf::EnableFencedFrames, blink::features::kFencedFrames,
+     kSetOnlyIfOverridden},
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
     {wf::EnableGenericSensorExtraClasses, features::kGenericSensorExtraClasses},
@@ -622,6 +624,16 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "=" << blink::features::kPortals.name
         << " instead.";
     WebRuntimeFeatures::EnablePortals(false);
+  }
+
+  // Fenced frames, like Portals, cannot be enabled without the support of the
+  // browser process.
+  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsFencedFramesEnabled())
+        << "Fenced frames cannot be enabled in this configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kFencedFrames.name << " instead.";
+    WebRuntimeFeatures::EnableFencedFrames(false);
   }
 }
 

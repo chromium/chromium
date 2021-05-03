@@ -1798,6 +1798,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-fenced-frames",
+    "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-filtering-scroll-events",
     "owners": [ "eirage", "nzolghadr", "input-dev" ],
     "expiry_milestone": 85

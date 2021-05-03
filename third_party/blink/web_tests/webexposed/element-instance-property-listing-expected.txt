@@ -556,6 +556,8 @@ html element embed
     property src
     property type
     property width
+html element fencedframe
+    property src
 html element fieldset
     property checkValidity
     property disabled

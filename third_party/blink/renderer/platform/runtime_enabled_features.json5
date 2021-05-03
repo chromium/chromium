@@ -924,6 +924,16 @@
       status: "experimental"
     },
     {
+      name: "FencedFrames",
+      // This helps enable and expose the <fencedframe> element, but note that
+      // blink::features::kFencedFrames must be enabled as well, similar to
+      // Portals, as we require the support of the browser process to fully
+      // enable the feature. Enabling this runtime enabled feature alone has no
+      // effect.
+      status: "experimental",
+      origin_trial_feature_name: "FencedFrames",
+    },
+    {
       name: "FetchUploadStreaming",
       origin_trial_feature_name: "FetchUploadStreaming",
       origin_trial_allows_third_party: true,

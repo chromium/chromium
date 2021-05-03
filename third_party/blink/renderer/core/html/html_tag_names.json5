@@ -157,6 +157,14 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
+      name: "fencedframe",
+      interfaceName: "HTMLFencedFrameElement",
+      runtimeEnabled: "FencedFrames",
+      // This element could be enabled in some documents but not others (due to
+      // origin trials), so we need custom type helpers.
+      noTypeHelpers: true,
+    },
+    {
       name: "fieldset",
       interfaceName: "HTMLFieldSetElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
