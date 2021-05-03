@@ -10,11 +10,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
-import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -146,11 +144,11 @@ public class ActivityTabProvider implements Supplier<Tab> {
     /** The {@link Tab} that is considered to be the activity's tab. */
     private Tab mActivityTab;
 
-    /** A handle to the {@link LayoutManagerImpl} to get the active layout. */
-    private LayoutManagerImpl mLayoutManager;
+    /** A handle to the {@link LayoutStateProvider} to get the active layout. */
+    private LayoutStateProvider mLayoutStateProvider;
 
-    /** The observer watching scene changes in the {@link LayoutManagerImpl}. */
-    private SceneChangeObserver mSceneChangeObserver;
+    /** The observer watching scene changes in the active layout. */
+    private LayoutStateObserver mLayoutStateObserver;
 
     /** A handle to the {@link TabModelSelector}. */
     private TabModelSelector mTabModelSelector;
@@ -169,7 +167,7 @@ public class ActivityTabProvider implements Supplier<Tab> {
      */
     public ActivityTabProvider() {
         mRewindableIterator = mObservers.rewindableIterator();
-        mSceneChangeObserver = new SceneChangeObserver() {
+        mLayoutStateObserver = new LayoutStateObserver() {
             @Override
             public void onTabSelectionHinted(int tabId) {
                 if (mTabModelSelector == null || mLastHintedTabId == tabId) return;
@@ -182,15 +180,15 @@ public class ActivityTabProvider implements Supplier<Tab> {
             }
 
             @Override
-            public void onSceneChange(Layout layout) {
+            public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
                 // The {@link SimpleAnimationLayout} is a special case, the intent is not to switch
                 // tabs, but to merely run an animation. In this case, do nothing. If the animation
                 // layout does result in a new tab {@link TabModelObserver#didSelectTab} will
                 // trigger the event instead. If the tab does not change, the event will no
-                if (layout instanceof SimpleAnimationLayout) return;
+                if (LayoutType.SIMPLE_ANIMATION == layout) return;
 
                 Tab tab = mTabModelSelector.getCurrentTab();
-                if (!(layout instanceof StaticLayout)) tab = null;
+                if (layout != LayoutType.BROWSING) tab = null;
                 triggerActivityTabChangeEvent(tab);
             }
         };
@@ -237,12 +235,12 @@ public class ActivityTabProvider implements Supplier<Tab> {
     }
 
     /**
-     * @param layoutManager A {@link LayoutManagerImpl} for watching for scene changes.
+     * @param layoutStateProvider A {@link LayoutStateProvider} for watching for scene changes.
      */
-    public void setLayoutManager(LayoutManagerImpl layoutManager) {
-        assert mLayoutManager == null;
-        mLayoutManager = layoutManager;
-        mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        assert mLayoutStateProvider == null;
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     /**
@@ -251,9 +249,9 @@ public class ActivityTabProvider implements Supplier<Tab> {
      */
     private void triggerActivityTabChangeEvent(Tab tab) {
         // Allow the event to trigger before native is ready (before the layout manager is set).
-        if (mLayoutManager != null
-                && !(mLayoutManager.getActiveLayout() instanceof StaticLayout
-                        || mLayoutManager.getActiveLayout() instanceof SimpleAnimationLayout)
+        if (mLayoutStateProvider != null
+                && !(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)
+                        || mLayoutStateProvider.isLayoutVisible(LayoutType.SIMPLE_ANIMATION))
                 && tab != null) {
             return;
         }
@@ -302,8 +300,8 @@ public class ActivityTabProvider implements Supplier<Tab> {
     /** Clean up and detach any observers this object created. */
     public void destroy() {
         mObservers.clear();
-        if (mLayoutManager != null) mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
-        mLayoutManager = null;
+        if (mLayoutStateProvider != null) mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+        mLayoutStateProvider = null;
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         if (mTabModelSelectorObserver != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);

@@ -1989,7 +1989,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler());
         }
 
-        mActivityTabProvider.setLayoutManager(layoutManager);
+        mActivityTabProvider.setLayoutStateProvider(layoutManager);
 
         if (mContextualSearchManager != null) {
             mContextualSearchManager.initialize(contentContainer, layoutManager,

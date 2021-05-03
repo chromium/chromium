@@ -814,6 +814,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     updateButtonStatus();
                 }
             }
+
+            @Override
+            public void onFinishedShowing(@LayoutType int layoutType) {
+                maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
+            }
         };
 
         mSceneChangeObserver = new SceneChangeObserver() {
@@ -830,7 +835,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onSceneChange(Layout layout) {
                 mToolbar.setContentAttached(layout.shouldDisplayContentOverlay());
-                maybeFocusOmnibox(layout, mActivityTabProvider.get());
             }
         };
 
@@ -878,7 +882,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     /**
      * May set Omnibox focused if the Tab has the flag to require focusing the Omnibox.
      */
-    private void maybeFocusOmnibox(Layout layout, Tab tab) {
+    private void maybeFocusOmnibox(@LayoutType int layout, Tab tab) {
         if (StartSurfaceConfiguration.consumeFocusOnOmnibox(tab, layout)) {
             if (mLocationBar.getOmniboxStub() == null
                     || mLocationBar.getOmniboxStub().isUrlBarFocused()) {
@@ -1196,7 +1200,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
-        maybeFocusOmnibox(mLayoutManager.getActiveLayout(), currentTab);
+        maybeFocusOmnibox(mLayoutManager.getActiveLayout().getLayoutType(), currentTab);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);

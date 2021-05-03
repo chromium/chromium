@@ -31,6 +31,7 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -256,16 +257,16 @@ public class BottomSheetControllerTest {
         });
 
         // Enter the tab switcher and select a different tab.
+        setTabSwitcherState(true);
+
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.getLayoutManager().showOverview(false);
-            mTestSupport.endAllAnimations();
             assertEquals("The bottom sheet should be hidden.",
                     BottomSheetController.SheetState.HIDDEN, mSheetController.getSheetState());
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
                     0, TabSelectionType.FROM_USER);
-            mActivity.getLayoutManager().hideOverview(false);
-            mTestSupport.endAllAnimations();
         });
+
+        setTabSwitcherState(false);
 
         contentChangeHelper.waitForCallback(0);
         assertEquals("The bottom sheet still should be hidden.",
@@ -676,15 +677,41 @@ public class BottomSheetControllerTest {
      * Enter and immediately exit the tab switcher. This function will assert that the sheet is not
      * showing in the tab switcher.
      */
-    private void enterAndExitTabSwitcher() {
+    private void enterAndExitTabSwitcher() throws TimeoutException {
+        setTabSwitcherState(true);
+
+        assertEquals("The bottom sheet should be hidden.", BottomSheetController.SheetState.HIDDEN,
+                mSheetController.getSheetState());
+
+        setTabSwitcherState(false);
+    }
+
+    /**
+     * Set the tab switcher state and wait for that state to be settled.
+     * @param shown Whether the tab switcher should be shown.
+     * @throws TimeoutException
+     */
+    private void setTabSwitcherState(boolean shown) throws TimeoutException {
+        CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
+        LayoutStateObserver observer = new LayoutStateObserver() {
+            @Override
+            public void onFinishedShowing(int layoutType) {
+                finishedShowingCallbackHelper.notifyCalled();
+            }
+        };
+        mActivity.getLayoutManager().addObserver(observer);
+
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.getLayoutManager().showOverview(false);
-            mTestSupport.endAllAnimations();
-            assertEquals("The bottom sheet should be hidden.",
-                    BottomSheetController.SheetState.HIDDEN, mSheetController.getSheetState());
-            mActivity.getLayoutManager().hideOverview(false);
-            mTestSupport.endAllAnimations();
+            if (shown) {
+                mActivity.getLayoutManager().showOverview(false);
+            } else {
+                mActivity.getLayoutManager().hideOverview(false);
+            }
         });
+
+        finishedShowingCallbackHelper.waitForFirst();
+        mActivity.getLayoutManager().removeObserver(observer);
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 
     /**
@@ -699,15 +726,13 @@ public class BottomSheetControllerTest {
             }
         });
 
-        int previousCallCount = tabSelectedHelper.getCallCount();
-
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTabCreator(false).createNewTab(new LoadUrlParams("about:blank"),
                     TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
         });
 
-        tabSelectedHelper.waitForCallback(previousCallCount, 1);
-        ThreadUtils.runOnUiThreadBlocking(() -> mTestSupport.endAllAnimations());
+        tabSelectedHelper.waitForFirst();
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 
     /**
@@ -716,6 +741,6 @@ public class BottomSheetControllerTest {
     private void openNewTabInForeground() {
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(), mActivity, "about:blank", false);
-        ThreadUtils.runOnUiThreadBlocking(() -> mTestSupport.endAllAnimations());
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 }

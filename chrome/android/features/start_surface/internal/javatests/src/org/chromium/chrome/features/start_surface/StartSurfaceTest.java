@@ -41,6 +41,7 @@ import static org.chromium.chrome.features.start_surface.InstantStartTest.create
 import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FEED_VISIBILITY_CONSISTENCY;
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.chrome.test.util.ViewUtils.waitForStableView;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
@@ -81,6 +82,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -95,6 +97,8 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -128,6 +132,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -160,6 +165,11 @@ public class StartSurfaceTest {
     private final boolean mUseInstantStart;
     private final boolean mImmediateReturn;
 
+    private CallbackHelper mLayoutChangedCallbackHelper;
+    private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
+    @LayoutType
+    private int mCurrentlyActiveLayout;
+
     public StartSurfaceTest(boolean useInstantStart, boolean immediateReturn) {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.INSTANT_START, useInstantStart);
 
@@ -169,6 +179,8 @@ public class StartSurfaceTest {
 
     @Before
     public void setUp() throws IOException {
+        mLayoutChangedCallbackHelper = new CallbackHelper();
+
         int expectedTabs = 1;
         int additionalTabs = expectedTabs - (mImmediateReturn ? 0 : 1);
         if (additionalTabs > 0) {
@@ -192,12 +204,24 @@ public class StartSurfaceTest {
             // Create fake TabState files to emulate having one tab in previous session.
             TabAttributeCache.setTitleForTesting(0, "tab title");
             startMainActivityFromLauncher();
+
+            // Assume start surface is shown immediately.
+            mCurrentlyActiveLayout = LayoutType.TAB_SWITCHER;
         } else {
             assertFalse(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
             // Cannot use startMainActivityFromLauncher().
             // Otherwise tab switcher could be shown immediately if single-pane is enabled.
             mActivityTestRule.startMainActivityOnBlankPage();
             onViewWaiting(withId(R.id.home_button));
+
+            mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
+                @Override
+                public void onFinishedShowing(@LayoutType int layoutType) {
+                    mCurrentlyActiveLayout = layoutType;
+                    mLayoutChangedCallbackHelper.notifyCalled();
+                }
+            };
+            mActivityTestRule.getActivity().getLayoutManager().addObserver(mLayoutObserver);
         }
     }
 
@@ -565,6 +589,8 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.search_box_text));
         TextView urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
+        waitForStableView(urlBar);
+        waitForStableView(mActivityTestRule.getActivity().findViewById(R.id.search_box_text));
         onView(withId(R.id.search_box_text)).perform(click());
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
     }
@@ -1966,11 +1992,13 @@ public class StartSurfaceTest {
     }
 
     private void waitForOverviewVisible() {
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible(),
-                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        int callCount = mLayoutChangedCallbackHelper.getCallCount();
+        if (mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER) return;
+        try {
+            mLayoutChangedCallbackHelper.waitForCallback(callCount);
+        } catch (TimeoutException ex) {
+            assert false : "Timeout waiting for browser to enter tab switcher.";
+        }
     }
 }
 

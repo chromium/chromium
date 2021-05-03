@@ -13,12 +13,11 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -148,8 +147,8 @@ public class StartSurfaceConfiguration {
      * Tab is showing, and resets the flag in the Tab's UserData. This function returns true only
      * when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
      */
-    public static boolean consumeFocusOnOmnibox(Tab tab, Layout layout) {
-        if (tab != null && tab.getUrl().isEmpty() && layout instanceof StaticLayout
+    public static boolean consumeFocusOnOmnibox(Tab tab, @LayoutType int layout) {
+        if (tab != null && tab.getUrl().isEmpty() && layout == LayoutType.BROWSING
                 && StartSurfaceUserData.getFocusOnOmnibox(tab)) {
             assert OMNIBOX_FOCUSED_ON_NEW_TAB.getValue();
             StartSurfaceUserData.setFocusOnOmnibox(tab, false);
