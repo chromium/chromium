@@ -10,6 +10,8 @@
 namespace federated_learning {
 
 extern const base::Feature kFlocIdComputedEventLogging;
+extern const base::Feature
+    kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation;
 
 extern const base::Feature kFederatedLearningOfCohorts;
 extern const base::FeatureParam<base::TimeDelta> kFlocIdScheduledUpdateInterval;
