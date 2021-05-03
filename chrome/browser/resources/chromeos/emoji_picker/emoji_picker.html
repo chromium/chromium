@@ -120,6 +120,10 @@
     background-color: var(--cr-checked-color);
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
+    /* This gets made visible after we determine the correct location by loading
+     * history.
+     */
+    display: none;
     flex-shrink: 0;
     height: 2px;
     /* Left needed so that transition end fires when it changes for the first
@@ -127,7 +131,6 @@
      */
     left: 0;
     position: relative;
-    transition: left 200ms;
     width:  calc(312px / var(--emoji-per-row));
   }
 

@@ -188,6 +188,11 @@ export class EmojiPicker extends PolymerElement {
       this.set(
           ['preferenceMapping'], this.recentEmojiStore.getPreferenceMapping());
     }
+    // Make highlight bar visible (now we know where it should be) and
+    // add smooth sliding.
+    this.updateActiveGroup();
+    this.$.bar.style.display = 'block';
+    this.$.bar.style.transition = 'left 200ms';
   }
 
   ready() {
@@ -366,6 +371,13 @@ export class EmojiPicker extends PolymerElement {
       }
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
+
+    // Ensure that the history tab is not set as active if it is empty.
+    if (index === 0 && this.history.emoji.length === 0) {
+      this.set(['emojiGroupTabs', 0, 'active'], false);
+      this.set(['emojiGroupTabs', 1, 'active'], true);
+      index = 1;
+    }
 
     // Once tab scroll is updated, update the position of the highlight bar.
     if (!this.highlightBarMoving && !this.groupTabsMoving) {
