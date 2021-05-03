@@ -155,8 +155,7 @@ bool BluetoothRemoteGattCharacteristicBlueZ::IsNotifying() const {
 }
 
 void BluetoothRemoteGattCharacteristicBlueZ::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DVLOG(1) << "Sending GATT characteristic read request to characteristic: "
            << GetIdentifier() << ", UUID: " << GetUUID().canonical_value()
            << ".";
@@ -164,13 +163,14 @@ void BluetoothRemoteGattCharacteristicBlueZ::ReadRemoteCharacteristic(
   DCHECK_GE(num_of_characteristic_value_read_in_progress_, 0);
   ++num_of_characteristic_value_read_in_progress_;
 
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluez::BluezDBusManager::Get()
       ->GetBluetoothGattCharacteristicClient()
       ->ReadValue(
-          object_path(), std::move(callback),
+          object_path(), std::move(split_callback.first),
           base::BindOnce(&BluetoothRemoteGattCharacteristicBlueZ::OnReadError,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::move(error_callback)));
+                         std::move(split_callback.second)));
 }
 
 void BluetoothRemoteGattCharacteristicBlueZ::WriteRemoteCharacteristic(
@@ -403,15 +403,17 @@ void BluetoothRemoteGattCharacteristicBlueZ::OnStopNotifyError(
 }
 
 void BluetoothRemoteGattCharacteristicBlueZ::OnReadError(
-    ErrorCallback error_callback,
+    ValueCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
   DVLOG(1) << "Operation failed: " << error_name
            << ", message: " << error_message;
   --num_of_characteristic_value_read_in_progress_;
   DCHECK_GE(num_of_characteristic_value_read_in_progress_, 0);
-  std::move(error_callback)
-      .Run(BluetoothGattServiceBlueZ::DBusErrorToServiceError(error_name));
+  std::move(callback).Run(
+      base::make_optional(
+          BluetoothGattServiceBlueZ::DBusErrorToServiceError(error_name)),
+      /*value=*/std::vector<uint8_t>());
 }
 
 void BluetoothRemoteGattCharacteristicBlueZ::OnWriteError(

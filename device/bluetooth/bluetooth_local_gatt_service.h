@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -45,28 +46,28 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
   class Delegate {
    public:
     // Callbacks used for communicating GATT request responses.
-    using ValueCallback = base::OnceCallback<void(const std::vector<uint8_t>&)>;
+    using ValueCallback = base::OnceCallback<void(
+        base::Optional<BluetoothGattService::GattErrorCode> error_code,
+        const std::vector<uint8_t>&)>;
     using ErrorCallback = base::OnceClosure;
 
     // Called when a remote device |device| requests to read the value of the
-    // characteristic |characteristic| starting at offset |offset|.
-    // This method is only called if the characteristic was specified as
-    // readable and any authentication and authorization challenges were
-    // satisfied by the remote device.
+    // characteristic |characteristic| starting at offset |offset|. To respond
+    // to the request with failure (e.g. if an invalid offset was given),
+    // delegates must invoke |callback| with the appropriate error code. If
+    // |callback| is not invoked, the request will time out resulting in an
+    // error. Therefore, delegates MUST invoke |callback| regardless of success
+    // or failure.
     //
     // To respond to the request with success and return the requested value,
-    // the delegate must invoke |callback| with the value. Doing so will
-    // automatically update the value property of |characteristic|. To respond
-    // to the request with failure (e.g. if an invalid offset was given),
-    // delegates must invoke |error_callback|. If neither callback parameter is
-    // invoked, the request will time out and result in an error. Therefore,
-    // delegates MUST invoke either |callback| or |error_callback|.
+    // the delegate must invoke |callback| with the value (and without an error
+    // code). Doing so will automatically update the value property of
+    // |characteristic|.
     virtual void OnCharacteristicReadRequest(
         const BluetoothDevice* device,
         const BluetoothLocalGattCharacteristic* characteristic,
         int offset,
-        ValueCallback callback,
-        ErrorCallback error_callback) = 0;
+        ValueCallback callback) = 0;
 
     // Called when a remote device |device| requests to write the value of the
     // characteristic |characteristic| starting at offset |offset|.
@@ -113,24 +114,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         ErrorCallback error_callback) = 0;
 
     // Called when a remote device |device| requests to read the value of the
-    // descriptor |descriptor| starting at offset |offset|.
-    // This method is only called if the descriptor was specified as
-    // readable and any authentication and authorization challenges were
-    // satisfied by the remote device.
+    // descriptor |descriptor| starting at offset |offset|. To respond
+    // to the request with failure (e.g. if an invalid offset was given),
+    // delegates must invoke |callback| with the appropriate error code. If
+    // |callback| is not invoked, the request will time out resulting in an
+    // error. Therefore, delegates MUST invoke |callback| regardless of success
+    // or failure.
     //
     // To respond to the request with success and return the requested value,
-    // the delegate must invoke |callback| with the value. Doing so will
-    // automatically update the value property of |descriptor|. To respond
-    // to the request with failure (e.g. if an invalid offset was given),
-    // delegates must invoke |error_callback|. If neither callback parameter is
-    // invoked, the request will time out and result in an error. Therefore,
-    // delegates MUST invoke either |callback| or |error_callback|.
+    // the delegate must invoke |callback| with the value (and without an error
+    // code). Doing so will automatically update the value property of
+    // |descriptor|.
     virtual void OnDescriptorReadRequest(
         const BluetoothDevice* device,
         const BluetoothLocalGattDescriptor* descriptor,
         int offset,
-        ValueCallback callback,
-        ErrorCallback error_callback) = 0;
+        ValueCallback callback) = 0;
 
     // Called when a remote device |devie| requests to write the value of the
     // descriptor |descriptor| starting at offset |offset|.

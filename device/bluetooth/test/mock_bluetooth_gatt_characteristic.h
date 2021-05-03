@@ -68,10 +68,10 @@ class MockBluetoothGattCharacteristic
   }
   MOCK_METHOD2(StopNotifySession_,
                void(BluetoothGattNotifySession*, base::OnceClosure&));
-  void ReadRemoteCharacteristic(ValueCallback c, ErrorCallback ec) override {
-    ReadRemoteCharacteristic_(c, ec);
+  void ReadRemoteCharacteristic(ValueCallback c) override {
+    ReadRemoteCharacteristic_(c);
   }
-  MOCK_METHOD2(ReadRemoteCharacteristic_, void(ValueCallback&, ErrorCallback&));
+  MOCK_METHOD1(ReadRemoteCharacteristic_, void(ValueCallback&));
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& v,
                                  WriteType t,
                                  base::OnceClosure c,

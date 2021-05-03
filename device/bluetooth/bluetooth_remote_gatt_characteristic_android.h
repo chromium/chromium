@@ -63,8 +63,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       const std::string& identifier) const override;
   std::vector<BluetoothRemoteGattDescriptor*> GetDescriptorsByUUID(
       const BluetoothUUID& uuid) const override;
-  void ReadRemoteCharacteristic(ValueCallback callback,
-                                ErrorCallback error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
                                  WriteType write_type,
                                  base::OnceClosure callback,
@@ -142,10 +141,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   // Adapter unique instance ID.
   std::string instance_id_;
 
-  // ReadRemoteCharacteristic callbacks and pending state.
+  // ReadRemoteCharacteristic callback and pending state.
   bool read_pending_ = false;
   ValueCallback read_callback_;
-  ErrorCallback read_error_callback_;
 
   // WriteRemoteCharacteristic callbacks and pending state.
   bool write_pending_ = false;

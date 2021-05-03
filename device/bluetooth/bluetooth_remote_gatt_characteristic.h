@@ -51,8 +51,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   };
 
   // The ValueCallback is used to return the value of a remote characteristic
-  // upon a read request.
-  using ValueCallback = base::OnceCallback<void(const std::vector<uint8_t>&)>;
+  // upon a read request. Upon successful completion |error_code| will not
+  // have a value and |value| may be used. When unsuccessful |error_code| will
+  // have a value and |value| must be ignored.
+  using ValueCallback = base::OnceCallback<void(
+      base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value)>;
 
   // The NotifySessionCallback is used to return sessions after they have
   // been successfully started.
@@ -139,10 +143,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 #endif
 
   // Sends a read request to a remote characteristic to read its value.
-  // |callback| is called to return the read value on success and
-  // |error_callback| is called for failures.
-  virtual void ReadRemoteCharacteristic(ValueCallback callback,
-                                        ErrorCallback error_callback) = 0;
+  // |callback| is called to return the read value or error.
+  virtual void ReadRemoteCharacteristic(ValueCallback callback) = 0;
 
   // Sends a write request to a remote characteristic with the value |value|
   // using the specified |write_type|. |callback| is called to signal success

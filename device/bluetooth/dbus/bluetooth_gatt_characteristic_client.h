@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
@@ -80,8 +81,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   using ErrorCallback =
       base::OnceCallback<void(const std::string& error_name,
                               const std::string& error_message)>;
-  using ValueCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>& value)>;
+  using ValueCallback = base::OnceCallback<void(
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value)>;
 
   ~BluetoothGattCharacteristicClient() override;
 

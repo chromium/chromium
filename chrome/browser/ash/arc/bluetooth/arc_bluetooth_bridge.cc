@@ -302,36 +302,37 @@ void OnGattOperationError(arc::ArcBluetoothBridge::GattStatusCallback callback,
       error_code, /* is_read_operation = */ false));
 }
 
-// Common success callback for ReadGattCharacteristic and ReadGattDescriptor
-void OnGattReadDone(GattReadCallback callback,
-                    const std::vector<uint8_t>& result) {
+// Common callback (success and error) for ReadGattCharacteristic and
+// ReadGattDescriptor.
+void OnGattRead(
+    GattReadCallback callback,
+    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+        error_code,
+    const std::vector<uint8_t>& result) {
   arc::mojom::BluetoothGattValuePtr gattValue =
       arc::mojom::BluetoothGattValue::New();
-  gattValue->status = arc::mojom::BluetoothGattStatus::GATT_SUCCESS;
-  gattValue->value = result;
-  std::move(callback).Run(std::move(gattValue));
-}
 
-// Common error callback for ReadGattCharacteristic and ReadGattDescriptor
-void OnGattReadError(GattReadCallback callback,
-                     BluetoothGattService::GattErrorCode error_code) {
-  arc::mojom::BluetoothGattValuePtr gattValue =
-      arc::mojom::BluetoothGattValue::New();
-  gattValue->status =
-      ConvertGattErrorCodeToStatus(error_code, /* is_read_operation = */ true);
+  if (error_code.has_value()) {
+    gattValue->status = ConvertGattErrorCodeToStatus(
+        error_code.value(), /*is_read_operation=*/true);
+  } else {
+    gattValue->status = arc::mojom::BluetoothGattStatus::GATT_SUCCESS;
+  }
+  gattValue->value = result;
   std::move(callback).Run(std::move(gattValue));
 }
 
 // Callback function for mojom::BluetoothInstance::RequestGattRead
 void OnGattServerRead(
-    BluetoothLocalGattService::Delegate::ValueCallback success_callback,
-    BluetoothLocalGattService::Delegate::ErrorCallback error_callback,
+    BluetoothLocalGattService::Delegate::ValueCallback callback,
     arc::mojom::BluetoothGattStatus status,
     const std::vector<uint8_t>& value) {
-  if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS)
-    std::move(success_callback).Run(value);
-  else
-    std::move(error_callback).Run();
+  if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS) {
+    std::move(callback).Run(/*error_code=*/base::nullopt, value);
+  } else {
+    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+                            /*value=*/std::vector<uint8_t>());
+  }
 }
 
 // Callback function for mojom::BluetoothInstance::RequestGattWrite
@@ -878,13 +879,13 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
     const LocalGattAttribute* attribute,
     int offset,
     mojom::BluetoothGattDBAttributeType attribute_type,
-    ValueCallback success_callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), RequestGattRead);
   if (!bluetooth_instance || !IsGattOffsetValid(offset)) {
-    std::move(error_callback).Run();
+    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+                            /*value=*/std::vector<uint8_t>());
     return;
   }
 
@@ -893,9 +894,7 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
   bluetooth_instance->RequestGattRead(
       mojom::BluetoothAddress::From(device->GetAddress()),
       gatt_handle_[attribute->GetIdentifier()], offset, false /* is_long */,
-      attribute_type,
-      base::BindOnce(&OnGattServerRead, std::move(success_callback),
-                     std::move(error_callback)));
+      attribute_type, base::BindOnce(&OnGattServerRead, std::move(callback)));
 }
 
 void ArcBluetoothBridge::OnGattServerPrepareWrite(
@@ -967,12 +966,11 @@ void ArcBluetoothBridge::OnCharacteristicReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattCharacteristic* characteristic,
     int offset,
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   OnGattAttributeReadRequest(
       device, characteristic, offset,
       mojom::BluetoothGattDBAttributeType::BTGATT_DB_CHARACTERISTIC,
-      std::move(callback), std::move(error_callback));
+      std::move(callback));
 }
 
 void ArcBluetoothBridge::OnCharacteristicWriteRequest(
@@ -1008,12 +1006,11 @@ void ArcBluetoothBridge::OnDescriptorReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattDescriptor* descriptor,
     int offset,
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   OnGattAttributeReadRequest(
       device, descriptor, offset,
       mojom::BluetoothGattDBAttributeType::BTGATT_DB_DESCRIPTOR,
-      std::move(callback), std::move(error_callback));
+      std::move(callback));
 }
 
 void ArcBluetoothBridge::OnDescriptorWriteRequest(
@@ -1731,10 +1728,8 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
   DCHECK(characteristic);
   DCHECK(characteristic->GetPermissions() & kGattReadPermission);
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
   characteristic->ReadRemoteCharacteristic(
-      base::BindOnce(&OnGattReadDone, std::move(split_callback.first)),
-      base::BindOnce(&OnGattReadError, std::move(split_callback.second)));
+      base::BindOnce(&OnGattRead, std::move(callback)));
 }
 
 void ArcBluetoothBridge::WriteGattCharacteristic(
@@ -1777,10 +1772,8 @@ void ArcBluetoothBridge::ReadGattDescriptor(
   DCHECK(descriptor);
   DCHECK(descriptor->GetPermissions() & kGattReadPermission);
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
   descriptor->ReadRemoteDescriptor(
-      base::BindOnce(&OnGattReadDone, std::move(split_callback.first)),
-      base::BindOnce(&OnGattReadError, std::move(split_callback.second)));
+      base::BindOnce(&OnGattRead, std::move(callback)));
 }
 
 void ArcBluetoothBridge::WriteGattDescriptor(

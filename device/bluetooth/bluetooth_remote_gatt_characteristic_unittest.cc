@@ -384,8 +384,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   std::vector<uint8_t> empty_vector;
   SimulateGattCharacteristicRead(characteristic1_, empty_vector);
   base::RunLoop().RunUntilIdle();
@@ -499,23 +498,20 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   ASSERT_NO_FATAL_FAILURE(FakeCharacteristicBoilerplate(
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
-  bool read_error_callback_called = false;
-  characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      base::BindLambdaForTesting(
-          [&](BluetoothRemoteGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
-            read_error_callback_called = true;
-            // Retrying Read should fail:
-            characteristic1_->ReadRemoteCharacteristic(
-                GetReadValueCallback(Call::NOT_EXPECTED),
-                GetGattErrorCallback(Call::EXPECTED));
-          }));
+  bool read_characteristic_failed = false;
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>&) {
+        EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED, error_code);
+        read_characteristic_failed = true;
+        // Retrying Read should fail:
+        characteristic1_->ReadRemoteCharacteristic(
+            GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
+      }));
 
   DeleteDevice(device_);  // TODO(576906) delete only the characteristic.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(read_error_callback_called);
+  EXPECT_TRUE(read_characteristic_failed);
   EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 }
@@ -641,8 +637,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   RememberCharacteristicForSubsequentAction(characteristic1_);
   DeleteDevice(device_);  // TODO(576906) delete only the characteristic.
@@ -678,8 +673,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
 // Set up for receiving a read response after disconnection.
 // On macOS or WinRT no events arrive after disconnection so there is no point
@@ -919,8 +913,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadRemoteCharacteristic) {
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
 
   std::vector<uint8_t> test_vector = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
   SimulateGattCharacteristicRead(characteristic1_, test_vector);
@@ -941,9 +934,10 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadRemoteCharacteristic) {
 static void TestCallback(
     BluetoothRemoteGattCharacteristic::ValueCallback callback,
     const TestBluetoothAdapterObserver& callback_observer,
+    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   EXPECT_EQ(0, callback_observer.gatt_characteristic_value_changed_count());
-  std::move(callback).Run(value);
+  std::move(callback).Run(error_code, value);
 }
 
 #if defined(OS_ANDROID) || defined(OS_MAC)
@@ -971,10 +965,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindOnce(TestCallback, GetReadValueCallback(Call::EXPECTED),
-                     std::cref(observer)),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+  characteristic1_->ReadRemoteCharacteristic(base::BindOnce(
+      TestCallback, GetReadValueCallback(Call::EXPECTED, Result::SUCCESS),
+      std::cref(observer)));
 
   std::vector<uint8_t> test_vector = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
   SimulateGattCharacteristicRead(characteristic1_, test_vector);
@@ -1099,8 +1092,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
 
   uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
   std::vector<uint8_t> test_vector(values, values + base::size(values));
@@ -1115,8 +1107,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   // Read again, with different value:
   ResetEventCounts();
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   std::vector<uint8_t> empty_vector;
   SimulateGattCharacteristicRead(characteristic1_, empty_vector);
   base::RunLoop().RunUntilIdle();
@@ -1259,11 +1250,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   characteristic2_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(0, error_callback_count_);
 
@@ -1437,9 +1426,11 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_1 = {0, 1, 2, 3, 4};
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
-        GetReadValueCallback(Call::EXPECTED).Run(data);
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& data) {
+        GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
+            .Run(error_code, data);
 
         EXPECT_EQ(1, gatt_read_characteristic_attempts_);
         EXPECT_EQ(1, callback_count_);
@@ -1448,11 +1439,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         EXPECT_EQ(test_vector_1, characteristic1_->GetValue());
 
         characteristic1_->ReadRemoteCharacteristic(
-            GetReadValueCallback(Call::EXPECTED),
-            GetGattErrorCallback(Call::NOT_EXPECTED));
+            GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
         SimulateGattCharacteristicRead(characteristic1_, test_vector_2);
-      }),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      }));
 
   SimulateGattCharacteristicRead(characteristic1_, test_vector_1);
   base::RunLoop().RunUntilIdle();
@@ -1599,8 +1588,11 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_1 = {0, 1, 2, 3, 4};
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& data) {
+        ASSERT_FALSE(error_code.has_value())
+            << "unexpected error: " << error_code.value();
         EXPECT_EQ(1, gatt_read_characteristic_attempts_);
         EXPECT_EQ(0, gatt_write_characteristic_attempts_);
         EXPECT_EQ(test_vector_1, data);
@@ -1621,12 +1613,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
                 }));
 
         SimulateGattCharacteristicWrite(characteristic1_);
-      }),
-      base::BindLambdaForTesting(
-          [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
-            loop.Quit();
-          }));
+      }));
 
   SimulateGattCharacteristicRead(characteristic1_, test_vector_1);
   loop.Run();
@@ -1659,9 +1646,11 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_1 = {0, 1, 2, 3, 4};
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
-        GetReadValueCallback(Call::EXPECTED).Run(data);
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& data) {
+        GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
+            .Run(error_code, data);
 
         EXPECT_EQ(1, gatt_read_characteristic_attempts_);
         EXPECT_EQ(0, gatt_write_characteristic_attempts_);
@@ -1674,8 +1663,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             test_vector_2, GetCallback(Call::EXPECTED),
             GetGattErrorCallback(Call::NOT_EXPECTED));
         SimulateGattCharacteristicWrite(characteristic1_);
-      }),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      }));
 
   SimulateGattCharacteristicRead(characteristic1_, test_vector_1);
   base::RunLoop().RunUntilIdle();
@@ -1720,19 +1708,17 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         EXPECT_EQ(1, gatt_write_characteristic_attempts_);
         EXPECT_EQ(test_vector_1, last_write_value_);
 
-        characteristic1_->ReadRemoteCharacteristic(
-            base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
+        characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+            [&](base::Optional<BluetoothRemoteGattService::GattErrorCode>
+                    error_code,
+                const std::vector<uint8_t>& data) {
+              EXPECT_EQ(error_code, base::nullopt);
               EXPECT_EQ(1, gatt_read_characteristic_attempts_);
               EXPECT_EQ(1, gatt_write_characteristic_attempts_);
               EXPECT_EQ(test_vector_2, data);
               EXPECT_EQ(test_vector_2, characteristic1_->GetValue());
               loop.Quit();
-            }),
-            base::BindLambdaForTesting(
-                [&](BluetoothGattService::GattErrorCode error_code) {
-                  ADD_FAILURE() << "unexpected error: " << error_code;
-                  loop.Quit();
-                }));
+            }));
         SimulateGattCharacteristicRead(characteristic1_, test_vector_2);
       }),
       base::BindLambdaForTesting(
@@ -1783,8 +1769,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         EXPECT_EQ(test_vector_1, last_write_value_);
 
         characteristic1_->ReadRemoteCharacteristic(
-            GetReadValueCallback(Call::EXPECTED),
-            GetGattErrorCallback(Call::NOT_EXPECTED));
+            GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
         SimulateGattCharacteristicRead(characteristic1_, test_vector_2);
       }),
       GetGattErrorCallback(Call::NOT_EXPECTED));
@@ -1820,8 +1805,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadError) {
   TestBluetoothAdapterObserver observer(adapter_);
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
   SimulateGattCharacteristicReadError(
       characteristic1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
   SimulateGattCharacteristicReadError(
@@ -1916,8 +1900,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadSynchronousError) {
 
   SimulateGattCharacteristicReadWillFailSynchronouslyOnce(characteristic1_);
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
   EXPECT_EQ(0, gatt_read_characteristic_attempts_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
@@ -1928,8 +1911,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadSynchronousError) {
   // After failing once, can succeed:
   ResetEventCounts();
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   EXPECT_EQ(1, gatt_read_characteristic_attempts_);
   std::vector<uint8_t> empty_vector;
   SimulateGattCharacteristicRead(characteristic1_, empty_vector);
@@ -2042,11 +2024,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       BluetoothRemoteGattCharacteristic::PROPERTY_READ));
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   base::RunLoop().RunUntilIdle();
 
@@ -2202,17 +2182,13 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             ADD_FAILURE() << "unexpected error: " << error_code;
             loop1.Quit();
           }));
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
-        ADD_FAILURE() << "unexpected success";
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& data) {
+        EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+                  error_code);
         loop2.Quit();
-      }),
-      base::BindLambdaForTesting(
-          [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                      error_code);
-            loop2.Quit();
-          }));
+      }));
 
   loop2.Run();
 
@@ -2250,8 +2226,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       empty_vector, GetCallback(Call::EXPECTED),
       GetGattErrorCallback(Call::NOT_EXPECTED));
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   base::RunLoop().RunUntilIdle();
 
@@ -2294,16 +2269,12 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop loop1;
   base::RunLoop loop2;
   std::vector<uint8_t> empty_vector;
-  characteristic1_->ReadRemoteCharacteristic(
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& data) {
-        SUCCEED();
+  characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
+      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& data) {
+        EXPECT_FALSE(error_code.has_value()) << "unexpected failure";
         loop1.Quit();
-      }),
-      base::BindLambdaForTesting(
-          [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
-            loop1.Quit();
-          }));
+      }));
   characteristic1_->WriteRemoteCharacteristic(
       empty_vector, WriteType::kWithResponse, base::BindLambdaForTesting([&] {
         ADD_FAILURE() << "unexpected success";
@@ -2349,8 +2320,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   std::vector<uint8_t> empty_vector;
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   characteristic1_->DeprecatedWriteRemoteCharacteristic(
       empty_vector, GetCallback(Call::NOT_EXPECTED),
       GetGattErrorCallback(Call::EXPECTED));
@@ -2399,8 +2369,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   TestBluetoothAdapterObserver observer(adapter_);
 
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::EXPECTED),
-      GetGattErrorCallback(Call::NOT_EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
 
   std::vector<uint8_t> notification_value = {111};
   SimulateGattCharacteristicChanged(characteristic1_, notification_value);
@@ -4178,8 +4147,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadDuringDisconnect) {
   SimulateGattDisconnection(device_);
   // Do not yet call RunUntilIdle() to process the disconnect task.
   characteristic1_->ReadRemoteCharacteristic(
-      GetReadValueCallback(Call::NOT_EXPECTED),
-      GetGattErrorCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,

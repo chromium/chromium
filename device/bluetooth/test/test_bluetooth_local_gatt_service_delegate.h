@@ -27,8 +27,7 @@ class TestBluetoothLocalGattServiceDelegate
       const BluetoothDevice* device,
       const BluetoothLocalGattCharacteristic* characteristic,
       int offset,
-      ValueCallback callback,
-      ErrorCallback error_callback) override;
+      ValueCallback callback) override;
   void OnCharacteristicWriteRequest(
       const BluetoothDevice* device,
       const BluetoothLocalGattCharacteristic* characteristic,
@@ -47,8 +46,7 @@ class TestBluetoothLocalGattServiceDelegate
   void OnDescriptorReadRequest(const BluetoothDevice* device,
                                const BluetoothLocalGattDescriptor* descriptor,
                                int offset,
-                               ValueCallback callback,
-                               ErrorCallback error_callback) override;
+                               ValueCallback callback) override;
 
   void OnDescriptorWriteRequest(const BluetoothDevice* device,
                                 const BluetoothLocalGattDescriptor* descriptor,

@@ -42,6 +42,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
   void SendValueChanged(const std::vector<uint8_t>& value) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BluetoothGattCharacteristicServiceProviderTest,
+                           ReadValueSuccess);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothGattCharacteristicServiceProviderTest,
+                           ReadValueFailure);
+
   // Returns true if the current thread is on the origin thread.
   bool OnOriginThread();
 
@@ -102,19 +107,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
 
   // Called by the Delegate in response to a method to call to read the value
   // of this characteristic.
-  void OnReadValue(dbus::MethodCall* method_call,
-                   dbus::ExportedObject::ResponseSender response_sender,
-                   const std::vector<uint8_t>& value);
+  void OnReadValue(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   // Called by the Delegate in response to a method to call to write the value
   // of this characteristic.
   void OnWriteValue(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
 
-  // Called by the Delegate in response to a failed method call to get or set
+  // Called by the Delegate in response to a failed method call to set
   // the characteristic value.
-  void OnFailure(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender);
+  void OnWriteValueFailure(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   const dbus::ObjectPath& object_path() const override;
 

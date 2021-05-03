@@ -311,15 +311,35 @@ void BluetoothTestBase::StopNotifyCheckForPrecedingCalls(
   ++actual_success_callback_calls_;
 }
 
-void BluetoothTestBase::ReadValueCallback(Call expected,
-                                          const std::vector<uint8_t>& value) {
-  ++callback_count_;
+void BluetoothTestBase::ReadValueCallback(
+    Call expected,
+    Result expected_result,
+    base::Optional<BluetoothGattService::GattErrorCode> error_code,
+    const std::vector<uint8_t>& value) {
+  if (expected_result == Result::FAILURE) {
+    if (error_code.has_value())
+      read_results_.failure.actual++;
+    else
+      read_results_.success.unexpected++;
+  } else {
+    if (!error_code.has_value())
+      read_results_.success.actual++;
+    else
+      read_results_.failure.unexpected++;
+  }
   last_read_value_ = value;
 
+  if (error_code.has_value()) {
+    error_callback_count_++;
+    last_gatt_error_code_ = error_code.value();
+  } else {
+    callback_count_++;
+  }
+
   if (expected == Call::EXPECTED)
-    ++actual_success_callback_calls_;
+    read_callback_calls_.actual++;
   else
-    unexpected_success_callback_ = true;
+    read_callback_calls_.unexpected++;
 }
 
 void BluetoothTestBase::ErrorCallback(Call expected) {
@@ -469,11 +489,16 @@ base::OnceClosure BluetoothTestBase::GetStopNotifyCheckForPrecedingCalls(
 }
 
 BluetoothRemoteGattCharacteristic::ValueCallback
-BluetoothTestBase::GetReadValueCallback(Call expected) {
-  if (expected == Call::EXPECTED)
-    ++expected_success_callback_calls_;
+BluetoothTestBase::GetReadValueCallback(Call expected, Result expected_result) {
+  if (expected == Call::EXPECTED) {
+    read_callback_calls_.expected++;
+    if (expected_result == Result::SUCCESS)
+      read_results_.success.expected++;
+    else
+      read_results_.failure.expected++;
+  }
   return base::BindOnce(&BluetoothTestBase::ReadValueCallback,
-                        weak_factory_.GetWeakPtr(), expected);
+                        weak_factory_.GetWeakPtr(), expected, expected_result);
 }
 
 BluetoothAdapter::ErrorCallback BluetoothTestBase::GetErrorCallback(

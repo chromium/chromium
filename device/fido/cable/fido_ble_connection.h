@@ -105,11 +105,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   void OnStartNotifySessionError(
       BluetoothGattService::GattErrorCode error_code);
 
-  static void OnReadControlPointLength(ControlPointLengthCallback callback,
-                                       const std::vector<uint8_t>& value);
-  static void OnReadControlPointLengthError(
+  static void OnReadControlPointLength(
       ControlPointLengthCallback callback,
-      BluetoothGattService::GattErrorCode error_code);
+      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+          error_code,
+      const std::vector<uint8_t>& value);
 
   std::unique_ptr<BluetoothGattConnection> connection_;
   std::unique_ptr<BluetoothGattNotifySession> notify_session_;

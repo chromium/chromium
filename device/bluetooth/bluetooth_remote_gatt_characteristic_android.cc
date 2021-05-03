@@ -55,10 +55,10 @@ BluetoothRemoteGattCharacteristicAndroid::
     ~BluetoothRemoteGattCharacteristicAndroid() {
   Java_ChromeBluetoothRemoteGattCharacteristic_onBluetoothRemoteGattCharacteristicAndroidDestruction(
       AttachCurrentThread(), j_characteristic_);
-  if (!read_callback_.is_null()) {
-    DCHECK(!read_error_callback_.is_null());
-    std::move(read_error_callback_)
-        .Run(BluetoothGattService::GATT_ERROR_FAILED);
+  if (read_callback_) {
+    std::move(read_callback_)
+        .Run(BluetoothGattService::GATT_ERROR_FAILED,
+             /*value=*/std::vector<uint8_t>());
   }
 
   if (!write_callback_.is_null()) {
@@ -126,28 +126,27 @@ BluetoothRemoteGattCharacteristicAndroid::GetDescriptorsByUUID(
 }
 
 void BluetoothRemoteGattCharacteristicAndroid::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   if (read_pending_ || write_pending_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS));
+        base::BindOnce(std::move(callback),
+                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+                       /*value=*/std::vector<uint8_t>()));
     return;
   }
 
   if (!Java_ChromeBluetoothRemoteGattCharacteristic_readRemoteCharacteristic(
           AttachCurrentThread(), j_characteristic_)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_FAILED));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  BluetoothRemoteGattService::GATT_ERROR_FAILED,
+                                  /*value=*/std::vector<uint8_t>()));
     return;
   }
 
   read_pending_ = true;
   read_callback_ = std::move(callback);
-  read_error_callback_ = std::move(error_callback);
 }
 
 void BluetoothRemoteGattCharacteristicAndroid::WriteRemoteCharacteristic(
@@ -234,15 +233,16 @@ void BluetoothRemoteGattCharacteristicAndroid::OnRead(
 
   // Clear callbacks before calling to avoid reentrancy issues.
   ValueCallback read_callback = std::move(read_callback_);
-  ErrorCallback read_error_callback = std::move(read_error_callback_);
+  if (!read_callback)
+    return;
 
-  if (status == 0  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
-      && !read_callback.is_null()) {
+  if (status == 0) {  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
     base::android::JavaByteArrayToByteVector(env, value, &value_);
-    std::move(read_callback).Run(value_);
-  } else if (!read_error_callback.is_null()) {
-    std::move(read_error_callback)
-        .Run(BluetoothRemoteGattServiceAndroid::GetGattErrorCode(status));
+    std::move(read_callback).Run(/*error_code=*/base::nullopt, value_);
+  } else {
+    std::move(read_callback)
+        .Run(BluetoothRemoteGattServiceAndroid::GetGattErrorCode(status),
+             /*value=*/std::vector<uint8_t>());
   }
 }
 

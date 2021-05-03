@@ -1136,14 +1136,9 @@ void WebBluetoothServiceImpl::RemoteCharacteristicReadValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto copyable_callback = AdaptCallbackForRepeating(std::move(callback));
   query_result.characteristic->ReadRemoteCharacteristic(
-      base::BindOnce(&WebBluetoothServiceImpl::OnCharacteristicReadValueSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindOnce(&WebBluetoothServiceImpl::OnCharacteristicReadValueFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+      base::BindOnce(&WebBluetoothServiceImpl::OnCharacteristicReadValue,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
@@ -1313,14 +1308,9 @@ void WebBluetoothServiceImpl::RemoteDescriptorReadValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   query_result.descriptor->ReadRemoteDescriptor(
-      base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorReadValueSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorReadValueFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+      base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorReadValue,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
@@ -1887,19 +1877,17 @@ void WebBluetoothServiceImpl::OnCreateGATTConnectionFailed(
   std::move(callback).Run(TranslateConnectErrorAndRecord(error_code));
 }
 
-void WebBluetoothServiceImpl::OnCharacteristicReadValueSuccess(
+void WebBluetoothServiceImpl::OnCharacteristicReadValue(
     RemoteCharacteristicReadValueCallback callback,
+    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (error_code.has_value()) {
+    std::move(callback).Run(TranslateGATTError(error_code.value()),
+                            /*value=*/base::nullopt);
+    return;
+  }
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS, value);
-}
-
-void WebBluetoothServiceImpl::OnCharacteristicReadValueFailed(
-    RemoteCharacteristicReadValueCallback callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(TranslateGATTError(error_code),
-                          /*value=*/base::nullopt);
 }
 
 void WebBluetoothServiceImpl::OnCharacteristicWriteValueSuccess(
@@ -1949,19 +1937,17 @@ void WebBluetoothServiceImpl::OnStopNotifySessionComplete(
   std::move(callback).Run();
 }
 
-void WebBluetoothServiceImpl::OnDescriptorReadValueSuccess(
+void WebBluetoothServiceImpl::OnDescriptorReadValue(
     RemoteDescriptorReadValueCallback callback,
+    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (error_code.has_value()) {
+    std::move(callback).Run(TranslateGATTError(error_code.value()),
+                            /*value=*/base::nullopt);
+    return;
+  }
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS, value);
-}
-
-void WebBluetoothServiceImpl::OnDescriptorReadValueFailed(
-    RemoteDescriptorReadValueCallback callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(TranslateGATTError(error_code),
-                          /*value=*/base::nullopt);
 }
 
 void WebBluetoothServiceImpl::OnDescriptorWriteValueSuccess(

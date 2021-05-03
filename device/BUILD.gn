@@ -252,6 +252,7 @@ test("device_unittests") {
       "bluetooth/bluez/bluetooth_service_record_bluez_unittest.cc",
       "bluetooth/bluez/bluetooth_socket_bluez_unittest.cc",
       "bluetooth/dbus/bluetooth_gatt_application_service_provider_unittest.cc",
+      "bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_unittest.cc",
       "bluetooth/test/bluetooth_test_bluez.cc",
       "bluetooth/test/bluetooth_test_bluez.h",
     ]

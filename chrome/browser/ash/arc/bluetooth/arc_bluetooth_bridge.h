@@ -160,8 +160,7 @@ class ArcBluetoothBridge
       const device::BluetoothDevice* device,
       const device::BluetoothLocalGattCharacteristic* characteristic,
       int offset,
-      ValueCallback callback,
-      ErrorCallback error_callback) override;
+      ValueCallback callback) override;
 
   void OnCharacteristicWriteRequest(
       const device::BluetoothDevice* device,
@@ -184,8 +183,7 @@ class ArcBluetoothBridge
       const device::BluetoothDevice* device,
       const device::BluetoothLocalGattDescriptor* descriptor,
       int offset,
-      ValueCallback callback,
-      ErrorCallback error_callback) override;
+      ValueCallback callback) override;
 
   void OnDescriptorWriteRequest(
       const device::BluetoothDevice* device,
@@ -467,8 +465,7 @@ class ArcBluetoothBridge
       const LocalGattAttribute* attribute,
       int offset,
       mojom::BluetoothGattDBAttributeType attribute_type,
-      ValueCallback success_callback,
-      ErrorCallback error_callback);
+      ValueCallback callback);
 
   // Common code for OnCharacteristicWriteRequest and OnDescriptorWriteRequest
   // |is_prepare| is only set when a local characteristic receives a prepare

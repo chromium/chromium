@@ -43,6 +43,8 @@ class BluetoothTestBase : public testing::Test {
  public:
   enum class Call { EXPECTED, NOT_EXPECTED };
 
+  enum class Result { SUCCESS, FAILURE };
+
   // List of devices that can be simulated with
   // SimulateConnectedLowEnergyDevice().
   // GENERIC_DEVICE:
@@ -486,8 +488,7 @@ class BluetoothTestBase : public testing::Test {
   virtual void SimulateLocalGattCharacteristicValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
-      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-      base::OnceClosure error_callback) {}
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback) {}
 
   // Simulates write a value to a locally hosted GATT characteristic by a
   // remote central device.
@@ -515,8 +516,7 @@ class BluetoothTestBase : public testing::Test {
   virtual void SimulateLocalGattDescriptorValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattDescriptor* descriptor,
-      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-      base::OnceClosure error_callback) {}
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback) {}
 
   // Simulates write a value to a locally hosted GATT descriptor by a
   // remote central device.
@@ -616,7 +616,11 @@ class BluetoothTestBase : public testing::Test {
       std::unique_ptr<BluetoothGattNotifySession>);
   void StopNotifyCallback(Call expected);
   void StopNotifyCheckForPrecedingCalls(int num_of_preceding_calls);
-  void ReadValueCallback(Call expected, const std::vector<uint8_t>& value);
+  void ReadValueCallback(
+      Call expected,
+      Result expected_result,
+      base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
   void ErrorCallback(Call expected);
   void AdvertisementErrorCallback(Call expected,
                                   BluetoothAdvertisement::ErrorCode error_code);
@@ -650,7 +654,8 @@ class BluetoothTestBase : public testing::Test {
   base::OnceClosure GetStopNotifyCheckForPrecedingCalls(
       int num_of_preceding_calls);
   BluetoothRemoteGattCharacteristic::ValueCallback GetReadValueCallback(
-      Call expected);
+      Call expected,
+      Result expected_result);
   BluetoothAdapter::ErrorCallback GetErrorCallback(Call expected);
   BluetoothAdapter::AdvertisementErrorCallback GetAdvertisementErrorCallback(
       Call expected);
@@ -673,6 +678,19 @@ class BluetoothTestBase : public testing::Test {
   void RemoveTimedOutDevices();
 
  protected:
+  // The expected/actual counts for tests.
+  struct EventCounts {
+    int unexpected = 0;
+    int expected = 0;
+    int actual = 0;
+  };
+
+  // Counts for an expected metric being tested.
+  struct ResultCounts {
+    EventCounts success;
+    EventCounts failure;
+  };
+
   // Utility method to simplify creading a low energy device of a given
   // |device_ordinal|.
   LowEnergyDeviceData GetLowEnergyDeviceData(int device_ordinal) const;
@@ -692,7 +710,8 @@ class BluetoothTestBase : public testing::Test {
   std::vector<std::unique_ptr<BluetoothGattNotifySession>> notify_sessions_;
   std::vector<uint8_t> last_read_value_;
   std::vector<uint8_t> last_write_value_;
-  BluetoothRemoteGattService::GattErrorCode last_gatt_error_code_;
+  BluetoothRemoteGattService::GattErrorCode last_gatt_error_code_ =
+      BluetoothRemoteGattService::GATT_ERROR_UNKNOWN;
 
   int callback_count_ = 0;
   int error_callback_count_ = 0;
@@ -713,6 +732,9 @@ class BluetoothTestBase : public testing::Test {
   int actual_error_callback_calls_ = 0;
   bool unexpected_success_callback_ = false;
   bool unexpected_error_callback_ = false;
+
+  EventCounts read_callback_calls_;
+  ResultCounts read_results_;
 
   base::WeakPtrFactory<BluetoothTestBase> weak_factory_{this};
 };

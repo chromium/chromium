@@ -129,13 +129,11 @@ device::BluetoothRemoteGattService* FakeRemoteGattCharacteristic::GetService()
 }
 
 void FakeRemoteGattCharacteristic::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchReadResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void FakeRemoteGattCharacteristic::WriteRemoteCharacteristic(
@@ -231,8 +229,7 @@ void FakeRemoteGattCharacteristic::UnsubscribeFromNotifications(
 }
 
 void FakeRemoteGattCharacteristic::DispatchReadResponse(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DCHECK(next_read_response_);
   uint16_t gatt_code = next_read_response_->gatt_code();
   base::Optional<std::vector<uint8_t>> value = next_read_response_->value();
@@ -242,12 +239,12 @@ void FakeRemoteGattCharacteristic::DispatchReadResponse(
     case mojom::kGATTSuccess:
       DCHECK(value);
       value_ = std::move(value.value());
-      std::move(callback).Run(value_);
+      std::move(callback).Run(base::nullopt, value_);
       break;
     case mojom::kGATTInvalidHandle:
       DCHECK(!value);
-      std::move(error_callback)
-          .Run(device::BluetoothGattService::GATT_ERROR_FAILED);
+      std::move(callback).Run(device::BluetoothGattService::GATT_ERROR_FAILED,
+                              std::vector<uint8_t>());
       break;
     default:
       NOTREACHED();

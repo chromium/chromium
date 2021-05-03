@@ -24,16 +24,17 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattCharacteristic* characteristic,
     int offset,
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   if (should_fail_) {
-    std::move(error_callback).Run();
+    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+                            /*value=*/std::vector<uint8_t>());
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  std::move(callback).Run(BluetoothGattServerTest::GetValue(value_to_write_));
+  std::move(callback).Run(/*error_code=*/base::nullopt,
+                          BluetoothGattServerTest::GetValue(value_to_write_));
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnCharacteristicWriteRequest(
@@ -81,15 +82,16 @@ void TestBluetoothLocalGattServiceDelegate::OnDescriptorReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattDescriptor* descriptor,
     int offset,
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   EXPECT_EQ(expected_descriptor_->GetIdentifier(), descriptor->GetIdentifier());
   if (should_fail_) {
-    std::move(error_callback).Run();
+    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+                            /*value=*/std::vector<uint8_t>());
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  std::move(callback).Run(BluetoothGattServerTest::GetValue(value_to_write_));
+  std::move(callback).Run(/*error_code=*/base::nullopt,
+                          BluetoothGattServerTest::GetValue(value_to_write_));
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnDescriptorWriteRequest(

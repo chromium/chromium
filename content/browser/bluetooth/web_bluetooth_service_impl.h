@@ -115,6 +115,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            BluetoothScanningPermissionRevokedWhenBlocked);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            BluetoothScanningPermissionRevokedWhenFocusIsLost);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           ReadCharacteristicValueErrorWithValueIgnored);
   friend class FrameConnectedBluetoothDevicesTest;
   friend class WebBluetoothServiceImplTest;
   using PrimaryServicesRequestCallback =
@@ -294,12 +296,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       device::BluetoothDevice::ConnectErrorCode error_code);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::ReadRemoteCharacteristic.
-  void OnCharacteristicReadValueSuccess(
+  void OnCharacteristicReadValue(
       RemoteCharacteristicReadValueCallback callback,
+      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+          error_code,
       const std::vector<uint8_t>& value);
-  void OnCharacteristicReadValueFailed(
-      RemoteCharacteristicReadValueCallback callback,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::WriteRemoteCharacteristic.
   void OnCharacteristicWriteValueSuccess(
@@ -324,11 +325,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteCharacteristicStopNotificationsCallback callback);
 
   // Callbacks for BluetoothRemoteGattDescriptor::ReadRemoteDescriptor.
-  void OnDescriptorReadValueSuccess(RemoteDescriptorReadValueCallback callback,
-                                    const std::vector<uint8_t>& value);
-  void OnDescriptorReadValueFailed(
+  void OnDescriptorReadValue(
       RemoteDescriptorReadValueCallback callback,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+          error_code,
+      const std::vector<uint8_t>& value);
 
   // Callbacks for BluetoothRemoteGattDescriptor::WriteRemoteDescriptor.
   void OnDescriptorWriteValueSuccess(

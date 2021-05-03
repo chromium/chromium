@@ -96,11 +96,11 @@ class BluetoothLowEnergyCharacteristicsFinder
   void NotifyFailureIfNoPendingEidCharReads();
 
   void TryToVerifyEid(device::BluetoothRemoteGattCharacteristic* eid_char);
-  void OnRemoteCharacteristicRead(const std::string& service_id,
-                                  const std::vector<uint8_t>& value);
-  void OnReadRemoteCharacteristicError(
+  void OnRemoteCharacteristicRead(
       const std::string& service_id,
-      device::BluetoothRemoteGattService::GattErrorCode error);
+      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+          error_code,
+      const std::vector<uint8_t>& value);
   bool DoesEidMatchExpectedDevice(const std::vector<uint8_t>& eid_value_read);
 
   // The Bluetooth adapter where the connection was established.

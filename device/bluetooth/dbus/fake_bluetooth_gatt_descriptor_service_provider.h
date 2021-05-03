@@ -41,9 +41,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorServiceProvider
   // GATT manager.
   void GetValue(
       const dbus::ObjectPath& device_path,
-      device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-      device::BluetoothLocalGattService::Delegate::ErrorCallback
-          error_callback);
+      device::BluetoothLocalGattService::Delegate::ValueCallback callback);
   void SetValue(const dbus::ObjectPath& device_path,
                 const std::vector<uint8_t>& value,
                 base::OnceClosure callback,

@@ -41,9 +41,7 @@ class BluetoothGattAttributeValueDelegate {
   // out if left pending for too long causing a disconnection.
   virtual void GetValue(
       const dbus::ObjectPath& device_path,
-      device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-      device::BluetoothLocalGattService::Delegate::ErrorCallback
-          error_callback) = 0;
+      device::BluetoothLocalGattService::Delegate::ValueCallback callback) = 0;
 
   // This method will be called, when a remote device requests to write the
   // value of the exported GATT attribute. Invoke |callback| to report

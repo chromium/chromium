@@ -69,13 +69,12 @@ BluetoothRemoteGattDescriptorWin::GetPermissions() const {
 }
 
 void BluetoothRemoteGattDescriptorWin::ReadRemoteDescriptor(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   NOTIMPLEMENTED();
-  std::move(error_callback)
-      .Run(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED);
+  std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED,
+                          /*value=*/std::vector<uint8_t>());
 }
 
 void BluetoothRemoteGattDescriptorWin::WriteRemoteDescriptor(

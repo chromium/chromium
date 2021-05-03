@@ -141,8 +141,8 @@ TEST_F(BluetoothAdapterMacMetricsTest, DidUpdateValueForDescriptorError) {
   EXPECT_EQ(1u, characteristic_->GetDescriptors().size());
   BluetoothRemoteGattDescriptor* descriptor =
       characteristic_->GetDescriptors()[0];
-  descriptor->ReadRemoteDescriptor(GetReadValueCallback(Call::NOT_EXPECTED),
-                                   GetGattErrorCallback(Call::EXPECTED));
+  descriptor->ReadRemoteDescriptor(
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
   SimulateGattDescriptorUpdateError(
       descriptor, BluetoothRemoteGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();

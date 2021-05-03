@@ -106,8 +106,17 @@ void OnWriteRemoteCharacteristicError(
   std::move(callback).Run(false);
 }
 
-void OnReadServiceRevisionBitfield(ServiceRevisionsCallback callback,
-                                   const std::vector<uint8_t>& value) {
+void OnReadServiceRevisionBitfield(
+    ServiceRevisionsCallback callback,
+    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+        error_code,
+    const std::vector<uint8_t>& value) {
+  if (error_code.has_value()) {
+    FIDO_LOG(ERROR) << "Error while reading Service Revision Bitfield: "
+                    << ToString(error_code.value());
+    std::move(callback).Run({});
+    return;
+  }
   if (value.empty()) {
     FIDO_LOG(DEBUG) << "Service Revision Bitfield is empty.";
     std::move(callback).Run({});
@@ -137,14 +146,6 @@ void OnReadServiceRevisionBitfield(ServiceRevisionsCallback callback,
   }
 
   std::move(callback).Run(std::move(service_revisions));
-}
-
-void OnReadServiceRevisionBitfieldError(
-    ServiceRevisionsCallback callback,
-    BluetoothGattService::GattErrorCode error_code) {
-  FIDO_LOG(ERROR) << "Error while reading Service Revision Bitfield: "
-                  << ToString(error_code);
-  std::move(callback).Run({});
 }
 
 }  // namespace
@@ -220,12 +221,8 @@ void FidoBleConnection::ReadControlPointLength(
   }
 
   FIDO_LOG(DEBUG) << "Read Control Point Length";
-  // Work around legacy APIs. Only one of the callbacks to
-  // ReadRemoteCharacteristic() gets invoked, but we don't know which one.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   control_point_length->ReadRemoteCharacteristic(
-      base::BindOnce(OnReadControlPointLength, copyable_callback),
-      base::BindOnce(OnReadControlPointLengthError, copyable_callback));
+      base::BindOnce(OnReadControlPointLength, std::move(callback)));
 }
 
 void FidoBleConnection::WriteControlPoint(const std::vector<uint8_t>& data,
@@ -371,8 +368,7 @@ void FidoBleConnection::ConnectToFidoService() {
         &FidoBleConnection::OnReadServiceRevisions, weak_factory_.GetWeakPtr());
     fido_service->GetCharacteristic(*service_revision_bitfield_id_)
         ->ReadRemoteCharacteristic(
-            base::BindOnce(OnReadServiceRevisionBitfield, callback),
-            base::BindOnce(OnReadServiceRevisionBitfieldError, callback));
+            base::BindOnce(OnReadServiceRevisionBitfield, callback));
     return;
   }
 
@@ -518,7 +514,15 @@ const BluetoothRemoteGattService* FidoBleConnection::GetFidoService() {
 // static
 void FidoBleConnection::OnReadControlPointLength(
     ControlPointLengthCallback callback,
+    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
+        error_code,
     const std::vector<uint8_t>& value) {
+  if (error_code.has_value()) {
+    FIDO_LOG(ERROR) << "Error reading Control Point Length: "
+                    << ToString(error_code.value());
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
   if (value.size() != 2) {
     FIDO_LOG(ERROR) << "Wrong Control Point Length: " << value.size()
                     << " bytes";
@@ -529,15 +533,6 @@ void FidoBleConnection::OnReadControlPointLength(
   uint16_t length = (value[0] << 8) | value[1];
   FIDO_LOG(DEBUG) << "Control Point Length: " << length;
   std::move(callback).Run(length);
-}
-
-// static
-void FidoBleConnection::OnReadControlPointLengthError(
-    ControlPointLengthCallback callback,
-    BluetoothGattService::GattErrorCode error_code) {
-  FIDO_LOG(ERROR) << "Error reading Control Point Length: "
-                  << ToString(error_code);
-  std::move(callback).Run(base::nullopt);
 }
 
 }  // namespace device

@@ -172,21 +172,23 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     // running only on one thread. Calls to
     // |task_environment_.RunUntilIdle()| in tests will process any
     // pending callbacks.
-    ON_CALL(*characteristic.get(), ReadRemoteCharacteristic_(_, _))
+    ON_CALL(*characteristic.get(), ReadRemoteCharacteristic_(_))
         .WillByDefault(Invoke(
             [read_success, correct_eid](
-                BluetoothRemoteGattCharacteristic::ValueCallback& callback,
-                BluetoothRemoteGattCharacteristic::ErrorCallback&
-                    error_callback) {
+                BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
+              base::Optional<BluetoothRemoteGattService::GattErrorCode>
+                  error_code;
+              std::vector<uint8_t> value;
+              if (read_success) {
+                error_code = base::nullopt;
+                value =
+                    correct_eid ? GetCorrectEidValue() : GetIncorrectEidValue();
+              } else {
+                error_code = device::BluetoothGattService::GATT_ERROR_FAILED;
+              }
               base::ThreadTaskRunnerHandle::Get()->PostTask(
                   FROM_HERE,
-                  read_success
-                      ? base::BindOnce(std::move(callback),
-                                       correct_eid ? GetCorrectEidValue()
-                                                   : GetIncorrectEidValue())
-                      : base::BindOnce(
-                            std::move(error_callback),
-                            BluetoothGattService::GATT_ERROR_FAILED));
+                  base::BindOnce(std::move(callback), error_code, value));
             }));
     return characteristic;
   }

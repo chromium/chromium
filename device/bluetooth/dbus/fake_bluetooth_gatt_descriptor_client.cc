@@ -120,7 +120,8 @@ void FakeBluetoothGattDescriptorClient::ReadValue(
     }
   }
 
-  std::move(callback).Run(iter->second->properties->value.value());
+  std::move(callback).Run(/*error_code=*/base::nullopt,
+                          iter->second->properties->value.value());
 }
 
 void FakeBluetoothGattDescriptorClient::WriteValue(

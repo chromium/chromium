@@ -84,9 +84,11 @@ BluetoothRemoteGattCharacteristicMac::BluetoothRemoteGattCharacteristicMac(
 }
 
 BluetoothRemoteGattCharacteristicMac::~BluetoothRemoteGattCharacteristicMac() {
+  destructor_called_ = true;
   if (HasPendingRead()) {
-    std::move(read_characteristic_value_callbacks_.second)
-        .Run(BluetoothGattService::GATT_ERROR_FAILED);
+    std::move(read_characteristic_value_callback_)
+        .Run(BluetoothGattService::GATT_ERROR_FAILED,
+             /*value=*/std::vector<uint8_t>());
   }
   if (HasPendingWrite()) {
     std::move(write_characteristic_value_callbacks_.second)
@@ -129,27 +131,27 @@ bool BluetoothRemoteGattCharacteristicMac::IsNotifying() const {
 }
 
 void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   if (!IsReadable()) {
     DVLOG(1) << *this << ": Characteristic not readable.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED));
+        base::BindOnce(std::move(callback),
+                       BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED,
+                       /*value=*/std::vector<uint8_t>()));
     return;
   }
-  if (HasPendingRead() || HasPendingWrite()) {
+  if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic read already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS));
+        base::BindOnce(std::move(callback),
+                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+                       /*value=*/std::vector<uint8_t>()));
     return;
   }
   DVLOG(1) << *this << ": Read characteristic.";
-  read_characteristic_value_callbacks_ =
-      std::make_pair(std::move(callback), std::move(error_callback));
+  read_characteristic_value_callback_ = std::move(callback);
   [GetCBPeripheral() readValueForCharacteristic:cb_characteristic_];
 }
 
@@ -158,7 +160,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (HasPendingRead() || HasPendingWrite()) {
+  if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic write already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -205,7 +207,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
                        BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED));
     return;
   }
-  if (HasPendingRead() || HasPendingWrite()) {
+  if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic write already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -271,8 +273,8 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
   // notification is received.
   RecordDidUpdateValueResult(error);
   if (HasPendingRead()) {
-    std::pair<ValueCallback, ErrorCallback> callbacks;
-    callbacks.swap(read_characteristic_value_callbacks_);
+    ValueCallback read_callback =
+        std::move(read_characteristic_value_callback_);
     if (error) {
       BluetoothGattService::GattErrorCode error_code =
           BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
@@ -280,12 +282,14 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
                << ": Bluetooth error while reading for characteristic, domain: "
                << BluetoothAdapterMac::String(error)
                << ", error code: " << error_code;
-      std::move(callbacks.second).Run(error_code);
+      std::move(read_callback)
+          .Run(error_code,
+               /*value=*/std::vector<uint8_t>());
       return;
     }
     DVLOG(1) << *this << ": Read request arrived.";
     UpdateValue();
-    std::move(callbacks.first).Run(value_);
+    std::move(read_callback).Run(/*error_code=*/base::nullopt, value_);
   } else if (IsNotifying()) {
     DVLOG(1) << *this << ": Notification arrived.";
     UpdateValue();

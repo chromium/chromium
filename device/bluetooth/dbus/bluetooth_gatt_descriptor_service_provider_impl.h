@@ -78,19 +78,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
 
   // Called by the Delegate in response to a method to call to read the value
   // of this descriptor.
-  void OnReadValue(dbus::MethodCall* method_call,
-                   dbus::ExportedObject::ResponseSender response_sender,
-                   const std::vector<uint8_t>& value);
+  void OnReadValue(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   // Called by the Delegate in response to a method to call to write the value
   // of this descriptor.
   void OnWriteValue(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
 
-  // Called by the Delegate in response to a failed method call to get or set
+  // Called by the Delegate in response to a failed method call to set
   // the descriptor value.
-  void OnFailure(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender);
+  void OnWriteFailure(dbus::MethodCall* method_call,
+                      dbus::ExportedObject::ResponseSender response_sender);
 
   const dbus::ObjectPath& object_path() const override;
 

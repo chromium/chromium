@@ -42,8 +42,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
   // BluetoothRemoteGattDescriptor:
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
-  void ReadRemoteDescriptor(ValueCallback callback,
-                            ErrorCallback error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
@@ -52,14 +51,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
   GetDescriptorForTesting();
 
  private:
-  struct PendingReadCallbacks {
-    PendingReadCallbacks(ValueCallback callback, ErrorCallback error_callback);
-    ~PendingReadCallbacks();
-
-    ValueCallback callback;
-    ErrorCallback error_callback;
-  };
-
   struct PendingWriteCallbacks {
     PendingWriteCallbacks(base::OnceClosure callback,
                           ErrorCallback error_callback);
@@ -94,7 +85,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
   BluetoothUUID uuid_;
   std::string identifier_;
   std::vector<uint8_t> value_;
-  std::unique_ptr<PendingReadCallbacks> pending_read_callbacks_;
+  ValueCallback pending_read_callback_;
   std::unique_ptr<PendingWriteCallbacks> pending_write_callbacks_;
 
   base::WeakPtrFactory<BluetoothRemoteGattDescriptorWinrt> weak_ptr_factory_{
