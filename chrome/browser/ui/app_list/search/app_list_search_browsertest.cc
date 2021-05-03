@@ -323,4 +323,24 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveSearchTest) {
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_file");
 }
 
+// Test that Drive folders can be searched.
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFolderTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(GetProfile());
+  ASSERT_TRUE(drive_service->IsMounted());
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+
+  ASSERT_TRUE(base::CreateDirectory(mount_path.Append("my_folder")));
+  ASSERT_TRUE(base::CreateDirectory(mount_path.Append("other_folder")));
+
+  SearchAndWaitForProviders("my", {ResultType::kDriveSearch});
+
+  const auto results = PublishedResultsForProvider(ResultType::kDriveSearch);
+  ASSERT_EQ(results.size(), 1u);
+  ASSERT_TRUE(results[0]);
+  EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_folder");
+}
+
 }  // namespace app_list

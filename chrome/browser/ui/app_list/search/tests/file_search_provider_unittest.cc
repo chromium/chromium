@@ -102,13 +102,13 @@ TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
               UnorderedElementsAre(Title("FILE_1.png"), Title("FiLe_2.Png")));
 }
 
-TEST_F(FileSearchProviderTest, DirectoriesIgnored) {
+TEST_F(FileSearchProviderTest, SearchDirectories) {
   CreateDirectory("my_folder");
 
   provider_->Start(u"my_folder");
   Wait();
 
-  EXPECT_TRUE(provider_->results().empty());
+  EXPECT_THAT(provider_->results(), UnorderedElementsAre(Title("my_folder")));
 }
 
 TEST_F(FileSearchProviderTest, ResultMetadataTest) {

@@ -47,9 +47,11 @@ class FileResult : public ChromeSearchResult {
              const base::FilePath& filepath,
              ResultType result_type,
              DisplayType display_type,
+             Type type,
              Profile* profile);
 
   const base::FilePath filepath_;
+  const Type type_;
   Profile* const profile_;
 };
 

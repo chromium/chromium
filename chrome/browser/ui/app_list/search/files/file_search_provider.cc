@@ -54,25 +54,29 @@ std::string CreateFnmatchQuery(const std::string& query) {
   return base::StrCat(query_pieces);
 }
 
-std::vector<base::FilePath> SearchFilesByPattern(
+// Returns a vector of matched filepaths and a bool indicating whether or not
+// the path is a directory.
+std::vector<std::pair<base::FilePath, bool>> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::string& query,
     const base::TimeTicks& query_start_time) {
   base::FileEnumerator enumerator(
       root_path,
-      /*recursive=*/true, base::FileEnumerator::FILES,
+      /*recursive=*/true,
+      base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES,
       CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
 
   const auto time_limit = base::TimeDelta::FromMilliseconds(kSearchTimeoutMs);
   bool timed_out = false;
-
-  std::vector<base::FilePath> matched_paths;
+  std::vector<std::pair<base::FilePath, bool>> matched_paths;
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    matched_paths.emplace_back(path);
+    matched_paths.emplace_back(path, enumerator.GetInfo().IsDirectory());
 
-    if (matched_paths.size() == kMaxResults ||
-        base::TimeTicks::Now() - query_start_time > time_limit) {
+    if (matched_paths.size() == kMaxResults)
+      break;
+
+    if (base::TimeTicks::Now() - query_start_time > time_limit) {
       timed_out = true;
       break;
     }
@@ -120,7 +124,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
 }
 
 void FileSearchProvider::OnSearchComplete(
-    const std::vector<base::FilePath>& paths) {
+    const std::vector<std::pair<base::FilePath, bool>>& paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SearchProvider::Results results;
@@ -133,10 +137,12 @@ void FileSearchProvider::OnSearchComplete(
 }
 
 std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
-    const base::FilePath& path) {
-  return std::make_unique<FileResult>(
-      kFileSearchSchema, path, ash::AppListSearchResultType::kFileSearch,
-      last_tokenized_query_, FileResult::Type::kFile, profile_);
+    const std::pair<base::FilePath, bool>& path) {
+  const auto type =
+      path.second ? FileResult::Type::kDirectory : FileResult::Type::kFile;
+  return std::make_unique<FileResult>(kFileSearchSchema, path.first,
+                                      ash::AppListSearchResultType::kFileSearch,
+                                      last_tokenized_query_, type, profile_);
 }
 
 }  // namespace app_list

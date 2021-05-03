@@ -89,8 +89,9 @@ FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
                        ResultType result_type,
                        DisplayType display_type,
+                       Type type,
                        Profile* profile)
-    : filepath_(filepath), profile_(profile) {
+    : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
 
@@ -131,7 +132,12 @@ FileResult::FileResult(const std::string& schema,
                        DisplayType display_type,
                        float relevance,
                        Profile* profile)
-    : FileResult(schema, filepath, result_type, display_type, profile) {
+    : FileResult(schema,
+                 filepath,
+                 result_type,
+                 display_type,
+                 Type::kFile,
+                 profile) {
   set_relevance(relevance);
   // TODO(crbug.com/1188495): Add relevance metrics for zero state files.
 
@@ -158,7 +164,12 @@ FileResult::FileResult(
     base::Optional<chromeos::string_matching::TokenizedString>& query,
     Type type,
     Profile* profile)
-    : FileResult(schema, filepath, result_type, DisplayType::kList, profile) {
+    : FileResult(schema,
+                 filepath,
+                 result_type,
+                 DisplayType::kList,
+                 type,
+                 profile) {
   const double relevance = CalculateRelevance(query, title());
   DCHECK((relevance >= 0) && (relevance <= 1));
   set_relevance(relevance);
@@ -184,9 +195,19 @@ FileResult::FileResult(
 FileResult::~FileResult() = default;
 
 void FileResult::Open(int event_flags) {
-  platform_util::OpenItem(profile_, filepath_,
-                          platform_util::OpenItemType::OPEN_FILE,
-                          platform_util::OpenOperationCallback());
+  switch (type_) {
+    case Type::kFile:
+      platform_util::OpenItem(profile_, filepath_,
+                              platform_util::OpenItemType::OPEN_FILE,
+                              platform_util::OpenOperationCallback());
+      break;
+    case Type::kDirectory:
+    case Type::kSharedDirectory:
+      platform_util::OpenItem(profile_, filepath_,
+                              platform_util::OpenItemType::OPEN_FOLDER,
+                              platform_util::OpenOperationCallback());
+      break;
+  }
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const FileResult& result) {
