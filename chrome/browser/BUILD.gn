@@ -6208,6 +6208,10 @@ static_library("browser") {
 
   if (enable_session_service) {
     sources += [
+      "sessions/session_data_service.cc",
+      "sessions/session_data_service.h",
+      "sessions/session_data_service_factory.cc",
+      "sessions/session_data_service_factory.h",
       "sessions/session_restore.cc",
       "sessions/session_restore.h",
       "sessions/session_restore_delegate.cc",

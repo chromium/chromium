@@ -188,9 +188,6 @@ class SessionService : public SessionServiceBase {
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   void RebuildCommandsIfRequired() override;
 
-  // Deletes session data if no windows are open for the current profile.
-  void MaybeDeleteSessionOnlyData();
-
   // Invoked with true when all browsers start closing.
   void OnClosingAllBrowsersChanged(bool closing);
 

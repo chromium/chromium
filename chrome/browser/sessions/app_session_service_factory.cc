@@ -8,7 +8,8 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/session_data_deleter.h"
+#include "chrome/browser/sessions/session_data_service.h"
+#include "chrome/browser/sessions/session_data_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
@@ -39,7 +40,8 @@ AppSessionService* AppSessionServiceFactory::GetForProfileForSessionRestore(
 
 // static
 void AppSessionServiceFactory::ShutdownForProfile(Profile* profile) {
-  DeleteSessionOnlyData(profile);
+  if (SessionDataServiceFactory::GetForProfile(profile))
+    SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
 
   // We're about to exit, force creation of the session service if it hasn't
   // been created yet. We do this to ensure session state matches the point in

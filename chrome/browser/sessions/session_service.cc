@@ -301,12 +301,6 @@ void SessionService::WindowClosing(const SessionID& window_id) {
 }
 
 void SessionService::WindowClosed(const SessionID& window_id) {
-  if (!ShouldTrackChangesToWindow(window_id)) {
-    // The last window may be one that is not tracked.
-    MaybeDeleteSessionOnlyData();
-    return;
-  }
-
   windows_tracking()->erase(window_id);
   last_selected_tab_in_window()->erase(window_id);
 
@@ -324,7 +318,6 @@ void SessionService::WindowClosed(const SessionID& window_id) {
       ScheduleCommand(sessions::CreateWindowClosedCommand(window_id));
     }
   }
-  MaybeDeleteSessionOnlyData();
 }
 
 void SessionService::SetWindowType(const SessionID& window_id,
@@ -534,29 +527,6 @@ bool SessionService::HasOpenTrackableBrowsers(
 void SessionService::RebuildCommandsIfRequired() {
   if (rebuild_on_next_save() && pending_window_close_ids_.empty())
     ScheduleResetCommands();
-}
-
-void SessionService::MaybeDeleteSessionOnlyData() {
-  // Don't try anything if we're testing.  The browser_process is not fully
-  // created and DeleteSession will crash if we actually attempt it.
-  if (profile()->AsTestingProfile())
-    return;
-
-  // Clear session data if the last window for a profile has been closed and
-  // closing the last window would normally close Chrome, unless background mode
-  // is active.  Tests don't have a background_mode_manager.
-  if (has_open_trackable_browsers_ ||
-      browser_defaults::kBrowserAliveWithNoWindows ||
-      g_browser_process->background_mode_manager()->IsBackgroundModeActive()) {
-    return;
-  }
-
-  // Check for any open windows for the current profile that we aren't tracking.
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile())
-      return;
-  }
-  DeleteSessionOnlyData(profile());
 }
 
 void SessionService::OnClosingAllBrowsersChanged(bool closing) {

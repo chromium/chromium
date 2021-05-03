@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/sessions/session_data_service_factory.h"
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_data_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+// static
+SessionDataService* SessionDataServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<SessionDataService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+SessionDataServiceFactory* SessionDataServiceFactory::GetInstance() {
+  return base::Singleton<SessionDataServiceFactory>::get();
+}
+
+SessionDataServiceFactory::SessionDataServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "SessionDataService",
+          BrowserContextDependencyManager::GetInstance()) {}
+
+SessionDataServiceFactory::~SessionDataServiceFactory() = default;
+
+KeyedService* SessionDataServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* profile) const {
+  return new SessionDataService(static_cast<Profile*>(profile));
+}
+
+bool SessionDataServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool SessionDataServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
