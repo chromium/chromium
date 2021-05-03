@@ -1055,7 +1055,7 @@ def main():
       if not os.path.exists(build_dir):
         os.mkdir(os.path.join(build_dir))
       os.chdir(build_dir)
-      target_spec = target_arch + '-fuchsia'
+      target_spec = target_arch + '-unknown-fuchsia'
       if args.build_mac_arm:
         # Just-built clang can't run (it's an arm binary on an intel host), so
         # use the bootstrap compiler instead.
@@ -1071,9 +1071,9 @@ def main():
         '-DCMAKE_AR=' + os.path.join(host_path, 'bin/llvm-ar'),
         '-DLLVM_CONFIG_PATH=' + os.path.join(host_path, 'bin/llvm-config'),
         '-DCMAKE_SYSTEM_NAME=Fuchsia',
-        '-DCMAKE_CXX_COMPILER_TARGET=%s-fuchsia' % target_arch,
-        '-DCMAKE_C_COMPILER_TARGET=%s-fuchsia' % target_arch,
-        '-DCMAKE_ASM_COMPILER_TARGET=%s-fuchsia' % target_arch,
+        '-DCMAKE_CXX_COMPILER_TARGET=' + target_spec,
+        '-DCMAKE_C_COMPILER_TARGET=' + target_spec,
+        '-DCMAKE_ASM_COMPILER_TARGET=' + target_spec,
         '-DCOMPILER_RT_BUILD_BUILTINS=ON',
         '-DCOMPILER_RT_BUILD_CRT=OFF',
         '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',

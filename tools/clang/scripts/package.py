@@ -239,16 +239,16 @@ def main():
       'bin/clang',
 
       # Include libclang_rt.builtins.a for Fuchsia targets.
-      'lib/clang/$V/lib/aarch64-fuchsia/libclang_rt.builtins.a',
-      'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.builtins.a',
+      'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
+      'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
     ])
     if not args.build_mac_arm:
       # TODO(thakis): Figure out why this doesn't build in --build-mac-arm
       # builds.
-      want.append('lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a')
+      want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.profile.a')
     if sys.platform != 'darwin':
       # The Fuchsia asan runtime is only built on non-Mac platforms.
-      want.append('lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.asan.a')
+      want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.a')
   if sys.platform == 'darwin':
     want.extend([
       # AddressSanitizer runtime.
