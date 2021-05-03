@@ -137,12 +137,20 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
     network_error_ = std::make_unique<NearbyShareHttpError>(network_error);
   }
 
+  void CheckPlatformTypeHeader(const net::HttpRequestHeaders& headers) {
+    std::string platform_type;
+    EXPECT_TRUE(headers.GetHeader("X-Sharing-Platform-Type", &platform_type));
+    EXPECT_EQ("OSType.CHROME_OS", platform_type);
+  }
+
   void CheckNearbySharingClientHttpPostRequest(
       const std::string& serialized_request) {
     const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
         *test_url_loader_factory_.pending_requests();
     ASSERT_EQ(1u, pending.size());
     const network::ResourceRequest& request = pending[0].request;
+
+    CheckPlatformTypeHeader(request.headers);
 
     EXPECT_EQ(UrlWithQueryParameters(
                   kRequestUrl, base::nullopt /* request_as_query_parameters */),
@@ -165,6 +173,8 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
     ASSERT_EQ(1u, pending.size());
     const network::ResourceRequest& request = pending[0].request;
 
+    CheckPlatformTypeHeader(request.headers);
+
     EXPECT_EQ(UrlWithQueryParameters(
                   kRequestUrl, base::nullopt /* request_as_query_parameters */),
               request.url);
@@ -186,6 +196,8 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
         *test_url_loader_factory_.pending_requests();
     ASSERT_EQ(1u, pending.size());
     const network::ResourceRequest& request = pending[0].request;
+
+    CheckPlatformTypeHeader(request.headers);
 
     EXPECT_EQ(UrlWithQueryParameters(kRequestUrl, request_as_query_parameters),
               request.url);
