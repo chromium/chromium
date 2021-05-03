@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 namespace web {
 class WebState;
@@ -45,6 +46,7 @@ class StartSurfaceRecentTabBrowserAgent
     : public BrowserUserData<StartSurfaceRecentTabBrowserAgent>,
       BrowserObserver,
       public WebStateListObserver,
+      public web::WebStateObserver,
       public favicon::FaviconDriverObserver {
  public:
   // Notifies the Browser Agent to save the most recent WebState.
@@ -77,6 +79,9 @@ class StartSurfaceRecentTabBrowserAgent
                           web::WebState* web_state,
                           int index) override;
 
+  // web::WebStateObserver
+  void WebStateDestroyed(web::WebState* web_state) override;
+
   // favicon::FaviconDriverObserver
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
                         NotificationIconType notification_icon_type,
@@ -87,10 +92,13 @@ class StartSurfaceRecentTabBrowserAgent
   // A list of observers notified when the most recent tab is removed. Weak
   // references.
   base::ObserverList<StartSurfaceRecentTabObserver, true>::Unchecked observers_;
-  // Manages observation relationship between |this| and WebFaviconDriver.
+  // Manages observation relationship between |this| and favicon::FaviconDriver.
   base::ScopedObservation<favicon::FaviconDriver,
                           favicon::FaviconDriverObserver>
       favicon_driver_observer_{this};
+  // Manages observation relationship between |this| and web::WebState.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
   // The most recent tab managed by this Browser Agent.
   web::WebState* most_recent_tab_ = nullptr;
   // Browser.
