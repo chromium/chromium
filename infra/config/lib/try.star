@@ -353,7 +353,7 @@ def chromium_swangle_linux_builder(*, name, **kwargs):
     return chromium_swangle_builder(
         name = name,
         goma_backend = builders.goma.backend.RBE_PROD,
-        os = builders.os.LINUX_XENIAL_OR_BIONIC,
+        os = builders.os.LINUX_XENIAL_OR_BIONIC_REMOVE,
         **kwargs
     )
 
@@ -455,7 +455,7 @@ def gpu_chromium_android_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
-        os = builders.os.LINUX_XENIAL_OR_BIONIC,
+        os = builders.os.LINUX_XENIAL_OR_BIONIC_REMOVE,
         **kwargs
     )
 
@@ -464,7 +464,7 @@ def gpu_chromium_linux_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.linux",
         goma_backend = builders.goma.backend.RBE_PROD,
-        os = builders.os.LINUX_XENIAL_OR_BIONIC,
+        os = builders.os.LINUX_XENIAL_OR_BIONIC_REMOVE,
         **kwargs
     )
 

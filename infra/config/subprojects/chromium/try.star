@@ -649,64 +649,64 @@ try_.chromium_android_builder(
 
 try_.chromium_angle_builder(
     name = "android_angle_deqp_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "android_angle_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "android_angle_vk32_deqp_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "android_angle_vk32_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "android_angle_vk64_deqp_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "android_angle_vk64_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "fuchsia-angle-rel",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "fuchsia-angle-try",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     executable = "recipe:angle_chromium_trybot",
 )
 
 try_.chromium_angle_builder(
     name = "linux-angle-rel",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "linux-angle-chromium-try",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     executable = "recipe:angle_chromium_trybot",
 )
 
 try_.chromium_angle_builder(
     name = "linux_angle_deqp_rel_ng",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_angle_builder(
     name = "linux-angle-try",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     executable = "recipe:angle_chromium_trybot",
 )
 
@@ -871,7 +871,7 @@ try_.chromium_dawn_builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/gpu/.+",
@@ -953,7 +953,7 @@ try_.chromium_dawn_builder(
 
 try_.chromium_dawn_builder(
     name = "linux-dawn-rel",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_dawn_builder(
@@ -1256,8 +1256,7 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
-    # TODO(crbug/1199425): Remove this once bionic bot is the default option.
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 # Experimental builder to check dual coverage on linux platform.
@@ -1451,7 +1450,7 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    os = os.LINUX_XENIAL_OR_BIONIC,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
