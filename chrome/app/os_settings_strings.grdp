@@ -3651,7 +3651,7 @@ Press an assigned switch to remove assignment.
     Disabling can make your peripherals perform better, but may expose your personal data through unauthorized usage.
   </message>
   <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION" desc="The description of the dialog that states that disabling peripheral data acces protection may reset the user's peripherals and may take a few seconds.">
-    Your displays and peripherals may reset briefly. This may take a few seconds to take effect.
+    Your displays and peripherals may reset briefly. For this change to take effect, unplug and replug your peripherals.
   </message>
   <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL" desc="The label of the cancel button for the data access protection confirmation dialog">
     Cancel
