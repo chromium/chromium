@@ -141,27 +141,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpContextualSearchInPanelHelp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "LongpressInPanelHelp",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:contextual_search_in_panel_help_shown;comparator:<3;window:30;storage:180",
-                        "event_used": "name:contextual_search_acknowledged_in_panel_help;comparator:<1;window:60;storage:180",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ContextualSearchInPanelHelp"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpContextualSearchPromoteLongpress": [
         {
             "platforms": [
@@ -2118,15 +2097,18 @@
                     "name": "TranslationsCaption_20210422",
                     "params": {
                         "availability": "any",
-                        "event_trigger": "name:translations_bubble_shown;comparator:<3;window:30;storage:180",
-                        "event_used": "name:contextual_search_enabled_opt_in;comparator:==0;window:365;storage:365",
+                        "event_trigger": "name:contextual_search_in_panel_help_shown;comparator:<3;window:30;storage:180",
+                        "event_used": "name:contextual_search_acknowledged_in_panel_help;comparator:=<1;window:60;storage:180",
                         "session_rate": "<1"
                     },
                     "enable_features": [
                         "ContextualSearchForceCaption",
                         "ContextualSearchLiteralSearchTap",
                         "ContextualSearchTranslations",
-                        "IPH_ContextualSearchTranslationEnable"
+                        "IPH_ContextualSearchInPanelHelp"
+                    ],
+                    "disable_features": [
+                        "ContextualSearchLongpressResolve"
                     ]
                 }
             ]
