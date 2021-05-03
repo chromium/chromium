@@ -19,7 +19,8 @@
 namespace policy {
 
 // A policy loader for Lacros. The data is taken from Ash and the validatity of
-// data is trusted, since they have been validated by Ash.
+// data is trusted, since they have been validated by Ash. This class loads only
+// the user policy that has to apply browser-wide (non per_profile).
 class POLICY_EXPORT PolicyLoaderLacros
     : public AsyncPolicyLoader,
       public chromeos::LacrosChromeServiceImpl::Observer {

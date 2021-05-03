@@ -92,6 +92,7 @@ class PolicyDetails:
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
     self.is_future = policy.get('future', False)
+    self.per_profile = features.get('per_profile', False)
     self.supported_chrome_os_management = policy.get(
         'supported_chrome_os_management', ['active_directory', 'google_cloud'])
     self.schema = policy['schema']
@@ -553,6 +554,7 @@ def _WriteChromePolicyAccessHeader(f, protobuf_type):
           % protobuf_type.lower())
   f.write('struct %sPolicyAccess {\n' % protobuf_type)
   f.write('  const char* policy_key;\n'
+          '  bool per_profile;\n'
           '  bool (enterprise_management::CloudPolicySettings::'
           '*has_proto)() const;\n'
           '  const enterprise_management::%sPolicyProto&\n'
@@ -1261,11 +1263,13 @@ def _WriteChromePolicyAccessSource(policies, f, protobuf_type):
       if protobuf_type == 'String':
         extra_args = ',\n   ' + _GetStringPolicyType(policy.policy_type)
       f.write('  {key::k%s,\n'
+              '   %s,\n'
               '   &em::CloudPolicySettings::has_%s,\n'
               '   &em::CloudPolicySettings::%s%s},\n' %
-              (name, name.lower(), name.lower(), extra_args))
+              (name, str(policy.per_profile).lower(), name.lower(),
+               name.lower(), extra_args))
   # The list is nullptr-terminated.
-  f.write('  {nullptr, nullptr, nullptr},\n' '};\n\n')
+  f.write('  {nullptr, false, nullptr, nullptr},\n' '};\n\n')
 
 
 #------------------ policy risk tag header -------------------------#
@@ -1540,6 +1544,7 @@ def _WriteChromeOSPolicyAccessHeader(f, protobuf_type):
           '%s user\n// policies.\n' % protobuf_type.lower())
   f.write('struct %sPolicyAccess {\n'
           '  const char* policy_key;\n'
+          '  bool per_profile;\n'
           '  enterprise_management::%sPolicyProto*\n'
           '      (enterprise_management::CloudPolicySettings::'
           '*mutable_proto_ptr)();\n'

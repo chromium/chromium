@@ -105,6 +105,18 @@ base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
   return std::move(value_with_error.value.value());
 }
 
+bool PerProfileMatches(bool policy_per_profile,
+                       PolicyPerProfileFilter per_profile_enum) {
+  switch (per_profile_enum) {
+    case PolicyPerProfileFilter::kTrue:
+      return policy_per_profile;
+    case PolicyPerProfileFilter::kFalse:
+      return !policy_per_profile;
+    case PolicyPerProfileFilter::kAny:
+      return true;
+  }
+}
+
 }  // namespace
 
 void DecodeProtoFields(
@@ -113,12 +125,24 @@ void DecodeProtoFields(
     PolicySource source,
     PolicyScope scope,
     PolicyMap* map) {
+  DecodeProtoFieldsPerProfile(policy, external_data_manager, source, scope, map,
+                              PolicyPerProfileFilter::kAny);
+}
+
+void DecodeProtoFieldsPerProfile(
+    const em::CloudPolicySettings& policy,
+    base::WeakPtr<CloudExternalDataManager> external_data_manager,
+    PolicySource source,
+    PolicyScope scope,
+    PolicyMap* map,
+    PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
 
   // Access arrays are terminated by a struct that contains only nullptrs.
   for (const BooleanPolicyAccess* access = &kBooleanPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::BooleanPolicyProto& proto = (policy.*access->get_proto)();
@@ -131,7 +155,8 @@ void DecodeProtoFields(
 
   for (const IntegerPolicyAccess* access = &kIntegerPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::IntegerPolicyProto& proto = (policy.*access->get_proto)();
@@ -149,7 +174,8 @@ void DecodeProtoFields(
 
   for (const StringPolicyAccess* access = &kStringPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::StringPolicyProto& proto = (policy.*access->get_proto)();
@@ -177,7 +203,8 @@ void DecodeProtoFields(
 
   for (const StringListPolicyAccess* access = &kStringListPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::StringListPolicyProto& proto = (policy.*access->get_proto)();

@@ -89,9 +89,10 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
 
   PolicyMap policy_map;
   base::WeakPtr<CloudExternalDataManager> external_data_manager;
-  DecodeProtoFields(*(validator.payload()), external_data_manager,
-                    PolicySource::POLICY_SOURCE_CLOUD,
-                    PolicyScope::POLICY_SCOPE_USER, &policy_map);
+  DecodeProtoFieldsPerProfile(*(validator.payload()), external_data_manager,
+                              PolicySource::POLICY_SOURCE_CLOUD,
+                              PolicyScope::POLICY_SCOPE_USER, &policy_map,
+                              PolicyPerProfileFilter::kFalse);
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);
   return bundle;
