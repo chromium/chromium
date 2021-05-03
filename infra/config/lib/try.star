@@ -218,6 +218,7 @@ def blink_mac_builder(
     )
 
 def chromium_builder(*, name, **kwargs):
+    kwargs.setdefault("os", builders.os.LINUX_XENIAL_OR_BIONIC_REMOVE)
     return try_builder(
         name = name,
         builder_group = "tryserver.chromium",
