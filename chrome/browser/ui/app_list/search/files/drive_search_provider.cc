@@ -126,18 +126,10 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
-  const double relevance =
-      CalculateFilenameRelevance(last_tokenized_query_, relative_path);
-
-  // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
-  DCHECK((relevance >= 0) && (relevance <= 1));
-  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.DriveSearchProvider.Relevance",
-                             floor(100 * relevance), /*exclusive_max=*/101);
-
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveSearch,
-      ash::SearchResultDisplayType::kList, relevance, profile_);
+      ash::AppListSearchResultType::kDriveSearch, last_tokenized_query_,
+      FileResult::Type::kFile, profile_);
 }
 
 }  // namespace app_list

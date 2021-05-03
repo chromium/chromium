@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -47,13 +46,11 @@ std::string StripHostedFileExtensions(const std::string& filename) {
   return filename;
 }
 
-}  // namespace
-
-double CalculateFilenameRelevance(const base::Optional<TokenizedString>& query,
-                                  const base::FilePath& path) {
-  const TokenizedString title(
-      base::UTF8ToUTF16(StripHostedFileExtensions(path.BaseName().value())),
-      TokenizedString::Mode::kWords);
+// Helper function for calculating a file's relevance score. Will return a
+// default relevance score if the query is missing or the filename is empty.
+double CalculateRelevance(const base::Optional<TokenizedString>& query,
+                          const std::u16string& raw_title) {
+  const TokenizedString title(raw_title, TokenizedString::Mode::kWords);
 
   const bool use_default_relevance =
       !query || query.value().text().empty() || title.text().empty();
@@ -69,16 +66,33 @@ double CalculateFilenameRelevance(const base::Optional<TokenizedString>& query,
   return match.relevance();
 }
 
+void LogRelevance(FileResult::ResultType result_type, const double relevance) {
+  // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
+  const int scaled_relevance = floor(100 * relevance);
+  switch (result_type) {
+    case FileResult::ResultType::kFileSearch:
+      UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.FileSearchProvider.Relevance",
+                                 scaled_relevance, /*exclusive_max=*/101);
+      break;
+    case FileResult::ResultType::kDriveSearch:
+      UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.DriveSearchProvider.Relevance",
+                                 scaled_relevance, /*exclusive_max=*/101);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
                        ResultType result_type,
                        DisplayType display_type,
-                       float relevance,
                        Profile* profile)
     : filepath_(filepath), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
-  set_relevance(relevance);
 
   SetResultType(result_type);
   switch (result_type) {
@@ -102,6 +116,25 @@ FileResult::FileResult(const std::string& schema,
 
   SetDisplayType(display_type);
 
+  // Set the details to the display name of the Files app.
+  std::u16string sanitized_name = base::CollapseWhitespace(
+      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
+  base::i18n::SanitizeUserSuppliedString(&sanitized_name);
+  SetDetails(sanitized_name);
+  SetTitle(base::UTF8ToUTF16(
+      StripHostedFileExtensions(filepath.BaseName().value())));
+}
+
+FileResult::FileResult(const std::string& schema,
+                       const base::FilePath& filepath,
+                       ResultType result_type,
+                       DisplayType display_type,
+                       float relevance,
+                       Profile* profile)
+    : FileResult(schema, filepath, result_type, display_type, profile) {
+  set_relevance(relevance);
+  // TODO(crbug.com/1188495): Add relevance metrics for zero state files.
+
   // Launcher search results UI is light by default, so use icons for light
   // background if dark/light mode feature is not enabled.
   const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
@@ -116,14 +149,36 @@ FileResult::FileResult(const std::string& schema,
     default:
       NOTREACHED();
   }
+}
 
-  // Set the details to the display name of the Files app.
-  std::u16string sanitized_name = base::CollapseWhitespace(
-      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
-  base::i18n::SanitizeUserSuppliedString(&sanitized_name);
-  SetDetails(sanitized_name);
-  SetTitle(base::UTF8ToUTF16(
-      StripHostedFileExtensions(filepath.BaseName().value())));
+FileResult::FileResult(
+    const std::string& schema,
+    const base::FilePath& filepath,
+    ResultType result_type,
+    base::Optional<chromeos::string_matching::TokenizedString>& query,
+    Type type,
+    Profile* profile)
+    : FileResult(schema, filepath, result_type, DisplayType::kList, profile) {
+  const double relevance = CalculateRelevance(query, title());
+  DCHECK((relevance >= 0) && (relevance <= 1));
+  set_relevance(relevance);
+  LogRelevance(result_type, relevance);
+
+  // Launcher search results UI is light by default, so use icons for light
+  // background if dark/light mode feature is not enabled.
+  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
+                               ash::ColorProvider::Get()->IsDarkModeEnabled();
+  switch (type) {
+    case Type::kFile:
+      SetIcon(ash::GetIconForPath(filepath, dark_background));
+      break;
+    case Type::kDirectory:
+      SetIcon(ash::GetIconFromType("folder", dark_background));
+      break;
+    case Type::kSharedDirectory:
+      SetIcon(ash::GetIconFromType("shared", dark_background));
+      break;
+  }
 }
 
 FileResult::~FileResult() = default;

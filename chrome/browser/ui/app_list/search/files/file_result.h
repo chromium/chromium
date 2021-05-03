@@ -16,19 +16,23 @@ class Profile;
 
 namespace app_list {
 
-// Helper function for calculating a file's relevance score. Will return a
-// default relevance score if the query is missing or the filename is empty.
-double CalculateFilenameRelevance(
-    const base::Optional<chromeos::string_matching::TokenizedString>& query,
-    const base::FilePath& path);
-
 class FileResult : public ChromeSearchResult {
  public:
+  enum class Type { kFile, kDirectory, kSharedDirectory };
+
+  // Constructor for zero state results.
   FileResult(const std::string& schema,
              const base::FilePath& filepath,
              ResultType result_type,
              DisplayType display_type,
              float relevance,
+             Profile* profile);
+  // Constructor for search results.
+  FileResult(const std::string& schema,
+             const base::FilePath& filepath,
+             ResultType result_type,
+             base::Optional<chromeos::string_matching::TokenizedString>& query,
+             Type type,
              Profile* profile);
   ~FileResult() override;
 
@@ -39,6 +43,12 @@ class FileResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
+  FileResult(const std::string& schema,
+             const base::FilePath& filepath,
+             ResultType result_type,
+             DisplayType display_type,
+             Profile* profile);
+
   const base::FilePath filepath_;
   Profile* const profile_;
 };

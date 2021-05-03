@@ -134,17 +134,9 @@ void FileSearchProvider::OnSearchComplete(
 
 std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const base::FilePath& path) {
-  const double relevance =
-      CalculateFilenameRelevance(last_tokenized_query_, path);
-
-  // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
-  DCHECK((relevance >= 0) && (relevance <= 1));
-  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.FileSearchProvider.Relevance",
-                             floor(100 * relevance), /*exclusive_max=*/101);
-
   return std::make_unique<FileResult>(
       kFileSearchSchema, path, ash::AppListSearchResultType::kFileSearch,
-      ash::SearchResultDisplayType::kList, relevance, profile_);
+      last_tokenized_query_, FileResult::Type::kFile, profile_);
 }
 
 }  // namespace app_list
