@@ -573,6 +573,12 @@
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1200574): Remove this exception.
+              'os': 'Ubuntu-16.04',
+            }
+          ],
           'shards': 40,
         },
       },
@@ -1169,11 +1175,6 @@
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
           'shards': 12,
         },
       },
@@ -1394,11 +1395,6 @@
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
           'shards': 2,
         },
       },
@@ -2162,11 +2158,6 @@
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
           'shards': 16,
         },
       },
@@ -2621,11 +2612,6 @@
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-18.04',
-            }
-          ],
           'shards': 4,
         },
       },
