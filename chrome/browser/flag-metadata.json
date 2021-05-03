@@ -5055,11 +5055,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "touch-events",
-    "owners": [ "eirage", "input-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "touch-selection-strategy",
     "owners": [ "omrilio" ],
     "expiry_milestone": 80
