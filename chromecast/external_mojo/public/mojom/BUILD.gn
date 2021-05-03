@@ -9,3 +9,7 @@ mojom("mojom") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 }
+
+mojom("test_support") {
+  sources = [ "test_connector.mojom" ]
+}

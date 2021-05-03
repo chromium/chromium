@@ -36,6 +36,7 @@ source_set("test_support") {
   deps = [
     ":external_service",
     "//base",
+    "//chromecast/external_mojo/public/mojom:test_support",
     "//mojo/public/cpp/bindings",
   ]
 }

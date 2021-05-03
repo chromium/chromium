@@ -12,6 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
+#include "chromecast/external_mojo/public/mojom/test_connector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
@@ -20,14 +23,18 @@ namespace external_service_support {
 // Local, single-process ExternalConnector for testing. Clients can register
 // mock services with FakeExternalConnector and verify that tested code makes
 // the expected service requests.
-class FakeExternalConnector : public ExternalConnector {
+class FakeExternalConnector
+    : public external_service_support::ExternalConnector,
+      public external_mojo::mojom::TestExternalConnector {
  public:
   FakeExternalConnector();
+  explicit FakeExternalConnector(
+      mojo::PendingRemote<external_mojo::mojom::TestExternalConnector> remote);
   FakeExternalConnector(const FakeExternalConnector&) = delete;
   FakeExternalConnector& operator=(const FakeExternalConnector&) = delete;
   ~FakeExternalConnector() override;
 
-  // ExternalConnector implementation:
+  // external_service_support::ExternalConnector implementation:
   void RegisterService(const std::string& service_name,
                        ExternalService* service) override;
   void RegisterService(
@@ -46,7 +53,7 @@ class FakeExternalConnector : public ExternalConnector {
   void RegisterServices(
       std::vector<chromecast::external_mojo::mojom::ServiceInstanceInfoPtr>
           service_instances_info) override;
-  std::unique_ptr<ExternalConnector> Clone() override;
+  std::unique_ptr<external_service_support::ExternalConnector> Clone() override;
   void SendChromiumConnectorRequest(
       mojo::ScopedMessagePipeHandle request) override;
   void QueryServiceList(
@@ -56,9 +63,18 @@ class FakeExternalConnector : public ExternalConnector {
           callback) override;
 
  private:
+  // external_mojo::mojom::TestExternalConnector implementation:
+  void BindInterfaceInternal(
+      const std::string& service_name,
+      const std::string& interface_name,
+      mojo::ScopedMessagePipeHandle interface_pipe) override;
+
+  mojo::Remote<external_mojo::mojom::TestExternalConnector> parent_;
   base::flat_map<std::string,
                  mojo::Remote<external_mojo::mojom::ExternalService>>
       services_;
+  mojo::ReceiverSet<external_mojo::mojom::TestExternalConnector>
+      child_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
