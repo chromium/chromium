@@ -5,7 +5,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Theme shared between Chrome and embedders. -->
-    <style name="Theme.BrowserUI" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Base.Theme.BrowserUI" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Text colors -->
         <item name="android:textColorLink">@color/default_text_color_link</item>
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
@@ -46,6 +46,7 @@
         <!-- Shape -->
         <item name="menuCornerSize">@dimen/popup_bg_corner_radius</item>
     </style>
+    <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI" />
 
     <!-- Popup and long-press context popup menu style -->
     <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
