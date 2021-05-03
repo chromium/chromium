@@ -1,4 +1,5 @@
+CONSOLE WARNING: line 14: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = done() was called without first defining any tests
+PASS Serializing SharedArrayBuffer throws DataClone error.
 Harness: the test ran to completion.
 

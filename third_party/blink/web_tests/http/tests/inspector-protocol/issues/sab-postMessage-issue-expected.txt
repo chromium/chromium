@@ -22,7 +22,7 @@ Transfer issue: {
         code : SharedArrayBufferIssue
         details : {
             sharedArrayBufferIssueDetails : {
-                isWarning : false
+                isWarning : true
                 sourceCodeLocation : {
                     columnNumber : 1
                     lineNumber : 0
