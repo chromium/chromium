@@ -425,18 +425,16 @@ class CrostiniManager::CrostiniRestarter
     auto info = crostini_manager_->GetContainerInfo(container_id_);
     if (container_id_ == ContainerId::GetDefault() && info) {
       StartStage(mojom::InstallerState::kFetchSshKeys);
-      crostini_manager_->MountCrostiniFiles(
-          container_id_,
-          base::BindOnce(&CrostiniRestarter::MountCrostiniFilesFinished,
-                         weak_ptr_factory_.GetWeakPtr()));
+      crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing());
+      // TODO(crbug/1142321): Metrics
+      FinishDefaultContainerRestart(result);
     } else {
       FinishRestart(result);
     }
   }
 
  private:
-  void MountCrostiniFilesFinished(CrostiniResult result) {
-    // TODO(crbug/1142321): Metrics
+  void FinishDefaultContainerRestart(CrostiniResult result) {
     // TODO(crbug/1198006): For backwards compatibility quickly run through
     // these stages which have since been removed, but some clients still
     // expect to see.

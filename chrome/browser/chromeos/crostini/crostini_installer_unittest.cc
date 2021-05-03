@@ -59,38 +59,6 @@ class CrostiniInstallerTest : public testing::Test {
     MOCK_METHOD0(OnCanceled, void());
   };
 
-  class MountPathWaiter {
-   public:
-    using MountPointInfo = chromeos::disks::DiskMountManager::MountPointInfo;
-
-    void MountPath(const std::string& source_path,
-                   const std::string& source_format,
-                   const std::string& mount_label,
-                   const std::vector<std::string>& mount_options,
-                   chromeos::MountType type,
-                   chromeos::MountAccessMode access_mode) {
-      mount_point_info_ = std::make_unique<MountPointInfo>(
-          source_path, "/media/fuse/" + mount_label,
-          chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
-          chromeos::disks::MountCondition::MOUNT_CONDITION_NONE);
-      if (quit_closure_) {
-        std::move(quit_closure_).Run();
-      }
-    }
-
-    MountPointInfo* get_mount_point_info() { return mount_point_info_.get(); }
-
-    void WaitForMountPathCalled() {
-      base::RunLoop loop;
-      quit_closure_ = loop.QuitClosure();
-      loop.Run();
-    }
-
-   private:
-    base::OnceClosure quit_closure_;
-    std::unique_ptr<MountPointInfo> mount_point_info_;
-  };
-
   class WaitingFakeConciergeClient : public chromeos::FakeConciergeClient {
    public:
     void StartTerminaVm(
@@ -186,7 +154,6 @@ class CrostiniInstallerTest : public testing::Test {
   }
 
  protected:
-  MountPathWaiter mount_path_waiter_;
   MockCallbacks mock_callbacks_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD,
@@ -195,6 +162,7 @@ class CrostiniInstallerTest : public testing::Test {
 
   // Owned by DiskMountManager
   chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
+
   // Owned by chromeos::DBusThreadManager
   WaitingFakeConciergeClient* waiting_fake_concierge_client_ = nullptr;
 
@@ -220,22 +188,11 @@ TEST_F(CrostiniInstallerTest, InstallFlow) {
       EXPECT_CALL(mock_callbacks_,
                   OnProgress(_, AllOf(greater_equal_last_progress, Le(1.0))))
           .WillRepeatedly(SaveArg<1>(&last_progress));
-  expectation_set +=
-      EXPECT_CALL(*disk_mount_manager_mock_,
-                  MountPath("sshfs://test@hostname:", _, _, _, _, _))
-          .WillOnce(Invoke(&mount_path_waiter_, &MountPathWaiter::MountPath));
   // |OnProgress()| should not happens after |OnFinished()|
   EXPECT_CALL(mock_callbacks_, OnFinished(InstallerError::kNone))
       .After(expectation_set);
 
   Install();
-  mount_path_waiter_.WaitForMountPathCalled();
-
-  ASSERT_TRUE(mount_path_waiter_.get_mount_point_info());
-  disk_mount_manager_mock_->NotifyMountEvent(
-      chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
-      chromeos::MountError::MOUNT_ERROR_NONE,
-      *mount_path_waiter_.get_mount_point_info());
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
@@ -263,10 +220,6 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
       EXPECT_CALL(mock_callbacks_,
                   OnProgress(_, AllOf(greater_equal_last_progress, Le(1.0))))
           .WillRepeatedly(SaveArg<1>(&last_progress));
-  expectation_set +=
-      EXPECT_CALL(*disk_mount_manager_mock_,
-                  MountPath("sshfs://test@hostname:", _, _, _, _, _))
-          .WillOnce(Invoke(&mount_path_waiter_, &MountPathWaiter::MountPath));
   // |OnProgress()| should not happens after |OnFinished()|
   EXPECT_CALL(mock_callbacks_, OnFinished(InstallerError::kNone))
       .After(expectation_set);
@@ -275,14 +228,6 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
 
   task_environment_.RunUntilIdle();
   test_helper.SendSucceededApplySignal();
-
-  mount_path_waiter_.WaitForMountPathCalled();
-
-  ASSERT_TRUE(mount_path_waiter_.get_mount_point_info());
-  disk_mount_manager_mock_->NotifyMountEvent(
-      chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
-      chromeos::MountError::MOUNT_ERROR_NONE,
-      *mount_path_waiter_.get_mount_point_info());
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(

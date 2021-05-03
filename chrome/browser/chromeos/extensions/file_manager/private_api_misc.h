@@ -272,6 +272,7 @@ class FileManagerPrivateMountCrostiniFunction : public LoggedExtensionFunction {
 
   ResponseAction Run() override;
   void RestartCallback(crostini::CrostiniResult);
+  void MountCallback(crostini::CrostiniResult);
 };
 
 // Implements the chrome.fileManagerPrivate.importCrostiniImage method.

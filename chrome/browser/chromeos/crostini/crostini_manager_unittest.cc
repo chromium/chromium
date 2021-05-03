@@ -737,23 +737,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     run_loop()->Quit();
   }
 
-  void SshfsMount(const std::string& source_path,
-                  const std::string& source_format,
-                  const std::string& mount_label,
-                  const std::vector<std::string>& mount_options,
-                  chromeos::MountType type,
-                  chromeos::MountAccessMode access_mode) {
-    if (abort_on_mount_event_) {
-      Abort();
-    }
-    disk_mount_manager_mock_->NotifyMountEvent(
-        chromeos::disks::DiskMountManager::MountEvent::MOUNTING, mount_error_,
-        chromeos::disks::DiskMountManager::MountPointInfo(
-            source_path, "/media/fuse/" + mount_label,
-            chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
-            chromeos::disks::MountCondition::MOUNT_CONDITION_NONE));
-  }
-
   void ExpectRestarterUmaCount(int count) {
     histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", count);
     histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
@@ -779,10 +762,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   bool abort_on_container_mounted_ = false;
   bool abort_then_stop_vm_ = false;
 
-  // Used by SshfsMount().
-  bool abort_on_mount_event_ = false;
-  chromeos::MountError mount_error_ = chromeos::MountError::MOUNT_ERROR_NONE;
-
   int restart_crostini_callback_count_ = 0;
   CrostiniResult last_crostini_callback_result_ = CrostiniResult::SUCCESS;
   int remove_crostini_callback_count_ = 0;
@@ -802,8 +781,6 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  // Mount only performed for termina/penguin.
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   base::Optional<ContainerInfo> container_info =
@@ -825,8 +802,6 @@ TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  // Mount only performed for termina/penguin.
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   base::Optional<ContainerInfo> container_info =
@@ -860,8 +835,6 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  // Mount only performed for termina/penguin.
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   base::Optional<ContainerInfo> container_info =
@@ -882,8 +855,6 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  // Mount only performed for termina/penguin.
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   base::Optional<ContainerInfo> container_info =
@@ -904,7 +875,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnComponentLoaded) {
       profile_->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled));
   EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -933,7 +903,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -950,7 +919,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -983,7 +951,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnVmStarted) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1000,7 +967,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartVm) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1020,7 +986,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForVmStarted) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1035,7 +1000,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnLxdStarted) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1052,7 +1016,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartLxd) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1070,7 +1033,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1086,7 +1048,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreated) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1102,7 +1063,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateContainer) {
       this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1120,7 +1080,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerCreated) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1150,7 +1109,6 @@ TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1169,7 +1127,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreatedError) {
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(0, restart_crostini_callback_count_);
   ExpectRestarterUmaCount(1);
 }
@@ -1185,7 +1142,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerStarted) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1201,7 +1157,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerSetup) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1219,7 +1174,6 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::SETUP_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1252,91 +1206,8 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
-}
-
-TEST_F(CrostiniManagerRestartTest, AbortOnContainerMounted) {
-  abort_on_container_mounted_ = true;
-
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      disk_mount_manager_mock_);
-  EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
-      .WillOnce(Invoke(
-          this, &CrostiniManagerRestartTest_AbortOnContainerMounted_Test::
-                    SshfsMount));
-
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-
-  chromeos::disks::DiskMountManager::Shutdown();
-}
-
-TEST_F(CrostiniManagerRestartTest, AbortOnMountEvent) {
-  abort_on_mount_event_ = true;
-
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      disk_mount_manager_mock_);
-  EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
-      .WillOnce(Invoke(
-          this,
-          &CrostiniManagerRestartTest_AbortOnMountEvent_Test::SshfsMount));
-
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-
-  chromeos::disks::DiskMountManager::Shutdown();
-}
-
-TEST_F(CrostiniManagerRestartTest, AbortOnMountEventWithError) {
-  mount_error_ = chromeos::MountError::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS;
-  abort_on_mount_event_ = true;
-
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      disk_mount_manager_mock_);
-  EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
-      .WillOnce(Invoke(
-          this, &CrostiniManagerRestartTest_AbortOnMountEventWithError_Test::
-                    SshfsMount));
-
-  // Use termina/penguin names to allow fetch ssh keys.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-
-  chromeos::disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(CrostiniManagerRestartTest, AbortThenStopVm) {
@@ -1349,7 +1220,6 @@ TEST_F(CrostiniManagerRestartTest, AbortThenStopVm) {
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1390,21 +1260,6 @@ TEST_F(CrostiniManagerRestartTest, DoubleAbortIsSafe) {
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
 }
 
-TEST_F(CrostiniManagerRestartTest, OnlyMountTerminaPenguin) {
-  // Use names other than termina/penguin.  Will not mount sshfs.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
-  ExpectRestarterUmaCount(1);
-}
-
 TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
   CrostiniManager::RestartId id1, id2, id3;
   id1 = crostini_manager()->RestartCrostini(
@@ -1435,49 +1290,6 @@ TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
   ExpectRestarterUmaCount(3);
 }
 
-TEST_F(CrostiniManagerRestartTest, MountForTerminaPenguin) {
-  // DiskMountManager mock.  Verify that correct values are received
-  // from concierge and passed to DiskMountManager.
-  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      disk_mount_manager_mock_);
-  disk_mount_manager_mock_->SetupDefaultReplies();
-  std::string known_hosts;
-  base::Base64Encode("[hostname]:2222 pubkey", &known_hosts);
-  std::string identity;
-  base::Base64Encode("privkey", &identity);
-  std::vector<std::string> mount_options = {
-      "UserKnownHostsBase64=" + known_hosts, "IdentityBase64=" + identity,
-      "Port=2222"};
-  EXPECT_CALL(*disk_mount_manager_mock_,
-              MountPath("sshfs://testing_profile@hostname:", "",
-                        "crostini_test_termina_penguin", mount_options,
-                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                        chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-      .WillOnce(Invoke(
-          this,
-          &CrostiniManagerRestartTest_MountForTerminaPenguin_Test::SshfsMount));
-
-  // Use termina/penguin to perform mount.
-  restart_id_ = crostini_manager()->RestartCrostini(
-      ContainerId::GetDefault(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
-  run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
-  base::FilePath path;
-  EXPECT_TRUE(
-      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          "crostini_test_termina_penguin", &path));
-  EXPECT_EQ(base::FilePath("/media/fuse/crostini_test_termina_penguin"), path);
-  ExpectRestarterUmaCount(1);
-
-  chromeos::disks::DiskMountManager::Shutdown();
-}
-
 TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),
@@ -1490,7 +1302,6 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   // Mount only performed for termina/penguin.
-  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
@@ -1894,14 +1705,6 @@ class CrostiniManagerEnterpriseReportingTest
  public:
   void SetUp() override {
     CrostiniManagerRestartTest::SetUp();
-
-    // Ensure that Crostini restart is successful:
-    disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_mock_);
-    EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
-        .WillOnce(
-            Invoke(this, &CrostiniManagerEnterpriseReportingTest::SshfsMount));
 
     // Enable Crostini reporting:
     profile()->GetPrefs()->SetBoolean(prefs::kReportCrostiniUsageEnabled, true);

@@ -665,6 +665,24 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
         base::StringPrintf("Error mounting crostini container: %d", result)));
     return;
   }
+  // Use OriginalProfile since using crostini in incognito such as saving
+  // files into Linux files should still work.
+  Profile* profile =
+      Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
+  DCHECK(crostini::CrostiniFeatures::Get()->IsEnabled(profile));
+  crostini::CrostiniManager::GetForProfile(profile)->MountCrostiniFiles(
+      crostini::ContainerId::GetDefault(),
+      base::BindOnce(&FileManagerPrivateMountCrostiniFunction::MountCallback,
+                     this));
+}
+
+void FileManagerPrivateMountCrostiniFunction::MountCallback(
+    crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS) {
+    Respond(Error(
+        base::StringPrintf("Error mounting crostini container: %d", result)));
+    return;
+  }
   Respond(NoArguments());
 }
 
