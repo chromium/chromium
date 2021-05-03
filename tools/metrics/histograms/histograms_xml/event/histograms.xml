@@ -380,19 +380,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.OS" units="microseconds"
-    expires_after="2021-12-01">
+<histogram name="Event.Latency.OS" units="microseconds" expires_after="M92">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between input event received by OS and sent to Chrome, recorded for
-    each event when it is received by Chrome.
+    each event when it is received by Chrome. This is obsoleted by
+    Event.Latency.OS2 and should be removed after they've been run side-by-side
+    for M92.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+  </summary>
+</histogram>
+
+<histogram name="Event.Latency.OS2" units="ms" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Time between input event received by OS and sent to Chrome, recorded for
+    each event when it is received by Chrome.
+
+    Warning: On Windows, the timestamps of most events come from a clock with a
+    several msec resolution so will have an abnormal distribution even when
+    TimeTicks::IsHighResolution returns true. The exception is touch events
+    which usually come from the high-resolution clock when
+    TimeTicks::IsHighResolution returns true.
   </summary>
 </histogram>
 
@@ -404,7 +420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     For Mac, a version of Event.Latency.OS that has the positive values it would
     contain if ValidateEventTimeClock() were not called on the timestamps.
 
-    This metric is intended to debug http://crbug.com/1039833, where very high
+    This metric is intended to debug http://crbug.com/1039833 where very high
     numbers are seen for PageLoad.InputDelay3. The units of this metric are the
     same as PageLoad.InputDelay3 for consistency while debugging.
   </summary>
@@ -412,6 +428,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.OS_WIN.HIGH_RES" units="ms"
     expires_after="2021-12-01">
+  <obsolete>
+    Removed 2021-04-22 - replaced by Event.Latency.OS2.
+  </obsolete>
   <owner>joenotcharles@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -434,6 +453,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.OS_WIN.LOW_RES" units="ms"
     expires_after="2021-12-01">
+  <obsolete>
+    Removed 2021-04-22 - replaced by Event.Latency.OS2.
+  </obsolete>
   <owner>joenotcharles@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -456,6 +478,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.OS_WIN_IS_VALID" enum="Boolean"
     expires_after="2021-12-01">
+  <obsolete>
+    Removed 2021-04-22 - replaced by Event.Latency.OS2.
+  </obsolete>
   <owner>joenotcharles@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

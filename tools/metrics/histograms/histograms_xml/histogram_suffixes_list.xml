@@ -6333,11 +6333,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="TOUCH_PRESSED" label=""/>
   <suffix name="TOUCH_RELEASED" label=""/>
   <affected-histogram name="Event.Latency.OS"/>
+  <affected-histogram name="Event.Latency.OS2"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.NEGATIVE"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.POSITIVE"/>
-  <affected-histogram name="Event.Latency.OS_WIN.HIGH_RES"/>
-  <affected-histogram name="Event.Latency.OS_WIN.LOW_RES"/>
-  <affected-histogram name="Event.Latency.OS_WIN_IS_VALID"/>
+  <affected-histogram name="Event.Latency.OS_WIN.HIGH_RES">
+    <obsolete>
+      Removed 2021-04-22 - replaced by Event.Latency.OS2.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Event.Latency.OS_WIN.LOW_RES">
+    <obsolete>
+      Removed 2021-04-22 - replaced by Event.Latency.OS2.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Event.Latency.OS_WIN_IS_VALID">
+    <obsolete>
+      Removed 2021-04-22 - replaced by Event.Latency.OS2.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyPinchTypes" separator=".">

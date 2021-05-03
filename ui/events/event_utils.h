@@ -33,7 +33,6 @@ class Vector2d;
 }  // namespace gfx
 
 namespace base {
-class TickClock;
 class TimeTicks;
 }
 
@@ -86,6 +85,15 @@ EVENTS_EXPORT int EventFlagsFromNative(const PlatformEvent& native_event);
 // same native event may return different values.
 EVENTS_EXPORT base::TimeTicks EventTimeFromNative(
     const PlatformEvent& native_event);
+
+// Get the timestamp to use for latency metrics from |native_event|.
+// |current_time| is a timestamp returned by EventTimeForNow which will be
+// compared to the |native_event| timestamp to calculate latency. This is
+// different from EventTimeFromNative because on some platforms (eg. Windows)
+// EventTimeFromNative returns a synthesized timestamp.
+EVENTS_EXPORT base::TimeTicks EventLatencyTimeFromNative(
+    const PlatformEvent& native_event,
+    base::TimeTicks current_time);
 
 // Get the location from a native event.  The coordinate system of the resultant
 // |Point| has the origin at top-left of the "root window".  The nature of
@@ -169,25 +177,23 @@ EVENTS_EXPORT display::Display::TouchSupport GetInternalDisplayTouchSupport();
 
 EVENTS_EXPORT void ComputeEventLatencyOS(const PlatformEvent& native_event);
 
-#if defined(OS_WIN)
-// Makes ComputeEventLatencyOSWinFromTickCount call the given |clock| to find
-// the current time ticks to compare to an MSG timestamp. If |clock| is nullptr,
-// it will call ::GetTickCount, which is the default.
-EVENTS_EXPORT void SetEventLatencyTickClockForTesting(
-    const base::TickClock* clock);
+EVENTS_EXPORT void ComputeEventLatencyOS(ui::EventType type,
+                                         base::TimeTicks time_stamp,
+                                         base::TimeTicks current_time);
 
-// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
-// ::GetTickCount (such as an MSG).
-EVENTS_EXPORT void ComputeEventLatencyOSWinFromTickCount(
+#if defined(OS_WIN)
+// Like ComputeEventLatencyOS, but for events whose timestamp comes from a
+// TOUCHINPUT structure instead of PlatformEvent.
+EVENTS_EXPORT void ComputeEventLatencyOSFromTOUCHINPUT(
     ui::EventType event_type,
-    DWORD event_time,
+    TOUCHINPUT touch_input,
     base::TimeTicks current_time);
 
-// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
-// a Performance Counter (such as POINTER_INFO).
-EVENTS_EXPORT void ComputeEventLatencyOSWinFromPerformanceCounter(
+// Like ComputeEventLatencyOS, but for events whose timestamp comes from a
+// POINTER_INFO structure instead of PlatformEvent.
+EVENTS_EXPORT void ComputeEventLatencyOSFromPOINTER_INFO(
     ui::EventType event_type,
-    UINT64 event_time,
+    POINTER_INFO pointer_info,
     base::TimeTicks current_time);
 
 EVENTS_EXPORT int GetModifiersFromKeyState();

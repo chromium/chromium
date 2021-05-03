@@ -15,6 +15,11 @@ base::TimeTicks EventTimeFromNative(const PlatformEvent& native_event) {
   return event->time_stamp();
 }
 
+base::TimeTicks EventLatencyTimeFromNative(const PlatformEvent& native_event,
+                                           base::TimeTicks current_time) {
+  return EventTimeFromNative(native_event);
+}
+
 int EventFlagsFromNative(const PlatformEvent& native_event) {
   const ui::Event* event = static_cast<const ui::Event*>(native_event);
   return event->flags();

@@ -17,7 +17,17 @@ int EventFlagsFromNative(const MSG& native_event) {
 }
 
 base::TimeTicks EventTimeFromNative(const MSG& native_event) {
+  // Note EventTimeFromMSG actually returns a time based on the current clock
+  // tick, ignoring MSG. See the comments in that function (which is in
+  // events_win_utils.cc) for the reason.
   return EventTimeFromMSG(native_event);
+}
+
+base::TimeTicks EventLatencyTimeFromNative(const MSG& native_event,
+                                           base::TimeTicks current_time) {
+  // For latency calculations use the real timestamp, rather than the one
+  // returned from EventTimeFromMSG.
+  return EventLatencyTimeFromTickClock(native_event.time, current_time);
 }
 
 gfx::PointF EventLocationFromNative(const MSG& native_event) {

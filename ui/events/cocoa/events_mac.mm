@@ -84,6 +84,11 @@ base::TimeTicks EventTimeFromNative(const PlatformEvent& native_event) {
   return timestamp;
 }
 
+base::TimeTicks EventLatencyTimeFromNative(const PlatformEvent& native_event,
+                                           base::TimeTicks current_time) {
+  return EventTimeFromNative(native_event);
+}
+
 gfx::PointF EventLocationFromNative(const PlatformEvent& native_event) {
   NSWindow* window = [native_event window];
   NSPoint location = [native_event locationInWindow];

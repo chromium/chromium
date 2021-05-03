@@ -5,9 +5,12 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/win/windowsx_shim.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -153,6 +156,19 @@ int MouseStateFlags(const MSG& native_event) {
   return flags;
 }
 
+class GetTickCountClock : public base::TickClock {
+ public:
+  GetTickCountClock() = default;
+  ~GetTickCountClock() override = default;
+
+  base::TimeTicks NowTicks() const override {
+    return base::TimeTicks() +
+           base::TimeDelta::FromMilliseconds(::GetTickCount());
+  }
+};
+
+const base::TickClock* g_tick_count_clock = nullptr;
+
 }  // namespace
 
 EventType EventTypeFromMSG(const MSG& native_event) {
@@ -240,6 +256,47 @@ base::TimeTicks EventTimeFromMSG(const MSG& native_event) {
   // It is unnecessary to invoke |ValidateEventTimeClock| here because of above.
   // [1] http://blogs.msdn.com/b/oldnewthing/archive/2014/01/22/10491576.aspx
   return EventTimeForNow();
+}
+
+base::TimeTicks EventLatencyTimeFromTickClock(DWORD event_time,
+                                              base::TimeTicks current_time) {
+  static const base::NoDestructor<GetTickCountClock> default_tick_count_clock;
+  if (!g_tick_count_clock)
+    g_tick_count_clock = default_tick_count_clock.get();
+
+  base::TimeTicks time_stamp =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event_time);
+
+  base::TimeTicks current_tick_count = g_tick_count_clock->NowTicks();
+  // Check if the 32-bit tick count wrapped around after the event.
+  if (current_tick_count < time_stamp) {
+    // ::GetTickCount returns an unsigned 32-bit value, which will fit into the
+    // signed 64-bit base::TimeTicks.
+    current_tick_count +=
+        base::TimeDelta::FromMilliseconds(std::numeric_limits<DWORD>::max());
+  }
+
+  // |time_stamp| is from the GetTickCount clock, which has a different 0-point
+  // from |current_time| (which uses either the high-resolution timer or
+  // timeGetTime). Adjust it to be compatible.
+  //
+  // This offset will vary by up to ~16 msec because it depends on when exactly
+  // we sample the high-resolution clock. It would be more consistent to
+  // calculate one offset at the start of the program and apply it every time,
+  // but that consistency isn't needed for jank investigations and then we
+  // would have to adjust for clock drift.
+  const base::TimeDelta time_source_offset = current_time - current_tick_count;
+  time_stamp += time_source_offset;
+
+  ValidateEventTimeClock(&time_stamp);
+  return time_stamp;
+}
+
+base::TimeTicks EventLatencyTimeFromPerformanceCounter(UINT64 event_time) {
+  DCHECK(base::TimeTicks::IsHighResolution());
+  base::TimeTicks time_stamp = base::TimeTicks::FromQPCValue(event_time);
+  ValidateEventTimeClock(&time_stamp);
+  return time_stamp;
 }
 
 gfx::Point EventLocationFromMSG(const MSG& native_event) {
@@ -491,6 +548,10 @@ MouseWheelEvent MouseWheelEventFromMSG(const MSG& msg) {
 
   return MouseWheelEvent(offset, location, root_location, time_stamp, flags,
                          changed_button_flags);
+}
+
+void SetEventLatencyTickClockForTesting(const base::TickClock* clock) {
+  g_tick_count_clock = clock;
 }
 
 }  // namespace ui

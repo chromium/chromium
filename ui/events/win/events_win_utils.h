@@ -25,6 +25,7 @@ class Vector2d;
 }  // namespace gfx
 
 namespace base {
+class TickClock;
 class TimeTicks;
 }
 
@@ -43,6 +44,22 @@ EVENTS_EXPORT int EventFlagsFromMSG(const MSG& native_event);
 // Note: This is not a pure function meaning that multiple applications on the
 // same native event may return different values.
 EVENTS_EXPORT base::TimeTicks EventTimeFromMSG(const MSG& native_event);
+
+// Convert |event_time|, a count of milliseconds from the clock used by
+// ::GetTickCount(), to a value comparable to the base::TimeTicks clock.
+// |current_time| is a value returned in the recent past by EventTimeForNow,
+// which will be compared to the current result of ::GetTickCount() for
+// calibration.
+EVENTS_EXPORT base::TimeTicks EventLatencyTimeFromTickClock(
+    DWORD event_time,
+    base::TimeTicks current_time);
+
+// Convert |event_time|, a timestamp from the clock used by
+// ::QueryPerformanceCounter(), to a value comparable to the base::TimeTicks
+// clock. Must not be called if base::TimeTicks::IsHighResolution() returns
+// false.
+EVENTS_EXPORT base::TimeTicks EventLatencyTimeFromPerformanceCounter(
+    UINT64 event_time);
 
 // Get the location from a native event.  The coordinate system of the resultant
 // |Point| has the origin at top-left of the "root window".  The nature of
@@ -100,6 +117,12 @@ EVENTS_EXPORT bool GetFlingData(const MSG& native_event,
 // Returns whether this is a scroll event and optionally gets the amount to be
 // scrolled.
 EVENTS_EXPORT bool GetScrollOffsetsFromMSG(const MSG& native_event);
+
+// Makes EventLatencyTimeFromTickClock call the given |clock| to find the
+// current time ticks. If |clock| is nullptr, it will call ::GetTickCount(),
+// which is the default.
+EVENTS_EXPORT void SetEventLatencyTickClockForTesting(
+    const base::TickClock* clock);
 
 }  // namespace ui
 
