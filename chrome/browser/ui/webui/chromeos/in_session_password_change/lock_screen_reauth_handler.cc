@@ -176,6 +176,8 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetBoolean("doSamlRedirect", ShouldDoSamlRedirect(context.email));
   params.SetString("clientVersion", version_info::GetVersionNumber());
+  params.SetBoolean("readOnlyEmail", true);
+
   AllowJavascript();
   CallJavascriptFunction("$(\'main-element\').loadAuthenticator", params);
 }
