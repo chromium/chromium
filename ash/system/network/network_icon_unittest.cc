@@ -88,7 +88,7 @@ class NetworkIconTest : public AshTestBase {
       NetworkType type,
       ConnectionStateType connection_state,
       int signal_strength) {
-    return helper().CreateStandaloneNetworkProperties(
+    return network_config_helper_.CreateStandaloneNetworkProperties(
         id, type, connection_state, signal_strength);
   }
 

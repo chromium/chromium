@@ -121,7 +121,7 @@ class ActiveNetworkIconTest : public AshTestBase {
     std::string id = base::StringPrintf("reference_%d", reference_count_++);
     chromeos::network_config::mojom::NetworkStatePropertiesPtr
         reference_properties =
-            network_state_helper().CreateStandaloneNetworkProperties(
+            network_config_helper_.CreateStandaloneNetworkProperties(
                 id, type, connection_state, signal_strength);
     return network_icon::GetImageForNonVirtualNetwork(
         reference_properties.get(), icon_type_, false /* show_vpn_badge */);

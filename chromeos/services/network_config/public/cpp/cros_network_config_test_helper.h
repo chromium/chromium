@@ -10,6 +10,8 @@
 #include "base/macros.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -31,6 +33,12 @@ class CrosNetworkConfigTestHelper {
   explicit CrosNetworkConfigTestHelper(bool initialize);
 
   ~CrosNetworkConfigTestHelper();
+
+  mojom::NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
+      const std::string& id,
+      mojom::NetworkType type,
+      mojom::ConnectionStateType connection_state,
+      int signal_strength);
 
   NetworkStateTestHelper& network_state_helper() {
     return network_state_helper_;
