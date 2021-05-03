@@ -2368,7 +2368,7 @@ TEST_F(HeapTest, VectorDestructors) {
     Persistent<InlinedVectorObjectWrapper> vector_wrapper =
         MakeGarbageCollected<InlinedVectorObjectWrapper>();
     ConservativelyCollectGarbage();
-    EXPECT_EQ(2, InlinedVectorObject::destructor_calls_);
+    EXPECT_LE(2, InlinedVectorObject::destructor_calls_);
   }
   PreciselyCollectGarbage();
   EXPECT_LE(8, InlinedVectorObject::destructor_calls_);
@@ -2427,7 +2427,7 @@ TEST_F(HeapTest, VectorDestructorsWithVtable) {
     vector.push_back(i2);
   }
   PreciselyCollectGarbage();
-  EXPECT_EQ(4, InlinedVectorObjectWithVtable::destructor_calls_);
+  EXPECT_LE(4, InlinedVectorObjectWithVtable::destructor_calls_);
 
   InlinedVectorObjectWithVtable::destructor_calls_ = 0;
   {
@@ -2437,7 +2437,7 @@ TEST_F(HeapTest, VectorDestructorsWithVtable) {
     vector.push_back(i2);  // This allocates an out-of-line buffer.
   }
   PreciselyCollectGarbage();
-  EXPECT_EQ(5, InlinedVectorObjectWithVtable::destructor_calls_);
+  EXPECT_LE(5, InlinedVectorObjectWithVtable::destructor_calls_);
 
   InlinedVectorObjectWithVtable::destructor_calls_ = 0;
   {
@@ -2447,17 +2447,17 @@ TEST_F(HeapTest, VectorDestructorsWithVtable) {
     vector.push_back(i2);
   }
   PreciselyCollectGarbage();
-  EXPECT_EQ(4, InlinedVectorObjectWithVtable::destructor_calls_);
+  EXPECT_LE(4, InlinedVectorObjectWithVtable::destructor_calls_);
 
   InlinedVectorObjectWithVtable::destructor_calls_ = 0;
   {
     Persistent<InlinedVectorObjectWithVtableWrapper> vector_wrapper =
         MakeGarbageCollected<InlinedVectorObjectWithVtableWrapper>();
     ConservativelyCollectGarbage();
-    EXPECT_EQ(3, InlinedVectorObjectWithVtable::destructor_calls_);
+    EXPECT_LE(3, InlinedVectorObjectWithVtable::destructor_calls_);
   }
   PreciselyCollectGarbage();
-  EXPECT_EQ(9, InlinedVectorObjectWithVtable::destructor_calls_);
+  EXPECT_LE(9, InlinedVectorObjectWithVtable::destructor_calls_);
 }
 #endif
 
