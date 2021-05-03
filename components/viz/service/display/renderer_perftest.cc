@@ -15,21 +15,16 @@
 //    --use_virtualized_gl_contexts=1
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/quads/render_pass_io.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
@@ -48,7 +43,6 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/compositor_frame_helpers.h"
-#include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -230,35 +224,6 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                tex_coord_rect, texture_size, premultiplied_alpha,
                nearest_neighbor, force_anti_aliasing_off);
-}
-
-bool CompositorRenderPassListFromJSON(
-    const std::string& tag,
-    const std::string& site,
-    uint32_t year,
-    size_t frame_index,
-    CompositorRenderPassList* render_pass_list) {
-  base::FilePath json_path;
-  if (!base::PathService::Get(Paths::DIR_TEST_DATA, &json_path))
-    return false;
-  std::string site_year = site + "_" + base::NumberToString(year);
-  std::string filename = base::NumberToString(frame_index);
-  while (filename.length() < 4)
-    filename = "0" + filename;
-  filename += ".json";
-  json_path = json_path.Append(FILE_PATH_LITERAL("render_pass_data"))
-                  .AppendASCII(tag)
-                  .AppendASCII(site_year)
-                  .AppendASCII(filename);
-  if (!base::PathExists(json_path))
-    return false;
-  std::string json_text;
-  if (!base::ReadFileToString(json_path, &json_text))
-    return false;
-  base::Optional<base::Value> dict = base::JSONReader::Read(json_text);
-  if (!dict.has_value())
-    return false;
-  return CompositorRenderPassListFromDict(dict.value(), render_pass_list);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/surface_aggregator.h"
@@ -16,6 +17,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
+#include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -190,11 +192,78 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     reporter.AddResult(kMetricSpeedRunsPerS, timer_.LapsPerSecond());
   }
 
+  void SetUpRenderPassListResources(
+      CompositorRenderPassList* render_pass_list) {
+    std::set<ResourceId> created_resources;
+    for (auto& render_pass : *render_pass_list) {
+      for (auto* quad : render_pass->quad_list) {
+        for (ResourceId resource_id : quad->resources) {
+          // Don't create multiple resources for the same ResourceId.
+          if (created_resources.find(resource_id) != created_resources.end()) {
+            continue;
+          }
+          resource_list_.push_back(TransferableResource::MakeSoftware(
+              SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888));
+          resource_list_.back().id = resource_id;
+          created_resources.insert(resource_id);
+        }
+      }
+    }
+  }
+
+  void RunSingleSurfaceRenderPassListFromJson(const std::string& tag,
+                                              const std::string& site,
+                                              uint32_t year,
+                                              size_t index) {
+    CompositorRenderPassList render_pass_list;
+    ASSERT_TRUE(CompositorRenderPassListFromJSON(tag, site, year, index,
+                                                 &render_pass_list));
+    ASSERT_FALSE(render_pass_list.empty());
+    this->SetUpRenderPassListResources(&render_pass_list);
+
+    aggregator_ = std::make_unique<SurfaceAggregator>(
+        manager_.surface_manager(), resource_provider_.get(), true, true);
+
+    constexpr FrameSinkId root_frame_sink_id(1, 1);
+    TestSurfaceIdAllocator root_surface_id(root_frame_sink_id);
+    auto root_support = std::make_unique<CompositorFrameSinkSupport>(
+        nullptr, &manager_, root_frame_sink_id, /*is_root=*/true);
+
+    base::TimeTicks next_fake_display_time =
+        base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+
+    timer_.Reset();
+    do {
+      CompositorRenderPassList local_list;
+      CompositorRenderPass::CopyAllForTest(render_pass_list, &local_list);
+      // Ensure damage encompasses the entire output_rect so everything is
+      // aggregated.
+      auto& last_render_pass = *local_list.back();
+      last_render_pass.damage_rect = last_render_pass.output_rect;
+
+      CompositorFrame frame = CompositorFrameBuilder()
+                                  .SetRenderPassList(std::move(local_list))
+                                  .SetTransferableResources(resource_list_)
+                                  .Build();
+      root_support->SubmitCompositorFrame(root_surface_id.local_surface_id(),
+                                          std::move(frame));
+      auto aggregated = aggregator_->Aggregate(
+          root_surface_id, next_fake_display_time, gfx::OVERLAY_TRANSFORM_NONE);
+
+      next_fake_display_time += BeginFrameArgs::DefaultInterval();
+      timer_.NextLap();
+    } while (!timer_.HasTimeLimitExpired());
+
+    auto reporter = SetUpSurfaceAggregatorReporter(site + "_json");
+    reporter.AddResult(kMetricSpeedRunsPerS, timer_.LapsPerSecond());
+  }
+
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
+  std::vector<TransferableResource> resource_list_;
 };
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque) {
@@ -250,6 +319,36 @@ TEST_F(SurfaceAggregatorPerfTest, FewSurfacesAggregateDamaged) {
   RunTest(3, 1000, 1.f, true, false, "few_surfaces_aggregate_damaged",
           ExpectedOutput(1, 1500));
 }
+
+#define TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(SITE, FRAME)           \
+  TEST_F(SurfaceAggregatorPerfTest, SITE##_JsonTest) {                   \
+    this->RunSingleSurfaceRenderPassListFromJson(                        \
+        /*tag=*/"top_real_world_desktop", /*site=*/#SITE, /*year=*/2018, \
+        /*frame_index=*/FRAME);                                          \
+  }
+
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(accu_weather, 298)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(amazon, 30)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(blogspot, 56)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(ebay, 44)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(espn, 463)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(facebook, 327)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(gmail, 66)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(google_calendar, 53)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(google_docs, 369)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(google_image_search, 44)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(google_plus, 45)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(google_web_search, 89)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(linkedin, 284)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(pinterest, 120)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(techcrunch, 190)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(twitch, 396)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(wikipedia, 48)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(wordpress, 75)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_answers, 74)
+TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_sports, 269)
+
+#undef TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST
 
 }  // namespace
 }  // namespace viz
