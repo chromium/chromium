@@ -237,8 +237,7 @@ void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
 void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
                                         const Profile* profile);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
-void UpdateSupervisionTransitionResultUMA(
-    mojom::SupervisionChangeStatus result);
+void UpdateSupervisionTransitionResultUMA(mojom::ManagementChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateAuthTiming(const char* histogram_name,

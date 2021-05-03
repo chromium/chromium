@@ -258,24 +258,24 @@ enum MainAccountResolutionStatus {
     // tools/metrics/histograms/enums.xml.
 };
 
-// These values describe the result of ARC attempting to change supervision
+// These values describe the result of ARC attempting to change management
 // state after an account type change.
 [Extensible]
-enum SupervisionChangeStatus {
-  // CloudDPC supervision was disabled successfully.
+enum ManagementChangeStatus {
+  // CloudDPC was disabled successfully.
   [MinVersion=13] CLOUD_DPC_DISABLED = 0,
 
-  // CloudDPC supervision was already disabled.
+  // CloudDPC was already disabled.
   [MinVersion=13] CLOUD_DPC_ALREADY_DISABLED = 1,
 
-  // CloudDPC supervision was enabled successfully.
+  // CloudDPC was enabled successfully.
   [MinVersion=13] CLOUD_DPC_ENABLED = 2,
 
-  // CloudDPC supervision was already enabled.
+  // CloudDPC was already enabled.
   [MinVersion=13] CLOUD_DPC_ALREADY_ENABLED = 3,
 
   // Invalid state returned from Chrome.
-  [MinVersion=13] INVALID_SUPERVISION_STATE = 4,
+  [MinVersion=13] INVALID_MANAGEMENT_STATE = 4,
 
   // Failed to disable CloudDPC due to an unspecified error.
   [MinVersion=13] CLOUD_DPC_DISABLING_FAILED = 5,
@@ -384,12 +384,12 @@ interface AuthHost {
   // Reports result of account check.
   [MinVersion=9] ReportAccountCheckStatus@9(AccountCheckStatus status);
 
-  // Reports to Chrome the result of changing the supervision state.
-  // Chrome informs ARC on every boot if a supervision transition is necessary
+  // Reports to Chrome the result of changing the management state.
+  // Chrome informs ARC on every boot if a management transition is necessary
   // or not (see https://crrev.com/c/1069031). ARC should report back only if
   // a transition was necessary.
-  [MinVersion=13] ReportSupervisionChangeStatus@11(
-      SupervisionChangeStatus status);
+  [MinVersion=13] ReportManagementChangeStatus@11(
+      ManagementChangeStatus status);
 
   // Returns the primary account from Chrome.
   // |account_name| is the email address of the primary account for consumer and

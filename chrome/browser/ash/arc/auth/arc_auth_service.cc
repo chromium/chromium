@@ -373,28 +373,28 @@ void ArcAuthService::ReportAccountCheckStatus(
   UpdateAuthAccountCheckStatus(status, profile_);
 }
 
-void ArcAuthService::ReportSupervisionChangeStatus(
-    mojom::SupervisionChangeStatus status) {
+void ArcAuthService::ReportManagementChangeStatus(
+    mojom::ManagementChangeStatus status) {
   UpdateSupervisionTransitionResultUMA(status);
   switch (status) {
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_DISABLED:
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_ALREADY_DISABLED:
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_ENABLED:
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_ALREADY_ENABLED:
+    case mojom::ManagementChangeStatus::CLOUD_DPC_DISABLED:
+    case mojom::ManagementChangeStatus::CLOUD_DPC_ALREADY_DISABLED:
+    case mojom::ManagementChangeStatus::CLOUD_DPC_ENABLED:
+    case mojom::ManagementChangeStatus::CLOUD_DPC_ALREADY_ENABLED:
       profile_->GetPrefs()->SetInteger(
           prefs::kArcSupervisionTransition,
           static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
       // TODO(brunokim): notify potential observers.
       break;
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_DISABLING_FAILED:
-    case mojom::SupervisionChangeStatus::CLOUD_DPC_ENABLING_FAILED:
-      LOG(ERROR) << "Child transition failed: " << status;
+    case mojom::ManagementChangeStatus::CLOUD_DPC_DISABLING_FAILED:
+    case mojom::ManagementChangeStatus::CLOUD_DPC_ENABLING_FAILED:
+      LOG(ERROR) << "Management transition failed: " << status;
       ShowDataRemovalConfirmationDialog(
           profile_, base::BindOnce(&ArcAuthService::OnDataRemovalAccepted,
                                    weak_ptr_factory_.GetWeakPtr()));
       break;
-    case mojom::SupervisionChangeStatus::INVALID_SUPERVISION_STATE:
-      NOTREACHED() << "Invalid status of child transition: " << status;
+    case mojom::ManagementChangeStatus::INVALID_MANAGEMENT_STATE:
+      NOTREACHED() << "Invalid status of management transition: " << status;
   }
 }
 

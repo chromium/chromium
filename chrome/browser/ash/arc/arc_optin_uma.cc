@@ -203,8 +203,9 @@ void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state) {
   base::UmaHistogramEnumeration("Arc.OptInSilentAuthCode", state);
 }
 
+// TODO(tantoshchuk): rename UMA histogram to "Arc.Management.Transition.Result"
 void UpdateSupervisionTransitionResultUMA(
-    mojom::SupervisionChangeStatus result) {
+    mojom::ManagementChangeStatus result) {
   base::UmaHistogramEnumeration("Arc.Supervision.Transition.Result", result);
 }
 
