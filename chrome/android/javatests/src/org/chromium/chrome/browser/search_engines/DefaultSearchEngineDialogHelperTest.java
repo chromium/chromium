@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.locale;
+package org.chromium.chrome.browser.search_engines;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -33,20 +32,17 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class DefaultSearchEngineDialogHelperTest {
-    private class TestDelegate extends DefaultSearchEngineDialogHelper.HelperDelegate {
-        public TestDelegate(int dialogType) {
-            super(dialogType);
-        }
-
+    private class TestDelegate implements DefaultSearchEngineDialogHelper.Delegate {
         public String chosenKeyword;
 
         @Override
-        protected List<TemplateUrl> getSearchEngines() {
+        public List<TemplateUrl> getSearchEnginesForPromoDialog(@SearchEnginePromoType int type) {
             return mTemplateUrls;
         }
 
         @Override
-        protected void onUserSeachEngineChoice(List<String> keywords, String keyword) {
+        public void onUserSearchEngineChoice(
+                @SearchEnginePromoType int type, List<String> keywords, String keyword) {
             chosenKeyword = keyword;
         }
     }
@@ -80,17 +76,12 @@ public class DefaultSearchEngineDialogHelperTest {
     }
 
     private class TestDialogHelper extends DefaultSearchEngineDialogHelper {
-        public TestDelegate delegate;
+        public final TestDelegate delegate;
 
-        public TestDialogHelper(@SearchEnginePromoType int dialogType, RadioButtonLayout controls,
-                Button confirmButton, Runnable finishRunnable) {
-            super(dialogType, controls, confirmButton, finishRunnable);
-        }
-
-        @Override
-        protected HelperDelegate createDelegate(int dialogType) {
-            delegate = new TestDelegate(mDialogType);
-            return delegate;
+        public TestDialogHelper(@SearchEnginePromoType int dialogType, TestDelegate delegate,
+                RadioButtonLayout controls, Button confirmButton, Runnable finishRunnable) {
+            super(dialogType, delegate, controls, confirmButton, finishRunnable);
+            this.delegate = delegate;
         }
     }
 
@@ -105,6 +96,7 @@ public class DefaultSearchEngineDialogHelperTest {
 
     private final DismissRunnable mDismissRunnable = new DismissRunnable();
     private final List<TemplateUrl> mTemplateUrls = new ArrayList<>();
+    private final TestDelegate mTestDelegate = new TestDelegate();
 
     private Context mContext;
     private @SearchEnginePromoType int mDialogType;
@@ -124,12 +116,12 @@ public class DefaultSearchEngineDialogHelperTest {
     @SmallTest
     @UiThreadTest
     public void testInitialState() {
-        mDialogType = LocaleManager.SearchEnginePromoType.SHOW_EXISTING;
+        mDialogType = SearchEnginePromoType.SHOW_EXISTING;
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper =
-                new TestDialogHelper(mDialogType, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper = new TestDialogHelper(
+                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         // Confirm that no radio buttons are marked as selected.
         for (int i = 0; i < radioLayout.getChildCount(); i++) {
@@ -184,7 +176,7 @@ public class DefaultSearchEngineDialogHelperTest {
         final int maxAttempts = 3;
         boolean succeeded = false;
 
-        mDialogType = LocaleManager.SearchEnginePromoType.SHOW_EXISTING;
+        mDialogType = SearchEnginePromoType.SHOW_EXISTING;
 
         // Repeatedly create pairs of helpers and confirm that they are shuffled differently.  If
         // this test repeatedly iterates without succeeding, then something is terribly wrong.
@@ -192,13 +184,15 @@ public class DefaultSearchEngineDialogHelperTest {
             RadioButtonLayout firstLayout = new RadioButtonLayout(mContext);
             Button firstButton = new Button(mContext);
             DismissRunnable firstRunnable = new DismissRunnable();
-            new TestDialogHelper(mDialogType, firstLayout, firstButton, firstRunnable);
+            new TestDialogHelper(
+                    mDialogType, mTestDelegate, firstLayout, firstButton, firstRunnable);
             Assert.assertEquals(mTemplateUrls.size(), firstLayout.getChildCount());
 
             RadioButtonLayout secondLayout = new RadioButtonLayout(mContext);
             Button secondButton = new Button(mContext);
             DismissRunnable secondRunnable = new DismissRunnable();
-            new TestDialogHelper(mDialogType, secondLayout, secondButton, secondRunnable);
+            new TestDialogHelper(
+                    mDialogType, mTestDelegate, secondLayout, secondButton, secondRunnable);
             Assert.assertEquals(mTemplateUrls.size(), firstLayout.getChildCount());
 
             boolean listsMatched = true;
@@ -220,12 +214,12 @@ public class DefaultSearchEngineDialogHelperTest {
     @SmallTest
     @UiThreadTest
     public void testSelectEngine() {
-        mDialogType = LocaleManager.SearchEnginePromoType.SHOW_EXISTING;
+        mDialogType = SearchEnginePromoType.SHOW_EXISTING;
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper =
-                new TestDialogHelper(mDialogType, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper = new TestDialogHelper(
+                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         Assert.assertNull(
                 "Engine selected after construction", helper.getCurrentlySelectedKeyword());
@@ -247,12 +241,12 @@ public class DefaultSearchEngineDialogHelperTest {
     @SmallTest
     @UiThreadTest
     public void testFlipFlopSelection() {
-        mDialogType = LocaleManager.SearchEnginePromoType.SHOW_EXISTING;
+        mDialogType = SearchEnginePromoType.SHOW_EXISTING;
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper =
-                new TestDialogHelper(mDialogType, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper = new TestDialogHelper(
+                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         Assert.assertNull(
                 "Engine selected after construction", helper.getCurrentlySelectedKeyword());

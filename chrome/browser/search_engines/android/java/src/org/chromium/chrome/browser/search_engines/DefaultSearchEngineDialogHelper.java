@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.locale;
+package org.chromium.chrome.browser.search_engines;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,7 +12,6 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.components.search_engines.TemplateUrl;
 
@@ -23,32 +22,27 @@ import java.util.List;
 /** Handles user interactions with a user dialog that lets them pick a default search engine. */
 public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener, OnClickListener {
     /** Handles interactions with the TemplateUrlService and LocaleManager. */
-    public static class HelperDelegate {
-        private final int mDialogType;
+    public interface Delegate {
+        /**
+         * Get the list of search engines that a user may choose between.
+         * @param promoType Which search engine list to show.
+         * @return List of engines to show.
+         */
+        List<TemplateUrl> getSearchEnginesForPromoDialog(@SearchEnginePromoType int type);
 
         /**
-         * Basic constructor for the delegate.
-         * @param dialogType {@link SearchEnginePromoType} for the dialog this delegate belongs to.
+         * To be called after the user has made a selection from a search engine promo dialog.
+         * @param type The type of search engine promo dialog that was shown.
+         * @param keywords The keywords for all search engines listed in the order shown to the
+         *         user.
+         * @param keyword The keyword for the search engine chosen.
          */
-        public HelperDelegate(@SearchEnginePromoType int dialogType) {
-            mDialogType = dialogType;
-        }
-
-        /** Determine what search engines will be listed. */
-        protected List<TemplateUrl> getSearchEngines() {
-            List<TemplateUrl> templateUrls =
-                    LocaleManager.getInstance().getSearchEnginesForPromoDialog(mDialogType);
-            return templateUrls;
-        }
-
-        /** Called when the search engine the user selected is confirmed to be the one they want. */
-        protected void onUserSeachEngineChoice(List<String> keywords, String keyword) {
-            LocaleManager.getInstance().onUserSearchEngineChoiceFromPromoDialog(
-                    mDialogType, keywords, keyword);
-        }
+        void onUserSearchEngineChoice(
+                @SearchEnginePromoType int type, List<String> keywords, String keyword);
     }
 
-    private final HelperDelegate mDelegate;
+    private final int mDialogType;
+    private final Delegate mDelegate;
     private final Runnable mFinishRunnable;
     private final Button mConfirmButton;
 
@@ -73,19 +67,21 @@ public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener,
      * Constructs a DefaultSearchEngineDialogHelper.
      *
      * @param dialogType     Dialog type to show.
+     * @param delegate       Delegate for getting search engine list/selection notification.
      * @param controls       {@link RadioButtonLayout} that will contains all the engine options.
      * @param confirmButton  Button that the user clicks on to confirm their selection.
      * @param finishRunnable Runs after the user has confirmed their selection.
      */
-    public DefaultSearchEngineDialogHelper(@SearchEnginePromoType int dialogType,
+    public DefaultSearchEngineDialogHelper(@SearchEnginePromoType int dialogType, Delegate delegate,
             RadioButtonLayout controls, Button confirmButton, Runnable finishRunnable) {
+        mDialogType = dialogType;
         mConfirmButton = confirmButton;
         mConfirmButton.setOnClickListener(this);
         mFinishRunnable = finishRunnable;
-        mDelegate = createDelegate(dialogType);
+        mDelegate = delegate;
 
         // Shuffle up the engines.
-        List<TemplateUrl> engines = mDelegate.getSearchEngines();
+        List<TemplateUrl> engines = mDelegate.getSearchEnginesForPromoDialog(dialogType);
         List<CharSequence> engineNames = new ArrayList<>();
         mSearchEngineKeywords = new ArrayList<>();
         Collections.shuffle(engines);
@@ -139,13 +135,9 @@ public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener,
 
         mConfirmedKeyword = mCurrentlySelectedKeyword;
 
-        mDelegate.onUserSeachEngineChoice(mSearchEngineKeywords, mConfirmedKeyword.toString());
+        mDelegate.onUserSearchEngineChoice(
+                mDialogType, mSearchEngineKeywords, mConfirmedKeyword.toString());
         mFinishRunnable.run();
-    }
-
-    /** Creates the delegate that interacts with the TemplateUrlService. */
-    protected HelperDelegate createDelegate(@SearchEnginePromoType int dialogType) {
-        return new HelperDelegate(dialogType);
     }
 
     /** Prevent the user from moving forward until they've clicked a search engine. */

@@ -644,7 +644,6 @@ chrome_java_resources = [
   "java/res/drawable/popup_bg_bottom_tinted.xml",
   "java/res/drawable/qr_code.xml",
   "java/res/drawable/screenshot.xml",
-  "java/res/drawable/search_sogou.xml",
   "java/res/drawable/send_tab.xml",
   "java/res/drawable/shared_clipboard_zero_state_dark.xml",
   "java/res/drawable/shared_clipboard_zero_state_light.xml",
