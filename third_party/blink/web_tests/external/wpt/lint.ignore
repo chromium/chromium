@@ -289,7 +289,7 @@ GENERATE_TESTS: html/webappapis/atob/base64.any.js
 GENERATE_TESTS: mediacapture-fromelement/capture.html
 GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
-GENERATE_TESTS: html/canvas/offscreen/manual/filter/offscreencanvas.filter.html
+GENERATE_TESTS: html/canvas/offscreen/manual/filters/offscreencanvas.filter.html
 GENERATE_TESTS: pointerevents/pointerevent_constructor.html
 GENERATE_TESTS: pointerevents/extension/pointerevent_constructor.html
 GENERATE_TESTS: selection/collapse.js
