@@ -330,7 +330,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // BackgroundColorPaintWorklet, as a result, we should not composite
           // the background color animation on the table rows or cols.
           if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
-              layout_object->IsLayoutTableCol() ||
+              !layout_object || layout_object->IsLayoutTableCol() ||
               layout_object->IsTableRow() || background_transfers_to_view ||
               !compositable_animation) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
