@@ -150,6 +150,10 @@ public class AddToHomescreenIPHController {
     }
 
     private void showMessageIPH(Tab tab) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+            return;
+        }
+
         if (!mTracker.shouldTriggerHelpUI(FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE)) {
             return;
         }
