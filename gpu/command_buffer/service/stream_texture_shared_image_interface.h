@@ -18,7 +18,7 @@ class TextureBase;
 class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
  public:
   enum class BindingsMode {
-    // Ensures that the TextureOwner's texture is bound to the latest image, if
+    // Ensures that the texture is bound to the latest image, if
     // it requires explicit binding.
     kEnsureTexImageBound,
 
@@ -39,9 +39,14 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
   // or not.
   virtual bool IsUsingGpuMemory() const = 0;
 
-  // Update the texture image to the most recent frame and bind it to the
-  // texture.
-  virtual void UpdateAndBindTexImage() = 0;
+  // Update texture image to the most recent frame and bind it to the provided
+  // texture |service_id| if TextureOwner does not implicitly binds texture
+  // during the update.
+  // If TextureOwner() always binds texture implicitly during the update, then
+  // it will always bind it to TextureOwner's texture id and not to the
+  // |service_id|.
+  virtual void UpdateAndBindTexImage(GLuint service_id) = 0;
+
   virtual bool HasTextureOwner() const = 0;
   virtual TextureBase* GetTextureBase() const = 0;
 
@@ -52,6 +57,10 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
   // Render the video frame into an overlay plane. Should only be called after
   // the overlay promotion. Return true if it could render to overlay correctly.
   virtual bool RenderToOverlay() = 0;
+
+  // Whether TextureOwner's implementation binds texture to TextureOwner owned
+  // texture_id during the texture update.
+  virtual bool TextureOwnerBindsTextureOnUpdate() = 0;
 
  protected:
   ~StreamTextureSharedImageInterface() override = default;

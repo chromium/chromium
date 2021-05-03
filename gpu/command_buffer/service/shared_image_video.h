@@ -89,7 +89,16 @@ class GPU_GLES2_EXPORT SharedImageVideo
   friend class SharedImageRepresentationVideoSkiaVk;
   friend class SharedImageRepresentationOverlayVideo;
 
-  void BeginGLReadAccess();
+  // Whether we're using the passthrough command decoder and should generate
+  // passthrough textures.
+  bool Passthrough();
+
+  // Helper method to generate an abstract texture.
+  std::unique_ptr<gles2::AbstractTexture> GenAbstractTexture(
+      scoped_refptr<SharedContextState> context_state,
+      const bool passthrough);
+
+  void BeginGLReadAccess(const GLuint service_id);
 
   scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
 

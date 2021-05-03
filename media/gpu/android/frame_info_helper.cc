@@ -80,7 +80,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
       base::Optional<FrameInfo> info;
 
       if (buffer_renderer->RenderToTextureOwnerFrontBuffer(
-              CodecOutputBufferRenderer::BindingsMode::kDontRestoreIfBound)) {
+              CodecOutputBufferRenderer::BindingsMode::kDontRestoreIfBound,
+              0)) {
         gfx::Size coded_size;
         gfx::Rect visible_rect;
         if (texture_owner->GetCodedSizeAndVisibleRect(

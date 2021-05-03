@@ -37,7 +37,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
       const base::RepeatingClosure& frame_available_cb) override;
   gl::ScopedJavaSurface CreateJavaSurface() const override;
   void UpdateTexImage() override;
-  void EnsureTexImageBound() override;
+  void EnsureTexImageBound(GLuint service_id) override;
   void ReleaseBackBuffers() override;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;
@@ -66,7 +66,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
     ~ScopedCurrentImageRef();
     AImage* image() const { return image_; }
     base::ScopedFD GetReadyFence() const;
-    void EnsureBound();
+    void EnsureBound(GLuint service_id);
 
    private:
     ImageReaderGLOwner* texture_owner_;

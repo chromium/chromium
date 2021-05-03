@@ -84,17 +84,24 @@ bool CodecImage::CopyTexImage(unsigned target) {
   if (!output_buffer_renderer_)
     return true;
 
-  GLint bound_service_id = 0;
-  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id);
-  // The currently bound texture should be the texture owner's texture.
-  if (bound_service_id !=
-      static_cast<GLint>(
-          output_buffer_renderer_->texture_owner()->GetTextureId()))
+  GLint texture_id = 0;
+  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
+
+  // CopyTexImage will only be called for TextureOwner's SurfaceTexture
+  // implementation which binds texture to TextureOwner's texture_id on update.
+  DCHECK(output_buffer_renderer_->texture_owner()->binds_texture_on_update());
+  if (texture_id > 0 &&
+      static_cast<unsigned>(texture_id) !=
+          output_buffer_renderer_->texture_owner()->GetTextureId()) {
     return false;
+  }
 
-
+  // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
+  // glGetIntegerv() parameter. In this case the value of |texture_id| will be
+  // zero and we assume that it is properly bound to TextureOwner's texture id.
   output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(
-      BindingsMode::kEnsureTexImageBound);
+      BindingsMode::kEnsureTexImageBound,
+      output_buffer_renderer_->texture_owner()->GetTextureId());
   return true;
 }
 
@@ -168,8 +175,9 @@ bool CodecImage::IsUsingGpuMemory() const {
   return output_buffer_renderer_->was_tex_image_bound();
 }
 
-void CodecImage::UpdateAndBindTexImage() {
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kEnsureTexImageBound);
+void CodecImage::UpdateAndBindTexImage(GLuint service_id) {
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kEnsureTexImageBound,
+                                  service_id);
 }
 
 bool CodecImage::HasTextureOwner() const {
@@ -193,17 +201,24 @@ bool CodecImage::RenderToTextureOwnerBackBuffer() {
   return output_buffer_renderer_->RenderToTextureOwnerBackBuffer();
 }
 
-bool CodecImage::RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode) {
+bool CodecImage::RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode,
+                                                 GLuint service_id) {
   if (!output_buffer_renderer_)
     return false;
-  return output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(
-      bindings_mode);
+  return output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(bindings_mode,
+                                                                  service_id);
 }
 
 bool CodecImage::RenderToOverlay() {
   if (!output_buffer_renderer_)
     return false;
   return output_buffer_renderer_->RenderToOverlay();
+}
+
+bool CodecImage::TextureOwnerBindsTextureOnUpdate() {
+  if (!output_buffer_renderer_)
+    return false;
+  return output_buffer_renderer_->texture_owner()->binds_texture_on_update();
 }
 
 void CodecImage::ReleaseCodecBuffer() {
@@ -219,7 +234,11 @@ CodecImage::GetAHardwareBuffer() {
   if (!output_buffer_renderer_)
     return nullptr;
 
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontRestoreIfBound);
+  // Using BindingsMode::kDontRestoreIfBound here since we do not want to bind
+  // the image. We just want to get the AHardwareBuffer from the latest image.
+  // Hence pass service_id as 0.
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontRestoreIfBound,
+                                  0 /* service_id */);
   return output_buffer_renderer_->texture_owner()->GetAHardwareBuffer();
 }
 
