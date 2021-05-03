@@ -64,7 +64,7 @@ namespace internal {
 // std::unique_ptr<ConditionVariable> CreateConditionVariable()
 //     Creates a condition variable using this as a lock.
 
-#if DCHECK_IS_ON()
+#if 0 // DCHECK_IS_ON()
 class LOCKABLE CheckedLock : public CheckedLockImpl {
  public:
   CheckedLock() = default;

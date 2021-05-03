@@ -118,6 +118,10 @@ class deterministic_unordered_map {
     }
   };
 
+  bool empty() const {
+    return map_.empty();
+  }
+
   iterator find(const Key& k) {
     auto iter = map_.find(k);
     return iter != map_.end() ? iterator(iter->second, vector_) : end();
