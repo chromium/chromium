@@ -107,6 +107,12 @@ export class FakeObservables {
   constructor() {
     /** @private {!Map<string, !FakeObservableState>} */
     this.observables_ = new Map();
+
+    /**
+     * Set of observables that are capable of taking an additional argument.
+     * @private {!Set<string>}
+     */
+    this.sharedObservables_ = new Set();
   }
 
   /**
@@ -119,12 +125,34 @@ export class FakeObservables {
   }
 
   /**
+   * Register an observable that can take a single argument to its observe
+   * method. The argument can identify a more specific entity within a group to
+   * observe.
+   * @param {string} methodName
+   */
+  registerObservableWithArg(methodName) {
+    this.sharedObservables_.add(methodName);
+  }
+
+  /**
    * Supply the callback for observing methodName.
    * @param {string} methodName
    * @param {!function(!T)} callback
    */
   observe(methodName, callback) {
     this.getObservable_(methodName).addObserver(callback);
+  }
+
+  /**
+   * Supply the callback for observing a methodName that belongs to a shared
+   * observer group.
+   * @param {string} methodName
+   * @param {string} arg
+   * @param {!function(!T)} callback
+   */
+  observeWithArg(methodName, arg, callback) {
+    this.getObservable_(this.lookupMethodWithArgName_(methodName, arg))
+        .addObserver(callback);
   }
 
   /**
@@ -137,6 +165,26 @@ export class FakeObservables {
   setObservableData(methodName, observations) {
     this.getObservable_(methodName).setObservableData(observations);
   }
+
+  /**
+   * Sets the data that will be produced when an observable that takes
+   * arg as a parameter is triggered.
+   * @param {string} methodName
+   * @param {string} arg
+   * @param {!Array<!T>} observations
+   */
+  setObservableDataForArg(methodName, arg, observations) {
+    assert(
+        this.sharedObservables_.has(methodName),
+        `${methodName} not found in sharedObservables_`);
+    const methodNameToRegister = this.createMethodWithArgName_(methodName, arg);
+    const isMethodRegistered = !!this.observables_.get(methodNameToRegister);
+    if (!isMethodRegistered) {
+      this.register(methodNameToRegister);
+    }
+    this.setObservableData(methodNameToRegister, observations);
+  }
+
   /**
    * Start firing the observer on a fixed interval. setObservableData() must
    * already have been called.
@@ -174,6 +222,17 @@ export class FakeObservables {
   }
 
   /**
+   * Causes a shared observable to trigger and notify all observers observing
+   * |arg| of the next observation value.
+   * @param {string} methodName
+   * @param {string} arg
+   */
+  triggerWithArg(methodName, arg) {
+    this.getObservable_(this.lookupMethodWithArgName_(methodName, arg))
+        .trigger();
+  }
+
+  /**
    * Return the Observable for methodName.
    * @param {string} methodName
    * @return {!FakeObservableState}
@@ -183,5 +242,34 @@ export class FakeObservables {
     let observable = this.observables_.get(methodName);
     assert(!!observable, `Observable '${methodName}' not found.`);
     return observable;
+  }
+
+  /**
+   * Returns a concatenated form of methodName and arg separated by
+   * an underscore.
+   * @param {string} methodName
+   * @param {string} arg
+   * @return {string}
+   * @private
+   */
+  createMethodWithArgName_(methodName, arg) {
+    return `${methodName}_${arg}`;
+  }
+
+  /**
+   * Returns the methodName that was registered for a shared observable.
+   * You must register methodName and set data specifically for arg before
+   * calling this method.
+   * @param {string} methodName
+   * @param {string} arg
+   * @return {string}
+   * @private
+   */
+  lookupMethodWithArgName_(methodName, arg) {
+    const observableName = this.createMethodWithArgName_(methodName, arg);
+    assert(
+        !!this.observables_.get(observableName),
+        `Observable '${observableName}' not found.`);
+    return observableName;
   }
 }

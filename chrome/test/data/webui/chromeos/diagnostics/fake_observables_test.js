@@ -84,4 +84,85 @@ export function fakeObservablesTestSuite() {
     observables.trigger('ObserveFoo_OnFooUpdated');
     return resolver.promise;
   });
+
+  test('RegisterSimpleSharedObservable', () => {
+    observables.registerObservableWithArg('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    const expected = ['bar'];
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'foo', expected);
+
+    let resolver = new PromiseResolver();
+    observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo) => {
+      assertEquals(expected[0], foo);
+      resolver.resolve();
+    });
+
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'foo');
+    return resolver.promise;
+  });
+
+  test('SharedObservableRegisteredTwice', () => {
+    observables.registerObservableWithArg('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    const expected = ['bar1', 'bar2'];
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'bar', expected);
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'bar', expected);
+
+    // With 3 calls and 2 observable values the response should cycle
+    // 'bar1', 'bar2', 'bar1'
+    let resolver = new PromiseResolver();
+    const expectedCallCount = 3;
+    let callCount = 0;
+    observables.observeWithArg('ObserveFoo_OnFooUpdated', 'bar', (foo) => {
+      assertEquals(expected[callCount % expected.length], foo);
+      callCount++;
+      if (callCount === expectedCallCount) {
+        resolver.resolve();
+      }
+    });
+
+    // Trigger the observer three times.
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    return resolver.promise;
+  });
+
+  test('SharedObservableRegisteredTwiceWithNewData', () => {
+    observables.registerObservableWithArg('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    let expected = ['bar1', 'bar2'];
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'bar', expected);
+
+    // With 4 calls and 4 observable values the response should cycle
+    // 'bar1', 'bar2', 'bar3', 'bar4'
+    let resolver = new PromiseResolver();
+    const expectedCallCount = 4;
+    let callCount = 0;
+    observables.observeWithArg('ObserveFoo_OnFooUpdated', 'bar', (foo) => {
+      assertEquals(expected[callCount % expected.length], foo);
+      callCount++;
+      if (callCount === expectedCallCount) {
+        resolver.resolve();
+      }
+    });
+
+    // Trigger the observer twice.
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+
+    // Update observable data.
+    expected = ['bar3', 'bar4'];
+    // Change observable data for 'ObserveFoo_OnFooUpdated_bar'.
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'bar', expected);
+
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
+    return resolver.promise;
+  });
 }
