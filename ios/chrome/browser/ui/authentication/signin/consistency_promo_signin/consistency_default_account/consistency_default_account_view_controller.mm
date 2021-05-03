@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -183,6 +184,10 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   // the "continue as" button.
   self.identityButtonControl.layer.cornerRadius =
       self.continueAsButton.layer.cornerRadius;
+
+  // Ensure that keyboard is hidden.
+  UIResponder* firstResponder = GetFirstResponder();
+  [firstResponder resignFirstResponder];
 }
 
 #pragma mark - UI actions
