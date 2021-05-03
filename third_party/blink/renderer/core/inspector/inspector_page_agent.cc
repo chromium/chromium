@@ -476,6 +476,9 @@ InspectorPageAgent::InspectorPageAgent(
                                    /*default_value=*/WTF::String()),
       worlds_to_evaluate_on_load_(&agent_state_,
                                   /*default_value=*/WTF::String()),
+      include_command_line_api_for_scripts_to_evaluate_on_load_(
+          &agent_state_,
+          /*default_value=*/false),
       standard_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       fixed_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       serif_font_family_(&agent_state_, /*default_value=*/WTF::String()),
@@ -564,6 +567,7 @@ Response InspectorPageAgent::disable() {
 Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     const String& source,
     Maybe<String> world_name,
+    Maybe<bool> include_command_line_api,
     String* identifier) {
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
   auto* result = std::max_element(
@@ -578,6 +582,8 @@ Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
 
   scripts_to_evaluate_on_load_.Set(*identifier, source);
   worlds_to_evaluate_on_load_.Set(*identifier, world_name.fromMaybe(""));
+  include_command_line_api_for_scripts_to_evaluate_on_load_.Set(
+      *identifier, include_command_line_api.fromMaybe(false));
   return Response::Success();
 }
 
@@ -587,13 +593,14 @@ Response InspectorPageAgent::removeScriptToEvaluateOnNewDocument(
     return Response::ServerError("Script not found");
   scripts_to_evaluate_on_load_.Clear(identifier);
   worlds_to_evaluate_on_load_.Clear(identifier);
+  include_command_line_api_for_scripts_to_evaluate_on_load_.Clear(identifier);
   return Response::Success();
 }
 
 Response InspectorPageAgent::addScriptToEvaluateOnLoad(const String& source,
                                                        String* identifier) {
   return addScriptToEvaluateOnNewDocument(source, Maybe<String>(""),
-                                          identifier);
+                                          Maybe<bool>(false), identifier);
 }
 
 Response InspectorPageAgent::removeScriptToEvaluateOnLoad(
@@ -932,10 +939,26 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
   for (const WTF::String& key : keys) {
     const String source = scripts_to_evaluate_on_load_.Get(key);
     const String world_name = worlds_to_evaluate_on_load_.Get(key);
+    const bool include_command_line_api =
+        include_command_line_api_for_scripts_to_evaluate_on_load_.Get(key);
+    auto* window = frame->DomWindow();
     if (world_name.IsEmpty()) {
-      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-          ->RunScript(frame->DomWindow(),
-                      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      if (include_command_line_api) {
+        v8::HandleScope handle_scope(window->GetIsolate());
+        ScriptState* script_state =
+            ToScriptStateForMainWorld(window->GetFrame());
+        auto scope = v8_session_->initializeCommandLineAPIScope(
+            v8_inspector::V8ContextInfo::executionContextId(
+                script_state->GetContext()));
+        DCHECK(scope);
+        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+            ->RunScript(window,
+                        ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      } else {
+        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+            ->RunScript(window,
+                        ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      }
       continue;
     }
 
@@ -947,9 +970,21 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
     // Note: An error event in an isolated world will never be dispatched to
     // a foreign world.
     v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-        ->RunScriptInIsolatedWorldAndReturnValue(frame->DomWindow(),
-                                                 world->GetWorldId());
+    if (include_command_line_api) {
+      ScriptState* script_state = ToScriptState(
+          window->GetFrame(),
+          *DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(window->GetFrame()),
+                                                world->GetWorldId()));
+      auto scope = v8_session_->initializeCommandLineAPIScope(
+          v8_inspector::V8ContextInfo::executionContextId(
+              script_state->GetContext()));
+      DCHECK(scope);
+      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+          ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
+    } else {
+      ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+          ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
+    }
   }
 
   if (!script_to_evaluate_on_load_once_.IsEmpty()) {
