@@ -793,7 +793,6 @@ try_.chromium_chromiumos_builder(
     name = "lacros-amd64-generic-rel",
     builderless = not settings.is_main,
     main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
