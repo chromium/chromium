@@ -2940,7 +2940,7 @@ crbug.com/626703 [ Mac ] external/wpt/FileAPI/file/send-file-formdata-controls.h
 crbug.com/626703 [ Win ] external/wpt/FileAPI/file/send-file-formdata-controls.html [ Failure Crash ]
 crbug.com/626703 [ Linux ] external/wpt/websockets/Close-1000-verify-code.any.worker.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Close-1000-verify-code.any.worker.html?wpt_flags=h2 [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Failure Crash ]
+crbug.com/626703 [ Mac ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Failure Crash Pass ]
 crbug.com/626703 [ Win10 ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Failure Crash ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/abort.any.sharedworker.html?wpt_flags=h2 [ Failure Crash ]
 crbug.com/626703 [ Win10 ] external/wpt/websockets/stream/tentative/abort.any.sharedworker.html?wpt_flags=h2 [ Failure Crash ]
