@@ -587,14 +587,11 @@
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1200574): Remove this exception.
-              'os': 'Ubuntu-16.04',
-            }
-          ],
           'shards': 40,
         },
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
       },
       'Linux ASan Tests (sandboxed)': {
         'swarming': {
