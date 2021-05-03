@@ -820,22 +820,8 @@ TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfAdbSideloadingEnabled) {
   EXPECT_TRUE(test_api.bottom_status_indicator()->GetVisible());
 }
 
-class LockContentsViewUnitTestWithDeviceDisclosureEnabled
-    : public LockContentsViewUnitTest {
- public:
-  LockContentsViewUnitTestWithDeviceDisclosureEnabled()
-      : LockContentsViewUnitTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kLoginDeviceManagementDisclosure}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Show bottom status indicator if device is enrolled
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       ShowStatusIndicatorIfEnrolledDevice) {
+TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
   Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
                                                              false);
@@ -860,8 +846,7 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 }
 
 // Show bottom status indicator if device is enrolled
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       ShowManagementBubbleOnClickIfEnrolledDevice) {
+TEST_F(LockContentsViewUnitTest, ShowManagementBubbleOnClickIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
   Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
                                                              false);
@@ -896,8 +881,7 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 
 // Do not show the management bubble on click if ADB sideloading is enabled and
 // device is enrolled.
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       DoNotShowManagementBubbleOnClickIfAdb) {
+TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
   // If the device is enrolled, bottom_status_indicator should be visible.
   Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
                                                              false);
