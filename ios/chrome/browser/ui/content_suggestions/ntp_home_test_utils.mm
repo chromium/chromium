@@ -79,6 +79,12 @@ UIView* FakeOmnibox() {
       [[UIApplication sharedApplication] keyWindow]);
 }
 
+UILabel* DiscoverHeaderLabel() {
+  return base::mac::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
+      DiscoverHeaderTitleAccessibilityID(),
+      [[UIApplication sharedApplication] keyWindow]));
+}
+
 }  // namespace ntp_home
 
 namespace ntp_snippets {

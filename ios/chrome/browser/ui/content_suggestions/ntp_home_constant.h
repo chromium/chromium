@@ -35,6 +35,9 @@ typedef NS_ENUM(NSUInteger, IOSNTPImpression) {
 // Returns the accessibility identifier used by the fake omnibox.
 NSString* FakeOmniboxAccessibilityID();
 
+// Returns the accessibility identifier used by the Discover header title.
+NSString* DiscoverHeaderTitleAccessibilityID();
+
 // Returns the accessibility identifier used by the NTP logo.
 NSString* NTPLogoAccessibilityID();
 

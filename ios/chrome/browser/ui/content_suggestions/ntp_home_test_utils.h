@@ -24,6 +24,10 @@ UICollectionView* ContentSuggestionsCollectionView();
 // Returns the view corresponding to the fake omnibox. Returns nil if it is not
 // in the view hierarchy.
 UIView* FakeOmnibox();
+
+// Returns the label corresponding to the Discover header label. Returns nil if
+// it is not in the view hierarchy.
+UILabel* DiscoverHeaderLabel();
 }  // namespace ntp_home
 
 namespace ntp_snippets {

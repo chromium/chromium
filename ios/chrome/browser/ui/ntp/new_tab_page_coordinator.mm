@@ -333,10 +333,10 @@
   if (IsRefactoredNTP()) {
     ios::GetChromeBrowserProvider()
         ->GetDiscoverFeedProvider()
-        ->RemoveFeedViewController(
-            self.discoverFeedWrapperViewController.discoverFeed);
+        ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.discoverFeedWrapperViewController = nil;
+  self.discoverFeedViewController = nil;
 
   [self.ntpMediator shutdown];
   self.ntpMediator = nil;

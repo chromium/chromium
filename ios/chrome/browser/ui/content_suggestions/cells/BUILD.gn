@@ -66,6 +66,7 @@ source_set("cells_ui") {
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/ntp_tile_views",

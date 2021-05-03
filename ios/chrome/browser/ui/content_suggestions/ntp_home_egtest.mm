@@ -6,6 +6,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -135,6 +136,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [ChromeEarlGreyAppInterface
       setBoolValue:YES
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
 
   self.defaultSearchEngine = [NewTabPageAppInterface defaultSearchEngine];
 }
@@ -714,6 +718,97 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [self testNTPInitialPositionAndContent:collectionView];
 }
 
+// Test to ensure that feed can be collapsed/shown and that feed header changes
+// accordingly.
+- (void)testToggleFeedVisible {
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  NSString* labelTextForVisibleFeed =
+      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+  NSString* labelTextForHiddenFeed =
+      [NSString stringWithFormat:@"%@ – %@", labelTextForVisibleFeed,
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+
+  // Ensure that label is visible with correct text for visible feed.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue(
+      [discoverHeaderLabel.text isEqualToString:labelTextForVisibleFeed],
+      @"Discover header label is incorrect with feed visible.");
+
+  // Hide feed.
+  // TODO(crbug.com/1194106): Hide feed using feed header menu instead of
+  // manipulating pref directly.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
+
+  // Ensure that label is visible with correct text for hidden feed.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue(
+      [discoverHeaderLabel.text isEqualToString:labelTextForHiddenFeed],
+      @"Discover header label is incorrect with feed hidden.");
+
+  // Show feed again.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
+
+  // Ensure that label is visible with correct text for feed being made visible.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue(
+      [discoverHeaderLabel.text isEqualToString:labelTextForVisibleFeed],
+      @"Discover header label is incorrect with feed made visible.");
+}
+
+// Test to ensure that feed can be enabled/disabled and that feed header changes
+// accordingly.
+- (void)testToggleFeedEnabled {
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+
+  // Ensure that label is visible with correct text for enabled feed.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue(
+      [discoverHeaderLabel.text
+          isEqualToString:l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)],
+      @"Discover header label is incorrect with feed enabled.");
+
+  // Disable feed.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+
+  // Ensure that label is no longer visible.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Re-enable feed.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+
+  // Ensure that label is once again visible.
+  [self testNTPInitialPositionAndContent:collectionView];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
+  GREYAssertTrue(
+      [discoverHeaderLabel.text
+          isEqualToString:l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)],
+      @"Discover header label is incorrect with feed re-enabled.");
+}
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -89,6 +90,8 @@ const CGFloat kFeedCardIPhoneWidth = 375;
                                          weight:UIFontWeightMedium];
     _titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
+    _titleLabel.accessibilityIdentifier =
+        ntp_home::DiscoverHeaderTitleAccessibilityID();
 
     _menuButton = [[UIButton alloc] init];
     _menuButton.translatesAutoresizingMaskIntoConstraints = NO;

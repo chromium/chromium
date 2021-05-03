@@ -62,6 +62,9 @@
 // Returns the fake omnibox.
 + (UIView*)fakeOmnibox;
 
+// Returns the Discover header label.
++ (UILabel*)discoverHeaderLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_

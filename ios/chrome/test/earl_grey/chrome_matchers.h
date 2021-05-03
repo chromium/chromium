@@ -393,6 +393,9 @@ id<GREYMatcher> NewTabPageOmnibox();
 // Returns matcher for a fake omnibox on a new tab page.
 id<GREYMatcher> FakeOmnibox();
 
+// Returns matcher for a header label of the Discover feed.
+id<GREYMatcher> DiscoverHeaderLabel();
+
 // Returns matcher for a logo on a new tab page.
 id<GREYMatcher> NTPLogo();
 

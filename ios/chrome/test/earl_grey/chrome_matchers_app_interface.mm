@@ -797,6 +797,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(ntp_home::FakeOmniboxAccessibilityID());
 }
 
++ (id<GREYMatcher>)discoverHeaderLabel {
+  return grey_accessibilityID(ntp_home::DiscoverHeaderTitleAccessibilityID());
+}
+
 + (id<GREYMatcher>)ntpLogo {
   return grey_accessibilityID(ntp_home::NTPLogoAccessibilityID());
 }

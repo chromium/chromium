@@ -196,6 +196,10 @@ ContentSuggestion CreateSuggestion(Category category,
   return ntp_home::FakeOmnibox();
 }
 
++ (UILabel*)discoverHeaderLabel {
+  return ntp_home::DiscoverHeaderLabel();
+}
+
 #pragma mark - Helper
 
 + (MockContentSuggestionsProvider*)provider {

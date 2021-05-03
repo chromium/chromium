@@ -15,6 +15,10 @@ NSString* FakeOmniboxAccessibilityID() {
   return @"NTPHomeFakeOmniboxAccessibilityID";
 }
 
+NSString* DiscoverHeaderTitleAccessibilityID() {
+  return @"DiscoverHeaderTitleAccessibilityID";
+}
+
 NSString* NTPLogoAccessibilityID() {
   return @"NTPLogoAccessibilityID";
 }

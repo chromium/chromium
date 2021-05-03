@@ -322,6 +322,7 @@ source_set("eg2_tests") {
     ":feature_flags",
     "//base",
     "//base/test:test_support",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:pref_names",

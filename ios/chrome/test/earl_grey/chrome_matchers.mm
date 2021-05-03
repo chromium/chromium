@@ -497,6 +497,10 @@ id<GREYMatcher> FakeOmnibox() {
   return [ChromeMatchersAppInterface fakeOmnibox];
 }
 
+id<GREYMatcher> DiscoverHeaderLabel() {
+  return [ChromeMatchersAppInterface discoverHeaderLabel];
+}
+
 id<GREYMatcher> NTPLogo() {
   return [ChromeMatchersAppInterface ntpLogo];
 }
