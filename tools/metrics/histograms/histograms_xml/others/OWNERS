@@ -6,3 +6,5 @@ per-file histograms.xml=file://tools/metrics/histograms/histograms_xml/METRIC_RE
 
 # For the Discarding.* and PerformanceMonitor.* histograms:
 sebmarchand@chromium.org
+# For display, mouse, and input related histograms.
+zentaro@chromium.org
