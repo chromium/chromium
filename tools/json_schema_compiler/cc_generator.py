@@ -1097,7 +1097,7 @@ class _Generator(object):
       cpp_type = self._type_helper.GetCppType(item_type, is_in_container=True)
       c.Append('%s = std::make_unique<std::vector<%s>>();' %
                    (dst_var, cpp_type))
-    (c.Sblock('for (const auto& it : *(%s)) {' % src_var)
+    (c.Sblock('for (const auto& it : (%s)->GetList()) {' % src_var)
       .Append('%s tmp;' % self._type_helper.GetCppType(item_type))
       .Concat(self._GenerateStringToEnumConversion(item_type,
                                                    '(it)',
