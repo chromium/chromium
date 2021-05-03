@@ -1544,5 +1544,11 @@ public class NavigationTest {
 
         navigateAndWaitForCompletion(URL3, () -> navigationController.reload());
         assertEquals(0, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        navigateAndWaitForCompletion(URL1, () -> navigationController.goToIndex(0));
+        assertEquals(-2, mCallback.onCompletedCallback.getNavigationEntryOffset());
+
+        navigateAndWaitForCompletion(URL3, () -> navigationController.goToIndex(2));
+        assertEquals(2, mCallback.onCompletedCallback.getNavigationEntryOffset());
     }
 }
