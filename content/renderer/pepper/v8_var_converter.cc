@@ -323,6 +323,8 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
   v8::Context::Scope context_scope(context);
   v8::Isolate* isolate = context->GetIsolate();
   v8::EscapableHandleScope handle_scope(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   VarHandleMap visited_ids;
   ParentVarSet parent_ids;
@@ -475,7 +477,10 @@ bool V8VarConverter::FromV8ValueInternal(
     v8::Local<v8::Context> context,
     ppapi::ScopedPPVar* result_var) {
   v8::Context::Scope context_scope(context);
-  v8::HandleScope handle_scope(context->GetIsolate());
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   HandleVarMap visited_handles;
   ParentHandleSet parent_handles;
@@ -573,8 +578,7 @@ bool V8VarConverter::FromV8ValueInternal(
 
         // Extend this test to cover more types as necessary and if sensible.
         if (!key->IsString() && !key->IsNumber()) {
-          NOTREACHED() << "Key \""
-                       << *v8::String::Utf8Value(context->GetIsolate(), key)
+          NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
                        << "\" "
                           "is neither a string nor a number";
           return false;
@@ -588,7 +592,7 @@ bool V8VarConverter::FromV8ValueInternal(
           continue;
         }
 
-        v8::String::Utf8Value name_utf8(context->GetIsolate(), key_string);
+        v8::String::Utf8Value name_utf8(isolate, key_string);
 
         v8::Local<v8::Value> child_v8;
         if (!v8_object->Get(context, key).ToLocal(&child_v8))
