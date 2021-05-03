@@ -45,6 +45,8 @@ struct CORE_EXPORT LogicalSize {
   }
 
   void Transpose() { std::swap(inline_size, block_size); }
+
+  static LogicalSize AspectRatioFromFloatSize(const FloatSize&);
 };
 
 inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {

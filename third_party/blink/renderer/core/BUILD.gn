@@ -1321,6 +1321,7 @@ source_set("unit_tests") {
     "layout/force_legacy_layout_test.cc",
     "layout/geometry/axis_test.cc",
     "layout/geometry/logical_rect_test.cc",
+    "layout/geometry/logical_size_test.cc",
     "layout/geometry/physical_rect_test.cc",
     "layout/geometry/physical_size_test.cc",
     "layout/geometry/writing_mode_converter_test.cc",

@@ -2628,7 +2628,7 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
     FloatSize ratio = AspectRatio().GetRatio();
     if (!IsHorizontalWritingMode())
       ratio = ratio.TransposedSize();
-    return LogicalSize(LayoutUnit(ratio.Width()), LayoutUnit(ratio.Height()));
+    return LogicalSize::AspectRatioFromFloatSize(ratio);
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {
