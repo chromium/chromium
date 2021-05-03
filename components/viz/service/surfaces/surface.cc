@@ -258,6 +258,11 @@ Surface::QueueFrameResult Surface::QueueFrame(
     if (deadline_->HasDeadlinePassed()) {
       ActivatePendingFrameForDeadline();
     } else {
+      // If we are blocked on another Surface, and its latest frame is unacked,
+      // we send the Ack now. This will allow frame production to continue for
+      // that client, leading to the group being unblocked.
+      for (auto* it : blocking_allocation_groups_)
+        it->AckLastestActiveUnAckedFrame();
       auto traced_value = std::make_unique<base::trace_event::TracedValue>();
       traced_value->BeginArray("Pending");
       for (auto& it : activation_dependencies_)

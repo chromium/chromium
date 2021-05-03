@@ -32,6 +32,10 @@ class FakeSurfaceObserver : public SurfaceObserver {
 
   const SurfaceInfo& last_surface_info() const { return last_surface_info_; }
 
+  void set_damage_display(bool damage_display) {
+    damage_display_ = damage_display;
+  }
+
   void Reset();
 
  private:

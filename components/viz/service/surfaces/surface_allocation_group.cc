@@ -4,6 +4,8 @@
 
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 
+#include <utility>
+
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
@@ -174,6 +176,18 @@ void SurfaceAllocationGroup::WillNotRegisterNewSurfaces() {
   for (const auto& entry : embedders) {
     entry.first->OnActivationDependencyResolved(entry.second, this);
   }
+}
+
+void SurfaceAllocationGroup::AckLastestActiveUnAckedFrame() {
+  if (!last_active_reference_.is_valid())
+    return;
+  SurfaceRange range(last_active_reference_);
+  auto* lastest_active = FindLatestActiveSurfaceInRange(range);
+  // If this group is blocking another Surface, and our latest frame is unacked,
+  // we send the Ack now. This will allow frame production to continue for our
+  // client, leading to this group unblocking the other.
+  if (lastest_active && lastest_active->HasUnackedActiveFrame())
+    lastest_active->SendAckToClient();
 }
 
 std::vector<Surface*>::const_iterator

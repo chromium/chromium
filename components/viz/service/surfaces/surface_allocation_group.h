@@ -113,6 +113,10 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // will have their dependency resolved.
   void WillNotRegisterNewSurfaces();
 
+  // Called by surfaces which are blocked by this allocation group. This will
+  // send an Ack to the latest active surface, if it has an un-Acked frame.
+  void AckLastestActiveUnAckedFrame();
+
   // Returns the last surface created in this allocation group.
   Surface* last_created_surface() const {
     return surfaces_.empty() ? nullptr : surfaces_.back();

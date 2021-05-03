@@ -454,6 +454,11 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     TRACE_EVENT_INSTANT0("viz", "Damage not visible.",
                          TRACE_EVENT_SCOPE_THREAD);
     surface->SendAckToClient();
+  } else if (HasBlockedEmbedder(surface->surface_id().frame_sink_id())) {
+    // If the Surface is a part of a blocked embedding group, Ack even if it is
+    // modified. This will allow frame production to continue for this client
+    // leading to the group being unblocked.
+    surface->SendAckToClient();
   }
 
   for (auto& observer : observer_list_)
