@@ -85,7 +85,14 @@ if they are:
 Example:
 * An action runs a binary that creates an output as well as a log file. Do not
   list the log file as an output.
-  
+
+Rationale:
+* Inputs and outputs are a node's public API on the build graph. Not listing
+  "implementation detail"-style outputs prevents other targets from depending on
+  them as inputs.
+* Not listing them also helps to minimize the size of the build graph (although
+  this would be noticeable only for frequently used templates).
+
 #### Where to Place Outputs
 **Option 1:** To make outputs visible in codesearch (e.g. generated sources):
 * use `$target_gen_dir/$target_name.$EXTENSION`.
