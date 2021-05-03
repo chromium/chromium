@@ -49,7 +49,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
     ~RestoredLocalTransportData();
 
-    std::string encryption_bootstrap_token;
     std::string keystore_encryption_bootstrap_token;
     std::map<ModelType, int64_t> invalidation_versions;
 

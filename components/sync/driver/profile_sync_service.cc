@@ -134,7 +134,6 @@ ProfileSyncService::InitParams::~InitParams() = default;
 ProfileSyncService::ProfileSyncService(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
       sync_prefs_(sync_client_->GetPrefService()),
-      sync_transport_data_prefs_(sync_client_->GetPrefService()),
       identity_manager_(init_params.identity_manager),
       auth_manager_(std::make_unique<SyncAuthManager>(
           identity_manager_,
@@ -482,6 +481,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
+  params.encryption_bootstrap_token = sync_prefs_.GetEncryptionBootstrapToken();
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();
@@ -519,8 +519,7 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
     if (reason == ShutdownReason::DISABLE_SYNC) {
-      sync_client_->GetSyncApiComponentFactory()
-          ->ClearAllTransportDataExceptEncryptionBootstrapToken();
+      sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
     }
     return;
   }
@@ -588,10 +587,10 @@ void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
       // through first-time setup again and set SyncRequested to false.
       sync_prefs_.ClearFirstSetupComplete();
       sync_prefs_.ClearPassphrasePromptMutedProductVersion();
-      SetSyncRequestedAndIgnoreNotification(false);
       // For explicit passphrase users, clear the encryption key, such that they
       // will need to reenter it if sync gets re-enabled.
-      sync_transport_data_prefs_.ClearEncryptionBootstrapToken();
+      sync_prefs_.ClearEncryptionBootstrapToken();
+      SetSyncRequestedAndIgnoreNotification(false);
       // Also let observers know that Sync-the-feature is now fully disabled
       // (before it possibly starts up again in transport-only mode).
       NotifyObservers();
@@ -1000,6 +999,12 @@ void ProfileSyncService::ReconfigureDataTypesDueToCrypto() {
   // IsSetupInProgress() case where the UI needs to be updated to reflect that
   // the passphrase was accepted (https://crbug.com/870256).
   NotifyObservers();
+}
+
+void ProfileSyncService::EncryptionBootstrapTokenChanged(
+    const std::string& bootstrap_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);
 }
 
 bool ProfileSyncService::IsSetupInProgress() const {

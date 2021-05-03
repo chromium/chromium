@@ -64,6 +64,7 @@ class SyncEngine : public ModelTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
+    std::string encryption_bootstrap_token;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(InitParams);
@@ -120,9 +121,8 @@ class SyncEngine : public ModelTypeConfigurer {
   // are no pending keys.
   virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
 
-  // Legacy bootstrap tokens stored in preferences.
+  // Legacy bootstrap token stored in preferences.
   // TODO(crbug.com/1010397): Delete this API together with the preferences.
-  virtual void SetEncryptionBootstrapToken(const std::string& token) = 0;
   virtual void SetKeystoreEncryptionBootstrapToken(
       const std::string& token) = 0;
 

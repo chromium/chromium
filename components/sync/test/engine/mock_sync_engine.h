@@ -49,10 +49,6 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(void, SetDecryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(void,
-              SetEncryptionBootstrapToken,
-              (const std::string&),
-              (override));
-  MOCK_METHOD(void,
               SetKeystoreEncryptionBootstrapToken,
               (const std::string&),
               (override));

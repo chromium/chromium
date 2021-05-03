@@ -33,6 +33,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void CryptoStateChanged() = 0;
     virtual void CryptoRequiredUserActionChanged() = 0;
     virtual void ReconfigureDataTypesDueToCrypto() = 0;
+    virtual void EncryptionBootstrapTokenChanged(
+        const std::string& bootstrap_token) = 0;
   };
 
   // |delegate| must not be null and must outlive this object.

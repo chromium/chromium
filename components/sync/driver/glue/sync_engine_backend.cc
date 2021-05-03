@@ -216,7 +216,7 @@ void SyncEngineBackend::DoInitialize(
       std::make_unique<NigoriStorageImpl>(
           sync_data_folder_.Append(kNigoriStorageFilename), &encryptor_),
       &encryptor_, base::BindRepeating(&Nigori::GenerateScryptSalt),
-      restored_local_transport_data.encryption_bootstrap_token,
+      params.encryption_bootstrap_token,
       restored_local_transport_data.keystore_encryption_bootstrap_token);
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);

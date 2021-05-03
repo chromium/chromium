@@ -76,8 +76,6 @@ void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 void FakeSyncEngine::SetDecryptionPassphrase(const std::string& passphrase) {}
 
-void FakeSyncEngine::SetEncryptionBootstrapToken(const std::string& token) {}
-
 void FakeSyncEngine::SetKeystoreEncryptionBootstrapToken(
     const std::string& token) {}
 

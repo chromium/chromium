@@ -62,6 +62,10 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoStateChanged, (), (override));
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
+  MOCK_METHOD(void,
+              EncryptionBootstrapTokenChanged,
+              (const std::string&),
+              (override));
 };
 
 // Object representing a server that contains the authoritative trusted vault

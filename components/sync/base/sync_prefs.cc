@@ -134,7 +134,7 @@ void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
   sync_pref_observers_.RemoveObserver(sync_pref_observer);
 }
 
-void SyncTransportDataPrefs::ClearAllExceptEncryptionBootstrapToken() {
+void SyncTransportDataPrefs::ClearAll() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pref_service_->ClearPref(prefs::kSyncLastSyncedTime);
@@ -329,18 +329,17 @@ bool SyncPrefs::IsManaged() const {
   return pref_service_->GetBoolean(prefs::kSyncManaged);
 }
 
-std::string SyncTransportDataPrefs::GetEncryptionBootstrapToken() const {
+std::string SyncPrefs::GetEncryptionBootstrapToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetString(prefs::kSyncEncryptionBootstrapToken);
 }
 
-void SyncTransportDataPrefs::SetEncryptionBootstrapToken(
-    const std::string& token) {
+void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(prefs::kSyncEncryptionBootstrapToken, token);
 }
 
-void SyncTransportDataPrefs::ClearEncryptionBootstrapToken() {
+void SyncPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::kSyncEncryptionBootstrapToken);
 }

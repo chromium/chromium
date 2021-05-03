@@ -57,7 +57,6 @@ namespace syncer {
 namespace {
 
 constexpr char kTestUser[] = "test_user@gmail.com";
-constexpr char kTestCacheGuid[] = "test_cache_guid";
 
 class TestSyncServiceObserver : public SyncServiceObserver {
  public:
@@ -165,13 +164,9 @@ class ProfileSyncServiceTest : public ::testing::Test {
   }
 
   void PopulatePrefsForNthSync() {
-    // Set first sync time before initialize to simulate a complete sync setup.
-    SyncTransportDataPrefs transport_data_prefs(prefs());
-    SyncPrefs sync_prefs(prefs());
-    transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-    transport_data_prefs.SetBirthday(FakeSyncEngine::kTestBirthday);
-    transport_data_prefs.SetLastSyncedTime(base::Time::Now());
     component_factory()->set_first_time_sync_configure_done(true);
+    // Set first sync time before initialize to simulate a complete sync setup.
+    SyncPrefs sync_prefs(prefs());
     sync_prefs.SetSyncRequested(true);
     sync_prefs.SetSelectedTypes(
         /*keep_everything_synced=*/true,
@@ -288,20 +283,13 @@ TEST_F(ProfileSyncServiceTest, NeedsConfirmation) {
   SignIn();
   CreateService(ProfileSyncService::MANUAL_START);
 
+  // Mimic a sync cycle (transport-only) having completed earlier.
   SyncPrefs sync_prefs(prefs());
   sync_prefs.SetSyncRequested(true);
   sync_prefs.SetSelectedTypes(
       /*keep_everything_synced=*/true,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet::All());
-
-  // Mimic a sync cycle (transport-only) having completed earlier.
-  const base::Time kLastSyncedTime = base::Time::Now();
-  SyncTransportDataPrefs transport_data_prefs(prefs());
-  transport_data_prefs.SetLastSyncedTime(kLastSyncedTime);
-  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-  transport_data_prefs.SetBirthday(FakeSyncEngine::kTestBirthday);
-
   service()->Initialize();
 
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
@@ -311,10 +299,6 @@ TEST_F(ProfileSyncServiceTest, NeedsConfirmation) {
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
-
-  // The local sync data shouldn't be cleared.
-  EXPECT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_EQ(kLastSyncedTime, transport_data_prefs.GetLastSyncedTime());
 }
 
 TEST_F(ProfileSyncServiceTest, ModelTypesForTransportMode) {

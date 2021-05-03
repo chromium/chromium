@@ -50,10 +50,10 @@ class SyncApiComponentFactory {
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service) = 0;
 
-  // Clears all local transport data except the encryption bootstrap token.
-  // Upon calling this, the deletion is guaranteed to finish before a new engine
-  // returned by |CreateSyncEngine()| can do any proper work.
-  virtual void ClearAllTransportDataExceptEncryptionBootstrapToken() = 0;
+  // Clears all local transport data. Upon calling this, the deletion is
+  // guaranteed to finish before a new engine returned by |CreateSyncEngine()|
+  // can do any proper work.
+  virtual void ClearAllTransportData() = 0;
 };
 
 }  // namespace syncer

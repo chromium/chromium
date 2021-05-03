@@ -88,10 +88,12 @@ TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
   EXPECT_EQ(now, sync_prefs_->GetLastSyncedTime());
 }
 
-TEST_F(SyncTransportDataPrefsTest, EncryptionBootstrapToken) {
+TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
   sync_prefs_->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_prefs_->GetEncryptionBootstrapToken());
+  sync_prefs_->ClearEncryptionBootstrapToken();
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
 }
 
 class MockSyncPrefObserver : public SyncPrefObserver {
@@ -149,23 +151,18 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
 }
 #endif
 
-TEST_F(SyncTransportDataPrefsTest, ClearAllExceptEncryptionBootstrapToken) {
+TEST_F(SyncTransportDataPrefsTest, ClearAll) {
   sync_prefs_->SetLastSyncedTime(base::Time::Now());
-  sync_prefs_->SetEncryptionBootstrapToken("explicit_passphrase_token");
   sync_prefs_->SetKeystoreEncryptionBootstrapToken("keystore_token");
 
   ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-  ASSERT_EQ("explicit_passphrase_token",
-            sync_prefs_->GetEncryptionBootstrapToken());
   ASSERT_EQ("keystore_token",
             sync_prefs_->GetKeystoreEncryptionBootstrapToken());
 
-  sync_prefs_->ClearAllExceptEncryptionBootstrapToken();
+  sync_prefs_->ClearAll();
 
   EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
   EXPECT_TRUE(sync_prefs_->GetKeystoreEncryptionBootstrapToken().empty());
-  EXPECT_EQ("explicit_passphrase_token",
-            sync_prefs_->GetEncryptionBootstrapToken());
 }
 
 TEST_F(SyncPrefsTest, Basic) {

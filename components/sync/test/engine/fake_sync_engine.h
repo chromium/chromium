@@ -68,8 +68,6 @@ class FakeSyncEngine : public SyncEngine,
 
   void SetDecryptionPassphrase(const std::string& passphrase) override;
 
-  void SetEncryptionBootstrapToken(const std::string& token) override;
-
   void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
 
   void AddTrustedVaultDecryptionKeys(

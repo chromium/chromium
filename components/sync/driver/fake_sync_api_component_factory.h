@@ -35,8 +35,8 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   FakeSyncEngine* last_created_engine() { return last_created_engine_.get(); }
 
   // Returns the number of times transport data was cleared, which includes
-  // ClearAllTransportDataExceptEncryptionBootstrapToken() being invoked as
-  // well as SyncEngine::Shutdown() being invoked with DISABLE_SYNC.
+  // ClearAllTransportData() being invoked as well as SyncEngine::Shutdown()
+  // being invoked with DISABLE_SYNC.
   int clear_transport_data_call_count() const {
     return clear_transport_data_call_count_;
   }
@@ -59,7 +59,7 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
       const std::string& name,
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidations_service) override;
-  void ClearAllTransportDataExceptEncryptionBootstrapToken() override;
+  void ClearAllTransportData() override;
 
  private:
   base::WeakPtr<DataTypeManagerImpl> last_created_data_type_manager_;

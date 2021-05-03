@@ -511,7 +511,7 @@ void SyncServiceCrypto::OnBootstrapTokenUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.engine);
   if (type == PASSPHRASE_BOOTSTRAP_TOKEN) {
-    state_.engine->SetEncryptionBootstrapToken(bootstrap_token);
+    delegate_->EncryptionBootstrapTokenChanged(bootstrap_token);
   } else {
     state_.engine->SetKeystoreEncryptionBootstrapToken(bootstrap_token);
   }

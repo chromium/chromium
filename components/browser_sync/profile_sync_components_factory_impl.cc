@@ -430,8 +430,7 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
                           base::Unretained(sync_client_)));
 }
 
-void ProfileSyncComponentsFactoryImpl::
-    ClearAllTransportDataExceptEncryptionBootstrapToken() {
+void ProfileSyncComponentsFactoryImpl::ClearAllTransportData() {
   syncer::SyncTransportDataPrefs sync_transport_data_prefs(
       sync_client_->GetPrefService());
 
@@ -448,7 +447,7 @@ void ProfileSyncComponentsFactoryImpl::
             sync_client_->GetModelTypeStoreService()->GetSyncDataPath()));
   }
 
-  sync_transport_data_prefs.ClearAllExceptEncryptionBootstrapToken();
+  sync_transport_data_prefs.ClearAll();
   sync_client_->OnLocalSyncTransportDataCleared();
 }
 

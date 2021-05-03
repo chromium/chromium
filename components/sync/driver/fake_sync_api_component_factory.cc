@@ -59,8 +59,7 @@ std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
   return engine;
 }
 
-void FakeSyncApiComponentFactory::
-    ClearAllTransportDataExceptEncryptionBootstrapToken() {
+void FakeSyncApiComponentFactory::ClearAllTransportData() {
   ++clear_transport_data_call_count_;
 }
 

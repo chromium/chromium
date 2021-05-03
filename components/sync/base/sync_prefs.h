@@ -56,9 +56,8 @@ class SyncTransportDataPrefs {
   SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
   ~SyncTransportDataPrefs();
 
-  // Clears all preferences in this class, which excludes the encryption
-  // bootstrap token (non-keystore counterpart).
-  void ClearAllExceptEncryptionBootstrapToken();
+  // Clears all preferences in this class.
+  void ClearAll();
 
   void SetGaiaId(const std::string& gaia_id);
   std::string GetGaiaId() const;
@@ -77,15 +76,6 @@ class SyncTransportDataPrefs {
 
   base::TimeDelta GetPollInterval() const;
   void SetPollInterval(base::TimeDelta interval);
-
-  // The encryption bootstrap token is used for explicit passphrase users
-  // (usually custom passphrase) and represents a user-entered passphrase.
-  // Hence, it gets treated as user-controlled similarly to sync datatype
-  // selection settings (i.e. doesn't get cleared in
-  // ClearAllExceptEncryptionBootstrapToken()).
-  std::string GetEncryptionBootstrapToken() const;
-  void SetEncryptionBootstrapToken(const std::string& token);
-  void ClearEncryptionBootstrapToken();
 
   // Use this keystore bootstrap token if we're not using an explicit
   // passphrase.
@@ -188,6 +178,12 @@ class SyncPrefs {
 
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
+
+  // The encryption bootstrap token is used for explicit passphrase users
+  // (usually custom passphrase) and represents a user-entered passphrase.
+  std::string GetEncryptionBootstrapToken() const;
+  void SetEncryptionBootstrapToken(const std::string& token);
+  void ClearEncryptionBootstrapToken();
 
   // Muting mechanism for passphrase prompts, used on Android.
   int GetPassphrasePromptMutedProductVersion() const;

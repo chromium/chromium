@@ -47,7 +47,6 @@ namespace {
 SyncEngineBackend::RestoredLocalTransportData
 RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   SyncEngineBackend::RestoredLocalTransportData result;
-  result.encryption_bootstrap_token = prefs.GetEncryptionBootstrapToken();
   result.keystore_encryption_bootstrap_token =
       prefs.GetKeystoreEncryptionBootstrapToken();
   result.cache_guid = prefs.GetCacheGuid();
@@ -261,11 +260,6 @@ void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
                                 backend_, passphrase));
-}
-
-void SyncEngineImpl::SetEncryptionBootstrapToken(const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefs_->SetEncryptionBootstrapToken(token);
 }
 
 void SyncEngineImpl::SetKeystoreEncryptionBootstrapToken(
@@ -657,7 +651,7 @@ void SyncEngineImpl::UpdateLastSyncedTime() {
 }
 
 void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
-  prefs_->ClearAllExceptEncryptionBootstrapToken();
+  prefs_->ClearAll();
   sync_transport_data_cleared_cb_.Run();
 }
 

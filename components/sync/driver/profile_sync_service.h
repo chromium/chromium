@@ -180,6 +180,8 @@ class ProfileSyncService : public SyncService,
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
   void ReconfigureDataTypesDueToCrypto() override;
+  void EncryptionBootstrapTokenChanged(
+      const std::string& bootstrap_token) override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
@@ -368,9 +370,6 @@ class ProfileSyncService : public SyncService,
 
   // The class that handles getting, setting, and persisting sync preferences.
   SyncPrefs sync_prefs_;
-  // TODO(crbug.com/938894): Remove this member and interact with SyncEngine
-  // instead.
-  SyncTransportDataPrefs sync_transport_data_prefs_;
 
   // Encapsulates user signin - used to set/get the user's authenticated
   // email address and sign-out upon error.
