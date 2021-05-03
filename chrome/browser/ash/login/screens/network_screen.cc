@@ -183,8 +183,6 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
   connection_timer_.Stop();
 
   network_id_ = network_id;
-  if (view_)
-    view_->ShowConnectingStatus(false, network_id_);
 
   // Automatically continue if we are using Hands-Off Enrollment.
   if (is_connected && continue_attempts_ == 0 &&
@@ -201,8 +199,6 @@ void NetworkScreen::WaitForConnection(const std::u16string& network_id) {
   }
 
   network_id_ = network_id;
-  if (view_)
-    view_->ShowConnectingStatus(continue_pressed_, network_id_);
 }
 
 void NetworkScreen::OnBackButtonClicked() {

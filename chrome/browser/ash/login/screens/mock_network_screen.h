@@ -41,9 +41,6 @@ class MockNetworkScreenView : public NetworkScreenView {
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, ShowError, (const std::u16string& message));
   MOCK_METHOD(void, ClearErrors, ());
-  MOCK_METHOD(void,
-              ShowConnectingStatus,
-              (bool connecting, const std::u16string& network_id));
   MOCK_METHOD(void, SetOfflineDemoModeEnabled, (bool enabled));
 
  private:

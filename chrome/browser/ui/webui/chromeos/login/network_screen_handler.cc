@@ -76,10 +76,6 @@ void NetworkScreenHandler::ClearErrors() {
   CallJS("login.NetworkScreen.setError", std::string());
 }
 
-void NetworkScreenHandler::ShowConnectingStatus(
-    bool connecting,
-    const std::u16string& network_id) {}
-
 void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
   CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);
 }

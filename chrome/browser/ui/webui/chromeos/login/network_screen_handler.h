@@ -39,10 +39,6 @@ class NetworkScreenView {
   // Hides error messages showing no error state.
   virtual void ClearErrors() = 0;
 
-  // Shows network connecting status or network selection otherwise.
-  virtual void ShowConnectingStatus(bool connecting,
-                                    const std::u16string& network_id) = 0;
-
   // Enables or disables offline Demo Mode during Demo Mode network selection.
   virtual void SetOfflineDemoModeEnabled(bool enabled) = 0;
 };
@@ -65,8 +61,6 @@ class NetworkScreenHandler : public NetworkScreenView,
   void Unbind() override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
-  void ShowConnectingStatus(bool connecting,
-                            const std::u16string& network_id) override;
   void SetOfflineDemoModeEnabled(bool enabled) override;
 
   // BaseScreenHandler:
