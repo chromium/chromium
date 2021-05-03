@@ -38,7 +38,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation FakeSigninScreenConsumer
 
-- (void)hideIdentityButtonControl {
+- (void)noIdentityAvailable {
   self.hidden = YES;
 }
 

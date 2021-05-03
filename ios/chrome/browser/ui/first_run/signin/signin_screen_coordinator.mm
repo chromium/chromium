@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -77,6 +78,15 @@
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
   self.mediator = [[SigninScreenMediator alloc] init];
+  NSArray* identities = ios::GetChromeBrowserProvider()
+                            ->GetChromeIdentityService()
+                            ->GetAllIdentitiesSortedForDisplay(
+                                self.browser->GetBrowserState()->GetPrefs());
+  ChromeIdentity* newIdentity = nil;
+  if (identities.count != 0) {
+    newIdentity = identities[0];
+  }
+  self.mediator.selectedIdentity = newIdentity;
   self.mediator.consumer = self.viewController;
   self.mediator.delegate = self;
   BOOL animated = self.baseNavigationController.topViewController != nil;

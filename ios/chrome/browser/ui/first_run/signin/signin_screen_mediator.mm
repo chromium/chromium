@@ -151,7 +151,7 @@
           [weakSelf.consumer setUserImage:identityAvatar];
         });
   } else {
-    [self.consumer hideIdentityButtonControl];
+    [self.consumer noIdentityAvailable];
   }
 
   // TODO(crbug.com/1189836): Update the buttons.
