@@ -24,7 +24,6 @@
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -43,6 +42,9 @@
 #endif
 
 namespace base {
+
+class DictionaryValue;
+class Value;
 
 // Full declaration is in process_metrics_iocounters.h.
 struct IoCounters;

@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
+#include "base/stl_util.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_parameters.h"

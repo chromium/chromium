@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/intent_util.h"
 
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
