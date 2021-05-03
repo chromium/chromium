@@ -49,6 +49,7 @@
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "media/cdm/cdm_host_file.h"
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
 #include "content/services/isolated_xr_device/xr_device_service.h"  // nogncheck
@@ -60,7 +61,6 @@
 #include "sandbox/win/src/sandbox.h"
 extern sandbox::TargetServices* g_utility_target_services;
 #endif  // defined(OS_WIN)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "sandbox/linux/services/libc_interceptor.h"
@@ -135,7 +135,7 @@ class UtilityThreadVideoCaptureServiceImpl final
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::kMTA};
-#endif
+#endif  // defined(OS_WIN)
 };
 
 auto RunNetworkService(

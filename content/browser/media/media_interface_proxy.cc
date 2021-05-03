@@ -40,11 +40,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "content/browser/media/cdm_registry_impl.h"
 #include "content/browser/media/cdm_storage_impl.h"
-#include "content/browser/media/service_factory.h"
 #include "media/base/key_system_names.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #if defined(OS_MAC)
@@ -56,6 +53,12 @@
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if defined(OS_WIN) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#include "content/browser/media/cdm_registry_impl.h"
+#include "content/browser/media/service_factory.h"
+#include "media/base/media_switches.h"
+#endif  // defined(OS_WIN) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_WIN)
 #include "base/threading/sequence_local_storage_slot.h"

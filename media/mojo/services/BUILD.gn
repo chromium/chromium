@@ -123,16 +123,6 @@ component("services") {
     sources += [
       "cdm_service.cc",
       "cdm_service.h",
-      "mojo_cdm_allocator.cc",
-      "mojo_cdm_allocator.h",
-      "mojo_cdm_file_io.cc",
-      "mojo_cdm_file_io.h",
-      "mojo_cdm_helper.cc",
-      "mojo_cdm_helper.h",
-    ]
-    deps += [
-      "//media/cdm:cdm_api",
-      "//media/cdm:cdm_paths",
     ]
 
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
@@ -140,6 +130,18 @@ component("services") {
     if (is_mac) {
       deps += [ "//sandbox" ]
     }
+  }
+
+  if (is_win || enable_library_cdms) {
+    sources += [
+      "mojo_cdm_allocator.cc",
+      "mojo_cdm_allocator.h",
+      "mojo_cdm_file_io.cc",
+      "mojo_cdm_file_io.h",
+      "mojo_cdm_helper.cc",
+      "mojo_cdm_helper.h",
+    ]
+    deps += [ "//media/cdm:cdm_api" ]
   }
 
   if (is_chromeos_ash) {

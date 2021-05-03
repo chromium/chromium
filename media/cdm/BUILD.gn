@@ -9,7 +9,7 @@ source_set("cdm_api") {
 }
 
 source_set("cdm_type_conversion") {
-  if (enable_library_cdms) {
+  if (enable_library_cdms || is_win) {
     # This target is a subcomponent.
     visibility = [
       "//media",
@@ -83,7 +83,6 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
-      ":cdm_type_conversion",
       "//components/crash/core/common:crash_key",
     ]
     sources += [
@@ -91,12 +90,6 @@ source_set("cdm") {
       "cdm_adapter.h",
       "cdm_adapter_factory.cc",
       "cdm_adapter_factory.h",
-      "cdm_allocator.cc",
-      "cdm_allocator.h",
-      "cdm_auxiliary_helper.cc",
-      "cdm_auxiliary_helper.h",
-      "cdm_helpers.cc",
-      "cdm_helpers.h",
       "cdm_module.cc",
       "cdm_module.h",
       "cdm_wrapper.h",
@@ -114,6 +107,21 @@ source_set("cdm") {
         "cdm_host_files.h",
       ]
     }
+  }
+
+  if (is_win || enable_library_cdms) {
+    sources += [
+      "cdm_allocator.cc",
+      "cdm_allocator.h",
+      "cdm_auxiliary_helper.cc",
+      "cdm_auxiliary_helper.h",
+      "cdm_helpers.cc",
+      "cdm_helpers.h",
+    ]
+    deps += [
+      ":cdm_api",
+      ":cdm_type_conversion",
+    ]
   }
 
   if (is_win) {

@@ -258,6 +258,6 @@ if (media_use_ffmpeg) {
   media_subcomponent_deps += [ "//media/ffmpeg" ]
 }
 
-if (enable_library_cdms) {
+if (enable_library_cdms || is_win) {
   media_subcomponent_deps += [ "//media/cdm:cdm_type_conversion" ]
 }
