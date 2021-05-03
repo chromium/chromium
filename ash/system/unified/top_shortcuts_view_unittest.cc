@@ -153,6 +153,8 @@ TEST_F(TopShortcutsViewTest, ButtonLayoutAddingUser) {
 TEST_F(TopShortcutsViewTest, DisableSettingsIconPolicy) {
   GetSessionControllerClient()->AddUserSession("foo@example.com",
                                                user_manager::USER_TYPE_REGULAR);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
   SetUpView();
   EXPECT_EQ(views::Button::STATE_NORMAL, GetSettingsButton()->GetState());
 

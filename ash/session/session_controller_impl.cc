@@ -105,13 +105,9 @@ SessionState SessionControllerImpl::GetSessionState() const {
 }
 
 bool SessionControllerImpl::ShouldEnableSettings() const {
-  // Settings opens a web UI window, so it is not available at the lock screen.
-  if (!IsActiveUserSessionStarted() || IsScreenLocked() ||
-      IsInSecondaryLoginScreen()) {
-    return false;
-  }
-
-  return true;
+  // Settings opens a web UI window, so it is only available at active session
+  // at the moment.
+  return !IsUserSessionBlocked();
 }
 
 bool SessionControllerImpl::ShouldShowNotificationTray() const {
