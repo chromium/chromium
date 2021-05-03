@@ -121,15 +121,6 @@ typedef std::map<AutocompleteMatchType::Type, float> DemotionMultipliers;
 // end of the vector are assumed to have scores of 1.0.
 typedef std::vector<std::pair<size_t, double>> NumMatchesScores;
 
-// Do not change these values as they need to be in sync with values
-// specified in experiment configs on the variations server.
-enum EmphasizeTitlesCondition {
-  EMPHASIZE_WHEN_NONEMPTY = 0,
-  EMPHASIZE_WHEN_TITLE_MATCHES = 1,
-  EMPHASIZE_WHEN_ONLY_TITLE_MATCHES = 2,
-  EMPHASIZE_NEVER = 3
-};
-
 // ---------------------------------------------------------
 // For any experiment that's part of the bundled omnibox field trial.
 
@@ -358,17 +349,6 @@ bool HUPSearchDatabase();
 // with sufficiently-complete matches, i.e., the user has typed all of the
 // important part of the keyword.  Returns -1 if the experiment isn't active.
 int KeywordScoreForSufficientlyCompleteMatch();
-
-// ---------------------------------------------------------
-// For the EmphasizeTitles experiment that's part of the bundled omnibox
-// field trial.
-
-// Returns the conditions under which the UI code should display the title
-// of a URL more prominently than the URL for input |input|. Normally the URL
-// is displayed more prominently. Returns NEVER_EMPHASIZE if the experiment
-// isn't active.
-EmphasizeTitlesCondition GetEmphasizeTitlesConditionForInput(
-    const AutocompleteInput& input);
 
 // ---------------------------------------------------------
 // For UI experiments.

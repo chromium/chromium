@@ -598,39 +598,6 @@ int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
   return value;
 }
 
-OmniboxFieldTrial::EmphasizeTitlesCondition
-OmniboxFieldTrial::GetEmphasizeTitlesConditionForInput(
-    const AutocompleteInput& input) {
-  if (base::FeatureList::IsEnabled(omnibox::kUIExperimentSwapTitleAndUrl)) {
-    return EMPHASIZE_WHEN_NONEMPTY;
-  }
-
-  // Touch-optimized UI always swaps title and URL.
-  if (ui::TouchUiController::Get()->touch_ui())
-    return EMPHASIZE_WHEN_NONEMPTY;
-
-  // Look up the parameter named kEmphasizeTitlesRule + "_" + input.type(),
-  // find its value, and return that value as an enum.  If the parameter
-  // isn't redefined, fall back to the generic rule kEmphasizeTitlesRule + "_*"
-  std::string value_str(variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      std::string(kEmphasizeTitlesRule) + "_" +
-          base::NumberToString(static_cast<int>(input.type()))));
-  if (value_str.empty()) {
-    value_str = variations::GetVariationParamValue(
-        kBundledExperimentFieldTrialName,
-        std::string(kEmphasizeTitlesRule) + "_*");
-  }
-  if (value_str.empty())
-    return EMPHASIZE_NEVER;
-  // This is a best-effort conversion; we trust the hand-crafted parameters
-  // downloaded from the server to be perfect.  There's no need for handle
-  // errors smartly.
-  int value;
-  base::StringToInt(value_str, &value);
-  return static_cast<EmphasizeTitlesCondition>(value);
-}
-
 bool OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kShortBookmarkSuggestions);
 }
@@ -942,7 +909,6 @@ const char OmniboxFieldTrial::kKeywordRequiresRegistryRule[] =
     "KeywordRequiresRegistry";
 const char OmniboxFieldTrial::kKeywordScoreForSufficientlyCompleteMatchRule[] =
     "KeywordScoreForSufficientlyCompleteMatch";
-const char OmniboxFieldTrial::kEmphasizeTitlesRule[] = "EmphasizeTitles";
 
 const char OmniboxFieldTrial::kHUPNewScoringTypedCountRelevanceCapParam[] =
     "TypedCountRelevanceCap";

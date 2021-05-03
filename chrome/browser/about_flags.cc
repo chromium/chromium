@@ -4478,11 +4478,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
 
-    {"omnibox-ui-swap-title-and-url",
-     flag_descriptions::kOmniboxUISwapTitleAndUrlName,
-     flag_descriptions::kOmniboxUISwapTitleAndUrlDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kUIExperimentSwapTitleAndUrl)},
-
     {"omnibox-webui-omnibox-popup",
      flag_descriptions::kOmniboxWebUIOmniboxPopupName,
      flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,

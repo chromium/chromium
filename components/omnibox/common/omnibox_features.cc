@@ -78,10 +78,6 @@ const base::Feature kSearchProviderWarmUpOnFocus{
 const base::Feature kDisplayTitleForCurrentUrl{
     "OmniboxDisplayTitleForCurrentUrl", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature used to always swap the title and URL.
-const base::Feature kUIExperimentSwapTitleAndUrl{
-    "OmniboxUIExperimentSwapTitleAndUrl", enabled_by_default_desktop_only};
-
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

@@ -1858,11 +1858,6 @@ const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[] =
     "Google head non personalized search suggestions provided by a compact on "
     "device model for non-incognito";
 
-const char kOmniboxUISwapTitleAndUrlName[] = "Omnibox UI Swap Title and URL";
-const char kOmniboxUISwapTitleAndUrlDescription[] =
-    "In the omnibox dropdown, shows titles before URLs when both are "
-    "available.";
-
 const char kOmniboxWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kOmniboxWebUIOmniboxPopupDescription[] =
     "If enabled, uses WebUI to render the omnibox suggestions popup, similar "

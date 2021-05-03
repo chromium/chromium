@@ -187,35 +187,16 @@ void AutocompleteResult::TransferOldMatches(
 
 void AutocompleteResult::AppendMatches(const AutocompleteInput& input,
                                        const ACMatches& matches) {
-  for (const auto& i : matches) {
-    DCHECK_EQ(AutocompleteMatch::SanitizeString(i.contents), i.contents);
-    DCHECK_EQ(AutocompleteMatch::SanitizeString(i.description),
-              i.description);
-    matches_.push_back(i);
-    if (!AutocompleteMatch::IsSearchType(i.type) &&
-        i.type != ACMatchType::DOCUMENT_SUGGESTION) {
-      const OmniboxFieldTrial::EmphasizeTitlesCondition condition(
-          OmniboxFieldTrial::GetEmphasizeTitlesConditionForInput(input));
-      bool emphasize = false;
-      switch (condition) {
-        case OmniboxFieldTrial::EMPHASIZE_WHEN_NONEMPTY:
-          emphasize = !i.description.empty();
-          break;
-        case OmniboxFieldTrial::EMPHASIZE_WHEN_TITLE_MATCHES:
-          emphasize = !i.description.empty() &&
-                      AutocompleteMatch::HasMatchStyle(i.description_class);
-          break;
-        case OmniboxFieldTrial::EMPHASIZE_WHEN_ONLY_TITLE_MATCHES:
-          emphasize = !i.description.empty() &&
-                      AutocompleteMatch::HasMatchStyle(i.description_class) &&
-                      !AutocompleteMatch::HasMatchStyle(i.contents_class);
-          break;
-        case OmniboxFieldTrial::EMPHASIZE_NEVER:
-          break;
-        default:
-          NOTREACHED();
-      }
-      matches_.back().swap_contents_and_description = emphasize;
+  for (const auto& match : matches) {
+    DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents),
+              match.contents);
+    DCHECK_EQ(AutocompleteMatch::SanitizeString(match.description),
+              match.description);
+    matches_.push_back(match);
+    if (!match.description.empty() &&
+        !AutocompleteMatch::IsSearchType(match.type) &&
+        match.type != ACMatchType::DOCUMENT_SUGGESTION) {
+      matches_.back().swap_contents_and_description = true;
     }
   }
 }

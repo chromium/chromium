@@ -87,7 +87,7 @@ class AutocompleteResult {
                           TemplateURLService* template_url_service);
 
   // Adds a new set of matches to the result set.  Does not re-sort.  Calls
-  // PossiblySwapContentsAndDescriptionForURLSuggestion(input)" on all added
+  // PossiblySwapContentsAndDescriptionForURLSuggestion(input) on all added
   // matches; see comments there for more information.
   void AppendMatches(const AutocompleteInput& input,
                      const ACMatches& matches);

@@ -4081,11 +4081,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "omnibox-ui-swap-title-and-url",
-    "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "omnibox-webui-omnibox-popup",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 99
