@@ -136,7 +136,7 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
 
   // Many types of nodes cannot be used as parent in normal situations.
   // These rules also apply to allowing aria-owns.
-  if (!AXObject::CanComputeAsParent(owner->GetNode()))
+  if (!AXObject::CanComputeAsNaturalParent(owner->GetNode()))
     return false;
 
   return true;

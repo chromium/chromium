@@ -1476,6 +1476,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityBR) {
   RunHtmlTest(FILE_PATH_LITERAL("br.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityBRWithChild) {
+  RunHtmlTest(FILE_PATH_LITERAL("br-with-child.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButton) {
   RunHtmlTest(FILE_PATH_LITERAL("button.html"));
 }
@@ -2730,6 +2734,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTextIndent) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTextarea) {
   RunHtmlTest(FILE_PATH_LITERAL("textarea.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTextareaChanges) {
+  RunHtmlTest(FILE_PATH_LITERAL("textarea-changes.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

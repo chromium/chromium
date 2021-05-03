@@ -234,7 +234,9 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
 }
 
 bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
-  DCHECK(layout_text.Parent());
+  if (!layout_text.Parent())
+    return false;
+
   Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
@@ -278,35 +280,37 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
   if (!node->IsInUserAgentShadowRoot())
     return true;
 
-  // All non-slot user agent shadow nodes are relevant.
+  // Don't use non-<option> descendants of an AXMenuList.
+  // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
+  // for handling the user-agent shadow DOM exposed by a <select> element.
+  // That class adds a mock AXMenuListPopup, which adds AXMenuListOption
+  // children for <option> descendants only.
+  if (AXObjectCacheImpl::UseAXMenuList() && !IsA<HTMLOptionElement>(node)) {
+    // Find any ancestor <select> if it is present.
+    Node* host = node->OwnerShadowHost();
+    auto* select_element = DynamicTo<HTMLSelectElement>(host);
+    if (!select_element) {
+      // An <optgroup> can be a shadow host too -- look for it's owner <select>.
+      if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(host))
+        select_element = opt_group_element->OwnerSelectElement();
+    }
+    if (select_element) {
+      if (!select_element->GetLayoutObject())
+        return select_element->IsInCanvasSubtree();
+      // Non-option: only create AXObject if not inside an AXMenuList.
+      return !AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          select_element->GetLayoutObject());
+    }
+  }
+
+  // Outside of AXMenuList descendants, all other non-slot user agent shadow
+  // nodes are relevant.
   const HTMLSlotElement* slot_element = DynamicTo<HTMLSlotElement>(node);
   if (!slot_element)
     return true;
 
-  // All empty slots are irrelevant.
-  if (!LayoutTreeBuilderTraversal::FirstChild(*slot_element))
-    return false;
-
-  // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
-  // for handling the user-agent shadow DOM exposed by a <select> element.
-  if (AXObjectCacheImpl::UseAXMenuList()) {
-    // Don't use any shadow root descendants, because AXMenuList already
-    // handles adding descendants and these would be redundant.
-    // DOM traversal is still necessary for the <canvas> case.
-    Node* host = node->OwnerShadowHost();
-    auto* select_element = DynamicTo<HTMLSelectElement>(host);
-    if (!select_element) {
-      if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(host))
-        select_element = opt_group_element->OwnerSelectElement();
-    }
-
-    if (select_element) {
-      return !select_element->UsesMenuList() ||
-             select_element->IsInCanvasSubtree();
-    }
-  }
-
-  return true;
+  // Slots are relevant if they have content.
+  return LayoutTreeBuilderTraversal::FirstChild(*slot_element);
 }
 
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
@@ -317,9 +321,6 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     return AXObjectCacheImpl::IsRelevantPseudoElementDescendant(layout_object);
   }
 
-  if (layout_object.IsText())
-    return IsTextRelevantForAccessibility(To<LayoutText>(layout_object));
-
   Node* node = layout_object.GetNode();
   DCHECK(node) << "Non-anonymous layout objects always have a node";
 
@@ -327,6 +328,9 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
       !IsShadowContentRelevantForAccessibility(node)) {
     return false;
   }
+
+  if (layout_object.IsText())
+    return IsTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
   // Menu list option and HTML area elements are indexed by DOM node, never by
   // layout object.
@@ -375,6 +379,11 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (node->IsDocumentNode())
     return true;
 
+  if (node->ContainingShadowRoot() &&
+      !IsShadowContentRelevantForAccessibility(node)) {
+    return false;
+  }
+
   if (node->IsTextNode()) {
     // Layout has more info available to determine if whitespace is relevant.
     // If display-locked, layout object may be missing or stale:
@@ -403,12 +412,6 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     // Allowing rendered non-whitespace to be considered relevant will allow
     // use for accessible relations such as labelledby and describedby.
     return !To<Text>(node)->ContainsOnlyWhitespaceOrEmpty();
-  }
-
-  // Node also not relevant -- truncate subtree here.
-  if (node->ContainingShadowRoot() &&
-      !IsShadowContentRelevantForAccessibility(node)) {
-    return false;
   }
 
   if (!node->IsElementNode())
@@ -799,22 +802,21 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
       return MakeGarbageCollected<AXSlider>(layout_object, *this);
   }
 
-  if (layout_object->IsBoxModelObject()) {
-    auto* css_box = To<LayoutBoxModelObject>(layout_object);
-    if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
-      if (select_element->UsesMenuList()) {
-        if (use_ax_menu_list_)
-          return MakeGarbageCollected<AXMenuList>(css_box, *this);
-      } else {
-        return MakeGarbageCollected<AXListBox>(css_box, *this);
+  if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
+    if (select_element->UsesMenuList()) {
+      if (use_ax_menu_list_) {
+        DCHECK(ShouldCreateAXMenuListFor(layout_object));
+        return MakeGarbageCollected<AXMenuList>(layout_object, *this);
       }
+    } else {
+      return MakeGarbageCollected<AXListBox>(layout_object, *this);
     }
+  }
 
-    // progress bar
-    if (css_box->IsProgress()) {
-      return MakeGarbageCollected<AXProgressIndicator>(
-          To<LayoutProgress>(css_box), *this);
-    }
+  // progress bar
+  if (layout_object->IsProgress()) {
+    return MakeGarbageCollected<AXProgressIndicator>(
+        To<LayoutProgress>(layout_object), *this);
   }
 
   return MakeGarbageCollected<AXLayoutObject>(layout_object, *this);
@@ -827,10 +829,25 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
   auto* option_element = DynamicTo<HTMLOptionElement>(node);
   if (!option_element)
     return false;
-  const HTMLSelectElement* select = option_element->OwnerSelectElement();
-  if (!select || !select->UsesMenuList())
+
+  if (auto* select = option_element->OwnerSelectElement())
+    return ShouldCreateAXMenuListFor(select->GetLayoutObject());
+
+  return false;
+}
+
+// static
+bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(LayoutObject* layout_object) {
+  if (!layout_object)
     return false;
-  return select->GetLayoutObject() && AXObjectCacheImpl::UseAXMenuList();
+
+  if (!AXObjectCacheImpl::UseAXMenuList())
+    return false;
+
+  if (auto* select = DynamicTo<HTMLSelectElement>(layout_object->GetNode()))
+    return select->UsesMenuList();
+
+  return false;
 }
 
 // static
@@ -982,6 +999,19 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
       return nullptr;
   }
 
+#if DCHECK_IS_ON()
+  if (!IsA<HTMLOptionElement>(node) && node->IsInUserAgentShadowRoot()) {
+    if (Node* owner_shadow_host = node->OwnerShadowHost()) {
+      DCHECK(!AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          owner_shadow_host->GetLayoutObject()))
+          << "DOM descendants of an AXMenuList should not be added to the AX "
+             "hierarchy, except for the AXMenuListOption children added in "
+             "AXMenuListPopup. An attempt was made to create an AXObject for: "
+          << node;
+    }
+  }
+#endif
+
   AXObject* parent = parent_if_known
                          ? parent_if_known
                          : AXObject::ComputeNonARIAParent(*this, node);
@@ -1056,6 +1086,20 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
     if (shadow_host && !shadow_host->CanHaveChildren())
       return nullptr;
   }
+
+#if DCHECK_IS_ON()
+  if (node && !IsA<HTMLOptionElement>(node) &&
+      node->IsInUserAgentShadowRoot()) {
+    if (Node* owner_shadow_host = node->OwnerShadowHost()) {
+      DCHECK(!AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          owner_shadow_host->GetLayoutObject()))
+          << "DOM descendants of an AXMenuList should not be added to the AX "
+             "hierarchy, except for the AXMenuListOption children added in "
+             "AXMenuListPopup. An attempt was made to create an AXObject for: "
+          << node;
+    }
+  }
+#endif
 
   // Prefer creating AXNodeObjects over AXLayoutObjects in locked subtrees
   // (e.g. content-visibility: auto), even if a LayoutObject is available,
@@ -1223,7 +1267,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
-  ChildrenChanged(obj->CachedParentObject());
+  AXObject* parent = obj->CachedParentObject();
 
   obj->Detach();
   RemoveAXID(obj);
@@ -1234,6 +1278,11 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!objects_.Take(ax_id))
     return;
 
+  // This will clear the children of |parent| immediately, and therefore must
+  // come after obj->Detach(), which accesses the children in order
+  // to detach all of them from |parent|.
+  ChildrenChanged(parent);
+
   DCHECK_GE(objects_.size(), ids_in_use_.size());
 }
 
@@ -1242,18 +1291,23 @@ void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
     return;
 
   AXID ax_id = accessible_node_mapping_.at(accessible_node);
-  Remove(ax_id);
   accessible_node_mapping_.erase(accessible_node);
+
+  Remove(ax_id);
 }
 
-void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
+bool AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
   if (!layout_object)
-    return;
+    return false;
 
   AXID ax_id = layout_object_mapping_.at(layout_object);
+  if (!ax_id)
+    return false;
 
-  Remove(ax_id);
   layout_object_mapping_.erase(layout_object);
+  Remove(ax_id);
+
+  return true;
 }
 
 void AXObjectCacheImpl::Remove(Node* node) {
@@ -1262,11 +1316,10 @@ void AXObjectCacheImpl::Remove(Node* node) {
 
   // This is all safe even if we didn't have a mapping.
   AXID ax_id = node_object_mapping_.at(node);
-  Remove(ax_id);
   node_object_mapping_.erase(node);
 
-  if (node->GetLayoutObject())
-    Remove(node->GetLayoutObject());
+  if (!Remove(node->GetLayoutObject()))
+    Remove(ax_id);
 }
 
 void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
@@ -1274,8 +1327,9 @@ void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
     return;
 
   AXID ax_id = inline_text_box_object_mapping_.at(inline_text_box);
-  Remove(ax_id);
   inline_text_box_object_mapping_.erase(inline_text_box);
+
+  Remove(ax_id);
 }
 
 AXID AXObjectCacheImpl::GenerateAXID() const {
@@ -1730,8 +1784,10 @@ void AXObjectCacheImpl::ChildrenChanged(const AXObject* obj) {
 }
 
 void AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
-  if (!obj)
+  if (!obj || obj->IsDetached())
     return;
+
+  obj->SetNeedsToUpdateChildren();
 
   Node* node = obj->GetNode();
   if (node && !nodes_with_pending_children_changed_.insert(node).is_new_entry)

@@ -3855,6 +3855,18 @@ bool AXNodeObject::CanHaveChildren() const {
     return false;
   }
 
+  if (IsA<HTMLBRElement>(GetNode()) &&
+      (!GetLayoutObject() || !GetLayoutObject()->IsBR())) {
+    // A <br> element that is not treated as a line break could occur when the
+    // <br> element has DOM children. A <br> does not usually have DOM children,
+    // but there is nothing preventing a script from creating this situation.
+    // This anomalous child content is not rendered, and therefore AXObjects
+    // should not be created for the children. Enforcing that <br>s to only have
+    // children when they are line breaks also helps create consistency: any AX
+    // child of a <br> will always be an AXInlineTextBox.
+    return false;
+  }
+
   switch (native_role_) {
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kListBoxOption:
@@ -3865,20 +3877,18 @@ bool AXNodeObject::CanHaveChildren() const {
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kRadioButton:
     case ax::mojom::blink::Role::kScrollBar:
-    // case ax::mojom::blink::Role::kSearchBox:
     case ax::mojom::blink::Role::kSlider:
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
-    // case ax::mojom::blink::Role::kTextField:
     case ax::mojom::blink::Role::kToggleButton:
       return false;
     case ax::mojom::blink::Role::kPopUpButton:
       return true;
     case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kStaticText:
-      // AddInlineTextBoxChildren() must also check
-      // AXObjectCache().InlineTextBoxAccessibilityEnabled();
+      // Note: these can have AXInlineTextBox children, but when adding them, we
+      // also check AXObjectCache().InlineTextBoxAccessibilityEnabled().
       return true;
     case ax::mojom::blink::Role::kImage:
       // Can turn into an image map if gains children later.

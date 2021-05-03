@@ -107,7 +107,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ImageLoaded(const LayoutObject*) override;
 
   void Remove(AccessibleNode*) override;
-  void Remove(LayoutObject*) override;
+  // Returns false if no associated AXObject exists in the cache.
+  bool Remove(LayoutObject*) override;
   void Remove(Node*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
@@ -206,7 +207,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
 
-  AXObject* Get(const Node*) override;
+  // Get an AXObject* backed by the passed-in DOM node or the node's layout
+  // object, whichever is available.
+  AXObject* Get(const Node*);
   AXObject* Get(const LayoutObject*);
 
   AXObject* FirstAccessibleObjectFromNode(const Node*);
@@ -313,6 +316,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetActiveAriaModalDialog() const;
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
+  static bool ShouldCreateAXMenuListFor(LayoutObject* layout_object);
   static bool ShouldCreateAXMenuListOptionFor(const Node*);
   static bool IsRelevantPseudoElement(const Node& node);
   static bool IsRelevantPseudoElementDescendant(

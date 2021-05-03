@@ -192,14 +192,18 @@ Node* GetParentNodeForComputeParent(Node* node) {
   if (!node)
     return nullptr;
 
-  // Prefer LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
-  Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
-  if (parent)
-    return parent;
-
-  // Unfortunately, LayoutTreeBuilderTraversal::Parent() can return nullptr for
-  // a text node, such as inside a text area. Fall back on DOM parentNode().
-  return node->parentNode();
+  // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
+  // This can return nullptr for a node that is never visited by
+  // LayoutTreeBuilderTraversal's child traversal. For example, while an element
+  // can be appended as a <textarea>'s child, it is never visited by
+  // LayoutTreeBuilderTraversal's child traversal. Therefore, returning null in
+  // this case is appropriate, because that child content is not attached to any
+  // parent as far as rendering or accessibility are concerned.
+  // Whenever null is returned from this function, then a parent cannot be
+  // computed, and when a parent is not provided or computed, the accessible
+  // object will not be created.
+  // TODO(aleventhal) Remove this method / inline, if proven to be this simple.
+  return LayoutTreeBuilderTraversal::Parent(*node);
 }
 
 #if DCHECK_IS_ON()
@@ -535,6 +539,10 @@ void AXObject::Init(AXObject* parent) {
 }
 
 void AXObject::Detach() {
+  // Prevents LastKnown*() methods from returning the wrong values.
+  cached_is_ignored_ = true;
+  cached_is_ignored_but_included_in_tree_ = false;
+
   if (IsDetached()) {
     // Only mock objects can end up being detached twice, because their owner
     // may have needed to detach them when they were detached, but couldn't
@@ -574,9 +582,21 @@ bool AXObject::IsRoot() const {
 
 void AXObject::SetParent(AXObject* new_parent) const {
 #if DCHECK_IS_ON()
-  DCHECK(new_parent || IsRoot())
-      << "Parent cannot be null, except at the root, was null at " << GetNode()
-      << " " << GetLayoutObject();
+  if (!new_parent && !IsRoot()) {
+    std::ostringstream message;
+    message << "Parent cannot be null, except at the root. "
+               "Parent chain from DOM, starting at |this|:";
+    int count = 0;
+    for (Node* node = GetNode(); node;
+         node = GetParentNodeForComputeParent(node)) {
+      message << "\n"
+              << (++count) << ". " << node
+              << "\n  LayoutObject=" << node->GetLayoutObject();
+      if (AXObject* obj = AXObjectCache().Get(node))
+        message << "\n  " << obj->ToString(true, true);
+    }
+    NOTREACHED() << message.str();
+  }
 
   if (new_parent) {
     DCHECK(!new_parent->IsDetached())
@@ -623,8 +643,6 @@ void AXObject::RepairMissingParent() const {
   DCHECK(IsMissingParent());
 
   SetParent(ComputeParent());
-
-  DCHECK(parent_);
 }
 
 // In many cases, ComputeParent() is not called, because the parent adding
@@ -667,7 +685,7 @@ AXObject* AXObject::ComputeParent() const {
 }
 
 // static
-bool AXObject::CanComputeAsParent(Node* node) {
+bool AXObject::CanComputeAsNaturalParent(Node* node) {
   // A <select> menulist that will use AXMenuList is not allowed.
   if (AXObjectCacheImpl::UseAXMenuList()) {
     if (auto* select = DynamicTo<HTMLSelectElement>(node)) {
@@ -675,10 +693,14 @@ bool AXObject::CanComputeAsParent(Node* node) {
         return false;
     }
   }
-  // A <br> can only have an inline textbox child.
+
+  // A <br> can only support AXInlineTextBox children, which is never the result
+  // of a parent computation (the parent of the children is set at Init()).
   if (IsA<HTMLBRElement>(node))
     return false;
-  // Parents of <area> are handled separately above.
+
+  // Image map parent-child relationships (from image to area) must be retrieved
+  // manually via AXImageMapLink::GetAXObjectForImageMap().
   if (IsA<HTMLMapElement>(node) || IsA<HTMLAreaElement>(node) ||
       IsA<HTMLImageElement>(node)) {
     return false;
@@ -695,12 +717,6 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
       << "Can't compute parent without a backing Node "
          "or LayoutObject.";
 
-  // A WebArea's parent should be the page popup owner, if any, otherwise null.
-  if (IsA<Document>(current_node)) {
-    LocalFrame* frame = current_layout_obj->GetFrame();
-    return cache.GetOrCreate(frame->PagePopupOwner());
-  }
-
   // If no node, use the layout parent.
   if (!current_node) {
     // If no DOM node, this is an anonymous layout object.
@@ -714,7 +730,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
     if (!parent_layout_obj)
       return nullptr;
     Node* parent_node = parent_layout_obj->GetNode();
-    if (!CanComputeAsParent(parent_node))
+    if (!CanComputeAsNaturalParent(parent_node))
       return nullptr;
     if (AXObject* ax_parent = cache.GetOrCreate(parent_layout_obj)) {
       DCHECK(!ax_parent->IsDetached());
@@ -728,6 +744,13 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   DCHECK(current_node->isConnected())
       << "Should not call ComputeParent() with disconnected node: "
       << current_node;
+
+  // A WebArea's parent should be the page popup owner, if any, otherwise null.
+  if (auto* document = DynamicTo<Document>(current_node)) {
+    LocalFrame* frame = document->GetFrame();
+    DCHECK(frame);
+    return cache.GetOrCreate(frame->PagePopupOwner());
+  }
 
   // For <option> in <select size=1>, return the popup.
   if (AXObjectCacheImpl::UseAXMenuList()) {
@@ -747,34 +770,36 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
     }
   }
 
-  current_node = GetParentNodeForComputeParent(current_node);
-  DCHECK(current_node);
-
-  // When AXMenuList is being used, a menu list is only allowed to parent an
-  // AXMenuListPopup, which is added as a child on creation. No other
-  // children are allowed, and null is returned for anything else where the
-  // parent would be AXMenuList.
-  if (AXObjectCacheImpl::UseAXMenuList()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(current_node)) {
-      if (select->UsesMenuList())
-        return nullptr;
-    }
+  Node* parent_node = GetParentNodeForComputeParent(current_node);
+  if (!parent_node) {
+    // This occurs when a DOM child isn't visited by LayoutTreeBuilderTraversal,
+    // such as an element child of a <textarea>, which only supports plain text.
+    return nullptr;
   }
 
-  if (!CanComputeAsParent(current_node))
+  // When the flag to use AXMenuList in on, a menu list is only allowed to
+  // parent an AXMenuListPopup, which is added as a child on creation. No other
+  // children are allowed, and nullptr is returned for anything else where the
+  // parent would be AXMenuList.
+  if (AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          parent_node->GetLayoutObject())) {
+    return nullptr;
+  }
+
+  if (!CanComputeAsNaturalParent(parent_node))
     return nullptr;
 
-  if (AXObject* ax_parent = cache.GetOrCreate(current_node)) {
+  if (AXObject* ax_parent = cache.GetOrCreate(parent_node)) {
     DCHECK(!ax_parent->IsDetached());
     // If the parent can't have children, then return null so that the caller
     // knows that it is not a relevant natural parent, as it is a leaf.
     return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
   }
 
-  // Could not create AXObject for this the parent node, therefore there is no
-  // relevant natural parent. For example, the AXObject that would have been
-  // created would have been a descendant of a leaf, or otherwise an illegal
-  // child of a specialized object.
+  // Could not create AXObject for |parent_node|, therefore there is no relevant
+  // natural parent. For example, the AXObject that would have been created
+  // would have been a descendant of a leaf, or otherwise an illegal child of a
+  // specialized object.
   return nullptr;
 }
 
@@ -2500,10 +2525,15 @@ const AXObject* AXObject::DatetimeAncestor(int max_levels_to_check) const {
 }
 
 bool AXObject::LastKnownIsIgnoredValue() const {
+  DCHECK(cached_is_ignored_ || !IsDetached())
+      << "A detached object should always indicate that it is ignored so that "
+         "it won't ever accidentally be included in the tree.";
   return cached_is_ignored_;
 }
 
 bool AXObject::LastKnownIsIgnoredButIncludedInTreeValue() const {
+  DCHECK(!cached_is_ignored_but_included_in_tree_ || !IsDetached())
+      << "A detached object should never be included in the tree.";
   return cached_is_ignored_but_included_in_tree_;
 }
 
@@ -4044,17 +4074,22 @@ AXObject* AXObject::ParentObject() const {
     if (IsMissingParent())
       RepairMissingParent();
   } else {
-    if (parent_->IsDetached()) {
-      // TODO(accessibility) This should never happen, but it fails
-      // All/DumpAccessibilityTreeTest.IgnoredCrash/blink, meaning that when
-      // ClearChildren() was called, the parent did not find this as a child,
-      // and could not DetachFromParent() on the child.
-      NOTREACHED() << "Cached parent should never be detached:"
-                   << "\n* Child: " << RoleValue() << " " << GetNode() << " "
-                   << GetLayoutObject()
-                   << "\n* Parent: " << parent_->ToString(true, true);
-      return nullptr;
-    }
+    // If the cached parent is detached, it means that when ClearChildren() was
+    // called, the parent did not find this as a child, and could not
+    // DetachFromParent() on the child.
+    // Hint: one way to debug this illegal condition when it it occurs, is to
+    // locally patch ComputeAccessibilityIsIgnoredButIncludedInTree() so
+    // that it returns true for all objects. This should allow ClearChildren()
+    // on the parent to find the children and call DetachFromParent() on them.
+    DCHECK(!parent_->IsDetached())
+        << "Cached parent cannot be detached:"
+        << "\n* |this| = " << ToString(true, true)
+        << "\n* GetNode() = " << GetNode()
+        << "\n* GetLayoutObject() = " << GetLayoutObject()
+        << "\n* Parent: " << parent_->ToString(true, true)
+        << "\n* GetParentNodeForComputeParent() = "
+        << GetParentNodeForComputeParent(GetNode())
+        << "\n* OwnerShadowHost(): " << GetNode()->OwnerShadowHost();
   }
 
   return parent_;
@@ -4214,6 +4249,7 @@ void AXObject::ClearChildren() const {
   for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+    // Get the child object that should be detached from this parent.
     AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {

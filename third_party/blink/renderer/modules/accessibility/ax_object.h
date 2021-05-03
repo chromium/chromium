@@ -1117,8 +1117,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // the parent. It calls ComputeParentImpl() for the actual work.
   AXObject* ComputeParent() const;
 
-  // Can this node be used to compute the parent of an object?
-  static bool CanComputeAsParent(Node*);
+  // Can this node be used to compute the natural parent of an object?
+  // These are objects that can have some children, but the children are
+  // only of a certain type or from another part of the tree, and therefore
+  // the parent-child relationships are not natural and must be handled
+  // specially. For example, a <select> may be an innapropriate natural parent
+  // for all of its child nodes as determined by LayoutTreeBuilderTraversal,
+  // such as an <optgroup> or <div> in the shadow DOM, because an AXMenuList, if
+  // used, only allows <option>/AXMenuListOption children.
+  static bool CanComputeAsNaturalParent(Node*);
 
   // Compute the AXObject parent for the given node or layout_object.
   // The layout object is only necessary if the node is null, which is the case
