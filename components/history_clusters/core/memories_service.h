@@ -82,7 +82,8 @@ class MemoriesService : public KeyedService {
   // Note: At the moment, this method asks |remote_model_helper_| to construct
   // Memories from |visits_|.
   void QueryMemories(mojom::QueryParamsPtr query_params,
-                     base::OnceCallback<void(QueryMemoriesResponse)> callback);
+                     base::OnceCallback<void(QueryMemoriesResponse)> callback,
+                     base::CancelableTaskTracker* task_tracker);
   // Removes all visits to the specified URLs in the specified time ranges in
   // |expire_list|. Calls |closure| when done.
   void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,
@@ -103,7 +104,6 @@ class MemoriesService : public KeyedService {
   std::map<int64_t, IncompleteVisit> incomplete_visits_;
 
   history::HistoryService* history_service_;
-  base::CancelableTaskTracker task_tracker_;
 
   // Helper service to handle communicating with the remote model. This will be
   // used for debugging only; the launch ready feature will use a local model

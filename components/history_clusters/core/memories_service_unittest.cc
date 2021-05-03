@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -195,6 +196,8 @@ class MemoriesServiceTest : public testing::Test {
   std::unique_ptr<MemoriesService> memories_service_;
   std::unique_ptr<MemoriesServiceTestApi> memories_service_test_api_;
 
+  base::CancelableTaskTracker task_tracker_;
+
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;
   base::RepeatingClosure run_loop_quit_;
@@ -251,7 +254,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
                       "Github title");
             EXPECT_TRUE(response.clusters[1]->keywords.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
   InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
@@ -298,7 +302,8 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(response.clusters[0]->keywords[0], u"keyword 1");
             EXPECT_EQ(response.clusters[0]->keywords[1], u"keyword 2");
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   VerifyHardcodedTestDataInUrlLoaderRequest();
   InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
@@ -320,7 +325,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
             // Verify the parsed response.
             EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify no request is made.
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -345,7 +351,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
             // Verify the empty response.
             EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify no request is made.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -370,7 +377,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
             // Verify the parsed response.
             EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -400,7 +408,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
             // Verify the parsed response.
             EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -430,7 +439,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
             // Verify the parsed response.
             EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -455,9 +465,9 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
           [&](MemoriesService::QueryMemoriesResponse response) {
-            // Verify not reached.
-            EXPECT_TRUE(false);
-          }));
+            ADD_FAILURE() << "This should not be reached.";
+          }),
+      &task_tracker_);
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -469,7 +479,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
             // Verify the parsed response.
             EXPECT_EQ(response.clusters.size(), 2u);
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   // Verify there's a single request to the endpoint.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -540,14 +551,78 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDb) {
             EXPECT_EQ(response.clusters[1]->top_visits[0]->page_title,
                       "Github title");
             run_loop_quit_.Run();
-          }));
+          }),
+      &task_tracker_);
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
+  // Verify there's a single request to the endpoint.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Fake a response from the endpoint with two clusters.
   InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
   // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDbWithPendingRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {
+              kMemories,
+              {{"MemoriesStoreVisitsInHistoryDb", "true"}},
+          },
+          {
+              kRemoteModelForDebugging,
+              {{"MemoriesRemoteModelEndpoint", kFakeEndpoint}},
+          },
+      },
+      {});
+
+  // Must not be too old otherwise the history layer will ignore the visit.
+  const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3);
+  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5);
+
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  memories_service_->QueryMemories(
+      mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](MemoriesService::QueryMemoriesResponse response) {
+            ADD_FAILURE() << "This should not be reached.";
+          }),
+      &task_tracker_);
+
+  // Verify there are no requests to the endpoint just yet.
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+
+  // Cancel pending queries, if any.
+  task_tracker_.TryCancelAll();
+
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  memories_service_->QueryMemories(
+      mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](MemoriesService::QueryMemoriesResponse response) {
+            // Verify the parsed response.
+            EXPECT_EQ(response.clusters.size(), 2u);
+            run_loop_quit_.Run();
+          }),
+      &task_tracker_);
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  // Verify there's a single request to the endpoint.
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Fake a response from the endpoint with two clusters.
+  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
+
+  // Verify the last callback is invoked.
   run_loop_.Run();
 }
 

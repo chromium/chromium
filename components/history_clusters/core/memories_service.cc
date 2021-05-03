@@ -183,7 +183,8 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
 
 void MemoriesService::QueryMemories(
     mojom::QueryParamsPtr query_params,
-    base::OnceCallback<void(QueryMemoriesResponse)> callback) {
+    base::OnceCallback<void(QueryMemoriesResponse)> callback,
+    base::CancelableTaskTracker* task_tracker) {
   // |QueryMemories| has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
   //    from |visits_|.
@@ -208,7 +209,7 @@ void MemoriesService::QueryMemories(
             // This echo callback is necessary to copy the |ClusterVisit| refs.
             [](std::vector<history::ClusterVisit> visits) { return visits; })
             .Then(std::move(on_visits_callback)),
-        &task_tracker_);
+        task_tracker);
   } else
     std::move(on_visits_callback).Run(visits_);
 }

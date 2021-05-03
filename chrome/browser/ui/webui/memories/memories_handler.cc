@@ -92,6 +92,8 @@ void MemoriesHandler::QueryMemories(
       base::BindOnce(&MemoriesHandler::OnMemoriesQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
   if (history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
+    // Cancel pending queries, if any.
+    query_task_tracker_.TryCancelAll();
     auto* memory_service =
         MemoriesServiceFactory::GetForBrowserContext(profile_);
     memory_service->QueryMemories(
@@ -105,14 +107,15 @@ void MemoriesHandler::QueryMemories(
               std::move(callback).Run(std::move(response.query_params),
                                       std::move(response.clusters));
             },
-            std::move(result_callback)));
+            std::move(result_callback)),
+        &query_task_tracker_);
   } else {
 #if defined(CHROME_BRANDED)
     page_->OnMemoriesQueryResult(
         history_clusters::mojom::MemoriesResult::New());
 #else
     // Cancel pending queries, if any.
-    history_task_tracker_.TryCancelAll();
+    query_task_tracker_.TryCancelAll();
     QueryHistoryService(std::move(query_params), {},
                         std::move(result_callback));
 #endif
@@ -198,7 +201,7 @@ void MemoriesHandler::QueryHistoryService(
       base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params),
                      std::move(memory_mojoms), std::move(callback)),
-      &history_task_tracker_);
+      &query_task_tracker_);
 }
 
 void MemoriesHandler::OnHistoryQueryResults(

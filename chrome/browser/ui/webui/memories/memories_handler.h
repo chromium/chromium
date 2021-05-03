@@ -81,11 +81,13 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
       std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
       MemoriesQueryResultsCallback callback,
       history::QueryResults results);
-  base::CancelableTaskTracker history_task_tracker_;
 #endif
 
   Profile* profile_;
   content::WebContents* web_contents_;
+  // Tracker for query requests to the MemoriesService.
+  base::CancelableTaskTracker query_task_tracker_;
+  // Tracker for remove requests to the MemoriesService.
   base::CancelableTaskTracker remove_task_tracker_;
 
   // Used to observe the service.
