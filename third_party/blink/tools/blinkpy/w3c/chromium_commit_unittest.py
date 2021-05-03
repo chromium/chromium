@@ -22,10 +22,10 @@ class ChromiumCommitTest(unittest.TestCase):
         host = MockHost()
         host.executive = MockExecutive(
             output='c881563d734a86f7d9cd57ac509653a61c45c240')
-        pos = 'Cr-Commit-Position: refs/heads/master@{#789}'
+        pos = 'Cr-Commit-Position: refs/heads/main@{#789}'
         chromium_commit = ChromiumCommit(host, position=pos)
 
-        self.assertEqual(chromium_commit.position, 'refs/heads/master@{#789}')
+        self.assertEqual(chromium_commit.position, 'refs/heads/main@{#789}')
         self.assertEqual(chromium_commit.sha,
                          'c881563d734a86f7d9cd57ac509653a61c45c240')
 
@@ -33,12 +33,12 @@ class ChromiumCommitTest(unittest.TestCase):
         host = MockHost()
         host.executive = mock_git_commands({
             'footers':
-            'refs/heads/master@{#789}'
+            'refs/heads/main@{#789}'
         })
         chromium_commit = ChromiumCommit(
             host, sha='c881563d734a86f7d9cd57ac509653a61c45c240')
 
-        self.assertEqual(chromium_commit.position, 'refs/heads/master@{#789}')
+        self.assertEqual(chromium_commit.position, 'refs/heads/main@{#789}')
         self.assertEqual(chromium_commit.sha,
                          'c881563d734a86f7d9cd57ac509653a61c45c240')
 
@@ -70,7 +70,7 @@ class ChromiumCommitTest(unittest.TestCase):
             'c881563d734a86f7d9cd57ac509653a61c45c240',
         })
 
-        position_footer = 'Cr-Commit-Position: refs/heads/master@{#789}'
+        position_footer = 'Cr-Commit-Position: refs/heads/main@{#789}'
         chromium_commit = ChromiumCommit(host, position=position_footer)
 
         files = chromium_commit.filtered_changed_files()

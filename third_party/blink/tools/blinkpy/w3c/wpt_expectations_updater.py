@@ -804,7 +804,7 @@ class WPTExpectationsUpdater(object):
         # TODO(robertma): Improve Git.changed_files so that we can use
         # it here.
         paths = self.git.run(
-            ['diff', 'origin/master', '--diff-filter=D',
+            ['diff', 'origin/main', '--diff-filter=D',
              '--name-only']).splitlines()
         deleted_files = []
         for p in paths:
@@ -822,7 +822,7 @@ class WPTExpectationsUpdater(object):
         Returns a dictionary mapping source name to destination name.
         """
         out = self.git.run([
-            'diff', 'origin/master', '-M90%', '--diff-filter=R',
+            'diff', 'origin/main', '-M90%', '--diff-filter=R',
             '--name-status'
         ])
         renamed_tests = {}

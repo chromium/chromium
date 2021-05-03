@@ -70,7 +70,7 @@ class ImportNotifierTest(unittest.TestCase):
             self.notifier.more_failures_in_baseline('foo-expected.txt'))
         self.assertEqual(
             executive.calls,
-            [['git', 'diff', '-U0', 'origin/master', '--', 'foo-expected.txt']
+            [['git', 'diff', '-U0', 'origin/main', '--', 'foo-expected.txt']
              ])
 
     def test_more_failures_in_baseline_fewer_fails(self):

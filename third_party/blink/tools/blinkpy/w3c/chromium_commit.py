@@ -15,9 +15,9 @@ class ChromiumCommit(object):
             host: A Host object.
             sha: A Chromium commit SHA hash.
             position: A commit position footer string of the form:
-                    'Cr-Commit-Position: refs/heads/master@{#431915}'
+                    'Cr-Commit-Position: refs/heads/main@{#431915}'
                 or just the commit position string:
-                    'refs/heads/master@{#431915}'
+                    'refs/heads/main@{#431915}'
         """
         self.host = host
         self.absolute_chromium_dir = absolute_chromium_dir(host)
@@ -46,14 +46,14 @@ class ChromiumCommit(object):
     def short_sha(self):
         return self.sha[0:10]
 
-    def num_behind_master(self):
-        """Returns the number of commits this commit is behind origin/master.
+    def num_behind_main(self):
+        """Returns the number of commits this commit is behind origin/main.
 
         It is inclusive of this commit and of the latest commit.
         """
         return len(
             self.host.executive.run_command(
-                ['git', 'rev-list', '{}..origin/master'.format(self.sha)],
+                ['git', 'rev-list', '{}..origin/main'.format(self.sha)],
                 cwd=self.absolute_chromium_dir).splitlines())
 
     def position_to_sha(self, commit_position):

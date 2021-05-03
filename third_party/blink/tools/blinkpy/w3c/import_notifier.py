@@ -138,7 +138,7 @@ class ImportNotifier(object):
         failures - this includes going from FAIL to error or vice-versa.
         """
 
-        diff = self.git.run(['diff', '-U0', 'origin/master', '--', baseline])
+        diff = self.git.run(['diff', '-U0', 'origin/main', '--', baseline])
         delta_failures = 0
         delta_harness_errors = 0
         for line in diff.splitlines():
