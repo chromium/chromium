@@ -146,6 +146,7 @@ generate_grd("build_grd") {
     "images/notification_access_error.svg",
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
+    "images/keyboard_shortcut.svg",
     "../../nearby_share/shared/nearby_share_pulse_animation.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
@@ -468,6 +469,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
     "chromeos/search_handler.m.js",
+    "chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.js",
     "controls/controlled_button.js",
     "controls/controlled_radio_button.js",
     "controls/extension_controlled_indicator.js",
@@ -505,6 +507,7 @@ group("closure_compile_module") {
     "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
+    "keyboard_shortcut_banner:closure_compile_module",
     "localized_link:closure_compile_module",
     "multidevice_page:closure_compile_module",
     "nearby_share_page:closure_compile_module",
@@ -656,6 +659,7 @@ group("polymer3_elements") {
     "guest_os:polymer3_elements",
     "internet_page:polymer3_elements",
     "kerberos_page:polymer3_elements",
+    "keyboard_shortcut_banner:web_components",
     "localized_link:polymer3_elements",
     "multidevice_page:polymer3_elements",
     "nearby_share_page:polymer3_elements",

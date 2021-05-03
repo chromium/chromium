@@ -95,7 +95,7 @@
    * @const
    */
   const allowedTags =
-      new Set(['A', 'B', 'BR', 'DIV', 'P', 'PRE', 'SPAN', 'STRONG']);
+      new Set(['A', 'B', 'BR', 'DIV', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
 
   /**
    * Allow-list of optional tag names in parseHtmlSubset.
