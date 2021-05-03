@@ -242,6 +242,11 @@ class MotionMarkRampPage(MotionMarkPage):
             '&time-measurement=performance') % (suite_name, test_name)
 
 
+class MotionMarkRampMultiply(MotionMarkRampPage):
+  BASE_NAME = 'motionmark_ramp_multiply'
+  URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Multiply')
+
+
 class MotionMarkRampCanvasArcs(MotionMarkRampPage):
   BASE_NAME = 'motionmark_ramp_canvas_arcs'
   URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Canvas Arcs')
