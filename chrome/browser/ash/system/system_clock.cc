@@ -188,10 +188,7 @@ bool SystemClock::ShouldUse24HourClock() const {
       user_pref->IsDefaultValue()) {
     return default_value;
   }
-
-  bool use_24_hour_clock = true;
-  user_pref->GetValue()->GetAsBoolean(&use_24_hour_clock);
-  return use_24_hour_clock;
+  return user_pref->GetValue()->GetIfBool().value_or(true);
 }
 
 void SystemClock::OnSystemPrefChanged() {

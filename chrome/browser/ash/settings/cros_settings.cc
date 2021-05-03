@@ -129,8 +129,10 @@ bool CrosSettings::GetBoolean(const std::string& path,
                               bool* bool_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsBoolean(bool_value);
+  if (value && value->is_bool()) {
+    *bool_value = value->GetBool();
+    return true;
+  }
   return false;
 }
 
