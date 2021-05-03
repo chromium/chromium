@@ -6,6 +6,7 @@
 
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/federated_learning/features/features.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_context.h"
@@ -64,6 +65,11 @@ FlocEligibilityObserver::OnCommit(
 }
 
 void FlocEligibilityObserver::OnAdResource() {
+  if (!base::FeatureList::IsEnabled(
+          kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation)) {
+    return;
+  }
+
   OnOptInSignalObserved();
 }
 

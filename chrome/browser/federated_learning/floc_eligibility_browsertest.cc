@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -54,8 +55,11 @@ class FlocEligibilityBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   FlocEligibilityBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kInterestCohortFeaturePolicy);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kInterestCohortFeaturePolicy},
+        /*disabled_features=*/{
+            federated_learning::
+                kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation});
   }
 
   void SetUpOnMainThread() override {
@@ -193,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
-                       EligibleForHistoryAfterAdResource) {
+                       NotEligibleForHistoryAfterAdResource) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
   SetRulesetWithRules(
@@ -205,9 +209,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
-  // Expect that the navigation history is eligible for floc computation as the
-  // page contains an ad resource.
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+  // Expect that the navigation history is not eligible for floc computation.
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -231,14 +234,13 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        NotEligibleForHistoryDueToFeaturePolicy) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
-  SetRulesetWithRules(
-      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
-
   GURL main_page_url = https_server_.GetURL(
       "a.test", "/federated_learning/feature_policy_interest_cohort_none.html");
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  InvokeInterestCohortJsApi(web_contents());
 
   // Expect that the navigation history is not eligible for floc computation as
   // the feature policy disallows it.
@@ -247,14 +249,13 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        NotEligibleForHistoryDueToPrivateIP) {
-  SetRulesetWithRules(
-      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
-
   GURL main_page_url = https_server_.GetURL(
       "a.test", "/federated_learning/page_with_script_and_iframe.html");
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  InvokeInterestCohortJsApi(web_contents());
 
   // Expect that the navigation history is not eligible for floc computation as
   // the IP was not publicly routable.
@@ -420,6 +421,53 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
         document.body.textContent
       )")
           .ExtractString());
+}
+
+class FlocEligibilityBrowserTestPagesWithAdResourcesDefaultIncluded
+    : public FlocEligibilityBrowserTest {
+ public:
+  FlocEligibilityBrowserTestPagesWithAdResourcesDefaultIncluded() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kInterestCohortFeaturePolicy,
+         federated_learning::
+             kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FlocEligibilityBrowserTestPagesWithAdResourcesDefaultIncluded,
+    EligibleForHistoryAfterAdResource) {
+  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
+
+  GURL main_page_url = https_server_.GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Expect that the navigation history is eligible for floc computation as the
+  // page contains an ad resource.
+  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FlocEligibilityBrowserTestPagesWithAdResourcesDefaultIncluded,
+    NotEligibleForHistoryAfterNonAdResource) {
+  net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+
+  GURL main_page_url = https_server_.GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  // Expect that the navigation history is not eligible for floc computation.
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
 class FlocEligibilityBrowserTestChromeFeaturePolicyDisabled

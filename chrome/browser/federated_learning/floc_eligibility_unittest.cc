@@ -8,6 +8,7 @@
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/floc_page_load_metrics_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/federated_learning/features/features.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
@@ -159,7 +160,7 @@ TEST_F(FlocEligibilityUnitTest, OnAdResourceObserved) {
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
   SimulateResourceDataUseUpdate(/*is_ad_resource=*/true);
-  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(url));
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 }
 
 TEST_F(FlocEligibilityUnitTest, OnNonAdResourceObserved) {
@@ -198,6 +199,42 @@ TEST_F(FlocEligibilityUnitTest, StopObservingFlocFeaturePolicyDisabled) {
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 
   GetFlocEligibilityObserver()->OnInterestCohortApiUsed();
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+}
+
+class FlocEligibilityUnitTestPagesWithAdResourcesDefaultIncluded
+    : public FlocEligibilityUnitTest {
+ public:
+  FlocEligibilityUnitTestPagesWithAdResourcesDefaultIncluded() {
+    feature_list_.InitAndEnableFeature(
+        kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FlocEligibilityUnitTestPagesWithAdResourcesDefaultIncluded,
+       OnAdResourceObserved) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
+
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+
+  SimulateResourceDataUseUpdate(/*is_ad_resource=*/true);
+  EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(url));
+}
+
+TEST_F(FlocEligibilityUnitTestPagesWithAdResourcesDefaultIncluded,
+       OnNonAdResourceObserved) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*floc_feature_policy_enabled=*/true);
+
+  EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
+
+  SimulateResourceDataUseUpdate(/*is_ad_resource=*/false);
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 }
 
