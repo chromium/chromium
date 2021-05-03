@@ -27,9 +27,6 @@ class WebState;
 // authorization is not yet determined.
 - (void)triggerSystemPrompt;
 
-// Notifies the receiver that the location bar became the first responder.
-- (void)locationBarDidBecomeFirstResponder:(ChromeBrowserState*)browserState;
-
 // Notifies the receiver that the browser finished loading the page for
 // |webState|. |loadSuccess| whether the web state loaded successfully.
 // |webState| can't be null.

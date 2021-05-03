@@ -4430,8 +4430,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                        [self.typingShield setAlpha:1.0];
                      }];
   }
-  [[OmniboxGeolocationController sharedInstance]
-      locationBarDidBecomeFirstResponder:self.browserState];
 
   [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:YES];
 

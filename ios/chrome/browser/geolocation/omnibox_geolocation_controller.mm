@@ -100,51 +100,9 @@ const char* const kGeolocationAuthorizationActionNewUser =
   }
 }
 
-- (void)locationBarDidBecomeFirstResponder:(ChromeBrowserState*)browserState {
-  if (self.locationServicesEnabled && browserState &&
-      !browserState->IsOffTheRecord()) {
-    [self requestPermission];
-  }
-}
-
 - (void)finishPageLoadForWebState:(web::WebState*)webState
                       loadSuccess:(BOOL)loadSuccess {
-  if (!loadSuccess || !webState->GetBrowserState() ||
-      webState->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
-  web::NavigationItem* item =
-      webState->GetNavigationManager()->GetVisibleItem();
-
-  if (!item) {
-    // TODO(crbug.com/899827): remove this early return once committed
-    // navigation item always exists after WebStateObserver::PageLoaded.
-    return;
-  }
-
-  if (![self URLIsAuthorizationPromptingURL:item->GetURL()] ||
-      !self.locationServicesEnabled) {
-    return;
-  }
-
-  switch (CLLocationManager.authorizationStatus) {
-    case kCLAuthorizationStatusNotDetermined:
-      // Prompt the user with the iOS system location authorization alert.
-      //
-      // Set |systemPrompt_|, so that
-      // locationManagerDidChangeAuthorization: will know that any
-      // CLAuthorizationStatus changes are coming from this specific prompt.
-      _systemPrompt = YES;
-      [self requestPermission];
-      break;
-
-    case kCLAuthorizationStatusRestricted:
-    case kCLAuthorizationStatusDenied:
-    case kCLAuthorizationStatusAuthorizedAlways:
-    case kCLAuthorizationStatusAuthorizedWhenInUse:
-      break;
-  }
+  // Don't ask for permission on page loads.
 }
 
 - (void)systemPromptSkippedForNewUser {
