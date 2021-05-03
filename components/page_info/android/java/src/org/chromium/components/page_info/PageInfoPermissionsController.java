@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,6 +32,13 @@ import java.util.List;
  */
 public class PageInfoPermissionsController
         implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
+    /**  Parameters to represent a single permission. */
+    public static class PermissionObject {
+        public CharSequence name;
+        public boolean allowed;
+        public @StringRes int warningTextResource;
+    }
+
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
@@ -102,14 +110,14 @@ public class PageInfoPermissionsController
         fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
-    public void setPermissions(PageInfoView.PermissionParams params) {
+    public void setPermissions(List<PermissionObject> permissions) {
         Resources resources = mRowView.getContext().getResources();
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.ic_tune_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
-        rowParams.subtitle = getPermissionSummaryString(params.permissions, resources);
+        rowParams.subtitle = getPermissionSummaryString(permissions, resources);
         rowParams.visible = mDelegate.isSiteSettingsAvailable() && rowParams.subtitle != null;
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             rowParams.rowTint = mHighlightColor;
@@ -122,15 +130,15 @@ public class PageInfoPermissionsController
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static String getPermissionSummaryString(
-            List<PageInfoView.PermissionRowParams> permissions, Resources resources) {
+            List<PermissionObject> permissions, Resources resources) {
         int numPermissions = permissions.size();
         if (numPermissions == 0) {
             return null;
         }
 
-        PageInfoView.PermissionRowParams perm1 = permissions.get(0);
+        PermissionObject perm1 = permissions.get(0);
         boolean same = true;
-        for (PageInfoView.PermissionRowParams perm : permissions) {
+        for (PermissionObject perm : permissions) {
             if (perm.warningTextResource != 0) {
                 // Show the first (most important warning) only, if there is one.
                 return resources.getString(R.string.page_info_permissions_os_warning,
@@ -146,7 +154,7 @@ public class PageInfoPermissionsController
             return resources.getString(resId, perm1.name.toString());
         }
 
-        PageInfoView.PermissionRowParams perm2 = permissions.get(1);
+        PermissionObject perm2 = permissions.get(1);
         if (numPermissions == 2) {
             if (same) {
                 int resId = perm1.allowed ? R.string.page_info_permissions_summary_2_allowed

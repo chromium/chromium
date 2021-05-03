@@ -63,6 +63,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /**
  * Java side of Android implementation of the page info UI.
@@ -127,9 +128,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // Used to show Site settings from Page Info UI.
     private final PermissionParamsListBuilder mPermissionParamsListBuilder;
 
-    // Delegate used by PermissionParamsListBuilder.
-    private final PermissionParamsListBuilderDelegate mPermissionParamsListBuilderDelegate;
-
     // The current page info subpage controller, if any.
     private PageInfoSubpageController mSubpageController;
 
@@ -165,13 +163,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public PageInfoController(WebContents webContents, int securityLevel, String publisher,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
             @ContentSettingsType int highlightedPermission) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
         mIsV2Enabled = PageInfoFeatures.PAGE_INFO_V2.isEnabled();
-        mPermissionParamsListBuilderDelegate = permissionParamsListBuilderDelegate;
         PageInfoViewParams viewParams = new PageInfoViewParams();
 
         mWindowAndroid = webContents.getTopLevelNativeWindow();
@@ -326,11 +322,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());
 
-        // TODO(crbug.com/1040091): Remove when cookie controls are launched.
-        boolean showTitle = viewParams.cookieControlsShown;
-        mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid,
-                mFullUrl.getSpec(), showTitle, this, mView::setPermissions,
-                mPermissionParamsListBuilderDelegate);
+        mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);
         mNativePageInfoController = PageInfoControllerJni.get().init(this, mWebContents);
         mCookieBridge =
                 mDelegate.createCookieControlsBridge(mIsV2Enabled ? mCookiesController : this);
@@ -445,12 +437,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @CalledByNative
     private void updatePermissionDisplay() {
         assert (mPermissionParamsListBuilder != null);
-        PageInfoView.PermissionParams params = mPermissionParamsListBuilder.build();
-        if (mIsV2Enabled) {
-            mPermissionsController.setPermissions(params);
-        } else {
-            mView.setPermissions(params);
-        }
+        List<PageInfoPermissionsController.PermissionObject> params =
+                mPermissionParamsListBuilder.build();
+        mPermissionsController.setPermissions(params);
     }
 
     /**
@@ -627,7 +616,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         sLastPageInfoControllerForTesting = new WeakReference<>(new PageInfoController(webContents,
                 SecurityStateModel.getSecurityLevelForWebContents(webContents), contentPublisher,
-                delegate, permissionParamsListBuilderDelegate, highlightedPermission));
+                delegate, highlightedPermission));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

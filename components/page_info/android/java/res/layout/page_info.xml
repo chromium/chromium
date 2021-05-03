@@ -131,30 +131,6 @@
         android:paddingStart="@dimen/page_info_popup_padding_sides"
         android:paddingEnd="@dimen/page_info_popup_padding_sides"/>
 
-    <View
-        android:id="@+id/page_info_permissions_separator"
-        android:layout_marginTop="16dp"
-        style="@style/HorizontalDivider" />
-
-    <TextView
-        android:id="@+id/page_info_permissions_list_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingStart="@dimen/page_info_popup_padding_sides"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:text="@string/page_info_permissions_title"/>
-
-    <LinearLayout
-        android:id="@+id/page_info_permissions_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/page_info_popup_padding_sides"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides" >
-    </LinearLayout>
-
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_info_site_settings_button"
         android:layout_width="wrap_content"

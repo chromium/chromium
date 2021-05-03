@@ -17,7 +17,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.PageInfoPermissionsController;
-import org.chromium.components.page_info.PageInfoView.PermissionRowParams;
+import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,34 +28,32 @@ import java.util.List;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class PageInfoPermissionsControllerUnitTest {
-    private static PermissionRowParams createPermission(
+    private static PermissionObject createPermission(
             String name, boolean allowed, int warningResId) {
-        PermissionRowParams permission = new PermissionRowParams();
+        PermissionObject permission = new PermissionObject();
         permission.name = name;
         permission.allowed = allowed;
         permission.warningTextResource = warningResId;
         return permission;
     }
-    private static final PermissionRowParams LOCATION_OS_WARNING =
+    private static final PermissionObject LOCATION_OS_WARNING =
             createPermission("Location", true, R.string.page_info_android_location_blocked);
-    private static final PermissionRowParams LOCATION_ALLOWED =
-            createPermission("Location", true, 0);
-    private static final PermissionRowParams LOCATION_BLOCKED =
-            createPermission("Location", false, 0);
-    private static final PermissionRowParams SOUND_ALLOWED = createPermission("Sound", true, 0);
-    private static final PermissionRowParams SOUND_BLOCKED = createPermission("Sound", false, 0);
-    private static final PermissionRowParams VR_ALLOWED = createPermission("VR", true, 0);
-    private static final PermissionRowParams VR_BLOCKED = createPermission("VR", false, 0);
-    private static final PermissionRowParams AR_ALLOWED = createPermission("AR", true, 0);
-    private static final PermissionRowParams AR_BLOCKED = createPermission("AR", false, 0);
+    private static final PermissionObject LOCATION_ALLOWED = createPermission("Location", true, 0);
+    private static final PermissionObject LOCATION_BLOCKED = createPermission("Location", false, 0);
+    private static final PermissionObject SOUND_ALLOWED = createPermission("Sound", true, 0);
+    private static final PermissionObject SOUND_BLOCKED = createPermission("Sound", false, 0);
+    private static final PermissionObject VR_ALLOWED = createPermission("VR", true, 0);
+    private static final PermissionObject VR_BLOCKED = createPermission("VR", false, 0);
+    private static final PermissionObject AR_ALLOWED = createPermission("AR", true, 0);
+    private static final PermissionObject AR_BLOCKED = createPermission("AR", false, 0);
 
     private Context mContext;
     private String mTestName;
-    private List<PermissionRowParams> mPermissions;
+    private List<PermissionObject> mPermissions;
     private String mExpectedString;
 
     public PageInfoPermissionsControllerUnitTest(
-            String testName, List<PermissionRowParams> permissions, String expectedString) {
+            String testName, List<PermissionObject> permissions, String expectedString) {
         mContext = ApplicationProvider.getApplicationContext();
         this.mTestName = testName;
         this.mPermissions = permissions;

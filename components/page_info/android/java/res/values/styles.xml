@@ -8,8 +8,4 @@
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
-    <style name="TextAppearance.PageInfoPermissionSubtitle"
-        parent="TextAppearance.TextMedium.Secondary">
-        <item name="android:textColor">@color/secondary_text_default_material_light</item>
-    </style>
 </resources>

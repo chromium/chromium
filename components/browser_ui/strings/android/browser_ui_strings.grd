@@ -556,18 +556,6 @@
       <message name="IDS_PAGE_INFO_ANDROID_AR_CAMERA_BLOCKED" desc="The label used in the Page Info dialog for the AR permission to indicate that Camera has been disabled for the device in Android settings">
         Camera is turned off in Android settings
       </message>
-      <message name="IDS_PAGE_INFO_PERMISSION_ALLOWED" desc="The label used in the Page Info dialog to describe an allowed permission. Eg: Location - Allowed">
-        Allowed
-      </message>
-      <message name="IDS_PAGE_INFO_PERMISSION_BLOCKED" desc="The label used in the Page Info dialog to describe a blocked permission. Eg: Location - Blocked">
-        Blocked
-      </message>
-      <message name="IDS_PAGE_INFO_DSE_PERMISSION_ALLOWED" desc="The label used in the Page Info dialog to describe an allowed location permission for the current search engine. Eg: Location - Allowed for current search engine">
-        Allowed for current search engine
-      </message>
-      <message name="IDS_PAGE_INFO_DSE_PERMISSION_BLOCKED" desc="The label used in the Page Info dialog to describe a blocked location permission for the current search engine. Eg: Location - Blocked for current search engine">
-        Blocked for current search engine
-      </message>
       <message name="IDS_PAGE_INFO_URL_EXPANDED" desc="Accessibility announcement when the URL in PageInfo switches from truncated to full display">
         URL expanded
       </message>

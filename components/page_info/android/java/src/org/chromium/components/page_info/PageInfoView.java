@@ -15,16 +15,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatTextView;
-
-import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,25 +163,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         public int urlOriginLength;
     }
 
-    /** Parameters to configure the permission info section */
-    public static class PermissionParams {
-        public boolean show_title = true;
-        public List<PermissionRowParams> permissions;
-    }
-
-    /**  Parameters to configure the view of a permission row. */
-    public static class PermissionRowParams {
-        public CharSequence name;
-        public boolean allowed;
-        // TODO(crbug.com/1077766): Remove status text and associations after migration.
-        public CharSequence status;
-        public @DrawableRes int iconResource;
-        public @ColorRes int iconTintColorResource;
-        public @StringRes int warningTextResource;
-        public @StringRes int subtitleTextResource;
-        public Runnable clickCallback;
-    }
-
     /**  Parameters to configure the view of the connection message. */
     public static class ConnectionInfoParams {
         public CharSequence message;
@@ -214,9 +188,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private TextView mConnectionMessage;
     private TextView mPerformanceSummary;
     private TextView mPerformanceMessage;
-    private TextView mPermissionsTitle;
-    private View mPermissionsSeparator;
-    private LinearLayout mPermissionsList;
     private TextView mHttpsImageCompressionMessage;
     private View mCookieControlsSeparator;
     private CookieControlsView mCookieControlsView;
@@ -277,13 +248,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     }
 
     protected void initPermissions(PageInfoViewParams params) {
-        mPermissionsTitle = findViewById(R.id.page_info_permissions_list_title);
-        mPermissionsSeparator = findViewById(R.id.page_info_permissions_separator);
-        mPermissionsList = findViewById(R.id.page_info_permissions_list);
-        // Hide the permissions list for sites with no permissions.
-        initializePageInfoViewChild(mPermissionsTitle, false, null);
-        initializePageInfoViewChild(mPermissionsSeparator, false, null);
-        initializePageInfoViewChild(mPermissionsList, false, null);
+        // TODO(crbug.com/1182193): Remove function and restructure init at the end of cleanup.
     }
 
     protected void initCookies(PageInfoViewParams params) {
@@ -322,17 +287,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mOnUiClosingCallback.run();
-    }
-
-    public void setPermissions(PermissionParams params) {
-        mPermissionsList.removeAllViews();
-        // If we have at least one permission show the lower permissions area.
-        mPermissionsList.setVisibility(!params.permissions.isEmpty() ? View.VISIBLE : View.GONE);
-        mPermissionsTitle.setVisibility(params.show_title ? View.VISIBLE : View.GONE);
-        mPermissionsSeparator.setVisibility(params.show_title ? View.VISIBLE : View.GONE);
-        for (PermissionRowParams rowParams : params.permissions) {
-            mPermissionsList.addView(createPermissionRow(rowParams));
-        }
     }
 
     public void setConnectionInfo(ConnectionInfoParams params) {
@@ -397,40 +351,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         child.setOnClickListener(this);
     }
 
-    private View createPermissionRow(PermissionRowParams params) {
-        View permissionRow =
-                LayoutInflater.from(getContext()).inflate(R.layout.page_info_permission_row, null);
-
-        TextView permissionStatus = permissionRow.findViewById(R.id.page_info_permission_status);
-        permissionStatus.setText(params.status);
-
-        ImageView permissionIcon = permissionRow.findViewById(R.id.page_info_permission_icon);
-        permissionIcon.setImageDrawable(UiUtils.getTintedDrawable(getContext(), params.iconResource,
-                params.iconTintColorResource != 0 ? params.iconTintColorResource
-                                                  : R.color.default_icon_color));
-
-        if (params.warningTextResource != 0) {
-            TextView permissionUnavailable =
-                    permissionRow.findViewById(R.id.page_info_permission_unavailable_message);
-            permissionUnavailable.setVisibility(View.VISIBLE);
-            permissionUnavailable.setText(params.warningTextResource);
-        }
-
-        if (params.subtitleTextResource != 0) {
-            TextView permissionSubtitle =
-                    permissionRow.findViewById(R.id.page_info_permission_subtitle);
-            permissionSubtitle.setVisibility(View.VISIBLE);
-            permissionSubtitle.setText(params.subtitleTextResource);
-        }
-
-        if (params.clickCallback != null) {
-            permissionRow.setTag(R.id.page_info_click_callback, params.clickCallback);
-            permissionRow.setOnClickListener(this);
-        }
-
-        return permissionRow;
-    }
-
     /**
      * Create a list of all the views which we want to individually fade in.
      */
@@ -445,11 +365,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         animatableViews.add(mInstantAppButton);
         animatableViews.add(mCookieControlsSeparator);
         animatableViews.add(mCookieControlsView);
-        animatableViews.add(mPermissionsSeparator);
-        animatableViews.add(mPermissionsTitle);
-        for (int i = 0; i < mPermissionsList.getChildCount(); i++) {
-            animatableViews.add(mPermissionsList.getChildAt(i));
-        }
         animatableViews.add(mSiteSettingsButton);
 
         return animatableViews;
