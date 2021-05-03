@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "content/public/browser/web_contents.h"
 #endif
 
@@ -41,5 +42,16 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
     location_bar->UpdateContentSettingsIcons();
 #endif
 }
+
+#if !defined(OS_ANDROID)
+std::u16string GetPermissionDetailString(Profile* profile,
+                                         ContentSettingsType content_type,
+                                         const GURL& url) {
+  if (content_type != ContentSettingsType::FILE_HANDLING || !url.is_valid())
+    return {};
+
+  return web_app::GetFileExtensionsHandledByWebAppDisplayedAsList(profile, url);
+}
+#endif
 
 }  // namespace content_settings

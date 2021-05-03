@@ -63,6 +63,7 @@ constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kRecentPermissions[] = "recentPermissions";
 constexpr char kSetting[] = "setting";
+constexpr char kSettingDetail[] = "settingDetail";
 constexpr char kSites[] = "sites";
 constexpr char kPolicyIndicator[] = "indicator";
 constexpr char kSource[] = "source";
@@ -124,6 +125,8 @@ base::Value GetValueForManagedState(const ManagedState& state);
 
 // Helper function to construct a dictionary for an exception.
 std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
+    ContentSettingsType content_type,
+    Profile* profile,
     const ContentSettingsPattern& pattern,
     const ContentSettingsPattern& secondary_pattern,
     const std::string& display_name,

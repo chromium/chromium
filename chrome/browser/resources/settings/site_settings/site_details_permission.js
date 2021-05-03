@@ -192,15 +192,16 @@ Polymer({
    * @param {!SiteSettingSource} source The source of the permission.
    * @param {!ContentSettingsTypes} category The permission type.
    * @param {!ContentSetting} setting The permission setting.
+   * @param {?string} settingDetail A sublabel for the permission.
    * @return {boolean} Whether the permission will have a source string to
    *     display.
    * @private
    */
-  hasPermissionInfoString_(source, category, setting) {
+  hasPermissionInfoString_(source, category, setting, settingDetail) {
     // This method assumes that an empty string will be returned for categories
     // that have no permission info string.
     return this.permissionInfoString_(
-               source, category, setting,
+               source, category, setting, settingDetail,
                // Set all permission info string arguments as null. This is OK
                // because there is no need to know what the information string
                // will be, just whether there is one or not.
@@ -214,12 +215,14 @@ Polymer({
    * @param {!SiteSettingSource} source The source of the permission.
    * @param {!ContentSettingsTypes} category The permission type.
    * @param {!ContentSetting} setting The permission setting.
+   * @param {?string} settingDetail A sublabel for the permission.
    * @return {string} CSS class applied when there is an additional description
    *     string.
    * @private
    */
-  permissionInfoStringClass_(source, category, setting) {
-    return this.hasPermissionInfoString_(source, category, setting) ?
+  permissionInfoStringClass_(source, category, setting, settingDetail) {
+    return this.hasPermissionInfoString_(
+               source, category, setting, settingDetail) ?
         'two-line' :
         '';
   },
@@ -311,6 +314,10 @@ Polymer({
    * @param {!SiteSettingSource} source The source of the permission.
    * @param {!ContentSettingsTypes} category The permission type.
    * @param {!ContentSetting} setting The permission setting.
+   * @param {?string} settingDetail If non-empty, the string to display as the
+   *     permission info. This overrides other calculations made by this
+   *     function, and is used for situations where extra data about the
+   *     permission is required to compose the substring.
    * @param {?string} allowlistString The string to show if the permission is
    *     allowlisted.
    * @param {?string} adsBlacklistString The string to show if the site is
@@ -331,14 +338,22 @@ Polymer({
    * @private
    */
   permissionInfoString_(
-      source, category, setting, allowlistString, adsBlacklistString,
-      adsBlockString, embargoString, insecureOriginString, killSwitchString,
-      extensionAllowString, extensionBlockString, extensionAskString,
-      policyAllowString, policyBlockString, policyAskString,
+      source, category, setting, settingDetail, allowlistString,
+      adsBlacklistString, adsBlockString, embargoString, insecureOriginString,
+      killSwitchString, extensionAllowString, extensionBlockString,
+      extensionAskString, policyAllowString, policyBlockString, policyAskString,
       drmDisabledString) {
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return null;
+    }
+
+    if (settingDetail) {
+      // For now, settingDetail is only used for file extensions.
+      // TODO(estade): assert in the other direction as well: the FILE_HANDLING
+      // category should always have detail text.
+      assert(category === ContentSettingsTypes.FILE_HANDLING);
+      return settingDetail;
     }
 
     /** @type {Object<!ContentSetting, ?string>} */

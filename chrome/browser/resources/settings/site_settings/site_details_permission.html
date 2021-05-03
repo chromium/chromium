@@ -1,8 +1,10 @@
     <style include="settings-shared md-select"></style>
     <div id="details" hidden$="[[shouldHideCategory_(category)]]">
       <div id="permissionItem"
-          class$="list-item [[permissionInfoStringClass_(site.source, category,
-                                                         site.setting)]]">
+          class$="list-item [[permissionInfoStringClass_(site.source,
+                                                         category,
+                                                         site.setting,
+                                                         site.settingDetail)]]">
         <div>
           <iron-icon icon="[[icon]]">
           </iron-icon>
@@ -10,12 +12,15 @@
         <div class="middle" id="permissionHeader" aria-hidden="true">
           [[label]]
           <div class="secondary" id="permissionSecondary"
-              hidden$="[[!hasPermissionInfoString_(site.source, category,
-                                                   site.setting)]]"
+              hidden$="[[!hasPermissionInfoString_(site.source,
+                                                   category,
+                                                   site.setting,
+                                                   site.settingDetail)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
                 site.setting,
+                site.settingDetail,
                 '$i18nPolymer{siteSettingsAllowlisted}',
                 '$i18nPolymer{siteSettingsAdsBlockBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsAdsBlockNotBlocklistedSingular}',

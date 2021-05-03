@@ -73,6 +73,51 @@ suite('SiteListEntry', function() {
     });
   }
 
+  test('shows settingDetail', function() {
+    // Verify that `settingDetail` is respected.
+    testElement.model = {
+      origin: 'http://example.com',
+      settingDetail: '.txt',
+      category: ContentSettingsTypes.FILE_HANDLING,
+    };
+    flush();
+    const siteDescription = testElement.$$('#siteDescription');
+    assertEquals('.txt', siteDescription.textContent);
+
+    // Verify that with no settingDetail, a computed label is used.
+    testElement.model = {
+      origin: 'http://example.com',
+      category: ContentSettingsTypes.GEOLOCATION,
+    };
+    flush();
+    assertEquals(
+        loadTimeData.getString('embeddedOnAnyHost'),
+        siteDescription.textContent);
+
+    // Verify that settingDetail overrides other (computed) labels.
+    testElement.model = {
+      origin: 'http://example.com',
+      category: ContentSettingsTypes.GEOLOCATION,
+      settingDetail: '.txt',
+    };
+    flush();
+    assertEquals('.txt', siteDescription.textContent);
+  });
+
+  // Verify that with GEOLOCATION, the "embedded on any host" text is shown.
+  // Regression test for crbug.com/1205103
+  test('location embedded on any host', function() {
+    testElement.model = {
+      origin: 'http://example.com',
+      category: ContentSettingsTypes.GEOLOCATION,
+    };
+    flush();
+    const siteDescription = testElement.$$('#siteDescription');
+    assertEquals(
+        loadTimeData.getString('embeddedOnAnyHost'),
+        siteDescription.textContent);
+  });
+
   test('not valid origin does not go to site details page', function() {
     browserProxy.setIsOriginValid(false);
     testElement.model = {

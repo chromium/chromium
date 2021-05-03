@@ -72,6 +72,7 @@ export let SiteGroup;
  *            isEmbargoed: boolean,
  *            origin: string,
  *            displayName: string,
+ *            settingDetail: ?string,
  *            type: string,
  *            setting: !ContentSetting,
  *            source: !SiteSettingSource}}
@@ -87,6 +88,7 @@ export let RawSiteException;
  *            isEmbargoed: boolean,
  *            origin: string,
  *            displayName: string,
+ *            settingDetail: ?string,
  *            setting: !ContentSetting,
  *            enforcement: ?chrome.settingsPrivate.Enforcement,
  *            controlledBy: !chrome.settingsPrivate.ControlledBy,

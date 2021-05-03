@@ -142,12 +142,16 @@ bool IsChromeOs() {
 std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
                                                           const GURL& url) {
   auto* provider = WebAppProviderBase::GetProviderBase(profile);
+  if (!provider)
+    return {};
+
   const AppRegistrar& registrar = provider->registrar();
-  const apps::FileHandlers* handlers =
-      registrar.GetAppFileHandlers(*registrar.FindAppWithUrlInScope(url));
-  DCHECK(handlers);
-  std::set<std::string> extensions =
-      apps::GetFileExtensionsFromFileHandlers(*handlers);
+  base::Optional<AppId> app_id = registrar.FindAppWithUrlInScope(url);
+  if (!app_id)
+    return {};
+
+  std::set<std::string> extensions = apps::GetFileExtensionsFromFileHandlers(
+      *registrar.GetAppFileHandlers(*app_id));
   return std::vector<std::string>(extensions.begin(), extensions.end());
 }
 

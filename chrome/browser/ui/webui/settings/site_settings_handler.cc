@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -1020,7 +1021,11 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     raw_site_exception->SetString(site_settings::kDisplayName, display_name);
     raw_site_exception->SetString(site_settings::kSetting,
                                   content_setting_string);
+    raw_site_exception->SetString(site_settings::kSettingDetail,
+                                  content_settings::GetPermissionDetailString(
+                                      profile_, content_type, origin_url));
     raw_site_exception->SetString(site_settings::kSource, source_string);
+
     exceptions->Append(std::move(raw_site_exception));
   }
 

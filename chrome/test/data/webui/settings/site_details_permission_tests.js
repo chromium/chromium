@@ -502,4 +502,37 @@ suite('SiteDetailsPermission', function() {
         assertFalse(testElement.$.permission.disabled);
         assertFalse(testElement.$.permission.options.block.hidden);
       });
+
+  test('settingDetail string is respected', function() {
+    const origin = 'https://www.example.com';
+    browserProxy.setPrefs(prefs);
+
+    testElement.category = ContentSettingsTypes.SOUND;
+    testElement.label = 'Sound';
+    testElement.site = {
+      origin: origin,
+      embeddingOrigin: '',
+      setting: ContentSetting.ALLOW,
+      source: SiteSettingSource.PREFERENCE,
+    };
+
+    // Typically, the secondary text is hidden.
+    assertTrue(testElement.$.permissionSecondary.hidden);
+
+    testElement.category = ContentSettingsTypes.FILE_HANDLING;
+    testElement.label = 'File handlers';
+    testElement.site = {
+      origin: origin,
+      embeddingOrigin: '',
+      setting: ContentSetting.ALLOW,
+      source: SiteSettingSource.PREFERENCE,
+      settingDetail: '.txt',
+    };
+
+    // For file handlers with a `settingDetail`, the secondary text is shown.
+    assertFalse(testElement.$.permissionSecondary.hidden);
+    assertEquals(
+        '.txt', testElement.$.permissionSecondary.innerText,
+        'settingDetail should be displayed');
+  });
 });

@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -459,6 +460,8 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
 // Create a DictionaryValue* that will act as a data source for a single row
 // in a HostContentSettingsMap-controlled exceptions table (e.g., cookies).
 std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
+    ContentSettingsType content_type,
+    Profile* profile,
     const ContentSettingsPattern& pattern,
     const ContentSettingsPattern& secondary_pattern,
     const std::string& display_name,
@@ -477,8 +480,11 @@ std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
   DCHECK(!setting_string.empty());
-
   exception->SetString(kSetting, setting_string);
+
+  exception->SetString(site_settings::kSettingDetail,
+                       content_settings::GetPermissionDetailString(
+                           profile, content_type, GURL(pattern.ToString())));
   exception->SetString(kSource, provider_name);
   exception->SetBoolean(kIncognito, incognito);
   exception->SetBoolean(kIsEmbargoed, is_embargoed);
@@ -640,8 +646,8 @@ void GetExceptionsForContentType(
     const ContentSettingsPattern& secondary_pattern =
         parent == one_settings.end() ? primary_pattern : parent->first;
     this_provider_exceptions.push_back(GetExceptionForPage(
-        primary_pattern, secondary_pattern, display_name, parent_setting,
-        source, incognito,
+        type, profile, primary_pattern, secondary_pattern, display_name,
+        parent_setting, source, incognito,
         base::Contains(origins_under_embargo, primary_pattern)));
 
     // Add the "children" for any embedded settings.
@@ -652,8 +658,9 @@ void GetExceptionsForContentType(
 
       ContentSetting content_setting = j->second;
       this_provider_exceptions.push_back(GetExceptionForPage(
-          primary_pattern, j->first, display_name, content_setting, source,
-          incognito, base::Contains(origins_under_embargo, primary_pattern)));
+          type, profile, primary_pattern, j->first, display_name,
+          content_setting, source, incognito,
+          base::Contains(origins_under_embargo, primary_pattern)));
     }
   }
 
@@ -754,7 +761,8 @@ void GetPolicyAllowedUrls(
   DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
          type == ContentSettingsType::MEDIASTREAM_CAMERA);
 
-  PrefService* prefs = Profile::FromWebUI(web_ui)->GetPrefs();
+  Profile* profile = Profile::FromWebUI(web_ui);
+  PrefService* prefs = profile->GetPrefs();
   const base::ListValue* policy_urls =
       prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
                          ? prefs::kAudioCaptureAllowedUrls
@@ -784,7 +792,8 @@ void GetPolicyAllowedUrls(
     std::string display_name =
         GetDisplayNameForPattern(pattern, extension_registry);
     exceptions->push_back(GetExceptionForPage(
-        pattern, ContentSettingsPattern(), display_name, CONTENT_SETTING_ALLOW,
+        type, profile, pattern, ContentSettingsPattern(), display_name,
+        CONTENT_SETTING_ALLOW,
         SiteSettingSourceToString(SiteSettingSource::kPolicy), incognito));
   }
 }

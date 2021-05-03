@@ -175,6 +175,11 @@ Polymer({
    * @return {string}
    */
   computeSiteDescription_() {
+    // If the SiteException specifies its own label, use that.
+    if (this.model.settingDetail) {
+      return this.model.settingDetail;
+    }
+
     let description = '';
 
     if (this.model.isEmbargoed) {
@@ -191,7 +196,7 @@ Polymer({
         description = loadTimeData.getStringF(
             'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
       }
-    } else if (this.category === ContentSettingsTypes.GEOLOCATION) {
+    } else if (this.model.category === ContentSettingsTypes.GEOLOCATION) {
       description = loadTimeData.getString('embeddedOnAnyHost');
     }
 

@@ -172,6 +172,7 @@ const SiteSettingsBehaviorImpl = {
       origin: origin,
       displayName: exception.displayName,
       setting: exception.setting,
+      settingDetail: exception.settingDetail,
       enforcement: enforcement,
       controlledBy: controlledBy,
     };

@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_CONTENT_SETTINGS_CHROME_CONTENT_SETTINGS_UTILS_H_
 
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
 
 // Put utility functions only used by //chrome code here. If a function declared
 // here would be meaningfully shared with other platforms, consider moving it to
 // components/content_settings/core/browser/content_settings_utils.h.
+
+class GURL;
+class Profile;
+enum class ContentSettingsType;
 
 namespace content {
 class WebContents;
@@ -50,6 +55,16 @@ void RecordPopupsAction(PopupsAction action);
 
 // Calls UpdateContentSettingsIcons on the |LocationBar| for |web_contents|.
 void UpdateLocationBarUiForWebContents(content::WebContents* web_contents);
+
+#if !defined(OS_ANDROID)
+// Returns a string for display alongside UI that describes the given content
+// setting in `profile`. This string gives extra, pertinent details about the
+// content setting. `url` represents the site for which the given setting
+// applies.
+std::u16string GetPermissionDetailString(Profile* profile,
+                                         ContentSettingsType content_type,
+                                         const GURL& url);
+#endif
 
 }  // namespace content_settings
 

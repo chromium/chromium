@@ -1396,7 +1396,8 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
       ContentSettingsPattern::FromString("[*.]google.com");
   std::unique_ptr<base::DictionaryValue> exception =
       site_settings::GetExceptionForPage(
-          pattern, ContentSettingsPattern::Wildcard(), pattern.ToString(),
+          ContentSettingsType::NOTIFICATIONS, /*profile=*/nullptr, pattern,
+          ContentSettingsPattern::Wildcard(), pattern.ToString(),
           CONTENT_SETTING_BLOCK,
           site_settings::SiteSettingSourceToString(
               site_settings::SiteSettingSource::kPreference),
