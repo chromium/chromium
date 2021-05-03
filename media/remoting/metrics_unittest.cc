@@ -51,13 +51,13 @@ TEST_F(MediaRemotingMetricsTest, RecordCompatibility) {
   recorder_.RecordCompatibility(RemotingCompatibility::kCompatible);
   recorder_.RecordCompatibility(RemotingCompatibility::kIncompatibleVideoCodec);
 
+  // We record only for the first RecordCompatibility() call for the
+  // given SessionMetricsRecorder instance.
   EXPECT_THAT(
       tester.GetAllSamples(kCompatibilityHistogramName),
-      ElementsAre(
-          Bucket(static_cast<int>(RemotingCompatibility::kCompatible), 1),
-          Bucket(
-              static_cast<int>(RemotingCompatibility::kIncompatibleVideoCodec),
-              2)));
+      ElementsAre(Bucket(
+          static_cast<int>(RemotingCompatibility::kIncompatibleVideoCodec),
+          1)));
 }
 
 }  // namespace remoting

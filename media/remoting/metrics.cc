@@ -182,6 +182,10 @@ void SessionMetricsRecorder::RecordVideoPixelRateSupport(
 
 void SessionMetricsRecorder::RecordCompatibility(
     RemotingCompatibility compatibility) {
+  if (did_record_compatibility_) {
+    return;
+  }
+  did_record_compatibility_ = true;
   base::UmaHistogramEnumeration("Media.Remoting.Compatibility", compatibility);
 }
 

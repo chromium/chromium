@@ -70,7 +70,8 @@ class SessionMetricsRecorder {
   // for the recorder instance.
   void RecordVideoPixelRateSupport(PixelRateSupport support);
 
-  // Records the compatibility of a media content with remoting.
+  // Records the compatibility of a media content with remoting. Records only on
+  // the first call for the recorder instance.
   void RecordCompatibility(RemotingCompatibility compatibility);
 
  private:
@@ -114,6 +115,7 @@ class SessionMetricsRecorder {
   bool remote_playback_is_disabled_ = false;
 
   bool did_record_pixel_rate_support_ = false;
+  bool did_record_compatibility_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SessionMetricsRecorder);
 };
