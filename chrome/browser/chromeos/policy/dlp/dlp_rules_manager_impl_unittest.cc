@@ -532,14 +532,14 @@ TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
       std::move(restrictions_1)));
 
   base::Value src_urls_2(base::Value::Type::LIST);
-  src_urls_1.Append(kWildCardMatching);
+  src_urls_2.Append(kWildCardMatching);
 
   base::Value restrictions_2(base::Value::Type::LIST);
   restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
       dlp::kPrintingRestriction, dlp::kBlockLevel));
 
   rules.Append(dlp_test_util::CreateRule(
-      "Block any printing", "Block printing any docs", std::move(src_urls_1),
+      "Block any printing", "Block printing any docs", std::move(src_urls_2),
       /*dst_urls=*/base::Value(base::Value::Type::LIST),
       /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions_2)));
