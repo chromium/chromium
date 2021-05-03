@@ -360,8 +360,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
-// If you can, it is better to subclass View and construct a
-// BubbleDialogDelegate instance as a member of your subclass.
+// TODO(pbos): Finish moving functionality from BubbleDialogDelegateView into
+// BubbleDialogDelegate, then document here that it's better to subclass View
+// and construct a BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
                                               public View {
  public:
