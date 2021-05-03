@@ -187,18 +187,18 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
   def _maybe_build_metadata(self):
     metadata_builder_cmd = [
-         sys.executable,
-         os.path.join(wpt_common.BLINK_TOOLS_DIR, 'build_wpt_metadata.py'),
-         '--android-product',
-         self.options.product,
-         '--metadata-output-dir',
-         self._metadata_dir,
-         '--additional-expectations',
-         ANDROID_DISABLED_TESTS,
-         '--use-subtest-results',
+      sys.executable,
+      os.path.join(wpt_common.BLINK_TOOLS_DIR, 'build_wpt_metadata.py'),
+      '--android-product',
+      self.options.product,
+      '--metadata-output-dir',
+      self._metadata_dir,
+      '--additional-expectations',
+      ANDROID_DISABLED_TESTS,
+      '--use-subtest-results',
     ]
     if self.options.ignore_default_expectations:
-        metadata_builder_cmd += [ '--ignore-default-expectations' ]
+      metadata_builder_cmd += [ '--ignore-default-expectations' ]
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)
 
@@ -207,7 +207,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
       metadata_command_ret = self._maybe_build_metadata()
       if metadata_command_ret != 0:
-          return metadata_command_ret
+        return metadata_command_ret
 
       # If there is no metadata then we need to create an
       # empty directory to pass to wptrunner
@@ -470,7 +470,7 @@ def no_op():
 # This is not really a "script test" so does not need to manually add
 # any additional compile targets.
 def main_compile_targets(args):
-    json.dump([], args.output)
+  json.dump([], args.output)
 
 @contextlib.contextmanager
 def get_device(args):
@@ -534,19 +534,19 @@ def main():
     # WPT setup for chrome and webview requires that PATH contains adb.
     platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
     os.environ['PATH'] = ':'.join([platform_tools_path] +
-                                os.environ['PATH'].split(':'))
+                                  os.environ['PATH'].split(':'))
 
     return adapter.run_test()
 
 
 if __name__ == '__main__':
-    # Conform minimally to the protocol defined by ScriptTest.
-    if 'compile_targets' in sys.argv:
-        funcs = {
-            'run': None,
-            'compile_targets': main_compile_targets,
-        }
-        sys.exit(common.run_script(sys.argv[1:], funcs))
-    logging.basicConfig(level=logging.WARNING)
-    logger = logging.getLogger()
-    sys.exit(main())
+  # Conform minimally to the protocol defined by ScriptTest.
+  if 'compile_targets' in sys.argv:
+    funcs = {
+      'run': None,
+      'compile_targets': main_compile_targets,
+    }
+    sys.exit(common.run_script(sys.argv[1:], funcs))
+  logging.basicConfig(level=logging.WARNING)
+  logger = logging.getLogger()
+  sys.exit(main())
