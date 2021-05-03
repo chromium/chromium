@@ -68,7 +68,9 @@ IdentityManagerFactory::IdentityManagerFactory()
       }));
 }
 
-IdentityManagerFactory::~IdentityManagerFactory() {}
+IdentityManagerFactory::~IdentityManagerFactory() {
+  signin::SetIdentityManagerProvider({});
+}
 
 // static
 signin::IdentityManager* IdentityManagerFactory::GetForProfile(

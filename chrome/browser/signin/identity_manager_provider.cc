@@ -20,7 +20,13 @@ IdentityManagerProvider& GetIdentityManagerProvider() {
 
 void SetIdentityManagerProvider(const IdentityManagerProvider& provider) {
   IdentityManagerProvider& instance = GetIdentityManagerProvider();
-  DCHECK(!instance);
+
+  // Exactly one of `provider` or `instance` should be non-null.
+  if (provider)
+    DCHECK(!instance);
+  else
+    DCHECK(instance);
+
   instance = provider;
 }
 
