@@ -2704,8 +2704,6 @@ static_library("test_support") {
     "shelf/shelf_test_util.h",
     "shelf/shelf_view_test_api.cc",
     "shelf/shelf_view_test_api.h",
-    "shelf/test/widget_animation_waiter.cc",
-    "shelf/test/widget_animation_waiter.h",
     "shell_test_api.cc",
     "system/holding_space/holding_space_test_api.cc",
     "system/message_center/test_notifier_settings_controller.cc",

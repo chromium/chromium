@@ -53,7 +53,6 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/hotseat_state_watcher.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
-#include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/status_area_widget.h"
@@ -97,6 +96,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/test/widget_animation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -1820,7 +1820,7 @@ TEST_F(ShelfLayoutManagerTest,
         GetShelfWidget()->GetWindowBoundsInScreen();
     gfx::Point start(shelf_bounds_in_screen.CenterPoint());
     gfx::Point end(start.x(), shelf_bounds_in_screen.bottom());
-    WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
+    views::WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
     generator->GestureScrollSequence(start, end,
                                      base::TimeDelta::FromMilliseconds(10), 5);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -1859,7 +1859,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToVisibleWhenGestureInComplete) {
     gfx::Point end(start.x(), start.y() - 100);
     ui::test::EventGenerator* generator = GetEventGenerator();
 
-    WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
+    views::WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
     generator->GestureScrollSequence(start, end,
                                      base::TimeDelta::FromMilliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -1891,7 +1891,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToHiddenWhenGestureOutComplete) {
     ui::test::EventGenerator* generator = GetEventGenerator();
 
     // Show the shelf first.
-    WidgetAnimationWaiter waiter1(GetShelfWidget(), visible_bounds);
+    views::WidgetAnimationWaiter waiter1(GetShelfWidget(), visible_bounds);
     SwipeUpOnShelf();
     waiter1.WaitForAnimation();
     EXPECT_TRUE(waiter1.WasValidAnimation());
@@ -1901,7 +1901,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToHiddenWhenGestureOutComplete) {
     gfx::Point start =
         GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint();
     gfx::Point end = gfx::Point(start.x(), start.y() + 100);
-    WidgetAnimationWaiter waiter2(GetShelfWidget(), auto_hidden_bounds);
+    views::WidgetAnimationWaiter waiter2(GetShelfWidget(), auto_hidden_bounds);
     generator->GestureScrollSequence(start, end,
                                      base::TimeDelta::FromMilliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -3898,7 +3898,7 @@ TEST_F(ShelfLayoutManagerTest, VerifyHomeButtonBounds) {
   }
 
   // Activate a window and wait for the navigation widget animation to finish.
-  WidgetAnimationWaiter waiter(shelf->navigation_widget());
+  views::WidgetAnimationWaiter waiter(shelf->navigation_widget());
   std::unique_ptr<aura::Window> window =
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());

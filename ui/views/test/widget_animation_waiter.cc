@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shelf/test/widget_animation_waiter.h"
+#include "ui/views/test/widget_animation_waiter.h"
 
-#include "ash/test/ash_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
+namespace views {
 
-WidgetAnimationWaiter::WidgetAnimationWaiter(views::Widget* widget)
+WidgetAnimationWaiter::WidgetAnimationWaiter(Widget* widget)
     : target_bounds_(gfx::Rect()), widget_(widget) {
   widget->GetLayer()->GetAnimator()->AddObserver(this);
 }
 
-WidgetAnimationWaiter::WidgetAnimationWaiter(views::Widget* widget,
-                                             gfx::Rect target_bounds)
+WidgetAnimationWaiter::WidgetAnimationWaiter(Widget* widget,
+                                             const gfx::Rect& target_bounds)
     : target_bounds_(target_bounds), widget_(widget) {
   widget->GetLayer()->GetAnimator()->AddObserver(this);
 }
@@ -41,6 +41,7 @@ void WidgetAnimationWaiter::OnLayerAnimationEnded(
     run_loop_.Quit();
   }
 }
+
 void WidgetAnimationWaiter::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {}
 
@@ -59,4 +60,4 @@ bool WidgetAnimationWaiter::WasValidAnimation() {
   return animation_scheduled_ && is_valid_animation_;
 }
 
-}  // namespace ash
+}  // namespace views

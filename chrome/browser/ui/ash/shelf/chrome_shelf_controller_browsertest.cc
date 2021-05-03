@@ -23,7 +23,6 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
-#include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -126,6 +125,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/test/widget_animation_waiter.h"
 
 namespace {
 
@@ -200,9 +200,9 @@ void ExtendHotseat(Browser* browser) {
   ash::ShelfView* shelf_view = controller->shelf()->GetShelfViewForTesting();
 
   // Observe hotseat animation before animation starts. Because
-  // ash::WidgetAnimationWaiter only reacts to completion of the animation whose
-  // animation scheduling is recorded in ash::WidgetAnimationWaiter.
-  ash::WidgetAnimationWaiter waiter(shelf_view->GetWidget());
+  // views::WidgetAnimationWaiter only reacts to completion of the animation
+  // whose animation scheduling is recorded in views::WidgetAnimationWaiter.
+  views::WidgetAnimationWaiter waiter(shelf_view->GetWidget());
 
   ui::test::EventGenerator event_generator(controller->GetRootWindow());
   event_generator.GestureScrollSequence(

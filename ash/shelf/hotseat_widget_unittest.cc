@@ -31,7 +31,6 @@
 #include "ash/shelf/test/hotseat_state_watcher.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shelf/test/widget_animation_smoothness_inspector.h"
-#include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
@@ -52,6 +51,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/widget_animation_waiter.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -2525,7 +2525,7 @@ TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
 TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
   // Go into tablet mode and make sure animations are over.
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
-  WidgetAnimationWaiter waiter(hotseat);
+  views::WidgetAnimationWaiter waiter(hotseat);
   TabletModeControllerTestApi().EnterTabletMode();
   waiter.WaitForAnimation();
 
@@ -2535,14 +2535,14 @@ TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
   // Go into overview and back to know what to expect in terms of bounds.
   const gfx::Rect shown_hotseat_bounds = hotseat->GetWindowBoundsInScreen();
   {
-    WidgetAnimationWaiter waiter(hotseat);
+    views::WidgetAnimationWaiter waiter(hotseat);
     StartOverview();
     waiter.WaitForAnimation();
   }
 
   const gfx::Rect extended_hotseat_bounds = hotseat->GetWindowBoundsInScreen();
   {
-    WidgetAnimationWaiter waiter(hotseat);
+    views::WidgetAnimationWaiter waiter(hotseat);
     EndOverview();
     waiter.WaitForAnimation();
   }
@@ -2556,7 +2556,7 @@ TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
 
   {
     WidgetAnimationSmoothnessInspector inspector(hotseat);
-    WidgetAnimationWaiter waiter(hotseat);
+    views::WidgetAnimationWaiter waiter(hotseat);
     StartOverview();
     waiter.WaitForAnimation();
     EXPECT_TRUE(inspector.CheckAnimation(4));
@@ -2567,7 +2567,7 @@ TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
 
   {
     WidgetAnimationSmoothnessInspector inspector(hotseat);
-    WidgetAnimationWaiter waiter(hotseat);
+    views::WidgetAnimationWaiter waiter(hotseat);
     EndOverview();
     waiter.WaitForAnimation();
     EXPECT_TRUE(inspector.CheckAnimation(4));

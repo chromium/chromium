@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_TEST_WIDGET_ANIMATION_WAITER_H_
-#define ASH_SHELF_TEST_WIDGET_ANIMATION_WAITER_H_
+#ifndef UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
+#define UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
 
 #include "base/run_loop.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -14,16 +14,13 @@ class Rect;
 
 namespace views {
 class Widget;
-}
-
-namespace ash {
 
 // Class which waits until for a widget to finish animating and verifies
 // that the layer transform animation was valid.
 class WidgetAnimationWaiter : ui::LayerAnimationObserver {
  public:
-  WidgetAnimationWaiter(views::Widget* widget);
-  WidgetAnimationWaiter(views::Widget* widget, gfx::Rect target_bounds);
+  explicit WidgetAnimationWaiter(Widget* widget);
+  WidgetAnimationWaiter(Widget* widget, const gfx::Rect& target_bounds);
   ~WidgetAnimationWaiter() override;
 
   // ui::LayerAnimationObserver:
@@ -40,13 +37,13 @@ class WidgetAnimationWaiter : ui::LayerAnimationObserver {
   gfx::Rect target_bounds_;
 
   // Unowned
-  views::Widget* widget_;
+  Widget* const widget_;
 
   base::RunLoop run_loop_;
   bool is_valid_animation_ = false;
   bool animation_scheduled_ = false;
 };
 
-}  // namespace ash
+}  // namespace views
 
-#endif  // ASH_SHELF_TEST_WIDGET_ANIMATION_WAITER_H_
+#endif  // UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
