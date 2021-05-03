@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
       "Entered window overview mode. Swipe to navigate, or press tab if using "
       "a keyboard.");
 
-  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern(
       "Chrom* - data:text slash html;charset equal utf-8, less than button "
       "autofocus greater than Click me less than slash button greater than");

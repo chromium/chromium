@@ -508,10 +508,21 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
   const auto* desk_bar_view = GetOverviewSession()
                                   ->GetGridWithRootWindow(root_window)
                                   ->desks_bar_view();
-
   ASSERT_TRUE(desk_bar_view->IsZeroState());
-  // Tab once. The viewport should be centered on the center of the default
-  // desk button in the zero state desks bar.
+
+  // Tab once. The viewport should be centered on the beginning of the overview
+  // item's title.
+  SendKey(ui::VKEY_TAB);
+  OverviewItem* item = GetOverviewItemForWindow(window.get());
+  ASSERT_TRUE(item);
+  const auto label_bounds_in_screen =
+      item->overview_item_view()->title_label()->GetBoundsInScreen();
+  const gfx::Point expected_point_of_interest(
+      label_bounds_in_screen.x(), label_bounds_in_screen.CenterPoint().y());
+  TestMagnifierLayerTransform(expected_point_of_interest, root_window);
+
+  // Tab one more time. The viewport should be centered on the center of the
+  // default desk button in the zero state desks bar.
   SendKey(ui::VKEY_TAB);
   TestMagnifierLayerTransform(desk_bar_view->zero_state_default_desk_button()
                                   ->GetBoundsInScreen()
@@ -525,17 +536,6 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
                                   ->GetBoundsInScreen()
                                   .CenterPoint(),
                               root_window);
-
-  // Tab one more time. The viewport should be centered on the beginning of the
-  // overview item's title.
-  SendKey(ui::VKEY_TAB);
-  OverviewItem* item = GetOverviewItemForWindow(window.get());
-  ASSERT_TRUE(item);
-  const auto label_bounds_in_screen =
-      item->overview_item_view()->title_label()->GetBoundsInScreen();
-  const gfx::Point expected_point_of_interest(
-      label_bounds_in_screen.x(), label_bounds_in_screen.CenterPoint().y());
-  TestMagnifierLayerTransform(expected_point_of_interest, root_window);
 }
 
 // Test that we exist split view and over view modes when a single window is

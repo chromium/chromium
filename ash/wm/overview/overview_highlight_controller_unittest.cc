@@ -392,7 +392,14 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingBasic) {
   CheckDeskBarViewSize(desk_bar_view, "initial");
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlighted item is the first mini view.
+  // Tests that the overview item gets highlighted first.
+  SendKey(ui::VKEY_TAB);
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
+  CheckDeskBarViewSize(desk_bar_view, "overview item");
+
+  // Tests that the first highlighted desk item is the first mini view.
+  SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
@@ -412,21 +419,14 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingBasic) {
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
-  // Tests that the overview item gets highlighted after the new desk button.
-  SendKey(ui::VKEY_TAB);
-  auto* item2 = GetOverviewItemForWindow(window2.get());
-  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
-  CheckDeskBarViewSize(desk_bar_view, "overview item");
-
   // Tests that after tabbing through the overview items, we go back to the
-  // first mini view.
+  // first overview item.
   SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "go back to first");
 }
 
-// Tests that we can reverse tab through the desk mini views, new desk button
+// tests that we can reverse tab through the desk mini views, new desk button
 // and overview items in the correct order.
 TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
@@ -437,15 +437,8 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlighted item when reversing is the last overview
-  // item.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  auto* item1 = GetOverviewItemForWindow(window1.get());
-  EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
-
-  // Tests that after reverse tabbing through the overview items, we highlight
-  // the new desk button.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  // Tests that the first highlighted item when reversing is the new desk
+  // button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->new_desk_button(),
             GetHighlightedView());
@@ -463,10 +456,18 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
 
-  // Tests that we return to the last overview item after reverse tabbing from
-  // the first mini view.
+  // Tests that the next highlighted item when reversing is the last overview
+  // item.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
+
+  // Tests that we return to the new desk button after reverse tabbing through
+  // the overview items.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->new_desk_button(),
+            GetHighlightedView());
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
@@ -492,7 +493,16 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   const auto* desk_bar_view1 = GetDesksBarViewForRoot(roots[0]);
   EXPECT_EQ(2u, desk_bar_view1->mini_views().size());
 
-  // Tests that tabbing initially will go through the desk mini views and their
+  // Tests that tabbing initially will go through the two overview items on the
+  // first display.
+  SendKey(ui::VKEY_TAB);
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  auto* item1 = GetOverviewItemForWindow(window1.get());
+  EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
+
+  // Tests that further tabbing will go through the desk mini views and their
   // desk name views, then the new desk button on the first display.
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[0], GetHighlightedView());
@@ -508,17 +518,12 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->new_desk_button(),
             GetHighlightedView());
 
-  // Tests that two more tabs, will highlight the two overview items on the
-  // first display.
-  SendKey(ui::VKEY_TAB);
-  auto* item2 = GetOverviewItemForWindow(window2.get());
-  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
-  SendKey(ui::VKEY_TAB);
-  auto* item1 = GetOverviewItemForWindow(window1.get());
-  EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
-
-  // Tests that the next tab will bring us to the first mini view on the
+  // Tests that the next tab will bring us to the first overview item on the
   // second display.
+  SendKey(ui::VKEY_TAB);
+  auto* item3 = GetOverviewItemForWindow(window3.get());
+  EXPECT_EQ(item3->overview_item_view(), GetHighlightedView());
+
   SendKey(ui::VKEY_TAB);
   const auto* desk_bar_view2 = GetDesksBarViewForRoot(roots[1]);
   EXPECT_EQ(desk_bar_view2->mini_views()[0], GetHighlightedView());
@@ -530,12 +535,13 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->new_desk_button(),
             GetHighlightedView());
-  SendKey(ui::VKEY_TAB);
-  auto* item3 = GetOverviewItemForWindow(window3.get());
-  EXPECT_EQ(item3->overview_item_view(), GetHighlightedView());
 
   // Tests that after tabbing through the items on the second display, the
-  // next tab will bring us to the first mini view on the third display.
+  // next tab will bring us to the first overview item on the third display.
+  SendKey(ui::VKEY_TAB);
+  auto* item4 = GetOverviewItemForWindow(window4.get());
+  EXPECT_EQ(item4->overview_item_view(), GetHighlightedView());
+
   SendKey(ui::VKEY_TAB);
   const auto* desk_bar_view3 = GetDesksBarViewForRoot(roots[2]);
   EXPECT_EQ(desk_bar_view3->mini_views()[0], GetHighlightedView());
@@ -547,14 +553,11 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->new_desk_button(),
             GetHighlightedView());
-  SendKey(ui::VKEY_TAB);
-  auto* item4 = GetOverviewItemForWindow(window4.get());
-  EXPECT_EQ(item4->overview_item_view(), GetHighlightedView());
 
   // Tests that after tabbing through the items on the third display, the next
-  // tab will bring us to the first mini view on the first display.
+  // tab will bring us to the first overview item on the first display.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
 }
 
 TEST_F(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {

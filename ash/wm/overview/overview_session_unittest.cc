@@ -3230,21 +3230,21 @@ TEST_F(OverviewSessionTest, AccessibilityFocusAnnotator) {
     EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
   };
 
-  // Order should be [focus_widget, desk_widget, item_widget1, item_widget2,
-  // item_widget3].
-  check_a11y_overrides("focus", focus_widget, item_widget3, desk_widget);
-  check_a11y_overrides("desk", desk_widget, focus_widget, item_widget1);
-  check_a11y_overrides("item1", item_widget1, desk_widget, item_widget2);
+  // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
+  // desk_widget].
+  check_a11y_overrides("focus", focus_widget, desk_widget, item_widget1);
+  check_a11y_overrides("item1", item_widget1, focus_widget, item_widget2);
   check_a11y_overrides("item2", item_widget2, item_widget1, item_widget3);
-  check_a11y_overrides("item3", item_widget3, item_widget2, focus_widget);
+  check_a11y_overrides("item3", item_widget3, item_widget2, desk_widget);
+  check_a11y_overrides("desk", desk_widget, item_widget3, focus_widget);
 
-  // Remove |window2|. The new order should be [focus_widget, desk_widget,
-  // item_widget1, item_widget3].
+  // Remove |window2|. The new order should be [focus_widget, item_widget1,
+  // item_widget3, desk_widget].
   window2.reset();
-  check_a11y_overrides("focus", focus_widget, item_widget3, desk_widget);
-  check_a11y_overrides("desk", desk_widget, focus_widget, item_widget1);
-  check_a11y_overrides("item1", item_widget1, desk_widget, item_widget3);
-  check_a11y_overrides("item3", item_widget3, item_widget1, focus_widget);
+  check_a11y_overrides("focus", focus_widget, desk_widget, item_widget1);
+  check_a11y_overrides("item1", item_widget1, focus_widget, item_widget3);
+  check_a11y_overrides("item3", item_widget3, item_widget1, desk_widget);
+  check_a11y_overrides("desk", desk_widget, item_widget3, focus_widget);
 }
 
 // Tests that removing a transient child during overview does not result in a

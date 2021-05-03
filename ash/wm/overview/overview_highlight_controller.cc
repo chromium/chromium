@@ -212,8 +212,10 @@ OverviewHighlightController::GetTraversableViews() const {
                             (desks_util::kMaxNumberOfDesks + 1) *
                                 Shell::Get()->GetAllRootWindows().size());
   for (auto& grid : overview_session_->grid_list()) {
-    auto* bar_view = grid->desks_bar_view();
-    if (bar_view) {
+    for (auto& item : grid->window_list())
+      traversable_views.push_back(item->overview_item_view());
+
+    if (auto* bar_view = grid->desks_bar_view()) {
       const bool is_zero_state = bar_view->IsZeroState();
       // The desk items are always traversable from left to right, even in RTL
       // languages.
@@ -232,9 +234,6 @@ OverviewHighlightController::GetTraversableViews() const {
       if (!is_zero_state && new_desk_button->GetEnabled())
         traversable_views.push_back(new_desk_button);
     }
-
-    for (auto& item : grid->window_list())
-      traversable_views.push_back(item->overview_item_view());
   }
   return traversable_views;
 }

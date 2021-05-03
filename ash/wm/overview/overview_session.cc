@@ -1220,10 +1220,10 @@ void OverviewSession::UpdateAccessibilityFocus() {
     a11y_widgets.push_back(overview_focus_widget_.get());
 
   for (auto& grid : grid_list_) {
-    if (grid->desks_widget())
-      a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
     for (const auto& item : grid->window_list())
       a11y_widgets.push_back(item->item_widget());
+    if (grid->desks_widget())
+      a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
   }
   if (no_windows_widget_.get())
     a11y_widgets.push_back(no_windows_widget_.get());
