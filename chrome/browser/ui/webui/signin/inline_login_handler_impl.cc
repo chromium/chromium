@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/search/selected_colors_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -219,20 +221,6 @@ void SetProfileLocked(const base::FilePath profile_path, bool locked) {
   }
 }
 
-void SetProfileName(const base::FilePath& profile_path,
-                    const std::u16string name) {
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_path);
-  if (!entry) {
-    NOTREACHED();
-    return;
-  }
-
-  entry->SetLocalProfileName(name, /*is_default_name=*/false);
-}
-
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
                                  InlineLoginHandlerImpl* handler) {
   SetProfileLocked(profile_path, false);
@@ -282,7 +270,26 @@ void OnSyncSetupComplete(Profile* profile,
           profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
               primary_account);
     }
-    SetProfileName(profile->GetPath(), profile_name);
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile->GetPath());
+    if (entry) {
+      entry->SetLocalProfileName(profile_name, /*is_default_name=*/false);
+      // TODO(https://crbug.com/1186969): move the following code into a new
+      // `Profile::SetIsHidden()` method.
+      entry->SetIsOmitted(false);
+      if (!profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+        // Unmark this profile ephemeral so that it isn't deleted upon next
+        // startup. Profiles should never be made non-ephemeral if ephemeral
+        // mode is forced by policy.
+        entry->SetIsEphemeral(false);
+      }
+    } else {
+      DVLOG(1) << "ProfileAttributesEntry not found for profile:"
+               << profile->GetPath();
+    }
+
     Browser* browser = chrome::FindBrowserWithProfile(profile);
 
     // Don't show the customization bubble if a valid policy theme is set.
