@@ -105,16 +105,17 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
 
   LayerTranslationAnimationNotifier(
       ui::Layer* animation_layer,
+      const gfx::Transform& initial_transform_,
       const gfx::Transform& target_transform,
       AnimationCallback animation_start_callback,
       AnimationCallback animation_end_callback,
       AnimationCallback animation_progress_callback)
       : animation_layer_(animation_layer),
+        initial_transform_(initial_transform_),
         target_transform_(target_transform),
         animation_start_callback_(animation_start_callback),
         animation_end_callback_(animation_end_callback),
         animation_progress_callback_(animation_progress_callback) {
-    DCHECK(!target_transform_.IsIdentity());
     animation_layer_->GetCompositor()->AddObserver(this);
   }
   LayerTranslationAnimationNotifier(const LayerTranslationAnimationNotifier&) =
@@ -130,7 +131,7 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override {
     const gfx::Transform current_transform = animation_layer_->transform();
-    if (current_transform.IsIdentity()) {
+    if (current_transform == initial_transform_) {
       animation_start_callback_.Run(current_transform);
     } else if (current_transform == target_transform_) {
       animation_end_callback_.Run(current_transform);
@@ -143,6 +144,9 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
  private:
   // The layer to be animated.
   ui::Layer* const animation_layer_;
+
+  // The initial transform.
+  gfx::Transform initial_transform_;
 
   // The target transform.
   gfx::Transform target_transform_;
@@ -1875,63 +1879,6 @@ TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
   EXPECT_EQ(DeletionOrder::LAYOUT_MANAGER_FIRST, tracker.order());
 }
 
-// Verifies that the function to get the window's screen bounds during layer
-// animation works as expected.
-TEST_F(WindowTest, VerifyWindowActualBoundsDuringAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  std::unique_ptr<Window> viewport(
-      CreateTestWindowWithBounds(gfx::Rect(100, 50, 200, 200), root_window()));
-  std::unique_ptr<Window> child(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), viewport.get()));
-
-  // Store `child''s bounds in screen before animation starts.
-  const gfx::Rect start_screen_bounds = child->GetBoundsInScreen();
-
-  // Start a translation animation on `viewport`.
-  auto* viewport_layer = viewport->layer();
-  auto* viewport_layer_animator = viewport_layer->GetAnimator();
-  gfx::Transform target_transform;
-  target_transform.Translate(-50, -50);
-  {
-    ui::ScopedLayerAnimationSettings settings(viewport_layer_animator);
-    viewport_layer->SetTransform(target_transform);
-  }
-
-  // Verify at the start of the animation.
-  auto animation_start_callback = [](const aura::Window* child,
-                                     const gfx::Transform& transform) {
-    EXPECT_EQ("100,50 100x100", child->GetActualBoundsInScreen().ToString());
-    EXPECT_EQ("50,0 100x100", child->GetBoundsInScreen().ToString());
-  };
-
-  // Verify at the end of the animation.
-  auto animation_end_callback = [](const aura::Window* child,
-                                   const gfx::Transform& transform) {
-    EXPECT_EQ("50,0 100x100", child->GetActualBoundsInScreen().ToString());
-    EXPECT_EQ("50,0 100x100", child->GetBoundsInScreen().ToString());
-  };
-
-  // Verify during the progress of the animation.
-  auto animation_progress_callback = [](const aura::Window* child,
-                                        const gfx::Rect& start_screen_bounds,
-                                        const gfx::Transform& transform) {
-    gfx::RectF current_screen_bounds = gfx::RectF(start_screen_bounds);
-    transform.TransformRect(&current_screen_bounds);
-    EXPECT_EQ(gfx::ToEnclosedRect(current_screen_bounds),
-              child->GetActualBoundsInScreen());
-  };
-
-  LayerTranslationAnimationNotifier bounds_checker(
-      viewport_layer, target_transform,
-      base::BindRepeating(animation_start_callback, child.get()),
-      base::BindRepeating(animation_end_callback, child.get()),
-      base::BindRepeating(animation_progress_callback, child.get(),
-                          start_screen_bounds));
-  bounds_checker.WaitForAnimationCompletion();
-}
-
 TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
   // We cannot short-circuit animations in this test.
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -3629,6 +3576,113 @@ TEST_F(WindowTest, CleanupGestureStateDeleteOtherWindows) {
   EXPECT_EQ(1u, window.children().size());
   EXPECT_FALSE(child1);
   child2.reset();
+}
+
+class WindowActualScreenBoundsTest
+    : public WindowTest,
+      public testing::WithParamInterface<
+          /*is_target_transform_identical*/ bool> {
+ public:
+  WindowActualScreenBoundsTest() = default;
+  WindowActualScreenBoundsTest(const WindowActualScreenBoundsTest&) = delete;
+  WindowActualScreenBoundsTest& operator=(const WindowActualScreenBoundsTest&) =
+      delete;
+  ~WindowActualScreenBoundsTest() override = default;
+
+  // WindowTest:
+  void SetUp() override {
+    WindowTest::SetUp();
+    viewport_ = std::unique_ptr<Window>(CreateTestWindowWithBounds(
+        gfx::Rect(/*x=*/100, /*y=*/50, /*width=*/200, /*height=*/200),
+        root_window()));
+    child_ = std::unique_ptr<Window>(CreateTestWindowWithBounds(
+        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height*/ 100),
+        viewport_.get()));
+  }
+
+  void TearDown() override {
+    child_.reset();
+    viewport_.reset();
+    WindowTest::TearDown();
+  }
+
+  void OnTranslationAnimationStarted(const gfx::Transform& transform) const {
+    EXPECT_EQ("100,50 100x100", child_->GetActualBoundsInScreen().ToString());
+    EXPECT_EQ("50,0 100x100", child_->GetBoundsInScreen().ToString());
+  }
+
+  void OnTranslationAnimationEnded(const gfx::Transform& transform) const {
+    EXPECT_EQ("50,0 100x100", child_->GetActualBoundsInScreen().ToString());
+    EXPECT_EQ("50,0 100x100", child_->GetBoundsInScreen().ToString());
+  }
+
+  void OnTranslationAnimationProgressed(const gfx::Rect& child_initial_bounds,
+                                        const gfx::Transform& transform) const {
+    gfx::RectF current_screen_bounds(child_initial_bounds);
+    transform.TransformRect(&current_screen_bounds);
+    EXPECT_EQ(gfx::ToEnclosedRect(current_screen_bounds),
+              child_->GetActualBoundsInScreen());
+  }
+
+  std::unique_ptr<Window> viewport_;
+  std::unique_ptr<Window> child_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, WindowActualScreenBoundsTest, testing::Bool());
+
+// Verifies that the function to get the window's screen bounds works as
+// expected during layer animation.
+TEST_P(WindowActualScreenBoundsTest, VerifyWindowActualBoundsDuringAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* viewport_layer = viewport_->layer();
+  gfx::Transform initial_transform;
+  gfx::Transform target_transform;
+  gfx::Rect child_initial_bounds;
+  if (GetParam()) {
+    // Test in the scenario where the target transform is identical.
+
+    // Set the target bounds.
+    viewport_->SetBounds(
+        gfx::Rect(/*x=*/50, /*y=*/0, /*width=*/200, /*height=*/200));
+
+    // Set the transform to reverse the effect brought by bounds setting.
+    initial_transform.Translate(50, 50);
+    viewport_->layer()->SetTransform(initial_transform);
+
+    // Trigger the translation animation.
+    ui::ScopedLayerAnimationSettings settings(viewport_layer->GetAnimator());
+    viewport_layer->SetTransform(target_transform);
+
+    // Calculate the child's initial screen bounds manually.
+    child_initial_bounds =
+        gfx::Rect(/*x=*/50, /*y=*/0, /*width=*/100, /*height=*/100);
+  } else {
+    // Test in the scenario where the target transform is non-identical.
+
+    // Trigger the translation animation.
+    ui::ScopedLayerAnimationSettings settings(viewport_layer->GetAnimator());
+    target_transform.Translate(-50, -50);
+    viewport_layer->SetTransform(target_transform);
+
+    // Calculate the child's initial screen bounds manually.
+    child_initial_bounds =
+        gfx::Rect(/*x=*/100, /*y=*/50, /*width=*/100, /*height=*/100);
+  }
+
+  LayerTranslationAnimationNotifier bounds_checker(
+      viewport_layer, initial_transform, target_transform,
+      base::BindRepeating(
+          &WindowActualScreenBoundsTest::OnTranslationAnimationStarted,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &WindowActualScreenBoundsTest::OnTranslationAnimationEnded,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &WindowActualScreenBoundsTest::OnTranslationAnimationProgressed,
+          base::Unretained(this), child_initial_bounds));
+  bounds_checker.WaitForAnimationCompletion();
 }
 
 }  // namespace

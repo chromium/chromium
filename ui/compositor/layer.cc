@@ -1731,10 +1731,10 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
     gfx::Transform translation;
     translation.Translate(static_cast<float>(p->bounds().x()),
                           static_cast<float>(p->bounds().y()));
-    if (!p->GetTargetTransform().IsIdentity()) {
-      transform->ConcatTransform(is_target_transform ? p->GetTargetTransform()
-                                                     : p->transform());
-    }
+    const gfx::Transform& layer_transform =
+        is_target_transform ? p->GetTargetTransform() : p->transform();
+    if (!layer_transform.IsIdentity())
+      transform->ConcatTransform(layer_transform);
     transform->ConcatTransform(translation);
   }
   return p == ancestor;
