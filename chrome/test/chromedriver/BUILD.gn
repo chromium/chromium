@@ -4,7 +4,9 @@
 
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
-import("//build/linux/strip_binary.gni")
+if (is_linux) {
+  import("//build/linux/strip_binary.gni")
+}
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
