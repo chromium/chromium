@@ -1064,6 +1064,31 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectCrossOrigin) {
           ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
+IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL url_2 =
+      embedded_test_server()->GetURL("b.com", "/javaScriptTitle.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::NavigateToURL(browser(), url_1);
+  HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  EXPECT_NE(map, nullptr);
+  EXPECT_FALSE(
+      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  map->SetContentSettingDefaultScope(url_2, url_2,
+                                     ContentSettingsType::JAVASCRIPT,
+                                     ContentSetting::CONTENT_SETTING_BLOCK);
+  ui_test_utils::NavigateToURL(browser(), url_2);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+}
+
 class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
  public:
   ContentSettingsWorkerModulesBrowserTest() = default;

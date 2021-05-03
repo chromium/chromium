@@ -201,9 +201,8 @@ void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
   // There may be content settings that were updated for the navigated URL.
   // These would not have been sent before if we're navigating cross-origin.
   // Ensure up to date rules are sent before navigation commits.
-  MaybeSendRendererContentSettingsRules(
-      navigation_handle->GetWebContents()->GetMainFrame(), map_,
-      delegate_.get());
+  MaybeSendRendererContentSettingsRules(navigation_handle->GetRenderFrameHost(),
+                                        map_, delegate_.get());
 }
 
 void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
