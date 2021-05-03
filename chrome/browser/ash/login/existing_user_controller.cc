@@ -1147,6 +1147,10 @@ void ExistingUserController::ForceOnlineLoginForAccountId(
   // Start online sign-in UI for the user.
   is_login_in_progress_ = false;
   login_performer_.reset();
+  if (session_manager::SessionManager::Get()->IsInSecondaryLoginScreen()) {
+    // Gaia dialog is not supported on the secondary login screen.
+    return;
+  }
   GetLoginDisplayHost()->ShowGaiaDialog(account_id);
 }
 
