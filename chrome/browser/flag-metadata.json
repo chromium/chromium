@@ -3781,11 +3781,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "offline-indicator-always-http-probe",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "offline-indicator-choice",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76

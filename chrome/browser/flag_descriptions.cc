@@ -3118,12 +3118,6 @@ extern const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 extern const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card infobars will use the new Messages UI.";
 
-const char kOfflineIndicatorAlwaysHttpProbeName[] = "Always http probe";
-const char kOfflineIndicatorAlwaysHttpProbeDescription[] =
-    "Always do http probe to detect network connectivity for offline indicator "
-    "as opposed to just taking the connection state from the system."
-    "Used for testing.";
-
 const char kOfflineIndicatorChoiceName[] = "Offline indicator choices";
 const char kOfflineIndicatorChoiceDescription[] =
     "Show an offline indicator while offline.";

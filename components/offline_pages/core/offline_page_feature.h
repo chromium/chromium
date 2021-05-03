@@ -22,7 +22,6 @@ extern const base::Feature kOfflinePagesDescriptiveFailStatusFeature;
 extern const base::Feature kOfflinePagesCTSuppressNotificationsFeature;
 extern const base::Feature kOfflinePagesShowAlternateDinoPageFeature;
 extern const base::Feature kOfflineIndicatorFeature;
-extern const base::Feature kOfflineIndicatorAlwaysHttpProbeFeature;
 extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
 extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
 
@@ -76,12 +75,6 @@ std::string GetPrefetchingOfflinePagesExperimentTag();
 
 // Returns true if offline indicator UI is shown when the user is offline.
 bool IsOfflineIndicatorFeatureEnabled();
-
-// Returns true if we should always do http probes to detect network
-// connectivity instead of retrieving it from the system. This enables the user
-// to test our http probe detection on Android devices with Marshmallow and
-// above.
-bool IsOfflineIndicatorAlwaysHttpProbeEnabled();
 
 // Returns true if we are saving MHTML files to the target location and
 // calculating their content digests in one step.

@@ -3627,11 +3627,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(offline_pages::kOfflineIndicatorFeature,
                                     kOfflineIndicatorFeatureVariations,
                                     "OfflineIndicator")},
-    {"offline-indicator-always-http-probe",
-     flag_descriptions::kOfflineIndicatorAlwaysHttpProbeName,
-     flag_descriptions::kOfflineIndicatorAlwaysHttpProbeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflineIndicatorAlwaysHttpProbeFeature)},
     {"offline-indicator-v2", flag_descriptions::kOfflineIndicatorV2Name,
      flag_descriptions::kOfflineIndicatorV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOfflineIndicatorV2)},

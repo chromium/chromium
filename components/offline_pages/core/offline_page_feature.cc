@@ -53,9 +53,6 @@ const base::Feature kOfflinePagesShowAlternateDinoPageFeature{
 const base::Feature kOfflineIndicatorFeature{"OfflineIndicator",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOfflineIndicatorAlwaysHttpProbeFeature{
-    "OfflineIndicatorAlwaysHttpProbe", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kOfflinePagesNetworkStateLikelyUnknown{
     "OfflinePagesNetworkStateLikelyUnknown", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -119,10 +116,6 @@ std::string GetPrefetchingOfflinePagesExperimentTag() {
 
 bool IsOfflineIndicatorFeatureEnabled() {
   return base::FeatureList::IsEnabled(kOfflineIndicatorFeature);
-}
-
-bool IsOfflineIndicatorAlwaysHttpProbeEnabled() {
-  return base::FeatureList::IsEnabled(kOfflineIndicatorAlwaysHttpProbeFeature);
 }
 
 bool IsOnTheFlyMhtmlHashComputationEnabled() {
