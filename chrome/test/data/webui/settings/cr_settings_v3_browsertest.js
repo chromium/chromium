@@ -14,10 +14,6 @@ GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/password_manager/core/common/password_manager_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
-GEN('#include "components/language/core/common/language_experiments.h"');
-GEN('#endif');
-
 /** Test fixture for shared Polymer 3 elements. */
 // eslint-disable-next-line no-var
 var CrSettingsV3BrowserTest = class extends PolymerTest {
@@ -90,16 +86,8 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 GEN('#endif');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
-// eslint-disable-next-line no-var
-var CrSettingsLanguagesPageRestructuredV3Test =
-    class extends CrSettingsLanguagesPageV3Test {
-  /** @override */
-  get featureListInternal() {
-    return {enabled: ['language::kDesktopRestructuredLanguageSettings']};
-  }
-};
 TEST_F(
-    'CrSettingsLanguagesPageRestructuredV3Test', 'RestructuredLanguageSettings',
+    'CrSettingsLanguagesPageV3Test', 'RestructuredLanguageSettings',
     function() {
       mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
           .run();
@@ -148,6 +136,14 @@ TEST_F(
           .grep(languages_subpage_details_tests.TestNames.AlwaysTranslateDialog)
           .run();
     });
+
+TEST_F(
+    'CrSettingsLanguagesSubpageDetailedV3Test', 'NeverTranslateDialog',
+    function() {
+      mocha.grep(languages_subpage_details_tests.TestNames.NeverTranslateDialog)
+          .run();
+    });
+
 GEN('#endif');
 
 // eslint-disable-next-line no-var
@@ -170,11 +166,6 @@ var CrSettingsClearBrowsingDataV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/clear_browsing_data_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kSearchHistoryLink']};
   }
 };
 
@@ -556,7 +547,7 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['DownloadsPage', 'downloads_page_test.js'],
  ['DropdownMenu', 'dropdown_menu_tests.js'],
  ['ExtensionControlledIndicator', 'extension_controlled_indicator_tests.js'],
- ['HelpPage', 'help_page_test.js'],
+ ['HelpPage', 'help_page_v3_test.js'],
  ['Languages', 'languages_tests.js'],
  ['Menu', 'settings_menu_test.js'],
  ['OnStartupPage', 'on_startup_page_tests.js'],
