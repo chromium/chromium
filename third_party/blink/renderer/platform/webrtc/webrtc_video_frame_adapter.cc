@@ -264,8 +264,8 @@ WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
     // allowing optimized mapping and scaling of future frames for these sizes.
     std::vector<gfx::Size> mapped_sizes;
     for (const auto& adapted_frame : adapted_frames_) {
-      const auto& coded_size = adapted_frame.video_frame->coded_size();
-      const auto& visible_rect = adapted_frame.video_frame->visible_rect();
+      const auto& coded_size = frame_->coded_size();
+      const auto& visible_rect = adapted_frame.size.visible_rect;
       // The portion of the coded size that is visible.
       double kVisiblePortionX =
           static_cast<double>(visible_rect.width()) / coded_size.width();
@@ -273,7 +273,7 @@ WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
           static_cast<double>(visible_rect.height()) / coded_size.height();
       // The mapped size is the natural size of the entire image, not just the
       // visible portion.
-      const auto& natural_size = adapted_frame.video_frame->natural_size();
+      const auto& natural_size = adapted_frame.size.natural_size;
       mapped_sizes.emplace_back(
           std::round(natural_size.width() / kVisiblePortionX),
           std::round(natural_size.height() / kVisiblePortionY));
@@ -320,21 +320,22 @@ WebRtcVideoFrameAdapter::GetOrCreateFrameBufferForSize(
       return adapted_frame.frame_buffer;
   }
   // Adapt the frame for this size.
-  scoped_refptr<media::VideoFrame> video_frame = GetOrWrapFrameForSize(size);
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
-      ConvertToWebRtcVideoFrameBuffer(video_frame, shared_resources_);
-  adapted_frames_.emplace_back(size, video_frame, frame_buffer);
-  return frame_buffer;
+  adapted_frames_.push_back(AdaptBestFrame(size));
+  return adapted_frames_.back().frame_buffer;
 }
 
-scoped_refptr<media::VideoFrame> WebRtcVideoFrameAdapter::GetOrWrapFrameForSize(
+WebRtcVideoFrameAdapter::AdaptedFrame WebRtcVideoFrameAdapter::AdaptBestFrame(
     const ScaledBufferSize& size) const {
   double requested_scale_factor =
       static_cast<double>(size.natural_size.width()) /
       size.visible_rect.width();
   // Ideally we have a frame that is in the same scale as |size|. Otherwise, the
   // best frame is the smallest frame that is greater than |size|.
-  scoped_refptr<media::VideoFrame> best_frame = frame_;
+  //
+  // Search for the "best frame" amongst media::VideoFrames (pre-scaled frames).
+  // The "best frame" can either be a media::VideoFrame (a pre-scaled frame) or
+  // a webrtc::VideoFrameBuffer (a previously hard-applied frame).
+  scoped_refptr<media::VideoFrame> best_media_frame = frame_;
   double best_frame_scale_factor = 1.0;
   for (const auto& scaled_frame : scaled_frames_) {
     double scale_factor =
@@ -342,11 +343,38 @@ scoped_refptr<media::VideoFrame> WebRtcVideoFrameAdapter::GetOrWrapFrameForSize(
         frame_->coded_size().width();
     if (scale_factor >= requested_scale_factor &&
         scale_factor < best_frame_scale_factor) {
-      best_frame = scaled_frame;
+      best_media_frame = scaled_frame;
       best_frame_scale_factor = scale_factor;
       if (scale_factor == requested_scale_factor) {
         break;
       }
+    }
+  }
+  if (best_frame_scale_factor != requested_scale_factor) {
+    // Scaling is needed. Consider if the "best frame" is in fact a previously
+    // adapted frame. Search amongst webrtc::VideoFrameBuffers (previously
+    // hard-applied frames).
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> best_webrtc_frame;
+    for (const auto& adapted_frame : adapted_frames_) {
+      // For simplicity, ignore frames where the cropping is not identical to a
+      // previous mapping.
+      if (size.visible_rect != adapted_frame.size.visible_rect) {
+        continue;
+      }
+      double scale_factor =
+          static_cast<double>(adapted_frame.size.natural_size.width()) /
+          adapted_frame.size.visible_rect.width();
+      if (scale_factor >= requested_scale_factor &&
+          scale_factor < best_frame_scale_factor) {
+        best_webrtc_frame = adapted_frame.frame_buffer;
+        best_frame_scale_factor = scale_factor;
+      }
+    }
+    if (best_webrtc_frame) {
+      rtc::scoped_refptr<webrtc::VideoFrameBuffer> adapted_webrtc_frame =
+          best_webrtc_frame->Scale(size.natural_size.width(),
+                                   size.natural_size.height());
+      return AdaptedFrame(size, nullptr, adapted_webrtc_frame);
     }
   }
   // Because |size| is expressed relative to the full size'd frame, we need to
@@ -355,23 +383,26 @@ scoped_refptr<media::VideoFrame> WebRtcVideoFrameAdapter::GetOrWrapFrameForSize(
                          size.visible_rect.y() * best_frame_scale_factor,
                          size.visible_rect.width() * best_frame_scale_factor,
                          size.visible_rect.height() * best_frame_scale_factor);
-  if (IsApproxEquals(visible_rect, best_frame->visible_rect())) {
+  if (IsApproxEquals(visible_rect, best_media_frame->visible_rect())) {
     // Due to rounding errors it is possible for |visible_rect| to be slightly
     // off, which could either cause unnecessary cropping/scaling or cause
     // crashes if |visible_rect| is not contained within
-    // |best_frame->visible_rect()|, so we adjust it.
-    visible_rect = best_frame->visible_rect();
+    // |best_media_frame->visible_rect()|, so we adjust it.
+    visible_rect = best_media_frame->visible_rect();
   }
-  CHECK(best_frame->visible_rect().Contains(visible_rect))
+  CHECK(best_media_frame->visible_rect().Contains(visible_rect))
       << visible_rect.ToString() << " is not contained within "
-      << best_frame->visible_rect().ToString();
+      << best_media_frame->visible_rect().ToString();
   // Wrapping is only needed if we need to crop or scale the best frame.
-  if (best_frame->visible_rect() == visible_rect &&
-      best_frame->natural_size() == size.natural_size) {
-    return best_frame;
+  if (best_media_frame->visible_rect() != visible_rect ||
+      best_media_frame->natural_size() != size.natural_size) {
+    best_media_frame = media::VideoFrame::WrapVideoFrame(
+        best_media_frame, best_media_frame->format(), visible_rect,
+        size.natural_size);
   }
-  return media::VideoFrame::WrapVideoFrame(best_frame, best_frame->format(),
-                                           visible_rect, size.natural_size);
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> adapted_webrtc_frame =
+      ConvertToWebRtcVideoFrameBuffer(best_media_frame, shared_resources_);
+  return AdaptedFrame(size, best_media_frame, adapted_webrtc_frame);
 }
 
 scoped_refptr<media::VideoFrame>
