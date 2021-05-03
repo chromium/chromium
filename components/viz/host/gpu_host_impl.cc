@@ -14,7 +14,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -276,22 +275,6 @@ void GpuHostImpl::CloseChannel(int client_id) {
 
   channel_requests_.erase(client_id);
 }
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-void GpuHostImpl::FilterVisualDebugStream(base::Value json) {
-  viz_main_->FilterDebugStream(std::move(json));
-}
-
-void GpuHostImpl::StartVisualDebugStream(
-    base::RepeatingCallback<void(base::Value)> callback) {
-  viz_debug_output_callback_ = std::move(callback);
-  viz_main_->StartDebugStream(viz_debug_output_.BindNewPipeAndPassRemote());
-}
-
-void GpuHostImpl::StopVisualDebugStream() {
-  viz_main_->StopDebugStream();
-  viz_debug_output_.reset();
-}
-#endif
 
 void GpuHostImpl::SendOutstandingReplies() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -597,12 +580,5 @@ void GpuHostImpl::RecordLogMessage(int32_t severity,
                                    const std::string& message) {
   delegate_->RecordLogMessage(severity, header, message);
 }
-
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-void GpuHostImpl::LogFrame(base::Value frame_data) {
-  if (!viz_debug_output_callback_.is_null())
-    viz_debug_output_callback_.Run(std::move(frame_data));
-}
-#endif
 
 }  // namespace viz

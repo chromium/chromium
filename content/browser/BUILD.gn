@@ -11,7 +11,6 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//components/ui_devtools/devtools.gni")
-import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//content/public/common/zygote/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -2162,14 +2161,6 @@ source_set("browser") {
     ]
   }
 
-  if (use_viz_debugger) {
-    sources += [
-      "$target_gen_dir/devtools/protocol/visual_debugger.cc",
-      "$target_gen_dir/devtools/protocol/visual_debugger.h",
-      "devtools/protocol/visual_debugger_handler.cc",
-      "devtools/protocol/visual_debugger_handler.h",
-    ]
-  }
   if (toolkit_views) {
     deps += [ "//ui/events" ]
   }

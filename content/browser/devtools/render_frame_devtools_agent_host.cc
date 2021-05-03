@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/viz/common/buildflags.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -71,10 +70,6 @@
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #else
 #include "content/browser/devtools/protocol/webauthn_handler.h"
-#endif
-
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-#include "content/browser/devtools/protocol/visual_debugger_handler.h"
 #endif
 
 namespace content {
@@ -306,9 +301,6 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::MemoryHandler>());
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-  session->AddHandler(std::make_unique<protocol::VisualDebuggerHandler>());
-#endif
   if (!frame_tree_node_ || !frame_tree_node_->parent())
     session->AddHandler(std::make_unique<protocol::OverlayHandler>());
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(

@@ -20,11 +20,9 @@
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/ui_devtools/buildflags.h"
-#include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_domain_guilt.h"
@@ -56,12 +54,7 @@ class ShaderDiskCache;
 
 namespace viz {
 
-class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-    ,
-                                    public mojom::VizDebugOutput
-#endif
-{
+class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
  public:
   class VIZ_HOST_EXPORT Delegate {
    public:
@@ -183,19 +176,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                            EstablishChannelCallback callback);
   void CloseChannel(int client_id);
 
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-  // Command as a Json string that the visual debugging instance interprets as
-  // stream filtering.
-  void FilterVisualDebugStream(base::Value filter_data);
-
-  // Establishes the connection between the visual debugging instance and the
-  // output stream.
-  void StartVisualDebugStream(
-      base::RepeatingCallback<void(base::Value)> callback);
-
-  void StopVisualDebugStream();
-#endif
-
   void SendOutstandingReplies();
 
   void BindInterface(const std::string& interface_name,
@@ -266,11 +246,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                         const std::string& header,
                         const std::string& message) override;
 
-  // Implements mojom::VizDebugOutput and is called by VizDebugger.
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-  void LogFrame(base::Value frame_data) override;
-#endif
-
   Delegate* const delegate_;
   mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
@@ -285,11 +260,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 #endif
   mojo::Receiver<mojom::GpuHost> gpu_host_receiver_{this};
   gpu::GpuProcessHostActivityFlags activity_flags_;
-
-#if BUILDFLAG(USE_VIZ_DEBUGGER)
-  mojo::Receiver<mojom::VizDebugOutput> viz_debug_output_{this};
-  base::RepeatingCallback<void(base::Value)> viz_debug_output_callback_;
-#endif
 
   base::ProcessId pid_ = base::kNullProcessId;
 
