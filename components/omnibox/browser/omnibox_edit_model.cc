@@ -40,11 +40,13 @@
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -1513,10 +1515,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // If entering keyword mode by space is disabled, do not set
   // |allow_exact_keyword_match_|.
   allow_exact_keyword_match_ =
-      (OmniboxFieldTrial::GetKeywordSpaceTrigger() !=
-       OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED) &&
-      state_changes.text_differs && allow_keyword_ui_change &&
-      !state_changes.just_deleted_text && no_selection &&
+      AllowKeywordSpaceTriggering() && state_changes.text_differs &&
+      allow_keyword_ui_change && !state_changes.just_deleted_text &&
+      no_selection &&
       CreatedKeywordSearchByInsertingSpaceInMiddle(
           *state_changes.old_text, user_text_, state_changes.new_sel_start);
   view_->UpdatePopup();
@@ -1698,10 +1699,19 @@ bool OmniboxEditModel::ShouldPreventElision() const {
   return controller()->GetLocationBarModel()->ShouldPreventElision();
 }
 
+bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
+  PrefService* pref_service =
+      autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+  return (OmniboxFieldTrial::GetKeywordSpaceTrigger() !=
+          OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED) &&
+         (!base::FeatureList::IsEnabled(
+              omnibox::kKeywordSpaceTriggeringSetting) ||
+          pref_service->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled));
+}
+
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
     const std::u16string& new_text) {
-  if (OmniboxFieldTrial::GetKeywordSpaceTrigger() ==
-      OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED)
+  if (!AllowKeywordSpaceTriggering())
     return false;
 
   size_t keyword_length = new_text.length() - 1;

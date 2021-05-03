@@ -1611,8 +1611,22 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_REMOVE_FROM_LIST},
       {"searchEnginesManageExtension",
        IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION},
+      // TODO(yoangela): Placeholder strings, update when these strings are
+      // finalized.
+      {"searchEnginesTriggerOptions",
+       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_OPTIONS},
+      {"searchEnginesTriggerDescription",
+       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_DESCRIPTION},
+      {"searchEnginesTriggerSpaceEnabled",
+       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_ENABLED},
+      {"searchEnginesTriggerSpaceDisabled",
+       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_DISABLED},
+
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean(
+      "showKeywordTriggerSetting",
+      base::FeatureList::IsEnabled(omnibox::kKeywordSpaceTriggeringSetting));
 }
 
 void AddSiteSettingsStrings(content::WebUIDataSource* html_source,

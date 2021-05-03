@@ -1712,6 +1712,12 @@ const char kOmniboxKeywordSpaceTriggeringDescription[] =
     "Controls whether keyword mode can be triggered by space, double space, or "
     "neither.";
 
+const char kOmniboxKeywordSpaceTriggeringSettingName[] =
+    "Omnibox Keyword Space Triggering Setting";
+const char kOmniboxKeywordSpaceTriggeringSettingDescription[] =
+    "Adds a setting to the search engines setting page to control whether "
+    "spacebar activates keyword mode.";
+
 const char kOmniboxMostVisitedTilesName[] = "Omnibox Most Visited Tiles";
 const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frquently visited pages from history as a single row "

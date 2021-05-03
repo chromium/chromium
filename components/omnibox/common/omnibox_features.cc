@@ -304,6 +304,11 @@ const base::Feature kOmniboxAssistantVoiceSearch{
 const base::Feature kKeywordSpaceTriggering{"OmniboxKeywordSpaceTriggering",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, a setting is added to chrome://settings/searchEngines to
+// control whether <space> can be used to trigger keyword mode.
+const base::Feature kKeywordSpaceTriggeringSetting{
+    "OmniboxKeywordSpaceTriggeringSetting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to reveal the path, query and ref from steady state URLs
 // on hover.
 const base::Feature kRevealSteadyStateUrlPathQueryAndRefOnHover{

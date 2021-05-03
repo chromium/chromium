@@ -44541,6 +44541,8 @@ from previous Chrome versions.
   <int value="-1899409297"
       label="ProcessSharingWithStrictSiteInstances:disabled"/>
   <int value="-1899342084" label="ArcGhostWindow:enabled"/>
+  <int value="-1898963163"
+      label="OmniboxKeywordSpaceTriggeringSetting:disabled"/>
   <int value="-1898386671" label="PasswordCheck:enabled"/>
   <int value="-1896871201" label="CrossOriginOpenerPolicyReporting:enabled"/>
   <int value="-1896733769" label="CheckOfflineCapability:disabled"/>
@@ -46085,6 +46087,7 @@ from previous Chrome versions.
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
   <int value="-599932554" label="DoodlesOnLocalNtp:disabled"/>
   <int value="-599005750" label="ScanningUI:disabled"/>
+  <int value="-598191408" label="OmniboxKeywordSpaceTriggeringSetting:enabled"/>
   <int value="-598050737" label="disable-es3-apis"/>
   <int value="-596822155" label="AppManagementIntentSettings:enabled"/>
   <int value="-596337171" label="disable-ash-sidebar"/>

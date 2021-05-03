@@ -81,6 +81,7 @@ extern const base::Feature kWebUIOmniboxPopup;
 extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
 extern const base::Feature kKeywordSpaceTriggering;
+extern const base::Feature kKeywordSpaceTriggeringSetting;
 
 // Path-hiding experiments - these hide the path and other URL components in
 // some circumstances in the steady-state omnibox.

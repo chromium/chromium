@@ -474,6 +474,12 @@ class OmniboxEditModel {
   void GetInfoForCurrentText(AutocompleteMatch* match,
                              GURL* alternate_nav_url) const;
 
+  // Checks whether keyword mode space-triggering has been disabled either by
+  // a pref or relevant feature flags. If the setting isn't available on the
+  // search engines page, the pref should be ignored.  Returns true if space
+  // triggering is enabled, false otherwise.
+  bool AllowKeywordSpaceTriggering() const;
+
   // Accepts current keyword if the user just typed a space at the end of
   // |new_text|.  This handles both of the following cases:
   //   (assume "foo" is a keyword, | is the input caret, [] is selected text)
