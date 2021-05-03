@@ -522,8 +522,7 @@ void CastRemotingConnector::OnPrefChanged() {
 #if !defined(OS_ANDROID)
   const PrefService::Preference* pref = pref_service_->FindPreference(
       media_router::prefs::kMediaRouterMediaRemotingEnabled);
-  bool enabled = false;
-  pref->GetValue()->GetAsBoolean(&enabled);
+  bool enabled = pref->GetValue()->GetIfBool().value_or(false);
   remoting_allowed_ = enabled;
   if (!enabled)
     OnStopped(media::mojom::RemotingStopReason::USER_DISABLED);

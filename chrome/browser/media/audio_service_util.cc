@@ -29,10 +29,8 @@ bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()));
   base::Optional<bool> policy_value;
-  if (const base::Value* value = policies.GetValue(policy_name)) {
-    policy_value.emplace();
-    value->GetAsBoolean(&policy_value.value());
-  }
+  if (const base::Value* value = policies.GetValue(policy_name))
+    policy_value = value->GetIfBool();
   return policy_value.value_or(base::FeatureList::IsEnabled(feature));
 }
 #endif
