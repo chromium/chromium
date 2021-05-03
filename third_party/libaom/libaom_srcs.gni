@@ -653,6 +653,7 @@ aom_sources = [
   "//third_party/libaom/source/libaom/aom/aom_codec.h",
   "//third_party/libaom/source/libaom/aom/aom_decoder.h",
   "//third_party/libaom/source/libaom/aom/aom_encoder.h",
+  "//third_party/libaom/source/libaom/aom/aom_external_partition.h",
   "//third_party/libaom/source/libaom/aom/aom_frame_buffer.h",
   "//third_party/libaom/source/libaom/aom/aom_image.h",
   "//third_party/libaom/source/libaom/aom/aom_integer.h",
