@@ -7079,6 +7079,8 @@ crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass 
 crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Pass Failure ]
 
 # Sheriff 2021-05-03
+crbug.com/1205020 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Pass Failure ]
+crbug.com/1205020 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Pass Failure ]
 crbug.com/1161155 [ Mac ] paint/invalidation/image/canvas-composite-repaint-by-all-imagesource.html [ Failure ]
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Timeout Pass ]
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
