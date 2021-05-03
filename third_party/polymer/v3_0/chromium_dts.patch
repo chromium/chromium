@@ -1,17 +1,3 @@
-diff --git a/components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts b/components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts
-index b60ac3ba18a0..64aa9a729184 100644
---- a/components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts
-+++ b/components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts
-@@ -34,6 +34,9 @@ declare class IronA11yAnnouncer {
-    */
-   announce(text: string): void;
-   _onIronAnnounce(event: any): void;
-+  // TODO: Delete when following issue is fixed
-+  // https://github.com/PolymerElements/iron-a11y-announcer/issues/52
-+  static requestAvailability(): void;
- }
- 
- interface IronA11yAnnouncer extends LegacyElementMixin, HTMLElement {
 diff --git a/components-chromium/polymer/polymer.d.ts b/components-chromium/polymer/polymer.d.ts
 index a9f1aa64c5b8..a202c7fb06ba 100644
 --- a/components-chromium/polymer/polymer.d.ts

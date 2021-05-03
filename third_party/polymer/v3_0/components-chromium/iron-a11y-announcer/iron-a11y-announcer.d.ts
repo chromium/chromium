@@ -24,6 +24,12 @@ declare class IronA11yAnnouncer {
    * `polite` and `assertive`.
    */
   mode: string|null|undefined;
+
+  /**
+   * The timeout on refreshing the announcement text. Larger timeouts are
+   * needed for certain screen readers to re-announce the same message.
+   */
+  timeout: number|null|undefined;
   _text: string|null|undefined;
   created(): void;
 
@@ -34,8 +40,6 @@ declare class IronA11yAnnouncer {
    */
   announce(text: string): void;
   _onIronAnnounce(event: any): void;
-  // TODO: Delete when following issue is fixed
-  // https://github.com/PolymerElements/iron-a11y-announcer/issues/52
   static requestAvailability(): void;
 }
 
