@@ -387,7 +387,6 @@ class DeviceCloudPolicyStatusProviderChromeOS
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
-  std::string enterprise_enrollment_domain_;
   std::string enterprise_domain_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStatusProviderChromeOS);
@@ -452,7 +451,6 @@ class DeviceActiveDirectoryPolicyStatusProvider
  public:
   DeviceActiveDirectoryPolicyStatusProvider(
       policy::ActiveDirectoryPolicyManager* policy_manager,
-      const std::string& enterprise_realm,
       const std::string& enterprise_domain_manager);
 
   ~DeviceActiveDirectoryPolicyStatusProvider() override = default;
@@ -461,7 +459,6 @@ class DeviceActiveDirectoryPolicyStatusProvider
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
-  std::string enterprise_realm_;
   std::string enterprise_domain_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceActiveDirectoryPolicyStatusProvider);
@@ -639,7 +636,6 @@ DeviceCloudPolicyStatusProviderChromeOS::
         policy::BrowserPolicyConnectorChromeOS* connector)
     : CloudPolicyCoreStatusProvider(
           connector->GetDeviceCloudPolicyManager()->core()) {
-  enterprise_enrollment_domain_ = connector->GetEnterpriseEnrollmentDomain();
   enterprise_domain_manager_ = connector->GetEnterpriseDomainManager();
 }
 
@@ -649,7 +645,6 @@ DeviceCloudPolicyStatusProviderChromeOS::
 void DeviceCloudPolicyStatusProviderChromeOS::GetStatus(
     base::DictionaryValue* dict) {
   GetStatusFromCore(core_, dict);
-  dict->SetString("enterpriseEnrollmentDomain", enterprise_enrollment_domain_);
   dict->SetString("enterpriseDomainManager", enterprise_domain_manager_);
   GetOffHoursStatus(dict);
 }
@@ -757,16 +752,13 @@ void UserActiveDirectoryPolicyStatusProvider::OnStoreError(
 DeviceActiveDirectoryPolicyStatusProvider::
     DeviceActiveDirectoryPolicyStatusProvider(
         policy::ActiveDirectoryPolicyManager* policy_manager,
-        const std::string& enterprise_realm,
         const std::string& enterprise_domain_manager)
     : UserActiveDirectoryPolicyStatusProvider(policy_manager, nullptr),
-      enterprise_realm_(enterprise_realm),
       enterprise_domain_manager_(enterprise_domain_manager) {}
 
 void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
     base::DictionaryValue* dict) {
   UserActiveDirectoryPolicyStatusProvider::GetStatus(dict);
-  dict->SetString("enterpriseEnrollmentDomain", enterprise_realm_);
   dict->SetString("enterpriseDomainManager", enterprise_domain_manager_);
 }
 
@@ -891,7 +883,7 @@ void PolicyUIHandler::RegisterMessages() {
       device_status_provider_ =
           std::make_unique<DeviceActiveDirectoryPolicyStatusProvider>(
               connector->GetDeviceActiveDirectoryPolicyManager(),
-              connector->GetRealm(), connector->GetEnterpriseDomainManager());
+              connector->GetEnterpriseDomainManager());
     } else {
       device_status_provider_ =
           std::make_unique<DeviceCloudPolicyStatusProviderChromeOS>(connector);

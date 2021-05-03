@@ -123,8 +123,6 @@ StatusBox.prototype = {
       // status item with the domain the device is enrolled into.
       this.querySelector('.legend').textContent =
           loadTimeData.getString('statusDevice');
-      this.setLabelAndShow_(
-          '.enterprise-enrollment-domain', status.enterpriseEnrollmentDomain);
 
       // Populate the device naming information.
       // Populate the asset identifier.
@@ -163,7 +161,7 @@ StatusBox.prototype = {
         this.setLabelAndShow_('.version', status.version);
       }
       if (status.domain) {
-        this.setLabelAndShow_('.enterprise-enrollment-domain', status.domain);
+        this.setLabelAndShow_('.machine-enrollment-domain', status.domain);
       }
     } else {
       // For user policy, set the appropriate title and populate the topmost
