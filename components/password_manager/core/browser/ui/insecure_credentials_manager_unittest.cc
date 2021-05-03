@@ -33,17 +33,18 @@ constexpr char kPassword1[] = "f00b4r";
 constexpr char kPassword2[] = "s3cr3t";
 constexpr char kPassword3[] = "484her";
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 constexpr char kWeakPassword1[] = "123456";
 constexpr char kWeakPassword2[] = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
 constexpr char kStrongPassword1[] = "fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char kStrongPassword2[] = "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
+// Delay in milliseconds.
+constexpr int kDelay = 2;
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
-
-// Delay in milliseconds.
-const int kDelay = 2;
 
 struct MockInsecureCredentialsManagerObserver
     : InsecureCredentialsManager::Observer {
@@ -97,6 +98,7 @@ CredentialWithPassword MakeCompromisedCredential(
   return credential_with_password;
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 CredentialWithPassword MakeWeakCredential(const PasswordForm& form) {
   CredentialWithPassword weak_credential{CredentialView(form)};
   weak_credential.insecure_type = InsecureCredentialTypeFlags::kWeakCredential;
@@ -112,6 +114,7 @@ CredentialWithPassword MakeWeakAndCompromisedCredential(
       InsecureCredentialTypeFlags::kWeakCredential;
   return credential_with_password;
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 class InsecureCredentialsManagerTest : public ::testing::Test {
  protected:
@@ -482,6 +485,7 @@ TEST_F(InsecureCredentialsManagerTest, MapCompromisedPasswordsToPasswords) {
               ElementsAreArray(store().stored_passwords().at(kExampleOrg)));
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(InsecureCredentialsManagerTest, StartWeakCheckNotifiesOnCompletion) {
   base::MockOnceClosure closure;
   provider().StartWeakCheck(closure.Get());
@@ -724,6 +728,7 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.PasswordScore", 0, 1);
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 // Test verifies that saving LeakCheckCredential via provider adds expected
 // compromised credential.
@@ -773,6 +778,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 // Test verifies that editing weak credential via provider has affect on weak
 // credentials and updates password in the store.
 TEST_F(InsecureCredentialsManagerTest, UpdateWeakPassword) {
@@ -794,7 +800,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdateWeakPassword) {
             kStrongPassword1);
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
 // Test verifies that editing a weak credential to another weak credential
 // continues to be treated weak.
 TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
@@ -816,7 +821,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
   expected.password = base::ASCIIToUTF16(kWeakPassword2);
   EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
 }
-#endif
 
 // Test verifies that editing credential that is weak and compromised via
 // provider change the saved password.
@@ -843,6 +847,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateInsecurePassword) {
   EXPECT_EQ(GetSavedPasswordForUsername(kExampleCom, kUsername1),
             kStrongPassword1);
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
   InsecureCredential credential =
@@ -865,6 +870,7 @@ TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
   EXPECT_THAT(provider().GetInsecureCredentials(), IsEmpty());
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(InsecureCredentialsManagerTest, RemoveWeakCredential) {
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
@@ -925,6 +931,7 @@ TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
                           MakeWeakCredential(password_forms[2]),
                           MakeWeakCredential(password_forms[3])));
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 namespace {
 class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
@@ -1072,6 +1079,7 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
   EXPECT_TRUE(account_store().stored_passwords().at(kExampleCom).empty());
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
   // Add `kUsername1`,`kPassword1` to both stores.
   profile_store().AddLogin(
@@ -1092,5 +1100,6 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
   EXPECT_THAT(profile_store().stored_passwords().at(kExampleCom), IsEmpty());
   EXPECT_THAT(account_store().stored_passwords().at(kExampleCom), IsEmpty());
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 }  // namespace password_manager

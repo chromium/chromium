@@ -347,8 +347,6 @@ static_library("browser") {
     "component_updater/subresource_filter_component_installer.h",
     "component_updater/trust_token_key_commitments_component_installer.cc",
     "component_updater/trust_token_key_commitments_component_installer.h",
-    "component_updater/zxcvbn_data_component_installer.cc",
-    "component_updater/zxcvbn_data_component_installer.h",
     "consent_auditor/consent_auditor_factory.cc",
     "consent_auditor/consent_auditor_factory.h",
     "content_index/content_index_metrics.cc",
@@ -2347,7 +2345,6 @@ static_library("browser") {
     "//third_party/zlib:minizip",
     "//third_party/zlib/google:compression_utils",
     "//third_party/zlib/google:zip",
-    "//third_party/zxcvbn-cpp",
     "//ui/accessibility",
     "//ui/base",
     "//ui/base:ui_data_pack",
@@ -3483,6 +3480,8 @@ static_library("browser") {
       "component_updater/soda_component_installer.h",
       "component_updater/soda_language_pack_component_installer.cc",
       "component_updater/soda_language_pack_component_installer.h",
+      "component_updater/zxcvbn_data_component_installer.cc",
+      "component_updater/zxcvbn_data_component_installer.h",
       "content_settings/generated_cookie_prefs.cc",
       "content_settings/generated_cookie_prefs.h",
       "content_settings/generated_notification_pref.cc",
@@ -4223,6 +4222,7 @@ static_library("browser") {
       "//courgette:courgette_lib",
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
+      "//third_party/zxcvbn-cpp",
     ]
     public_deps += [
       "//chrome/common:buildflags",

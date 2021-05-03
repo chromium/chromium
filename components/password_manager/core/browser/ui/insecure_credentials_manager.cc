@@ -24,8 +24,11 @@
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/browser/ui/weak_check_utility.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#include "components/password_manager/core/browser/ui/weak_check_utility.h"
+#endif
 
 namespace password_manager {
 
@@ -164,6 +167,8 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
   return credentials;
 }
 
+// The function is only used by the weak check.
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 base::flat_set<std::u16string> ExtractPasswords(
     SavedPasswordsPresenter::SavedPasswordsView password_forms) {
   std::vector<std::u16string> passwords;
@@ -173,6 +178,7 @@ base::flat_set<std::u16string> ExtractPasswords(
   }
   return base::flat_set<std::u16string>(std::move(passwords));
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 }  // namespace
 
@@ -239,6 +245,7 @@ void InsecureCredentialsManager::Init() {
   insecure_credentials_reader_.Init();
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 void InsecureCredentialsManager::StartWeakCheck(
     base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -249,6 +256,7 @@ void InsecureCredentialsManager::StartWeakCheck(
                      weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
           .Then(std::move(on_check_done)));
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
     const LeakCheckCredential& credential) {

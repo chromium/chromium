@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -163,9 +164,11 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
 
   void Init();
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Computes weak credentials in a separate thread and then passes the result
   // to OnWeakCheckDone.
   void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
+#endif
 
   // Marks all saved credentials which have same username & password as
   // insecure.
