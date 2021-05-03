@@ -1718,7 +1718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad.Duplicate{UniquenessCriterion}"
-    units="bookmarks" expires_after="2021-06-06">
+    units="bookmarks" expires_after="2021-10-10">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -1737,7 +1737,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad.Unique{UniquenessCriterion}"
-    units="bookmarks" expires_after="2021-06-06">
+    units="bookmarks" expires_after="2021-10-10">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
