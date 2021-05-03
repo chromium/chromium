@@ -217,9 +217,8 @@ class EduAccountLoginHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
     EXPECT_EQ(event_name, callback_id);
 
-    bool callback_success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&callback_success));
-    EXPECT_EQ(success, callback_success);
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_EQ(success, data.arg2()->GetBool());
   }
 
   image_fetcher::MockImageFetcher* mock_image_fetcher() const {
@@ -418,10 +417,9 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id);
 
-  bool result = false;
-  ASSERT_TRUE(data.arg3()->GetAsBoolean(&result));
+  ASSERT_TRUE(data.arg3()->is_bool());
   // IsNetworkReady should return false.
-  ASSERT_FALSE(result);
+  ASSERT_FALSE(data.arg3()->GetBool());
 }
 
 TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
@@ -435,10 +433,9 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id);
 
-  bool result = false;
-  ASSERT_TRUE(data.arg3()->GetAsBoolean(&result));
+  ASSERT_TRUE(data.arg3()->is_bool());
   // IsNetworkReady should return true.
-  ASSERT_TRUE(result);
+  ASSERT_TRUE(data.arg3()->GetBool());
 }
 
 }  // namespace chromeos
