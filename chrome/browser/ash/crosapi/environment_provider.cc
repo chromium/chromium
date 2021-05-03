@@ -137,8 +137,7 @@ std::string EnvironmentProvider::GetDeviceAccountPolicy() {
 }
 
 bool EnvironmentProvider::GetUseNewAccountManager() {
-  // TODO(crbug.com/1117486): set use_new_account_manager param.
-  return false;
+  return true;
 }
 
 }  // namespace crosapi
