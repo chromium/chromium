@@ -37,10 +37,11 @@ class ViewWithInkDrop : public T {
 
   // views::InkDropHostView:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = T::CreateDefaultFloodFillInkDropImpl();
+    std::unique_ptr<views::InkDrop> ink_drop =
+        views::InkDrop::CreateInkDropForFloodFillRipple(this);
     ink_drop->SetShowHighlightOnHover(false);
     ink_drop->SetShowHighlightOnFocus(false);
-    return std::move(ink_drop);
+    return ink_drop;
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()

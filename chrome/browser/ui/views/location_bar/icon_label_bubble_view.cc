@@ -322,11 +322,12 @@ void IconLabelBubbleView::OnThemeChanged() {
 }
 
 std::unique_ptr<views::InkDrop> IconLabelBubbleView::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      CreateDefaultFloodFillInkDropImpl();
-  ink_drop->SetShowHighlightOnFocus(!focus_ring());
+  std::unique_ptr<views::InkDrop> ink_drop =
+      views::InkDrop::CreateInkDropForFloodFillRipple(
+          this, /*highlight_on_hover=*/false,
+          /*highlight_on_focus=*/!focus_ring());
   ink_drop->AddObserver(this);
-  return std::move(ink_drop);
+  return ink_drop;
 }
 
 SkColor IconLabelBubbleView::GetInkDropBaseColor() const {

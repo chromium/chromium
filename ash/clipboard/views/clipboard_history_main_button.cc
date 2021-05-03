@@ -55,8 +55,6 @@ const char* ClipboardHistoryMainButton::GetClassName() const {
 }
 
 std::unique_ptr<views::InkDrop> ClipboardHistoryMainButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
-
   // We do not use the ripple highlight due to the following reasons:
   // (1) Events may be intercepted by the menu controller. As a result, the
   // ripple highlight may not update properly.
@@ -64,9 +62,8 @@ std::unique_ptr<views::InkDrop> ClipboardHistoryMainButton::CreateInkDrop() {
   // selection is advanced by the up/down arrow key.
   // Hence, highlighted background is implemented by customizing in
   // `PaintButtonContents()`.
-  ink_drop->SetShowHighlightOnHover(false);
-
-  return ink_drop;
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/!focus_ring());
 }
 
 void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {

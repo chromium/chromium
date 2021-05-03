@@ -109,10 +109,7 @@ class OverviewCloseButton : public views::ImageButton {
  protected:
   // views::Button:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
-    ink_drop->SetAutoHighlightMode(
-        views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-    return ink_drop;
+    return views::InkDrop::CreateInkDropForFloodFillRipple(this);
   }
 
   // views::ImageButton:

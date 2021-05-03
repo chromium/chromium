@@ -81,7 +81,7 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
 std::unique_ptr<InkDrop> InkDropHostView::CreateInkDrop() {
   if (create_ink_drop_callback_)
     return create_ink_drop_callback_.Run();
-  return CreateDefaultFloodFillInkDropImpl();
+  return InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 void InkDropHostView::SetCreateInkDropCallback(
@@ -262,28 +262,7 @@ void InkDropHostView::OnInkDropHighlightedChanged() {
   OnPropertyChanged(&ink_drop_, kPropertyEffectsNone);
 }
 
-std::unique_ptr<InkDropImpl> InkDropHostView::CreateDefaultInkDropImpl() {
-  auto ink_drop = std::make_unique<InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(
-      InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE);
-  return ink_drop;
-}
-
-std::unique_ptr<InkDropImpl>
-InkDropHostView::CreateDefaultFloodFillInkDropImpl() {
-  auto ink_drop = std::make_unique<InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(
-      views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  return ink_drop;
-}
-
-std::unique_ptr<InkDropRipple> InkDropHostView::CreateDefaultInkDropRipple(
-    const gfx::Point& center_point,
-    const gfx::Size& size) const {
-  return CreateSquareInkDropRipple(center_point, size);
-}
-
-std::unique_ptr<InkDropRipple> InkDropHostView::CreateSquareInkDropRipple(
+std::unique_ptr<InkDropRipple> InkDropHostView::CreateInkDropForSquareRipple(
     const gfx::Point& center_point,
     const gfx::Size& size) const {
   auto ripple = std::make_unique<SquareInkDropRipple>(

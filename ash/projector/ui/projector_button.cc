@@ -32,10 +32,8 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback)
 }
 
 std::unique_ptr<views::InkDrop> ProjectorButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
-  ink_drop->SetShowHighlightOnHover(true);
-  ink_drop->SetShowHighlightOnFocus(true);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      this, /*highlight_on_hover=*/true, /*highlight_on_focus=*/true);
 }
 
 void ProjectorButton::OnPaintBackground(gfx::Canvas* canvas) {

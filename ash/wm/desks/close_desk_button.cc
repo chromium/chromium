@@ -44,9 +44,7 @@ const char* CloseDeskButton::GetClassName() const {
 }
 
 std::unique_ptr<views::InkDrop> CloseDeskButton::CreateInkDrop() {
-  auto ink_drop = CreateDefaultFloodFillInkDropImpl();
-  ink_drop->SetShowHighlightOnFocus(false);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 std::unique_ptr<views::InkDropHighlight>

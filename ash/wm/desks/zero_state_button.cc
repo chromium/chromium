@@ -90,12 +90,12 @@ void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 std::unique_ptr<views::InkDrop> DeskButtonBase::CreateInkDrop() {
-  auto ink_drop = CreateDefaultFloodFillInkDropImpl();
   // Do not show highlight on hover and focus. Since the button will be painted
   // with a background, see |highlight_on_hover_| for more details.
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetShowHighlightOnFocus(false);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      this,
+      /*highlight_on_hover=*/false,
+      /*highlight_on_focus=*/false);
 }
 
 std::unique_ptr<views::InkDropHighlight>

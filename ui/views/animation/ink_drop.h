@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_H_
 
+#include <memory>
 
 #include "base/time/time.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -19,6 +20,7 @@
 namespace views {
 
 class InkDropObserver;
+class InkDropHostView;
 
 // Base class that manages the lifetime and state of an ink drop ripple as
 // well as visual hover state feedback.
@@ -27,6 +29,21 @@ class VIEWS_EXPORT InkDrop {
   InkDrop(const InkDrop&) = delete;
   InkDrop& operator=(const InkDrop&) = delete;
   virtual ~InkDrop();
+
+  // Create an InkDrop appropriate for the "square" InkDropRipple effect. This
+  // InkDrop hides when the ripple effect is active instead of layering
+  // underneath it.
+  static std::unique_ptr<InkDrop> CreateInkDropForSquareRipple(
+      InkDropHostView* host,
+      bool highlight_on_hover = true,
+      bool highlight_on_focus = false);
+
+  // Create an InkDrop appropriate for the "flood-fill" InkDropRipple effect.
+  // This InkDrop shows as a response to the ripple effect.
+  static std::unique_ptr<InkDrop> CreateInkDropForFloodFillRipple(
+      InkDropHostView* host,
+      bool highlight_on_hover = true,
+      bool highlight_on_focus = false);
 
   // Called by ink drop hosts when their size is changed.
   virtual void HostSizeChanged(const gfx::Size& new_size) = 0;

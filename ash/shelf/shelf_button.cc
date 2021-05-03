@@ -78,10 +78,9 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
 }
 
 std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      Button::CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForSquareRipple(
+      this,
+      /*highlight_on_hover=*/false);
 }
 
 }  // namespace ash

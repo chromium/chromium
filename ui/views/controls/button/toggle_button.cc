@@ -324,17 +324,15 @@ void ToggleButton::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
 }
 
 std::unique_ptr<InkDrop> ToggleButton::CreateInkDrop() {
-  std::unique_ptr<InkDropImpl> ink_drop = Button::CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetAutoHighlightMode(
-      InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForSquareRipple(
+      this,
+      /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<InkDropRipple> ToggleButton::CreateInkDropRipple() const {
   gfx::Rect rect = thumb_view_->GetLocalBounds();
   rect.Inset(-ThumbView::GetShadowOutsets());
-  return CreateDefaultInkDropRipple(rect.CenterPoint());
+  return CreateInkDropForSquareRipple(rect.CenterPoint());
 }
 
 SkColor ToggleButton::GetInkDropBaseColor() const {

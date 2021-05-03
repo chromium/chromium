@@ -155,12 +155,11 @@ void SearchResultSuggestionChipView::OnThemeChanged() {
 
 std::unique_ptr<views::InkDrop>
 SearchResultSuggestionChipView::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      Button::CreateDefaultInkDropImpl();
+  auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
+  ink_drop->SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::NONE);
   ink_drop->SetShowHighlightOnHover(false);
   ink_drop->SetShowHighlightOnFocus(false);
-  ink_drop->SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::NONE);
-  return std::move(ink_drop);
+  return ink_drop;
 }
 
 std::unique_ptr<views::InkDropRipple>

@@ -107,9 +107,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
  protected:
   // views::Button:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = TrayPopupUtils::CreateInkDrop(this);
-    ink_drop->SetShowHighlightOnHover(true);
-    return ink_drop;
+    return TrayPopupUtils::CreateInkDrop(this, /*highlight_on_hover=*/true);
   }
 
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {

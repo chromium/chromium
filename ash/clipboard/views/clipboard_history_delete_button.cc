@@ -61,10 +61,8 @@ void ClipboardHistoryDeleteButton::AddLayerBeneathView(ui::Layer* layer) {
 }
 
 std::unique_ptr<views::InkDrop> ClipboardHistoryDeleteButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetShowHighlightOnFocus(true);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
 }
 
 void ClipboardHistoryDeleteButton::OnClickCanceled(const ui::Event& event) {

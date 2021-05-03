@@ -32,10 +32,9 @@ PaddedButton::PaddedButton(PressedCallback callback)
 }
 
 std::unique_ptr<views::InkDrop> PaddedButton::CreateInkDrop() {
-  auto ink_drop = CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetShowHighlightOnFocus(false);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForSquareRipple(
+      this,
+      /*highlight_on_hover=*/false);
 }
 
 void PaddedButton::OnThemeChanged() {

@@ -35,13 +35,12 @@ class LockScreenActionBackgroundView::NoteBackground
   ~NoteBackground() override = default;
 
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDropImpl> ink_drop =
-        CreateDefaultFloodFillInkDropImpl();
+    auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
+    ink_drop->SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::NONE);
     ink_drop->SetShowHighlightOnHover(false);
     ink_drop->SetShowHighlightOnFocus(false);
-    ink_drop->SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::NONE);
     ink_drop->AddObserver(observer_);
-    return std::move(ink_drop);
+    return ink_drop;
   }
 
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {

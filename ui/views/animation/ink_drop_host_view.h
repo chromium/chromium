@@ -198,27 +198,13 @@ class VIEWS_EXPORT InkDropHostView : public View {
   void OnInkDropHighlightedChanged();
 
  protected:
-  // Size used for the default SquareInkDropRipple.
+  // Size used by default for the SquareInkDropRipple.
   static constexpr gfx::Size kDefaultInkDropSize = gfx::Size(24, 24);
 
-  // Returns an InkDropImpl suitable for use with a square ink drop.
-  // TODO(pbos): Rename to CreateDefaultSquareInkDropImpl.
-  std::unique_ptr<InkDropImpl> CreateDefaultInkDropImpl();
-
-  // Returns an InkDropImpl configured to work well with a flood-fill ink drop
-  // ripple.
-  std::unique_ptr<InkDropImpl> CreateDefaultFloodFillInkDropImpl();
-
-  // TODO(pbos): Migrate uses to CreateSquareInkDropRipple which this calls
-  // directly.
-  std::unique_ptr<InkDropRipple> CreateDefaultInkDropRipple(
+  // Creates a SquareInkDropRipple centered on |center_point|.
+  std::unique_ptr<InkDropRipple> CreateInkDropForSquareRipple(
       const gfx::Point& center_point,
       const gfx::Size& size = kDefaultInkDropSize) const;
-
-  // Creates a SquareInkDropRipple centered on |center_point|.
-  std::unique_ptr<InkDropRipple> CreateSquareInkDropRipple(
-      const gfx::Point& center_point,
-      const gfx::Size& size) const;
 
   // Returns true if an ink drop instance has been created.
   bool HasInkDrop() const;

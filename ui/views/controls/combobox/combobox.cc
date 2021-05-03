@@ -84,11 +84,12 @@ class TransparentButton : public Button {
     return hover_animation().GetCurrentValue();
   }
 
-  // Overridden from InkDropHost:
+  // Button:
   std::unique_ptr<InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDropImpl> ink_drop = CreateDefaultInkDropImpl();
+    std::unique_ptr<InkDrop> ink_drop =
+        InkDrop::CreateInkDropForSquareRipple(this);
     ink_drop->SetShowHighlightOnHover(false);
-    return std::move(ink_drop);
+    return ink_drop;
   }
 
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {

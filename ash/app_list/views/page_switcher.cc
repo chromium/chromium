@@ -89,11 +89,7 @@ class PageSwitcherButton : public views::Button {
 
  protected:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDropImpl> ink_drop =
-        Button::CreateDefaultInkDropImpl();
-    ink_drop->SetAutoHighlightMode(
-        views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-    return std::move(ink_drop);
+    return views::InkDrop::CreateInkDropForFloodFillRipple(this);
   }
 
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {

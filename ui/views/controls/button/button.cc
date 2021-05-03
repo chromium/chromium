@@ -594,7 +594,7 @@ Button::Button(PressedCallback callback)
   SetCreateInkDropCallback(base::BindRepeating(
       [](Button* button) {
         std::unique_ptr<InkDrop> ink_drop =
-            button->CreateDefaultFloodFillInkDropImpl();
+            views::InkDrop::CreateInkDropForFloodFillRipple(button);
         ink_drop->SetShowHighlightOnFocus(!button->focus_ring());
         return ink_drop;
       },

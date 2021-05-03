@@ -4,13 +4,41 @@
 
 #include "ui/views/animation/ink_drop.h"
 
+#include <memory>
+
 #include "ui/compositor/layer.h"
+#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
 InkDrop::~InkDrop() = default;
+
+std::unique_ptr<InkDrop> InkDrop::CreateInkDropForSquareRipple(
+    InkDropHostView* host,
+    bool highlight_on_hover,
+    bool highlight_on_focus) {
+  auto ink_drop = std::make_unique<InkDropImpl>(host, host->size());
+  ink_drop->SetAutoHighlightMode(
+      InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE);
+  ink_drop->SetShowHighlightOnHover(highlight_on_hover);
+  ink_drop->SetShowHighlightOnFocus(highlight_on_focus);
+  return ink_drop;
+}
+
+std::unique_ptr<InkDrop> InkDrop::CreateInkDropForFloodFillRipple(
+    InkDropHostView* host,
+    bool highlight_on_hover,
+    bool highlight_on_focus) {
+  auto ink_drop = std::make_unique<InkDropImpl>(host, host->size());
+  ink_drop->SetAutoHighlightMode(
+      InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
+  ink_drop->SetShowHighlightOnHover(highlight_on_hover);
+  ink_drop->SetShowHighlightOnFocus(highlight_on_focus);
+  return ink_drop;
+}
 
 void InkDrop::AddObserver(InkDropObserver* observer) {
   CHECK(observer);

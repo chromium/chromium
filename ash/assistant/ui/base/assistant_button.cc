@@ -97,11 +97,7 @@ void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 std::unique_ptr<views::InkDrop> AssistantButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      std::make_unique<views::InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(
-      views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 std::unique_ptr<views::InkDropHighlight>

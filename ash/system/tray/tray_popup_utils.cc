@@ -290,13 +290,8 @@ std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
     views::InkDropHostView* host,
     bool highlight_on_hover,
     bool highlight_on_focus) {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      std::make_unique<views::InkDropImpl>(host, host->size());
-  ink_drop->SetAutoHighlightMode(
-      views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  ink_drop->SetShowHighlightOnHover(highlight_on_hover);
-  ink_drop->SetShowHighlightOnFocus(highlight_on_focus);
-  return std::move(ink_drop);
+  return views::InkDrop::CreateInkDropForFloodFillRipple(
+      host, highlight_on_hover, highlight_on_focus);
 }
 
 std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(

@@ -276,12 +276,7 @@ SkColor HoverButton::GetInkDropBaseColor() const {
 }
 
 std::unique_ptr<views::InkDrop> HoverButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = LabelButton::CreateInkDrop();
-  // Turn on highlighting when the button is focused only - hovering the button
-  // will request focus.
-  ink_drop->SetShowHighlightOnFocus(true);
-  ink_drop->SetShowHighlightOnHover(false);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
