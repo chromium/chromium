@@ -71,7 +71,8 @@ enum class AssistantEntryPoint {
   kStylus = 7,
   kLauncherSearchResult = 8,
   kLauncherSearchBoxIcon = 9,
-  kProactiveSuggestions = 10,
+  // Deprecated, please do not reuse
+  // kProactiveSuggestions = 10,
   kLauncherChip = 11,
   // Deprecated, please do not reuse
   // kBloom = 12,

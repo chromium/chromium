@@ -23,7 +23,7 @@ enum class AssistantQuerySource {
   kStylus = 3,
   kSuggestionChip = 4,
   kVoiceInput = 5,
-  kProactiveSuggestions = 6,
+  // kProactiveSuggestionsDeprecated = 6,
   kLibAssistantInitiated = 7,
   // kWarmerWelcomeDeprecated = 8,
   kConversationStarter = 9,

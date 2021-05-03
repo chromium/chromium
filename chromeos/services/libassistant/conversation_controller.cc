@@ -33,6 +33,7 @@ constexpr base::TimeDelta kStopInteractionDelayTime =
 
 // A macro which ensures we are running on the main thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \
+  DVLOG(3) << __func__;                                                     \
   if (!mojom_task_runner_->RunsTasksInCurrentSequence()) {                  \
     mojom_task_runner_->PostTask(                                           \
         FROM_HERE,                                                          \
@@ -273,6 +274,8 @@ void ConversationController::OnDestroyingAssistantManager(
 void ConversationController::SendTextQuery(const std::string& query,
                                            AssistantQuerySource source,
                                            bool allow_tts) {
+  DVLOG(1) << __func__;
+
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
   if (!assistant_manager_internal_)
@@ -300,6 +303,8 @@ void ConversationController::SendTextQuery(const std::string& query,
 }
 
 void ConversationController::StartVoiceInteraction() {
+  DVLOG(1) << __func__;
+
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
   if (!assistant_manager_) {
@@ -564,6 +569,8 @@ void ConversationController::OnInteractionFinished(
 }
 
 void ConversationController::MaybeStopPreviousInteraction() {
+  DVLOG(1) << __func__;
+
   if (!stop_interaction_closure_ || stop_interaction_closure_->IsCancelled()) {
     return;
   }

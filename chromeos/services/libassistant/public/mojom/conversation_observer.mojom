@@ -100,7 +100,6 @@ enum AssistantQuerySource {
   kStylus,
   kSuggestionChip,
   kVoiceInput,
-  kProactiveSuggestions,
   kLibAssistantInitiated,
   kConversationStarter,
   kWhatsOnMyScreen,

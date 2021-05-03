@@ -34,7 +34,6 @@ enum class DeepLinkType {
   kLists,
   kNotes,
   kOnboarding,
-  kProactiveSuggestions,
   kQuery,
   kReminders,
   kScreenshot,
@@ -70,14 +69,6 @@ enum class AlarmTimerAction {
   kPauseTimer,
   kRemoveAlarmOrTimer,
   kResumeTimer,
-};
-
-// Enumeration of proactive suggestions deep link actions.
-enum class ProactiveSuggestionsAction {
-  kCardClick,
-  kEntryPointClick,
-  kEntryPointClose,
-  kViewImpression,
 };
 
 // Enumeration of reminder deep link actions.
@@ -170,15 +161,6 @@ base::Optional<int32_t> GetDeepLinkParamAsInt(
 // parameter is not found or is not an int64, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
 base::Optional<int64_t> GetDeepLinkParamAsInt64(
-    const std::map<std::string, std::string>& params,
-    DeepLinkParam param);
-
-// Returns a specific ProactiveSuggestionsAction |param| from the given
-// parameters. If the desired parameter is not found, an empty value is
-// returned.
-COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<ProactiveSuggestionsAction>
-GetDeepLinkParamAsProactiveSuggestionsAction(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 

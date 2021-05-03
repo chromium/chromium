@@ -44,7 +44,6 @@ bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
     case AssistantEntryPoint::kDeepLink:
     case AssistantEntryPoint::kLauncherChip:
     case AssistantEntryPoint::kLauncherSearchResult:
-    case AssistantEntryPoint::kProactiveSuggestions:
     case AssistantEntryPoint::kSetup:
     case AssistantEntryPoint::kStylus:
       return false;

@@ -365,6 +365,8 @@ void AssistantInteractionControllerImpl::OnCommittedQueryChanged(
 // pending query that occur outside of this method.
 void AssistantInteractionControllerImpl::OnInteractionStarted(
     const AssistantInteractionMetadata& metadata) {
+  VLOG(1) << __func__;
+
   // Abort any request in progress.
   screen_context_request_factory_.InvalidateWeakPtrs();
 
@@ -416,6 +418,8 @@ void AssistantInteractionControllerImpl::OnInteractionStarted(
 
 void AssistantInteractionControllerImpl::OnInteractionFinished(
     AssistantInteractionResolution resolution) {
+  VLOG(1) << __func__;
+
   base::UmaHistogramEnumeration("Assistant.Interaction.Resolution", resolution);
   model_.SetMicState(MicState::kClosed);
 

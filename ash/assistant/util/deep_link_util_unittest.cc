@@ -451,45 +451,6 @@ TEST_F(DeepLinkUtilTest, GetDeepLinkParamAsTimeDelta) {
   AssertDeepLinkParamEq(base::nullopt, DeepLinkParam::kAction);
 }
 
-TEST_F(DeepLinkUtilTest, GetDeepLinkParamAsProactiveSuggestionsAction) {
-  std::map<std::string, std::string> params;
-
-  auto AssertDeepLinkParamEq =
-      [&params](const base::Optional<ProactiveSuggestionsAction>& expected,
-                DeepLinkParam param) {
-        ASSERT_EQ(expected,
-                  GetDeepLinkParamAsProactiveSuggestionsAction(params, param));
-      };
-
-  // Case: Deep link parameter present, well formed "cardClick".
-  params["action"] = "cardClick";
-  AssertDeepLinkParamEq(ProactiveSuggestionsAction::kCardClick,
-                        DeepLinkParam::kAction);
-
-  // Case: Deep link parameter present, well formed "entryPointClick".
-  params["action"] = "entryPointClick";
-  AssertDeepLinkParamEq(ProactiveSuggestionsAction::kEntryPointClick,
-                        DeepLinkParam::kAction);
-
-  // Case: Deep link parameter present, well formed "entryPointClose".
-  params["action"] = "entryPointClose";
-  AssertDeepLinkParamEq(ProactiveSuggestionsAction::kEntryPointClose,
-                        DeepLinkParam::kAction);
-
-  // Case: Deep link parameter present, well formed "viewImpression".
-  params["action"] = "viewImpression";
-  AssertDeepLinkParamEq(ProactiveSuggestionsAction::kViewImpression,
-                        DeepLinkParam::kAction);
-
-  // Case: Deep link parameter present, incorrect parameter.
-  params["action"] = "invalid";
-  AssertDeepLinkParamEq(base::nullopt, DeepLinkParam::kAction);
-
-  // Case: Deep link parameter absent.
-  params.clear();
-  AssertDeepLinkParamEq(base::nullopt, DeepLinkParam::kAction);
-}
-
 TEST_F(DeepLinkUtilTest, GetDeepLinkParamAsRemindersAction) {
   std::map<std::string, std::string> params;
 
@@ -524,8 +485,6 @@ TEST_F(DeepLinkUtilTest, GetDeepLinkType) {
       {"googleassistant://lists", DeepLinkType::kLists},
       {"googleassistant://notes", DeepLinkType::kNotes},
       {"googleassistant://onboarding", DeepLinkType::kOnboarding},
-      {"googleassistant://proactive-suggestions",
-       DeepLinkType::kProactiveSuggestions},
       {"googleassistant://reminders", DeepLinkType::kReminders},
       {"googleassistant://send-feedback", DeepLinkType::kFeedback},
       {"googleassistant://send-query", DeepLinkType::kQuery},
@@ -541,8 +500,6 @@ TEST_F(DeepLinkUtilTest, GetDeepLinkType) {
       {"googleassistant://lists?param=true", DeepLinkType::kLists},
       {"googleassistant://notes?param=true", DeepLinkType::kNotes},
       {"googleassistant://onboarding?param=true", DeepLinkType::kOnboarding},
-      {"googleassistant://proactive-suggestions?param=true",
-       DeepLinkType::kProactiveSuggestions},
       {"googleassistant://reminders?param=true", DeepLinkType::kReminders},
       {"googleassistant://send-feedback?param=true", DeepLinkType::kFeedback},
       {"googleassistant://send-query?param=true", DeepLinkType::kQuery},
