@@ -1443,9 +1443,6 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_BIONIC,
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 40,
-    ),
 )
 
 try_.chromium_linux_builder(
@@ -1454,6 +1451,7 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
+    os = os.LINUX_XENIAL_OR_BIONIC,
     tryjob = try_.job(),
 )
 
