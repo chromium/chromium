@@ -308,10 +308,11 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
     return true;
   }
 
-  if (!background_persistent->GetAsBoolean(&is_persistent_)) {
+  if (!background_persistent->is_bool()) {
     *error = ASCIIToUTF16(errors::kInvalidBackgroundPersistent);
     return false;
   }
+  is_persistent_ = background_persistent->GetBool();
 
   if (!has_background_page()) {
     *error = ASCIIToUTF16(errors::kInvalidBackgroundPersistentNoPage);
@@ -328,12 +329,11 @@ bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
                                   &allow_js_access))
     return true;
 
-  if (!allow_js_access->is_bool() ||
-      !allow_js_access->GetAsBoolean(&allow_js_access_)) {
+  if (!allow_js_access->is_bool()) {
     *error = ASCIIToUTF16(errors::kInvalidBackgroundAllowJsAccess);
     return false;
   }
-
+  allow_js_access_ = allow_js_access->GetBool();
   return true;
 }
 

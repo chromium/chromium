@@ -434,9 +434,8 @@ TEST_F(ExtensionAlarmsTest, Clear) {
   {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"nobody\"]"));
-    bool copy_bool_result = false;
-    ASSERT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    EXPECT_FALSE(copy_bool_result);
+    ASSERT_TRUE(result->is_bool());
+    EXPECT_FALSE(result->GetBool());
   }
 
   // Create 3 alarms.
@@ -446,16 +445,14 @@ TEST_F(ExtensionAlarmsTest, Clear) {
   {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"7\"]"));
-    bool copy_bool_result = false;
-    ASSERT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    EXPECT_TRUE(copy_bool_result);
+    ASSERT_TRUE(result->is_bool());
+    EXPECT_TRUE(result->GetBool());
   }
   {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"0\"]"));
-    bool copy_bool_result = false;
-    ASSERT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    EXPECT_TRUE(copy_bool_result);
+    ASSERT_TRUE(result->is_bool());
+    EXPECT_TRUE(result->GetBool());
   }
 
   alarm_manager_->GetAllAlarms(
@@ -486,9 +483,8 @@ TEST_F(ExtensionAlarmsTest, ClearAll) {
   {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new AlarmsClearAllFunction(), "[]"));
-    bool copy_bool_result = false;
-    ASSERT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    EXPECT_TRUE(copy_bool_result);
+    ASSERT_TRUE(result->is_bool());
+    EXPECT_TRUE(result->GetBool());
   }
 
   // Create 3 alarms.
