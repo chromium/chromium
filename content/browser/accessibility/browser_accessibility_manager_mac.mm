@@ -265,6 +265,22 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
       break;
+    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+      // Calling NSAccessibilityPostNotification on a menu which is about to be
+      // closed/destroyed is possible, but the event does not appear to be
+      // emitted reliably by the NSAccessibility stack. If VoiceOver is not
+      // notified that a given menu has been closed, it might fail to present
+      // subsequent changes to the user. WebKit seems to address this by firing
+      // AXMenuClosed on the document itself when an accessible menu is being
+      // detached. See WebKit's AccessibilityObject::detachRemoteParts
+      if (BrowserAccessibilityManager* root_manager = GetRootManager()) {
+        if (BrowserAccessibility* root = root_manager->GetRoot())
+          FireNativeMacNotification((NSString*)kAXMenuClosedNotification, root);
+      }
+      return;
+    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+      mac_notification = (NSString*)kAXMenuOpenedNotification;
+      break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
       mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
       break;

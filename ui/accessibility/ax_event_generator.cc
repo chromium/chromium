@@ -342,6 +342,10 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
       AddEvent(node, Event::IGNORED_CHANGED);
       if (!new_value)
         AddEvent(node, Event::SUBTREE_CREATED);
+      if (node->data().role == ax::mojom::Role::kMenu) {
+        new_value ? AddEvent(node, Event::MENU_POPUP_END)
+                  : AddEvent(node, Event::MENU_POPUP_START);
+      }
       break;
     }
     case ax::mojom::State::kMultiline:
@@ -1195,6 +1199,10 @@ const char* ToString(AXEventGenerator::Event event) {
       return "loadStart";
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
       return "menuItemSelected";
+    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+      return "menuPopupEnd";
+    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+      return "menuPopupStart";
     case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       return "multilineStateChanged";
     case AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:

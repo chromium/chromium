@@ -1068,6 +1068,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
 }
 
+#if defined(OS_WIN)
+// TODO(crbug.com/1198056#c3): Test is flaky on Windows.
+#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
+  DISABLED_AccessibilityEventsMenubarShowHideMenus
+#else
+#define MAYBE_AccessibilityEventsMenubarShowHideMenus \
+  AccessibilityEventsMenubarShowHideMenus
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       MAYBE_AccessibilityEventsMenubarShowHideMenus) {
+  RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
+}
+
 // crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        DISABLED_AccessibilityEventsAriaFlowToChange) {
