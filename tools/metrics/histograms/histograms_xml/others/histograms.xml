@@ -1628,6 +1628,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-04">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This histogram records when a bookmark is added sliced on profile type.
 
@@ -1640,6 +1641,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-10">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This histogram records the count of tabs when a user bookmarks all open
     tabs, in incognito mode.
@@ -1650,6 +1652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-04">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This histogram records the count of tabs when a user bookmarks all open
     tabs, in regular mode.
@@ -1660,6 +1663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="BookmarkBarPrefAndState" expires_after="2021-10-17">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This records the Boomarks bar pref state and status when the reading list is
     opened. This will help determine how often the reading list is accessed from
@@ -1671,6 +1675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Bookmarks.BookmarksInFolder" units="bookmarks"
     expires_after="M85">
   <owner>calamity@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs the number of bookmark items inside a folder every time a folder is
     opened inside the bookmark manager.
@@ -1681,6 +1686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M91">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs the destination directory chosen by the user when saving a bookmark via
     bottom sheet on Android.
@@ -1693,6 +1699,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>isherman@chromium.org</owner>
   <owner>aidanday@google.com</owner>
   <owner>mamir@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     The total number of bookmarks a user has saved, excluding folders. Recorded
     when a profile is opened - precisely, when bookmarks are loaded into storage
@@ -1709,6 +1716,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     The number of bookmarks a user has saved with a URL that is also present in
     at least one other bookmark. This excludes folders (which don't have a URL).
@@ -1721,6 +1729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="bookmarks" expires_after="2021-10-10">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     The number of bookmarks a user has saved with a {UniquenessCriterion} that
     is also present in at least one other bookmark. This excludes not only
@@ -1740,6 +1749,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="bookmarks" expires_after="2021-10-10">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     The number of unique {UniquenessCriterion}s among bookmarks saved by the
     user. Recorded when bookmarks are loaded into storage from disk.
@@ -1755,6 +1765,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M82">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Records the number of bookmarks which are opened using the &quot;Open in
     incognito tab&quot; button from selection mode in the Android bookmark
@@ -1766,6 +1777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M82">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Records the number of bookmarks which are opened using the &quot;Open in new
     tab&quot; button from selection mode in the Android bookmark manager.
@@ -1779,6 +1791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Time taken to build the bookmark index. Logged upon profile load when the
     bookmarks JSON file is read.
@@ -1791,6 +1804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Time taken to decode the bookmarks JSON file. Logged upon profile load when
     the bookmarks JSON file is read.
@@ -1804,6 +1818,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Time to compute values to be logged for UMA metrics
     Bookmarks.Count.OnProfileLoad.*.
@@ -1813,18 +1828,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
     expires_after="2021-08-29">
   <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>How users add a new bookmark.</summary>
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
     expires_after="2021-10-25">
   <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
 </histogram>
 
 <histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
     expires_after="M77">
   <owner>pkotwicz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs how frequently BookmarkModel::OnFaviconsChanged() is called with a
     non-empty |icon_url| to determine whether BookmarkNodes should be cached
@@ -1839,6 +1857,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="BrowserProfileType" expires_after="2022-03-01">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This records the number of times the bookmark manager is opened from regular
     or Incognito tab. This histogram only records the count from
@@ -1854,6 +1873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs the duration in milliseconds between bookmark creation time and
     bookmark open time based on device local time. Recorded when {BookmarkType}
@@ -1871,6 +1891,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2022-02-15">
   <owner>dtrainor@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
     out corrupted data introduced by a timestamp bug.
@@ -1885,6 +1906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
     expires_after="2021-10-04">
   <owner>wychen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Logs whether the bookmark entry is a user bookmark or a partner bookmark
     when it is opened.
@@ -1895,6 +1917,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-04">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>
     Logs the total number of reading list items shown in the reading list on the
     Android Bookmarks page when it is opened.
@@ -1905,6 +1929,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-09-19">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>
     Logs the number of read items shown in the reading list on the Android
     Bookmarks page when it is opened.
@@ -1915,6 +1941,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-10">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
   <summary>
     Logs the number of unread items shown in the reading list on the Android
     Bookmarks page when it is opened.
@@ -1925,6 +1953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="StarEntryPointAction" expires_after="2021-10-10">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Recorded when an action in the Bookmark icon menu is clicked.
   </summary>
@@ -1934,6 +1963,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-10-04">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     The number of times bookmarks are used in each profile type. Recorded when a
     bookmark is clicked.
