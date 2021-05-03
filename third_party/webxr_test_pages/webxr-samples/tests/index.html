@@ -115,6 +115,9 @@
 
             { title: 'Permission Requests', category: 'User Agent Behavior',
               path: 'permission-request.html',
+              variants: [
+                  {name: 'Start Inline Session', query: '?inlineSession=true'}
+              ],
               description: 'Tests requesting permissions from within XR.' },
 
             { title: 'Offscreen Canvas', category: 'Alternate WebGL Modes',
@@ -168,6 +171,16 @@
             polyfillLink.href = page.path + '?allowPolyfill=1';
             polyfillLink.innerHTML = 'Open with Polyfill';
             links.appendChild(polyfillLink);
+
+            if (page.variants) {
+              for (let i = 0; i < page.variants.length; ++i) {
+                let variant = page.variants[i];
+                let link = document.createElement('a');
+                link.href = page.path + variant.query;
+                link.innerHTML = variant.name;
+                links.appendChild(link);
+              }
+            }
 
             let sourceLink = document.createElement('a');
             sourceLink.href = 'https://cs.chromium.org/chromium/src/third_party/webxr_test_pages/webxr-samples/tests/' + page.path;
