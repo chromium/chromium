@@ -62,6 +62,7 @@
 <translation id="1376578503827013741">हिसाब गर्दै…</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
+<translation id="1385855801883526502">हाइलाइट गरिएको पाठ अर्को शैलीको बनाउनुहोस्</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="1406000523432664303">“ट्रयाक नगर्नुहोस्”</translation>
@@ -485,7 +486,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
-<translation id="4320177379694898372">कुनै इन्टरनेट जडान छैन</translation>
+<translation id="4320177379694898372">इन्टरनेट छैन</translation>
 <translation id="4321739720395210191">तपाईंको क्यामेरा खोल्न सकिएन। आफ्नो यन्त्र पुनः सुरु गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="433213510553688132">फलो गरिँदै छ…</translation>
 <translation id="4335835283689002019">Safe Browsing अफ छ</translation>

@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">За да управлявате профила си в Google, докоснете бутона „Управление на профила“</translation>
 <translation id="1549000191223877751">Преместв. в другия прозорец</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
+<translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
 <translation id="1569387923882100876">Свързано устройство</translation>
 <translation id="1571304935088121812">Копиране на потребителското име</translation>
 <translation id="1592864538817356322">Стандартна защита:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2518590038762162553">В олекотения режим на Chrome страниците се зареждат по-бързо и се използват до 60 процента по-малко данни. С цел оптимизиране на посещаваните от вас страници Chrome изпраща до Google уеб трафика ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Изпраща до Google URL адресите на страниците, които посещавате</translation>
+<translation id="2527497042232966453">Превключихте към разделите в режим „инкогнито“</translation>
 <translation id="2527779675047087889">Скриване на съдържанието в буферната памет</translation>
 <translation id="2532336938189706096">Изглед в мрежата</translation>
 <translation id="2534155362429831547">Изтрихте <ph name="NUMBER_OF_ITEMS" /> елемента</translation>
@@ -424,11 +426,13 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
+<translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3861633093716975811">Популярни видеоклипове</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3894427358181296146">Добавяне на папка</translation>
 <translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
+<translation id="3899682235662194879">Затваряне на всички раздели в режим „инкогнито“</translation>
 <translation id="3908308510347173149">Актуализиране на <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Намираме най-доброто от мрежата…</translation>
 <translation id="3924911262913579434">Режимът „<ph name="SAFE_BROWSING_MODE" />“ е включен</translation>
@@ -482,6 +486,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4263656433980196874">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на пълната височина</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
 <translation id="4290281343757112331">Да се изтегли ли по-късно вместо това?</translation>
+<translation id="4296252229500326964">Нов раздел „инкогнито“</translation>
 <translation id="4298388696830689168">Свързани сайтове</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основни положения</translation>
@@ -573,6 +578,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4865987431642283918">Основният език на устройството</translation>
 <translation id="4866368707455379617">Модулът „<ph name="MODULE" />“ за Chrome не може да се инсталира</translation>
 <translation id="4875775213178255010">Предложения за съдържание</translation>
+<translation id="4877678010818027629">Влизане в режим „инкогнито“</translation>
 <translation id="4878404682131129617">Създаването на тунел през прокси сървъра не бе успешно</translation>
 <translation id="4880127995492972015">Превод…</translation>
 <translation id="4881695831933465202">Отваряне</translation>
@@ -899,6 +905,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="686366188661646310">Искате ли да изтриете паролата?</translation>
 <translation id="6864459304226931083">Изтегляне на изображението</translation>
 <translation id="6865313869410766144">Данни за автоматично попълване на формуляри</translation>
+<translation id="6867400383614725881">Нов раздел „инкогнито“</translation>
 <translation id="6882836635272038266">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни.</translation>
 <translation id="688738109438487280">Добавяне на съществуващите данни към <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Отключете, за да копирате паролата си</translation>
@@ -914,6 +921,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6955535239952325894">Тази настройка е деактивирана за управлявани браузъри</translation>
 <translation id="6963766334940102469">Изтриване на отметките</translation>
+<translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
