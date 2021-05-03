@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import android.support.test.InstrumentationRegistry;
@@ -366,6 +368,22 @@ public class BottomSheetOnboardingCoordinatorTest {
                     && activity.getActivityTab().getUrl().getSpec().equals(url);
         });
         activity.finish();
+    }
+
+    @Test
+    @MediumTest
+    public void testIgnoreShowingUiAfterCancellation() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        BaseOnboardingCoordinator coordinator = createCoordinator();
+        showOnboardingAndWait(coordinator, mCallback);
+
+        // Cancel startup.
+        TestThreadUtils.runOnUiThreadBlocking(coordinator::hide);
+        waitUntilViewAssertionTrue(withId(R.id.autofill_assistant), doesNotExist(), 3000L);
+
+        TestThreadUtils.runOnUiThreadBlocking(coordinator::updateAndShowView);
+        // Does not crash.
     }
 
     /** Trigger onboarding and wait until it is fully displayed. */

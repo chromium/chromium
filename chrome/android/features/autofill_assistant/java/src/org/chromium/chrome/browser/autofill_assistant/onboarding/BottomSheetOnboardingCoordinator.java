@@ -139,6 +139,11 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
 
     @Override
     void showViewImpl() {
+        if (mContent == null) {
+            // This can happen if the startup has been cancelled in the time between |show()| and
+            // here.
+            return;
+        }
         mContent.setContent(mView, mView);
         BottomSheetUtils.showContentAndMaybeExpand(
                 mController, mContent, /* shouldExpand = */ true, mAnimate);
