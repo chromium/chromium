@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/decoder/system_engine.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -201,7 +202,12 @@ void SystemEngine::OnCompositionCanceled() {
 
 void SystemEngine::OnSuggestionsReturned(
     mojom::SuggestionsResponsePtr response) {
-  // TODO(crbug/1146266): Send the response into the shared lib.
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  ProcessMessage(WrapAndSerializeMessage(
+                     SuggestionsResponseToProto(seq_id, std::move(response))),
+                 base::DoNothing());
 }
 
 void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message,
@@ -225,7 +231,6 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
   }
 
   const ime::PublicMessage& reply = wrapper.public_message();
-  // TODO(crbug/1146266): Add case to handle request for suggestions.
   switch (reply.param_case()) {
     case ime::PublicMessage::kOnKeyEventReply: {
       const auto it = pending_key_event_callbacks_.find(reply.seq_id());
@@ -268,6 +273,13 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
     case ime::PublicMessage::kHandleAutocorrect: {
       remote->HandleAutocorrect(ProtoToAutocorrectSpan(
           reply.handle_autocorrect().autocorrect_span()));
+      break;
+    }
+    case ime::PublicMessage::kSuggestionsRequest: {
+      remote->RequestSuggestions(
+          ProtoToSuggestionsRequest(reply.suggestions_request()),
+          base::BindOnce(&SystemEngine::OnSuggestionsReturned,
+                         base::Unretained(this)));
       break;
     }
     default:

@@ -4,6 +4,8 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
+#include "chromeos/services/ime/public/cpp/suggestions.h"
+
 namespace chromeos {
 namespace ime {
 namespace {
@@ -58,6 +60,38 @@ InputFieldInfo::PersonalizationMode PersonalizationModeToProto(
       return InputFieldInfo::PERSONALIZATION_MODE_DISABLED;
     case mojom::PersonalizationMode::kEnabled:
       return InputFieldInfo::PERSONALIZATION_MODE_ENABLED;
+  }
+}
+
+SuggestionMode TextSuggestionModeToProto(TextSuggestionMode mode) {
+  switch (mode) {
+    case TextSuggestionMode::kPrediction:
+      return SuggestionMode::SUGGESTION_MODE_PREDICTION;
+    case TextSuggestionMode::kCompletion:
+      return SuggestionMode::SUGGESTION_MODE_COMPLETION;
+  }
+}
+
+SuggestionType TextSuggestionTypeToProto(TextSuggestionType type) {
+  switch (type) {
+    case TextSuggestionType::kAssistiveEmoji:
+      return SuggestionType::SUGGESTION_TYPE_ASSISTIVE_EMOJI;
+    case TextSuggestionType::kAssistivePersonalInfo:
+      return SuggestionType::SUGGESTION_TYPE_ASSISTIVE_PERSONAL_INFO;
+    case TextSuggestionType::kMultiWord:
+      return SuggestionType::SUGGESTION_TYPE_MULTI_WORD;
+  }
+}
+
+TextSuggestionMode ProtoToSuggestionMode(
+    const SuggestionMode& suggestion_mode) {
+  switch (suggestion_mode) {
+    case SuggestionMode::SUGGESTION_MODE_PREDICTION:
+      return TextSuggestionMode::kPrediction;
+    case SuggestionMode::SUGGESTION_MODE_COMPLETION:
+      return TextSuggestionMode::kCompletion;
+    default:
+      return TextSuggestionMode::kPrediction;
   }
 }
 
@@ -138,6 +172,25 @@ ime::PublicMessage OnCompositionCanceledToProto(uint64_t seq_id) {
   return message;
 }
 
+ime::PublicMessage SuggestionsResponseToProto(
+    uint64_t seq_id,
+    mojom::SuggestionsResponsePtr response) {
+  ime::PublicMessage message;
+  message.set_seq_id(seq_id);
+  ime::SuggestionsResponse* suggestions_response =
+      message.mutable_suggestions_response();
+
+  for (const auto& text_suggestion : response->candidates) {
+    ime::SuggestionCandidate* candidate =
+        suggestions_response->add_candidates();
+    candidate->set_mode(TextSuggestionModeToProto(text_suggestion.mode));
+    candidate->set_type(TextSuggestionTypeToProto(text_suggestion.type));
+    candidate->set_text(text_suggestion.text);
+  }
+
+  return message;
+}
+
 mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
     const chromeos::ime::AutocorrectSpan& autocorrect_span) {
   auto mojo_autocorrect_span = mojom::AutocorrectSpan::New();
@@ -147,6 +200,22 @@ mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
   mojo_autocorrect_span->original_text = autocorrect_span.original_text();
   mojo_autocorrect_span->current_text = autocorrect_span.current_text();
   return mojo_autocorrect_span;
+}
+
+mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
+    const chromeos::ime::SuggestionsRequest& suggestions_request) {
+  auto mojo_suggestions_request = mojom::SuggestionsRequest::New();
+  mojo_suggestions_request->text = suggestions_request.text();
+  mojo_suggestions_request->mode =
+      ProtoToSuggestionMode(suggestions_request.suggestion_mode());
+  for (const auto& candidate : suggestions_request.completion_candidates()) {
+    auto mojo_candidate = mojom::CompletionCandidate::New();
+    mojo_candidate->text = candidate.text();
+    mojo_candidate->normalized_score = candidate.normalized_score();
+    mojo_suggestions_request->completion_candidates.push_back(
+        std::move(mojo_candidate));
+  }
+  return mojo_suggestions_request;
 }
 
 }  // namespace ime

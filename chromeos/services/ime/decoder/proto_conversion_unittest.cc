@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -117,6 +118,28 @@ TEST(ProtoConversionTest, OnCompositionCanceledToProto) {
             expected_message.SerializeAsString());
 }
 
+TEST(ProtoConversionTest, SuggestionsResponseToProto) {
+  ime::PublicMessage expected_message;
+  expected_message.set_seq_id(42);
+  auto* candidate =
+      expected_message.mutable_suggestions_response()->add_candidates();
+  candidate->set_mode(ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
+  candidate->set_type(ime::SuggestionType::SUGGESTION_TYPE_MULTI_WORD);
+  candidate->set_text("gday");
+
+  auto mojo_response = mojom::SuggestionsResponse::New();
+  mojo_response->candidates.push_back(
+      ime::TextSuggestion{.mode = ime::TextSuggestionMode::kPrediction,
+                          .type = ime::TextSuggestionType::kMultiWord,
+                          .text = "gday"});
+
+  ime::PublicMessage actual_message =
+      SuggestionsResponseToProto(/*seq_id=*/42, std::move(mojo_response));
+
+  EXPECT_EQ(actual_message.SerializeAsString(),
+            expected_message.SerializeAsString());
+}
+
 TEST(ProtoConversionTest, ProtoToAutocorrectSpan) {
   ime::AutocorrectSpan autocorrect_span;
   autocorrect_span.mutable_autocorrect_range()->set_start(1);
@@ -128,6 +151,25 @@ TEST(ProtoConversionTest, ProtoToAutocorrectSpan) {
 
   EXPECT_EQ(result,
             mojom::AutocorrectSpan::New(gfx::Range(1, 2), "hello", "world"));
+}
+
+TEST(ProtoConversionTest, ProtoToSuggestionsRequest) {
+  ime::SuggestionsRequest suggestions_request;
+  suggestions_request.set_text("gday mate");
+  suggestions_request.set_suggestion_mode(
+      ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
+  auto* candidate = suggestions_request.add_completion_candidates();
+  candidate->set_text("something");
+  candidate->set_normalized_score(0.55);
+
+  mojom::SuggestionsRequestPtr result =
+      ProtoToSuggestionsRequest(suggestions_request);
+
+  EXPECT_EQ(result->text, "gday mate");
+  EXPECT_EQ(result->mode, ime::TextSuggestionMode::kPrediction);
+  EXPECT_EQ(static_cast<int>(result->completion_candidates.size()), 1);
+  EXPECT_EQ(result->completion_candidates[0]->text, "something");
+  EXPECT_FLOAT_EQ(result->completion_candidates[0]->normalized_score, 0.55);
 }
 
 }  // namespace ime

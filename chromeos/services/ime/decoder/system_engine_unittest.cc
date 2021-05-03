@@ -325,5 +325,93 @@ TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
   mock_channel.FlushForTesting();
 }
 
+using RequestSuggestionsCallback =
+    base::OnceCallback<void(mojo::StructPtr<mojom::SuggestionsResponse>)>;
+
+TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+
+  ime::Wrapper proto;
+  auto* suggestions_request =
+      proto.mutable_public_message()->mutable_suggestions_request();
+  suggestions_request->set_text("hello there!");
+  suggestions_request->set_suggestion_mode(
+      ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
+  auto* candidate = suggestions_request->add_completion_candidates();
+  candidate->set_text("hello");
+  candidate->set_normalized_score(0.55);
+
+  mojom::SuggestionsRequestPtr request;
+  EXPECT_CALL(mock_channel, RequestSuggestions)
+      .WillOnce([&request](mojom::SuggestionsRequestPtr suggestions_request,
+                           RequestSuggestionsCallback callback) {
+        request = std::move(suggestions_request);
+        std::move(callback).Run(mojom::SuggestionsResponse::New());
+      });
+
+  const std::string serialized = proto.SerializeAsString();
+  decoder_entry_points_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  client.FlushForTesting();
+
+  EXPECT_EQ(request->mode, TextSuggestionMode::kPrediction);
+  EXPECT_EQ(request->text, "hello there!");
+  EXPECT_EQ(static_cast<int>(request->completion_candidates.size()), 1);
+  EXPECT_EQ(request->completion_candidates[0]->text, "hello");
+  EXPECT_FLOAT_EQ(request->completion_candidates[0]->normalized_score, 0.55);
+}
+
+TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+
+  ime::Wrapper expected_response_proto;
+  ime::PublicMessage* expected_message =
+      expected_response_proto.mutable_public_message();
+  expected_message->set_seq_id(0);
+  auto* candidate =
+      expected_message->mutable_suggestions_response()->add_candidates();
+  candidate->set_mode(ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
+  candidate->set_type(ime::SuggestionType::SUGGESTION_TYPE_MULTI_WORD);
+  candidate->set_text("gday");
+
+  {
+    testing::InSequence sequence;
+
+    EXPECT_CALL(mock_channel, RequestSuggestions)
+        .WillOnce([](mojom::SuggestionsRequestPtr suggestions_request,
+                     RequestSuggestionsCallback callback) {
+          auto response = mojom::SuggestionsResponse::New();
+          response->candidates.push_back(
+              ime::TextSuggestion{.mode = ime::TextSuggestionMode::kPrediction,
+                                  .type = ime::TextSuggestionType::kMultiWord,
+                                  .text = "gday"});
+          std::move(callback).Run(std::move(response));
+        });
+
+    EXPECT_CALL(decoder_entry_points_, Process)
+        .With(EqualsProto(expected_response_proto));
+  }
+
+  ime::Wrapper proto;
+  proto.mutable_public_message()->mutable_suggestions_request();
+
+  const std::string serialized = proto.SerializeAsString();
+  decoder_entry_points_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+
+  // Ensure the first mojo call RequestSuggestions is flushed
+  client.FlushForTesting();
+  // Ensure the second mojo call RequestSuggestionsCallback is flushed
+  client.FlushForTesting();
+}
+
 }  // namespace ime
 }  // namespace chromeos
