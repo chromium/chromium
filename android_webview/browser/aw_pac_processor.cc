@@ -438,10 +438,7 @@ void AwPacProcessor::MakeProxyRequestNative(
 
 bool AwPacProcessor::SetProxyScript(std::string script) {
   SetProxyScriptJob job(this, script);
-  bool success = job.ExecSync();
-
-  DCHECK(proxy_resolver_);
-  return success;
+  return job.ExecSync();
 }
 
 jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
@@ -451,10 +448,14 @@ jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
   return SetProxyScript(script);
 }
 
-std::string AwPacProcessor::MakeProxyRequest(std::string url) {
+bool AwPacProcessor::MakeProxyRequest(std::string url, std::string* result) {
   MakeProxyRequestJob job(this, url);
-  bool success = job.ExecSync();
-  return success ? job.proxy_info().ToPacString() : nullptr;
+  if (job.ExecSync()) {
+    *result = job.proxy_info().ToPacString();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
@@ -462,7 +463,12 @@ ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jurl) {
   std::string url = ConvertJavaStringToUTF8(env, jurl);
-  return ConvertUTF8ToJavaString(env, MakeProxyRequest(url));
+  std::string result;
+  if (MakeProxyRequest(url, &result)) {
+    return ConvertUTF8ToJavaString(env, result);
+  } else {
+    return nullptr;
+  }
 }
 
 void AwPacProcessor::SetNetworkAndLinkAddresses(

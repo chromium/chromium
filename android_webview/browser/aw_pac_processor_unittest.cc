@@ -37,28 +37,37 @@ class AwPacProcessorTest : public testing::Test {
 };
 
 TEST_F(AwPacProcessorTest, MakeProxyRequest) {
-  pac_processor_->SetProxyScript(kScript);
-  EXPECT_EQ("PROXY localhost:8080;PROXY localhost:8081;DIRECT",
-            pac_processor_->MakeProxyRequest(kRequestUrl));
+  EXPECT_TRUE(pac_processor_->SetProxyScript(kScript));
+  std::string result;
+  EXPECT_TRUE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
+  EXPECT_EQ("PROXY localhost:8080;PROXY localhost:8081;DIRECT", result);
 }
 
 TEST_F(AwPacProcessorTest, MakeProxyRequestDnsResolve) {
-  pac_processor_->SetProxyScript(kScriptDnsResolve);
-  EXPECT_EQ("PROXY 127.0.0.1:80",
-            pac_processor_->MakeProxyRequest(kRequestUrl));
+  EXPECT_TRUE(pac_processor_->SetProxyScript(kScriptDnsResolve));
+  std::string result;
+  EXPECT_TRUE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
+  EXPECT_EQ("PROXY 127.0.0.1:80", result);
 }
 
 TEST_F(AwPacProcessorTest, MultipleProxyRequest) {
   AwPacProcessor* other_pac_processor_ = new AwPacProcessor();
-  pac_processor_->SetProxyScript(kScript);
-  other_pac_processor_->SetProxyScript(kScriptDnsResolve);
+  EXPECT_TRUE(pac_processor_->SetProxyScript(kScript));
+  EXPECT_TRUE(other_pac_processor_->SetProxyScript(kScriptDnsResolve));
 
-  EXPECT_EQ("PROXY localhost:8080;PROXY localhost:8081;DIRECT",
-            pac_processor_->MakeProxyRequest(kRequestUrl));
+  std::string result;
+  EXPECT_TRUE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
+  EXPECT_EQ("PROXY localhost:8080;PROXY localhost:8081;DIRECT", result);
 
-  EXPECT_EQ("PROXY 127.0.0.1:80",
-            other_pac_processor_->MakeProxyRequest(kRequestUrl));
+  EXPECT_TRUE(other_pac_processor_->MakeProxyRequest(kRequestUrl, &result));
+  EXPECT_EQ("PROXY 127.0.0.1:80", result);
   delete other_pac_processor_;
+}
+
+TEST_F(AwPacProcessorTest, UnparseableScript) {
+  EXPECT_FALSE(pac_processor_->SetProxyScript(""));
+  std::string result;
+  EXPECT_FALSE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
 }
 
 }  // namespace android_webview

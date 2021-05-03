@@ -38,7 +38,7 @@ class AwPacProcessor {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jurl);
-  std::string MakeProxyRequest(std::string url);
+  bool MakeProxyRequest(std::string url, std::string* result);
   void SetNetworkAndLinkAddresses(
       JNIEnv* env,
       net_handle_t net_handle,
