@@ -10,6 +10,7 @@
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 
 namespace {
@@ -17,6 +18,21 @@ namespace {
 ash::ArcOverlayManager* singleton = nullptr;
 
 const char* kBillingIdPrefix = "billing_id:";
+
+base::Optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
+  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+  DCHECK(shell_surface_base);
+  auto* shell_root_surface = shell_surface_base->root_surface();
+  DCHECK(shell_root_surface);
+
+  // If the client_surface_id doesn't have a particular prefix, it is not an
+  // overlay candidate.
+  std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
+  if (!base::StartsWith(client_surface_id, kBillingIdPrefix))
+    return {};
+
+  return client_surface_id.substr(strlen(kBillingIdPrefix));
+}
 
 }  // namespace
 
@@ -71,6 +87,15 @@ void ArcOverlayManager::OnWindowInitialized(aura::Window* window) {
   if (!window->delegate() || !ash::IsArcWindow(window))
     return;
 
+  // See if a potentially valid overlay token is set on the window, to confirm
+  // that it is intended to be an overlay window.
+  base::Optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  if (!token)
+    return;
+
+  // Disable animations on overlay windows.
+  window->SetProperty(aura::client::kAnimationsDisabledKey, true);
+
   window_observations_.AddObservation(window);
 }
 
@@ -91,22 +116,14 @@ void ArcOverlayManager::OnWindowVisibilityChanged(aura::Window* window,
   // We do not need to keep observing the window.
   window_observations_.RemoveObservation(window);
 
-  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
-  DCHECK(shell_surface_base);
-  auto* shell_root_surface = shell_surface_base->root_surface();
-  DCHECK(shell_root_surface);
-
-  // If the client_surface_id doesn't have a particular prefix, it is not an
-  // overlay candidate.
-  std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
-  if (!base::StartsWith(client_surface_id, kBillingIdPrefix))
+  // Get the overlay token.
+  base::Optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  if (!token)
     return;
 
-  std::string overlay_token =
-      client_surface_id.substr(strlen(kBillingIdPrefix));
-
   // Find and attach the overlay to the host window.
-  RegisterOverlayWindow(std::move(overlay_token), shell_surface_base);
+  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+  RegisterOverlayWindow(std::move(token).value(), shell_surface_base);
 }
 
 void ArcOverlayManager::RegisterOverlayWindow(
