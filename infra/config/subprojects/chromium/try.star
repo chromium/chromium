@@ -1872,7 +1872,7 @@ try_.chromium_win_builder(
 
 try_.cipd_3pp_builder(
     name = "3pp-linux-amd64-packager",
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
     builderless = False,
     properties = {
         "platform": "linux-amd64",
