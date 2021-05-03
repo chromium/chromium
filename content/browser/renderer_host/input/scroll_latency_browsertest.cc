@@ -546,8 +546,14 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
   RunScrollbarButtonLatencyTest();
 }
 
+// Crashes on Mac ASAN.  https://crbug.com/1188553
+#if defined(OS_MAC)
+#define MAYBE_ScrollbarThumbDragLatency DISABLED_ScrollbarThumbDragLatency
+#else
+#define MAYBE_ScrollbarThumbDragLatency ScrollbarThumbDragLatency
+#endif
 IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
-                       ScrollbarThumbDragLatency) {
+                       MAYBE_ScrollbarThumbDragLatency) {
   LoadURL();
 
   RunScrollbarThumbDragLatencyTest();
