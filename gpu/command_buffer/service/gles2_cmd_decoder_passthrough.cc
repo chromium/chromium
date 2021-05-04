@@ -1278,6 +1278,27 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
     }
   }
 
+  for (PendingQuery& pending_query : pending_queries_) {
+    if (!have_context) {
+      if (pending_query.commands_completed_fence) {
+        pending_query.commands_completed_fence->Invalidate();
+      }
+      if (pending_query.buffer_shadow_update_fence) {
+        pending_query.buffer_shadow_update_fence->Invalidate();
+      }
+    }
+  }
+  pending_queries_.clear();
+
+  for (PendingReadPixels& pending_read_pixels : pending_read_pixels_) {
+    if (!have_context) {
+      if (pending_read_pixels.fence) {
+        pending_read_pixels.fence->Invalidate();
+      }
+    }
+  }
+  pending_read_pixels_.clear();
+
   DeleteServiceObjects(&framebuffer_id_map_, have_context,
                        [this](GLuint client_id, GLuint framebuffer) {
                          api()->glDeleteFramebuffersEXTFn(1, &framebuffer);
