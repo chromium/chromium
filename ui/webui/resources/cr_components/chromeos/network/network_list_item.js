@@ -67,7 +67,8 @@ Polymer({
     rowLabel: {
       type: String,
       notify: true,
-      computed: 'getRowLabel_(item, networkState, subtitle_)',
+      computed:
+          'getRowLabel_(item, networkState, subtitle_, isPSimPendingActivationNetwork_)',
     },
 
     buttonLabel: {
@@ -397,6 +398,12 @@ Polymer({
               this.getItemName_(), this.item.typeState.cellular.signalStrength);
         }
         if (status) {
+          if (this.isPSimPendingActivationNetwork_) {
+            return this.i18n(
+                'networkListItemLabelCellularUnactivatedWithConnectionStatus',
+                index, total, this.getItemName_(), status,
+                this.item.typeState.cellular.signalStrength);
+          }
           if (this.subtitle_) {
             return this.i18n(
                 'networkListItemLabelCellularWithConnectionStatusAndProviderName',
@@ -407,6 +414,12 @@ Polymer({
               'networkListItemLabelCellularWithConnectionStatus', index, total,
               this.getItemName_(), status,
               this.item.typeState.cellular.signalStrength);
+        }
+
+        if (this.isPSimPendingActivationNetwork_) {
+          return this.i18n(
+              'networkListItemLabelCellularUnactivated', index, total,
+              this.getItemName_(), this.item.typeState.cellular.signalStrength);
         }
 
         if (this.subtitle_) {
