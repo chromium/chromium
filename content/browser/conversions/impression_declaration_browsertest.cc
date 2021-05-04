@@ -807,4 +807,83 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0u, host->num_impressions());
 }
 
+IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
+                       WindowOpenImpression_ImpressionReceived) {
+  ImpressionObserver impression_observer(web_contents());
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // Navigate the page using window.open and set an impression.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.open("https://a.com", "_top",
+    "attributionsourceeventid=1,attributiondestination=https://a.com,\
+    attributionreportto=https://report.com,attributionexpiry=1000");)"));
+
+  // Wait for the impression to be seen by the observer.
+  blink::Impression last_impression = impression_observer.Wait();
+
+  // Verify the attributes of the impression are set as expected.
+  EXPECT_EQ(1UL, last_impression.impression_data);
+  EXPECT_EQ(url::Origin::Create(GURL("https://a.com")),
+            last_impression.conversion_destination);
+  EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
+            last_impression.reporting_origin);
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
+}
+
+IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
+                       WindowOpenAttributionSourceFeatures_FeaturesHandled) {
+  struct {
+    std::string features;
+    bool expected;
+  } kTestCases[] = {
+      {"", false},
+      {"attributionsourceeventid=1", false},
+      {"attributiondestination=1", false},
+      {"attributionexpiry=1", false},
+      {"attributionsourceeventid=1,attributiondestination=1234", false},
+      {"attributionsourceeventid=1,attributiondestination=abcdefg", false},
+      {"attributionsourceeventid=1,attributiondestination=http://a.com", false},
+      {"attributionsourceeventid=1,attributiondestination=https://a.com", true},
+      {"attributionsourceeventid=bb,attributiondestination=https://a.com",
+       true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    ImpressionObserver impression_observer(web_contents());
+    GURL page_url =
+        https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+    EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+    // Navigate the page using window.open and set an impression.
+    EXPECT_TRUE(ExecJs(web_contents(),
+                       JsReplace(R"(window.open("https://a.com", "_top", $1);)",
+                                 test_case.features)));
+
+    // Wait for the impression to be seen by the observer.
+    if (test_case.expected)
+      impression_observer.Wait();
+    else
+      EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
+                       WindowOpenNoUserGesture_NoImpression) {
+  ImpressionObserver impression_observer(web_contents());
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // Navigate the page using window.open and set an impression, but do not give
+  // a user gesture.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.open("https://a.com", "_top",
+    "attributionsourceeventid=1,attributiondestination=https://a.com");)",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
+}
+
 }  // namespace content

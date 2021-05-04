@@ -28,8 +28,9 @@ TEST_F(WindowFeaturesTest, NoOpener) {
   };
 
   for (const auto& test : kCases) {
-    EXPECT_EQ(test.noopener,
-              GetWindowFeaturesFromString(test.feature_string).noopener)
+    EXPECT_EQ(test.noopener, GetWindowFeaturesFromString(
+                                 test.feature_string, nullptr /* dom_window */)
+                                 .noopener)
         << "Testing '" << test.feature_string << "'";
   }
 }
@@ -59,7 +60,9 @@ TEST_F(WindowFeaturesTest, NoReferrer) {
 
   for (const auto& test : kCases) {
     EXPECT_EQ(test.noreferrer,
-              GetWindowFeaturesFromString(test.feature_string).noreferrer)
+              GetWindowFeaturesFromString(test.feature_string,
+                                          nullptr /* dom_window */)
+                  .noreferrer)
         << "Testing '" << test.feature_string << "'";
   }
 }

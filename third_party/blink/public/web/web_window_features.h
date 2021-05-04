@@ -31,6 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 
+#include "base/optional.h"
+
+#include "third_party/blink/public/platform/web_impression.h"
+
 namespace blink {
 
 struct WebWindowFeatures {
@@ -60,6 +64,10 @@ struct WebWindowFeatures {
   bool noreferrer = false;
   bool background = false;
   bool persistent = false;
+
+  // Represents the attribution source declared by Attribution Reporting related
+  // window features, if any.
+  base::Optional<WebImpression> impression;
 };
 
 }  // namespace blink

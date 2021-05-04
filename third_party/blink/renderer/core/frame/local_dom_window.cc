@@ -1979,7 +1979,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     return nullptr;
   }
 
-  WebWindowFeatures window_features = GetWindowFeaturesFromString(features);
+  WebWindowFeatures window_features =
+      GetWindowFeaturesFromString(features, incumbent_window);
 
   FrameLoadRequest frame_request(incumbent_window,
                                  ResourceRequest(completed_url));
@@ -2002,6 +2003,10 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   bool has_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
   frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
   GetFrame()->MaybeLogAdClickNavigation();
+
+  if (has_user_gesture && window_features.impression) {
+    frame_request.SetImpression(*window_features.impression);
+  }
 
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(

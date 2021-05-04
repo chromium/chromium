@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
-                       WindowOpenImpressionConversion_ReportSent) {
+                       WindowOpenDeprecatedAPI_NoException) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL(
@@ -200,6 +201,43 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
       base::TimeDelta::FromMilliseconds(100));
   run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
+                       WindowOpenImpressionConversion_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL(
+          "https://a.test/.well-known/"
+          "register-conversion?impression-data=1&conversion-data=7&credit=100"),
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+
+  // We can't use `JsReplace` directly to input the origin as it will use string
+  // literals which shouldn't be provided in the window features string.
+  std::string window_features =
+      base::StrCat({"attributionsourceeventid=1,attributiondestination=",
+                    url::Origin::Create(conversion_url).Serialize()});
+
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(window.open($1, '_top', $2);)",
+                                       conversion_url, window_features)));
+  observer.Wait();
+
+  // Register a conversion with the original page as the reporting origin.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
+                                       url::Origin::Create(impression_url))));
+
+  EXPECT_EQ(expected_report.expected_url, expected_report.WaitForRequestUrl());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,

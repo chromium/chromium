@@ -25,6 +25,12 @@ namespace blink {
 
 namespace {
 
+base::Optional<uint64_t> ParseExpiry(const String& expiry) {
+  bool expiry_is_valid = false;
+  uint64_t parsed_expiry = expiry.ToUInt64Strict(&expiry_is_valid);
+  return expiry_is_valid ? base::make_optional(parsed_expiry) : base::nullopt;
+}
+
 base::Optional<WebImpression> GetImpression(
     ExecutionContext* execution_context,
     const String& impression_data_string,
@@ -149,13 +155,9 @@ base::Optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element) {
   base::Optional<uint64_t> expiry;
   if (element->hasAttribute(html_names::kImpressionexpiryAttr)) {
-    bool expiry_is_valid = false;
-    uint64_t expiry_milliseconds =
-        element->FastGetAttribute(html_names::kImpressionexpiryAttr)
-            .GetString()
-            .ToUInt64Strict(&expiry_is_valid);
-    if (expiry_is_valid)
-      expiry = expiry_milliseconds;
+    expiry =
+        ParseExpiry(element->FastGetAttribute(html_names::kImpressionexpiryAttr)
+                        .GetString());
   }
 
   DCHECK(element->hasAttribute(html_names::kConversiondestinationAttr));
@@ -172,6 +174,23 @@ base::Optional<WebImpression> GetImpressionForAnchor(
                     .GetString())
           : base::nullopt,
       expiry, element);
+}
+
+base::Optional<WebImpression> GetImpressionFromWindowFeatures(
+    ExecutionContext* execution_context,
+    const ImpressionFeatures& features) {
+  if (features.impression_data.IsNull() ||
+      features.conversion_destination.IsNull())
+    return base::nullopt;
+
+  return GetImpression(
+      execution_context, features.impression_data,
+      features.conversion_destination,
+      !features.reporting_origin.IsNull()
+          ? base::make_optional(features.reporting_origin)
+          : base::nullopt,
+      !features.expiry.IsNull() ? ParseExpiry(features.expiry) : base::nullopt,
+      nullptr);
 }
 
 base::Optional<WebImpression> GetImpressionForParams(

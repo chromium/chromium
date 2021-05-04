@@ -18,11 +18,26 @@ class ExecutionContext;
 class HTMLAnchorElement;
 class ImpressionParams;
 
+// Dummy struct to pass un-parsed Attribution Reporting window features into the
+// parsing utilities below.
+struct ImpressionFeatures {
+  String impression_data;
+  String conversion_destination;
+  String reporting_origin;
+  String expiry;
+};
+
 // Returns the WebImpression struct with all data declared by impression
 // related attributes on |element|. If the impression attributes do not contain
 // allowed values, base::nullopt is returned.
 base::Optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element);
+
+// Same as GetImpressionForAnchor(), but gets an impression specified by the
+// features string associated with a window.open call.
+base::Optional<WebImpression> GetImpressionFromWindowFeatures(
+    ExecutionContext* execution_context,
+    const ImpressionFeatures& features);
 
 // Same as GetImpressionForAnchor(), but gets an impression specified by an
 // ImpressionParams dictionary associated with a window.open call.
