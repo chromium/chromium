@@ -29,11 +29,10 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback)
   // Rounded background.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kProjectorButtonSize / 2.f);
-}
 
-std::unique_ptr<views::InkDrop> ProjectorButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForFloodFillRipple(
-      this, /*highlight_on_hover=*/true, /*highlight_on_focus=*/true);
+  views::InkDrop::UseInkDropForFloodFillRipple(this,
+                                               /*highlight_on_hover=*/true,
+                                               /*highlight_on_focus=*/true);
 }
 
 void ProjectorButton::OnPaintBackground(gfx::Canvas* canvas) {

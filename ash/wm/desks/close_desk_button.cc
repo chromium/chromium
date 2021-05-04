@@ -29,6 +29,7 @@ CloseDeskButton::CloseDeskButton(PressedCallback callback)
 
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
+  views::InkDrop::UseInkDropForFloodFillRipple(this);
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -41,10 +42,6 @@ CloseDeskButton::~CloseDeskButton() = default;
 
 const char* CloseDeskButton::GetClassName() const {
   return "CloseDeskButton";
-}
-
-std::unique_ptr<views::InkDrop> CloseDeskButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 std::unique_ptr<views::InkDropHighlight>

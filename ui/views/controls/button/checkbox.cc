@@ -53,6 +53,8 @@ Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
   SetRequestFocusOnPress(false);
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
+  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+                                                 /*highlight_on_hover=*/false);
 
   // Limit the checkbox height to match the legacy appearance.
   const gfx::Size preferred_size(LabelButton::CalculatePreferredSize());
@@ -151,11 +153,6 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
   UpdateImage();
-}
-
-std::unique_ptr<InkDrop> Checkbox::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<InkDropRipple> Checkbox::CreateInkDropRipple() const {

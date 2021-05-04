@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -146,6 +147,17 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   SetInkDropVisibleOpacity(GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
   SetInkDropHighlightOpacity(GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+
+  SetCreateInkDropCallback(base::BindRepeating(
+      [](IconLabelBubbleView* host) {
+        std::unique_ptr<views::InkDrop> ink_drop =
+            views::InkDrop::CreateInkDropForFloodFillRipple(
+                host, /*highlight_on_hover=*/false,
+                /*highlight_on_focus=*/!host->focus_ring());
+        ink_drop->AddObserver(host);
+        return ink_drop;
+      },
+      this));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
@@ -319,15 +331,6 @@ void IconLabelBubbleView::OnThemeChanged() {
   label()->SetBackground(nullptr);
 
   UpdateLabelColors();
-}
-
-std::unique_ptr<views::InkDrop> IconLabelBubbleView::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop =
-      views::InkDrop::CreateInkDropForFloodFillRipple(
-          this, /*highlight_on_hover=*/false,
-          /*highlight_on_focus=*/!focus_ring());
-  ink_drop->AddObserver(this);
-  return ink_drop;
 }
 
 SkColor IconLabelBubbleView::GetInkDropBaseColor() const {

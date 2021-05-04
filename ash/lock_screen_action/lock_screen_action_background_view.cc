@@ -30,17 +30,19 @@ class LockScreenActionBackgroundView::NoteBackground
       : observer_(observer) {
     DCHECK(observer);
     SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+
+    SetCreateInkDropCallback(base::BindRepeating(
+        [](NoteBackground* host) {
+          std::unique_ptr<views::InkDrop> ink_drop =
+              views::InkDrop::CreateInkDropWithoutAutoHighlight(
+                  host, /*highlight_on_hover=*/false);
+          ink_drop->AddObserver(host->observer_);
+          return ink_drop;
+        },
+        this));
   }
 
   ~NoteBackground() override = default;
-
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDrop> ink_drop =
-        views::InkDrop::CreateInkDropWithoutAutoHighlight(
-            this, /*highlight_on_hover=*/false);
-    ink_drop->AddObserver(observer_);
-    return ink_drop;
-  }
 
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
     gfx::Point center = base::i18n::IsRTL() ? GetLocalBounds().origin()

@@ -28,7 +28,6 @@ class ClipboardHistoryDeleteButton : public views::ImageButton {
   // views::ImageButton:
   const char* GetClassName() const override;
   void AddLayerBeneathView(ui::Layer* layer) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnClickCanceled(const ui::Event& event) override;
   void OnThemeChanged() override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;

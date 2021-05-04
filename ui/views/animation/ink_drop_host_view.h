@@ -58,14 +58,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // Removes |ink_drop_layer| from the layer tree.
   virtual void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
 
-  // Returns a configured InkDrop. In general subclasses will return an
-  // InkDropImpl instance that will use the CreateInkDropRipple() and
-  // CreateInkDropHighlight() methods to create the visual effects.
-  //
-  // Subclasses should override this if they need to configure any properties
-  // specific to the InkDrop instance. e.g. the AutoHighlightMode of an
-  // InkDropImpl instance.
-  virtual std::unique_ptr<InkDrop> CreateInkDrop();
+  // Returns a configured InkDrop. To override default behavior call
+  // SetCreateInkDropRippleCallback().
+  std::unique_ptr<InkDrop> CreateInkDrop();
 
   // Callback version of CreateInkDrop(). Note that this is called in the base
   // implementation of CreateInkDrop(), so if "it's not working", check the

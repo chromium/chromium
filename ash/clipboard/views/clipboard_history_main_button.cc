@@ -7,6 +7,7 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -34,6 +35,23 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
 
   // Let the parent handle accessibility features.
   GetViewAccessibility().OverrideIsIgnored(/*value=*/true);
+
+  // TODO(crbug.com/1205227): Revisit if this comment makes sense still. It was
+  // attached to CreateInkDrop() but sounds more about talking about a null
+  // CreateInkDropHighlight(), but at the time of writing the class inherited
+  // from Button and had no other InkDrop-related override than CreateInkDrop().
+  // This may need an upstream fix in InkDrop.
+  //
+  // We do not use the ripple highlight due to the following reasons:
+  // (1) Events may be intercepted by the menu controller. As a result, the
+  // ripple highlight may not update properly.
+  // (2) The animation to fade in/out highlight does not look good when the menu
+  // selection is advanced by the up/down arrow key.
+  // Hence, highlighted background is implemented by customizing in
+  // `PaintButtonContents()`.
+  views::InkDrop::UseInkDropForFloodFillRipple(
+      this, /*highlight_on_hover=*/false,
+      /*highlight_on_focus=*/!focus_ring());
 }
 
 ClipboardHistoryMainButton::~ClipboardHistoryMainButton() = default;
@@ -52,18 +70,6 @@ void ClipboardHistoryMainButton::SetShouldHighlight(bool should_highlight) {
 
 const char* ClipboardHistoryMainButton::GetClassName() const {
   return "ClipboardHistoryMainButton";
-}
-
-std::unique_ptr<views::InkDrop> ClipboardHistoryMainButton::CreateInkDrop() {
-  // We do not use the ripple highlight due to the following reasons:
-  // (1) Events may be intercepted by the menu controller. As a result, the
-  // ripple highlight may not update properly.
-  // (2) The animation to fade in/out highlight does not look good when the menu
-  // selection is advanced by the up/down arrow key.
-  // Hence, highlighted background is implemented by customizing in
-  // `PaintButtonContents()`.
-  return views::InkDrop::CreateInkDropForFloodFillRipple(
-      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/!focus_ring());
 }
 
 void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {

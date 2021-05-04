@@ -26,7 +26,6 @@ class ClipboardHistoryMainButton : public views::Button {
 
   // views::Button:
   const char* GetClassName() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnClickCanceled(const ui::Event& event) override;
   void OnThemeChanged() override;
   void OnGestureEvent(ui::GestureEvent* event) override;

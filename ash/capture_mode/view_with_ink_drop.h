@@ -17,6 +17,9 @@ namespace ash {
 // plate code for all the Capture Mode views that will need it. This is used by
 // CaptureModeToggleButton, CaptureModeCloseButton, ... etc.
 // |T| must be a subtype of |views::InkDropHostView|.
+// TODO(pbos): After migrating below to use SetCreateInkDrop* callbacks, replace
+// this class with a shared ConfigureInkDrop function called from all current
+// ViewWithInkDrop subclasses' constructors).
 template <typename T>
 class ViewWithInkDrop : public T {
  public:
@@ -31,19 +34,14 @@ class ViewWithInkDrop : public T {
     T::SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
     T::SetHasInkDropActionOnClick(true);
     T::SetInkDropVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
+    views::InkDrop::UseInkDropForFloodFillRipple(this,
+                                                 /*highlight_on_hover=*/false,
+                                                 /*highlight_on_focus=*/false);
   }
 
   ~ViewWithInkDrop() override = default;
 
   // views::InkDropHostView:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDrop> ink_drop =
-        views::InkDrop::CreateInkDropForFloodFillRipple(this);
-    ink_drop->SetShowHighlightOnHover(false);
-    ink_drop->SetShowHighlightOnFocus(false);
-    return ink_drop;
-  }
-
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override {
     auto highlight = std::make_unique<views::InkDropHighlight>(

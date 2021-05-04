@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -53,6 +54,12 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
+    SetCreateInkDropCallback(base::BindRepeating(
+        [](InkDropHostView* host) {
+          return TrayPopupUtils::CreateInkDrop(host,
+                                               /*highlight_on_hover=*/true);
+        },
+        this));
   }
 
   ~PageIndicatorButton() override {}
@@ -106,10 +113,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
 
  protected:
   // views::Button:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return TrayPopupUtils::CreateInkDrop(this, /*highlight_on_hover=*/true);
-  }
-
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
     gfx::Point center = GetLocalBounds().CenterPoint();
     gfx::Rect bounds(center.x() - kInkDropRadius, center.y() - kInkDropRadius,

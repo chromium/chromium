@@ -165,6 +165,15 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   if (base::FeatureList::IsEnabled(views::kInstallableInkDropFeature)) {
     installable_ink_drop_ = std::make_unique<views::InstallableInkDrop>(this);
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
+    SetCreateInkDropCallback(base::BindRepeating(
+        [](InkDropHostView* host) -> std::unique_ptr<views::InkDrop> {
+          // Ensure this doesn't get called when InstallableInkDrops are
+          // enabled.
+          DCHECK(
+              !base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
+          return views::InkDrop::CreateInkDropForFloodFillRipple(host);
+        },
+        this));
   }
 
   // Make sure icons are flipped by default so that back, forward, etc. follows
@@ -552,12 +561,6 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
   // Suppress tooltip when IPH is showing.
   return has_in_product_help_promo_ ? std::u16string()
                                     : views::LabelButton::GetTooltipText(p);
-}
-
-std::unique_ptr<views::InkDrop> ToolbarButton::CreateInkDrop() {
-  // Ensure this doesn't get called when InstallableInkDrops are enabled.
-  DCHECK(!base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
-  return views::LabelButton::CreateInkDrop();
 }
 
 std::unique_ptr<views::InkDropMask> ToolbarButton::CreateInkDropMask() const {

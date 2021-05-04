@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/wm_highlight_item_border.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -53,6 +54,11 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
+  // Do not show highlight on hover and focus. Since the button will be painted
+  // with a background, see |highlight_on_hover_| for more details.
+  views::InkDrop::UseInkDropForFloodFillRipple(this,
+                                               /*highlight_on_hover=*/false,
+                                               /*highlight_on_focus=*/false);
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
@@ -87,15 +93,6 @@ void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
                                                           : GetLocalBounds()),
                           corner_radius_, flags);
   }
-}
-
-std::unique_ptr<views::InkDrop> DeskButtonBase::CreateInkDrop() {
-  // Do not show highlight on hover and focus. Since the button will be painted
-  // with a background, see |highlight_on_hover_| for more details.
-  return views::InkDrop::CreateInkDropForFloodFillRipple(
-      this,
-      /*highlight_on_hover=*/false,
-      /*highlight_on_focus=*/false);
 }
 
 std::unique_ptr<views::InkDropHighlight>

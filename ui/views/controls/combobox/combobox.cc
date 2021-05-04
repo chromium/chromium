@@ -68,7 +68,10 @@ class TransparentButton : public Button {
 
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    InkDrop::UseInkDropForSquareRipple(this,
+                                       /*highlight_on_hover=*/false);
   }
+
   ~TransparentButton() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& mouse_event) override {
@@ -85,13 +88,6 @@ class TransparentButton : public Button {
   }
 
   // Button:
-  std::unique_ptr<InkDrop> CreateInkDrop() override {
-    std::unique_ptr<InkDrop> ink_drop =
-        InkDrop::CreateInkDropForSquareRipple(this);
-    ink_drop->SetShowHighlightOnHover(false);
-    return ink_drop;
-  }
-
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
     return std::unique_ptr<views::InkDropRipple>(
         new views::FloodFillInkDropRipple(

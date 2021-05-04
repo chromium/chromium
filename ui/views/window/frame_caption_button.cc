@@ -78,6 +78,8 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   SetInkDropMode(InkDropMode::ON);
   SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
   UpdateInkDropBaseColor();
+  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+                                                 /*highlight_on_hover=*/false);
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
@@ -183,11 +185,6 @@ void FrameCaptionButton::OnGestureEvent(ui::GestureEvent* event) {
 
 views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
   return views::PaintInfo::ScaleType::kUniformScaling;
-}
-
-std::unique_ptr<views::InkDrop> FrameCaptionButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<views::InkDropRipple> FrameCaptionButton::CreateInkDropRipple()

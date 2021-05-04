@@ -96,6 +96,7 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
   SetBorder(CreateBorderWithVerticalSpacing(vert_spacing));
 
   SetInkDropMode(InkDropMode::ON);
+  views::InkDrop::UseInkDropForFloodFillRipple(this);
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
@@ -273,10 +274,6 @@ void HoverButton::StateChanged(ButtonState old_state) {
 
 SkColor HoverButton::GetInkDropBaseColor() const {
   return GetInkDropColor(this);
-}
-
-std::unique_ptr<views::InkDrop> HoverButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {

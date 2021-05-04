@@ -73,8 +73,13 @@ class Arrow : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
+    // TODO(pbos): Share ink-drop configuration code between here and
+    // Combobox's TransparentButton.
+    // Similar to Combobox's TransparentButton.
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    InkDrop::UseInkDropForSquareRipple(this,
+                                       /*highlight_on_hover=*/false);
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -85,14 +90,6 @@ class Arrow : public Button {
   }
 
   // Button:
-  // Similar to Combobox's TransparentButton.
-  std::unique_ptr<InkDrop> CreateInkDrop() override {
-    std::unique_ptr<InkDrop> ink_drop =
-        InkDrop::CreateInkDropForSquareRipple(this);
-    ink_drop->SetShowHighlightOnHover(false);
-    return ink_drop;
-  }
-
   // Similar to Combobox's TransparentButton.
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
     return std::make_unique<views::FloodFillInkDropRipple>(

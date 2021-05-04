@@ -224,6 +224,8 @@ class LoginShelfButton : public views::LabelButton {
         color_provider->GetRippleAttributes();
     SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    views::InkDrop::UseInkDropWithoutAutoHighlight(
+        this, /*highlight_on_hover=*/false);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -257,11 +259,6 @@ class LoginShelfButton : public views::LabelButton {
     flags.setColor(GetButtonBackgroundColor());
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(GetButtonHighlightPath(this), flags);
-  }
-
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-        this, /*highlight_on_hover=*/false);
   }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
@@ -320,6 +317,8 @@ class KioskAppsButton : public views::MenuButton,
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    views::InkDrop::UseInkDropWithoutAutoHighlight(
+        this, /*highlight_on_hover=*/false);
 
     const AshColorProvider::RippleAttributes ripple_attributes =
         AshColorProvider::Get()->GetRippleAttributes();
@@ -392,11 +391,6 @@ class KioskAppsButton : public views::MenuButton,
     MenuButton::SetVisible(visible);
     if (visible)
       is_launch_enabled_ = true;
-  }
-
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-        this, /*highlight_on_hover=*/false);
   }
 
   void UpdateButtonColors() {

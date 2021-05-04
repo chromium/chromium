@@ -56,6 +56,7 @@ class PageSwitcherButton : public views::Button {
         background_color_(background_color) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
+    views::InkDrop::UseInkDropForFloodFillRipple(this);
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, is_root_app_grid_page_switcher ? kInkDropRadiusForRootGrid
                                              : kInkDropRadiusForFolderGrid);
@@ -88,10 +89,6 @@ class PageSwitcherButton : public views::Button {
   }
 
  protected:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return views::InkDrop::CreateInkDropForFloodFillRipple(this);
-  }
-
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
     gfx::Point center = GetLocalBounds().CenterPoint();
     const int max_radius = is_root_app_grid_page_switcher_

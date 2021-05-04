@@ -134,6 +134,8 @@ ToggleButton::ToggleButton(PressedCallback callback)
   // desirable.
   SetInstallFocusRingOnFocus(false);
   SetHasInkDropActionOnClick(true);
+  views::InkDrop::UseInkDropForSquareRipple(this,
+                                            /*highlight_on_hover=*/false);
 }
 
 ToggleButton::~ToggleButton() {
@@ -321,12 +323,6 @@ void ToggleButton::AddInkDropLayer(ui::Layer* ink_drop_layer) {
 
 void ToggleButton::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   thumb_view_->RemoveInkDropLayer(ink_drop_layer);
-}
-
-std::unique_ptr<InkDrop> ToggleButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForSquareRipple(
-      this,
-      /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<InkDropRipple> ToggleButton::CreateInkDropRipple() const {

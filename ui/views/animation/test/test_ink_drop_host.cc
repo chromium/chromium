@@ -76,7 +76,9 @@ class TestInkDropHighlight : public InkDropHighlight {
 
 }  // namespace
 
-TestInkDropHost::TestInkDropHost() = default;
+TestInkDropHost::TestInkDropHost() {
+  InkDrop::UseInkDropWithoutAutoHighlight(this);
+}
 
 TestInkDropHost::~TestInkDropHost() = default;
 
@@ -86,10 +88,6 @@ void TestInkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
 
 void TestInkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   ++num_ink_drop_layers_removed_;
-}
-
-std::unique_ptr<InkDrop> TestInkDropHost::CreateInkDrop() {
-  return std::make_unique<InkDropImpl>(this, gfx::Size());
 }
 
 std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {

@@ -89,6 +89,7 @@ class OverviewCloseButton : public views::ImageButton {
   explicit OverviewCloseButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+    views::InkDrop::UseInkDropForFloodFillRipple(this);
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
@@ -107,11 +108,6 @@ class OverviewCloseButton : public views::ImageButton {
   void ResetListener() { SetCallback(views::Button::PressedCallback()); }
 
  protected:
-  // views::Button:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    return views::InkDrop::CreateInkDropForFloodFillRipple(this);
-  }
-
   // views::ImageButton:
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();

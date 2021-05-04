@@ -28,7 +28,6 @@ class ASH_EXPORT DeskButtonBase
   // LabelButton:
   const char* GetClassName() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   SkColor GetInkDropBaseColor() const override;

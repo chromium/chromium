@@ -31,6 +31,8 @@ ShelfButton::ShelfButton(Shelf* shelf,
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(
       ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
       gfx::InsetsF()));
+  views::InkDrop::UseInkDropForSquareRipple(this,
+                                            /*highlight_on_hover=*/false);
 }
 
 ShelfButton::~ShelfButton() = default;
@@ -75,12 +77,6 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
   Button::NotifyClick(event);
   if (shelf_button_delegate_)
     shelf_button_delegate_->ButtonPressed(/*sender=*/this, event, GetInkDrop());
-}
-
-std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForSquareRipple(
-      this,
-      /*highlight_on_hover=*/false);
 }
 
 }  // namespace ash

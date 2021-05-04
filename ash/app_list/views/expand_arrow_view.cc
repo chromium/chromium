@@ -144,6 +144,8 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
   SetInkDropMode(InkDropMode::ON);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ExpandArrowHighlightPathGenerator>());
+  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+                                                 /*highlight_on_hover=*/false);
 
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_LIST_EXPAND_BUTTON));
 
@@ -269,11 +271,6 @@ void ExpandArrowView::OnBlur() {
 
 const char* ExpandArrowView::GetClassName() const {
   return "ExpandArrowView";
-}
-
-std::unique_ptr<views::InkDrop> ExpandArrowView::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<views::InkDropRipple> ExpandArrowView::CreateInkDropRipple()

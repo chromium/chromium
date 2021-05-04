@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -42,6 +44,14 @@ std::unique_ptr<InkDrop> InkDrop::CreateInkDropForSquareRipple(
                            highlight_on_hover, highlight_on_focus);
 }
 
+void InkDrop::UseInkDropForSquareRipple(InkDropHostView* host,
+                                        bool highlight_on_hover,
+                                        bool highlight_on_focus) {
+  host->SetCreateInkDropCallback(
+      base::BindRepeating(&InkDrop::CreateInkDropForSquareRipple, host,
+                          highlight_on_hover, highlight_on_focus));
+}
+
 std::unique_ptr<InkDrop> InkDrop::CreateInkDropForFloodFillRipple(
     InkDropHostView* host,
     bool highlight_on_hover,
@@ -50,12 +60,28 @@ std::unique_ptr<InkDrop> InkDrop::CreateInkDropForFloodFillRipple(
                            highlight_on_hover, highlight_on_focus);
 }
 
+void InkDrop::UseInkDropForFloodFillRipple(InkDropHostView* host,
+                                           bool highlight_on_hover,
+                                           bool highlight_on_focus) {
+  host->SetCreateInkDropCallback(
+      base::BindRepeating(&InkDrop::CreateInkDropForFloodFillRipple, host,
+                          highlight_on_hover, highlight_on_focus));
+}
+
 std::unique_ptr<InkDrop> InkDrop::CreateInkDropWithoutAutoHighlight(
     InkDropHostView* host,
     bool highlight_on_hover,
     bool highlight_on_focus) {
   return CreateInkDropImpl(host, InkDropImpl::AutoHighlightMode::NONE,
                            highlight_on_hover, highlight_on_focus);
+}
+
+void InkDrop::UseInkDropWithoutAutoHighlight(InkDropHostView* host,
+                                             bool highlight_on_hover,
+                                             bool highlight_on_focus) {
+  host->SetCreateInkDropCallback(
+      base::BindRepeating(&InkDrop::CreateInkDropWithoutAutoHighlight, host,
+                          highlight_on_hover, highlight_on_focus));
 }
 
 void InkDrop::AddObserver(InkDropObserver* observer) {

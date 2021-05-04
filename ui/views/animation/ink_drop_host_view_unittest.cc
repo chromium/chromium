@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -33,7 +34,15 @@ using InkDropMode = InkDropHostViewTestApi::InkDropMode;
 
 class TestInkDropHostView : public InkDropHostView {
  public:
-  TestInkDropHostView() = default;
+  TestInkDropHostView() {
+    SetCreateInkDropCallback(base::BindRepeating(
+        [](TestInkDropHostView* host) -> std::unique_ptr<InkDrop> {
+          auto ink_drop = std::make_unique<TestInkDrop>();
+          host->last_created_inkdrop_ = ink_drop.get();
+          return ink_drop;
+        },
+        this));
+  }
 
   // Accessors to InkDropHostView internals.
   ui::EventHandler* GetTargetHandler() { return target_handler(); }
@@ -43,14 +52,9 @@ class TestInkDropHostView : public InkDropHostView {
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
 
  protected:
+  // InkDropHostView:
   SkColor GetInkDropBaseColor() const override {
     return gfx::kPlaceholderColor;
-  }
-
-  // InkDropHostView:
-  std::unique_ptr<InkDrop> CreateInkDrop() override {
-    last_created_inkdrop_ = new TestInkDrop();
-    return base::WrapUnique(last_created_inkdrop_);
   }
 
  private:

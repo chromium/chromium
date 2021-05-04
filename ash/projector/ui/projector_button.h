@@ -23,7 +23,6 @@ class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
   ~ProjectorButton() override = default;
 
   // views::ToggleImageButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 };

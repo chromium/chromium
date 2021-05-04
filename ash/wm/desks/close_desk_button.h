@@ -28,7 +28,6 @@ class ASH_EXPORT CloseDeskButton : public views::ImageButton,
 
   // views::ImageButton:
   const char* GetClassName() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   SkColor GetInkDropBaseColor() const override;

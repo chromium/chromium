@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -147,7 +148,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   SkColor GetInkDropBaseColor() const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;

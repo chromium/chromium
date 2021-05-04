@@ -5,6 +5,7 @@
 #include "ash/system/tray/actionable_view.h"
 
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -33,6 +34,9 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
   SetInstallFocusRingOnFocus(false);
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
+  SetCreateInkDropCallback(base::BindRepeating(
+      [](InkDropHostView* host) { return TrayPopupUtils::CreateInkDrop(host); },
+      this));
 }
 
 ActionableView::~ActionableView() {
@@ -64,9 +68,6 @@ void ActionableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleName());
 }
 
-std::unique_ptr<views::InkDrop> ActionableView::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
 
 std::unique_ptr<views::InkDropRipple> ActionableView::CreateInkDropRipple()
     const {

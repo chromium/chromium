@@ -29,12 +29,8 @@ PaddedButton::PaddedButton(PressedCallback callback)
   SetInkDropMode(InkDropMode::ON);
   SetInkDropVisibleOpacity(0.12f);
   SetHasInkDropActionOnClick(true);
-}
-
-std::unique_ptr<views::InkDrop> PaddedButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForSquareRipple(
-      this,
-      /*highlight_on_hover=*/false);
+  views::InkDrop::UseInkDropForSquareRipple(this,
+                                            /*highlight_on_hover=*/false);
 }
 
 void PaddedButton::OnThemeChanged() {

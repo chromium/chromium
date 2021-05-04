@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -115,7 +116,6 @@ class ToolbarButton : public views::LabelButton,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   views::InkDrop* GetInkDrop() override;
   SkColor GetInkDropBaseColor() const override;

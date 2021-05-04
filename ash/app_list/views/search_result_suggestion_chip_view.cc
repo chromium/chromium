@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -64,6 +65,8 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
 
   SetInkDropMode(InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
+  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+                                                 /*highlight_on_hover=*/false);
 
   InitLayout();
 }
@@ -151,12 +154,6 @@ void SearchResultSuggestionChipView::OnThemeChanged() {
   text_view_->SetEnabledColor(
       AppListColorProvider::Get()->GetSuggestionChipTextColor());
   SchedulePaint();
-}
-
-std::unique_ptr<views::InkDrop>
-SearchResultSuggestionChipView::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
-      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<views::InkDropRipple>

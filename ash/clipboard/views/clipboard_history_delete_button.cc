@@ -9,6 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -48,6 +49,8 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   // The ink drop ripple should be circular.
   views::InstallFixedSizeCircleHighlightPathGenerator(
       this, ClipboardHistoryViews::kDeleteButtonSizeDip / 2);
+  views::InkDrop::UseInkDropForFloodFillRipple(
+      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
 }
 
 ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() = default;
@@ -58,11 +61,6 @@ const char* ClipboardHistoryDeleteButton::GetClassName() const {
 
 void ClipboardHistoryDeleteButton::AddLayerBeneathView(ui::Layer* layer) {
   ink_drop_container_->AddLayerBeneathView(layer);
-}
-
-std::unique_ptr<views::InkDrop> ClipboardHistoryDeleteButton::CreateInkDrop() {
-  return views::InkDrop::CreateInkDropForFloodFillRipple(
-      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
 }
 
 void ClipboardHistoryDeleteButton::OnClickCanceled(const ui::Event& event) {

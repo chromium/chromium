@@ -29,7 +29,6 @@ class MESSAGE_CENTER_EXPORT PaddedButton : public views::ImageButton {
   ~PaddedButton() override = default;
 
   // views::ImageButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnThemeChanged() override;
 };
 
