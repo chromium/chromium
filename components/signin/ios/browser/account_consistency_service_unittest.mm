@@ -223,6 +223,12 @@ class AccountConsistencyServiceTest : public PlatformTest {
                                 /*domain=*/std::string()));
   }
 
+  // Verifies the time that the Gaia cookie was last updated for google.com.
+  void CheckGaiaCookieWithUpdateTime(base::Time time) {
+    EXPECT_EQ(time,
+              account_consistency_service_->last_gaia_cookie_update_time_);
+  }
+
   // Navigation APIs.
   void SimulateNavigateToURL(NSURLResponse* response,
                              id<ManageAccountsDelegate> delegate) {
@@ -766,4 +772,56 @@ TEST_F(AccountConsistencyServiceTest,
 
   CheckNoChromeConnectedCookies();
   EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateBeforeDelay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kRestoreGaiaCookiesOnUserAction);
+
+  SignIn();
+
+  NSDictionary* headers =
+      [NSDictionary dictionaryWithObject:@"action=ADDSESSION"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+
+  SimulateNavigateToURL(response, nil);
+
+  // Advance clock, but stay within the one-hour Gaia update time.
+  base::TimeDelta oneMinuteDelta = base::TimeDelta::FromMinutes(1);
+  task_environment_.FastForwardBy(oneMinuteDelta);
+  SimulateNavigateToURLWithInterruption(response, nil);
+
+  // Does not process the second Gaia restore event.
+  CheckGaiaCookieWithUpdateTime(base::Time::Now() - oneMinuteDelta);
+}
+
+TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAfterDelay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kRestoreGaiaCookiesOnUserAction);
+
+  SignIn();
+
+  NSDictionary* headers =
+      [NSDictionary dictionaryWithObject:@"action=ADDSESSION"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+
+  SimulateNavigateToURL(response, nil);
+
+  // Advance clock past the one-hour Gaia update time.
+  base::TimeDelta twoHourDelta = base::TimeDelta::FromHours(2);
+  task_environment_.FastForwardBy(twoHourDelta);
+  SimulateNavigateToURL(response, nil);
+
+  // Will process the second Gaia restore event, since it is past the delay.
+  CheckGaiaCookieWithUpdateTime(base::Time::Now());
 }
