@@ -159,6 +159,7 @@ function updatePageData() {
   pageHandler.isMeasurementEnabled().then((response) => {
     $('feature-status-content').innerText =
         response.enabled ? 'enabled' : 'disabled';
+    $('feature-status-content').classList.toggle('disabled', !response.enabled);
 
     const htmlString = 'The #conversion-measurement-debug-mode flag is ' +
         '<strong>enabled</strong>, ' +

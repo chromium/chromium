@@ -31,6 +31,15 @@ body {
   font-weight: bold;
 }
 
+#feature-status-content.disabled {
+  color: red;
+}
+
+hr {
+  border-top: 1px solid rgb(48, 57, 66);
+  width: 100%;
+}
+
 .content {
   background-color: #fbfbfb;
   border: 1px solid #cecece;
@@ -73,4 +82,5 @@ table th {
 
 button {
   font: inherit;
+  margin-inline-end: 30px;
 }

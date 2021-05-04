@@ -10,27 +10,25 @@
 
   <link rel="stylesheet" href="conversion_internals.css">
   <script type="module" src="conversion_internals.js"></script>
-  <title>Conversion Internals</title>
+  <title>Conversion Measurement API Internals</title>
 </head>
 <body>
 
 <div id="page-heading">
-  Conversion Internals
+  Conversion Measurement API Internals
 </div>
+<div id="info">
+  <p>Learn more:
+    <a href="https://web.dev/using-conversion-measurement/" target="_blank">
+      Conversion Measurement API
+    </a>
+  <p>Conversion measurement is currently <span id="feature-status-content"></span>.
+</div>
+<hr>
 <div id="page-content">
-  <h2> General Info </h2>
-  <div class="content">
-    <div>
-      Conversion measurement is currently <span id="feature-status-content"></span>.
-      For a detailed explanation of the API and its behavior, see
-      <a href="https://github.com/WICG/conversion-measurement-api/blob/master/README.md" target="_blank">
-        the explainer
-      </a>.
-    </div>
-    <div>
-      <button id="refresh">Refresh all page data</button>
-      <button id="clear-data">Clear all conversions data</button>
-    </div>
+  <div>
+    <button id="refresh">Refresh all page data</button>
+    <button id="clear-data">Clear all conversions data</button>
   </div>
   <h2> Active Impressions </h2>
   <div class="content">
@@ -66,7 +64,7 @@
       </table>
     </div>
   </div>
-  <h2> Pending Reports </h2>
+  <h2> Pending Conversion Reports </h2>
   <div class="content">
     <div>
       <span id="debug-mode-content"></span>

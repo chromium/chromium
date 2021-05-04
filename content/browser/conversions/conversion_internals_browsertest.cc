@@ -85,11 +85,10 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   // Execute script to ensure the page has loaded correctly, executing similarly
   // to ExecJsInWebUI().
-  EXPECT_EQ(
-      true,
-      EvalJs(shell()->web_contents()->GetMainFrame(),
-             "document.body.innerHTML.search('Conversion Internals') >= 0;",
-             EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+                         "document.body.innerHTML.search('Conversion "
+                         "Measurement API Internals') >= 0;",
+                         EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
