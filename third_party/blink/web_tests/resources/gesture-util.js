@@ -150,14 +150,27 @@ function waitForAnimationEndTimeBased(getValue) {
   })
 }
 
-function waitForScrollEvent(eventTarget) {
+function waitForEvent(eventTarget, eventName, timeoutMs = 1000) {
   return new Promise((resolve, reject) => {
-    const scrollListener = () => {
-      eventTarget.removeEventListener('scroll', scrollListener);
-      resolve();
+    const eventListener = (evt) => {
+      clearTimeout(timeout);
+      eventTarget.removeEventListener(eventName, eventListener);
+      resolve(evt);
     };
-    eventTarget.addEventListener('scroll', scrollListener);
+    let timeout = setTimeout(() => {
+      eventTarget.removeEventListener(eventName, eventListener);
+      reject(`Timeout waiting for ${eventName} event`);
+    }, timeoutMs);
+    eventTarget.addEventListener(eventName, eventListener);
   });
+}
+
+function waitForScrollEvent(eventTarget, timeoutMs = 1000) {
+  return waitForEvent(eventTarget, 'scroll', timeoutMs);
+}
+
+function waitForScrollendEvent(eventTarget, timeoutMs = 1000) {
+  return waitForEvent(eventTarget, 'scrollend', timeoutMs);
 }
 
 // Event driven scroll promise. This method has the advantage over timing
