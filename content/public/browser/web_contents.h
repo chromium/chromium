@@ -958,8 +958,9 @@ class WebContents : public PageNavigator,
   // |bitmaps| will be empty on download failure.
   // |sizes| are the sizes in pixels of the bitmaps before they were resized due
   // to the max bitmap size passed to DownloadImage(). Each entry in the bitmaps
-  // vector corresponds to an entry in the sizes vector. If a bitmap was
-  // resized, there should be a single returned bitmap.
+  // vector corresponds to an entry in the sizes vector (both vector sizes are
+  // guaranteed to be equal). If a bitmap was resized, there should be a single
+  // returned bitmap.
   using ImageDownloadCallback =
       base::OnceCallback<void(int id,
                               int http_status_code,
