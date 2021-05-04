@@ -170,7 +170,7 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static void AssertPrecondition(const Node& node) {
     DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
-    DCHECK(node.CanParticipateInFlatTree());
+    DCHECK(!node.IsShadowRoot());
   }
 
   static void AssertPostcondition(const Node* node) {

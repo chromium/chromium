@@ -1386,7 +1386,8 @@ bool Node::ShouldHaveFocusAppearance() const {
 }
 
 bool Node::IsInert() const {
-  if (!isConnected() || !CanParticipateInFlatTree())
+  DCHECK(!IsShadowRoot());
+  if (!isConnected())
     return true;
 
   if (this != GetDocument() && this != GetDocument().documentElement()) {
@@ -1715,11 +1716,6 @@ bool Node::IsStyledElement() const {
   return IsHTMLElement() || IsSVGElement() || IsMathMLElement() ||
          (!RuntimeEnabledFeatures::MathMLCoreEnabled() && this_element &&
           this_element->namespaceURI() == mathml_names::kNamespaceURI);
-}
-
-bool Node::CanParticipateInFlatTree() const {
-  // TODO(hayato): Return false for pseudo elements.
-  return !IsShadowRoot();
 }
 
 bool Node::IsActiveSlot() const {

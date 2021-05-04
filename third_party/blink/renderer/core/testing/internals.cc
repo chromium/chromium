@@ -1012,62 +1012,50 @@ uint32_t Internals::countElementShadow(const Node* root,
   return To<ShadowRoot>(root)->ChildShadowRootCount();
 }
 
+namespace {
+
+bool CheckForFlatTreeExceptions(Node* node, ExceptionState& exception_state) {
+  if (node && !node->IsShadowRoot())
+    return false;
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kInvalidAccessError,
+      "The node argument doesn't participate in the flat tree.");
+  return true;
+}
+
+}  // namespace
+
 Node* Internals::nextSiblingInFlatTree(Node* node,
                                        ExceptionState& exception_state) {
-  DCHECK(node);
-  if (!node->CanParticipateInFlatTree()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument doesn't particite in the flat tree.");
+  if (CheckForFlatTreeExceptions(node, exception_state))
     return nullptr;
-  }
   return FlatTreeTraversal::NextSibling(*node);
 }
 
 Node* Internals::firstChildInFlatTree(Node* node,
                                       ExceptionState& exception_state) {
-  DCHECK(node);
-  if (!node->CanParticipateInFlatTree()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument doesn't particite in the flat tree");
+  if (CheckForFlatTreeExceptions(node, exception_state))
     return nullptr;
-  }
   return FlatTreeTraversal::FirstChild(*node);
 }
 
 Node* Internals::lastChildInFlatTree(Node* node,
                                      ExceptionState& exception_state) {
-  DCHECK(node);
-  if (!node->CanParticipateInFlatTree()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument doesn't particite in the flat tree.");
+  if (CheckForFlatTreeExceptions(node, exception_state))
     return nullptr;
-  }
   return FlatTreeTraversal::LastChild(*node);
 }
 
 Node* Internals::nextInFlatTree(Node* node, ExceptionState& exception_state) {
-  DCHECK(node);
-  if (!node->CanParticipateInFlatTree()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument doesn't particite in the flat tree.");
+  if (CheckForFlatTreeExceptions(node, exception_state))
     return nullptr;
-  }
   return FlatTreeTraversal::Next(*node);
 }
 
 Node* Internals::previousInFlatTree(Node* node,
                                     ExceptionState& exception_state) {
-  DCHECK(node);
-  if (!node->CanParticipateInFlatTree()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument doesn't particite in the flat tree.");
+  if (CheckForFlatTreeExceptions(node, exception_state))
     return nullptr;
-  }
   return FlatTreeTraversal::Previous(*node);
 }
 

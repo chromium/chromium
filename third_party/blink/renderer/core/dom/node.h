@@ -359,7 +359,6 @@ class CORE_EXPORT Node : public EventTarget {
   bool IsTreeScope() const;
   bool IsShadowRoot() const { return IsDocumentFragment() && IsTreeScope(); }
 
-  bool CanParticipateInFlatTree() const;
   bool IsActiveSlot() const;
   bool IsSlotable() const { return IsTextNode() || IsElementNode(); }
   AtomicString SlotName() const;

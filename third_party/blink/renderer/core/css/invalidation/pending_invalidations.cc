@@ -52,7 +52,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     }
     // No need to schedule descendant invalidations on display:none elements.
     if (requires_descendant_invalidation && !node.GetComputedStyle() &&
-        node.CanParticipateInFlatTree()) {
+        !node.IsShadowRoot()) {
       requires_descendant_invalidation = false;
     }
   }
