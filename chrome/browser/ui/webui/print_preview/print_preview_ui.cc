@@ -230,8 +230,6 @@ void HandleRequestCallback(const std::string& path,
 
 void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"accept", IDS_PRINT_PREVIEW_ACCEPT_INVITE},
-    {"acceptForGroup", IDS_PRINT_PREVIEW_ACCEPT_GROUP_INVITE},
     {"accountSelectTitle", IDS_PRINT_PREVIEW_ACCOUNT_SELECT_TITLE},
     {"addAccountTitle", IDS_PRINT_PREVIEW_ADD_ACCOUNT_TITLE},
     {"advancedSettingsDialogConfirm",
@@ -256,7 +254,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"extensionDestinationIconTooltip",
      IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP},
     {"goBackButton", IDS_PRINT_PREVIEW_BUTTON_GO_BACK},
-    {"groupPrinterSharingInviteText", IDS_PRINT_PREVIEW_GROUP_INVITE_TEXT},
     {"invalidPrinterSettings", IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS},
     {"layoutLabel", IDS_PRINT_PREVIEW_LAYOUT_LABEL},
     {"learnMore", IDS_LEARN_MORE},
@@ -319,12 +316,10 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
 #endif
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
-    {"printerSharingInviteText", IDS_PRINT_PREVIEW_INVITE_TEXT},
     {"printing", IDS_PRINT_PREVIEW_PRINTING},
     {"recentDestinationsTitle", IDS_PRINT_PREVIEW_RECENT_DESTINATIONS_TITLE},
     {"registerPrinterInformationMessage",
      IDS_CLOUD_PRINT_REGISTER_PRINTER_INFORMATION},
-    {"reject", IDS_PRINT_PREVIEW_REJECT_INVITE},
     {"resolveExtensionUSBDialogTitle",
      IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_DIALOG_TITLE},
     {"resolveExtensionUSBErrorMessage",

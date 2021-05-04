@@ -38,7 +38,6 @@ import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DestinationErrorType, DestinationStore} from '../data/destination_store.js';
-import {InvitationStore} from '../data/invitation_store.js';
 import {Error, State} from '../data/state.js';
 
 import {SettingsBehavior} from './settings_behavior.js';
@@ -142,9 +141,6 @@ Polymer({
     },
     // </if>
 
-    /** @private {?InvitationStore} */
-    invitationStore_: Object,
-
     /** @private {boolean} */
     isDialogOpen_: {
       type: Boolean,
@@ -221,9 +217,6 @@ Polymer({
 
   /** @override */
   detached() {
-    if (!this.cloudPrintDisabled_) {
-      this.invitationStore_.resetTracker();
-    }
     this.destinationStore_.resetTracker();
     this.tracker_.removeAll();
   },
@@ -321,8 +314,6 @@ Polymer({
     if (cloudPrintInterface.isConfigured()) {
       this.cloudPrintDisabled_ = false;
       this.destinationStore_.setCloudPrintInterface(cloudPrintInterface);
-      this.invitationStore_ = new InvitationStore();
-      this.invitationStore_.setCloudPrintInterface(cloudPrintInterface);
       beforeNextRender(this, () => {
         this.shadowRoot.querySelector('#userManager').initUserAccounts();
         recentDestinations = this.filterRecentDestinations_(recentDestinations);
@@ -577,9 +568,6 @@ Polymer({
     const value = e.detail;
     if (value === 'seeMore') {
       this.destinationStore_.startLoadAllDestinations();
-      if (this.activeUser_) {
-        this.invitationStore_.startLoadingInvitations(this.activeUser_);
-      }
       this.$.destinationDialog.get().show();
       this.lastUser_ = this.activeUser_;
       this.isDialogOpen_ = true;

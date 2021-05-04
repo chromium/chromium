@@ -17,8 +17,6 @@ js_type_check("closure_compile_module") {
     ":destination_policies",
     ":destination_store",
     ":document_info",
-    ":invitation",
-    ":invitation_store",
     ":local_parsers",
     ":margins",
     ":measurement_system",
@@ -60,15 +58,6 @@ js_library("destination_store") {
   ]
 }
 
-js_library("invitation_store") {
-  deps = [
-    ":invitation",
-    "..:cloud_print_interface",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
 if (is_chromeos_ash) {
   js_library("print_server_store") {
     deps = [
@@ -99,13 +88,8 @@ js_library("destination_match") {
 js_library("cloud_parsers") {
   deps = [
     ":destination",
-    ":invitation",
     "//ui/webui/resources/js:assert.m",
   ]
-}
-
-js_library("invitation") {
-  deps = [ ":destination" ]
 }
 
 js_library("destination") {
@@ -184,7 +168,6 @@ js_library("user_manager") {
   deps = [
     ":destination",
     ":destination_store",
-    ":invitation_store",
     "..:cloud_print_interface",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",

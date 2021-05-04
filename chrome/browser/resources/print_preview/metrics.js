@@ -42,12 +42,8 @@ Metrics.DestinationSearchBucket = {
   ACCOUNT_CHANGED: 9,
   // User tried to log into another account.
   ADD_ACCOUNT_SELECTED: 10,
-  // Printer sharing invitation was shown to the user.
-  INVITATION_AVAILABLE: 11,
-  // User accepted printer sharing invitation.
-  INVITATION_ACCEPTED: 12,
-  // User rejected printer sharing invitation.
-  INVITATION_REJECTED: 13,
+  // Note: values 11-13 are intentionally unset as these correspond to
+  // deprecated values in histograms/enums.xml. These enums are append-only.
   // User clicked on Manage button
   MANAGE_BUTTON_CLICKED: 14,
   // Max value.

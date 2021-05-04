@@ -7,9 +7,8 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
-import {parseCloudDestination, parseInvitation} from './data/cloud_parsers.js';
+import {parseCloudDestination} from './data/cloud_parsers.js';
 import {CloudOrigins, DestinationOrigin} from './data/destination.js';
-import {Invitation} from './data/invitation.js';
 // <if expr="chromeos">
 import {NativeLayerCrosImpl} from './native_layer_cros.js';
 // </if>
@@ -139,30 +138,6 @@ export class CloudPrintInterfaceImpl {
       this.outstandingCloudSearchRequests_.push(cpRequest);
       this.sendOrQueueRequest_(cpRequest);
     }, this);
-  }
-
-  /** @override */
-  invites(account) {
-    const params = [
-      new HttpParam('client', 'chrome'),
-    ];
-    this.sendOrQueueRequest_(this.buildRequest_(
-        'GET', 'invites', params, DestinationOrigin.COOKIES, account,
-        this.onInvitesDone_.bind(this)));
-  }
-
-  /** @override */
-  processInvite(invitation, accept) {
-    const params = [
-      new HttpParam('printerid', invitation.destination.id),
-      new HttpParam('email', invitation.scopeId),
-      new HttpParam('accept', accept ? 'true' : 'false'),
-      new HttpParam('use_cdd', 'true'),
-    ];
-    this.sendOrQueueRequest_(this.buildRequest_(
-        'POST', 'processinvite', params, invitation.destination.origin,
-        invitation.destination.account,
-        this.onProcessInviteDone_.bind(this, invitation, accept)));
   }
 
   /** @override */
@@ -486,73 +461,6 @@ export class CloudPrintInterfaceImpl {
           CloudPrintInterfaceEventType.SEARCH_FAILED,
           {detail: errorEventDetail}));
     }
-  }
-
-  /**
-   * Called when invitations search request completes.
-   * @param {!CloudPrintRequest} request Request that has been
-   *     completed.
-   * @private
-   */
-  onInvitesDone_(request) {
-    const activeUser = (request.result && request.result['request'] &&
-                        request.result['request']['user']) ||
-        '';
-    if (request.xhr.status === 200 && request.result['success']) {
-      // Extract invitations.
-      const invitationListJson = request.result['invites'] || [];
-      const invitationList = [];
-      invitationListJson.forEach(function(invitationJson) {
-        try {
-          invitationList.push(parseInvitation(invitationJson, activeUser));
-        } catch (e) {
-          console.warn('Unable to parse invitation: ' + e);
-        }
-      });
-      // Dispatch INVITES_DONE event.
-      this.eventTarget_.dispatchEvent(
-          new CustomEvent(CloudPrintInterfaceEventType.INVITES_DONE, {
-            detail: {
-              invitations: invitationList,
-              user: activeUser,
-            }
-          }));
-    } else {
-      this.eventTarget_.dispatchEvent(new CustomEvent(
-          CloudPrintInterfaceEventType.INVITES_FAILED, {detail: activeUser}));
-    }
-  }
-
-  /**
-   * Called when invitation processing request completes.
-   * @param {!Invitation} invitation Processed invitation.
-   * @param {boolean} accept Whether this invitation was accepted or rejected.
-   * @param {!CloudPrintRequest} request Request that has been
-   *     completed.
-   * @private
-   */
-  onProcessInviteDone_(invitation, accept, request) {
-    const activeUser = (request.result && request.result['request'] &&
-                        request.result['request']['user']) ||
-        '';
-    let printer = null;
-    if (request.xhr.status === 200 && request.result['success'] && accept) {
-      try {
-        printer = parseCloudDestination(
-            request.result['printer'], request.origin, activeUser);
-      } catch (e) {
-        console.warn('Failed to parse cloud print destination: ' + e);
-      }
-    }
-    this.eventTarget_.dispatchEvent(
-        new CustomEvent(CloudPrintInterfaceEventType.PROCESS_INVITE_DONE, {
-          detail: {
-            printer: printer,
-            invitation: invitation,
-            accept: accept,
-            user: activeUser,
-          }
-        }));
   }
 
   /**

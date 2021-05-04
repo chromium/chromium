@@ -63975,9 +63975,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="REGISTER_PROMO_SELECTED"/>
   <int value="9" label="ACCOUNT_CHANGED"/>
   <int value="10" label="ADD_ACCOUNT_SELECTED"/>
-  <int value="11" label="INVITATION_AVAILABLE"/>
-  <int value="12" label="INVITATION_ACCEPTED"/>
-  <int value="13" label="INVITATION_REJECTED"/>
+  <int value="11" label="INVITATION_AVAILABLE_DEPRECATED"/>
+  <int value="12" label="INVITATION_ACCEPTED_DEPRECATED"/>
+  <int value="13" label="INVITATION_REJECTED_DEPRECATED"/>
   <int value="14" label="MANAGE_BUTTON_CLICKED"/>
 </enum>
 

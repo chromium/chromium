@@ -18,7 +18,6 @@ export {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '.
 // </if>
 export {DestinationErrorType, DestinationStore} from './data/destination_store.js';
 export {PageLayoutInfo} from './data/document_info.js';
-export {InvitationStore} from './data/invitation_store.js';
 export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';

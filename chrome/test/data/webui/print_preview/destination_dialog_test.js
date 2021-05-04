@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, InvitationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, RecentDestination} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -75,7 +75,6 @@ suite(destination_dialog_test.suiteName, function() {
     dialog.activeUser = '';
     dialog.users = [];
     dialog.destinationStore = destinationStore;
-    dialog.invitationStore = new InvitationStore();
   });
 
   function finishSetup() {

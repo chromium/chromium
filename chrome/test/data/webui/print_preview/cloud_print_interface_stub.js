@@ -64,9 +64,6 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
   /** @override */
   areCookieDestinationsDisabled() {}
 
-  /** @override */
-  processInvite() {}
-
   /**
    * @param {!Destination} printer The destination to return
    *     when the printer is requested.
@@ -130,9 +127,6 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
     this.searchInProgress_ = false;
     this.eventTarget_.dispatchEvent(searchDoneEvent);
   }
-
-  /** @override */
-  invites(account) {}
 
   /**
    * Dispatches a CloudPrintInterfaceEventType.PRINTER_DONE event with the

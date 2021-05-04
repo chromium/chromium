@@ -97,8 +97,6 @@ preprocess_if_expr("preprocess") {
     "data/destination_policies.js",
     "data/destination_store.js",
     "data/document_info.js",
-    "data/invitation.js",
-    "data/invitation_store.js",
     "data/local_parsers.js",
     "data/margins.js",
     "data/measurement_system.js",
@@ -146,7 +144,6 @@ preprocess_if_expr("preprocess_generated") {
     "ui/duplex_settings.js",
     "ui/header.js",
     "ui/icons.js",
-    "ui/invitation_promo.js",
     "ui/layout_settings.js",
     "ui/margin_control.js",
     "ui/margin_control_container.js",
@@ -299,7 +296,6 @@ js_library("cloud_print_interface") {
   deps = [
     ":native_layer",
     "data:destination",
-    "data:invitation",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -310,7 +306,6 @@ js_library("cloud_print_interface_impl") {
     ":native_layer_cros",
     "data:cloud_parsers",
     "data:destination",
-    "data:invitation",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
