@@ -14,6 +14,11 @@ namespace sharesheet {
 constexpr int kSpacing = 24;
 
 constexpr size_t kTextPreviewMaximumLines = 3;
+constexpr int kImagePreviewCornerRadius = 4;
+constexpr SkColor kImagePreviewPlaceholderBackgroundColor = gfx::kGoogleBlue050;
+
+constexpr int kHeaderViewBetweenChildSpacing = 12;
+constexpr int kHeaderViewNarrowInsideBorderInsets = 14;
 
 constexpr int kTitleTextLineHeight = 24;
 constexpr int kSubtitleTextLineHeight = 22;

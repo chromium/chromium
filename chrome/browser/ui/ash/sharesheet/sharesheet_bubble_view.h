@@ -15,7 +15,6 @@
 namespace views {
 class GridLayout;
 class Separator;
-class Label;
 }  // namespace views
 
 namespace sharesheet {
@@ -25,7 +24,7 @@ class SharesheetServiceDelegate;
 namespace ash {
 namespace sharesheet {
 
-class SharesheetContentPreviews;
+class SharesheetHeaderView;
 class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView {
@@ -84,7 +83,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
   int GetBubbleHeight();
-  int GetBubbleHeadHeight();
   void RecordFormFactorMetric();
 
   // Owns this class.
@@ -103,6 +101,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   size_t keyboard_highlighted_target_ = 0;
 
   views::View* main_view_ = nullptr;
+  SharesheetHeaderView* header_view_ = nullptr;
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
@@ -112,8 +111,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   views::Separator* expanded_view_separator_ = nullptr;
   views::View* parent_view_ = nullptr;
   SharesheetExpandButton* expand_button_ = nullptr;
-  SharesheetContentPreviews* content_previews_ = nullptr;
-  views::Label* share_title_view_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };

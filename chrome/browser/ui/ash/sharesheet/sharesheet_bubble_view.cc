@@ -19,9 +19,10 @@
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
-#include "chrome/browser/ui/ash/sharesheet/sharesheet_content_previews.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -116,22 +117,6 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
-// TODO(crbug.com/1188938): Create sharesheet_util and move there.
-// Then use this for all sharesheet labels.
-std::unique_ptr<views::Label> CreateShareLabel(
-    const std::u16string& text,
-    const int text_context,
-    const int line_height,
-    const SkColor color,
-    const gfx::HorizontalAlignment alignment,
-    const int text_style = ash::STYLE_SHARESHEET) {
-  auto label = std::make_unique<views::Label>(text, text_context, text_style);
-  label->SetLineHeight(line_height);
-  label->SetEnabledColor(color);
-  label->SetHorizontalAlignment(alignment);
-  return label;
-}
-
 }  // namespace
 
 namespace ash {
@@ -180,8 +165,6 @@ SharesheetBubbleView::SharesheetBubbleView(
   parent_view_ =
       views::Widget::GetWidgetForNativeWindow(native_window)->GetRootView();
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  UpdateAnchorPosition();
-
   CreateBubble();
 }
 
@@ -199,27 +182,9 @@ void SharesheetBubbleView::ShowBubble(
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
-  std::unique_ptr<views::Label> share_title_view =
-      CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-                       CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
-                       kTitleTextColor, gfx::ALIGN_LEFT);
-
-  if (targets.empty() ||
-      !(base::FeatureList::IsEnabled(features::kSharesheetContentPreviews))) {
-    // Only the share title is displayed if there are no targets or if the
-    // content previews flag is off.
-    share_title_view->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets(kSpacing, kSpacing, kSpacing, kSpacing));
-    share_title_view_ = main_view_->AddChildView(std::move(share_title_view));
-  } else {
-    // Adds view for content previews including the title, text descriptor
-    // and image preview.
-    content_previews_ =
-        main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
-            intent_->Clone(), delegate_->GetProfile(),
-            std::move(share_title_view)));
-  }
+  header_view_ =
+      main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
+          intent_->Clone(), delegate_->GetProfile()));
 
   if (targets.empty()) {
     auto* image =
@@ -264,7 +229,8 @@ void SharesheetBubbleView::ShowBubble(
     SetToDefaultBubbleSizing();
   } else {
     width_ = kDefaultBubbleWidth;
-    height_ = kNoExtensionBubbleBodyHeight + GetBubbleHeadHeight();
+    height_ = kNoExtensionBubbleBodyHeight +
+              header_view_->GetPreferredSize().height();
     expand_button_->SetVisible(false);
     expand_button_separator_->SetVisible(false);
   }
@@ -742,24 +708,8 @@ void SharesheetBubbleView::CloseWidgetWithReason(
 int SharesheetBubbleView::GetBubbleHeight() {
   int height = (show_expanded_view_ ? kExpandedBubbleBodyHeight
                                     : kDefaultBubbleBodyHeight) +
-               GetBubbleHeadHeight();
+               header_view_->GetPreferredSize().height();
   return height;
-}
-
-int SharesheetBubbleView::GetBubbleHeadHeight() {
-  // |head_height| is the max height of |content_previews_| and
-  // |share_title_view_|.
-  int head_height = 0;
-  if (content_previews_) {
-    // The bubble height is increased by the height of the additional lines from
-    // text preview.
-    head_height = content_previews_->GetPreferredSize().height();
-  }
-  if (share_title_view_) {
-    head_height = share_title_view_->GetProperty(views::kMarginsKey)->height() +
-                  share_title_view_->GetPreferredSize().height();
-  }
-  return head_height;
 }
 
 void SharesheetBubbleView::RecordFormFactorMetric() {

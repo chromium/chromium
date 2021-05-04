@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/sharesheet/sharesheet_content_previews.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 
 #include <algorithm>
 #include <utility>
@@ -18,6 +18,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -36,8 +37,6 @@
 
 namespace {
 
-constexpr int kBetweenChildSpacing = 12;
-
 // Concatenates all the strings in |file_names| with a comma delineator.
 const std::u16string ConcatenateFileNames(
     const std::vector<std::string>& file_names) {
@@ -50,54 +49,62 @@ const std::u16string ConcatenateFileNames(
 namespace ash {
 namespace sharesheet {
 
-SharesheetContentPreviews::SharesheetContentPreviews(
-    apps::mojom::IntentPtr intent,
-    Profile* profile,
-    std::unique_ptr<views::Label> share_title)
+SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
+                                           Profile* profile)
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       /* inside_border_insets */ gfx::Insets(kSpacing),
-      /* between_child_spacing */ kBetweenChildSpacing,
+      /* between_child_spacing */ kHeaderViewBetweenChildSpacing,
       /* collapse_margins_spacing */ false));
   // Sets all views to be left-aligned.
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  // Sets all views to be top-aligned.
+  // Sets all views to be vertically centre-aligned.
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // The image view is initialised first to ensure its left most placement.
-  InitaliseImageView();
-
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+    InitaliseImageView();
+  }
   // A separate view is created for the share title and preview string views.
   text_view_ = AddChildView(std::make_unique<views::View>());
   text_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
+  text_view_->AddChildView(
+      CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+                       CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
+                       kTitleTextColor, gfx::ALIGN_LEFT));
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+    ShowTextPreview();
 
-  text_view_->AddChildView(std::move(share_title));
-  ShowTextPreview();
-
-  if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
-    LoadImage();
-  } else {
-    // TODO(crbug.com/2650014): Update to text icon.
-    image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
+    if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
+      LoadImage();
+    } else {
+      // TODO(crbug.com/2650014): Update to text icon.
+      image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
+    }
   }
 }
 
-SharesheetContentPreviews::~SharesheetContentPreviews() = default;
+SharesheetHeaderView::~SharesheetHeaderView() = default;
 
-void SharesheetContentPreviews::InitaliseImageView() {
+void SharesheetHeaderView::InitaliseImageView() {
   image_preview_ = AddChildView(std::make_unique<views::ImageView>());
   image_preview_->SetImageSize(
       gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize));
+  image_preview_->SetPaintToLayer();
+  image_preview_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kImagePreviewCornerRadius));
+  image_preview_->SetBackground(
+      views::CreateSolidBackground(kImagePreviewPlaceholderBackgroundColor));
 }
 
-void SharesheetContentPreviews::ShowTextPreview() {
+void SharesheetHeaderView::ShowTextPreview() {
   std::vector<std::u16string> text_fields = ExtractShareText();
 
   std::u16string filenames_tooltip_text = u"";
@@ -131,11 +138,18 @@ void SharesheetContentPreviews::ShowTextPreview() {
   // empty and the tooltip will instead be set to what the text says.
   DCHECK_LT(index, text_fields.size());
   AddTextLine(text_fields[index], filenames_tooltip_text);
+
+  // If we have 2 or more lines of text, shorten the vertical insets.
+  if (index >= 1) {
+    static_cast<views::BoxLayout*>(GetLayoutManager())
+        ->set_inside_border_insets(
+            gfx::Insets(/* vertical */ kHeaderViewNarrowInsideBorderInsets,
+                        /* horizontal */ kSpacing));
+  }
 }
 
-void SharesheetContentPreviews::AddTextLine(
-    const std::u16string& text,
-    const std::u16string& tooltip_text) {
+void SharesheetHeaderView::AddTextLine(const std::u16string& text,
+                                       const std::u16string& tooltip_text) {
   auto* new_line = text_view_->AddChildView(
       std::make_unique<views::Label>(text, CONTEXT_SHARESHEET_BUBBLE_BODY));
   new_line->SetLineHeight(kPrimaryTextLineHeight);
@@ -153,7 +167,7 @@ void SharesheetContentPreviews::AddTextLine(
       base::StrCat({new_line->GetText(), u" ", tooltip_text}));
 }
 
-std::vector<std::u16string> SharesheetContentPreviews::ExtractShareText() {
+std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
   std::vector<std::u16string> text_fields;
 
   if (intent_->share_title.has_value() &&
@@ -198,7 +212,7 @@ std::vector<std::u16string> SharesheetContentPreviews::ExtractShareText() {
 }
 
 // TODO(crbug.com/2650014) Optimise to load several images.
-void SharesheetContentPreviews::LoadImage() {
+void SharesheetHeaderView::LoadImage() {
   base::FilePath file_path;
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileSystemContextForExtensionId(
@@ -213,12 +227,12 @@ void SharesheetContentPreviews::LoadImage() {
   // If those implementations change, this will need to be updated.
   thumbnail_loader_.Load(
       {file_path, gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize)},
-      base::BindOnce(&SharesheetContentPreviews::OnImageLoaded,
+      base::BindOnce(&SharesheetHeaderView::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SharesheetContentPreviews::OnImageLoaded(const SkBitmap* bitmap,
-                                              base::File::Error error) {
+void SharesheetHeaderView::OnImageLoaded(const SkBitmap* bitmap,
+                                         base::File::Error error) {
   if (error != base::File::FILE_OK) {
     // TODO(crbug.com/2650014): Handle error case:
     // Add placeholder icons for each mimetype.
@@ -232,7 +246,7 @@ void SharesheetContentPreviews::OnImageLoaded(const SkBitmap* bitmap,
       gfx::Image::CreateFrom1xBitmap(*bitmap).AsImageSkia());
 }
 
-BEGIN_METADATA(SharesheetContentPreviews, views::View)
+BEGIN_METADATA(SharesheetHeaderView, views::View)
 END_METADATA
 
 }  // namespace sharesheet
