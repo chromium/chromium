@@ -105,9 +105,11 @@ def SetUnexpectedFailure(test_result):
 
 def TryUploadingResultToResultSink(results):
   def buildSummaryHtml(artifacts):
-    summary_html = ''
-    for artifact_id, _ in artifacts.items():
-      summary_html += '<p><text-artifact artifact-id="%s"></p>' % artifact_id
+    # Using test log as the summary. It is stored in an artifact named logs.txt.
+    if artifacts.has_key('logs.txt'):
+      summary_html = '<p><text-artifact artifact-id="logs.txt"></p>'
+    else:
+      summary_html = ''
     return summary_html
 
   def buildArtifacts(artifacts):
