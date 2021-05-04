@@ -91,12 +91,12 @@ void LoadStreamTask::Run() {
     return;
   }
 
-  // Use |kPendingActionsOnly| to short-circuit loading from store if we don't
+  // Use |kLoadNoContent| to short-circuit loading from store if we don't
   // need the full stream state.
   auto load_from_store_type =
       (options_.load_type == LoadType::kInitialLoad)
           ? LoadStreamFromStoreTask::LoadType::kFullLoad
-          : LoadStreamFromStoreTask::LoadType::kPendingActionsOnly;
+          : LoadStreamFromStoreTask::LoadType::kLoadNoContent;
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
       load_from_store_type, stream_, options_.stream_type, stream_->GetStore(),
       stream_->MissedLastRefresh(options_.stream_type),
@@ -111,11 +111,9 @@ void LoadStreamTask::LoadFromStoreComplete(
   stored_content_age_ = result.content_age;
   last_added_time_ = result.last_added_time;
 
-  // Phase 2.
-  //  - If loading from store works, update the model.
-  //  - Otherwise, try to load from the network.
+  // Phase 2. Process the result of `LoadStreamFromStoreTask`.
 
-  if (options_.load_type == LoadType::kInitialLoad &&
+  if (!options_.refresh_even_when_not_stale &&
       result.status == LoadStreamStatus::kLoadedFromStore) {
     update_request_ = std::move(result.update_request);
     Done(LoadStreamStatus::kLoadedFromStore);
@@ -291,6 +289,24 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.experiments = experiments_;
   std::move(done_callback_).Run(std::move(result));
   TaskComplete();
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const LoadStreamTask::Result& result) {
+  os << "LoadStreamTask::Result{" << result.stream_type
+     << " final_status=" << result.final_status
+     << " load_from_store_status=" << result.load_from_store_status
+     << " stored_content_age=" << result.stored_content_age
+     << " last_added_time=" << result.last_added_time
+     << " load_type=" << static_cast<int>(result.load_type)
+     << " update_request=" << result.update_request
+     << " request_schedule?=" << result.request_schedule.has_value();
+  if (result.network_response_info)
+    os << " network_response_info=" << *result.network_response_info;
+  return os << " loaded_new_content_from_network="
+            << result.loaded_new_content_from_network
+            << " latencies=" << result.latencies
+            << " upload_actions_result=" << result.upload_actions_result << "}";
 }
 
 }  // namespace feed

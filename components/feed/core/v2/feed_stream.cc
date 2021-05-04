@@ -874,6 +874,7 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
   options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
+  options.refresh_even_when_not_stale = true;
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
       options, this,
       base::BindOnce(&FeedStream::BackgroundRefreshComplete,

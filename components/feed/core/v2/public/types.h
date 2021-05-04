@@ -64,6 +64,8 @@ struct NetworkResponseInfo {
   bool was_signed_in = false;
 };
 
+std::ostream& operator<<(std::ostream& os, const NetworkResponseInfo& o);
+
 struct NetworkResponse {
   // HTTP response body.
   std::string response_bytes;

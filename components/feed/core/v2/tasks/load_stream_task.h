@@ -45,6 +45,7 @@ class LoadStreamTask : public offline_pages::Task {
     LoadType load_type = LoadType::kInitialLoad;
     // Abort the background refresh if there's already unread content.
     bool abort_if_unread_content = false;
+    bool refresh_even_when_not_stale = false;
   };
 
   struct Result {
@@ -127,6 +128,8 @@ class LoadStreamTask : public offline_pages::Task {
   base::Optional<bool> fetched_content_has_notice_card_;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& os, const LoadStreamTask::Result&);
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_TASKS_LOAD_STREAM_TASK_H_

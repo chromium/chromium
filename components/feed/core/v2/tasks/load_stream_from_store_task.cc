@@ -58,11 +58,6 @@ void LoadStreamFromStoreTask::LoadStreamDone(
   }
   pending_actions_ = std::move(result.pending_actions);
 
-  if (load_type_ == LoadType::kPendingActionsOnly) {
-    Complete(LoadStreamStatus::kLoadedFromStore);
-    return;
-  }
-
   if (result.stream_structures.empty()) {
     Complete(LoadStreamStatus::kNoStreamDataInStore);
     return;
@@ -83,6 +78,11 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     } else if (missed_last_refresh_) {
       stale_reason_ = LoadStreamStatus::kDataInStoreStaleMissedLastRefresh;
     }
+  }
+
+  if (load_type_ == LoadType::kLoadNoContent) {
+    Complete(LoadStreamStatus::kLoadedFromStore);
+    return;
   }
 
   std::vector<ContentId> referenced_content_ids;

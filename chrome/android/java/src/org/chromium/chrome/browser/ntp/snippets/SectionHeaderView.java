@@ -167,7 +167,7 @@ public class SectionHeaderView extends LinearLayout {
         if (tab != null) {
             tab.getCustomView()
                     .findViewById(R.id.badge)
-                    .setVisibility(hasBadge ? View.VISIBLE : View.GONE);
+                    .setVisibility(hasBadge ? View.VISIBLE : View.INVISIBLE);
         }
     }
 

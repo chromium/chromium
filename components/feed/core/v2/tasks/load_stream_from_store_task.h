@@ -30,9 +30,9 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     LoadStreamStatus status = LoadStreamStatus::kNoStatus;
     // Only provided if using |LoadType::kFullLoad| AND successful.
     std::unique_ptr<StreamModelUpdateRequest> update_request;
-    // This data is provided when |LoadType::kPendingActionsOnly|, or
-    // when loading fails.
-    std::string consistency_token;
+
+    // The fields below are provided for all `LoadType`s.
+
     // Pending actions to be uploaded if the stream is to be loaded from the
     // network.
     std::vector<feedstore::StoredAction> pending_actions;
@@ -43,9 +43,12 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     base::Time last_added_time;
   };
 
+  // Determines what kind of data is loaded. See `Result` for what is loaded.
   enum class LoadType {
+    // Load the full stream content.
     kFullLoad = 0,
-    kPendingActionsOnly = 1,
+    // Skips loading stream content.
+    kLoadNoContent = 1,
   };
 
   LoadStreamFromStoreTask(LoadType load_type,
