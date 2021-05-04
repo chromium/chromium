@@ -42,7 +42,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final Context mContext;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final String mVisibleUrl;
-    private final String mSelectedText;
     private final Tab mTab;
     private final ChromeShareExtras mChromeShareExtras;
     private final long mShareStartTime;
@@ -52,6 +51,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private ShareParams mShareLinkParams;
     private TextFragmentReceiver mProducer;
     private boolean mCancelRequest;
+    private String mSelectedText;
 
     public LinkToTextCoordinator(Context context, Tab tab,
             ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
@@ -150,6 +150,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void requestSelector() {
+        if (mChromeShareExtras.isReshareHighlightedText()) {
+            reshareHighlightedText();
+            return;
+        }
         if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mVisibleUrl))) {
             LinkToTextBridge.logGenerateErrorBlockList();
             onSelectorReady(INVALID_SELECTOR);
@@ -170,6 +174,19 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 onSelectorReady(selector);
             }
         });
+    }
+
+    public void reshareHighlightedText() {
+        mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+                TextFragmentReceiver.MANAGER);
+        mProducer.extractTextFragmentsMatches(
+                new TextFragmentReceiver.ExtractTextFragmentsMatchesResponse() {
+                    @Override
+                    public void call(String[] matches) {
+                        mSelectedText = String.join(",", matches);
+                        onSelectorReady(mVisibleUrl);
+                    }
+                });
     }
 
     public String getUrlToShare(String selector) {

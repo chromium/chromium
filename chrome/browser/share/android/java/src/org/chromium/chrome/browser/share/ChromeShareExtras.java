@@ -43,15 +43,18 @@ public class ChromeShareExtras {
     /** Whether it is sharing a tab group. */
     private final boolean mSharingTabGroup;
 
+    private final boolean mIsReshareHighlightedText;
+
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
             boolean isUrlOfVisiblePage, GURL imageSrcUrl, boolean isUserHighlightedText,
-            boolean sharingTabGroup) {
+            boolean sharingTabGroup, boolean isReshareHighlightedText) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
         mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
         mIsUserHighlightedText = isUserHighlightedText;
         mSharingTabGroup = sharingTabGroup;
+        mIsReshareHighlightedText = isReshareHighlightedText;
     }
 
     /**
@@ -97,6 +100,10 @@ public class ChromeShareExtras {
         return mSharingTabGroup;
     }
 
+    public boolean isReshareHighlightedText() {
+        return mIsReshareHighlightedText;
+    }
+
     /**
      * The builder for {@link ChromeShareExtras} objects.
      */
@@ -107,6 +114,7 @@ public class ChromeShareExtras {
         private GURL mImageSrcUrl;
         private boolean mIsUserHighlightedText;
         private boolean mSharingTabGroup;
+        private boolean mIsReshareHighlightedText;
 
         /**
          * Sets whether to save the chosen activity for future direct sharing.
@@ -157,9 +165,15 @@ public class ChromeShareExtras {
             return this;
         }
 
+        public Builder setIsReshareHighlightedText(boolean isReshareHighlightedText) {
+            mIsReshareHighlightedText = isReshareHighlightedText;
+            return this;
+        }
+
         public ChromeShareExtras build() {
             return new ChromeShareExtras(mSaveLastUsed, mShareDirectly, mIsUrlOfVisiblePage,
-                    mImageSrcUrl, mIsUserHighlightedText, mSharingTabGroup);
+                    mImageSrcUrl, mIsUserHighlightedText, mSharingTabGroup,
+                    mIsReshareHighlightedText);
         }
     }
 }

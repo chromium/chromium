@@ -18,6 +18,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -357,5 +358,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
+    }
+
+    @Override
+    public void removeHighlighting() {
+        TextFragmentReceiver producer =
+                mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+                        TextFragmentReceiver.MANAGER);
+        producer.removeFragments();
     }
 }

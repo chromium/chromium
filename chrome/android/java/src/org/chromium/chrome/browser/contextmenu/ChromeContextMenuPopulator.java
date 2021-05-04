@@ -754,8 +754,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_share_highlighting) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_HIGHLIGHTING);
+            shareHighlighting();
         } else if (itemId == R.id.contextmenu_remove_highlighting) {
             recordContextMenuSelection(ContextMenuUma.Action.REMOVE_HIGHLIGHTING);
+            mItemDelegate.removeHighlighting();
         } else if (itemId == R.id.contextmenu_learn_more) {
             recordContextMenuSelection(ContextMenuUma.Action.LEARN_MORE);
         } else {
@@ -788,6 +790,22 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private Activity getActivity() {
         return getWindow().getActivity().get();
+    }
+
+    private void shareHighlighting() {
+        ShareParams linkShareParams = new ShareParams
+                                              .Builder(getWindow(),
+                                                      /*title=*/"",
+                                                      /*url=*/mParams.getUrl().getSpec())
+                                              .build();
+
+        mShareDelegateSupplier.get().share(linkShareParams,
+                new ChromeShareExtras.Builder()
+                        .setSaveLastUsed(true)
+                        .setIsUserHighlightedText(true)
+                        .setIsReshareHighlightedText(true)
+                        .build(),
+                ShareOrigin.MOBILE_ACTION_MODE);
     }
 
     /**
