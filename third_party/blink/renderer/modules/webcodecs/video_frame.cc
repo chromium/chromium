@@ -908,9 +908,7 @@ ScriptPromise VideoFrame::readInto(
     plane->setStride(layout.planes[i].stride);
     result.push_back(plane);
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  resolver->Resolve(result);
-  return resolver->Promise();
+  return ScriptPromise::Cast(script_state, ToV8(result, script_state));
 }
 
 void VideoFrame::close() {
