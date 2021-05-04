@@ -246,8 +246,8 @@ public class ManualFillingIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
         whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()));
 
-        // Clicking the email field hides the accessory again.
-        mHelper.clickEmailField(false);
+        // Clicking a field without completion hides the accessory again.
+        mHelper.clickFieldWithoutCompletion();
         mHelper.waitForKeyboardAccessoryToDisappear();
     }
 
@@ -463,8 +463,8 @@ public class ManualFillingIntegrationTest {
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
         onView(withText(kSnackbarText)).check(matches(isCompletelyDisplayed()));
 
-        // Click into the email field to dismiss the keyboard accessory.
-        mHelper.clickEmailField(false);
+        // Click into a field without completion to dismiss the keyboard accessory.
+        mHelper.clickFieldWithoutCompletion();
         mHelper.waitForKeyboardAccessoryToDisappear();
         onView(withText(kSnackbarText)).check(matches(isCompletelyDisplayed()));
     }

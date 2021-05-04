@@ -18,6 +18,10 @@ namespace autofill {
 class AccessorySheetData;
 }  // namespace autofill
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // The interface for creating and controlling a view for the password accessory.
 // The view gets data from a given |ManualFillingController| and forwards
 // any request (like filling a suggestion) back to the controller.
@@ -76,7 +80,8 @@ class ManualFillingViewInterface {
   friend class ManualFillingControllerImpl;
   // Factory function used to create a concrete instance of this view.
   static std::unique_ptr<ManualFillingViewInterface> Create(
-      ManualFillingController* controller);
+      ManualFillingController* controller,
+      content::WebContents* web_contents);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_VIEW_INTERFACE_H_

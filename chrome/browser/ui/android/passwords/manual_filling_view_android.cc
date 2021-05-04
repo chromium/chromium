@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -43,8 +44,9 @@ using base::android::ScopedJavaLocalRef;
 using password_manager::PasswordForm;
 
 ManualFillingViewAndroid::ManualFillingViewAndroid(
-    ManualFillingController* controller)
-    : controller_(controller) {}
+    ManualFillingController* controller,
+    content::WebContents* web_contents)
+    : controller_(controller), web_contents_(web_contents) {}
 
 ManualFillingViewAndroid::~ManualFillingViewAndroid() {
   if (!java_object_internal_)
@@ -204,7 +206,8 @@ ManualFillingViewAndroid::GetOrCreateJavaObject() {
   }
   java_object_internal_.Reset(Java_ManualFillingComponentBridge_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      controller_->container_view()->GetWindowAndroid()->GetJavaObject()));
+      controller_->container_view()->GetWindowAndroid()->GetJavaObject(),
+      web_contents_->GetJavaWebContents()));
   return java_object_internal_;
 }
 
@@ -277,6 +280,7 @@ void JNI_ManualFillingComponentBridge_DisableServerPredictionsForTesting(
 
 // static
 std::unique_ptr<ManualFillingViewInterface> ManualFillingViewInterface::Create(
-    ManualFillingController* controller) {
-  return std::make_unique<ManualFillingViewAndroid>(controller);
+    ManualFillingController* controller,
+    content::WebContents* web_contents) {
+  return std::make_unique<ManualFillingViewAndroid>(controller, web_contents);
 }

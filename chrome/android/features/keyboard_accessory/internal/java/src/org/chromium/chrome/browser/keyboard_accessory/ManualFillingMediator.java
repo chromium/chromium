@@ -212,13 +212,13 @@ class ManualFillingMediator extends EmptyTabObserver
                 || mWindowAndroid.getDisplay().getRotation() == Surface.ROTATION_180;
     }
 
-    void registerSheetDataProvider(@AccessoryTabType int tabType,
+    void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int tabType,
             PropertyProvider<KeyboardAccessoryData.AccessorySheetData> dataProvider) {
         if (!isInitialized()) return;
-        ManualFillingState state = mStateCache.getStateFor(mActivity.getCurrentWebContents());
+        ManualFillingState state = mStateCache.getStateFor(webContents);
 
         state.wrapSheetDataProvider(tabType, dataProvider);
-        AccessorySheetTabCoordinator accessorySheet = getOrCreateSheet(tabType);
+        AccessorySheetTabCoordinator accessorySheet = getOrCreateSheet(webContents, tabType);
         if (accessorySheet == null) return; // Not available or initialized yet.
         accessorySheet.registerDataProvider(state.getSheetDataProvider(tabType));
     }
@@ -230,9 +230,10 @@ class ManualFillingMediator extends EmptyTabObserver
         mKeyboardAccessory.registerAutofillProvider(autofillProvider, delegate);
     }
 
-    void registerActionProvider(PropertyProvider<Action[]> actionProvider) {
+    void registerActionProvider(
+            WebContents webContents, PropertyProvider<Action[]> actionProvider) {
         if (!isInitialized()) return;
-        ManualFillingState state = mStateCache.getStateFor(mActivity.getCurrentWebContents());
+        ManualFillingState state = mStateCache.getStateFor(webContents);
 
         state.wrapActionsProvider(actionProvider, new Action[0]);
         mKeyboardAccessory.registerActionProvider(state.getActionsProvider());
@@ -603,13 +604,10 @@ class ManualFillingMediator extends EmptyTabObserver
     }
 
     @VisibleForTesting
-    AccessorySheetTabCoordinator getOrCreateSheet(@AccessoryTabType int tabType) {
+    AccessorySheetTabCoordinator getOrCreateSheet(
+            WebContents webContents, @AccessoryTabType int tabType) {
         if (!canCreateSheet(tabType)) return null;
-        WebContents webContents = mActivity.getCurrentWebContents();
-        if (webContents == null) return null; // There is no active tab or it's being destroyed.
         ManualFillingState state = mStateCache.getStateFor(webContents);
-        if (state.getAccessorySheet(tabType) != null) return state.getAccessorySheet(tabType);
-
         AccessorySheetTabCoordinator sheet = createNewSheet(tabType);
 
         state.setAccessorySheet(tabType, sheet);

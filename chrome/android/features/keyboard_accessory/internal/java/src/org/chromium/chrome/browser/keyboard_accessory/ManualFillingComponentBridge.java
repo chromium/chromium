@@ -28,12 +28,15 @@ class ManualFillingComponentBridge {
             new SparseArray<>();
     private PropertyProvider<Action[]> mActionProvider;
     private final WindowAndroid mWindowAndroid;
+    private final WebContents mWebContents;
     private long mNativeView;
     private final ManualFillingComponent.Observer mDestructionObserver = this::onComponentDestroyed;
 
-    private ManualFillingComponentBridge(long nativeView, WindowAndroid windowAndroid) {
+    private ManualFillingComponentBridge(
+            long nativeView, WindowAndroid windowAndroid, WebContents webContents) {
         mNativeView = nativeView;
         mWindowAndroid = windowAndroid;
+        mWebContents = webContents;
     }
 
     PropertyProvider<AccessorySheetData> getOrCreateProvider(@AccessoryTabType int tabType) {
@@ -42,14 +45,14 @@ class ManualFillingComponentBridge {
         if (getManualFillingComponent() == null) return null;
         provider = new PropertyProvider<>();
         mProviders.put(tabType, provider);
-        getManualFillingComponent().registerSheetDataProvider(tabType, provider);
+        getManualFillingComponent().registerSheetDataProvider(mWebContents, tabType, provider);
         return provider;
     }
 
     @CalledByNative
     private static ManualFillingComponentBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
-        return new ManualFillingComponentBridge(nativeView, windowAndroid);
+            long nativeView, WindowAndroid windowAndroid, WebContents webContents) {
+        return new ManualFillingComponentBridge(nativeView, windowAndroid, webContents);
     }
 
     @CalledByNative
@@ -88,7 +91,7 @@ class ManualFillingComponentBridge {
         }
         if (mActionProvider == null && getManualFillingComponent() != null) {
             mActionProvider = new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
-            getManualFillingComponent().registerActionProvider(mActionProvider);
+            getManualFillingComponent().registerActionProvider(mWebContents, mActionProvider);
         }
         if (mActionProvider != null) mActionProvider.notifyObservers(generationAction);
     }

@@ -153,7 +153,7 @@ class ManualFillingControllerImpl
   // member so the view can be created in the constructor with a fully set up
   // controller instance.
   std::unique_ptr<ManualFillingViewInterface> view_ =
-      ManualFillingViewInterface::Create(this);
+      ManualFillingViewInterface::Create(this, web_contents_);
 
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 

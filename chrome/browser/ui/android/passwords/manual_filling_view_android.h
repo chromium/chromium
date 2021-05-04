@@ -15,6 +15,10 @@ namespace gfx {
 class Image;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class ManualFillingController;
 
 // This Android-specific implementation of the |ManualFillingViewInterface|
@@ -23,7 +27,8 @@ class ManualFillingController;
 class ManualFillingViewAndroid : public ManualFillingViewInterface {
  public:
   // Builds the UI for the |controller|.
-  explicit ManualFillingViewAndroid(ManualFillingController* controller);
+  ManualFillingViewAndroid(ManualFillingController* controller,
+                           content::WebContents* web_contents);
   ~ManualFillingViewAndroid() override;
 
   // ManualFillingViewInterface:
@@ -74,6 +79,9 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
 
   // The controller provides data for this view and owns it.
   ManualFillingController* controller_;
+
+  // WebContents object that the controller and the bridge correspond to.
+  content::WebContents* web_contents_;
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;

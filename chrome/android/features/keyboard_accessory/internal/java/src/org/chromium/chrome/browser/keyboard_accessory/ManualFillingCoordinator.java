@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -91,15 +92,15 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void registerActionProvider(
+    public void registerActionProvider(WebContents webContents,
             PropertyProvider<KeyboardAccessoryData.Action[]> actionProvider) {
-        mMediator.registerActionProvider(actionProvider);
+        mMediator.registerActionProvider(webContents, actionProvider);
     }
 
     @Override
-    public void registerSheetDataProvider(@AccessoryTabType int sheetType,
+    public void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int sheetType,
             PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {
-        mMediator.registerSheetDataProvider(sheetType, sheetDataProvider);
+        mMediator.registerSheetDataProvider(webContents, sheetType, sheetDataProvider);
     }
 
     @Override

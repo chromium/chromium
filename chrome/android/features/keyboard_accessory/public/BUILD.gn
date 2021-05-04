@@ -9,6 +9,7 @@ android_library("public_java") {
     "//base:base_java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
   ]
