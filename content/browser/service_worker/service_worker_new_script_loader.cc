@@ -76,7 +76,10 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     int64_t cache_resource_id,
     bool is_throttle_needed)
     : request_url_(original_request.url),
-      resource_destination_(original_request.destination),
+      is_main_script_(original_request.destination ==
+                          network::mojom::RequestDestination::kServiceWorker &&
+                      original_request.mode ==
+                          network::mojom::RequestMode::kSameOrigin),
       original_options_(options),
       version_(version),
       network_watcher_(FROM_HERE,
@@ -89,7 +92,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   network::ResourceRequest resource_request(original_request);
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), resource_destination_);
+      version_->status(), original_request.destination);
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -100,11 +103,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
 
   // We need to filter on mode, since module imports use kServiceWorker as
   // destination, but only top level module scripts are same-origin.
-  const bool is_main_script =
-      (resource_destination_ ==
-           network::mojom::RequestDestination::kServiceWorker &&
-       resource_request.mode == network::mojom::RequestMode::kSameOrigin);
-  if (is_main_script) {
+  if (is_main_script_) {
     // Request SSLInfo. It will be persisted in service worker storage and
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
     // by this service worker.
@@ -117,7 +116,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   base::TimeDelta time_since_last_check =
       base::Time::Now() - registration->last_update_check();
   if (service_worker_loader_helpers::ShouldValidateBrowserCacheForScript(
-          is_main_script, version_->force_bypass_cache_for_scripts(),
+          is_main_script_, version_->force_bypass_cache_for_scripts(),
           registration->update_via_cache(), time_since_last_check)) {
     resource_request.load_flags |= net::LOAD_VALIDATE_CACHE;
   }
@@ -228,8 +227,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     return;
   }
 
-  if (resource_destination_ ==
-      network::mojom::RequestDestination::kServiceWorker) {
+  if (is_main_script_) {
     // Check the path restriction defined in the spec:
     // https://w3c.github.io/ServiceWorker/#service-worker-script-response
     std::string service_worker_allowed;

@@ -180,10 +180,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
 
   const GURL request_url_;
 
-  // This is network::mojom::RequestDestination::kServiceWorker for the
-  // main script or network::mojom::RequestDestination::kScript for
-  // an imported script.
-  const network::mojom::RequestDestination resource_destination_;
+  const bool is_main_script_;
 
   // Load options originally passed to this loader. The options passed to the
   // network loader might be different from this.
