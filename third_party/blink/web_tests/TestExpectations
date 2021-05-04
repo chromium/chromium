@@ -6929,6 +6929,8 @@ crbug.com/1196620 [ Mac ] external/wpt/css/compositing/mix-blend-mode/mix-blend-
 # QuicTransport tests should be eventually deleted.
 crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
 
+crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Pass Failure ]
+
 # Sheriff 2021-04-08
 crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
