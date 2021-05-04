@@ -162,7 +162,7 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     return;
   }
 
-  if (records_->empty() && !need_encryption_key_) {
+  if (records_->empty()) {
     Status empty_records =
         Status(error::INVALID_ARGUMENT, "records_ was empty");
     LOG(ERROR) << empty_records;
@@ -232,7 +232,7 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
-  // Decipher 'response' containing a base::Value dictionary that looks like:
+  // Decypher 'response' containing a base::Value dictionary that looks like:
   //  {
   //    "lastSucceedUploadedRecord": ... // SequencingInformation proto
   //    "firstFailedUploadedRecord": {

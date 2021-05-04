@@ -35,7 +35,6 @@ class StorageSelector {
   static bool is_uploader_required();
   static void CreateStorageModule(
       const base::FilePath& local_reporting_path,
-      base::StringPiece verification_key,
       UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
           cb);
