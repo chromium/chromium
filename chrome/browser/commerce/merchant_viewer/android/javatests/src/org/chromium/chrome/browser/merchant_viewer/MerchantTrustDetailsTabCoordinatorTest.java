@@ -17,6 +17,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -51,8 +53,13 @@ import org.chromium.url.GURL;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MerchantTrustDetailsTabCoordinatorTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public final BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -89,8 +96,7 @@ public class MerchantTrustDetailsTabCoordinatorTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = sActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mWindowAndroid = new WindowAndroid(mActivity); });
         mDetailsTabCoordinator = new MerchantTrustDetailsTabCoordinator(mActivity, mWindowAndroid,
