@@ -158,10 +158,18 @@ std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
 std::u16string GetFileExtensionsHandledByWebAppDisplayedAsList(
     Profile* profile,
     const GURL& url) {
+  std::vector<std::string> extensions =
+      GetFileExtensionsHandledByWebApp(profile, url);
+
+  // Convert file types from formats like ".txt" to "TXT".
+  std::transform(extensions.begin(), extensions.end(), extensions.begin(),
+                 [](const std::string& extension) {
+                   return base::ToUpperASCII(extension.substr(1));
+                 });
+
   return base::UTF8ToUTF16(base::JoinString(
-      GetFileExtensionsHandledByWebApp(profile, url),
-      l10n_util::GetStringUTF8(
-          IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
+      extensions, l10n_util::GetStringUTF8(
+                      IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
 }
 
 }  // namespace web_app

@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
@@ -1597,6 +1598,97 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   const WebApp* web_app =
       GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
   EXPECT_TRUE(web_app->file_handlers().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFileExtensionList) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  InstallWebApp();
+
+  EXPECT_EQ(u"TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
+                        browser()->profile(), GetAppURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFileExtensionsList) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt", ".md"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  InstallWebApp();
+
+  EXPECT_EQ(u"MD, TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
+                            browser()->profile(), GetAppURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFileExtensionsListWithTwoFileHandlers) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt"]
+          }
+        },
+        {
+          "action": "/?longtype",
+          "name": "Long Custom type",
+          "accept": {
+            "long/type": [".longtype"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  InstallWebApp();
+
+  EXPECT_EQ(u"LONGTYPE, TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
+                                  browser()->profile(), GetAppURL()));
 }
 
 class ManifestUpdateManagerBrowserTestWithShortcutsMenu
