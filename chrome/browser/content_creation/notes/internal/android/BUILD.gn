@@ -11,16 +11,23 @@ android_library("java") {
     "//chrome/android:chrome_all_java",
   ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
-
-  deps = [
-    "//base:base_java",
-    "//chrome/browser/profiles/android:java",
-    "//components/content_creation/notes/android:java",
+  sources = [
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarView.java",
   ]
-
-  resources_package = "org.chromium.chrome.browser.content_creation.notes"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/content_creation/notes/android:public_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/content_creation/notes/android:java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.content_creation.internal"
 }
 
 generate_jni("jni_headers") {
@@ -30,4 +37,11 @@ generate_jni("jni_headers") {
   ]
 
   sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/creation_dialog.xml",
+    "java/res/layout/top_bar.xml",
+  ]
 }

@@ -19,6 +19,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinator;
+import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -443,7 +445,11 @@ class ChromeProvidedSharingOptionsProvider {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
                 .setIcon(R.drawable.webnote, R.string.sharing_webnotes_stylized)
                 .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
-                .setOnClickCallback((view) -> {})
+                .setOnClickCallback((view) -> {
+                    NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create();
+                    coordinator.initialize(mActivity);
+                    coordinator.showDialog();
+                })
                 .build();
     }
 
