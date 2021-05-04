@@ -296,10 +296,25 @@ void VersionUpdaterCros::UpdateStatusChanged(
     case update_engine::Operation::ERROR:
     case update_engine::Operation::REPORTING_ERROR_EVENT:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
-      // This path previously used the FAILED status and IDS_UPGRADE_ERROR, but
-      // the update engine reports errors for some conditions that shouldn't
-      // actually be displayed as errors to users: http://crbug.com/146919.
-      // Just use the UPDATED status instead.
+      // Update engine reports errors for some conditions that shouldn't
+      // actually be displayed as errors to users so leave the status as
+      // UPDATED. However for some specific errors use the specific FAILED
+      // statuses. Last attempt error remains when update engine state is
+      // idle.
+
+      if (status.last_attempt_error() ==
+          static_cast<int32_t>(
+              update_engine::ErrorCode::kOmahaUpdateIgnoredPerPolicy)) {
+        my_status = DISABLED_BY_ADMIN;
+      } else if (status.last_attempt_error() ==
+                 static_cast<int32_t>(
+                     update_engine::ErrorCode::kOmahaErrorInHTTPResponse)) {
+        my_status = FAILED_HTTP;
+      } else if (status.last_attempt_error() ==
+                 static_cast<int32_t>(
+                     update_engine::ErrorCode::kDownloadTransferError)) {
+        my_status = FAILED_DOWNLOAD;
+      }
       break;
     case update_engine::Operation::CHECKING_FOR_UPDATE:
       my_status = CHECKING;

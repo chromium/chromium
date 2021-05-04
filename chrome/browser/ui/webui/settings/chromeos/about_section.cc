@@ -281,6 +281,9 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutShowReleaseNotes", IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES},
     {"aboutManagedEndOfLifeSubtitle",
      IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE},
+    {"aboutUpgradeTryAgain", IDS_SETTINGS_UPGRADE_TRY_AGAIN},
+    {"aboutUpgradeDownloadError", IDS_SETTINGS_UPGRADE_DOWNLOAD_ERROR},
+    {"aboutUpgradeAdministrator", IDS_SETTINGS_UPGRADE_ADMINISTRATOR_ERROR},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

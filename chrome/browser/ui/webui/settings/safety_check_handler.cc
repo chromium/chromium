@@ -90,6 +90,8 @@ SafetyCheckHandler::UpdateStatus ConvertToUpdateStatus(
     case VersionUpdater::DISABLED:
       return SafetyCheckHandler::UpdateStatus::kUnknown;
     case VersionUpdater::FAILED:
+    case VersionUpdater::FAILED_HTTP:
+    case VersionUpdater::FAILED_DOWNLOAD:
     case VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED:
       return SafetyCheckHandler::UpdateStatus::kFailed;
     case VersionUpdater::FAILED_OFFLINE:

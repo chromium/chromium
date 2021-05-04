@@ -85,6 +85,8 @@ export const UpdateStatus = {
   NEARLY_UPDATED: 'nearly_updated',
   UPDATED: 'updated',
   FAILED: 'failed',
+  FAILED_HTTP: 'failed_http',
+  FAILED_DOWNLOAD: 'failed_download',
   DISABLED: 'disabled',
   DISABLED_BY_ADMIN: 'disabled_by_admin',
   NEED_PERMISSION_TO_UPDATE: 'need_permission_to_update',

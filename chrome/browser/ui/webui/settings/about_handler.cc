@@ -234,6 +234,12 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
     case VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED:
       status_str = "failed";
       break;
+    case VersionUpdater::FAILED_HTTP:
+      status_str = "failed_http";
+      break;
+    case VersionUpdater::FAILED_DOWNLOAD:
+      status_str = "failed_download";
+      break;
     case VersionUpdater::DISABLED:
       status_str = "disabled";
       break;

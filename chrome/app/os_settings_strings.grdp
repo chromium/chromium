@@ -171,6 +171,15 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS" desc="Label describing the requirements for the text of the device hostname.">
     Name can use letters, numbers, and hyphens (-)
   </message>
+  <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
+    Couldn't update your Chromebook. Please try again later.
+  </message>
+  <message name="IDS_SETTINGS_UPGRADE_DOWNLOAD_ERROR" desc="Status label: Update check download error(ChromiumOS/ChromeOS)">
+    There was an issue downloading the update. Please try again later.
+  </message>
+  <message name="IDS_SETTINGS_UPGRADE_ADMINISTRATOR_ERROR" desc="Status label: Update blocked by policy (ChromiumOS/ChromeOS)">
+    This update is blocked by your administrator
+  </message>
   <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (ChromiumOS/ChromeOS)">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is up to date
   </message>
