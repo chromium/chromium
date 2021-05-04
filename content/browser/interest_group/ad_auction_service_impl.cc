@@ -349,7 +349,7 @@ void AdAuctionServiceImpl::WorkletComplete(
       bidder_report->report_url.SchemeIs(url::kHttpsScheme)) {
     FetchReport(factory, bidder_report->report_url, origin());
   }
-  if (seller_report->report_requested && seller_report->report_url.is_valid() &&
+  if (seller_report->success && seller_report->report_url.is_valid() &&
       seller_report->report_url.SchemeIs(url::kHttpsScheme)) {
     FetchReport(factory, seller_report->report_url, origin());
   }

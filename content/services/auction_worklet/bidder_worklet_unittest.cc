@@ -615,38 +615,37 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
 // Test handling of null auctionSignals and perBuyerSignals to generateBid.
 TEST_F(BidderWorkletTest, GenerateBidParametersOptionalString) {
   constexpr char kRetVal[] = R"({
-    ad: "metadata",
-    bid: (auctionSignals === null ? 10 : 0) +
-         (perBuyerSignals === null ? 2 : 1),
+    ad: [auctionSignals === null, perBuyerSignals === null],
+    bid: 1,
     render: "https://response.test/"
-})";
+  })";
 
   SetDefaultParameters();
   null_auction_signals_ = false;
   null_per_buyer_signals_ = false;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal, BidderWorklet::BidResult("\"metadata\"", 1,
+      kRetVal, BidderWorklet::BidResult("[false,false]", 1,
                                         GURL("https://response.test/")));
 
   SetDefaultParameters();
   null_auction_signals_ = false;
   null_per_buyer_signals_ = true;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal, BidderWorklet::BidResult("\"metadata\"", 2,
+      kRetVal, BidderWorklet::BidResult("[false,true]", 1,
                                         GURL("https://response.test/")));
 
   SetDefaultParameters();
   null_auction_signals_ = true;
   null_per_buyer_signals_ = false;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal, BidderWorklet::BidResult("\"metadata\"", 11,
+      kRetVal, BidderWorklet::BidResult("[true,false]", 1,
                                         GURL("https://response.test/")));
 
   SetDefaultParameters();
   null_auction_signals_ = true;
   null_per_buyer_signals_ = true;
   RunGenerateBidWithReturnValueExpectingResult(
-      kRetVal, BidderWorklet::BidResult("\"metadata\"", 12,
+      kRetVal, BidderWorklet::BidResult("[true,true]", 1,
                                         GURL("https://response.test/")));
 }
 

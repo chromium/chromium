@@ -11,13 +11,25 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 struct PreviousWin {
+  // Approximate time a particular group won an auction.
   mojo_base.mojom.Time time;
+
+  // The ad object returned by that group's bidding function with the winning
+  // bid.
   string ad_json;
 };
 
+// Information here corresponds to the interest group it's packaged with inside
+// BiddingInterestGroup.
 struct BiddingBrowserSignals {
+  // How many times this interest group has been joined in the period history
+  // is maintained.
   int32 join_count;
+
+  // How many times this interest group has made bids in auctions.
   int32 bid_count;
+
+  // Previous times the group won auctions.
   array<PreviousWin> prev_wins;
 };
 
@@ -42,13 +54,13 @@ struct WinningBidderReport {
 };
 
 struct SellerReport {
-  // true if the seller worklet's reporting function ran successfully and set a
-  // reporting URL.
-  bool report_requested;
+  // true if the seller worklet's reporting function ran successfully. Unlike
+  // WinningBidderReport, this doesn't require the URL to be set and valid.
+  bool success;
   string signals_for_winner_json;
 
-  // This is checked to be a https:// URL for `report_requested` to be true, but
-  // no restrictions on the destination are performed by AuctionRunner.
+  // If this is non-empty, it's a valid https:// URL, but no restrictions on
+  // destination beyond the scheme are enforced by AuctionRunner.
   url.mojom.Url report_url;
 };
 

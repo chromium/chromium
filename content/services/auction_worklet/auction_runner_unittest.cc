@@ -111,7 +111,6 @@ std::string MakeBidScript(const std::string& bid,
         throw new Error("wrong browserSignals.bid");
 
       sendReportTo("https://buyer-reporting.example.com");
-      return {ig: interestGroupName};
     }
   )";
   return base::StringPrintf(
@@ -120,7 +119,14 @@ std::string MakeBidScript(const std::string& bid,
       has_signals ? "true" : "false", signal_key.c_str(), signal_val.c_str());
 }
 
-constexpr char kAuctionScript[] = R"(
+// This can be appended to the standard script to override the function.
+constexpr char kReportWinNoUrl[] = R"(
+  function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                      browserSignals) {
+  }
+)";
+
+constexpr char kCheckingAuctionScript[] = R"(
   function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
       browserSignals) {
     if (adMetadata.bidKey !== ("data for " + bid)) {
@@ -141,10 +147,18 @@ constexpr char kAuctionScript[] = R"(
       throw new Error("wrong topWindowHostname");
     if ("joinCount" in browserSignals)
       throw new Error("wrong kind of browser signals");
+    if (browserSignals.adRenderFingerprint !== "#####")
+      throw new Error("wrong adRenderFingerprint");
+    if (typeof browserSignals.biddingDurationMsec !== "number")
+      throw new Error("biddingDurationMsec is not a number. huh");
+    if (browserSignals.biddingDurationMsec < 0)
+      throw new Error("biddingDurationMsec should be non-negative.");
 
     return bid * 2;
   }
+)";
 
+constexpr char kReportResultScript[] = R"(
   function reportResult(auctionConfig, browserSignals) {
     if (auctionConfig.decisionLogicUrl
         !== "https://adstuff.publisher1.com/auction.js") {
@@ -156,6 +170,32 @@ constexpr char kAuctionScript[] = R"(
     return browserSignals;
   }
 )";
+
+constexpr char kReportResultScriptNoUrl[] = R"(
+  function reportResult(auctionConfig, browserSignals) {
+    return browserSignals;
+  }
+)";
+
+std::string MakeAuctionScript() {
+  return std::string(kCheckingAuctionScript) + kReportResultScript;
+}
+
+std::string MakeAuctionScriptNoReportUrl() {
+  return std::string(kCheckingAuctionScript) + kReportResultScriptNoUrl;
+}
+
+const char kAuctionScriptRejects2[] = R"(
+  function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+    if (bid === 2)
+      return -1;
+    return bid + 1;
+  }
+)";
+
+std::string MakeAuctionScriptReject2() {
+  return std::string(kAuctionScriptRejects2) + kReportResultScript;
+}
 
 class AuctionRunnerTest : public testing::Test {
  protected:
@@ -280,7 +320,7 @@ TEST_F(AuctionRunnerTest, Basic) {
       &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     true /* has_signals */, "l2", "b"));
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
   AddJsonResponse(
       &url_loader_factory_,
       GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
@@ -294,7 +334,7 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
   EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
   EXPECT_EQ("Another Ad Thing", res.interest_group_name);
-  EXPECT_TRUE(res.seller_report->report_requested);
+  EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
@@ -315,7 +355,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
       MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
                     true /* has_signals */, "k1", "a"));
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
   AddJsonResponse(
       &url_loader_factory_,
       GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
@@ -329,7 +369,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
   EXPECT_EQ("https://adplatform.com", res.interest_group_owner.Serialize());
   EXPECT_EQ("Ad Platform", res.interest_group_name);
-  EXPECT_TRUE(res.seller_report->report_requested);
+  EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
@@ -352,8 +392,8 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
                     true /* has_signals */, "k1", "a"));
 
   // The auction script doesn't make any bids.
-  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, kAuctionScript);
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, MakeAuctionScript());
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
   AddJsonResponse(
       &url_loader_factory_,
       GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
@@ -367,7 +407,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
   EXPECT_EQ("https://adplatform.com", res.interest_group_owner.Serialize());
   EXPECT_EQ("Ad Platform", res.interest_group_name);
-  EXPECT_TRUE(res.seller_report->report_requested);
+  EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
@@ -385,7 +425,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
 TEST_F(AuctionRunnerTest, NoBids) {
   url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
   AddJsonResponse(
       &url_loader_factory_,
       GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
@@ -399,7 +439,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
   EXPECT_TRUE(res.ad_url.is_empty());
   EXPECT_TRUE(res.interest_group_owner.opaque());
   EXPECT_EQ("", res.interest_group_name);
-  EXPECT_FALSE(res.seller_report->report_requested);
+  EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
@@ -408,10 +448,10 @@ TEST_F(AuctionRunnerTest, NoBids) {
 
 // An auction where none of the bidding scripts has a valid bidding function.
 TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
-  // kAuctionScript is a valid script that doesn't have a bidding function.
-  AddJavascriptResponse(&url_loader_factory_, kBidder1Url, kAuctionScript);
-  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, kAuctionScript);
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  // MakeAuctionScript() is a valid script that doesn't have a bidding function.
+  AddJavascriptResponse(&url_loader_factory_, kBidder1Url, MakeAuctionScript());
+  AddJavascriptResponse(&url_loader_factory_, kBidder2Url, MakeAuctionScript());
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
   AddJsonResponse(
       &url_loader_factory_,
       GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
@@ -425,7 +465,7 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   EXPECT_TRUE(res.ad_url.is_empty());
   EXPECT_TRUE(res.interest_group_owner.opaque());
   EXPECT_EQ("", res.interest_group_name);
-  EXPECT_FALSE(res.seller_report->report_requested);
+  EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
@@ -458,11 +498,50 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   EXPECT_TRUE(res.ad_url.is_empty());
   EXPECT_TRUE(res.interest_group_owner.opaque());
   EXPECT_EQ("", res.interest_group_name);
-  EXPECT_FALSE(res.seller_report->report_requested);
+  EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+}
+
+// An auction where seller rejects one bid when scoring.
+TEST_F(AuctionRunnerTest, SellerRejectsOne) {
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b"));
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                        MakeAuctionScriptReject2());
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
+      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
+      R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  Result res = RunStandardAuction();
+  EXPECT_EQ("https://ad1.com/", res.ad_url.spec());
+  EXPECT_EQ("https://adplatform.com", res.interest_group_owner.Serialize());
+  EXPECT_EQ("Ad Platform", res.interest_group_name);
+  EXPECT_TRUE(res.seller_report->success);
+  EXPECT_EQ("https://reporting.example.com/",
+            res.seller_report->report_url.spec());
+  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
+            R"("interestGroupOwner":"https://adplatform.com",)"
+            R"("renderUrl":"https://ad1.com/",)"
+            R"("adRenderFingerprint":"#####",)"
+            R"("bid":1,"desirability":2})",
+            res.seller_report->signals_for_winner_json);
+  EXPECT_TRUE(res.bidder_report->report_requested);
+  EXPECT_EQ("https://buyer-reporting.example.com/",
+            res.bidder_report->report_url.spec());
 }
 
 // An auction where the seller script fails to load.
@@ -474,7 +553,7 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   EXPECT_TRUE(res.ad_url.is_empty());
   EXPECT_TRUE(res.interest_group_owner.opaque());
   EXPECT_EQ("", res.interest_group_name);
-  EXPECT_FALSE(res.seller_report->report_requested);
+  EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
@@ -493,7 +572,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
       &url_loader_factory_, kBidder2Url,
       MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
                     false /* has_signals */, "l2", "b"));
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
 
   std::vector<mojom::BiddingInterestGroupPtr> bidders;
   bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
@@ -513,7 +592,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
   EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
   EXPECT_EQ("Another Ad Thing", res.interest_group_name);
-  EXPECT_TRUE(res.seller_report->report_requested);
+  EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
@@ -543,13 +622,13 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   url_loader_factory_.AddResponse(
       kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2", "",
       net::HTTP_NOT_FOUND);
-  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, kAuctionScript);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
 
   Result res = RunStandardAuction();
   EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
   EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
   EXPECT_EQ("Another Ad Thing", res.interest_group_name);
-  EXPECT_TRUE(res.seller_report->report_requested);
+  EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
@@ -561,6 +640,122 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+}
+
+// A successful auction where seller reporting worklet doesn't set a URL.
+TEST_F(AuctionRunnerTest, NoReportResultUrl) {
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b"));
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                        MakeAuctionScriptNoReportUrl());
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
+      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
+      R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  Result res = RunStandardAuction();
+  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
+  EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
+  EXPECT_EQ("Another Ad Thing", res.interest_group_name);
+  EXPECT_TRUE(res.seller_report->success);
+  EXPECT_TRUE(res.seller_report->report_url.is_empty());
+  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
+            R"("interestGroupOwner":"https://anotheradthing.com",)"
+            R"("renderUrl":"https://ad2.com/",)"
+            R"("adRenderFingerprint":"#####",)"
+            R"("bid":2,"desirability":4})",
+            res.seller_report->signals_for_winner_json);
+  EXPECT_TRUE(res.bidder_report->report_requested);
+  EXPECT_EQ("https://buyer-reporting.example.com/",
+            res.bidder_report->report_url.spec());
+}
+
+// A successful auction where bidder reporting worklet doesn't set a URL.
+TEST_F(AuctionRunnerTest, NoReportWinUrl) {
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a") +
+          kReportWinNoUrl);
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b") +
+          kReportWinNoUrl);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl, MakeAuctionScript());
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
+      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
+      R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  Result res = RunStandardAuction();
+  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
+  EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
+  EXPECT_EQ("Another Ad Thing", res.interest_group_name);
+  EXPECT_TRUE(res.seller_report->success);
+  EXPECT_EQ("https://reporting.example.com/",
+            res.seller_report->report_url.spec());
+  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
+            R"("interestGroupOwner":"https://anotheradthing.com",)"
+            R"("renderUrl":"https://ad2.com/",)"
+            R"("adRenderFingerprint":"#####",)"
+            R"("bid":2,"desirability":4})",
+            res.seller_report->signals_for_winner_json);
+  EXPECT_FALSE(res.bidder_report->report_requested);
+  EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+}
+
+// A successful auction where neither reporting worklets sets a URL.
+TEST_F(AuctionRunnerTest, NeitherReportUrl) {
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a") +
+          kReportWinNoUrl);
+  AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b") +
+          kReportWinNoUrl);
+  AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                        MakeAuctionScriptNoReportUrl());
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2"),
+      R"({"k1":"a", "k2": "b", "extra": "c"})");
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL(kTrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=l1,l2"),
+      R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  Result res = RunStandardAuction();
+  EXPECT_EQ("https://ad2.com/", res.ad_url.spec());
+  EXPECT_EQ("https://anotheradthing.com", res.interest_group_owner.Serialize());
+  EXPECT_EQ("Another Ad Thing", res.interest_group_name);
+  EXPECT_TRUE(res.seller_report->success);
+  EXPECT_TRUE(res.seller_report->report_url.is_empty());
+  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
+            R"("interestGroupOwner":"https://anotheradthing.com",)"
+            R"("renderUrl":"https://ad2.com/",)"
+            R"("adRenderFingerprint":"#####",)"
+            R"("bid":2,"desirability":4})",
+            res.seller_report->signals_for_winner_json);
+  EXPECT_FALSE(res.bidder_report->report_requested);
+  EXPECT_TRUE(res.bidder_report->report_url.is_empty());
 }
 
 }  // namespace
