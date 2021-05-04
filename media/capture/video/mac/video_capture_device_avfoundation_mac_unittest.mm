@@ -363,15 +363,15 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
                                     capture_resolution.height() * 2);
     // Bad resolution because it is the same as the captured resolution.
     scaled_resolutions.push_back(capture_resolution);
+    // Good resolution because it causes downscale in one dimension (stretch).
+    scaled_resolutions.emplace_back(capture_resolution.width() / 2,
+                                    capture_resolution.height());
     // Good resolution because it causes downscale in both dimensions.
     scaled_resolutions.emplace_back(capture_resolution.width() / 2,
                                     capture_resolution.height() / 2);
     // Good resolution because it causes downscale in both dimensions.
     scaled_resolutions.emplace_back(capture_resolution.width() / 4,
                                     capture_resolution.height() / 4);
-    // Good resolution because it causes downscale in one dimension (stretch).
-    scaled_resolutions.emplace_back(capture_resolution.width() / 2,
-                                    capture_resolution.height());
     [captureDevice setScaledResolutions:scaled_resolutions];
 
     // Create a blank NV12 pixel buffer that we pretend was captured.
