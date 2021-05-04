@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
@@ -48,6 +49,9 @@ class TabHoverCardController : public views::ViewObserver,
   friend class TabHoverCardBubbleViewBrowserTest;
   friend class TabHoverCardBubbleViewInteractiveUiTest;
   friend class TabHoverCardMetrics;
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowWrongTabDoesntCrash);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           SetPreviewWithNoHoverCardDoesntCrash);
   class EventSniffer;
 
   static bool UseAnimations();
@@ -68,7 +72,7 @@ class TabHoverCardController : public views::ViewObserver,
 
   void UpdateOrShowCard(Tab* tab,
                         TabController::HoverCardUpdateType update_type);
-  void ShowHoverCard(bool is_initial);
+  void ShowHoverCard(bool is_initial, const Tab* intended_tab);
   void HideHoverCard();
 
   bool ShouldShowImmediately(const Tab* tab) const;
