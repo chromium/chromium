@@ -271,6 +271,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Renderer.ProcessLifetime.{Resolution}" units="ms"
+    expires_after="2021-08-29">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total time for which a renderer process was live. Recorded when the
+    browser identifies the process as having gone away.
+  </summary>
+  <token key="Resolution">
+    <variant name="HighResolution" summary="Tops out at 5 minutes."/>
+    <variant name="LowResolution" summary="Tops out at 24 hours"/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.ViewportZoomBugCount" enum="BooleanHit"
     expires_after="M77">
   <owner>kkhorimoto@chromium.org</owner>

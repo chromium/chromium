@@ -47,6 +47,9 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
   void OnFaviconUpdated(const PageNode* page_node) override;
   void OnTitleUpdated(const PageNode* page_node) override;
 
+  // ProcessNodeObserver implementation:
+  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
+
  protected:
   friend class MetricsReportRecordHolder;
   friend class UkmCollectionStateHolder;

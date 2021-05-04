@@ -8,6 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -93,6 +94,22 @@ void MetricsCollector::OnFaviconUpdated(const PageNode* page_node) {
   record->first_favicon_updated.OnSignalReceived(
       true, page_node->GetTimeSinceLastVisibilityChange(),
       graph_->GetUkmRecorder());
+}
+
+void MetricsCollector::OnBeforeProcessNodeRemoved(
+    const ProcessNode* process_node) {
+  const base::TimeDelta lifetime =
+      base::Time::Now() - process_node->GetLaunchTime();
+  if (lifetime > base::TimeDelta()) {
+    // Do not record in the rare case system time was adjusted and now < launch
+    // time.
+    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime.HighResolution",
+                               lifetime, base::TimeDelta::FromSeconds(1),
+                               base::TimeDelta::FromMinutes(5), 100);
+    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime.LowResolution",
+                               lifetime, base::TimeDelta::FromSeconds(1),
+                               base::TimeDelta::FromDays(1), 100);
+  }
 }
 
 void MetricsCollector::OnTitleUpdated(const PageNode* page_node) {
