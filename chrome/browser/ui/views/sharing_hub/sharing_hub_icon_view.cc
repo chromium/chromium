@@ -1,0 +1,77 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
+
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
+#include "components/omnibox/browser/omnibox_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+
+namespace sharing_hub {
+
+SharingHubIconView::SharingHubIconView(
+    CommandUpdater* command_updater,
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    PageActionIconView::Delegate* page_action_icon_delegate)
+    : PageActionIconView(command_updater,
+                         IDC_SHARING_HUB,
+                         icon_label_bubble_delegate,
+                         page_action_icon_delegate) {
+  SetVisible(false);
+}
+
+SharingHubIconView::~SharingHubIconView() = default;
+
+views::BubbleDialogDelegate* SharingHubIconView::GetBubble() const {
+  SharingHubBubbleController* controller = GetController();
+  if (!controller) {
+    return nullptr;
+  }
+
+  return static_cast<SharingHubBubbleViewImpl*>(
+      controller->sharing_hub_bubble_view());
+}
+
+void SharingHubIconView::UpdateImpl() {
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  const OmniboxView* omnibox_view = delegate()->GetOmniboxView();
+  if (!omnibox_view) {
+    return;
+  }
+
+  SetVisible(true);
+}
+
+void SharingHubIconView::OnExecuting(
+    PageActionIconView::ExecuteSource execute_source) {}
+
+const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
+  // TODO(1186843): Add Share icon.
+  return kAddIcon;
+}
+
+bool SharingHubIconView::ShouldShowLabel() const {
+  return false;
+}
+
+SharingHubBubbleController* SharingHubIconView::GetController() const {
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+  return SharingHubBubbleController::CreateOrGetFromWebContents(web_contents);
+}
+
+BEGIN_METADATA(SharingHubIconView, PageActionIconView)
+END_METADATA
+
+}  // namespace sharing_hub

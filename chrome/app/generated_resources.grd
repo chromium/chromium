@@ -7531,6 +7531,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Can't create QR code
       </message>
 
+      <!-- Sharing Hub feature strings. -->
+      <message name="IDS_SHARING_HUB_TITLE" desc="The title for the Sharing Hub.">
+        Share
+      </message>
+
       <!-- Clipboard History Menu feature. -->
       <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
           desc="Show the clipboard history menu.">
