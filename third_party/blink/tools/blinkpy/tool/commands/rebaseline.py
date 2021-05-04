@@ -308,13 +308,17 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 debug_builders.add(builder)
 
         builders_to_fallback_paths = {}
+        wpt_builders = set()
         for builder in list(release_builders) + list(debug_builders):
-            port = self._tool.port_factory.get_from_builder_name(builder)
-            fallback_path = port.baseline_search_path()
-            if fallback_path not in builders_to_fallback_paths.values():
-                builders_to_fallback_paths[builder] = fallback_path
+            if not self._tool.builders.is_wpt_builder(builder):
+                port = self._tool.port_factory.get_from_builder_name(builder)
+                fallback_path = port.baseline_search_path()
+                if fallback_path not in builders_to_fallback_paths.values():
+                    builders_to_fallback_paths[builder] = fallback_path
+            else:
+                wpt_builders.add(builder)
 
-        return set(builders_to_fallback_paths)
+        return set(builders_to_fallback_paths) | wpt_builders
 
     def _rebaseline_commands(self, test_baseline_set, options):
         path_to_blink_tool = self._tool.path()

@@ -77,6 +77,14 @@ class BaseTestCase(unittest.TestCase):
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release']
             },
+            'MOCK wpt(1)': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release']
+            },
+            'MOCK wpt(2)': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release']
+            },
         })
         self.mac_port = self.tool.port_factory.get_from_builder_name(
             'MOCK Mac10.11')
@@ -197,6 +205,11 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
             'MOCK Win7'
         ])
         self.assertEqual(builders_to_fetch, {'MOCK Win7', 'MOCK Win10'})
+
+        builders_to_fetch = self.command._builders_to_fetch_from([
+            'MOCK Trusty', 'MOCK wpt(1)', 'MOCK wpt(2)'
+        ])
+        self.assertEqual(builders_to_fetch, {'MOCK Trusty', 'MOCK wpt(1)', 'MOCK wpt(2)'})
 
     def test_generic_baseline_paths(self):
         test_baseline_set = TestBaselineSet(self.tool)
