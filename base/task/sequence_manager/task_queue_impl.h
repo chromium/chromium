@@ -291,8 +291,6 @@ class BASE_EXPORT TaskQueueImpl {
    private:
     ~TaskRunner() final;
 
-    bool PostTask(PostedTask task) const;
-
     const scoped_refptr<GuardedTaskPoster> task_poster_;
     const scoped_refptr<AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
