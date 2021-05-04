@@ -282,6 +282,11 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
                          base::Unretained(this)));
       break;
     }
+    case ime::PublicMessage::kDisplaySuggestions: {
+      remote->DisplaySuggestions(
+          ProtoToTextSuggestions(reply.display_suggestions()));
+      break;
+    }
     default:
       NOTREACHED();
       break;

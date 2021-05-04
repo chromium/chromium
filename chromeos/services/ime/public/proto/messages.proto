@@ -42,6 +42,7 @@ message PublicMessage {
     HandleAutocorrect handle_autocorrect = 14;
     SuggestionsRequest suggestions_request = 15;
     SuggestionsResponse suggestions_response = 16;
+    DisplaySuggestions display_suggestions = 17;
   }
 }
 
@@ -253,5 +254,11 @@ message SuggestionCandidate {
 // Protobuf version of SuggestionsResponse in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message SuggestionsResponse {
+  repeated SuggestionCandidate candidates = 1;
+}
+
+// Protobuf version of DisplaySuggestions in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message DisplaySuggestions {
   repeated SuggestionCandidate candidates = 1;
 }

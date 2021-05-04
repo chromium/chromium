@@ -156,6 +156,8 @@ class NativeInputMethodEngine
         ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
     void RequestSuggestions(ime::mojom::SuggestionsRequestPtr request,
                             RequestSuggestionsCallback callback) override;
+    void DisplaySuggestions(
+        const std::vector<ime::TextSuggestion>& suggestions) override;
 
     // Called when suggestions are collected from the system via
     // suggestions_collector_.

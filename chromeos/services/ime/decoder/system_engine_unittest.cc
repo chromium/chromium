@@ -413,5 +413,37 @@ TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
   client.FlushForTesting();
 }
 
+TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+
+  ime::Wrapper proto;
+  auto* candidate = proto.mutable_public_message()
+                        ->mutable_display_suggestions()
+                        ->add_candidates();
+  candidate->set_mode(SuggestionMode::SUGGESTION_MODE_PREDICTION);
+  candidate->set_type(SuggestionType::SUGGESTION_TYPE_MULTI_WORD);
+  candidate->set_text("gday mate");
+
+  std::vector<TextSuggestion> expected_suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "gday mate"},
+  };
+
+  EXPECT_CALL(mock_channel,
+              DisplaySuggestions(testing::ContainerEq(expected_suggestions)));
+
+  const std::string serialized = proto.SerializeAsString();
+  base::span<const uint8_t> serialized_bytes =
+      base::as_bytes(base::make_span(serialized));
+  decoder_entry_points_.delegate()->Process(serialized_bytes.data(),
+                                            serialized_bytes.size());
+  mock_channel.FlushForTesting();
+}
+
 }  // namespace ime
 }  // namespace chromeos

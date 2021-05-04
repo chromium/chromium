@@ -571,6 +571,11 @@ void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
           base::Unretained(this), std::move(callback)));
 }
 
+void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
+    const std::vector<ime::TextSuggestion>& suggestions) {
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+}
+
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
   if (remote_to_engine_.is_bound())

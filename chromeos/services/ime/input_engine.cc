@@ -227,5 +227,10 @@ void InputEngine::RequestSuggestions(mojom::SuggestionsRequestPtr request,
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::DisplaySuggestions(
+    const std::vector<TextSuggestion>& suggestions) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 }  // namespace ime
 }  // namespace chromeos

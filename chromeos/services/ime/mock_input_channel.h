@@ -85,6 +85,10 @@ class MockInputChannel : public mojom::InputChannel {
               (mojom::SuggestionsRequestPtr request,
                RequestSuggestionsCallback callback),
               (override));
+  MOCK_METHOD(void,
+              DisplaySuggestions,
+              (const std::vector<ime::TextSuggestion>& suggestions),
+              (override));
 
  private:
   mojo::Receiver<mojom::InputChannel> receiver_;

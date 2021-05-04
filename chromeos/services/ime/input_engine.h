@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_IME_INPUT_ENGINE_H_
 #define CHROMEOS_SERVICES_IME_INPUT_ENGINE_H_
 
+#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +74,8 @@ class InputEngine : public mojom::InputChannel {
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override;
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override;
+  void DisplaySuggestions(
+      const std::vector<TextSuggestion>& suggestions) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 

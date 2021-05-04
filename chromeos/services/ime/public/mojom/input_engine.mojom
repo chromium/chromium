@@ -350,6 +350,9 @@ interface InputChannel {
   // prediction context.
   RequestSuggestions(SuggestionsRequest request)
     => (SuggestionsResponse response);
+
+  // Asks the system to display the given suggestions to the user
+  DisplaySuggestions(array<SuggestionCandidate> suggestions);
 };
 
 // Implemented in the browser process, used to perform network requests or

@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
+#include "base/optional.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace chromeos {
@@ -83,7 +84,7 @@ SuggestionType TextSuggestionTypeToProto(TextSuggestionType type) {
   }
 }
 
-TextSuggestionMode ProtoToSuggestionMode(
+TextSuggestionMode ProtoToTextSuggestionMode(
     const SuggestionMode& suggestion_mode) {
   switch (suggestion_mode) {
     case SuggestionMode::SUGGESTION_MODE_PREDICTION:
@@ -92,6 +93,20 @@ TextSuggestionMode ProtoToSuggestionMode(
       return TextSuggestionMode::kCompletion;
     default:
       return TextSuggestionMode::kPrediction;
+  }
+}
+
+base::Optional<TextSuggestionType> ProtoToTextSuggestionType(
+    const SuggestionType& suggestion_type) {
+  switch (suggestion_type) {
+    case SuggestionType::SUGGESTION_TYPE_ASSISTIVE_EMOJI:
+      return TextSuggestionType::kAssistiveEmoji;
+    case SuggestionType::SUGGESTION_TYPE_ASSISTIVE_PERSONAL_INFO:
+      return TextSuggestionType::kAssistivePersonalInfo;
+    case SuggestionType::SUGGESTION_TYPE_MULTI_WORD:
+      return TextSuggestionType::kMultiWord;
+    default:
+      return base::nullopt;
   }
 }
 
@@ -207,7 +222,7 @@ mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
   auto mojo_suggestions_request = mojom::SuggestionsRequest::New();
   mojo_suggestions_request->text = suggestions_request.text();
   mojo_suggestions_request->mode =
-      ProtoToSuggestionMode(suggestions_request.suggestion_mode());
+      ProtoToTextSuggestionMode(suggestions_request.suggestion_mode());
   for (const auto& candidate : suggestions_request.completion_candidates()) {
     auto mojo_candidate = mojom::CompletionCandidate::New();
     mojo_candidate->text = candidate.text();
@@ -216,6 +231,23 @@ mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
         std::move(mojo_candidate));
   }
   return mojo_suggestions_request;
+}
+
+std::vector<TextSuggestion> ProtoToTextSuggestions(
+    const chromeos::ime::DisplaySuggestions& display_suggestions) {
+  std::vector<TextSuggestion> suggestions;
+  for (const auto& candidate : display_suggestions.candidates()) {
+    base::Optional<TextSuggestionType> suggestion_type =
+        ProtoToTextSuggestionType(candidate.type());
+    if (suggestion_type) {
+      // Drop any unexpected suggestion types
+      suggestions.push_back(
+          TextSuggestion{.mode = ProtoToTextSuggestionMode(candidate.mode()),
+                         .type = suggestion_type.value(),
+                         .text = candidate.text()});
+    }
+  }
+  return suggestions;
 }
 
 }  // namespace ime

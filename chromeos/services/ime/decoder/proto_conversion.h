@@ -54,6 +54,10 @@ mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
 mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
     const chromeos::ime::SuggestionsRequest& suggestions_request);
 
+// Converts a proto to a list of ime::TextSuggestion.
+std::vector<TextSuggestion> ProtoToTextSuggestions(
+    const chromeos::ime::DisplaySuggestions& display_suggestions);
+
 }  // namespace ime
 }  // namespace chromeos
 
