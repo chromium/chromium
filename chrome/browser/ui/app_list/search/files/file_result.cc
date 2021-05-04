@@ -67,8 +67,10 @@ double CalculateRelevance(const base::Optional<TokenizedString>& query,
   return match.relevance();
 }
 
-void LogRelevance(FileResult::ResultType result_type, const double relevance) {
+void LogRelevance(ChromeSearchResult::ResultType result_type,
+                  const double relevance) {
   // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
+  DCHECK((relevance >= 0) && (relevance <= 1));
   const int scaled_relevance = floor(100 * relevance);
   switch (result_type) {
     case FileResult::ResultType::kFileSearch:
@@ -78,6 +80,15 @@ void LogRelevance(FileResult::ResultType result_type, const double relevance) {
     case FileResult::ResultType::kDriveSearch:
       UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.DriveSearchProvider.Relevance",
                                  scaled_relevance, /*exclusive_max=*/101);
+      break;
+    case FileResult::ResultType::kZeroStateFile:
+      UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.ZeroStateFileProvider.Relevance",
+                                 scaled_relevance, /*exclusive_max=*/101);
+      break;
+    case FileResult::ResultType::kZeroStateDrive:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "Apps.AppList.ZeroStateDriveProvider.Relevance", scaled_relevance,
+          /*exclusive_max=*/101);
       break;
     default:
       NOTREACHED();
@@ -140,7 +151,11 @@ FileResult::FileResult(const std::string& schema,
                  Type::kFile,
                  profile) {
   set_relevance(relevance);
-  // TODO(crbug.com/1188495): Add relevance metrics for zero state files.
+  if (display_type == DisplayType::kList) {
+    // Chip and list results overlap, and only list results are fully launched.
+    // So we only log metrics for list results.
+    LogRelevance(result_type, relevance);
+  }
 
   // Launcher search results UI is light by default, so use icons for light
   // background if dark/light mode feature is not enabled.
@@ -174,7 +189,6 @@ FileResult::FileResult(
                  type,
                  profile) {
   const double relevance = CalculateRelevance(tokenized_query, title());
-  DCHECK((relevance >= 0) && (relevance <= 1));
   set_relevance(relevance);
   LogRelevance(result_type, relevance);
 
