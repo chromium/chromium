@@ -49,7 +49,6 @@
 #include "base/win/win_util.h"
 #endif
 
-using base::Bind;
 using base::BindOnce;
 using base::BindRepeating;
 using base::FilePath;

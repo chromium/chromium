@@ -45,8 +45,6 @@
 #include "content/browser/speech/speech_recognizer_impl_android.h"
 #endif
 
-using base::Callback;
-
 namespace content {
 
 SpeechRecognitionManager* SpeechRecognitionManager::manager_for_tests_;

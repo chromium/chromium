@@ -42,7 +42,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-using base::Bind;
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;

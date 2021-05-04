@@ -13,7 +13,7 @@
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database_service.h"
 
-using base::Bind;
+using base::BindOnce;
 using base::Time;
 
 class TokenWebDataBackend
@@ -78,27 +78,28 @@ TokenWebData::TokenWebData(
 
 void TokenWebData::SetTokenForService(const std::string& service,
                                       const std::string& token) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, Bind(&TokenWebDataBackend::SetTokenForService, token_backend_,
-                      service, token));
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        BindOnce(&TokenWebDataBackend::SetTokenForService,
+                                 token_backend_, service, token));
 }
 
 void TokenWebData::RemoveAllTokens() {
   wdbs_->ScheduleDBTask(
-      FROM_HERE, Bind(&TokenWebDataBackend::RemoveAllTokens, token_backend_));
+      FROM_HERE,
+      BindOnce(&TokenWebDataBackend::RemoveAllTokens, token_backend_));
 }
 
 void TokenWebData::RemoveTokenForService(const std::string& service) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        Bind(&TokenWebDataBackend::RemoveTokenForService,
-                             token_backend_, service));
+                        BindOnce(&TokenWebDataBackend::RemoveTokenForService,
+                                 token_backend_, service));
 }
 
 // Null on failure. Success is WDResult<std::string>
 WebDataServiceBase::Handle TokenWebData::GetAllTokens(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE, Bind(&TokenWebDataBackend::GetAllTokens, token_backend_),
+      FROM_HERE, BindOnce(&TokenWebDataBackend::GetAllTokens, token_backend_),
       consumer);
 }
 

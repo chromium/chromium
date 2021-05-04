@@ -25,7 +25,6 @@
 
 #include "content/public/browser/browser_thread.h"
 
-using base::Bind;
 using base::FileEnumerator;
 using base::FilePath;
 using base::Time;
