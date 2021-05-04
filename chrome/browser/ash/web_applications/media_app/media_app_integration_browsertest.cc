@@ -299,13 +299,25 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   // Ensure test image loaded.
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
+  // Expect info panel to not be open on first load.
+  constexpr char hasInfoPanelOpen[] = R"(
+    (async () => {
+      const metadataPanel = await getNode(
+          'backlight-metadata-panel', ['backlight-image-handler']);
+      return !!metadataPanel;
+    })();
+  )";
+  EXPECT_EQ(false,
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, hasInfoPanelOpen));
+
+  // Click info button.
   // Note the button id (icon-button-2283726) corresponds to the info panel
   // button and is calculated from a hash of the label ("Info"). This id is
   // used because the UI toolkit has loose guarantees about where the actual
   // label appears in the shadow DOM.
   constexpr char clickInfo[] = R"(
     (async () => {
-      const infoButton = await waitForNode(
+      const infoButton = await getNode(
           '#icon-button-2283726', ['backlight-app-bar', 'backlight-app']);
       infoButton.click();
       return true;
@@ -313,13 +325,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   )";
   EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, clickInfo));
 
-  constexpr char hasInfoPanelOpen[] = R"(
-    (async () => {
-      const metadataPanel = await waitForNode(
-          'backlight-metadata-panel', ['backlight-image-handler']);
-      return !!metadataPanel;
-    })();
-  )";
+  // Expect info panel to be open after clicking info button.
   EXPECT_EQ(true,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, hasInfoPanelOpen));
 }

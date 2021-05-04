@@ -8,6 +8,47 @@
  */
 
 /**
+ * Descends down from `document.body` using queries in `shadowRootPath` and
+ * `selectorMethod`. The shadow root of each node found is used to descend
+ * further.
+ *
+ * @param {!function(string, !Array<string>=):!Promise<!Element|undefined>}
+ *     selectorMethod
+ * @param {!Array<string>=} shadowRootPath
+ * @returns {!Promise<!HTMLElement|!ShadowRoot>}
+ */
+async function getNextRoot(selectorMethod, shadowRootPath = []) {
+  /** @type {!HTMLElement|!ShadowRoot} */
+  let parentNode = document.body;
+  const parentQuery = shadowRootPath.shift();
+  if (parentQuery) {
+    const element = await selectorMethod(parentQuery, shadowRootPath);
+    if (!(element instanceof HTMLElement) || !element.shadowRoot) {
+      throw new Error('Path not a shadow root HTMLElement');
+    }
+    parentNode = element.shadowRoot;
+  }
+  return parentNode;
+}
+
+/**
+ * Runs a query selector once. Returns the Element if it's found, otherwise
+ * returns undefined.
+ *
+ * @param {string} query
+ * @param {!Array<string>=} path
+ * @return {!Promise<!Element|undefined>}
+ */
+async function getNode(query, path = []) {
+  const parentElement = await getNextRoot(getNode, path);
+  const existingElement = parentElement.querySelector(query);
+  if (existingElement) {
+    return Promise.resolve(existingElement);
+  }
+  return Promise.resolve(undefined);
+}
+
+/**
  * Runs a query selector until it finds an element (repeated on each mutation).
  * If the element does not exist this will timeout.
  *
@@ -22,29 +63,21 @@
  * @return {!Promise<!Element>}
  */
 async function waitForNode(query, opt_path) {
-  /** @type {!HTMLElement|!ShadowRoot} */
-  let node = document.body;
-  const parent = opt_path ? opt_path.shift() : undefined;
-  if (parent) {
-    const element = await waitForNode(parent, opt_path);
-    if (!(element instanceof HTMLElement) || !element.shadowRoot) {
-      throw new Error('Path not a shadow root HTMLElement');
-    }
-    node = element.shadowRoot;
-  }
-  const existingElement = node.querySelector(query);
+  const parentElement = await getNextRoot(waitForNode, opt_path);
+  const existingElement = parentElement.querySelector(query);
   if (existingElement) {
     return Promise.resolve(existingElement);
   }
   console.log('Waiting for ' + query);
   return new Promise(resolve => {
     const observer = new MutationObserver((mutationList, observer) => {
-      const element = node.querySelector(query);
+      const element = parentElement.querySelector(query);
       if (element) {
         resolve(element);
         observer.disconnect();
       }
     });
-    observer.observe(node, {attributes: true, childList: true, subtree: true});
+    observer.observe(
+        parentElement, {attributes: true, childList: true, subtree: true});
   });
 }
