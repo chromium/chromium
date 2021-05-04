@@ -77,7 +77,7 @@ declare_args() {
   # The _fake option doesn't enable BackupRefPtr, but pretends it's enabled for
   # syntethic field trial (for testing purposes only).
   use_backup_ref_ptr = false
-  use_backup_ref_ptr_fake = true
+  use_backup_ref_ptr_fake = false
   enable_runtime_backup_ref_ptr_control = false
   is_ref_count_at_end_of_allocation = false
 
