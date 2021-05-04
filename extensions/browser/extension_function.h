@@ -416,7 +416,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // this return value in those cases.
   //
   // FooExtensionFunction::Run() {
-  //   Helper::FetchResults(..., base::Bind(&Success));
+  //   Helper::FetchResults(..., base::BindOnce(&Success));
   //   if (did_respond()) return AlreadyResponded();
   //   return RespondLater();
   // }
@@ -424,9 +424,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   //   Respond(...);
   // }
   //
-  // Helper::FetchResults(..., callback) {
+  // Helper::FetchResults(..., base::OnceCallback callback) {
   //   if (...)
-  //     callback.Run(..);  // Synchronously call |callback|.
+  //     std::move(callback).Run(..);  // Synchronously call |callback|.
   //   else
   //     // Asynchronously call |callback|.
   // }

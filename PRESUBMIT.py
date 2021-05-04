@@ -344,7 +344,7 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/cancelable_callback.h',  # Intentional.
   "^docs/callback\\.md",  # Intentional
   "^docs/process/lsc/large_scale_changes\\.md",  # Intentional
-  '^extensions/browser/',
+  '^extensions/browser/api/webcam_private',
   '^third_party/blink/PRESUBMIT_test.py', # Intentional.
   '^third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py' # Intentional pylint: disable=line-too-long
   '^tools/clang/base_bind_rewriters/',  # Intentional.
