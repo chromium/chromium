@@ -65,7 +65,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void signinWhenPrimaryAccountIsRenamedToAKnownAccount() {
-        mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
+        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
         final CoreAccountInfo oldAccount =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         final String newAccountEmail = "test.new.account@gmail.com";
@@ -85,7 +85,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void signoutWhenPrimaryAccountIsRenamedToAnUnknownAccount() {
-        mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
+        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
         final CoreAccountInfo oldAccount =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         final String newAccountEmail = "test.new.account@gmail.com";
@@ -105,7 +105,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void signoutWhenPrimaryAccountIsRemoved() {
-        mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
+        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
         final CoreAccountInfo oldAccount =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 

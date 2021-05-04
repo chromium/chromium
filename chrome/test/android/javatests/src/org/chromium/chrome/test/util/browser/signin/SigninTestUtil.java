@@ -116,9 +116,6 @@ public final class SigninTestUtil {
 
     /**
      * Waits for the AccountTrackerService to seed system accounts.
-     *
-     * TODO(crbug/1185712): We can remove this method once the accounts change event will
-     * be handled properly.
      */
     static void seedAccounts() {
         ThreadUtils.assertOnBackgroundThread();
