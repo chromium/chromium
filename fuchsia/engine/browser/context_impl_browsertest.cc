@@ -2,26 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <lib/fidl/cpp/binding.h>
-
-#include "base/bind.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
-#include "base/task/post_task.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
@@ -33,6 +20,9 @@ class ContextImplTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
   ContextImplTest() = default;
   ~ContextImplTest() override = default;
+
+  ContextImplTest(const ContextImplTest&) = delete;
+  ContextImplTest& operator=(const ContextImplTest&) = delete;
 
  protected:
   // Creates a Frame with |navigation_listener_| attached.
@@ -77,9 +67,6 @@ class ContextImplTest : public cr_fuchsia::WebEngineBrowserTest {
   }
 
   cr_fuchsia::TestNavigationListener navigation_listener_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextImplTest);
 };
 
 fuchsia::web::Cookie CreateExpectedCookie() {

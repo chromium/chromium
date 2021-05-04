@@ -12,6 +12,7 @@
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
+#include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/fake_semantics_manager.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/test/test_data.h"

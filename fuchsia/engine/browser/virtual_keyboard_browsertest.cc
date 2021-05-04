@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/frame_window_tree_host.h"
 #include "fuchsia/engine/test/test_data.h"

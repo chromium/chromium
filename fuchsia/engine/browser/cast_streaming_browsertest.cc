@@ -12,6 +12,7 @@
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/cast_streaming/test/cast_streaming_test_sender.h"
+#include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/test_data.h"

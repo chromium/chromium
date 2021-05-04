@@ -35,14 +35,7 @@ class WebEngineTestLauncherDelegate : public content::TestLauncherDelegate {
   }
 
   content::ContentMainDelegate* CreateContentMainDelegate() override {
-    auto delegate = std::make_unique<WebEngineMainDelegate>();
-
-    fidl::InterfaceHandle<fuchsia::web::Context> context;
-    WebEngineBrowserMainParts::SetContextRequestForTest(context.NewRequest());
-    cr_fuchsia::WebEngineBrowserTest::SetContextClientChannel(
-        context.TakeChannel());
-
-    return delegate.release();
+    return new WebEngineMainDelegate();
   }
 };
 

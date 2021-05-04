@@ -5,14 +5,22 @@
 #ifndef FUCHSIA_ENGINE_TEST_WEB_ENGINE_BROWSER_TEST_H_
 #define FUCHSIA_ENGINE_TEST_WEB_ENGINE_BROWSER_TEST_H_
 
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/test/browser_test_base.h"
-#include "fuchsia/engine/browser/context_impl.h"
+
+class ContextImpl;
+
+namespace base {
+class CommandLine;
+}
+
+namespace sys {
+class ServiceDirectory;
+}
 
 namespace cr_fuchsia {
 
@@ -23,9 +31,12 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   WebEngineBrowserTest();
   ~WebEngineBrowserTest() override;
 
-  // Sets the Context client channel which will be bound to a Context FIDL
-  // object by WebEngineBrowserTest.
-  static void SetContextClientChannel(zx::channel channel);
+  WebEngineBrowserTest(const WebEngineBrowserTest&) = delete;
+  WebEngineBrowserTest& operator=(const WebEngineBrowserTest&) = delete;
+
+  // Provides access to the set of services published by this browser process,
+  // through its outgoing directory.
+  sys::ServiceDirectory& published_services();
 
   // Creates a Frame for this Context using default parameters.
   // |listener|: If set, specifies the navigation listener for the Frame.
@@ -68,7 +79,8 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   fidl::BindingSet<fuchsia::web::NavigationEventListener>
       navigation_listener_bindings_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebEngineBrowserTest);
+  // Client for the directory of services published by this browser process.
+  std::shared_ptr<sys::ServiceDirectory> published_services_;
 };
 
 }  // namespace cr_fuchsia
