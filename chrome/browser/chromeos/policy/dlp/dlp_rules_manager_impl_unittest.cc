@@ -579,4 +579,80 @@ TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
                 DlpRulesManager::Level::kBlock));
 }
 
+TEST_F(DlpRulesManagerImplTest, ReportPriority) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls_1(base::Value::Type::LIST);
+  src_urls_1.Append(kWildCardMatching);
+
+  base::Value restrictions_1(base::Value::Type::LIST);
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenShareRestriction, dlp::kReportLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Report screensharing", "Report any screensharing", std::move(src_urls_1),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
+
+  base::Value src_urls_2(base::Value::Type::LIST);
+  src_urls_2.Append(kDrivePattern);
+  src_urls_2.Append(kDocsPattern);
+
+  base::Value restrictions_2(base::Value::Type::LIST);
+  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenShareRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Block screensharing", "Block screensharing of company urls",
+      std::move(src_urls_2),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
+
+  base::Value src_urls_3(base::Value::Type::LIST);
+  src_urls_3.Append(kChatPattern);
+
+  base::Value restrictions_3(base::Value::Type::LIST);
+  restrictions_3.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenShareRestriction, dlp::kAllowLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Allow screensharing", "Allow screensharing for chat urls",
+      std::move(src_urls_3),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_3)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  // Screensharing from chat.google should be allowed.
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_.IsRestricted(
+                GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
+                DlpRulesManager::Restriction::kScreenShare));
+
+  // Screensharing from docs/drive urls should be blocked.
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_.IsRestricted(
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                DlpRulesManager::Restriction::kScreenShare));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_.IsRestricted(
+                GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
+                DlpRulesManager::Restriction::kScreenShare));
+
+  // Screensharing from gmail/example/Salesforce urls should be reported.
+  EXPECT_EQ(DlpRulesManager::Level::kReport,
+            dlp_rules_manager_.IsRestricted(
+                GURL(kGmailUrl), DlpRulesManager::Restriction::kScreenShare));
+  EXPECT_EQ(DlpRulesManager::Level::kReport,
+            dlp_rules_manager_.IsRestricted(
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenShare));
+  EXPECT_EQ(DlpRulesManager::Level::kReport,
+            dlp_rules_manager_.IsRestricted(
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                DlpRulesManager::Restriction::kScreenShare));
+}
+
 }  // namespace policy

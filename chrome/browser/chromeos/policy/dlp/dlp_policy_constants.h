@@ -25,6 +25,7 @@ constexpr char kPluginVm[] = "PLUGIN_VM";
 constexpr char kAllowLevel[] = "ALLOW";
 constexpr char kBlockLevel[] = "BLOCK";
 constexpr char kWarnLevel[] = "WARN";
+constexpr char kReportLevel[] = "REPORT";
 
 }  // namespace dlp
 

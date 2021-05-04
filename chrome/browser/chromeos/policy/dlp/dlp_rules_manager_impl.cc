@@ -58,7 +58,8 @@ DlpRulesManager::Level GetLevelMapping(const std::string& level) {
       base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Level>(
           {{dlp::kAllowLevel, DlpRulesManager::Level::kAllow},
            {dlp::kBlockLevel, DlpRulesManager::Level::kBlock},
-           {dlp::kWarnLevel, DlpRulesManager::Level::kWarn}});
+           {dlp::kWarnLevel, DlpRulesManager::Level::kWarn},
+           {dlp::kReportLevel, DlpRulesManager::Level::kReport}});
   auto* it = kLevelsMap.find(level);
   return (it == kLevelsMap.end()) ? DlpRulesManager::Level::kNotSet
                                   : it->second;
