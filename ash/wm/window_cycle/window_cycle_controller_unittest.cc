@@ -37,6 +37,8 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
@@ -1427,20 +1429,22 @@ TEST_F(InteractiveWindowCycleControllerTest,
   scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0);
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 
-  // Open an overview session and window cycle list. Scroll right to second
-  // item. Scroll should only go to the window cycle list.
-  // Current order is [2,4,5,3,1].
+  // Open an overview session.
   Shell::Get()->overview_controller()->StartOverview();
   EXPECT_TRUE(InOverviewSession());
 
+  // Open the window cycle list. Scroll right to second item. Scroll should only
+  // go to the window cycle list so the overview focus should not be visible.
+  // Current order is [2,4,5,3,1].
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
   cycle_controller->StartCycling();
   Scroll(GetOffsetX(horizontal_scroll), 0, kNumFingersForTrackpad);
-
-  // TODO(crbug.com/1204345): Input events are currently incorrectly handled by
-  // both the overview session and the window cycle list. Once that bug has been
-  // fixed, this test should verify that GetOverviewHighlightedWindow() returns
-  // nullptr.
+  EXPECT_TRUE(InOverviewSession());
+  EXPECT_FALSE(Shell::Get()
+                   ->overview_controller()
+                   ->overview_session()
+                   ->highlight_controller()
+                   ->IsFocusHighlightVisible());
 
   CompleteCycling(cycle_controller);
   EXPECT_FALSE(InOverviewSession());
