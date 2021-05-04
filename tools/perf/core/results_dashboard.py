@@ -147,11 +147,6 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
   if max_bytes:
     add_diagnostics_args.extend(['--max_bytes', max_bytes])
 
-  stdio_url = _MakeStdioUrl(test_name, buildername, buildnumber)
-  if stdio_url:
-    add_diagnostics_args.extend(['--log_urls_k', 'Buildbot stdio'])
-    add_diagnostics_args.extend(['--log_urls_v', stdio_url])
-
   build_status_url = _MakeBuildStatusUrl(
       project, buildbucket, buildername, buildnumber)
   if build_status_url:
@@ -223,8 +218,6 @@ def MakeListOfPoints(charts, bot, test_name, project, buildbucket, buildername,
       # calculated revision column values so that these can be overwritten.
       result['supplemental_columns'].update(revision_columns)
       result['supplemental_columns'].update(
-          _GetStdioUriColumn(test_name, buildername, buildnumber))
-      result['supplemental_columns'].update(
           _GetBuildStatusUriColumn(project, buildbucket, buildername,
                                    buildnumber))
       result['supplemental_columns'].update(supplemental_columns)
@@ -281,8 +274,6 @@ def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, project,
       supplemental[key.replace('a_', '', 1)] = supplemental_dict[key]
 
   supplemental.update(
-      _GetStdioUriColumn(test_name, buildername, buildnumber))
-  supplemental.update(
       _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber))
 
   # TODO(sullivan): The android recipe sends "test_name.reference"
@@ -304,19 +295,6 @@ def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, project,
   return fields
 
 
-def _MakeStdioUrl(test_name, buildername, buildnumber):
-  """Returns a string url pointing to buildbot stdio log."""
-  # TODO(780914): Link to logdog instead of buildbot.
-  if not buildername or not buildnumber:
-    return ''
-
-  return '%sbuilders/%s/builds/%s/steps/%s/logs/stdio' % (
-      _GetBuildBotUrl(),
-      six.moves.urllib.parse.quote(buildername),
-      six.moves.urllib.parse.quote(str(buildnumber)),
-      six.moves.urllib.parse.quote(test_name))
-
-
 def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
   if not (buildername and buildnumber):
     return None
@@ -331,14 +309,6 @@ def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
       six.moves.urllib.parse.quote(str(buildnumber)))
 
 
-def _GetStdioUriColumn(test_name, buildername, buildnumber):
-  """Gets a supplemental column containing buildbot stdio link."""
-  url = _MakeStdioUrl(test_name, buildername, buildnumber)
-  if not url:
-    return {}
-  return _CreateLinkColumn('stdio_uri', 'Buildbot stdio', url)
-
-
 def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
   """Gets a supplemental column containing buildbot status link."""
   url = _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber)
@@ -350,12 +320,6 @@ def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
 def _CreateLinkColumn(name, label, url):
   """Returns a column containing markdown link to show on dashboard."""
   return {'a_' + name: '[%s](%s)' % (label, url)}
-
-
-def _GetBuildBotUrl():
-  """Gets the buildbot URL which contains hostname and master name."""
-  return os.environ.get('BUILDBOT_BUILDBOTURL',
-                        'http://build.chromium.org/p/chromium/')
 
 
 def _GetTimestamp():
