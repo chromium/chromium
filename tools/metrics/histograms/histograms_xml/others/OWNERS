@@ -8,3 +8,5 @@ per-file histograms.xml=file://tools/metrics/histograms/histograms_xml/METRIC_RE
 sebmarchand@chromium.org
 # For display, mouse, and input related histograms.
 zentaro@chromium.org
+# For the TrustedWebActivity.* histograms:
+eirage@chromium.org
