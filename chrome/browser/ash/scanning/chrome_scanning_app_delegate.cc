@@ -42,18 +42,6 @@ constexpr char kRoot[] = "root";
 constexpr char kScanningStickySettingsPref[] =
     "scanning.scanning_sticky_settings";
 
-// Determines if |path_to_file| is a supported file path for the Files app. Only
-// files under the |drive_path| and |my_files_path| paths are allowed to be
-// opened to from the Scan app. Paths with references (i.e. "../path") are not
-// supported.
-bool FilePathSupported(const base::FilePath& drive_path,
-                       const base::FilePath& my_files_path,
-                       const base::FilePath& path_to_file) {
-  return !path_to_file.ReferencesParent() &&
-         (drive_path.IsParent(path_to_file) ||
-          my_files_path.IsParent(path_to_file));
-}
-
 }  // namespace
 
 ChromeScanningAppDelegate::ChromeScanningAppDelegate(content::WebUI* web_ui)
@@ -101,6 +89,17 @@ std::string ChromeScanningAppDelegate::GetScanSettingsFromPrefs() {
   return GetPrefs()->GetString(kScanningStickySettingsPref);
 }
 
+// Determines if |path_to_file| is a supported file path for the Files app. Only
+// files under the |drive_path_| and |my_files_path_| paths are allowed to be
+// opened to from the Scan app. Paths with references (i.e. "../path") are not
+// supported.
+bool ChromeScanningAppDelegate::IsFilePathSupported(
+    const base::FilePath& path_to_file) {
+  return !path_to_file.ReferencesParent() &&
+         (google_drive_path_.IsParent(path_to_file) ||
+          my_files_path_.IsParent(path_to_file));
+}
+
 void ChromeScanningAppDelegate::OpenFilesInMediaApp(
     const std::vector<base::FilePath>& file_paths) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
@@ -123,8 +122,7 @@ void ChromeScanningAppDelegate::SaveScanSettingsToPrefs(
 bool ChromeScanningAppDelegate::ShowFileInFilesApp(
     const base::FilePath& path_to_file) {
   const bool can_show_file_picker =
-      FilePathSupported(google_drive_path_, my_files_path_, path_to_file) &&
-      base::PathExists(path_to_file);
+      IsFilePathSupported(path_to_file) && base::PathExists(path_to_file);
   if (!can_show_file_picker)
     return false;
 

@@ -82,6 +82,10 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Fetches scan settings from Pref service.
   void HandleGetScanSettings(const base::ListValue* args);
 
+  // Validates that a file path exists on the local filesystem and returns its
+  // display name. If the file path doesn't exist, return an empty file path.
+  void HandleEnsureValidFilePath(const base::ListValue* args);
+
   std::string scan_location_callback_id_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

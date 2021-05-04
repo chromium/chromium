@@ -1113,9 +1113,12 @@ export function scanningAppTest() {
       return;
     }
 
+    const selectedPath = {baseName: 'path', filePath: 'valid/scan/to/path'};
+    testBrowserProxy.setSavedSettingsSelectedPath(selectedPath);
+
     const savedScanSettings = {
       lastUsedScannerName: firstScannerName,
-      scanToPath: 'scan/to/path',
+      scanToPath: selectedPath.filePath,
       scanners: [{
         name: firstScannerName,
         lastScanDate: new Date(),
@@ -1139,7 +1142,7 @@ export function scanningAppTest() {
           assertEquals(
               ADF_DUPLEX, scanningApp.$$('#sourceSelect').$$('select').value);
           assertEquals(
-              loadTimeData.getString('myFilesSelectOption'),
+              selectedPath.baseName,
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
               ash.scanning.mojom.FileType.kPng.toString(),
@@ -1162,9 +1165,12 @@ export function scanningAppTest() {
       return;
     }
 
+    const selectedPath = {baseName: 'path', filePath: 'valid/scan/to/path'};
+    testBrowserProxy.setSavedSettingsSelectedPath(selectedPath);
+
     const savedScanSettings = {
       lastUsedScannerName: firstScannerName,
-      scanToPath: 'scan/to/path',
+      scanToPath: 'this/path/does/not/exist',
       scanners: [{
         name: firstScannerName,
         lastScanDate: new Date(),

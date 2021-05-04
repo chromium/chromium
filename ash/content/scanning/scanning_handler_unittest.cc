@@ -12,7 +12,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/content/scanning/scanning_app_delegate.h"
 #include "base/check.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
@@ -128,6 +131,11 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
     return base::FilePath(kTestFilePath);
   }
 
+  bool IsFilePathSupported(const base::FilePath& path_to_file) override {
+    return !path_to_file.ReferencesParent() &&
+           my_files_path_.IsParent(path_to_file);
+  }
+
   void OpenFilesInMediaApp(
       const std::vector<base::FilePath>& file_paths) override {
     DCHECK(!file_paths.empty());
@@ -147,9 +155,14 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
   // Returns the file paths saved in OpenFilesInMediaApp().
   const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
 
+  void SetMyFilesPath(base::FilePath my_files_path) {
+    my_files_path_ = my_files_path;
+  }
+
  private:
   std::vector<base::FilePath> file_paths_;
   std::string scan_settings_;
+  base::FilePath my_files_path_;
 };
 
 class ScanningHandlerTest : public testing::Test {
@@ -173,6 +186,11 @@ class ScanningHandlerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kScanAppMediaLink, ash::features::kScanAppStickySettings},
         {});
+
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    my_files_path_ = temp_dir_.GetPath().Append("MyFiles");
+    EXPECT_TRUE(base::CreateDirectory(my_files_path_));
+    fake_scanning_app_delegate_->SetMyFilesPath(my_files_path_);
   }
 
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
@@ -199,6 +217,8 @@ class ScanningHandlerTest : public testing::Test {
   std::unique_ptr<ScanningHandler> scanning_handler_;
   FakeScanningAppDelegate* fake_scanning_app_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath my_files_path_;
 };
 
 // Validates that invoking the requestScanToLocation Web UI event opens the
@@ -323,6 +343,46 @@ TEST_F(ScanningHandlerTest, ScanSettingsPrefs) {
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   EXPECT_EQ(expected_sticky_settings, call_data.arg3()->GetString());
+}
+
+// Validates that invoking the ensureValidFilePath Web UI event with a valid
+// file path returns the expected result.
+TEST_F(ScanningHandlerTest, ValidFilePathExists) {
+  const base::FilePath myScanPath = my_files_path_.Append("myScanPath");
+  base::File(myScanPath, base::File::FLAG_CREATE | base::File::FLAG_READ);
+
+  const size_t call_data_count_before_call = web_ui_.call_data().size();
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  args.Append(myScanPath.value());
+  web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+
+  const content::TestWebUI::CallData& call_data =
+      GetCallData(call_data_count_before_call);
+  const base::DictionaryValue* selected_path_dict;
+  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
+  EXPECT_EQ(myScanPath.value(),
+            *selected_path_dict->FindStringPath("filePath"));
+  EXPECT_EQ("myScanPath", *selected_path_dict->FindStringPath("baseName"));
+}
+
+// Validates that invoking the ensureValidFilePath Web UI event with an invalid
+// file path returns an object with an empty file path.
+TEST_F(ScanningHandlerTest, InvalidFilePath) {
+  const std::string invalidFilePath = "invalid/file/path";
+
+  const size_t call_data_count_before_call = web_ui_.call_data().size();
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  args.Append(invalidFilePath);
+  web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+
+  const content::TestWebUI::CallData& call_data =
+      GetCallData(call_data_count_before_call);
+  const base::DictionaryValue* selected_path_dict;
+  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
+  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("filePath"));
+  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("baseName"));
 }
 
 }  // namespace ash

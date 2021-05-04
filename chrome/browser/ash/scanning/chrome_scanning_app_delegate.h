@@ -42,6 +42,7 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
   std::string GetBaseNameFromPath(const base::FilePath& path) override;
   base::FilePath GetMyFilesPath() override;
   std::string GetScanSettingsFromPrefs() override;
+  bool IsFilePathSupported(const base::FilePath& path_to_file) override;
   void OpenFilesInMediaApp(
       const std::vector<base::FilePath>& file_paths) override;
   void SaveScanSettingsToPrefs(const std::string& scan_settings) override;

@@ -179,4 +179,36 @@ TEST_F(ChromeScanningAppDelegateTest, GetScanSettings) {
             chrome_scanning_app_delegate_->GetScanSettingsFromPrefs());
 }
 
+// Validates that passing a file path that is a child of the MyFiles path
+// returns true for IsFilePathSupported().
+TEST_F(ChromeScanningAppDelegateTest, FilePathSupportedMyFilesChild) {
+  const base::FilePath test_file = my_files_path_.Append("test_file.png");
+  base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  EXPECT_TRUE(chrome_scanning_app_delegate_->IsFilePathSupported(test_file));
+}
+
+// Validates that passing a file path that is a child of the Drive path returns
+// true for IsFilePathSupported().
+TEST_F(ChromeScanningAppDelegateTest, FilePathSupportedGoogleDrivePathChild) {
+  const base::FilePath test_file = drive_path_.Append("test_file.png");
+  base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  EXPECT_TRUE(chrome_scanning_app_delegate_->IsFilePathSupported(test_file));
+}
+
+// Validates that passing an unsupported path returns false for
+// IsFilePathSupported().
+TEST_F(ChromeScanningAppDelegateTest, FilePathNotSupported) {
+  ASSERT_FALSE(chrome_scanning_app_delegate_->IsFilePathSupported(
+      base::FilePath("/wrong/file/path/file.png")));
+}
+
+// Validates that passing a file path with a reference returns false for
+// IsFilePathSupported().
+TEST_F(ChromeScanningAppDelegateTest, FilePathReferencesNotSupported) {
+  const base::FilePath test_file = my_files_path_.Append("test_file.png");
+  base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  ASSERT_FALSE(chrome_scanning_app_delegate_->IsFilePathSupported(
+      my_files_path_.Append("../MyFiles/test_file.png")));
+}
+
 }  // namespace ash

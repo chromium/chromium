@@ -35,7 +35,7 @@ import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/po
 import {getScanService} from './mojo_interface_provider.js';
 import {AppState, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
-import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
 /**
  * URL for the Scanning help page.
@@ -766,6 +766,8 @@ Polymer({
       return;
     }
 
+    this.setScanToPathFromSavedSettings_();
+
     const scannerSettings = this.getSelectedScannerSavedSettings_();
     if (!scannerSettings) {
       return;
@@ -851,6 +853,27 @@ Polymer({
     const selectedScannerDisplayName = this.getSelectedScannerDisplayName_();
     return this.savedScanSettings_.scanners.find(
         scanner => scanner.name === selectedScannerDisplayName);
+  },
+
+  /**
+   * Validates that the file path from saved settings still exists on the local
+   * filesystem then sets the proper display name for the 'Scan to' dropdown. If
+   * the file path no longer exists, leave the default 'Scan to' path.
+   * @private
+   */
+  setScanToPathFromSavedSettings_() {
+    this.browserProxy_.ensureValidFilePath(this.savedScanSettings_.scanToPath)
+        .then(
+            /* @type {!SelectedPath} */ (selectedPath) => {
+              const baseName = selectedPath.baseName;
+              const filePath = selectedPath.filePath;
+              if (!baseName || !filePath) {
+                return;
+              }
+
+              this.selectedFolder = baseName;
+              this.selectedFilePath = filePath;
+            });
   },
 
   /**

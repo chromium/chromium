@@ -98,6 +98,14 @@ export class ScanningBrowserProxy {
    * @return {!Promise<string>}
    */
   getScanSettings() {}
+
+  /**
+   * Validates that |filePath| exists on the local filesystem and returns its
+   * display name. If |filePath| doesn't exist, return an empty SelectedPath.
+   * @param {string} filePath
+   * @return {!Promise<!SelectedPath>}
+   */
+  ensureValidFilePath(filePath) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -155,6 +163,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   getScanSettings() {
     return sendWithPromise('getScanSettings');
+  }
+
+  /** @override */
+  ensureValidFilePath(filePath) {
+    return sendWithPromise('ensureValidFilePath', filePath);
   }
 }
 

@@ -38,6 +38,9 @@ class ScanningAppDelegate {
   // Gets scan settings from Pref service.
   virtual std::string GetScanSettingsFromPrefs() = 0;
 
+  // Determines if |path_to_file| is a supported file path for the Files app.
+  virtual bool IsFilePathSupported(const base::FilePath& path_to_file) = 0;
+
   // Opens the Media app with the files specified in |file_paths|.
   virtual void OpenFilesInMediaApp(
       const std::vector<base::FilePath>& file_paths) = 0;

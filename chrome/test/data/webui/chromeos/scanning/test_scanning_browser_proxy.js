@@ -7,6 +7,11 @@ import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_bro
 import {assertArrayEquals, assertEquals} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
+const EMPTY_SELECTED_PATH = {
+  baseName: '',
+  filePath: ''
+};
+
 /**
  * Test version of ScanningBrowserProxy.
  * @implements {ScanningBrowserProxy}
@@ -25,10 +30,11 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'recordNumScanSettingChanges',
       'saveScanSettings',
       'getScanSettings',
+      'ensureValidFilePath',
     ]);
 
-    /** @private {?SelectedPath} */
-    this.selectedPath_ = null;
+    /** @private {!SelectedPath} */
+    this.selectedPath_ = EMPTY_SELECTED_PATH;
 
     /** @private {?string} */
     this.pathToFile_ = null;
@@ -44,6 +50,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
 
     /** @private {string} */
     this.savedSettings_ = '';
+
+    /** @private {!SelectedPath} */
+    this.savedSettingsSelectedPath_ = EMPTY_SELECTED_PATH;
   }
 
   /** @override */
@@ -122,6 +131,15 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
     return Promise.resolve(this.savedSettings_);
   }
 
+  /** @override */
+  ensureValidFilePath(filePath) {
+    this.methodCalled('ensureValidFilePath');
+    return Promise.resolve(
+        filePath === this.savedSettingsSelectedPath_.filePath ?
+            this.savedSettingsSelectedPath_ :
+            EMPTY_SELECTED_PATH);
+  }
+
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
     this.selectedPath_ = selectedPath;
@@ -150,5 +168,10 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @param {number} numChanges */
   setExpectedNumScanSettingChanges(numChanges) {
     this.expectedNumScanSettingChanges_ = numChanges;
+  }
+
+  /** @param {!SelectedPath} selectedPath */
+  setSavedSettingsSelectedPath(selectedPath) {
+    this.savedSettingsSelectedPath_ = selectedPath;
   }
 }
