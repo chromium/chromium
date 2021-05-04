@@ -708,6 +708,9 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
 
 bool WaylandWindow::CommitOverlays(
     std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr>& overlays) {
+  if (overlays.empty())
+    return true;
+
   // |overlays| is sorted from bottom to top.
   std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
 
@@ -731,8 +734,10 @@ bool WaylandWindow::CommitOverlays(
   if (!ArrangeSubsurfaceStack(above, below))
     return false;
 
-  if (wayland_overlay_delegation_enabled_)
+  if (wayland_overlay_delegation_enabled_) {
+    primary_subsurface()->Show();
     connection_->buffer_manager_host()->StartFrame(root_surface());
+  }
 
   {
     // Iterate through |subsurface_stack_below_|, setup subsurfaces and place
@@ -800,7 +805,7 @@ bool WaylandWindow::CommitOverlays(
     }
   }
 
-  if (!num_primary_planes && overlays.front()->z_order == INT32_MIN)
+  if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
   UpdateVisualSize((*split)->bounds_rect.size());
 
@@ -823,7 +828,9 @@ bool WaylandWindow::CommitOverlays(
     // with viewport.destination == buffer.size. So do not set
     // viewport.destination to primary planes if crop_rect is uniform.
     // TODO(fangzhoug): Refactor some of this logic s.t. the decision of whether
-    //   to apply viewport.destination is made at commit time.
+    //   to apply viewport.destination is made at commit time. Right now PIP
+    //   would have incorrect size b/c it is fullscreen overlay scheduled at
+    //   z_order=0.
     primary_subsurface_->ConfigureAndShowSurface(
         (*split)->transform, (*split)->crop_rect,
         (*split)->crop_rect == gfx::RectF(1.f, 1.f) ? gfx::Rect()

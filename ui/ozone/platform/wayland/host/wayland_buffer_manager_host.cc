@@ -228,7 +228,8 @@ class WaylandBufferManagerHost::Surface {
         continue;
 
       submitted_buffers_.push_back(
-          SubmissionInfo{pending_commit.buffer->buffer_id, /*acked=*/false});
+          SubmissionInfo{pending_commit.buffer->buffer_id,
+                         /*acked=*/submitted_buffers_.empty() ? true : false});
       if (connection_->presentation()) {
         feedback_queue_.push_back(
             {wl::Object<struct wp_presentation_feedback>(),

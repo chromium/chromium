@@ -132,11 +132,21 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     bool enable_blend,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
-  // If the widget this pixmap backs has not been assigned before, do it now.
-  if (widget_ == gfx::kNullAcceleratedWidget)
-    SetAcceleratedWiget(widget);
+  DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
-  DCHECK_EQ(widget_, widget);
+  // It's possible for a buffer to be attached to a different widget or
+  // wl_surface if this buffer represents an overlay and is being tab-dragged to
+  // a different window. Recreate wl_buffer handle if this happens.
+  // TODO(fangzhoug): Remove this workaround once better buffer management is
+  //   implemented.
+  z_order_ = z_order_set_ ? z_order_ : plane_z_order;
+  if (widget_ != widget || z_order_ != plane_z_order) {
+    buffer_manager_->DestroyBuffer(widget_, buffer_id_);
+    CreateDmabufBasedBuffer();
+    widget_ = widget;
+    z_order_ = plane_z_order;
+  }
+  z_order_set_ = true;
 
   auto* surface = buffer_manager_->GetSurface(widget);
   // This must never be hit.
