@@ -12,6 +12,17 @@
 
 namespace ui {
 
+namespace {
+
+std::string GetProcessName() {
+  char name[ZX_MAX_NAME_LEN] = {};
+  zx_status_t status =
+      zx::process::self()->get_property(ZX_PROP_NAME, name, sizeof(name));
+  return (status == ZX_OK) ? std::string(name) : "";
+}
+
+}  // namespace
+
 SysmemBufferManager::SysmemBufferManager(
     ScenicSurfaceFactory* scenic_surface_factory)
     : scenic_surface_factory_(scenic_surface_factory) {}
@@ -26,6 +37,8 @@ void SysmemBufferManager::Initialize(
   DCHECK(collections_.empty());
   DCHECK(!allocator_);
   allocator_.Bind(std::move(allocator));
+  allocator_->SetDebugClientInfo(GetProcessName() + "-SysmemBufferManager",
+                                 base::GetCurrentProcId());
 }
 
 void SysmemBufferManager::Shutdown() {
