@@ -74,7 +74,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     const useCameraAgainButton = activationCodePage.$$('#useCameraAgainButton');
     const scanSuccessContainer = activationCodePage.$$('#scanSuccessContainer');
     const scanFailureContainer = activationCodePage.$$('#scanFailureContainer');
-    const spinner = activationCodePage.$$('paper-spinner-lite');
 
     assertTrue(!!qrCodeDetectorContainer);
     assertTrue(!!activationCodeContainer);
@@ -86,7 +85,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(!!useCameraAgainButton);
     assertTrue(!!scanSuccessContainer);
     assertTrue(!!scanFailureContainer);
-    assertTrue(!!spinner);
+    assertFalse(!!activationCodePage.$$('paper-spinner-lite'));
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
@@ -94,7 +93,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
-    assertTrue(spinner.hidden);
+    assertFalse(!!activationCodePage.$$('paper-spinner-lite'));
 
     // Click the start scanning button.
     startScanningButton.click();
@@ -167,10 +166,11 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
-    assertTrue(spinner.hidden);
+    assertFalse(!!activationCodePage.$$('paper-spinner-lite'));
 
     activationCodePage.showBusy = true;
-    assertFalse(spinner.hidden);
+    await flushAsync();
+    assertTrue(!!activationCodePage.$$('paper-spinner-lite'));
 
     // Mock, no media devices present
     mediaDevices.removeDevice();

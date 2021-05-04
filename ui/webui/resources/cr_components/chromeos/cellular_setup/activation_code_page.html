@@ -45,9 +45,8 @@
 
       paper-spinner-lite {
         height: 20px;
-        position: absolute;
-        right: 16px;
-        top: 24px;
+        margin-inline-end: 6px;
+        margin-top: 6px;
         width: 20px;
       }
 
@@ -249,16 +248,19 @@
         <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(
               cameraCount_, qrCodeDetector_.*)]]">
           <cr-input id="activationCode"
-            label="[[i18n('activationCode')]]"
-            value="{{activationCode}}"
-            disabled="[[showBusy]]"
-            on-keydown="onKeyDown_"
-            invalid="[[shouldActivationCodeInputBeInvalid_(state_)]]"
-            error-message="[[i18n('scanQrCodeInvalid')]]">
+              label="[[i18n('activationCode')]]"
+              value="{{activationCode}}"
+              disabled="[[showBusy]]"
+              on-keydown="onKeyDown_"
+              invalid="[[shouldActivationCodeInputBeInvalid_(state_)]]"
+              error-message="[[i18n('scanQrCodeInvalid')]]">
+            <template is="dom-if" if="[[showBusy]]">
+              <div slot="suffix">
+                <paper-spinner-lite active>
+                </paper-spinner-lite>
+              </div>
+            </template>
           </cr-input>
-          <paper-spinner-lite active
-              hidden$="[[!showBusy]]">
-          </paper-spinner-lite>
           <div id="loadingMessage" hidden$="[[!showBusy]]">
               [[i18n('scanQrCodeLoading')]]
           </div>
