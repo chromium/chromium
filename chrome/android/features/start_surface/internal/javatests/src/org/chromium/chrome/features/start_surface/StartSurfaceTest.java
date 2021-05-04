@@ -641,6 +641,11 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testTapMVTilesInSingleSurface() {
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+
         if (!mImmediateReturn) {
             pressHomePageButton();
         }
@@ -1148,10 +1153,12 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() throws ExecutionException {
-        // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
@@ -1280,11 +1287,13 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonOnTabSwitcherWithDialogShowing()
             throws ExecutionException {
-        // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         backButtonOnTabSwitcherWithDialogShowingImpl();
     }
 
@@ -1377,11 +1386,13 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonOnHomepageWithGroupTabsDialog()
         throws ExecutionException {
-        // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         backButtonOnHomepageWithGroupTabsDialogImpl();
     }
 
@@ -1764,10 +1775,13 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86")
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
     public void testShow_SingleAsHomepage_ShowTabsInMRUOrder() throws ExecutionException {
-        // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+
         if (!mImmediateReturn) {
             pressHomePageButton();
         }
@@ -1823,10 +1837,12 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86")
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
     public void testShow_TabSwitcher_ShowTabsInMRUOrder() throws ExecutionException {
-        // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205525",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         tabSwitcher_ShowTabsInMRUOrderImpl();
     }
 
