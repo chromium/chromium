@@ -10,15 +10,17 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // An infobar that displays a message saying the system (OS or hardware) is
 // obsolete, along with a "Learn More" link.
 class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates an obsolete system infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
   ObsoleteSystemInfoBarDelegate(const ObsoleteSystemInfoBarDelegate&) = delete;
   ObsoleteSystemInfoBarDelegate& operator=(

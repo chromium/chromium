@@ -22,7 +22,7 @@ class WebContents;
 }
 
 // This class creates an alternate nav infobar and delegate and adds the infobar
-// to the infobar service for |web_contents|.
+// to the infobar manager for |web_contents|.
 class AlternateNavInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
   ~AlternateNavInfoBarDelegate() override;

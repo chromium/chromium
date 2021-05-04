@@ -11,10 +11,10 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/PermissionUpdateInfoBarDelegate_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_uma_util.h"
@@ -114,14 +114,14 @@ infobars::InfoBar* PermissionUpdateInfoBarDelegate::Create(
     const std::vector<ContentSettingsType> content_settings_types,
     int permission_msg_id,
     PermissionUpdatedCallback callback) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  if (!infobar_service) {
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
     std::move(callback).Run(false);
     return nullptr;
   }
 
-  return infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+  return infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       // Using WrapUnique as the PermissionUpdateInfoBarDelegate ctor is
       // private.
       base::WrapUnique<ConfirmInfoBarDelegate>(

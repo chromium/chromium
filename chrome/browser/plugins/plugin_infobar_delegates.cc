@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_installer.h"
@@ -24,6 +23,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -53,13 +53,13 @@ std::u16string GetInfoBarMessage(const PluginMetadata& metadata) {
 // OutdatedPluginInfoBarDelegate ----------------------------------------------
 
 void OutdatedPluginInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     PluginInstaller* installer,
     std::unique_ptr<PluginMetadata> plugin_metadata) {
   std::unique_ptr<ConfirmInfoBarDelegate> delegate_ptr;
   delegate_ptr.reset(
       new OutdatedPluginInfoBarDelegate(installer, std::move(plugin_metadata)));
-  infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(delegate_ptr)));
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate_ptr)));
 }
 
 OutdatedPluginInfoBarDelegate::OutdatedPluginInfoBarDelegate(
@@ -143,7 +143,7 @@ bool OutdatedPluginInfoBarDelegate::Accept() {
   // not pass a reference to an object that can go away.
   GURL plugin_url(plugin_metadata_->plugin_url());
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(infobar());
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
   if (web_contents) {
     DCHECK(plugin_metadata_->url_for_display());
     installer()->OpenDownloadURL(plugin_url, web_contents);
@@ -155,7 +155,7 @@ bool OutdatedPluginInfoBarDelegate::Cancel() {
   base::RecordAction(UserMetricsAction("OutdatedPluginInfobar.AllowThisTime"));
 
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(infobar());
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
   if (web_contents) {
     ChromePluginServiceFilter::GetInstance()->AuthorizeAllPlugins(
         web_contents, true, identifier_);

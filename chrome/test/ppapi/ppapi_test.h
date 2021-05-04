@@ -18,7 +18,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class PPAPITestMessageHandler : public content::TestMessageHandler {
  public:
@@ -74,7 +76,7 @@ class PPAPITestBase : public InProcessBrowserTest {
     void OnInfoBarAdded(infobars::InfoBar* infobar) override;
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
-    InfoBarService* GetInfoBarService();
+    infobars::ContentInfoBarManager* GetInfoBarManager();
 
     void VerifyInfoBarState();
 

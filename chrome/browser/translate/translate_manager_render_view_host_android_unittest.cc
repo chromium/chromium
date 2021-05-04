@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/fake_translate_agent.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/translate/content/browser/content_translate_driver.h"
@@ -59,15 +59,15 @@ class TranslateManagerRenderViewHostAndroidTest
                        page_translatable);
   }
 
-  InfoBarService* infobar_service() {
-    return InfoBarService::FromWebContents(web_contents());
+  infobars::ContentInfoBarManager* infobar_manager() {
+    return infobars::ContentInfoBarManager::FromWebContents(web_contents());
   }
 
   // Returns the translate infobar if there is 1 infobar and it is a translate
   // infobar.
   translate::TranslateInfoBarDelegate* GetTranslateInfoBar() {
-    return (infobar_service()->infobar_count() == 1)
-               ? infobar_service()
+    return (infobar_manager()->infobar_count() == 1)
+               ? infobar_manager()
                      ->infobar_at(0)
                      ->delegate()
                      ->AsTranslateInfoBarDelegate()
@@ -82,7 +82,7 @@ class TranslateManagerRenderViewHostAndroidTest
     if (!infobar)
       return false;
     infobar->InfoBarDismissed();  // Simulates closing the infobar.
-    infobar_service()->RemoveInfoBar(infobar_service()->infobar_at(0));
+    infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
     return true;
   }
 #endif
@@ -100,7 +100,7 @@ class TranslateManagerRenderViewHostAndroidTest
     TranslateService::InitializeForTesting(
         network::mojom::ConnectionType::CONNECTION_WIFI);
 
-    InfoBarService::CreateForWebContents(web_contents());
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     ChromeTranslateClient::CreateForWebContents(web_contents());
     ChromeTranslateClient::FromWebContents(web_contents())
         ->translate_driver()

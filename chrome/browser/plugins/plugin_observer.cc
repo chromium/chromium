@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/plugins/plugin_finder.h"
@@ -28,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -127,17 +127,16 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
 #endif
 
   ReloadPluginInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents()),
-      &web_contents()->GetController(),
-      infobar_text);
+      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+      &web_contents()->GetController(), infobar_text);
 }
 
 // static
 void PluginObserver::CreatePluginObserverInfoBar(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& plugin_name) {
   CreateSimpleAlertInfoBar(
-      infobar_service,
+      infobar_manager,
       infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
       &kExtensionCrashedIcon,
       l10n_util::GetStringFUTF16(IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT,
@@ -158,8 +157,8 @@ void PluginObserver::BlockedOutdatedPlugin(
         std::move(plugin_placeholder);
 
     OutdatedPluginInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents()), installer,
-        std::move(plugin));
+        infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+        installer, std::move(plugin));
   } else {
     NOTREACHED();
   }
@@ -181,8 +180,9 @@ void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
       plugin_path);
   std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
-  CreatePluginObserverInfoBar(InfoBarService::FromWebContents(web_contents()),
-                              plugin_name);
+  CreatePluginObserverInfoBar(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+      plugin_name);
 }
 
 void PluginObserver::OpenPDF(const GURL& url) {

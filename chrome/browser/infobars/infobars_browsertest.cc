@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_observer.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
@@ -45,6 +44,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/test/browser_test.h"
@@ -110,19 +110,20 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
 
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html"));
-  InfoBarService* infobar_service1 = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* infobar_manager1 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
 
   // Adding a theme should create an infobar.
   {
-    InfoBarObserver observer(infobar_service1,
+    InfoBarObserver observer(infobar_manager1,
                              InfoBarObserver::Type::kInfoBarAdded);
     InstallExtension("theme.crx");
     observer.Wait();
-    EXPECT_EQ(1u, infobar_service1->infobar_count());
+    EXPECT_EQ(1u, infobar_manager1->infobar_count());
   }
 
-  InfoBarService* infobar_service2 = nullptr;
+  infobars::ContentInfoBarManager* infobar_manager2 = nullptr;
 
   // Adding a theme in a new tab should close the old tab's infobar.
   {
@@ -130,26 +131,26 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
         browser(), embedded_test_server()->GetURL("/simple.html"),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    infobar_service2 = InfoBarService::FromWebContents(
+    infobar_manager2 = infobars::ContentInfoBarManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    InfoBarObserver observer_added(infobar_service2,
+    InfoBarObserver observer_added(infobar_manager2,
                                    InfoBarObserver::Type::kInfoBarAdded);
-    InfoBarObserver observer_removed(infobar_service1,
+    InfoBarObserver observer_removed(infobar_manager1,
                                      InfoBarObserver::Type::kInfoBarRemoved);
     InstallExtension("theme2.crx");
     observer_removed.Wait();
     observer_added.Wait();
-    EXPECT_EQ(0u, infobar_service1->infobar_count());
-    EXPECT_EQ(1u, infobar_service2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager1->infobar_count());
+    EXPECT_EQ(1u, infobar_manager2->infobar_count());
   }
 
   // Switching back to the default theme should close the infobar.
   {
-    InfoBarObserver observer(infobar_service2,
+    InfoBarObserver observer(infobar_manager2,
                              InfoBarObserver::Type::kInfoBarRemoved);
     ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
     observer.Wait();
-    EXPECT_EQ(0u, infobar_service2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager2->infobar_count());
   }
 }
 
@@ -209,7 +210,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   AddExpectedInfoBar(infobar_identifier);
   switch (infobar_identifier) {
     case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
-      HungPluginInfoBarDelegate::Create(GetInfoBarService(), nullptr, 0,
+      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
                                         u"Test Plugin");
       break;
 
@@ -227,7 +228,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE: {
       extensions::IncognitoConnectabilityInfoBarDelegate::Create(
-          GetInfoBarService(),
+          GetInfoBarManager(),
           l10n_util::GetStringFUTF16(
               IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO,
               u"http://example.com", u"Test Extension"),
@@ -237,7 +238,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::THEME_INSTALLED_INFOBAR_DELEGATE:
       ThemeInstalledInfoBarDelegate::Create(
-          GetInfoBarService(),
+          GetInfoBarManager(),
           ThemeServiceFactory::GetForProfile(browser()->profile()), "New Theme",
           "id",
           std::make_unique<ThemeService::ThemeReinstaller>(
@@ -246,7 +247,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::NACL_INFOBAR_DELEGATE:
 #if BUILDFLAG(ENABLE_NACL)
-      NaClInfoBarDelegate::Create(GetInfoBarService());
+      NaClInfoBarDelegate::Create(GetInfoBarManager());
 #else
       ADD_FAILURE() << "This infobar is not supported when NaCl is disabled.";
 #endif
@@ -254,7 +255,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
       OutdatedPluginInfoBarDelegate::Create(
-          GetInfoBarService(), nullptr,
+          GetInfoBarManager(), nullptr,
           std::make_unique<PluginMetadata>("test-plugin", u"Test Plugin", true,
                                            GURL(), GURL(), u"Test",
                                            std::string(), false));
@@ -262,13 +263,13 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
       ReloadPluginInfoBarDelegate::Create(
-          GetInfoBarService(), nullptr,
+          GetInfoBarManager(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
                                      u"Test Plugin"));
       break;
 
     case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarService(),
+      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
                                                   u"Test Plugin");
       break;
 
@@ -285,14 +286,14 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE:
-      CollectedCookiesInfoBarDelegate::Create(GetInfoBarService());
+      CollectedCookiesInfoBarDelegate::Create(GetInfoBarManager());
       break;
 
     case IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE: {
       const std::u16string msg =
           l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE);
       InstallationErrorInfoBarDelegate::Create(
-          GetInfoBarService(),
+          GetInfoBarManager(),
           extensions::CrxInstallError(
               extensions::CrxInstallErrorType::OTHER,
               extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
@@ -310,17 +311,17 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #else
-      chrome::DefaultBrowserInfoBarDelegate::Create(GetInfoBarService(),
+      chrome::DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
                                                     browser()->profile());
 #endif
       break;
 
     case IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE:
-      GoogleApiKeysInfoBarDelegate::Create(GetInfoBarService());
+      GoogleApiKeysInfoBarDelegate::Create(GetInfoBarManager());
       break;
 
     case IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
-      ObsoleteSystemInfoBarDelegate::Create(GetInfoBarService());
+      ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
       break;
 
     case IBD::SESSION_CRASHED_INFOBAR_DELEGATE_IOS:
@@ -328,7 +329,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:
-      PageInfoInfoBarDelegate::Create(GetInfoBarService());
+      PageInfoInfoBarDelegate::Create(GetInfoBarManager());
       break;
 
     case IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA: {
@@ -342,7 +343,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           ChromeTranslateClient::FromWebContents(GetWebContents());
       translate::TranslateInfoBarDelegate::Create(
           false, translate_client->GetTranslateManager()->GetWeakPtr(),
-          GetInfoBarService(), false,
+          GetInfoBarManager(), false,
           translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja", "en",
           translate::TranslateErrors::NONE, false);
 #endif
@@ -354,7 +355,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
-      TabSharingInfoBarDelegate::Create(GetInfoBarService(), u"example.com",
+      TabSharingInfoBarDelegate::Create(GetInfoBarManager(), u"example.com",
                                         u"application.com", false, true,
                                         nullptr);
       break;

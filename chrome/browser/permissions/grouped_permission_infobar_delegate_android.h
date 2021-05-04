@@ -11,7 +11,9 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 namespace content {
 class WebContents;
@@ -33,7 +35,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   static infobars::InfoBar* Create(
       const base::WeakPtr<permissions::PermissionPromptAndroid>&
           permission_prompt,
-      InfoBarService* infobar_service);
+      infobars::ContentInfoBarManager* infobar_manager);
 
   size_t PermissionCount() const;
 
@@ -69,7 +71,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   GroupedPermissionInfoBarDelegate(
       const base::WeakPtr<permissions::PermissionPromptAndroid>&
           permission_prompt,
-      InfoBarService* infobar_service);
+      infobars::ContentInfoBarManager* infobar_manager);
 
   // ConfirmInfoBarDelegate:
   InfoBarIdentifier GetIdentifier() const override;
@@ -80,7 +82,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
   base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
-  InfoBarService* infobar_service_;
+  infobars::ContentInfoBarManager* infobar_manager_;
   bool details_expanded_;
 
   DISALLOW_COPY_AND_ASSIGN(GroupedPermissionInfoBarDelegate);

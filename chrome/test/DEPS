@@ -25,6 +25,7 @@ include_rules = [
   "+components/guest_view/browser",
   "+components/history/content",
   "+components/history/core",
+  "+components/infobars/content",
   "+components/infobars/core",
   "+components/javascript_dialogs",
   "+components/keep_alive_registry",

@@ -26,6 +26,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
@@ -68,7 +69,6 @@
 #include "weblayer/browser/file_select_helper.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/i18n_util.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/navigation_entry_data.h"
@@ -290,7 +290,7 @@ void CreateContentSubresourceFilterThrottleManagerForWebContents(
   // problem as the subresource filter shows the infobar only on Android
   // as well.
 #if defined(OS_ANDROID)
-          InfoBarService::FromWebContents(web_contents),
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
 #else
           nullptr,
 #endif
@@ -366,9 +366,9 @@ TabImpl::TabImpl(ProfileImpl* profile,
   TranslateClientImpl::CreateForWebContents(web_contents_.get());
 
 #if defined(OS_ANDROID)
-  // InfoBarService must be created before SubresourceFilterClientImpl as the
-  // latter depends on it.
-  InfoBarService::CreateForWebContents(web_contents_.get());
+  // infobars::ContentInfoBarManager must be created before
+  // SubresourceFilterClientImpl as the latter depends on it.
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents_.get());
 #endif
 
   CreateContentSubresourceFilterThrottleManagerForWebContents(
@@ -1032,8 +1032,9 @@ void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
-      one_time_code, std::move(on_confirm), std::move(on_cancel));
+      web_contents,
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      origin_list, one_time_code, std::move(on_confirm), std::move(on_cancel));
 #else
   NOTREACHED();
 #endif

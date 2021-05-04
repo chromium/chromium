@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -142,12 +142,13 @@ void ChromeOmniboxNavigationObserver::Observe(
   // It's possible for an attempted omnibox navigation to cause the extensions
   // system to synchronously navigate an extension background page.  Not only is
   // this navigation not the one we want to observe, the associated WebContents
-  // is invisible and has no InfoBarService, so trying to show an infobar in it
-  // later will crash.  Just ignore this navigation and keep listening.
+  // is invisible and has no infobars::ContentInfoBarManager, so trying to show
+  // an infobar in it later will crash.  Just ignore this navigation and keep
+  // listening.
   content::NavigationController* controller =
       content::Source<content::NavigationController>(source).ptr();
   content::WebContents* web_contents = controller->GetWebContents();
-  if (!InfoBarService::FromWebContents(web_contents))
+  if (!infobars::ContentInfoBarManager::FromWebContents(web_contents))
     return;
 
   // Ignore navigations to the wrong URL.

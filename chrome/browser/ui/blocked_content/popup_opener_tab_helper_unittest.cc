@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/blocked_content/tab_under_navigation_throttle.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -28,6 +27,7 @@
 #include "components/blocked_content/list_item_position.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -66,7 +66,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
     blocked_content::PopupOpenerTabHelper::CreateForWebContents(
         web_contents(), &raw_clock_,
         HostContentSettingsMapFactory::GetForProfile(profile()));
-    InfoBarService::CreateForWebContents(web_contents());
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
@@ -410,12 +410,13 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
 
   infobars::InfoBarAndroid* GetInfoBar() {
 #if defined(OS_ANDROID)
-    auto* service = InfoBarService::FromWebContents(web_contents());
-    if (!service->infobar_count())
+    auto* manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents());
+    if (!manager->infobar_count())
       return nullptr;
-    EXPECT_EQ(1u, service->infobar_count());
+    EXPECT_EQ(1u, manager->infobar_count());
     infobars::InfoBarAndroid* infobar =
-        static_cast<infobars::InfoBarAndroid*>(service->infobar_at(0));
+        static_cast<infobars::InfoBarAndroid*>(manager->infobar_at(0));
     EXPECT_TRUE(infobar);
     return infobar;
 #endif  // defined(OS_ANDROID)

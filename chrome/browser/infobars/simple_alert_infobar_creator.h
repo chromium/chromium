@@ -13,13 +13,15 @@ namespace gfx {
 struct VectorIcon;
 }
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // Creates a simple alert infobar and delegate and adds the infobar to
 // |infobar_manager|. If |vector_icon| is not null, it will be shown.
 // |infobar_identifier| names what class triggered the infobar for metrics.
 void CreateSimpleAlertInfoBar(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
     const gfx::VectorIcon* vector_icon,
     const std::u16string& message,

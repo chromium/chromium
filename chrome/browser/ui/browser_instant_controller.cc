@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 
 #include "base/bind.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -54,10 +54,11 @@ class TabReloader : public content::WebContentsUserData<TabReloader> {
     web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
 
     // As the reload was not triggered by the user we don't want to close any
-    // infobars. We have to tell the InfoBarService after the reload,
-    // otherwise it would ignore this call when
+    // infobars. We have to tell the infobars::ContentInfoBarManager after the
+    // reload, otherwise it would ignore this call when
     // WebContentsObserver::DidStartNavigationToPendingEntry is invoked.
-    InfoBarService::FromWebContents(web_contents_)->set_ignore_next_reload();
+    infobars::ContentInfoBarManager::FromWebContents(web_contents_)
+        ->set_ignore_next_reload();
 
     web_contents_->RemoveUserData(UserDataKey());
   }

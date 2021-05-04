@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +46,7 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
                                    bool can_share,
                                    int tab_index = 0) {
     return TabSharingInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(
+        infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
         shared_tab_name, app_name, shared_tab, can_share,
         tab_sharing_mock_ui());
@@ -144,24 +144,25 @@ TEST_F(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
 // Test that multiple infobars can be created on the same tab.
 TEST_F(TabSharingInfoBarDelegateTest, MultipleInfobarsOnSameTab) {
   AddTab(browser(), GURL("about:blank"));
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_EQ(infobar_service->infobar_count(), 0u);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+  EXPECT_EQ(infobar_manager->infobar_count(), 0u);
   CreateInfobar(kSharedTabName, kAppName, false, true);
-  EXPECT_EQ(infobar_service->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
   CreateInfobar(kSharedTabName, kAppName, false, true);
-  EXPECT_EQ(infobar_service->infobar_count(), 2u);
+  EXPECT_EQ(infobar_manager->infobar_count(), 2u);
 }
 
 TEST_F(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
   AddTab(browser(), GURL("http://foo"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
   CreateInfobar(kSharedTabName, kAppName, false, true);
-  EXPECT_EQ(infobar_service->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
   content::NavigationController* controller = &web_contents->GetController();
   NavigateAndCommit(controller, GURL("http://bar"));
-  EXPECT_EQ(infobar_service->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
 }

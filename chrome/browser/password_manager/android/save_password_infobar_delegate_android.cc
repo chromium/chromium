@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observer.h"
 #include "base/values.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -39,9 +39,9 @@ void SavePasswordInfoBarDelegate::Create(
   // passwords to their Google Account.
   bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(sync_service);
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobar_service->AddInfoBar(std::make_unique<SavePasswordInfoBar>(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(std::make_unique<SavePasswordInfoBar>(
       base::WrapUnique(
           new SavePasswordInfoBarDelegate(web_contents, std::move(form_to_save),
                                           is_smartlock_branding_enabled)),

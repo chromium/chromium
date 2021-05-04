@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/java/test_jni/TestInfoBar_jni.h"
 
 using base::android::JavaParamRef;
@@ -43,8 +43,9 @@ ScopedJavaLocalRef<jobject> TestInfoBar::CreateRenderInfoBar(
 
 // static
 void TestInfoBar::Show(content::WebContents* web_contents) {
-  InfoBarService* service = InfoBarService::FromWebContents(web_contents);
-  service->AddInfoBar(
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  manager->AddInfoBar(
       std::make_unique<TestInfoBar>(std::make_unique<TestInfoBarDelegate>()));
 }
 

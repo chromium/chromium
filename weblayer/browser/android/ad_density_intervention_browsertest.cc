@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 
 namespace weblayer {
@@ -95,9 +95,10 @@ IN_PROC_BROWSER_TEST_F(
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is not
   // loaded and the subresource filter UI for ad blocking is shown.
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             1u);
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier(),
@@ -149,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             0u);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
 }
@@ -217,7 +219,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             0u);
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,

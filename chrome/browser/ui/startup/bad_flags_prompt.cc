@@ -15,7 +15,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/common/chrome_paths.h"
@@ -24,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
@@ -170,7 +170,7 @@ void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
   // --ignore-certificate-errors-spki-list.  This infobar only appears at
   // startup so the animation isn't visible to users anyway.
   CreateSimpleAlertInfoBar(
-      InfoBarService::FromWebContents(web_contents),
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
       infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, nullptr,
       l10n_util::GetStringFUTF16(message_id, base::UTF8ToUTF16(flag)),
       /*auto_expire=*/false, /*should_animate=*/false);

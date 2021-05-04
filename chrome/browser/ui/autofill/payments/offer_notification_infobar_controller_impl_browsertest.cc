@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_infobar_controller_impl.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -33,10 +33,11 @@ class OfferNotificationInfoBarControllerImplBrowserTest
   }
 
   infobars::InfoBar* GetInfoBar() {
-    InfoBarService* infobar_service = InfoBarService::FromWebContents(
-        chrome_test_utils::GetActiveWebContents(this));
-    for (size_t i = 0; i < infobar_service->infobar_count(); ++i) {
-      infobars::InfoBar* infobar = infobar_service->infobar_at(i);
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(
+            chrome_test_utils::GetActiveWebContents(this));
+    for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
+      infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
       if (infobar->delegate()->GetIdentifier() ==
           infobars::InfoBarDelegate::
               AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE) {

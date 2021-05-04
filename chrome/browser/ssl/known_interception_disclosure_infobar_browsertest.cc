@@ -5,12 +5,12 @@
 #include "base/files/file_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/network_service_instance.h"
@@ -24,16 +24,18 @@
 namespace {
 
 size_t GetInfobarCount(content::WebContents* contents) {
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(contents);
-  if (!infobar_service)
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+  if (!infobar_manager)
     return 0;
-  return infobar_service->infobar_count();
+  return infobar_manager->infobar_count();
 }
 
 infobars::InfoBar* GetInfobar(content::WebContents* contents) {
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(contents);
-  DCHECK(infobar_service);
-  return infobar_service->infobar_at(0);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+  DCHECK(infobar_manager);
+  return infobar_manager->infobar_at(0);
 }
 
 // Follows same logic as clicking the "Continue" button would.

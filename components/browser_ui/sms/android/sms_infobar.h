@@ -30,7 +30,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
   ~SmsInfoBar() override;
 
   // Creates an SMS receiver infobar and delegate and adds it to
-  // |infobar_service|.
+  // |infobar_manager|.
   static void Create(content::WebContents* web_contents,
                      infobars::InfoBarManager* manager,
                      const std::vector<url::Origin>& origin_list,

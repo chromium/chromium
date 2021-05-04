@@ -12,9 +12,9 @@
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/common/channel_info.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -101,10 +101,10 @@ void HungPluginTabHelper::PluginCrashed(const base::FilePath& plugin_path,
                               });
   if (i != hung_plugins_.end()) {
     if (i->second->infobar) {
-      InfoBarService* infobar_service =
-          InfoBarService::FromWebContents(web_contents());
-      if (infobar_service)
-        infobar_service->RemoveInfoBar(i->second->infobar);
+      infobars::ContentInfoBarManager* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents());
+      if (infobar_manager)
+        infobar_manager->RemoveInfoBar(i->second->infobar);
     }
     hung_plugins_.erase(i);
   }
@@ -114,24 +114,24 @@ void HungPluginTabHelper::PluginHungStatusChanged(
     int plugin_child_id,
     const base::FilePath& plugin_path,
     bool is_hung) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
 
   auto found = hung_plugins_.find(plugin_child_id);
   if (found != hung_plugins_.end()) {
     if (!is_hung) {
       // Hung plugin became un-hung, close the infobar and delete our info.
-      if (found->second->infobar && infobar_service)
-        infobar_service->RemoveInfoBar(found->second->infobar);
+      if (found->second->infobar && infobar_manager)
+        infobar_manager->RemoveInfoBar(found->second->infobar);
       hung_plugins_.erase(found);
     }
     return;
   }
 
-  if (!infobar_service)
+  if (!infobar_manager)
     return;
-  if (!infobar_observations_.IsObservingSource(infobar_service))
-    infobar_observations_.AddObservation(infobar_service);
+  if (!infobar_observations_.IsObservingSource(infobar_manager))
+    infobar_observations_.AddObservation(infobar_manager);
 
   std::u16string plugin_name =
       content::PluginService::GetInstance()->GetPluginDisplayNameByPath(
@@ -188,13 +188,13 @@ void HungPluginTabHelper::OnReshowTimer(int child_id) {
 }
 
 void HungPluginTabHelper::ShowBar(int child_id, PluginState* state) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
-  if (!infobar_service)
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  if (!infobar_manager)
     return;
 
   DCHECK(!state->infobar);
-  state->infobar = HungPluginInfoBarDelegate::Create(infobar_service, this,
+  state->infobar = HungPluginInfoBarDelegate::Create(infobar_manager, this,
                                                      child_id, state->name);
 }
 

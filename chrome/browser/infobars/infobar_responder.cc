@@ -8,24 +8,25 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 
-InfoBarResponder::InfoBarResponder(InfoBarService* infobar_service,
-                                   AutoResponseType response)
-    : infobar_service_(infobar_service), response_(response) {
-  infobar_service_->AddObserver(this);
+InfoBarResponder::InfoBarResponder(
+    infobars::ContentInfoBarManager* infobar_manager,
+    AutoResponseType response)
+    : infobar_manager_(infobar_manager), response_(response) {
+  infobar_manager_->AddObserver(this);
 }
 
 InfoBarResponder::~InfoBarResponder() {
   // This is safe even if we were already removed as an observer in
   // OnInfoBarAdded().
-  infobar_service_->RemoveObserver(this);
+  infobar_manager_->RemoveObserver(this);
 }
 
 void InfoBarResponder::OnInfoBarAdded(infobars::InfoBar* infobar) {
-  infobar_service_->RemoveObserver(this);
+  infobar_manager_->RemoveObserver(this);
   ConfirmInfoBarDelegate* delegate =
       infobar->delegate()->AsConfirmInfoBarDelegate();
   DCHECK(delegate);

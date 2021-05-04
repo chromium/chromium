@@ -10,16 +10,20 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class HungPluginTabHelper;
-class InfoBarService;
+
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class HungPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a hung plugin infobar and delegate and adds the infobar to
-  // |infobar_service|.  Returns the infobar if it was successfully added.
-  static infobars::InfoBar* Create(InfoBarService* infobar_service,
-                                   HungPluginTabHelper* helper,
-                                   int plugin_child_id,
-                                   const std::u16string& plugin_name);
+  // |infobar_manager|.  Returns the infobar if it was successfully added.
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager,
+      HungPluginTabHelper* helper,
+      int plugin_child_id,
+      const std::u16string& plugin_name);
 
  private:
   HungPluginInfoBarDelegate(HungPluginTabHelper* helper,

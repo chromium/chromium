@@ -35,7 +35,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -47,6 +46,7 @@
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/zoom/page_zoom.h"
@@ -220,7 +220,7 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   void ReadyForTest() override {}
   void ConnectionReady() override {}
   void SetOpenNewWindowForPopups(bool value) override {}
-  InfoBarService* GetInfoBarService() override;
+  infobars::ContentInfoBarManager* GetInfoBarManager() override;
   void RenderProcessGone(bool crashed) override {}
   void ShowCertificateViewer(const std::string& cert_chain) override {}
   content::WebContents* web_contents_;
@@ -244,8 +244,8 @@ void DefaultBindingsDelegate::InspectedContentsClosing() {
   web_contents_->ClosePage();
 }
 
-InfoBarService* DefaultBindingsDelegate::GetInfoBarService() {
-  return InfoBarService::FromWebContents(web_contents_);
+infobars::ContentInfoBarManager* DefaultBindingsDelegate::GetInfoBarManager() {
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents_);
 }
 
 std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
@@ -1499,7 +1499,7 @@ void DevToolsUIBindings::SearchCompleted(
 void DevToolsUIBindings::ShowDevToolsInfoBar(
     const std::u16string& message,
     DevToolsInfoBarDelegate::Callback callback) {
-  if (!delegate_->GetInfoBarService()) {
+  if (!delegate_->GetInfoBarManager()) {
     std::move(callback).Run(false);
     return;
   }

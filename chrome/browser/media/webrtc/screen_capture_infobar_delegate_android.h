@@ -17,7 +17,7 @@ class WebContents;
 class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
  public:
   // Creates a screen capture infobar and delegate and adds the infobar to the
-  // InfoBarService associated with |web_contents|.
+  // infobars::ContentInfoBarManager associated with |web_contents|.
   static void Create(content::WebContents* web_contents,
                      const content::MediaStreamRequest& request,
                      content::MediaResponseCallback callback);

@@ -17,8 +17,8 @@ class WebContents;
 
 class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates a keystone promotion delegate and adds it to the InfoBarService
-  // associated with |webContents|.
+  // Creates a keystone promotion delegate and adds it to the
+  // infobars::ContentInfoBarManager associated with |webContents|.
   static void Create(content::WebContents* webContents);
 
  private:

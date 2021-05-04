@@ -88,6 +88,7 @@ source_set("unittests") {
   deps = [
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
+    "//components/infobars/content",
     "//components/permissions:permissions",
   ]
 

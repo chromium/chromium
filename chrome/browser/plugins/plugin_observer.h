@@ -18,7 +18,9 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 namespace content {
 class WebContents;
@@ -35,8 +37,9 @@ class PluginObserver : public content::WebContentsObserver,
                      base::ProcessId plugin_pid) override;
 
   // Public for tests only.
-  static void CreatePluginObserverInfoBar(InfoBarService* infobar_service,
-                                          const std::u16string& plugin_name);
+  static void CreatePluginObserverInfoBar(
+      infobars::ContentInfoBarManager* infobar_manager,
+      const std::u16string& plugin_name);
 
  private:
   class PluginPlaceholderHost;

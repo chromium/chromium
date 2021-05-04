@@ -9,7 +9,9 @@
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // An infobar that asks if user wants to download a dangerous file.
 // Note that this infobar does not expire if the user subsequently navigates,
@@ -18,7 +20,7 @@ class DangerousDownloadInfoBarDelegate
     : public ConfirmInfoBarDelegate,
       public download::DownloadItem::Observer {
  public:
-  static void Create(InfoBarService* infobar_service,
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      download::DownloadItem* download_item);
 
   ~DangerousDownloadInfoBarDelegate() override;

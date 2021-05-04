@@ -19,7 +19,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,6 +26,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/nacl/common/buildflags.h"
@@ -86,7 +86,7 @@ PPAPITestBase::InfoBarObserver::InfoBarObserver(PPAPITestBase* test_base)
       expecting_infobar_(false),
       should_accept_(false),
       infobar_observer_(this) {
-  infobar_observer_.Add(GetInfoBarService());
+  infobar_observer_.Add(GetInfoBarManager());
 }
 
 PPAPITestBase::InfoBarObserver::~InfoBarObserver() {
@@ -116,13 +116,13 @@ void PPAPITestBase::InfoBarObserver::OnManagerShuttingDown(
 }
 
 void PPAPITestBase::InfoBarObserver::VerifyInfoBarState() {
-  InfoBarService* infobar_service = GetInfoBarService();
-  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_service->infobar_count());
+  infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
+  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_manager->infobar_count());
   if (!expecting_infobar_)
     return;
   expecting_infobar_ = false;
 
-  infobars::InfoBar* infobar = infobar_service->infobar_at(0);
+  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
   ConfirmInfoBarDelegate* delegate =
       infobar->delegate()->AsConfirmInfoBarDelegate();
   ASSERT_TRUE(delegate != NULL);
@@ -131,13 +131,14 @@ void PPAPITestBase::InfoBarObserver::VerifyInfoBarState() {
   else
     delegate->Cancel();
 
-  infobar_service->RemoveInfoBar(infobar);
+  infobar_manager->RemoveInfoBar(infobar);
 }
 
-InfoBarService* PPAPITestBase::InfoBarObserver::GetInfoBarService() {
+infobars::ContentInfoBarManager*
+PPAPITestBase::InfoBarObserver::GetInfoBarManager() {
   content::WebContents* web_contents =
       test_base_->browser()->tab_strip_model()->GetActiveWebContents();
-  return InfoBarService::FromWebContents(web_contents);
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
 PPAPITestBase::PPAPITestBase() {

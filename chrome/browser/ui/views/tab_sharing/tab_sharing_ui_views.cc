@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -159,7 +159,7 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   SetContentsBorderVisible(shared_tab_, false);
 
   content::WebContents* shared_tab =
-      InfoBarService::WebContentsFromInfoBar(infobar);
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
   DCHECK(shared_tab);
   DCHECK_EQ(infobars_[shared_tab], infobar);
   shared_tab_ = shared_tab;
@@ -239,7 +239,8 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
   infobar->owner()->RemoveObserver(this);
   infobars_.erase(infobars_entry);
-  if (InfoBarService::WebContentsFromInfoBar(infobar) == shared_tab_)
+  if (infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar) ==
+      shared_tab_)
     StopSharing();
 }
 
@@ -284,10 +285,11 @@ void TabSharingUIViews::CreateInfobarForWebContents(
     infobars_entry->second->owner()->RemoveObserver(this);
     infobars_entry->second->RemoveSelf();
   }
-  auto* infobar_service = InfoBarService::FromWebContents(contents);
-  infobar_service->AddObserver(this);
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+  infobar_manager->AddObserver(this);
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
-      infobar_service, shared_tab_name_, app_name_,
+      infobar_manager, shared_tab_name_, app_name_,
       shared_tab_ == contents /*shared_tab*/,
       !source_callback_.is_null() /*can_share*/, this);
 }

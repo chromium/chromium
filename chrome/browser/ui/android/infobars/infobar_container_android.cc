@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/android/infobar_android.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -32,12 +32,12 @@ void InfoBarContainerAndroid::SetWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& web_contents) {
-  InfoBarService* infobar_service =
+  infobars::ContentInfoBarManager* infobar_manager =
       web_contents
-          ? InfoBarService::FromWebContents(
+          ? infobars::ContentInfoBarManager::FromWebContents(
                 content::WebContents::FromJavaWebContents(web_contents))
           : nullptr;
-  ChangeInfoBarManager(infobar_service);
+  ChangeInfoBarManager(infobar_manager);
 }
 
 void InfoBarContainerAndroid::Destroy(JNIEnv* env,

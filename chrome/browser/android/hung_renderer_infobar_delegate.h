@@ -12,7 +12,9 @@ namespace content {
 class RenderProcessHost;
 }
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // A hung renderer infobar is shown when the when the renderer is deemed
 // unresponsive. The infobar provides the user with a choice of either
@@ -23,9 +25,9 @@ class InfoBarService;
 class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a hung renderer InfoBar, adding it to the provided
-  // |infobar_service|. The |render_process_host| will be used to kill the
+  // |infobar_manager|. The |render_process_host| will be used to kill the
   // renderer process if the user so chooses.
-  static void Create(InfoBarService* infobar_service,
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      content::RenderProcessHost* render_process_host);
 
   // Called if the renderer regains responsiveness before the infobar is

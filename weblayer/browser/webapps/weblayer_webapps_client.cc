@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/logging.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/java/jni/WebappsHelper_jni.h"
 
 #if defined(OS_ANDROID)
@@ -48,7 +48,7 @@ WebLayerWebappsClient::GetSecurityLevelForWebContents(
 infobars::ContentInfoBarManager*
 WebLayerWebappsClient::GetInfoBarManagerForWebContents(
     content::WebContents* web_contents) {
-  return InfoBarService::FromWebContents(web_contents);
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
 webapps::WebappInstallSource WebLayerWebappsClient::GetInstallSource(

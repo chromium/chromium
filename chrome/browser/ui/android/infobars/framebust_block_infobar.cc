@@ -12,10 +12,10 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/FramebustBlockInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/interventions/framebust_block_message_delegate_bridge.h"
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_infobar_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 
@@ -67,8 +67,9 @@ FramebustBlockInfoBar::CreateRenderInfoBar(
 void FramebustBlockInfoBar::Show(
     content::WebContents* web_contents,
     std::unique_ptr<FramebustBlockMessageDelegate> message_delegate) {
-  InfoBarService* service = InfoBarService::FromWebContents(web_contents);
-  service->AddInfoBar(
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  manager->AddInfoBar(
       base::WrapUnique(new FramebustBlockInfoBar(std::move(message_delegate))),
       /*replace_existing=*/true);
 }

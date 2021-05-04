@@ -9,14 +9,16 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "extensions/browser/install/crx_install_error.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // Helper class to put up an infobar when installation fails.
 class InstallationErrorInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates an error infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service,
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      const extensions::CrxInstallError& error);
 
  private:

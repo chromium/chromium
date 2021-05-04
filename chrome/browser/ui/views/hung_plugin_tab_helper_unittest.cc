@@ -6,10 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -62,7 +62,7 @@ void HungPluginTabHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
   HungPluginTabHelper::CreateForWebContents(web_contents());
-  InfoBarService::CreateForWebContents(web_contents());
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 }
 
 class DummyEvent : public ui::Event {
@@ -74,14 +74,14 @@ class DummyEvent : public ui::Event {
 TEST_F(HungPluginTabHelperTest, DontRemoveTwice) {
   HungPluginTabHelper::FromWebContents(web_contents())
       ->PluginHungStatusChanged(0, base::FilePath(), true);
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
-  ASSERT_TRUE(infobar_service);
-  ASSERT_EQ(1u, infobar_service->infobar_count());
-  auto* infobar = static_cast<ConfirmInfoBar*>(infobar_service->infobar_at(0));
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  ASSERT_TRUE(infobar_manager);
+  ASSERT_EQ(1u, infobar_manager->infobar_count());
+  auto* infobar = static_cast<ConfirmInfoBar*>(infobar_manager->infobar_at(0));
   views::MdTextButton* ok_button = infobar->ok_button_for_testing();
   ok_button->SetCallback(
       base::BindRepeating(&RemoveOnlyOnce, base::Unretained(infobar)));
   views::test::ButtonTestApi(ok_button).NotifyClick(DummyEvent());
-  EXPECT_EQ(0u, infobar_service->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
 }

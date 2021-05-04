@@ -8,10 +8,10 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -90,7 +90,7 @@ void ChromePopupNavigationDelegate::OnPopupBlocked(
     // Should replace existing popup infobars, with an updated count of how many
     // popups have been blocked.
     is_created = blocked_content::PopupBlockedInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents),
+        infobars::ContentInfoBarManager::FromWebContents(web_contents),
         total_popups_blocked_on_page,
         HostContentSettingsMapFactory::GetForProfile(
             web_contents->GetBrowserContext()),

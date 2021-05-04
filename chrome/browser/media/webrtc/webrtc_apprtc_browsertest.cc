@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_responder.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -232,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   InfoBarResponder left_infobar_responder(
-      InfoBarService::FromWebContents(left_tab), InfoBarResponder::ACCEPT);
+      infobars::ContentInfoBarManager::FromWebContents(left_tab),
+      InfoBarResponder::ACCEPT);
   ui_test_utils::NavigateToURL(browser(), room_url);
 
   // Wait for the local video to start playing. This is needed, because opening
@@ -250,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   InfoBarResponder right_infobar_responder(
-      InfoBarService::FromWebContents(right_tab), InfoBarResponder::ACCEPT);
+      infobars::ContentInfoBarManager::FromWebContents(right_tab),
+      InfoBarResponder::ACCEPT);
   ui_test_utils::NavigateToURL(browser(), room_url);
 
   ASSERT_TRUE(WaitForCallToComeUp(left_tab));

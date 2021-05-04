@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -75,7 +75,8 @@ void ShowPrompt() {
       continue;
 
     chrome::DefaultBrowserInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents), browser->profile());
+        infobars::ContentInfoBarManager::FromWebContents(web_contents),
+        browser->profile());
     break;
   }
 }

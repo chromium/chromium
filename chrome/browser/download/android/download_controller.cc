@@ -29,7 +29,6 @@
 #include "chrome/browser/download/download_offline_content_provider_factory.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -39,6 +38,7 @@
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -438,7 +438,7 @@ void DownloadController::OnDangerousDownload(DownloadItem* item) {
   }
 
   DangerousDownloadInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents), item);
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), item);
 }
 
 void DownloadController::StartContextMenuDownload(

@@ -8,9 +8,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -25,7 +25,7 @@ GeneratedPasswordSavedInfoBarDelegateAndroid::
 
 void GeneratedPasswordSavedInfoBarDelegateAndroid::OnInlineLinkClicked() {
   password_manager_launcher::ShowPasswordSettings(
-      InfoBarService::WebContentsFromInfoBar(infobar()),
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()),
       password_manager::ManagePasswordsReferrer::
           kPasswordGenerationConfirmation);
 }

@@ -5,16 +5,16 @@
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
 void InstallationErrorInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     const extensions::CrxInstallError& error) {
-  infobar_service->AddInfoBar(
+  infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new InstallationErrorInfoBarDelegate(error))));
 }

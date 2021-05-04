@@ -5,13 +5,13 @@
 #include <stddef.h>
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -47,8 +47,10 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
   size_t infobar_count() const {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents ?
-        InfoBarService::FromWebContents(web_contents)->infobar_count() : 0;
+    return web_contents
+               ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
+                     ->infobar_count()
+               : 0;
   }
 
  private:
@@ -72,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndCloseDialog) {
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndNavigateAway) {
   // Test navigation after changing dialog data. Changed dialog should not show
-  // infobar or crash because InfoBarService is gone.
+  // infobar or crash because infobars::ContentInfoBarManager is gone.
 
   SetDialogChanged();
 
@@ -85,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndNavigateAway) {
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndCloseTab) {
   // Test closing tab after changing dialog data. Changed dialog should not
-  // show infobar or crash because InfoBarService is gone.
+  // show infobar or crash because infobars::ContentInfoBarManager is gone.
 
   SetDialogChanged();
 

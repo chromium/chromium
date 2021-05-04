@@ -23,7 +23,7 @@
 #include "weblayer/browser/translate_ranker_factory.h"
 
 #if defined(OS_ANDROID)
-#include "weblayer/browser/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "weblayer/browser/translate_compact_infobar.h"
 #endif
 
@@ -83,7 +83,7 @@ bool TranslateClientImpl::ShowTranslateUI(
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
       translate_manager_->GetWeakPtr(),
-      InfoBarService::FromWebContents(web_contents()),
+      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
       web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
       source_language, target_language, error_type, triggered_from_menu);
   return true;

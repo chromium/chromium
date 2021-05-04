@@ -13,8 +13,8 @@
 #include "chrome/android/chrome_jni_headers/PermissionInfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -97,7 +97,7 @@ GroupedPermissionInfoBar::CreateRenderInfoBar(
   }
 
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(this);
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(this);
   DCHECK(web_contents);
 
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);

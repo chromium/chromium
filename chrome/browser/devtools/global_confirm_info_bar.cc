@@ -220,18 +220,18 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   if (is_closing_)
     return;
 
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  // WebContents from the tab strip must have the infobar service.
-  DCHECK(infobar_service);
-  if (base::Contains(proxies_, infobar_service))
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  // WebContents from the tab strip must have the infobar manager.
+  DCHECK(infobar_manager);
+  if (base::Contains(proxies_, infobar_manager))
     return;
 
   auto proxy = std::make_unique<GlobalConfirmInfoBar::DelegateProxy>(
       weak_factory_.GetWeakPtr());
   GlobalConfirmInfoBar::DelegateProxy* proxy_ptr = proxy.get();
   infobars::InfoBar* added_bar =
-      infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(proxy)));
+      infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(proxy)));
 
   // If AddInfoBar() fails, either infobars are globally disabled, or something
   // strange has gone wrong and we can't show the infobar on every tab. In
@@ -251,6 +251,6 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   }
 
   proxy_ptr->info_bar_ = added_bar;
-  proxies_[infobar_service] = proxy_ptr;
-  infobar_service->AddObserver(this);
+  proxies_[infobar_manager] = proxy_ptr;
+  infobar_manager->AddObserver(this);
 }

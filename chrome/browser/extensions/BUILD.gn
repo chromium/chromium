@@ -838,6 +838,7 @@ static_library("extensions") {
     "//components/gcm_driver",
     "//components/guest_view/browser",
     "//components/history/core/browser",
+    "//components/infobars/content",
     "//components/infobars/core",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",

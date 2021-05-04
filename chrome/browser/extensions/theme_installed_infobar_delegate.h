@@ -15,7 +15,9 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // When a user installs a theme, we display it immediately, but provide an
 // infobar allowing them to cancel.
@@ -23,9 +25,9 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
                                       public ThemeServiceObserver {
  public:
   // Creates a theme installed infobar and delegate and adds the infobar to
-  // |infobar_service|, replacing any previous theme infobar.
+  // |infobar_manager|, replacing any previous theme infobar.
   static void Create(
-      InfoBarService* infobar_service,
+      infobars::ContentInfoBarManager* infobar_manager,
       ThemeService* theme_service,
       const std::string& theme_name,
       const std::string& theme_id,

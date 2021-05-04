@@ -6,8 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/SyncErrorInfoBar_jni.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/sync_error_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 
 using base::android::JavaParamRef;
@@ -55,8 +55,8 @@ void JNI_SyncErrorInfoBar_Launch(JNIEnv* env,
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobar_service->AddInfoBar(std::make_unique<SyncErrorInfoBar>(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(std::make_unique<SyncErrorInfoBar>(
       base::WrapUnique(new SyncErrorInfoBarDelegateAndroid())));
 }

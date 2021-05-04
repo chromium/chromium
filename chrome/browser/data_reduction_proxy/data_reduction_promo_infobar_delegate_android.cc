@@ -5,7 +5,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_promo_infobar_delegate_android.h"
 
 #include "chrome/android/chrome_jni_headers/DataReductionPromoInfoBarDelegate_jni.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
 
@@ -15,11 +15,11 @@ using base::android::JavaRef;
 // static
 void DataReductionPromoInfoBarDelegateAndroid::Create(
     content::WebContents* web_contents) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobar_service->AddInfoBar(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(
       DataReductionPromoInfoBarDelegateAndroid::CreateInfoBar(
-          infobar_service,
+          infobar_manager,
           std::make_unique<DataReductionPromoInfoBarDelegateAndroid>()));
 }
 

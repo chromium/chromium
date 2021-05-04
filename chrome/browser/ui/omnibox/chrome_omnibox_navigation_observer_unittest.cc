@@ -11,11 +11,11 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -107,7 +107,7 @@ class ChromeOmniboxNavigationObserverTest
 
 void ChromeOmniboxNavigationObserverTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-  InfoBarService::CreateForWebContents(web_contents());
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
   // Set up a series of search engines for later testing.
   TemplateURLServiceFactoryTestUtil factory_util(profile());

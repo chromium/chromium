@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #else
 #include "components/permissions/permission_request_manager.h"
 #endif
@@ -64,7 +64,7 @@ class PaymentHandlerPermissionContextTests
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 #if defined(OS_ANDROID)
-    InfoBarService::CreateForWebContents(web_contents());
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 #else
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif

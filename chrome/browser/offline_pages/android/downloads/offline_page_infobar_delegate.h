@@ -26,8 +26,8 @@ class OfflinePageInfoBarDelegate
     : public ::android::DuplicateDownloadInfoBarDelegate {
  public:
   // Creates an offline page infobar and a delegate and adds the infobar to the
-  // InfoBarService associated with |web_contents|. |page_name| is the name
-  // shown for this file in the infobar text.
+  // infobars::ContentInfoBarManager associated with |web_contents|. |page_name|
+  // is the name shown for this file in the infobar text.
   static void Create(base::OnceClosure confirm_continuation,
                      const GURL& page_to_download,
                      bool exists_duplicate_request,

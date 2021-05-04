@@ -71,7 +71,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/download/download_prompt_status.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -1702,12 +1702,13 @@ class AndroidDownloadInfobarCounter
     : public infobars::InfoBarManager::Observer {
  public:
   explicit AndroidDownloadInfobarCounter(content::WebContents* web_contents)
-      : infobar_service_(InfoBarService::FromWebContents(web_contents)) {
-    infobar_service_->AddObserver(this);
+      : infobar_manager_(
+            infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
+    infobar_manager_->AddObserver(this);
   }
 
   ~AndroidDownloadInfobarCounter() override {
-    infobar_service_->RemoveObserver(this);
+    infobar_manager_->RemoveObserver(this);
   }
 
   int CheckAndResetInfobarCount() {
@@ -1725,7 +1726,7 @@ class AndroidDownloadInfobarCounter
     infobar->RemoveSelf();
   }
 
-  InfoBarService* infobar_service_;
+  infobars::ContentInfoBarManager* infobar_manager_;
   int infobar_count_ = 0;
 };
 

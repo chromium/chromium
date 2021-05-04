@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/nacl_host/nacl_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,6 +23,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pepper_permission_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -208,8 +208,8 @@ void NaClBrowserDelegateImpl::CreateInfoBarOnUiThread(int render_process_id,
       content::WebContents::FromRenderViewHost(rvh);
   if (!web_contents)
     return;
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  if (infobar_service)
-    NaClInfoBarDelegate::Create(infobar_service);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (infobar_manager)
+    NaClInfoBarDelegate::Create(infobar_manager);
 }

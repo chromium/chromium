@@ -7,13 +7,15 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class NaClInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a NaCl infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
  private:
   NaClInfoBarDelegate();

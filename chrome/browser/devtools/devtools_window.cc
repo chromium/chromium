@@ -24,7 +24,6 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -42,6 +41,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -1536,10 +1536,11 @@ void DevToolsWindow::InspectedContentsClosing() {
   main_web_contents_->ClosePage();
 }
 
-InfoBarService* DevToolsWindow::GetInfoBarService() {
-  return is_docked_ ?
-      InfoBarService::FromWebContents(GetInspectedWebContents()) :
-      InfoBarService::FromWebContents(main_web_contents_);
+infobars::ContentInfoBarManager* DevToolsWindow::GetInfoBarManager() {
+  return is_docked_ ? infobars::ContentInfoBarManager::FromWebContents(
+                          GetInspectedWebContents())
+                    : infobars::ContentInfoBarManager::FromWebContents(
+                          main_web_contents_);
 }
 
 void DevToolsWindow::RenderProcessGone(bool crashed) {

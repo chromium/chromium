@@ -5,10 +5,10 @@
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_throttle_manager_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -38,6 +38,6 @@ void CreateSubresourceFilterThrottleManagerForWebContents(
           web_contents,
           SubresourceFilterProfileContextFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-          InfoBarService::FromWebContents(web_contents),
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
           GetDatabaseManagerFromSafeBrowsingService(), dealer);
 }

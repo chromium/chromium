@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -45,6 +44,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -786,7 +786,7 @@ void ThemeService::OnThemeBuiltFromExtension(
           browser->tab_strip_model()->GetActiveWebContents();
       if (web_contents) {
         ThemeInstalledInfoBarDelegate::Create(
-            InfoBarService::FromWebContents(web_contents),
+            infobars::ContentInfoBarManager::FromWebContents(web_contents),
             ThemeServiceFactory::GetForProfile(profile_), extension->name(),
             extension->id(), std::move(reinstaller));
       }

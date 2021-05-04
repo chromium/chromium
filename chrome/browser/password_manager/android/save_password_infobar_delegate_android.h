@@ -28,8 +28,8 @@ class WebContents;
 class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
  public:
   // If we won't be showing the one-click signin infobar, creates a save
-  // password infobar and delegate and adds the infobar to the InfoBarService
-  // for |web_contents|.
+  // password infobar and delegate and adds the infobar to the
+  // infobars::ContentInfoBarManager for |web_contents|.
   static void Create(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);

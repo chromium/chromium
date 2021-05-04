@@ -6,11 +6,11 @@
 
 #include "base/callback_helpers.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -25,10 +25,10 @@ void ScreenCaptureInfoBarDelegateAndroid::Create(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
-  infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+  infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       std::unique_ptr<ConfirmInfoBarDelegate>(
           new ScreenCaptureInfoBarDelegateAndroid(web_contents, request,
                                                   std::move(callback)))));

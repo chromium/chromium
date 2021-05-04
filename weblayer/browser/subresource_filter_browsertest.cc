@@ -31,8 +31,8 @@
 
 #if defined(OS_ANDROID)
 #include "components/infobars/android/infobar_android.h"  // nogncheck
-#include "components/infobars/core/infobar_manager.h"     // nogncheck
-#include "weblayer/browser/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_manager.h"  // nogncheck
 #endif
 
 namespace weblayer {
@@ -305,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 // navigating away.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-  auto* infobar_service = InfoBarService::FromWebContents(web_contents);
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
   // Configure the subresource filter to activate on the test URL and to block
   // its script from loading.
@@ -316,21 +317,21 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
   TestInfoBarManagerObserver infobar_observer;
-  infobar_service->AddObserver(&infobar_observer);
+  infobar_manager->AddObserver(&infobar_observer);
 
   base::RunLoop run_loop;
   infobar_observer.set_on_infobar_added_callback(run_loop.QuitClosure());
 
-  EXPECT_EQ(0u, infobar_service->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
 
   // Navigate such that the script is blocked and verify that the ads blocked
   // infobar is presented.
   NavigateAndWaitForCompletion(test_url, shell());
   run_loop.Run();
 
-  EXPECT_EQ(1u, infobar_service->infobar_count());
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
   auto* infobar =
-      static_cast<infobars::InfoBarAndroid*>(infobar_service->infobar_at(0));
+      static_cast<infobars::InfoBarAndroid*>(infobar_manager->infobar_at(0));
   EXPECT_TRUE(infobar->HasSetJavaInfoBar());
   EXPECT_EQ(infobar->delegate()->GetIdentifier(),
             infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
@@ -342,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
   NavigateAndWaitForCompletion(GURL("about:blank"), shell());
   run_loop2.Run();
 
-  EXPECT_EQ(0u, infobar_service->infobar_count());
-  infobar_service->RemoveObserver(&infobar_observer);
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
+  infobar_manager->RemoveObserver(&infobar_observer);
 }
 #endif
 

@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
@@ -28,6 +27,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -375,13 +375,14 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
 void CollectedCookiesViews::OnDialogClosed() {
   // If the user closes our parent tab while we're still open, this method will
   // (eventually) be called in response to a WebContentsDestroyed() call from
-  // the WebContentsImpl to its observers.  But since the InfoBarService is also
-  // torn down in response to WebContentsDestroyed(), it may already be null.
-  // Since the tab is going away anyway, we can just omit showing an infobar,
-  // which prevents any attempt to access a null InfoBarService.
+  // the WebContentsImpl to its observers.  But since the
+  // infobars::ContentInfoBarManager is also torn down in response to
+  // WebContentsDestroyed(), it may already be null. Since the tab is going away
+  // anyway, we can just omit showing an infobar, which prevents any attempt to
+  // access a null infobars::ContentInfoBarManager.
   if (status_changed_ && !web_contents_->IsBeingDestroyed()) {
     CollectedCookiesInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents_));
+        infobars::ContentInfoBarManager::FromWebContents(web_contents_));
   }
 }
 

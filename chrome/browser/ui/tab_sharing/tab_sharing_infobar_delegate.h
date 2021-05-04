@@ -8,10 +8,10 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace infobars {
+class ContentInfoBarManager;
 class InfoBar;
 }
 
-class InfoBarService;
 class TabSharingUI;
 
 // Creates an infobar for sharing a tab using desktopCapture() API; one delegate
@@ -27,12 +27,13 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Creates a tab sharing infobar. If |shared_tab| is true, it creates an
   // infobar with "currently shared tab" layout (see class comment). If
   // |can_share| is false, [Share this tab] button is not displayed.
-  static infobars::InfoBar* Create(InfoBarService* infobar_service,
-                                   const std::u16string& shared_tab_name,
-                                   const std::u16string& app_name,
-                                   bool shared_tab,
-                                   bool can_share,
-                                   TabSharingUI* ui);
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager,
+      const std::u16string& shared_tab_name,
+      const std::u16string& app_name,
+      bool shared_tab,
+      bool can_share,
+      TabSharingUI* ui);
   ~TabSharingInfoBarDelegate() override = default;
 
  private:

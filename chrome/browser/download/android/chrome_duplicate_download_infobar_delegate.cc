@@ -12,9 +12,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "chrome/browser/download/android/download_controller.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/duplicate_download_infobar.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,11 +50,11 @@ ChromeDuplicateDownloadInfoBarDelegate::
 
 // static
 void ChromeDuplicateDownloadInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     download::DownloadItem* download_item,
     const base::FilePath& file_path,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback) {
-  infobar_service->AddInfoBar(DuplicateDownloadInfoBar::CreateInfoBar(
+  infobar_manager->AddInfoBar(DuplicateDownloadInfoBar::CreateInfoBar(
       base::WrapUnique(new ChromeDuplicateDownloadInfoBarDelegate(
           download_item, file_path, std::move(callback)))));
 }

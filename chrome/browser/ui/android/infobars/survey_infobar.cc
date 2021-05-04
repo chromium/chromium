@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/SurveyInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -74,7 +74,7 @@ base::android::ScopedJavaLocalRef<jobject> SurveyInfoBar::GetTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(this);
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(this);
   DCHECK(web_contents);
 
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
@@ -107,10 +107,11 @@ void JNI_SurveyInfoBar_Create(
     jboolean j_show_as_bottom_sheet,
     jint j_display_logo_resource_id,
     const JavaParamRef<jobject>& j_survey_info_bar_delegate) {
-  InfoBarService* service = InfoBarService::FromWebContents(
-      content::WebContents::FromJavaWebContents(j_web_contents));
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          content::WebContents::FromJavaWebContents(j_web_contents));
 
-  service->AddInfoBar(
+  manager->AddInfoBar(
       std::make_unique<SurveyInfoBar>(std::make_unique<SurveyInfoBarDelegate>(
           env, base::android::ConvertJavaStringToUTF8(env, j_site_id),
           j_show_as_bottom_sheet, j_display_logo_resource_id,

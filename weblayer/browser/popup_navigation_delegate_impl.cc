@@ -6,9 +6,9 @@
 
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
-#include "weblayer/browser/infobar_service.h"
 
 #if defined(OS_ANDROID)
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
@@ -59,7 +59,7 @@ void PopupNavigationDelegateImpl::OnPopupBlocked(
     int total_popups_blocked_on_page) {
 #if defined(OS_ANDROID)
   blocked_content::PopupBlockedInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents),
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
       total_popups_blocked_on_page,
       HostContentSettingsMapFactory::GetForBrowserContext(
           web_contents->GetBrowserContext()),

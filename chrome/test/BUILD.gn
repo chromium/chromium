@@ -837,6 +837,7 @@ if (!is_android) {
       "//components/enterprise:test_support",
       "//components/error_page/content/browser",
       "//components/feature_engagement/test:test_support",
+      "//components/infobars/content",
       "//components/metrics/demographics:test_support",
       "//components/nacl/common:buildflags",
       "//components/offline_items_collection/core/test_support",

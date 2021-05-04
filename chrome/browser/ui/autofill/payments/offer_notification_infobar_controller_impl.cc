@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/autofill/payments/offer_notification_infobar_controller_impl.h"
 
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/autofill_offer_notification_infobar.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_helper.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/android/window_android.h"
 
@@ -27,7 +27,7 @@ void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
   if (offer_notification_helper->OfferNotificationHasAlreadyBeenShown())
     return;
   if (card) {
-    InfoBarService::FromWebContents(web_contents_)
+    infobars::ContentInfoBarManager::FromWebContents(web_contents_)
         ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
             std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
                 offer_details_url, *card)));

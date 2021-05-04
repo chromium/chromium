@@ -25,7 +25,6 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
@@ -48,6 +47,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
@@ -686,7 +686,7 @@ void ContentSettingCookiesBubbleModel::CommitChanges() {
   // cookies settings bubble is open. This resets the web contents to NULL.
   if (settings_changed()) {
     CollectedCookiesInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents()));
+        infobars::ContentInfoBarManager::FromWebContents(web_contents()));
   }
   ContentSettingSingleRadioGroup::CommitChanges();
 }

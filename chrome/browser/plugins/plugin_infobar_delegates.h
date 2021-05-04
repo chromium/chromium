@@ -16,18 +16,20 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-
-class InfoBarService;
 class PluginInstaller;
 class PluginMetadata;
+
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // Infobar that's shown when a plugin is out of date or deprecated.
 class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
                                       public WeakPluginInstallerObserver {
  public:
   // Creates an outdated plugin infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service,
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      PluginInstaller* installer,
                      std::unique_ptr<PluginMetadata> metadata);
 

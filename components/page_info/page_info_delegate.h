@@ -57,8 +57,9 @@ class PageInfoDelegate {
       ContentSettingsType type,
       const GURL& site_url) = 0;
 #if !defined(OS_ANDROID)
-  // Creates an InfoBarService and an InfoBarDelegate using it, if possible.
-  // Returns true if an InfoBarDelegate was created, false otherwise.
+  // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
+  // if possible. Returns true if an InfoBarDelegate was created, false
+  // otherwise.
   virtual bool CreateInfoBarDelegate() = 0;
 
   virtual void ShowSiteSettings(const GURL& site_url) = 0;

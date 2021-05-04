@@ -10,10 +10,10 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "content/public/browser/web_contents.h"
@@ -28,9 +28,9 @@ void AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const GURL& search_url) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobar_service->AddInfoBar(AlternateNavInfoBarDelegate::CreateInfoBar(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(AlternateNavInfoBarDelegate::CreateInfoBar(
       base::WrapUnique(new AlternateNavInfoBarDelegate(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()), text,
           std::make_unique<AutocompleteMatch>(match), match.destination_url,
@@ -83,7 +83,7 @@ bool AlternateNavInfoBarDelegate::LinkClicked(
 
   // Pretend the user typed this URL, so that navigating to it will be the
   // default action when it's typed again in the future.
-  InfoBarService::WebContentsFromInfoBar(infobar())->OpenURL(
+  infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar())->OpenURL(
       content::OpenURLParams(destination_url_, content::Referrer(), disposition,
                              ui::PAGE_TRANSITION_TYPED, false));
 

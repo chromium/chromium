@@ -11,8 +11,8 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/android/chrome_jni_headers/InstantAppsInfoBarDelegate_jni.h"
 #include "chrome/browser/android/instantapps/instant_apps_settings.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/instant_apps_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -40,9 +40,9 @@ void InstantAppsInfoBarDelegate::Create(content::WebContents* web_contents,
                                         const jobject jdata,
                                         const std::string& url,
                                         bool instant_app_is_default) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobar_service->AddInfoBar(std::make_unique<InstantAppsInfoBar>(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(std::make_unique<InstantAppsInfoBar>(
       std::unique_ptr<InstantAppsInfoBarDelegate>(
           new InstantAppsInfoBarDelegate(web_contents, jdata, url,
                                          instant_app_is_default))));
@@ -93,7 +93,7 @@ bool InstantAppsInfoBarDelegate::EqualsDelegate(
 
 void InstantAppsInfoBarDelegate::InfoBarDismissed() {
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(infobar());
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
   InstantAppsSettings::RecordInfoBarDismissEvent(web_contents, url_);
   if (instant_app_is_default_) {
     base::RecordAction(base::UserMetricsAction(

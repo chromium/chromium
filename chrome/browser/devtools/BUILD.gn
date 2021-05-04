@@ -125,6 +125,7 @@ static_library("devtools") {
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//components/guest_view/browser",
+      "//components/infobars/content",
       "//components/infobars/core",
       "//components/javascript_dialogs",
       "//components/keep_alive_registry",

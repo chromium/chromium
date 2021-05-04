@@ -24,7 +24,7 @@
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #if BUILDFLAG(ENABLE_ARCORE)
 #include "chrome/browser/android/vr/ar_jni_headers/ArCompositorDelegateProviderImpl_jni.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "components/webxr/android/arcore_device_provider.h"
 #include "components/webxr/android/arcore_install_helper.h"
@@ -48,7 +48,7 @@ class ChromeXrInstallHelperDelegate : public webxr::XrInstallHelperDelegate {
 
   infobars::InfoBarManager* GetInfoBarManager(
       content::WebContents* web_contents) override {
-    return InfoBarService::FromWebContents(web_contents);
+    return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }
 };
 #endif

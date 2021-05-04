@@ -47,9 +47,9 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #else
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -349,20 +349,20 @@ bool ChromePermissionsClient::ResetPermissionIfControlledByDse(
 
 infobars::InfoBarManager* ChromePermissionsClient::GetInfoBarManager(
     content::WebContents* web_contents) {
-  return InfoBarService::FromWebContents(web_contents);
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
 infobars::InfoBar* ChromePermissionsClient::MaybeCreateInfoBar(
     content::WebContents* web_contents,
     ContentSettingsType type,
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  if (infobar_service &&
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (infobar_manager &&
       GroupedPermissionInfoBarDelegate::ShouldShowMiniInfobar(web_contents,
                                                               type)) {
     return GroupedPermissionInfoBarDelegate::Create(std::move(prompt),
-                                                    infobar_service);
+                                                    infobar_manager);
   }
   return nullptr;
 }

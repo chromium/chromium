@@ -10,9 +10,9 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -76,8 +76,8 @@ void MaybeShowKnownInterceptionDisclosureDialog(
 
   disclosure_tracker->set_has_seen_known_interception(true);
 
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto delegate =
@@ -85,10 +85,10 @@ void MaybeShowKnownInterceptionDisclosureDialog(
 
   if (!KnownInterceptionDisclosureCooldown::GetInstance()->IsActive(profile)) {
 #if defined(OS_ANDROID)
-    infobar_service->AddInfoBar(
+    infobar_manager->AddInfoBar(
         KnownInterceptionDisclosureInfoBar::CreateInfoBar(std::move(delegate)));
 #else
-    infobar_service->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+    infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 #endif
   }
 }

@@ -7,19 +7,19 @@
 #include <memory>
 
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 void CreateSimpleAlertInfoBar(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
     const gfx::VectorIcon* vector_icon,
     const std::u16string& message,
     bool auto_expire,
     bool should_animate) {
-  infobar_service->AddInfoBar(
+  infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<SimpleAlertInfoBarDelegate>(
           infobar_identifier, vector_icon, message, auto_expire,
           should_animate)));

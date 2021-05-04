@@ -8,11 +8,11 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/infobars/android/infobar_android.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/android/resource_mapper.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/java/jni/InfoBarContainer_jni.h"
 
 using base::android::JavaParamRef;
@@ -33,12 +33,12 @@ void InfoBarContainerAndroid::SetWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& web_contents) {
-  weblayer::InfoBarService* infobar_service =
+  infobars::ContentInfoBarManager* infobar_manager =
       web_contents
-          ? weblayer::InfoBarService::FromWebContents(
+          ? infobars::ContentInfoBarManager::FromWebContents(
                 content::WebContents::FromJavaWebContents(web_contents))
           : nullptr;
-  ChangeInfoBarManager(infobar_service);
+  ChangeInfoBarManager(infobar_manager);
 }
 
 void InfoBarContainerAndroid::Destroy(JNIEnv* env,

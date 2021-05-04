@@ -29,7 +29,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -70,6 +69,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -311,9 +311,9 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
   // when Chrome starts up after crash.
   void EnsureRestoreUIWasShown(content::WebContents* web_contents) {
 #if defined(OS_MAC)
-    InfoBarService* infobar_service =
-        InfoBarService::FromWebContents(web_contents);
-    EXPECT_EQ(1U, infobar_service->infobar_count());
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+    EXPECT_EQ(1U, infobar_manager->infobar_count());
 #endif  // defined(OS_MAC)
   }
 };
@@ -2231,7 +2231,7 @@ class StartupBrowserCreatorInfobarsTest
   StartupBrowserCreatorInfobarsTest() : policy_(GetParam()) {}
 
  protected:
-  InfoBarService* LaunchBrowserAndGetCreatedInfobarService(
+  infobars::ContentInfoBarManager* LaunchBrowserAndGetCreatedInfoBarManager(
       const base::CommandLine& command_line) {
     Profile* profile = browser()->profile();
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
@@ -2242,7 +2242,7 @@ class StartupBrowserCreatorInfobarsTest
     Browser* new_browser = FindOneOtherBrowser(browser());
     EXPECT_TRUE(new_browser);
 
-    return InfoBarService::FromWebContents(
+    return infobars::ContentInfoBarManager::FromWebContents(
         new_browser->tab_strip_model()->GetWebContentsAt(0));
   }
 
@@ -2276,13 +2276,13 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
                        CheckInfobarForEnableAutomation) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kEnableAutomation);
-  InfoBarService* infobar_service =
-      LaunchBrowserAndGetCreatedInfobarService(command_line);
-  ASSERT_TRUE(infobar_service);
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchBrowserAndGetCreatedInfoBarManager(command_line);
+  ASSERT_TRUE(infobar_manager);
 
   bool found_automation_infobar = false;
-  for (size_t i = 0; i < infobar_service->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
+    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
     if (infobar->delegate()->GetIdentifier() ==
         infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE) {
       found_automation_infobar = true;
@@ -2304,13 +2304,13 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
   // tests, this references the browser test's instead of the new process.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableWebSecurity);
-  InfoBarService* infobar_service =
-      LaunchBrowserAndGetCreatedInfobarService(command_line);
-  ASSERT_TRUE(infobar_service);
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchBrowserAndGetCreatedInfoBarManager(command_line);
+  ASSERT_TRUE(infobar_manager);
 
   bool found_bad_flags_infobar = false;
-  for (size_t i = 0; i < infobar_service->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
+    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
     if (infobar->delegate()->GetIdentifier() ==
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE) {
       found_bad_flags_infobar = true;
@@ -2338,7 +2338,8 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
   StartupBrowserCreatorInfobarsKioskTest() = default;
 
  protected:
-  InfoBarService* LaunchKioskBrowserAndGetCreatedInfobarService(
+  infobars::ContentInfoBarManager*
+  LaunchKioskBrowserAndGetCreatedInfoBarManager(
       const std::string& extra_switch) {
     Profile* profile = browser()->profile();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -2354,7 +2355,7 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
     if (!new_browser)
       return nullptr;
 
-    return InfoBarService::FromWebContents(
+    return infobars::ContentInfoBarManager::FromWebContents(
         new_browser->tab_strip_model()->GetActiveWebContents());
   }
 };
@@ -2362,14 +2363,14 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
 // Verify that the Automation Enabled infobar is still shown in Kiosk mode.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
                        CheckInfobarForEnableAutomation) {
-  InfoBarService* infobar_service =
-      LaunchKioskBrowserAndGetCreatedInfobarService(
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchKioskBrowserAndGetCreatedInfoBarManager(
           switches::kEnableAutomation);
-  ASSERT_TRUE(infobar_service);
+  ASSERT_TRUE(infobar_manager);
 
   bool found_automation_infobar = false;
-  for (size_t i = 0; i < infobar_service->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
+    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
     if (infobar->delegate()->GetIdentifier() ==
         infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE) {
       found_automation_infobar = true;
@@ -2391,13 +2392,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
   // Passing the kDisableWebSecurity argument here presently does not do
   // anything because of the aforementioned limitation.
   // https://crbug.com/1060293
-  InfoBarService* infobar_service =
-      LaunchKioskBrowserAndGetCreatedInfobarService(
+  infobars::ContentInfoBarManager* infobar_manager =
+      LaunchKioskBrowserAndGetCreatedInfoBarManager(
           switches::kDisableWebSecurity);
-  ASSERT_TRUE(infobar_service);
+  ASSERT_TRUE(infobar_manager);
 
-  for (size_t i = 0; i < infobar_service->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
+    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
     EXPECT_NE(infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
               infobar->delegate()->GetIdentifier());
   }

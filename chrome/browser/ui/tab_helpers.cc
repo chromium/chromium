@@ -32,7 +32,6 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/media/history/media_history_contents_observer.h"
@@ -100,6 +99,7 @@
 #include "components/download/content/public/download_navigation_observer.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
@@ -233,9 +233,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   zoom::ZoomController::CreateForWebContents(web_contents);
 #endif
 
-  // InfoBarService comes before common tab helpers since
+  // infobars::ContentInfoBarManager comes before common tab helpers since
   // ChromeSubresourceFilterClient has it as a dependency.
-  InfoBarService::CreateForWebContents(web_contents);
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

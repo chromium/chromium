@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -39,6 +38,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/embedder_support/switches.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_registrar.h"
@@ -891,8 +891,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
           ->GetMainFrame();
-  InfoBarService* infobar_service1 = InfoBarService::FromWebContents(
-      incognito_browser->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* infobar_manager1 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          incognito_browser->tab_strip_model()->GetActiveWebContents());
 
   CHECK(OpenURLOffTheRecord(
             profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
@@ -901,8 +902,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
           ->GetMainFrame();
-  InfoBarService* infobar_service2 = InfoBarService::FromWebContents(
-      incognito_browser->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* infobar_manager2 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          incognito_browser->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());
   EXPECT_NE(incognito_frame1, incognito_frame2);
 
@@ -911,13 +913,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       base::StringPrintf("assertions.trySendMessage('%s')", app->id().c_str());
   CHECK(content::ExecuteScript(incognito_frame1, script));
   CHECK(content::ExecuteScript(incognito_frame2, script));
-  EXPECT_EQ(1U, infobar_service1->infobar_count());
-  EXPECT_EQ(1U, infobar_service2->infobar_count());
+  EXPECT_EQ(1U, infobar_manager1->infobar_count());
+  EXPECT_EQ(1U, infobar_manager2->infobar_count());
 
   // Navigating away will dismiss the infobar on the active tab only.
   ui_test_utils::NavigateToURL(incognito_browser, google_com_url());
-  EXPECT_EQ(1U, infobar_service1->infobar_count());
-  EXPECT_EQ(0U, infobar_service2->infobar_count());
+  EXPECT_EQ(1U, infobar_manager1->infobar_count());
+  EXPECT_EQ(0U, infobar_manager2->infobar_count());
 
   // Navigate back and accept the infobar this time. Both should be dismissed.
   {
@@ -930,11 +932,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                            ->GetMainFrame();
     EXPECT_NE(incognito_frame1, incognito_frame2);
 
-    EXPECT_EQ(1U, infobar_service1->infobar_count());
+    EXPECT_EQ(1U, infobar_manager1->infobar_count());
     EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame2, app.get(),
                                                    NULL));
     EXPECT_EQ(1, alert_tracker.GetAndResetAlertCount());
-    EXPECT_EQ(0U, infobar_service1->infobar_count());
+    EXPECT_EQ(0U, infobar_manager1->infobar_count());
   }
 }
 

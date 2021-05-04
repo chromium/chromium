@@ -446,6 +446,7 @@ static_library("ui") {
     "//components/history/core/common",
     "//components/history_clusters/core",
     "//components/image_fetcher/core",
+    "//components/infobars/content",
     "//components/infobars/core",
     "//components/invalidation/impl",
     "//components/javascript_dialogs",

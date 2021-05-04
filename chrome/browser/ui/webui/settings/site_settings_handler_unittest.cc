@@ -25,7 +25,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,6 +46,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -1561,14 +1561,14 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  InfoBarService* GetInfobarServiceForTab(Browser* browser,
-                                          int tab_index,
-                                          GURL* tab_url) {
+  infobars::ContentInfoBarManager* GetInfoBarManagerForTab(Browser* browser,
+                                                           int tab_index,
+                                                           GURL* tab_url) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(tab_index);
     if (tab_url)
       *tab_url = web_contents->GetLastCommittedURL();
-    return InfoBarService::FromWebContents(web_contents);
+    return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -1627,7 +1627,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   AddTab(browser(), foo);
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
     EXPECT_EQ(0u,
-              GetInfobarServiceForTab(browser(), i, nullptr)->infobar_count());
+              GetInfoBarManagerForTab(browser(), i, nullptr)->infobar_count());
   }
 
   AddTab(browser2(), about);
@@ -1636,7 +1636,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   AddTab(browser2(), insecure);
   for (int i = 0; i < browser2()->tab_strip_model()->count(); ++i) {
     EXPECT_EQ(0u,
-              GetInfobarServiceForTab(browser2(), i, nullptr)->infobar_count());
+              GetInfoBarManagerForTab(browser2(), i, nullptr)->infobar_count());
   }
 
   // Block notifications.
@@ -1657,11 +1657,11 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
     if (i == /*origin_anchor=*/1 || i == /*origin=*/3) {
       EXPECT_EQ(
-          1u, GetInfobarServiceForTab(browser(), i, &tab_url)->infobar_count());
+          1u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
-          0u, GetInfobarServiceForTab(browser(), i, &tab_url)->infobar_count());
+          0u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -1669,12 +1669,12 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
     if (i == /*origin_query=*/1) {
       EXPECT_EQ(
           1u,
-          GetInfobarServiceForTab(browser2(), i, &tab_url)->infobar_count());
+          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
           0u,
-          GetInfobarServiceForTab(browser2(), i, &tab_url)->infobar_count());
+          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -1713,11 +1713,11 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
     if (i == /*origin_path=*/0 || i == /*origin_anchor=*/1 ||
         i == /*origin=*/3) {
       EXPECT_EQ(
-          1u, GetInfobarServiceForTab(browser(), i, &tab_url)->infobar_count());
+          1u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
-          0u, GetInfobarServiceForTab(browser(), i, &tab_url)->infobar_count());
+          0u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -1725,13 +1725,13 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // navigated to |example_without_www|) should disappear.
   for (int i = 0; i < browser2()->tab_strip_model()->count(); ++i) {
     EXPECT_EQ(
-        0u, GetInfobarServiceForTab(browser2(), i, &tab_url)->infobar_count());
+        0u, GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
     EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
   }
 
   // Make sure it's the correct infobar that's being shown.
   EXPECT_EQ(infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
-            GetInfobarServiceForTab(browser(), /*origin_path=*/0, &tab_url)
+            GetInfoBarManagerForTab(browser(), /*origin_path=*/0, &tab_url)
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier());

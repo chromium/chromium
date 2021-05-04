@@ -9,15 +9,17 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
-
 namespace content {
 class NavigationController;
 }
 
+namespace infobars {
+class ContentInfoBarManager;
+}
+
 class ReloadPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  static void Create(InfoBarService* infobar_service,
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      content::NavigationController* controller,
                      const std::u16string& message);
 

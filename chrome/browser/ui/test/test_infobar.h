@@ -10,11 +10,13 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
 
-class InfoBarService;
-
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class TestInfoBar : public UiBrowserTest {
  public:
@@ -37,9 +39,9 @@ class TestInfoBar : public UiBrowserTest {
   content::WebContents* GetWebContents();
   const content::WebContents* GetWebContents() const;
 
-  // Returns the InfoBarService associated with the active tab.
-  InfoBarService* GetInfoBarService();
-  const InfoBarService* GetInfoBarService() const;
+  // Returns the infobars::ContentInfoBarManager associated with the active tab.
+  infobars::ContentInfoBarManager* GetInfoBarManager();
+  const infobars::ContentInfoBarManager* GetInfoBarManager() const;
 
  private:
   using InfoBars = infobars::InfoBarManager::InfoBars;

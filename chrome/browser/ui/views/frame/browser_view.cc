@@ -37,7 +37,6 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/native_window_notification_source.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -146,6 +145,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
@@ -1203,7 +1203,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   }
 
   infobar_container_->ChangeInfoBarManager(
-      InfoBarService::FromWebContents(new_contents));
+      infobars::ContentInfoBarManager::FromWebContents(new_contents));
 
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(new_contents);

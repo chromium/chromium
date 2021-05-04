@@ -7,9 +7,9 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
@@ -17,10 +17,10 @@
 
 // static
 void HungRendererInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     content::RenderProcessHost* render_process_host) {
   DCHECK(render_process_host);
-  infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+  infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       std::unique_ptr<ConfirmInfoBarDelegate>(
           new HungRendererInfoBarDelegate(render_process_host))));
 }

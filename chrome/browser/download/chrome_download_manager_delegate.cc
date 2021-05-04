@@ -98,7 +98,7 @@
 #include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/mixed_content_download_infobar_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "net/http/http_content_disposition.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -1010,8 +1010,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       if (!show_download_later_dialog &&
           !download_prefs_->PromptForDownload() && web_contents) {
         android::ChromeDuplicateDownloadInfoBarDelegate::Create(
-            InfoBarService::FromWebContents(web_contents), download,
-            suggested_path, std::move(callback));
+            infobars::ContentInfoBarManager::FromWebContents(web_contents),
+            download, suggested_path, std::move(callback));
         return;
       }
 
@@ -1089,8 +1089,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     case DownloadConfirmationReason::TARGET_CONFLICT:
       if (web_contents) {
         android::ChromeDuplicateDownloadInfoBarDelegate::Create(
-            InfoBarService::FromWebContents(web_contents), download,
-            suggested_path, std::move(callback));
+            infobars::ContentInfoBarManager::FromWebContents(web_contents),
+            download, suggested_path, std::move(callback));
         return;
       }
       FALLTHROUGH;
@@ -1465,13 +1465,15 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
       (mcs == download::DownloadItem::MixedContentStatus::BLOCK ||
        mcs == download::DownloadItem::MixedContentStatus::WARN)) {
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
-    auto* infobar_service =
-        web_contents ? InfoBarService::FromWebContents(web_contents) : nullptr;
-    if (infobar_service) {
-      // There is always an infobar service except when running in a unit test,
+    auto* infobar_manager =
+        web_contents
+            ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
+            : nullptr;
+    if (infobar_manager) {
+      // There is always an infobar manager except when running in a unit test,
       // and those tests assume no infobar is shown.
       MixedContentDownloadInfoBarDelegate::Create(
-          infobar_service, target_path.BaseName(), mcs,
+          infobar_manager, target_path.BaseName(), mcs,
           base::BindOnce(HandleMixedDownloadInfoBarResult, item,
                          std::move(target_info), std::move(callback)));
       return;

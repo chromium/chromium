@@ -9,17 +9,17 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
 void DangerousDownloadInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     download::DownloadItem* download_item) {
-  infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+  infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       base::WrapUnique(new DangerousDownloadInfoBarDelegate(download_item))));
 }
 

@@ -9,11 +9,11 @@
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {
+class ContentInfoBarManager;
 class InfoBar;
 }
 
 class ConfirmInfoBarDelegate;
-class InfoBarService;
 
 // Used by test code to asynchronously respond to the first infobar shown, which
 // must have a ConfirmInfoBarDelegate. This can be used to ensure various
@@ -29,7 +29,8 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
   };
 
   // The responder will asynchronously perform the requested |response|.
-  InfoBarResponder(InfoBarService* infobar_service, AutoResponseType response);
+  InfoBarResponder(infobars::ContentInfoBarManager* infobar_manager,
+                   AutoResponseType response);
   ~InfoBarResponder() override;
 
   // infobars::InfoBarManager::Observer:
@@ -40,7 +41,7 @@ class InfoBarResponder : public infobars::InfoBarManager::Observer {
  private:
   void Respond(ConfirmInfoBarDelegate* delegate);
 
-  InfoBarService* infobar_service_;
+  infobars::ContentInfoBarManager* infobar_manager_;
   AutoResponseType response_;
 
   DISALLOW_COPY_AND_ASSIGN(InfoBarResponder);

@@ -9,7 +9,6 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
@@ -144,10 +144,10 @@ permissions::PermissionResult ChromePageInfoDelegate::GetPermissionStatus(
 }
 #if !defined(OS_ANDROID)
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents_);
-  if (infobar_service) {
-    PageInfoInfoBarDelegate::Create(infobar_service);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents_);
+  if (infobar_manager) {
+    PageInfoInfoBarDelegate::Create(infobar_manager);
     return true;
   }
   return false;

@@ -8,9 +8,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/messages/android/jni_headers/SimpleConfirmInfoBarBuilder_jni.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
@@ -179,9 +179,10 @@ void JNI_SimpleConfirmInfoBarBuilder_Create(
           ? std::u16string()
           : base::android::ConvertJavaStringToUTF16(env, j_link_text);
 
-  InfoBarService* service = InfoBarService::FromWebContents(
-      content::WebContents::FromJavaWebContents(j_web_contents));
-  service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          content::WebContents::FromJavaWebContents(j_web_contents));
+  manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       std::make_unique<SimpleConfirmInfoBarDelegate>(
           j_listener, infobar_identifier, icon_bitmap, message_str, primary_str,
           secondary_str, link_text_str, auto_expire)));

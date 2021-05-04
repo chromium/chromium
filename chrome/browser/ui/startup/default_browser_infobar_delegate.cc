@@ -22,9 +22,10 @@
 namespace chrome {
 
 // static
-void DefaultBrowserInfoBarDelegate::Create(InfoBarService* infobar_service,
-                                           Profile* profile) {
-  infobar_service->AddInfoBar(
+void DefaultBrowserInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager,
+    Profile* profile) {
+  infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new DefaultBrowserInfoBarDelegate(profile))));
 }

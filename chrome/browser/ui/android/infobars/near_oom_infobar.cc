@@ -14,9 +14,9 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/NearOomInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_infobar_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 
@@ -54,6 +54,7 @@ base::android::ScopedJavaLocalRef<jobject> NearOomInfoBar::CreateRenderInfoBar(
 // static
 void NearOomInfoBar::Show(content::WebContents* web_contents,
                           InterventionDelegate* delegate) {
-  InfoBarService* service = InfoBarService::FromWebContents(web_contents);
-  service->AddInfoBar(base::WrapUnique(new NearOomInfoBar(delegate)));
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  manager->AddInfoBar(base::WrapUnique(new NearOomInfoBar(delegate)));
 }
