@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -717,9 +718,9 @@ class ContentSettingPopupBubbleModel
     return bubble_content().list_items[index].item_id;
   }
 
-  ScopedObserver<blocked_content::UrlListManager,
-                 blocked_content::UrlListManager::Observer>
-      url_list_observer_;
+  base::ScopedObservation<blocked_content::UrlListManager,
+                          blocked_content::UrlListManager::Observer>
+      url_list_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingPopupBubbleModel);
 };
@@ -729,8 +730,7 @@ ContentSettingPopupBubbleModel::ContentSettingPopupBubbleModel(
     WebContents* web_contents)
     : ContentSettingSingleRadioGroup(delegate,
                                      web_contents,
-                                     ContentSettingsType::POPUPS),
-      url_list_observer_(this) {
+                                     ContentSettingsType::POPUPS) {
   set_title(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TITLE));
 
   // Build blocked popup list.
@@ -740,7 +740,7 @@ ContentSettingPopupBubbleModel::ContentSettingPopupBubbleModel(
   for (const auto& blocked_popup : blocked_popups)
     AddListItem(CreateUrlListItem(blocked_popup.first, blocked_popup.second));
 
-  url_list_observer_.Add(helper->manager());
+  url_list_observation_.Observe(helper->manager());
   content_settings::RecordPopupsAction(
       content_settings::POPUPS_ACTION_DISPLAYED_BUBBLE);
 }
@@ -1465,8 +1465,7 @@ ContentSettingFramebustBlockBubbleModel::
                                             WebContents* web_contents)
     : ContentSettingSingleRadioGroup(delegate,
                                      web_contents,
-                                     ContentSettingsType::POPUPS),
-      url_list_observer_(this) {
+                                     ContentSettingsType::POPUPS) {
   set_title(l10n_util::GetStringUTF16(IDS_REDIRECT_BLOCKED_MESSAGE));
   auto* helper = FramebustBlockTabHelper::FromWebContents(web_contents);
 
@@ -1474,7 +1473,7 @@ ContentSettingFramebustBlockBubbleModel::
   for (const auto& blocked_url : helper->blocked_urls())
     AddListItem(CreateUrlListItem(0 /* id */, blocked_url));
 
-  url_list_observer_.Add(helper->manager());
+  url_list_observation_.Observe(helper->manager());
 }
 
 ContentSettingFramebustBlockBubbleModel::
