@@ -344,8 +344,8 @@
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SEND_SUCCESS_TITLE" desc="Text shown as the title of a notfication when data was successfully sent via Nearby Share.">
     {COUNT, plural,
-      =1 {<ph name="ATTACHMENTS">$1<ex>1 item</ex></ph> successfully sent to <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}
-      other {<ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> successfully sent to <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
+      =1 {<ph name="ATTACHMENTS">$1<ex>1 item</ex></ph> sent to <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}
+      other {<ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> sent to <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SOURCE" desc="Text shown as the source of a Nearby Share notification.">
     Nearby Share
