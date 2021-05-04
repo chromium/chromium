@@ -38,6 +38,36 @@ using base::trace_event::TraceLog;
 using ::testing::Invoke;
 using ::testing::Return;
 
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
+class MockLoaderLockSampler : public LoaderLockSampler {
+ public:
+  MockLoaderLockSampler() = default;
+  ~MockLoaderLockSampler() override = default;
+
+  MOCK_METHOD(bool, IsLoaderLockHeld, (), (const, override));
+};
+
+class LoaderLockEventAnalyzer {
+ public:
+  LoaderLockEventAnalyzer() {
+    trace_analyzer::Start(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"));
+  }
+
+  size_t CountEvents() {
+    std::unique_ptr<trace_analyzer::TraceAnalyzer> analyzer =
+        trace_analyzer::Stop();
+    trace_analyzer::TraceEventVector events;
+    return analyzer->FindEvents(
+        trace_analyzer::Query::EventName() ==
+            trace_analyzer::Query::String(
+                LoaderLockSamplingThread::kLoaderLockHeldEventName),
+        &events);
+  }
+};
+
+#endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
 class TracingSampleProfilerTest : public TracingUnitTest {
  public:
   TracingSampleProfilerTest() = default;
@@ -45,6 +75,16 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 
   void SetUp() override {
     TracingUnitTest::SetUp();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+    // Override the default LoaderLockSampler because in production it is
+    // expected to be called from a single thread, and each test may re-create
+    // the sampling thread.
+    ON_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
+        .WillByDefault(Return(false));
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(
+        &mock_loader_lock_sampler_);
+#endif
 
     events_stack_received_count_ = 0u;
 
@@ -57,6 +97,10 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 
   void TearDown() override {
     producer_.reset();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
+#endif
 
     TracingUnitTest::TearDown();
   }
@@ -114,57 +158,13 @@ class TracingSampleProfilerTest : public TracingUnitTest {
   // Number of stack sampling events received.
   size_t events_stack_received_count_ = 0;
 
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+  MockLoaderLockSampler mock_loader_lock_sampler_;
+#endif
+
  private:
   DISALLOW_COPY_AND_ASSIGN(TracingSampleProfilerTest);
 };
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-
-class MockLoaderLockSampler : public LoaderLockSampler {
- public:
-  MockLoaderLockSampler() = default;
-  ~MockLoaderLockSampler() override = default;
-
-  MOCK_METHOD(bool, IsLoaderLockHeld, (), (const, override));
-};
-
-class LoaderLockEventAnalyzer {
- public:
-  LoaderLockEventAnalyzer() {
-    trace_analyzer::Start(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"));
-  }
-
-  size_t CountEvents() {
-    std::unique_ptr<trace_analyzer::TraceAnalyzer> analyzer =
-        trace_analyzer::Stop();
-    trace_analyzer::TraceEventVector events;
-    return analyzer->FindEvents(
-        trace_analyzer::Query::EventName() ==
-            trace_analyzer::Query::String(
-                LoaderLockSamplingThread::kLoaderLockHeldEventName),
-        &events);
-  }
-};
-
-class TracingSampleProfilerMockLoaderLockTest
-    : public TracingSampleProfilerTest {
- public:
-  TracingSampleProfilerMockLoaderLockTest() {
-    ON_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
-        .WillByDefault(Return(false));
-    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(
-        &mock_loader_lock_sampler_);
-  }
-
-  ~TracingSampleProfilerMockLoaderLockTest() override {
-    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
-  }
-
- protected:
-  MockLoaderLockSampler mock_loader_lock_sampler_;
-};
-
-#endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
 // Stub module for testing.
 class TestModule : public base::ModuleCache::Module {
@@ -317,7 +317,7 @@ TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
-TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockOnMainThread) {
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnMainThread) {
   if (ShouldSkipTestForMacOS11())
     GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
@@ -344,7 +344,7 @@ TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockOnMainThread) {
   EXPECT_EQ(event_analyzer.CountEvents(), call_count);
 }
 
-TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockAlwaysHeld) {
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockAlwaysHeld) {
   if (ShouldSkipTestForMacOS11())
     GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
@@ -364,7 +364,7 @@ TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockAlwaysHeld) {
   EXPECT_EQ(event_analyzer.CountEvents(), 1U);
 }
 
-TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockNeverHeld) {
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockNeverHeld) {
   if (ShouldSkipTestForMacOS11())
     GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
@@ -383,7 +383,7 @@ TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockNeverHeld) {
   EXPECT_EQ(event_analyzer.CountEvents(), 0U);
 }
 
-TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockOnChildThread) {
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnChildThread) {
   if (ShouldSkipTestForMacOS11())
     GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
@@ -407,12 +407,16 @@ TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockOnChildThread) {
   EXPECT_EQ(event_analyzer.CountEvents(), 0U);
 }
 
-// Use the real loader lock sampler. This tests that it is initialized
-// correctly in TracingSamplerProfiler.
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
   if (ShouldSkipTestForMacOS11())
     GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
 
+  // Use the real loader lock sampler. This tests that it is initialized
+  // correctly in TracingSamplerProfiler.
+  LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
+
+  // This must be the only thread that uses the real loader lock sampler in the
+  // test process.
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   BeginTrace();
   base::RunLoop().RunUntilIdle();
