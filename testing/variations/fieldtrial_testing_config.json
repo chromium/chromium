@@ -2052,11 +2052,9 @@
             ],
             "experiments": [
                 {
-                    "name": "DirectIntentEnabled_20210211",
+                    "name": "EnabledWithUpdatedMenuItemString_20210325",
                     "params": {
-                        "disableOnIncognito": "true",
-                        "minAgsaVersionForDirectIntent": "12.3.8",
-                        "useDirectIntent": "true"
+                        "useSearchImageWithGoogleLensItemName": "true"
                     },
                     "enable_features": [
                         "ContextMenuSearchWithGoogleLens"
