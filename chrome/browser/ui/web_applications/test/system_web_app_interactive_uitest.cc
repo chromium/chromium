@@ -422,19 +422,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                           ->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/1135863): Decide and formalize this behavior. This test is
-// disabled in DCHECK builds, because it hits a DCHECK in
-// LaunchSystemWebAppAsync. In production builds, SWA is link captured to the
-// original profile. The goal is to behave reasonably, and not crashing.
-#if DCHECK_IS_ON()
-#define MAYBE_IncognitoBrowserOmniboxLinkCapture \
-  DISABLED_IncognitoBrowserOmniboxLinkCapture
-#else
-#define MAYBE_IncognitoBrowserOmniboxLinkCapture \
-  IncognitoBrowserOmniboxLinkCapture
-#endif
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       MAYBE_IncognitoBrowserOmniboxLinkCapture) {
+                       IncognitoBrowserOmniboxLinkCapture) {
   WaitForTestSystemAppInstall();
 
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -676,13 +665,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// The following tests are disabled in DCHECK builds. LaunchSystemWebAppAsync
-// DCHECKs if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants)
-// aren't reliable in browsertests, so we don't test this. This is okay because
-// these tests are used to verify that in release builds,
-// LaunchSystemWebAppAsync doesn't crash and behaves reasonably (pick an
-// appropriate profile).
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
@@ -703,6 +686,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
 
+#if !DCHECK_IS_ON()
+// The following tests are disabled in DCHECK builds. LaunchSystemWebAppAsync
+// DCHECKs if it can't find a suitable profile. EXPECT_DCHECK_DEATH (or its
+// variants) aren't reliable in browsertests, so we don't test this. Here we
+// to verify LaunchSystemWebAppAsync doesn't crash in release builds
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
                        LaunchFromSignInProfile) {
   WaitForTestSystemAppInstall();
@@ -723,6 +711,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
 
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }
+#endif  // !DCHECK_IS_ON()
 
 using SystemWebAppLaunchProfileGuestSessionBrowserTest =
     SystemWebAppLaunchProfileBrowserTest;
@@ -765,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchOmniboxNavigateBrowsertest =
@@ -868,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLaunchProfileBrowserTest);
 

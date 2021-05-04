@@ -55,6 +55,16 @@ struct SystemAppLaunchParams {
 // launch behavior (e.g. launch to app's subpage, specifying launch source for
 // metrics). Terminal App should use crostini::LaunchTerminal*.
 //
+// This function will try to find an appropriate launch profile in these
+// circumstances:
+//
+//   - Incognito profile of a normal session: Launch to original profile, which
+//     the incognito profile is created from
+//   - Profiles in guest session: Launch to the primary off-the-record profile
+//     (the profile used to browser websites in guest sessions)
+//   - Other unsuitable profiles (e.g. Sign-in profile): Don't launch, and send
+//     a crash report
+//
 // In tests, remember to call FlushSystemWebAppLaunchesForTesting on the same
 // |profile|, or use TestNavigationObserver to wait the navigation.
 void LaunchSystemWebAppAsync(

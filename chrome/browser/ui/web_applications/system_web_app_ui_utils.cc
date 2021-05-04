@@ -150,35 +150,24 @@ void LaunchSystemWebAppAsync(Profile* profile,
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemAppType::TERMINAL);
 
-  // TODO(https://crbug.com/1135863): Implement a SWA-wide approach to handle
-  // launching (or link capturing) from incognito.
-  if (type == SystemAppType::SETTINGS) {
-    // In non-guest incognito profile, OS Settings will silently launch into
-    // the original profile.
-    if (!profile->IsGuestSession() && profile->IsIncognitoProfile()) {
-      profile = profile->GetOriginalProfile();
-    }
-  }
-
+  // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
+  // changing to a different profile.
   Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
-  if (profile_for_launch == nullptr || profile_for_launch != profile) {
-    // The provided profile can't launch system web apps. Complain about this so
-    // we can catch the call site, and ask them to pick the right profile.
+  if (profile_for_launch == nullptr) {
+    // We can't find a suitable profile to launch. Complain about this so we
+    // can identify the call site, and ask them to pick the right profile.
     base::debug::DumpWithoutCrashing();
 
     DVLOG(1)
         << "LaunchSystemWebAppAsync is called on a profile that can't launch "
-           "system web apps. Please check the profile you are using is correct."
-        << (profile_for_launch
-                ? "Instead, launch the app into a suitable profile "
-                  "based on your intention."
-                : "Can't find a suitable profile based on the provided "
-                  "argument. Thus ignore the launch request.");
+           "system web apps. The launch request is ignored. Please check the "
+           "profile you are using is correct.";
 
+    // This will DCHECK in debug builds. But no-op in production builds.
     NOTREACHED();
 
-    if (profile_for_launch == nullptr)
-      return;
+    // Early return if we can't find a profile to launch.
+    return;
   }
 
   const base::Optional<AppId> app_id =
