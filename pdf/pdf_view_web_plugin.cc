@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -287,6 +289,10 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
+blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
+  return text_input_type_;
+}
+
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
   set_cursor_type(new_cursor_type);
 }
@@ -452,7 +458,10 @@ void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
 }
 
 void PdfViewWebPlugin::SetFormFieldInFocus(bool in_focus) {
-  NOTIMPLEMENTED();
+  text_input_type_ = in_focus ? blink::WebTextInputType::kWebTextInputTypeText
+                              : blink::WebTextInputType::kWebTextInputTypeNone;
+  // Notify the frame widget.
+  GetValidContainerFrame()->FrameWidget()->UpdateTextInputState();
 }
 
 // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
