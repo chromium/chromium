@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
+#include "third_party/blink/renderer/modules/webcodecs/parsed_read_into_options.h"
+#include "third_party/blink/renderer/modules/webcodecs/plane_layout.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -807,9 +809,26 @@ base::Optional<uint64_t> VideoFrame::duration() const {
 
 uint32_t VideoFrame::allocationSize(VideoFrameReadIntoOptions* options,
                                     ExceptionState& exception_state) {
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "allocationSize() is not implemented.");
-  return 0;
+  auto local_frame = handle_->frame();
+  if (!local_frame)
+    return 0;
+
+  // TODO(crbug.com/1176464): Determine the format readback will occur in, use
+  // that to compute the layout.
+  if (!IsSupportedPlanarFormat(*local_frame)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "allocationSize() is not yet implemented when format is null.");
+    return 0;
+  }
+
+  ParsedReadIntoOptions layout(options, local_frame->format(),
+                               local_frame->coded_size(),
+                               local_frame->visible_rect(), exception_state);
+  if (exception_state.HadException())
+    return 0;
+
+  return layout.min_buffer_size;
 }
 
 ScriptPromise VideoFrame::readInto(
@@ -817,9 +836,81 @@ ScriptPromise VideoFrame::readInto(
     const ArrayBufferOrArrayBufferView& destination,
     VideoFrameReadIntoOptions* options,
     ExceptionState& exception_state) {
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "readInto() is not implemented.");
-  return ScriptPromise();
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot read closed VideoFrame.");
+    return ScriptPromise();
+  }
+
+  // TODO(crbug.com/1176464): Use async texture readback.
+  if (!IsSupportedPlanarFormat(*local_frame)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "readInto() is not yet implemented when format is null.");
+    return ScriptPromise();
+  }
+
+  // Compute layout.
+  ParsedReadIntoOptions layout(options, local_frame->format(),
+                               local_frame->coded_size(),
+                               local_frame->visible_rect(), exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  // Validate destination buffer.
+  DOMArrayPiece buffer(destination);
+  if (buffer.ByteLength() < static_cast<size_t>(layout.min_buffer_size)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
+                                      "destination is not large enough.");
+    return ScriptPromise();
+  }
+
+  // Map buffers if necessary.
+  if (!local_frame->IsMappable()) {
+    DCHECK(local_frame->HasGpuMemoryBuffer());
+    local_frame = media::ConvertToMemoryMappedFrame(local_frame);
+    if (!local_frame) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Failed to read VideoFrame data.");
+      return ScriptPromise();
+    }
+  }
+
+  // Copy data.
+  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
+    size_t src_stride = local_frame->stride(i);
+    size_t dest_stride = layout.planes[i].stride;
+    size_t row_bytes = layout.planes[i].width_bytes;
+
+    uint8_t* src = local_frame->data(i) + layout.planes[i].top * src_stride +
+                   layout.planes[i].left_bytes;
+    uint8_t* dest = buffer.Bytes() + layout.planes[i].offset;
+
+    // TODO(crbug.com/1205176): Use libyuv::CopyPlane(). The requirements to use
+    // it are a bit strange though, it computes with ints and expects
+    // intermediate values (like stride * height) to fit.
+    for (size_t row = 0; row < layout.planes[i].height; row++) {
+      // TODO(crbug.com/1205175): Spec what happens to the gaps between
+      // |row_bytes| and |dest_stride|. Probably needs to be compatible with
+      // whatever libyuv does.
+      memcpy(dest, src, row_bytes);
+      src += src_stride;
+      dest += dest_stride;
+    }
+  }
+
+  // Convert and return |layout|.
+  HeapVector<Member<PlaneLayout>> result;
+  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
+    auto* plane = MakeGarbageCollected<PlaneLayout>();
+    plane->setOffset(layout.planes[i].offset);
+    plane->setStride(layout.planes[i].stride);
+    result.push_back(plane);
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  resolver->Resolve(result);
+  return resolver->Promise();
 }
 
 void VideoFrame::close() {
