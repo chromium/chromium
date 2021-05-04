@@ -5,6 +5,7 @@
 #ifndef ASH_HUD_DISPLAY_HUD_DISPLAY_H_
 #define ASH_HUD_DISPLAY_HUD_DISPLAY_H_
 
+#include "ash/ash_export.h"
 #include "base/sequence_checker.h"
 #include "ui/views/view.h"
 
@@ -33,6 +34,9 @@ class HUDDisplayView : public views::View {
   // Creates/Destroys global singleton.
   static void Toggle();
 
+  // True when HUD is shown.
+  static bool ASH_EXPORT IsShown();
+
   // Called from ClientView. Responsible for moving widget when clicked outside
   // of the children.
   int NonClientHitTest(const gfx::Point& point);
@@ -48,6 +52,10 @@ class HUDDisplayView : public views::View {
 
   // Changes HUD overlay flag.
   void ToggleOverlay();
+
+  ASH_EXPORT static HUDDisplayView* GetForTesting();
+  ASH_EXPORT HUDSettingsView* GetSettingsViewForTesting();
+  ASH_EXPORT void ToggleSettingsForTesting();
 
  private:
   HUDHeaderView* header_view_ = nullptr;             // not owned

@@ -39,6 +39,7 @@ constexpr size_t kHUDGraphsInset = 5;
 
 // Default HUDDisplayView height.
 constexpr size_t kDefaultHUDGraphHeight = 300;
+constexpr size_t kDefaultHUDSettingHeight = 400;
 
 // Top border + Header height + margin + graph height + bottom border..
 constexpr int kHUDViewDefaultHeight =
@@ -69,6 +70,8 @@ class HTClientView : public views::ClientView {
   int NonClientHitTest(const gfx::Point& point) override {
     return hud_display_->NonClientHitTest(point);
   }
+
+  HUDDisplayView* GetHUDDisplayViewForTesting() { return hud_display_; }
 
  private:
   HUDDisplayView* hud_display_;
@@ -136,6 +139,11 @@ void HUDDisplayView::Toggle() {
   g_hud_widget = widget;
 }
 
+// static
+bool HUDDisplayView::IsShown() {
+  return g_hud_widget;
+}
+
 HUDDisplayView::HUDDisplayView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
@@ -191,6 +199,14 @@ HUDDisplayView::~HUDDisplayView() {
 
 // There is only one button.
 void HUDDisplayView::OnSettingsToggle() {
+  gfx::Rect bounds = g_hud_widget->GetWindowBoundsInScreen();
+  constexpr int settings_height_addition =
+      kDefaultHUDSettingHeight - kDefaultHUDGraphHeight;
+  // Adjust window height.
+  bounds.set_height(bounds.height() + (settings_view_->GetVisible() ? -1 : 1) *
+                                          settings_height_addition);
+  g_hud_widget->SetBounds(bounds);
+
   settings_view_->ToggleVisibility();
   graphs_container_->SetVisible(!settings_view_->GetVisible());
 }
@@ -204,6 +220,28 @@ void HUDDisplayView::ToggleOverlay() {
   g_hud_overlay_mode = !g_hud_overlay_mode;
   static_cast<ViewTreeHostRootView*>(GetWidget()->GetRootView())
       ->SetIsOverlayCandidate(g_hud_overlay_mode);
+}
+
+// static
+HUDDisplayView* HUDDisplayView::GetForTesting() {
+  if (!g_hud_widget)
+    return nullptr;
+
+  HTClientView* client_view =
+      static_cast<HTClientView*>(g_hud_widget->client_view());
+
+  if (!client_view)
+    return nullptr;
+
+  return client_view->GetHUDDisplayViewForTesting();  // IN-TEST
+}
+
+HUDSettingsView* HUDDisplayView::GetSettingsViewForTesting() {
+  return settings_view_;
+}
+
+void HUDDisplayView::ToggleSettingsForTesting() {
+  OnSettingsToggle();
 }
 
 int HUDDisplayView::NonClientHitTest(const gfx::Point& point) {

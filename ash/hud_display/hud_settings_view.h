@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "ash/hud_display/ash_tracing_manager.h"
 #include "ash/hud_display/hud_constants.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -16,6 +18,7 @@ class Event;
 }
 
 namespace views {
+class Label;
 class LabelButton;
 }
 
@@ -25,7 +28,11 @@ namespace hud_display {
 class HUDCheckboxHandler;
 class HUDDisplayView;
 
-class HUDSettingsView : public views::View {
+namespace {
+class HUDActionButton;
+}
+
+class HUDSettingsView : public AshTracingManager::Observer, public views::View {
  public:
   METADATA_HEADER(HUDSettingsView);
 
@@ -35,20 +42,39 @@ class HUDSettingsView : public views::View {
   HUDSettingsView(const HUDSettingsView&) = delete;
   HUDSettingsView& operator=(const HUDSettingsView&) = delete;
 
+  // AshTracingManager::Observer
+  void OnTracingStatusChange() override;
+
   // Shows/hides the view.
   void ToggleVisibility();
 
   // Creates Ui Dev Tools.
   void OnEnableUiDevToolsButtonPressed(const ui::Event& event);
 
+  // Starts tracing.
+  void OnEnableTracingButtonPressed(const ui::Event& event);
+
+  ASH_EXPORT void ToggleTracingForTesting();
+
  private:
+  // Starts/Stops tracing.
+  void ToggleTracing();
+
   // Replace "Create Ui Dev Tools" button label with "DevTools running".
   void UpdateDevToolsControlButtonLabel();
+
+  // Switches between "Start tracing" and "Stop tracing" button labels.
+  void UpdateTracingControlButton();
 
   std::vector<std::unique_ptr<HUDCheckboxHandler>> checkbox_handlers_;
 
   // Container for "Create Ui Dev Tools" button or "DevTools running" label.
   views::LabelButton* ui_dev_tools_control_button_ = nullptr;
+
+  HUDActionButton* tracing_control_button_ = nullptr;
+  views::Label* tracing_status_message_ = nullptr;
+
+  base::WeakPtrFactory<HUDSettingsView> weak_factory_{this};
 };
 
 }  // namespace hud_display

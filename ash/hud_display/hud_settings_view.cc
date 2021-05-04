@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/hud_display/ash_tracing_handler.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
 #include "ash/shell.h"
@@ -22,6 +23,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/paint_throbber.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
@@ -334,19 +336,72 @@ void AnimationSpeedControl::Layout() {
   views::View::Layout();
 }
 
-std::unique_ptr<views::LabelButton> CreateActionButton(
-    views::Button::PressedCallback::Callback callback,
-    const std::u16string& text) {
-  auto button = std::make_unique<views::LabelButton>(callback, text);
-  button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  button->SetEnabledTextColors(kHUDBackground);
-  button->SetProperty(kHUDClickHandler, HTCLIENT);
-  constexpr float kActionButtonCournerRadius = 2;
-  button->SetBackground(views::CreateRoundedRectBackground(
-      kHUDDefaultColor, kActionButtonCournerRadius));
-  button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  return button;
-}
+class HUDActionButton : public views::LabelButton {
+ public:
+  HUDActionButton(views::Button::PressedCallback::Callback callback,
+                  const std::u16string& text)
+      : LabelButton(callback, text) {
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    SetEnabledTextColors(kHUDBackground);
+    SetProperty(kHUDClickHandler, HTCLIENT);
+    constexpr float kActionButtonCournerRadius = 2;
+    SetBackground(views::CreateRoundedRectBackground(
+        kHUDDefaultColor, kActionButtonCournerRadius));
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+    on_enabled_changed_subscription_ =
+        AddEnabledChangedCallback(base::BindRepeating(
+            &HUDActionButton::OnEnabedChanged, base::Unretained(this)));
+  }
+
+  HUDActionButton(const HUDActionButton&) = delete;
+  HUDActionButton& operator=(const HUDActionButton&) = delete;
+
+  ~HUDActionButton() override = default;
+
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    views::LabelButton::PaintButtonContents(canvas);
+    if (spinner_refresh_timer_.IsRunning()) {
+      base::Time now = base::Time::Now();
+      gfx::Rect spinner = GetContentsBounds();
+      int spinner_width = std::min(spinner.width(), spinner.height());
+      spinner.ClampToCenteredSize(gfx::Size(spinner_width, spinner_width));
+      gfx::PaintThrobberSpinning(canvas, spinner,
+                                 SkColorSetA(SK_ColorWHITE, 0xFF * (.5)),
+                                 (now - spinner_created_) / 8);
+    }
+  }
+
+  void DisableWithSpinner() {
+    DCHECK(!spinner_refresh_timer_.IsRunning());
+    SetEnabled(false);
+    constexpr base::TimeDelta interval = base::TimeDelta::FromSecondsD(0.5);
+    spinner_created_ = base::Time::Now();
+    spinner_refresh_timer_.Start(
+        FROM_HERE, interval,
+        base::BindRepeating(
+            [](views::View* button) { button->SchedulePaint(); },
+            base::Unretained(this)));
+    SchedulePaint();
+  }
+
+  void UpdateBackgroundColor() override {
+    if (GetVisualState() == STATE_DISABLED) {
+      GetBackground()->SetNativeControlColor(kHUDDisabledButtonColor);
+    } else {
+      GetBackground()->SetNativeControlColor(kHUDDefaultColor);
+    }
+  }
+
+ private:
+  void OnEnabedChanged() {
+    if (GetEnabled())
+      spinner_refresh_timer_.Stop();
+  }
+
+  base::CallbackListSubscription on_enabled_changed_subscription_;
+  base::Time spinner_created_;
+  base::RepeatingTimer spinner_refresh_timer_;
+};
 
 }  // anonymous namespace
 
@@ -444,14 +499,66 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           views::BoxLayout::Orientation::kVertical))
       ->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  // Tracing controls.
+  constexpr int kTracingControlButtonMargin = 6;
+  views::View* tracing_controls = AddChildView(std::make_unique<views::View>());
+  tracing_controls
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical))
+      ->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kStretch);
+
   ui_devtools_controls->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(kUiDevToolsControlButtonMargin)));
   ui_dev_tools_control_button_ =
-      ui_devtools_controls->AddChildView(CreateActionButton(
+      ui_devtools_controls->AddChildView(std::make_unique<HUDActionButton>(
           base::BindRepeating(&HUDSettingsView::OnEnableUiDevToolsButtonPressed,
                               base::Unretained(this)),
           std::u16string()));
   UpdateDevToolsControlButtonLabel();
+
+  tracing_controls->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kTracingControlButtonMargin)));
+  tracing_control_button_ =
+      tracing_controls->AddChildView(std::make_unique<HUDActionButton>(
+          base::BindRepeating(&HUDSettingsView::OnEnableTracingButtonPressed,
+                              base::Unretained(this)),
+          std::u16string()));
+
+  const int kLabelBorderWidth = 3;
+  tracing_status_message_ =
+      tracing_controls->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_LABEL));
+  tracing_status_message_->SetAutoColorReadabilityEnabled(false);
+  tracing_status_message_->SetEnabledColor(kHUDDefaultColor);
+  tracing_status_message_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(/*vertical=*/0, /*horizontal=*/kLabelBorderWidth)));
+  tracing_status_message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  views::Label* pii_label = tracing_controls->AddChildView(std::make_unique<
+                                                           views::Label>(
+      u"WARNING: Trace files may contain Personally Identifiable Information. "
+      u"You should use discretion when sharing your trace files.",
+      views::style::CONTEXT_LABEL));
+  pii_label->SetMultiLine(true);
+  pii_label->SetAutoColorReadabilityEnabled(false);
+  pii_label->SetEnabledColor(kHUDDefaultColor);
+  pii_label->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(/*vertical=*/0, /*horizontal=*/kLabelBorderWidth)));
+  pii_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  UpdateTracingControlButton();
+
+  AshTracingManager::Get().AddObserver(this);
+}
+
+HUDSettingsView::~HUDSettingsView() {
+  AshTracingManager::Get().RemoveObserver(this);
+}
+
+void HUDSettingsView::OnTracingStatusChange() {
+  UpdateTracingControlButton();
 }
 
 void HUDSettingsView::OnEnableUiDevToolsButtonPressed(const ui::Event& event) {
@@ -473,8 +580,6 @@ void HUDSettingsView::UpdateDevToolsControlButtonLabel() {
   }
 }
 
-HUDSettingsView::~HUDSettingsView() = default;
-
 void HUDSettingsView::ToggleVisibility() {
   const bool is_shown = !GetVisible();
   if (is_shown) {
@@ -483,6 +588,38 @@ void HUDSettingsView::ToggleVisibility() {
     }
   }
   SetVisible(is_shown);
+}
+
+void HUDSettingsView::OnEnableTracingButtonPressed(const ui::Event& event) {
+  ToggleTracing();
+}
+
+void HUDSettingsView::ToggleTracingForTesting() {
+  ToggleTracing();
+}
+
+void HUDSettingsView::ToggleTracing() {
+  AshTracingManager& manager = AshTracingManager::Get();
+  tracing_control_button_->DisableWithSpinner();
+  if (manager.IsTracingStarted()) {
+    manager.Stop();
+  } else {
+    manager.Start();
+  }
+}
+
+void HUDSettingsView::UpdateTracingControlButton() {
+  AshTracingManager& manager = AshTracingManager::Get();
+  if (!manager.IsBusy())
+    tracing_control_button_->SetEnabled(true);
+
+  tracing_status_message_->SetText(
+      base::ASCIIToUTF16(manager.GetStatusMessage()));
+  if (manager.IsTracingStarted()) {
+    tracing_control_button_->SetText(u"Stop tracing.");
+  } else {
+    tracing_control_button_->SetText(u"Start tracing.");
+  }
 }
 
 }  // namespace hud_display

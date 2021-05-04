@@ -2543,6 +2543,7 @@ if (!is_android) {
         "../browser/ash/login/app_mode/kiosk_launch_controller_browsertest.cc",
         "../browser/ash/login/app_mode/web_kiosk_browsertest.cc",
         "../browser/ash/login/arc_terms_of_service_browsertest.cc",
+        "../browser/ash/login/ash_hud_login_browsertest.cc",
         "../browser/ash/login/challenge_response_auth_keys_loader_browsertest.cc",
         "../browser/ash/login/configuration_based_oobe_browsertest.cc",
         "../browser/ash/login/crash_restore_browsertest.cc",

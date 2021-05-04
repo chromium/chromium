@@ -52,6 +52,8 @@ class TestShellDelegate : public ShellDelegate {
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
   void SetSessionRestoreInProgress(bool in_progress);
+  bool IsLoggingRedirectDisabled() const override;
+  base::FilePath GetPrimaryUserDownloadsFolder() const override;
 
  private:
   // True if the current top window can go back.

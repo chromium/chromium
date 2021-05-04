@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
@@ -115,6 +116,13 @@ class ASH_EXPORT ShellDelegate {
   virtual void StartUiDevTools() {}
   virtual void StopUiDevTools() {}
   virtual int GetUiDevToolsPort() const;
+
+  // Returns true if Chrome was started with --disable-logging-redirect option.
+  virtual bool IsLoggingRedirectDisabled() const = 0;
+
+  // Returns empty path is user session has not started yet, or path to the
+  // primary user Downloads folder if user has already logged in.
+  virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
 };
 
 }  // namespace ash

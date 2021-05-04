@@ -1,0 +1,5 @@
+include_rules = [
+  "+services/tracing/public",
+  "+third_party/perfetto/include/perfetto/tracing/core/trace_config.h",
+  "+third_party/perfetto/include/perfetto/tracing/tracing.h",
+]

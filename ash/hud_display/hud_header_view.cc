@@ -186,9 +186,10 @@ HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
       gfx::Insets(kHUDInset, kHUDInset, 0, kHUDInset)));
 
   // Add buttons and tab strip.
-  header_buttons->AddChildView(
-      std::make_unique<SettingsButton>(base::BindRepeating(
-          &HUDDisplayView::OnSettingsToggle, base::Unretained(hud))));
+  header_buttons
+      ->AddChildView(std::make_unique<SettingsButton>(base::BindRepeating(
+          &HUDDisplayView::OnSettingsToggle, base::Unretained(hud))))
+      ->SetTooltipText(u"Trigger Ash HUD Settings");
   tab_strip_ = header_buttons->AddChildView(std::make_unique<HUDTabStrip>(hud));
 
   // Padding will take the rest of the header and draw bottom inner left

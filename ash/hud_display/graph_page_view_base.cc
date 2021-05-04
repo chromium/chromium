@@ -116,6 +116,8 @@ GraphPageViewBase::GraphPageViewBase() {
   legend_min_max_button_ = legend_container_->AddChildView(
       std::make_unique<MinMaxButton>(base::BindRepeating(
           &GraphPageViewBase::OnButtonPressed, base::Unretained(this))));
+
+  legend_min_max_button_->SetTooltipText(u"Trigger graph legend");
   SetMinimizeIconToButton(legend_min_max_button_);
 }
 
