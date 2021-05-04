@@ -21,8 +21,16 @@ RmadClient* g_instance = nullptr;
 class RmadClientImpl : public RmadClient {
  public:
   void Init(dbus::Bus* bus);
+
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
+  void TransitionNextState(
+      const rmad::RmadState& state,
+      DBusMethodCallback<rmad::GetStateReply> callback) override;
+  void TransitionPreviousState(
+      DBusMethodCallback<rmad::GetStateReply> callback) override;
+
+  void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
   RmadClientImpl() = default;
   RmadClientImpl(const RmadClientImpl&) = delete;
@@ -30,8 +38,8 @@ class RmadClientImpl : public RmadClient {
   ~RmadClientImpl() override = default;
 
  private:
-  void OnGetCurrentStateMethod(DBusMethodCallback<rmad::GetStateReply> callback,
-                               dbus::Response* response);
+  template <class T>
+  void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
 
   dbus::ObjectProxy* rmad_proxy_ = nullptr;
 
@@ -52,23 +60,69 @@ void RmadClientImpl::GetCurrentState(
   dbus::MessageWriter writer(&method_call);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&RmadClientImpl::OnGetCurrentStateMethod,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::GetStateReply>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void RmadClientImpl::OnGetCurrentStateMethod(
-    DBusMethodCallback<rmad::GetStateReply> callback,
-    dbus::Response* response) {
+void RmadClientImpl::TransitionNextState(
+    const rmad::RmadState& state,
+    DBusMethodCallback<rmad::GetStateReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kTransitionNextStateMethod);
+  dbus::MessageWriter writer(&method_call);
+  // Create the empty request proto.
+  rmad::TransitionNextStateRequest protobuf_request;
+  protobuf_request.set_allocated_state(new rmad::RmadState(state));
+  if (!writer.AppendProtoAsArrayOfBytes(protobuf_request)) {
+    LOG(ERROR) << "Error constructing message for "
+               << rmad::kTransitionNextStateMethod;
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::GetStateReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+void RmadClientImpl::TransitionPreviousState(
+    DBusMethodCallback<rmad::GetStateReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kTransitionPreviousStateMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::GetStateReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::AbortRma(
+    DBusMethodCallback<rmad::AbortRmaReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kAbortRmaMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::AbortRmaReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+template <class T>
+void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
+                                  dbus::Response* response) {
   if (!response) {
-    LOG(ERROR) << "Error calling " << rmad::kGetCurrentStateMethod;
+    LOG(ERROR) << "Error calling rmad function";
     std::move(callback).Run(base::nullopt);
     return;
   }
 
   dbus::MessageReader reader(response);
-  rmad::GetStateReply response_proto;
-  // TODO(gavindodd): pop the proto.
+  T response_proto;
+  if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+    LOG(ERROR) << "Unable to decode response for " << response->GetMember();
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
 
+  // TODO(gavindodd): Does this need std::move()?
   std::move(callback).Run(response_proto);
 }
 

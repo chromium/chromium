@@ -186,6 +186,8 @@ source_set("unit_tests") {
     "//chromeos/dbus/lorgnette_manager:test_support",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
+    "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/rmad:test_support",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/shill:test_support",
     "//chromeos/dbus/tpm_manager",

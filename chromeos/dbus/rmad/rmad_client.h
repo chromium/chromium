@@ -7,19 +7,11 @@
 
 #include "base/component_export.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/rmad/rmad.pb.h"
 
 namespace dbus {
 class Bus;
 }
-
-// Temporary to allow code to compile while prototype rmad.proto is replaced.
-namespace rmad {
-class GetStateReply {
- public:
-  int state() { return 0; }
-};
-
-}  // namespace rmad
 
 namespace chromeos {
 
@@ -43,9 +35,27 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   static RmadClient* Get();
 
   // Asynchronously gets the current RMA state.
-  // The state contains an error code and the current state of the RMA process.
+  // The response contains an error code and the current state of the RMA
+  // process.
   virtual void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+  // Asynchronously attempts to transition to the next RMA state.
+  // The response contains an error code and the current state of the RMA
+  // process.
+  virtual void TransitionNextState(
+      const rmad::RmadState& state,
+      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+  // Asynchronously attempts to transition to the previous RMA state.
+  // The response contains an error code and the current state of the RMA
+  // process.
+  virtual void TransitionPreviousState(
+      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+
+  // Request the RMA process be cancelled.
+  // There is no guarantee the callback is called if abort is successful because
+  // the device will reboot.
+  // Returns RMAD_ERROR_OK on success or an error code.
+  virtual void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

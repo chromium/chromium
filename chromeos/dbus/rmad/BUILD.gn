@@ -24,6 +24,24 @@ component("rmad") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":rmad" ]
+  deps = [
+    ":rmad_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "fake_rmad_client_unittest.cc",
+    "rmad_client_unittest.cc",
+  ]
+}
+
 proto_library("rmad_proto") {
   sources = [ "//third_party/cros_system_api/dbus/rmad/rmad.proto" ]
 
