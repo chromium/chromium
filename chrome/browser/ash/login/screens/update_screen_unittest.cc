@@ -20,7 +20,7 @@
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,7 +76,7 @@ class UpdateScreenUnitTest : public testing::Test {
     fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
@@ -98,7 +98,7 @@ class UpdateScreenUnitTest : public testing::Test {
     update_screen_.reset();
     mock_error_screen_.reset();
     network_portal_detector::Shutdown();
-    NetworkHandler::Shutdown();
+    network_handler_test_helper_.reset();
     PowerManagerClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
@@ -126,6 +126,7 @@ class UpdateScreenUnitTest : public testing::Test {
   // Test versions of core browser infrastructure.
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateScreenUnitTest);
 };

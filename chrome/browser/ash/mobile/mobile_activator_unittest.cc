@@ -10,9 +10,8 @@
 #include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/browser_thread.h"
@@ -104,14 +103,8 @@ class MobileActivatorTest : public testing::Test {
   ~MobileActivatorTest() override {}
 
  protected:
-  void SetUp() override {
-    DBusThreadManager::Initialize();
-    NetworkHandler::Initialize();
-  }
   void TearDown() override {
     mobile_activator_.TerminateActivation();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   void set_activator_state(const MobileActivator::PlanActivationState state) {
@@ -129,6 +122,7 @@ class MobileActivatorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   NetworkState cellular_network_;
   TestMobileActivator mobile_activator_;
 

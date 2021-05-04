@@ -24,7 +24,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/pref_service.h"
@@ -95,6 +95,10 @@ class UpdateRequiredNotificationTest
     return fake_update_engine_client_;
   }
 
+  chromeos::NetworkHandlerTestHelper* network_handler_test_helper() {
+    return network_handler_test_helper_.get();
+  }
+
   void SetUserManaged(bool managed) { user_managed_ = managed; }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -110,6 +114,8 @@ class UpdateRequiredNotificationTest
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>
       minimum_version_policy_handler_;
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
 };
 
 UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
@@ -124,12 +130,11 @@ void UpdateRequiredNotificationTest::SetUp() {
   fake_update_engine_client_ = fake_update_engine_client.get();
   chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
       std::move(fake_update_engine_client));
-  chromeos::NetworkHandler::Initialize();
+  network_handler_test_helper_ =
+      std::make_unique<chromeos::NetworkHandlerTestHelper>();
 
   chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface();
+      network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",
                            shill::kTypeEthernet, shill::kStateOnline,
@@ -149,7 +154,7 @@ void UpdateRequiredNotificationTest::SetUp() {
 
 void UpdateRequiredNotificationTest::TearDown() {
   minimum_version_policy_handler_.reset();
-  chromeos::NetworkHandler::Shutdown();
+  network_handler_test_helper_.reset();
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
@@ -197,9 +202,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
 
   // Disconnect all networks
   chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface();
+      network_handler_test_helper()->service_test();
   service_test->ClearServices();
 
   // This is needed to wait till EOL status is fetched from the update_engine.
@@ -238,9 +241,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
 TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   // Connect to metered network
   chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface();
+      network_handler_test_helper()->service_test();
   service_test->ClearServices();
   service_test->AddService(kCellularServicePath,
                            kCellularServicePath /* guid */,

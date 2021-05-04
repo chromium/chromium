@@ -20,7 +20,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
@@ -93,7 +93,8 @@ class VersionUpdaterUnitTest : public testing::Test {
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ =
+        std::make_unique<chromeos::NetworkHandlerTestHelper>();
 
     // `mock_network_portal_detector_->IsEnabled()` will always return false.
     mock_network_portal_detector_ =
@@ -120,7 +121,7 @@ class VersionUpdaterUnitTest : public testing::Test {
     mock_delegate_.reset();
 
     network_portal_detector::InitializeForTesting(nullptr);
-    NetworkHandler::Shutdown();
+    network_handler_test_helper_.reset();
 
     // It will delete `fake_update_engine_client_`.
     DBusThreadManager::Shutdown();
@@ -130,6 +131,8 @@ class VersionUpdaterUnitTest : public testing::Test {
   std::unique_ptr<VersionUpdater> version_updater_;
 
   // Accessory objects needed by VersionUpdater.
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
   std::unique_ptr<MockVersionUpdaterDelegate> mock_delegate_;
   std::unique_ptr<MockNetworkPortalDetector> mock_network_portal_detector_;
   std::unique_ptr<NetworkPortalDetectorTestImpl> fake_network_portal_detector_;

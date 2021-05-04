@@ -23,8 +23,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/tpm/stub_install_attributes.h"
@@ -61,7 +60,10 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ =
+        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+    network_handler_test_helper_->AddDefaultProfiles();
+
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
@@ -78,10 +80,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
 
     update_required_screen_->GetVersionUpdaterForTesting()
         ->set_wait_for_reboot_time_for_testing(base::TimeDelta::FromSeconds(0));
-
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            true /*use_default_devices_and_services*/);
   }
 
   void TearDown() override {
@@ -91,10 +89,9 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     update_required_screen_.reset();
     mock_error_view_.reset();
     mock_error_screen_.reset();
-    network_state_test_helper_.reset();
 
     network_portal_detector::Shutdown();
-    NetworkHandler::Shutdown();
+    network_handler_test_helper_.reset();
     DBusThreadManager::Shutdown();
   }
 
@@ -112,8 +109,9 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   MockNetworkPortalDetector* mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
   FakeUpdateEngineClient* fake_update_engine_client_;
-  // Initializes NetworkStateHandler
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  // Initializes NetworkHandler and required DBus clients.
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
 
  private:
   // Test versions of core browser infrastructure.

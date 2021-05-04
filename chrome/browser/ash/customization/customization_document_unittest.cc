@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -198,10 +198,8 @@ class ServicesCustomizationDocumentTest : public testing::Test {
     ServicesCustomizationDocument::InitializeForTesting(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &loader_factory_));
-
-    DBusThreadManager::Initialize();
-    NetworkHandler::Initialize();
     RunUntilIdle();
+
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
     std::string default_network_path =
@@ -225,8 +223,6 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
     network_portal_detector::InitializeForTesting(nullptr);
     loader_factory_.ClearResponses();
     interceptor_.reset();
@@ -286,6 +282,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   TestingPrefServiceSimple local_state_;

@@ -9,9 +9,8 @@
 #include "base/values.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,7 +46,7 @@ std::map<std::string, std::string> GetDOHProviders() {
   bool success = false;
   std::map<std::string, std::string> props;
   chromeos::ShillManagerClient* shill_manager =
-      chromeos::DBusThreadManager::Get()->GetShillManagerClient();
+      chromeos::ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
       base::BindOnce(&OnGetProperties, base::Unretained(&success),
@@ -67,25 +66,17 @@ class SecureDnsManagerTest : public testing::Test {
   SecureDnsManagerTest() = default;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
-    chromeos::NetworkHandler::Initialize();
-    EXPECT_TRUE(chromeos::NetworkHandler::IsInitialized());
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
                                                  SecureDnsConfig::kModeOff);
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
                                                  "");
   }
 
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-  }
-
   PrefService* pref_service() { return &pref_service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SecureDnsManagerTest);
