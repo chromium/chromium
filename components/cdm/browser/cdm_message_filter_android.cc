@@ -17,6 +17,7 @@
 #include "components/cdm/common/cdm_messages_android.h"
 #include "content/public/browser/android/android_overlay_provider.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"

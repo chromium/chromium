@@ -11,6 +11,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "ipc/ipc_channel_handle.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_platform_file.h"
 #include "remoting/host/chromoting_param_traits.h"
 #include "remoting/host/desktop_environment_options.h"

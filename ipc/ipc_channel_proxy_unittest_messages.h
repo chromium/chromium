@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 // Singly-included section for enums and custom IPC traits.
 #ifndef IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_

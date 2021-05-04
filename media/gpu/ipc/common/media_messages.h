@@ -11,6 +11,7 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/gpu_param_traits_macros.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/param_traits_macros.h"
 #include "media/base/overlay_info.h"
 #include "media/gpu/ipc/common/media_param_traits.h"

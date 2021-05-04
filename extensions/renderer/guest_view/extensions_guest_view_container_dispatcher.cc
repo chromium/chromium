@@ -6,6 +6,7 @@
 
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 namespace extensions {
 

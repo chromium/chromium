@@ -9,6 +9,7 @@
 
 #include "base/stl_util.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/message_filter.h"
 

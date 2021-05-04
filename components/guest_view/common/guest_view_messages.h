@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 #define IPC_MESSAGE_START GuestViewMsgStart
 

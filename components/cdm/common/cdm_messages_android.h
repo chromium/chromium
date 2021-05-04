@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "media/base/eme_constants.h"
 
 #define IPC_MESSAGE_START EncryptedMediaMsgStart

@@ -7,6 +7,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/renderer/guest_view_container.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 namespace guest_view {
 

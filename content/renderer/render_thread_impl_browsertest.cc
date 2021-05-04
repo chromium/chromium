@@ -64,6 +64,7 @@
 #undef IPC_MESSAGE_EXTRA
 #define IPC_MESSAGE_IMPL
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_templates_impl.h"
 
 #undef IPC_MESSAGE_START

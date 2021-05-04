@@ -16,6 +16,7 @@
 #include "components/nacl/common/pnacl_types.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_platform_file.h"
 #include "url/gurl.h"
 #include "url/ipc/url_param_traits.h"
