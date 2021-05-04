@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--
-The most basic GPU smoke test for WebCodecs: Accelerated VideoEncoder encodes
-several frames and accelerated VideoDecoder needs to successfully decode them.
--->
 <html>
 
 <head>
@@ -10,36 +6,38 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
   <script src="webcodecs_common.js"></script>
   <script type="text/javascript">
     'use strict';
-    const acceleration = 'require';
+    const acceleration = "require";
     async function main(arg) {
-      const width = 640;
-      const height = 480;
-      const frames_to_encode = 32;
+      let cnv = document.getElementById("display");
+      let ctx = cnv.getContext("2d");
+      let frames_to_encode = 35;
       let frames_encoded = 0;
       let frames_decoded = 0;
       let errors = 0;
 
-      const encoder_config = {
+      const encoder_config =
+      {
         codec: arg.codec,
         hardwareAcceleration: acceleration,
-        width: width,
-        height: height,
+        width: cnv.width,
+        height: cnv.height,
         bitrate: 5000000,
         framerate: 24
       };
       if (arg.codec.startsWith('avc1')) {
-        encoder_config.avc = { format: 'annexb' };
+        encoder_config.avc = { format: "annexb" };
       }
 
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
-        TEST.log('Skipping unsupported codec: ' + arg.codec);
+        TEST.log("Skipping unsupported codec: " + arg.codec);
         return;
       }
 
       let decoder = new VideoDecoder({
         output(frame) {
           frames_decoded++;
+          ctx.drawImage(frame, 0, 0);
           frame.close();
         },
         error(e) {
@@ -68,34 +66,32 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
 
       let encoder = new VideoEncoder(encoder_init);
       encoder.configure(encoder_config);
-      let source = new CanvasSource(width, height);
 
       for (let i = 0; i < frames_to_encode; i++) {
-        let frame = await source.getNextFrame();
+        let frame = await createFrame(cnv.width, cnv.height, i * 100);
         let keyframe = (i % 10 == 0);
         encoder.encode(frame, { keyFrame: keyframe });
         frame.close();
 
-        await waitForNextFrame();
+        await delay(1);
       }
       await encoder.flush();
       await decoder.flush();
       encoder.close();
       decoder.close();
 
-      TEST.assert(
-        frames_encoded == frames_to_encode,
-        'frames_encoded mismatch: ' + frames_encoded);
-      TEST.assert(
-        frames_decoded == frames_to_encode,
-        'frames_decoded mismatch: ' + frames_decoded);
-      TEST.assert(
-        errors == 0, 'Decoding or encoding errors occurred during the test');
+      TEST.assert(frames_encoded == frames_to_encode,
+        "frames_encoded mismatch: " + frames_encoded);
+      TEST.assert(frames_decoded == frames_to_encode,
+        "frames_decoded mismatch: " + frames_decoded);
+      TEST.assert(errors == 0,
+        "Decoding or encoding errors occurred during the test");
     }
   </script>
 </head>
 
 <body>
+  <canvas id='display' width="640" height="480"></canvas>
 </body>
 
 </html>
