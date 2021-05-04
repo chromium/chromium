@@ -17,9 +17,9 @@ namespace {
 ScopedJavaLocalRef<jobject> CreateJavaTemplateAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
-    const NoteTemplate& template) {
+    const NoteTemplate& note_template) {
   return Java_NoteTemplateConversionBridge_createTemplateAndMaybeAddToList(
-      env, jlist, ConvertUTF8ToJavaString(template.localized_name));
+      env, jlist, ConvertUTF8ToJavaString(env, note_template.localized_name));
 }
 
 }  // namespace
@@ -28,12 +28,12 @@ ScopedJavaLocalRef<jobject> CreateJavaTemplateAndMaybeAddToList(
 ScopedJavaLocalRef<jobject>
 NoteTemplateConversionBridge::CreateJavaNoteTemplates(
     JNIEnv* env,
-    const std::vector<NoteTemplate>& templates) {
+    const std::vector<NoteTemplate>& note_templates) {
   ScopedJavaLocalRef<jobject> jlist =
       Java_NoteTemplateConversionBridge_createTemplateList(env);
 
-  for (const auto& template : templates) {
-    CreateJavaTemplateAndMaybeAddToList(env, jlist, templates);
+  for (const auto& note_template : note_templates) {
+    CreateJavaTemplateAndMaybeAddToList(env, jlist, note_template);
   }
 
   return jlist;

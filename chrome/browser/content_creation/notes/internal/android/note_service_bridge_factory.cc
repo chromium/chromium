@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/content_creation/internal/jni_headers/NoteServiceFactory_jni.h"
-#include "chrome/browser/content_creation/internal/note_service_factory.h"
+#include "chrome/browser/content_creation/notes/internal/android/jni_headers/NoteServiceFactory_jni.h"
+#include "chrome/browser/content_creation/notes/internal/note_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -24,7 +24,7 @@ JNI_NoteServiceFactory_GetForProfile(
     return base::android::ScopedJavaLocalRef<jobject>();
 
   content_creation::NoteService* note_service =
-      NoteServiceFactory::GetInstance()->GetForKey(profile_key);
+      NoteServiceFactory::GetInstance()->GetServiceInstance(profile_key);
   return content_creation::NoteServiceBridge::GetBridgeForNoteService(
       note_service);
 }

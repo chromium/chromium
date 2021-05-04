@@ -8,7 +8,6 @@
 #include "base/android/jni_array.h"
 #include "base/bind.h"
 #include "components/content_creation/notes/android/jni_headers/NoteServiceBridge_jni.h"
-#include "components/content_creation/notes/android/jni_headers/NoteTemplateConversionBridge_jni.h"
 #include "components/content_creation/notes/android/note_template_conversion_bridge.h"
 #include "components/content_creation/notes/core/notes_types.h"
 

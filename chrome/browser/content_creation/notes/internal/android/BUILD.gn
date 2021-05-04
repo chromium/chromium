@@ -11,7 +11,7 @@ android_library("java") {
     "//chrome/android:chrome_all_java",
   ]
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
 
   deps = [
     "//base:base_java",
@@ -25,9 +25,9 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   visibility = [
-    ":*",
     "//chrome/browser",
+    "//chrome/browser/content_creation/notes/internal:*",
   ]
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
 }

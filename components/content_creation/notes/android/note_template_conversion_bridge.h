@@ -6,7 +6,7 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_ANDROID_NOTE_TEMPLATE_CONVERSION_BRIDGE_H_
 
 #include "base/android/jni_android.h"
-#include "components/content_creation/notes/notes_types.h"
+#include "components/content_creation/notes/core/notes_types.h"
 
 using base::android::ScopedJavaLocalRef;
 

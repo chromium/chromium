@@ -18,7 +18,7 @@ namespace content_creation {
 
 class NoteServiceBridge : public base::SupportsUserData::Data {
  public:
-  static scopedJavaLocalFed<jobject> GetBridgeForNoteService(
+  static ScopedJavaLocalRef<jobject> GetBridgeForNoteService(
       NoteService* note_service);
 
   explicit NoteServiceBridge(NoteService* note_service);

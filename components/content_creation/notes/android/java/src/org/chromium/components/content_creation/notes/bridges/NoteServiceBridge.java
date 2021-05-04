@@ -36,7 +36,7 @@ public class NoteServiceBridge implements NoteService {
     }
 
     @Override
-    public void GetTemplates(Callback<List<NoteTemplate>> callback) {
+    public void getTemplates(Callback<List<NoteTemplate>> callback) {
         if (mNativeNoteServiceBridge == 0) return;
         NoteServiceBridgeJni.get().getTemplates(mNativeNoteServiceBridge, this, callback);
     }
