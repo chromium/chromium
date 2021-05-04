@@ -39,6 +39,10 @@
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 #ifndef EFD_ZERO_ON_WAKE
 #define EFD_ZERO_ON_WAKE O_NOFOLLOW
 #endif
@@ -923,9 +927,19 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
       return false;
     }
 
-    // Do we have memfd_create support, we check by seeing if we get an -ENOSYS
-    // or an -EINVAL. We also support -EPERM because of seccomp rules this is
-    // another possible outcome.
+#if defined(OS_ANDROID)
+    // Finally, if running on Android it must have API version of at
+    // least 29 (Q). The reason for this was SELinux seccomp policies prior to
+    // that API version wouldn't allow moving a memfd.
+    if (base::android::BuildInfo::GetInstance()->sdk_int() <
+        base::android::SdkVersion::SDK_VERSION_Q) {
+      return false;
+    }
+#endif
+
+    // Do we have memfd_create support, we check by seeing if we get an
+    // -ENOSYS or an -EINVAL. We also support -EPERM because of seccomp
+    // rules this is another possible outcome.
     int ret = syscall(__NR_memfd_create, "", ~0);
     PCHECK(ret < 0 && (errno == EINVAL || errno == ENOSYS || errno == EPERM));
     bool memfd_supported = (ret < 0 && errno == EINVAL);
