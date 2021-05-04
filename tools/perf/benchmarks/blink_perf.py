@@ -650,7 +650,7 @@ class BlinkPerfSanitizerAPI(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.sanitizer-api'
+    return 'blink_perf.sanitizer-api'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs([

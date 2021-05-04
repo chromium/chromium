@@ -51,7 +51,7 @@
     "stories": [
       "sanitizer.html"
     ],
-    "name": "UNSCHEDULED_blink_perf.sanitizer-api"
+    "name": "blink_perf.sanitizer-api"
   },
   {
     "repeat": 1,

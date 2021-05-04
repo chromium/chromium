@@ -222,7 +222,11 @@ def _GetBenchmarkConfig(benchmark_name, abridged=False):
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 # power.mobile requires special hardware.
-OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove(['power.mobile'])
+# only run blink_perf.sanitizer-api on linux-perf.
+OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
+    'power.mobile',
+    'blink_perf.sanitizer-api',
+])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
 OFFICIAL_BENCHMARK_NAMES = frozenset(
@@ -307,6 +311,8 @@ _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
+]).Add([
+    'blink_perf.sanitizer-api',
 ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
