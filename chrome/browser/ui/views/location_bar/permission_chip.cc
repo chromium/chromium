@@ -186,8 +186,11 @@ void PermissionChip::Show(bool always_open_bubble) {
   SetVisible(true);
   // TODO(olesiamarukhno): Add tests for animation logic.
   chip_button_->ResetAnimation();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble)
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble) {
     chip_button_->AnimateExpand();
+  } else {
+    StartDismissTimer();
+  }
   PreferredSizeChanged();
 }
 
