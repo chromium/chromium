@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
@@ -24,11 +25,15 @@ namespace web_app {
 namespace url_handler_prefs {
 namespace {
 
-constexpr const char* kAppId = "app_id";
-constexpr const char* kExcludePaths = "exclude_paths";
-constexpr const char* kHasOriginWildcard = "has_origin_wildcard";
-constexpr const char* kPaths = "paths";
-constexpr const char* kProfilePath = "profile_path";
+constexpr const char kAppId[] = "app_id";
+constexpr const char kProfilePath[] = "profile_path";
+constexpr const char kIncludePaths[] = "include_paths";
+constexpr const char kExcludePaths[] = "exclude_paths";
+constexpr const char kHasOriginWildcard[] = "has_origin_wildcard";
+constexpr const char kDefaultPath[] = "/*";
+constexpr const char kPath[] = "path";
+constexpr const char kChoice[] = "choice";
+constexpr const char kTimestamp[] = "timestamp";
 
 // Returns true if |url| has the same origin as origin_str. If
 // |look_for_subdomains| is true, url must have an origin that extends
@@ -55,26 +60,99 @@ bool UrlMatchesOrigin(const GURL& url,
   }
 }
 
-// Return if |url_path| matches any path in |paths|. A path in |paths| can
-// contain one wildcard * at the end.
+// Returns true if |url_path| matches |path_pattern|. A prefix match is used if
+// |path_pattern| ends with a '*' wildcard character. An exact match is used
+// otherwise. |url_path| is a URL path from a fully specified URL.
+// |path_pattern| is a URL path that can contain a wildcard postfix.
+bool PathMatchesPathPattern(const std::string& url_path,
+                            base::StringPiece path_pattern) {
+  if (!path_pattern.empty() && path_pattern.back() == '*') {
+    // Remove the wildcard and check if it's the same as the first several
+    // characters of |url_path|.
+    path_pattern = path_pattern.substr(0, path_pattern.length() - 1);
+    if (base::StartsWith(url_path, path_pattern))
+      return true;
+  } else {
+    // |path_pattern| doesn't contain a wildcard, check for an exact match.
+    if (path_pattern == url_path)
+      return true;
+  }
+  return false;
+}
+
+// Return true if |url_path| matches any path in |include_paths|. A path in
+// |include_paths| can contain one wildcard '*' at the end.
+// If any path matches, returns the best UrlHandlerSavedChoice found and
+//  its associated timestamp through the |choice| and |time| output parameters.
+// "Best" here is defined by this ordering: kInApp > kNone > kInBrowser.
 // |url_path| always starts with a '/', as it's the result of GURL::path().
-bool UrlPathMatches(const std::string& url_path, const base::Value& paths) {
-  if (!paths.is_list())
+bool FindBestMatchingIncludePathChoice(const std::string& url_path,
+                                       const base::Value& include_paths,
+                                       UrlHandlerSavedChoice* choice,
+                                       base::Time* time) {
+  if (!include_paths.is_list())
     return false;
 
-  for (const auto& path : paths.GetList()) {
-    std::string path_str = path.GetString();
-    if (path_str.back() == '*') {
-      // Remove the wildcard and check if it's the same as the first several
-      // characters of |url_path|.
-      path_str = path_str.substr(0, path_str.length() - 1);
-      if (base::StartsWith(url_path, path_str))
-        return true;
-    } else {
-      // |path_str| doesn't contain a wildcard, check for an exact match.
-      if (path_str == url_path)
-        return true;
+  UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kInBrowser;
+  base::Time most_recent_timestamp;
+  bool found_match = false;
+
+  for (const auto& include_path_dict : include_paths.GetList()) {
+    if (!include_path_dict.is_dict())
+      continue;
+    const std::string* include_path = include_path_dict.FindStringKey(kPath);
+    if (!include_path)
+      continue;
+    const base::Optional<int> choice_opt =
+        include_path_dict.FindIntKey(kChoice);
+    if (!choice_opt)
+      continue;
+    // Check enum. bounds before casting.
+    if (*choice_opt < 0 ||
+        *choice_opt > static_cast<int>(UrlHandlerSavedChoice::kMax))
+      continue;
+    auto current_choice = static_cast<UrlHandlerSavedChoice>(*choice_opt);
+    base::Optional<base::Time> current_timestamp =
+        util::ValueToTime(include_path_dict.FindKey(kTimestamp));
+    if (!current_timestamp)
+      continue;
+
+    if (PathMatchesPathPattern(url_path, *include_path)) {
+      // If current_choice is better than best_choice, update best choice and
+      // timestamp.
+      bool update_best = current_choice > best_choice ||
+                         // If current_choice and best_choice are equal, choose
+                         // the one with the latest timestamp.
+                         (best_choice == current_choice &&
+                          current_timestamp > most_recent_timestamp);
+
+      if (update_best) {
+        best_choice = current_choice;
+        most_recent_timestamp = *current_timestamp;
+      }
+      found_match = true;
     }
+  }
+
+  if (found_match) {
+    *choice = best_choice;
+    *time = most_recent_timestamp;
+  }
+  return found_match;
+}
+
+// Return true if |url_path| matches any path in |exclude_paths|. A path in
+// |exclude_paths| can contain one wildcard '*' at the end.
+bool ExcludePathMatches(const std::string& url_path,
+                        const base::Value& exclude_paths) {
+  if (!exclude_paths.is_list())
+    return false;
+
+  for (const auto& exclude_path : exclude_paths.GetList()) {
+    if (!exclude_path.is_string())
+      continue;
+    if (PathMatchesPathPattern(url_path, exclude_path.GetString()))
+      return true;
   }
   return false;
 }
@@ -113,29 +191,102 @@ void FilterAndAddMatches(const base::Value& all_handlers,
     }
 
     const std::string& url_path = url.path();
-    bool path_matches = true;
-    const base::Value* const paths = handler.FindListKey(kPaths);
+    const base::Value* const include_paths = handler.FindListKey(kIncludePaths);
 
-    bool paths_exist = paths && paths->is_list() && !paths->GetList().empty();
-    if (paths_exist)
-      path_matches = UrlPathMatches(url_path, *paths);
+    bool include_paths_exist = include_paths && include_paths->is_list() &&
+                               !include_paths->GetList().empty();
+
+    UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kNone;
+    base::Time latest_timestamp = base::Time::Min();
+    if (include_paths_exist &&
+        !FindBestMatchingIncludePathChoice(url_path, *include_paths,
+                                           &best_choice, &latest_timestamp)) {
+      continue;
+    }
 
     const base::Value* const exclude_paths = handler.FindListKey(kExcludePaths);
     bool exclude_paths_exist = exclude_paths && exclude_paths->is_list() &&
                                !exclude_paths->GetList().empty();
-    if (exclude_paths_exist) {
-      bool match_exclude_path = UrlPathMatches(url_path, *exclude_paths);
-      // If |paths| and |exclude_paths| are both not empty, only |url_path|
-      // that matches a path and does not match an exclude path is considered
-      // a match.
-      // If |paths| is empty and |exclude_paths| is not, |url_path| that does
-      // not match any exclude path is considered a match.
-      path_matches = paths_exist ? (path_matches && !match_exclude_path)
-                                 : !match_exclude_path;
-    }
+    if (exclude_paths_exist && ExcludePathMatches(url_path, *exclude_paths))
+      continue;
 
-    if (path_matches)
-      matches.emplace_back(*profile_path, *app_id, url);
+    // Do not include a match if it should open in a normal browser tab.
+    if (best_choice == UrlHandlerSavedChoice::kInBrowser)
+      continue;
+
+    matches.emplace_back(*profile_path, *app_id, url, best_choice,
+                         latest_timestamp);
+  }
+}
+
+// If one or more match should open in app, keep the most recent one and remove
+// the others. Also remove matches with no saved choice.
+// Otherwise, any remaining matches should all have no saved choice.
+// Any match that should open in browser have already been removed and should
+// not be found in |matches|.
+void FilterBySavedChoice(std::vector<UrlHandlerLaunchParams>& matches) {
+  for (const UrlHandlerLaunchParams& params : matches)
+    DCHECK(params.saved_choice != UrlHandlerSavedChoice::kInBrowser);
+
+  // Are there matches that open in app? Which is the most recently saved?
+  bool has_in_app = false;
+  base::Time most_recent_time = base::Time::Min();
+  size_t most_recent_pos = 0;
+  for (size_t i = 0; i < matches.size(); i++) {
+    const UrlHandlerLaunchParams& params = matches[i];
+    if (params.saved_choice == UrlHandlerSavedChoice::kInApp) {
+      has_in_app = true;
+      if (params.saved_choice_timestamp > most_recent_time) {
+        most_recent_time = params.saved_choice_timestamp;
+        most_recent_pos = i;
+      }
+    }
+  }
+
+  // Only keep the most recently saved match that opens in app.
+  if (has_in_app)
+    matches = {std::move(matches[most_recent_pos])};
+
+  // Since no matches opened in browser to begin with and now no matches open in
+  // app, any remaining matches must have no saved choice.
+}
+
+void FindMatchesImpl(const base::Value& pref_value,
+                     const GURL& url,
+                     std::vector<UrlHandlerLaunchParams>& matches,
+                     const std::string& origin_str,
+                     const bool origin_trimmed) {
+  const base::Value* const all_handlers = pref_value.FindListKey(origin_str);
+  if (all_handlers) {
+    DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
+    FilterAndAddMatches(*all_handlers, url, origin_trimmed, matches);
+    FilterBySavedChoice(matches);
+  }
+}
+
+// Helper function that runs |op| repeatedly with shorter versions of
+// |origin_str|. This helps match URLs to entries keyed by broader origins.
+template <typename Operation>
+void TryDifferentOriginSubstrings(std::string origin_str, Operation op) {
+  bool origin_trimmed = false;
+  while (true) {
+    op(origin_str, origin_trimmed);
+
+    // Try to shorten origin_str to the next origin suffix by removing 1
+    // sub-domain. This enables matching against origins that contain wildcard
+    // prefixes. As these origins with wildcard prefixes could be of different
+    // lengths and yet match the initial origin_str, every suffix is processed.
+    auto found = origin_str.find('.');
+    if (found != std::string::npos) {
+      // Trim origin to after next '.' character if there is one.
+      origin_str = base::StrCat({"https://", origin_str.substr(found + 1)});
+      origin_trimmed = true;
+      // Do not early return here. There could be other apps that match using
+      // origin wildcard.
+    } else {
+      // There is no more '.'. Stop looking.
+      break;
+    }
   }
 }
 
@@ -154,38 +305,41 @@ std::vector<UrlHandlerLaunchParams> FindMatches(const base::Value& pref_value,
   if (origin.scheme() != url::kHttpsScheme)
     return matches;
 
+  // FindMatchesImpl accumulates results to |matches|.
   std::string origin_str = origin.Serialize();
-  bool origin_trimmed(false);
-
-  while (true) {
-    const base::Value* const all_handlers = pref_value.FindListKey(origin_str);
-    if (all_handlers) {
-      DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
-      FilterAndAddMatches(*all_handlers, url, origin_trimmed, matches);
-    }
-
-    // If a key matching the input URL's origin is not found, shorten the origin
-    // by sub-domain and try again. This enables matching against manifest
-    // "url_handlers" origins that contain wildcard prefixes.
-    auto found = origin_str.find('.');
-    if (found != std::string::npos) {
-      // Trim origin to after next '.' character if there is one.
-      origin_str = base::StrCat({"https://", origin_str.substr(found + 1)});
-      origin_trimmed = true;
-    } else {
-      // There is no more '.'. Stop looking.
-      break;
-    }
-  }
+  TryDifferentOriginSubstrings(
+      origin_str, [&pref_value, &url, &matches](const std::string& origin_str,
+                                                bool origin_trimmed) {
+        FindMatchesImpl(pref_value, url, matches, origin_str, origin_trimmed);
+      });
   return matches;
 }
 
-base::Value GetPathsValue(const std::vector<std::string>& paths) {
-  base::Value paths_value(base::Value::Type::LIST);
-  for (const auto& path : paths)
-    paths_value.Append(path);
+base::Value GetIncludePathsValue(
+    const std::vector<std::string>& include_paths) {
+  base::Value value(base::Value::Type::LIST);
+  // When no "paths" are specified in web-app-origin-association, all include
+  // paths are allowed.
+  for (const auto& include_path : include_paths.empty()
+                                      ? std::vector<std::string>({kDefaultPath})
+                                      : include_paths) {
+    base::Value path_dict(base::Value::Type::DICTIONARY);
+    path_dict.SetStringKey(kPath, include_path);
+    path_dict.SetIntKey(kChoice,
+                        static_cast<int>(UrlHandlerSavedChoice::kNone));
+    path_dict.SetKey(kTimestamp, util::TimeToValue(base::Time::Min()));
+    value.Append(std::move(path_dict));
+  }
+  return value;
+}
 
-  return paths_value;
+base::Value GetExcludePathsValue(
+    const std::vector<std::string>& exclude_paths) {
+  base::Value value(base::Value::Type::LIST);
+  for (const auto& exclude_path : exclude_paths) {
+    value.Append(exclude_path);
+  }
+  return value;
 }
 
 base::Value NewHandler(const AppId& app_id,
@@ -195,13 +349,9 @@ base::Value NewHandler(const AppId& app_id,
   value.SetStringKey(kAppId, app_id);
   value.SetKey(kProfilePath, util::FilePathToValue(profile_path));
   value.SetBoolKey(kHasOriginWildcard, info.has_origin_wildcard);
-
-  // Set paths and exclude paths from associated app.
-  value.SetKey(kPaths, GetPathsValue(info.paths));
-  value.SetKey(kExcludePaths, GetPathsValue(info.exclude_paths));
-
-  // TODO(crbug/1072058): Set "user_permission" field when implementing user
-  // settings in the chrome://settings page.
+  // Set include_paths and exclude paths from associated app.
+  value.SetKey(kIncludePaths, GetIncludePathsValue(info.paths));
+  value.SetKey(kExcludePaths, GetExcludePathsValue(info.exclude_paths));
   return value;
 }
 
@@ -212,17 +362,17 @@ bool IsHandlerForApp(const AppId& app_id,
                      const base::FilePath& profile_path,
                      bool match_app_id,
                      const base::Value& handler) {
-  const std::string* const app_id_local = handler.FindStringKey(kAppId);
-  base::Optional<base::FilePath> profile_path_local =
+  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
+  base::Optional<base::FilePath> handler_profile_path =
       util::ValueToFilePath(handler.FindKey(kProfilePath));
 
-  if (!app_id_local || !profile_path_local)
+  if (!handler_app_id || !handler_profile_path)
     return false;
 
-  if (*profile_path_local != profile_path)
+  if (*handler_profile_path != profile_path)
     return false;
 
-  return !match_app_id || *app_id_local == app_id;
+  return !match_app_id || *handler_app_id == app_id;
 }
 
 // Removes entries that match |profile_path| and |app_id|.
@@ -256,6 +406,110 @@ void RemoveEntries(base::Value& pref_value,
   for (const auto& origin_to_remove : origins_to_remove)
     pref_value.RemoveKey(origin_to_remove);
 }
+
+// Sets |choice| on every path in |include_paths| that matches |url|.
+void UpdateSavedChoice(base::Value& include_paths,
+                       const GURL& url,
+                       UrlHandlerSavedChoice choice,
+                       const base::Time& time) {
+  // |include_paths| is a list of include path dicts. Eg:
+  // [ {
+  //    "choice": 0,
+  //    "path": "/abc",
+  //    "timestamp": "-9223372036854775808"
+  // } ]
+  auto include_paths_list = include_paths.TakeList();
+  for (base::Value& include_path_dict : include_paths_list) {
+    if (!include_path_dict.is_dict())
+      continue;
+    const std::string* path = include_path_dict.FindStringKey(kPath);
+    if (!path)
+      continue;
+
+    // Any matching path dict. will be updated with the input choice and
+    // timestamp.
+    if (PathMatchesPathPattern(url.path(), *path)) {
+      include_path_dict.SetIntKey(kChoice, static_cast<int>(choice));
+      include_path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+    }
+  }
+  include_paths = base::Value(std::move(include_paths_list));
+}
+
+void SaveChoiceImpl(const AppId* app_id,
+                    const base::FilePath* profile_path,
+                    const GURL& url,
+                    const UrlHandlerSavedChoice choice,
+                    const base::Time& time,
+                    base::Value& pref_value,
+                    const std::string& origin_str,
+                    const bool origin_trimmed) {
+  base::Value* const handlers_mutable = pref_value.FindListKey(origin_str);
+  if (handlers_mutable) {
+    DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
+    base::Value::ListStorage handlers = handlers_mutable->TakeList();
+    for (auto& handler : handlers) {
+      if (!handler.is_dict())
+        continue;
+      const std::string* const handler_app_id = handler.FindStringKey(kAppId);
+      base::Optional<base::FilePath> handler_profile_path =
+          util::ValueToFilePath(handler.FindKey(kProfilePath));
+      if (!handler_app_id || !handler_profile_path)
+        continue;
+
+      if (choice == UrlHandlerSavedChoice::kInApp) {
+        if (*handler_app_id != *app_id ||
+            *handler_profile_path != *profile_path) {
+          continue;
+        }
+      }
+
+      base::Value* const include_paths = handler.FindListKey(kIncludePaths);
+      if (include_paths)
+        UpdateSavedChoice(*include_paths, url, choice, time);
+    }
+    *handlers_mutable = base::Value(std::move(handlers));
+  }
+}
+
+// Saves |choice| and |time| to all handler include_paths that match |app_id|,
+// |profile_path|, and |url|. |url| provides both origin and path for matching.
+void SaveChoice(PrefService* local_state,
+                const AppId* app_id,
+                const base::FilePath* profile_path,
+                const GURL& url,
+                const UrlHandlerSavedChoice choice,
+                const base::Time& time) {
+  DCHECK(url.is_valid());
+  DCHECK(local_state);
+  DCHECK(choice != UrlHandlerSavedChoice::kNone);
+  // |app_id| and |profile_path| are not needed when choice == kInBrowser.
+  DCHECK(choice != UrlHandlerSavedChoice::kInBrowser ||
+         (app_id == nullptr && profile_path == nullptr));
+
+  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value* const pref_value = update.Get();
+  if (!pref_value || !pref_value->is_dict())
+    return;
+
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque())
+    return;
+
+  if (origin.scheme() != url::kHttpsScheme)
+    return;
+
+  std::string origin_str = origin.Serialize();
+
+  // SaveChoiceImpl modifies prefs but produces no output.
+  TryDifferentOriginSubstrings(
+      origin_str, [app_id, profile_path, &url, choice, &time, pref_value](
+                      const std::string& origin_str, bool origin_trimmed) {
+        SaveChoiceImpl(app_id, profile_path, url, choice, time, *pref_value,
+                       origin_str, origin_trimmed);
+      });
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -312,8 +566,8 @@ void UpdateWebApp(PrefService* local_state,
                   const AppId& app_id,
                   const base::FilePath& profile_path,
                   const apps::UrlHandlers& url_handlers) {
-  // TODO(crbug/1072058): Handle "user_permission" field when it is
-  // implemented.
+  // TODO(crbug/1072058): Retain saved choices where possible if there are
+  // updates to 'url_handlers'.
   RemoveWebApp(local_state, app_id, profile_path);
   AddWebApp(local_state, app_id, profile_path, url_handlers);
 }
@@ -363,6 +617,24 @@ std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
     return {};
 
   return FindMatches(*pref_value, url);
+}
+
+void SaveOpenInApp(PrefService* local_state,
+                   const AppId& app_id,
+                   const base::FilePath& profile_path,
+                   const GURL& url,
+                   const base::Time& time) {
+  DCHECK(!profile_path.empty());
+  DCHECK(!app_id.empty());
+  SaveChoice(local_state, &app_id, &profile_path, url,
+             UrlHandlerSavedChoice::kInApp, time);
+}
+
+void SaveOpenInBrowser(PrefService* local_state,
+                       const GURL& url,
+                       const base::Time& time) {
+  SaveChoice(local_state, /*app_id=*/nullptr, /*profile_path=*/nullptr, url,
+             UrlHandlerSavedChoice::kInBrowser, time);
 }
 
 }  // namespace url_handler_prefs

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -27,6 +28,8 @@ constexpr char kAppUrl1[] = "https://web-app1.com/";
 constexpr char kAppUrl2[] = "https://web-app2.com/";
 constexpr char kOriginUrl1[] = "https://origin-1.com/abc";
 constexpr char kOriginUrl2[] = "https://origin-2.com/abc";
+constexpr char kTime1[] = "1 Jan 2000 00:00:00 GMT";
+constexpr char kTime2[] = "2 Jan 2000 00:00:00 GMT";
 constexpr base::FilePath::CharType kProfile1[] = FILE_PATH_LITERAL("/profile1");
 constexpr base::FilePath::CharType kProfile2[] = FILE_PATH_LITERAL("/profile2");
 
@@ -44,6 +47,8 @@ class UrlHandlerPrefsTest : public ::testing::Test {
     origin_2_ = url::Origin::Create(origin_url_2_);
     profile_1_ = base::FilePath(kProfile1);
     profile_2_ = base::FilePath(kProfile2);
+    EXPECT_TRUE(base::Time::FromString(kTime1, &time_1_));
+    EXPECT_TRUE(base::Time::FromString(kTime2, &time_2_));
   }
 
   ~UrlHandlerPrefsTest() override = default;
@@ -85,6 +90,8 @@ class UrlHandlerPrefsTest : public ::testing::Test {
   url::Origin origin_2_;
   base::FilePath profile_1_;
   base::FilePath profile_2_;
+  base::Time time_1_;
+  base::Time time_2_;
 
  private:
   ScopedTestingLocalState scoped_testing_local_state_;
@@ -688,6 +695,231 @@ TEST_F(UrlHandlerPrefsTest, UpdateAppWithPaths) {
     // No longer match since it's removed
     auto matches = url_handler_prefs::FindMatchingUrlHandlers(
         LocalState(), origin_url_2_.Resolve("c"));
+    EXPECT_EQ(0u, matches.size());
+  }
+}
+
+// Tests that choices can be saved when paths are not specified in
+// web-app-origin-association and the default path "/*" is assumed.
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_DefaultPaths) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+  {
+    // Check default choice and timestamp.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kNone);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, base::Time::Min());
+  }
+  // Save choice as UrlHandlerSavedChoice::kInApp.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   origin_url_1_, time_1_);
+  {
+    // Check saved choice and timestamp.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_1_);
+  }
+}
+
+// Check for the saved choice and timestamp.
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_InApp) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_,
+      {apps::UrlHandlerInfo(origin_1_, false, {"/abc", "/def"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+  // Save choice as UrlHandlerSavedChoice::kInApp to "/abc" path.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   origin_1_.GetURL().Resolve("abc"), time_1_);
+  {
+    // Check saved choice and timestamp.
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("abc"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_1_);
+  }
+  {
+    // Check unaffected path.
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("def"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kNone);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, base::Time::Min());
+  }
+}
+
+// Saving as UrlHandlerSavedChoice::kInBrowser prevents an app from being
+// matched as a URL handler.
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_InBrowser) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+  {
+    // Expect installed app to be matched with no saved choice.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kNone);
+  }
+  url_handler_prefs::SaveOpenInBrowser(LocalState(), origin_url_1_, time_1_);
+  {
+    // Expect the same URL to not be matched.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+}
+
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_HasExcludePaths) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_,
+      {apps::UrlHandlerInfo(origin_1_, false, {"/a", "/b"}, {"/x"})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+  // Save choice as UrlHandlerSavedChoice::kInApp for "/a" path.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   origin_1_.GetURL().Resolve("a"), time_1_);
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("a"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("b"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kNone);
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("x"));
+    EXPECT_EQ(0u, matches.size());
+  }
+}
+
+// Saved choices can be get overwritten.
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_Overwrite) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/*", "/a"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+
+  // URL with "/b" path matches and saves to "/*" URL handler path.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   origin_1_.GetURL().Resolve("b"), time_1_);
+  // URL with "/a" path matches and saves to both URL handler paths.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   origin_1_.GetURL().Resolve("a"), time_2_);
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("b"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_2_);
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("a"));
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_2_);
+  }
+}
+
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_MultipleApps) {
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+  const auto web_app_2 = WebAppWithUrlHandlers(
+      app_url_2_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers());
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
+                               web_app_2->url_handlers());
+  {
+    // Both apps should match the input URL.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(2u, matches.size());
+    EXPECT_EQ(matches[0].app_id, web_app_1->app_id());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kNone);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, base::Time::Min());
+    EXPECT_EQ(matches[1].app_id, web_app_2->app_id());
+    EXPECT_EQ(matches[1].saved_choice, UrlHandlerSavedChoice::kNone);
+    EXPECT_EQ(matches[1].saved_choice_timestamp, base::Time::Min());
+  }
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_1->app_id(),
+                                   profile_1_, origin_url_1_, time_1_);
+  {
+    // Only the app with a path saved as UrlHandlerSavedChoice::kInApp is
+    // returned from matching.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].app_id, web_app_1->app_id());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_1_);
+  }
+}
+
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_MultipleAppsInBrowser) {
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+  const auto web_app_2 = WebAppWithUrlHandlers(
+      app_url_2_, {apps::UrlHandlerInfo(origin_1_, false, {"/*"}, {})});
+
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers());
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
+                               web_app_2->url_handlers());
+
+  url_handler_prefs::SaveOpenInBrowser(LocalState(), origin_url_1_, time_1_);
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+}
+
+TEST_F(UrlHandlerPrefsTest, SaveUserChoice_OriginWildcardMatch) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_2_,
+      {apps::UrlHandlerInfo(origin_1_, /*has_origin_wildcard*/ true)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+
+  GURL en_origin_url_1("https://en.origin-1.com/abc");
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
+                                                              en_origin_url_1);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  // Choice should also be saved successfully to the app that matches because of
+  // its origin wildcard.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app->app_id(), profile_1_,
+                                   en_origin_url_1, time_1_);
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    ASSERT_EQ(1u, matches.size());
+    EXPECT_EQ(matches[0].saved_choice, UrlHandlerSavedChoice::kInApp);
+    EXPECT_EQ(matches[0].saved_choice_timestamp, time_1_);
+  }
+
+  url_handler_prefs::SaveOpenInBrowser(LocalState(), en_origin_url_1, time_1_);
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
+                                                              en_origin_url_1);
     EXPECT_EQ(0u, matches.size());
   }
 }

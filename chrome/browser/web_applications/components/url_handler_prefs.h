@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/prefs/pref_service.h"
@@ -38,9 +38,9 @@ namespace web_app {
 // contained a "url_handlers" field with an "*.contoso.com" origin, an entry
 // will be added here under the "https://contoso.com" key. The mapped value
 // contains a list of handlers, each of which identifies the app_id and profile
-// of the app that could be launched. It also contains "paths" and
-// "exclude_paths" patterns for more specific matches. it also contains
-// information about user permissions and saved defaults.
+// of the app that could be launched. It also contains "include_paths" and
+// "exclude_paths" patterns for more specific matches. It also contains saved
+// user preferences.
 //
 // An example of the information stored using this model:
 // {
@@ -51,18 +51,23 @@ namespace web_app {
 //             "profile_path": "C:\\Users\\alias\\Profile\\Default",
 //             "origin": "https://contoso.com",
 //             "has_origin_wildcard": false,
-//             "paths": ["/*"],
+//             "include_paths": [
+//                 {
+//                   "path": "/*",
+//                   "choice": 2,  // kInApp
+//                   // "2000-01-01 00:00:00.000 UTC"
+//                   "timestamp": "12591158400000000"
+//                 }
+//             ],
 //             "exclude_paths": ["/abc"],
-//             "user_permission": true
 //         },
 //         {
 //             "app_id": "qruhrugqrgjdsdfhjghjrghjhdfgaaamenww",
 //             "profile_path": "C:\\Users\\alias\\Profile\\Default",
 //             "origin": "https://contoso.com",
 //             "has_origin_wildcard": true,
-//             "paths": [],
+//             "include_paths": [],
 //             "exclude_paths": [],
-//             "user_permission": false
 //         }
 //     ],
 //     "https://www.en.osotnoc.org": [...]
@@ -91,13 +96,32 @@ void RemoveProfile(PrefService* local_state,
 void Clear(PrefService* local_state);
 
 // Search for all (app, profile) combinations that have active URL handlers
-// that matches |url|.
+// which matches |url|.
+// If there are results with saved_choice == kInApp, only the one with the most
+// recent timestamp is returned. Otherwise, if there results with saved_choice
+// == kNone, all of those will be returned. No results with saved_choiced ==
+// kInBrowser will be returned in any case.
 // |url| is a fully specified URL, eg. "https://contoso.com/abc/def".
-// TODO(crbug/1072058): Filter out inactive handlers when user permission is
-// implemented.
 std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
     PrefService* local_state,
     const GURL& url);
+
+// Users can save their app choice from the intent picker dialog so that they
+// are not prompted again the next time a similar URL matches to the same app.
+void SaveOpenInApp(PrefService* local_state,
+                   const AppId& app_id,
+                   const base::FilePath& profile_path,
+                   const GURL& url,
+                   const base::Time& time = base::Time::Now());
+
+// Users can save their choice to not launch a web app when a similar URL is
+// matched in the future.
+void SaveOpenInBrowser(PrefService* local_state,
+                       const GURL& url,
+                       const base::Time& time = base::Time::Now());
+
+// TODO(crbug/1072058): Implement methods to list and reset saved choices. These
+// will be used to expose saved URL handling app choices to chrome://settings.
 
 }  // namespace url_handler_prefs
 

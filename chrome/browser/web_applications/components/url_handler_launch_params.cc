@@ -11,12 +11,21 @@ namespace web_app {
 UrlHandlerLaunchParams::UrlHandlerLaunchParams(
     const base::FilePath& profile_path,
     const AppId& app_id,
-    const GURL& url)
-    : profile_path(profile_path), app_id(app_id), url(url) {
+    const GURL& url,
+    const UrlHandlerSavedChoice saved_choice,
+    const base::Time& saved_choice_timestamp)
+    : profile_path(profile_path),
+      app_id(app_id),
+      url(url),
+      saved_choice(saved_choice),
+      saved_choice_timestamp(saved_choice_timestamp) {
   DCHECK(!profile_path.empty());
   DCHECK(!app_id.empty());
   DCHECK(url.is_valid());
 }
+
+UrlHandlerLaunchParams::UrlHandlerLaunchParams(
+    const UrlHandlerLaunchParams& other) = default;
 
 UrlHandlerLaunchParams::~UrlHandlerLaunchParams() = default;
 
