@@ -1,5 +1,6 @@
 include_rules = [
+  "+components/viz/common/surfaces",
   "+extensions/common/image_util.h",
   "+third_party/skia/include",
-  "+ui"
+  "+ui",
 ]

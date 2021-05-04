@@ -10,6 +10,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"

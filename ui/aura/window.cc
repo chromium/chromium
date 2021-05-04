@@ -309,6 +309,10 @@ gfx::Rect Window::GetActualBoundsInRootWindow() const {
   return bounds_in_root;
 }
 
+const gfx::Transform& Window::transform() const {
+  return layer()->transform();
+}
+
 gfx::Rect Window::GetBoundsInScreen() const {
   gfx::Rect bounds(GetBoundsInRootWindow());
   const Window* root = GetRootWindow();

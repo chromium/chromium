@@ -25,6 +25,7 @@ include_rules = [
   "+ui/accessibility",
   "+ui/aura",
   "+ui/base/ime",
+  "+ui/compositor",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

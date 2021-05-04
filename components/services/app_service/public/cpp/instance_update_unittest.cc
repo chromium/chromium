@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "base/strings/string_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "content/public/test/browser_task_environment.h"

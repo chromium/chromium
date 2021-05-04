@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "extensions/common/image_util.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 
 namespace ui_devtools {

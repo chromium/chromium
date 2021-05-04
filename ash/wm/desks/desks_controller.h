@@ -19,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "ui/wm/public/activation_change_observer.h"
 

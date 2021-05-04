@@ -51,6 +51,10 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/compositor/throughput_tracker.h"
+#endif
+
 // NOTE: For more information about the objects and files in this directory,
 // view: http://dev.chromium.org/developers/design-documents/browser-window
 
@@ -79,9 +83,6 @@ class WebUITabStripContainerView;
 
 namespace ui {
 class NativeTheme;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ThroughputTracker;
-#endif
 }  // namespace ui
 
 namespace version_info {

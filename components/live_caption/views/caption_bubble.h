@@ -19,6 +19,7 @@
 
 namespace base {
 class RetainingOneShotTimer;
+class TickClock;
 }
 
 namespace views {
