@@ -205,27 +205,6 @@ TEST(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
   EXPECT_EQ(fake_text_input_client.text(), u"helloworld ");
 }
 
-TEST(AutocorrectManagerTest, UndoAutocorrectNoComposition) {
-  ui::IMEBridge::Initialize();
-  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  ui::InputMethodChromeOS ime(nullptr);
-  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
-  ime.SetFocusedTextInputClient(&fake_text_input_client);
-
-  ::testing::NiceMock<MockSuggestionHandler> mock_suggestion_handler;
-  AutocorrectManager manager(&mock_suggestion_handler);
-  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
-                                   /*anchor_pos=*/4);
-  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  // Move cursor to the middle of 'the'.
-  fake_text_input_client.SetTextAndSelection(u"the ", gfx::Range(2));
-
-  manager.UndoAutocorrect();
-
-  EXPECT_EQ(fake_text_input_client.text(), u"teh ");
-}
-
 TEST(AutocorrectManagerTest, RecordVirtualKeyboardMetricsWhenVisible) {
   ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;

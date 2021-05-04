@@ -210,10 +210,44 @@ void AutocorrectManager::UndoAutocorrect() {
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range range = input_context->GetAutocorrectRange();
 
-  input_context->SetComposingRange(range.start(), range.end(), {});
-  input_context->CommitText(
-      original_text_,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  if (input_context->HasCompositionText()) {
+    input_context->SetComposingRange(range.start(), range.end(), {});
+    input_context->CommitText(
+        original_text_,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  } else {
+    // NOTE: GetSurroundingTextInfo() could return a stale cache that no longer
+    // reflects reality, due to async-ness between IMF and TextInputClient.
+    // TODO(crbug/1194424): Work around the issue or fix
+    // GetSurroundingTextInfo().
+    const ui::SurroundingTextInfo surrounding_text =
+        input_context->GetSurroundingTextInfo();
+
+    // TODO(crbug/1111135): Can we get away with deleting less text?
+    // This will not quite work properly if there is text actually highlighted,
+    // and cursor is at end of the highlight block, but no easy way around it.
+    // First delete everything before cursor.
+    input_context->DeleteSurroundingText(
+        -static_cast<int>(surrounding_text.selection_range.start()),
+        surrounding_text.surrounding_text.length());
+
+    // Submit the text after the cursor in composition mode to leave the cursor
+    // at the start
+    ui::CompositionText composition_text;
+    composition_text.text =
+        surrounding_text.surrounding_text.substr(range.end());
+    input_context->UpdateCompositionText(composition_text,
+                                         /*cursor_pos=*/0, /*visible=*/true);
+    input_context->ConfirmCompositionText(/*reset_engine=*/false,
+                                          /*keep_selection=*/true);
+
+    // Insert the text before the cursor - now there should be the correct text
+    // and the cursor position will not have changed.
+    input_context->CommitText(
+        surrounding_text.surrounding_text.substr(0, range.start()) +
+            original_text_,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  }
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
