@@ -37,7 +37,6 @@ class GPU_GLES2_EXPORT SharedImageVideo
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
-      std::unique_ptr<gles2::AbstractTexture> abstract_texture,
       scoped_refptr<SharedContextState> shared_context_state,
       bool is_thread_safe);
 
@@ -101,9 +100,6 @@ class GPU_GLES2_EXPORT SharedImageVideo
   void BeginGLReadAccess(const GLuint service_id);
 
   scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
-
-  // |abstract_texture_| is only used for legacy mailbox.
-  std::unique_ptr<gles2::AbstractTexture> abstract_texture_;
   scoped_refptr<SharedContextState> context_state_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageVideo);

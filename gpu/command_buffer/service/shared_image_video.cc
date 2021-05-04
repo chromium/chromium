@@ -43,7 +43,6 @@ SharedImageVideo::SharedImageVideo(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
-    std::unique_ptr<gles2::AbstractTexture> abstract_texture,
     scoped_refptr<SharedContextState> context_state,
     bool is_thread_safe)
     : SharedImageBackingAndroid(
@@ -59,7 +58,6 @@ SharedImageVideo::SharedImageVideo(
           is_thread_safe,
           base::ScopedFD()),
       stream_texture_sii_(std::move(stream_texture_sii)),
-      abstract_texture_(std::move(abstract_texture)),
       context_state_(std::move(context_state)) {
   DCHECK(stream_texture_sii_);
   DCHECK(context_state_);
@@ -89,10 +87,11 @@ void SharedImageVideo::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 bool SharedImageVideo::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-  DCHECK(abstract_texture_);
-  mailbox_manager->ProduceTexture(mailbox(),
-                                  abstract_texture_->GetTextureBase());
-  return true;
+  // Android does not use legacy mailbox anymore. Hence marking this as
+  // NOTREACHED() now. Once all platform stops using legacy mailbox, this method
+  // can be removed.
+  NOTREACHED();
+  return false;
 }
 
 size_t SharedImageVideo::EstimatedSizeForMemTracking() const {
