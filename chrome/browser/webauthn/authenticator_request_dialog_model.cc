@@ -109,6 +109,12 @@ AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
 }
 
 void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
+  if (!started_) {
+    // Dialog isn't showing yet. Remember to show this step when it appears.
+    pending_step_ = step;
+    return;
+  }
+
   current_step_ = step;
   for (auto& observer : observers_)
     observer.OnStepTransition();
@@ -122,8 +128,10 @@ void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
     base::Optional<device::FidoTransportProtocol> last_used_transport,
     bool is_conditional) {
+  DCHECK(!started_);
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
+  started_ = true;
   transport_availability_ = std::move(transport_availability);
   last_used_transport_ = last_used_transport;
 
@@ -169,7 +177,10 @@ void AuthenticatorRequestDialogModel::
   auto most_likely_transport =
       SelectMostLikelyTransport(transport_availability_, last_used_transport_,
                                 cable_extension_provided_, have_paired_phones_);
-  if (most_likely_transport) {
+  if (pending_step_) {
+    SetCurrentStep(*pending_step_);
+    pending_step_.reset();
+  } else if (most_likely_transport) {
     StartGuidedFlowForTransport(*most_likely_transport);
   } else if (!transport_availability_.available_transports.empty()) {
     SetCurrentStep(Step::kTransportSelection);
