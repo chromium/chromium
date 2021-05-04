@@ -11,6 +11,9 @@ import './wifi_info.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Network, NetworkHealthProviderInterface} from './diagnostics_types.js';
+import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+
 /**
  * @fileoverview
  * 'network-info' is responsible for observing a network guid and
@@ -21,11 +24,51 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  /**
+   * @private {?NetworkHealthProviderInterface}
+   */
+  networkHealthProvider_: null,
+
   properties: {
     /** @type {string} */
     guid: {
       type: String,
       value: '',
     },
+
+    /** @private {!Network} */
+    network_: {
+      type: Object,
+    },
+  },
+
+  observers: ['observeNetwork_(guid)'],
+
+  /** @override */
+  created() {
+    this.networkHealthProvider_ = getNetworkHealthProvider();
+  },
+
+  /** @private */
+  observeNetwork_() {
+    if (!this.guid) {
+      return;
+    }
+    // Calling observeNetwork will trigger onNetworkStateChanged.
+    this.networkHealthProvider_.observeNetwork(this, this.guid);
+  },
+
+  /**
+   * Implements NetworkStateObserver.onNetworkStateChanged
+   * @param {!Network} network
+   */
+  onNetworkStateChanged(network) {
+    this.network_ = network;
+  },
+
+  /** @override */
+  detached() {
+    // TODO(michaelcheco): Stop observing guid when the real
+    // observeNetwork implementation is added.
   },
 });

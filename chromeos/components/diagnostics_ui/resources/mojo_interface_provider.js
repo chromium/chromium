@@ -11,7 +11,7 @@ import './system_routine_controller.mojom-lite.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {NetworkHealthProviderInterface, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
-import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
+import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from './fake_data.js';
 import {FakeNetworkHealthProvider} from './fake_network_health_provider.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
 import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
@@ -88,6 +88,9 @@ function setupFakeNetworkHealthProvider_() {
   const provider = new FakeNetworkHealthProvider();
   // The fake provides a stable state with all networks connected.
   provider.setFakeNetworkGuidInfo([fakeAllNetworksAvailable]);
+  provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
+  provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+  provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
 
   setNetworkHealthProviderForTesting(provider);
 }

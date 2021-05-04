@@ -4,6 +4,11 @@
 
 import 'chrome://diagnostics/network_info.js';
 
+import {Network} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
+import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
@@ -13,6 +18,14 @@ export function networkInfoTestSuite() {
   /** @type {?NetworkInfoElement} */
   let networkInfoElement = null;
 
+  /** @type {?FakeNetworkHealthProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeNetworkHealthProvider();
+    setNetworkHealthProviderForTesting(provider);
+  });
+
   setup(() => {
     document.body.innerHTML = '';
   });
@@ -20,45 +33,32 @@ export function networkInfoTestSuite() {
   teardown(() => {
     networkInfoElement.remove();
     networkInfoElement = null;
+    provider.reset();
   });
 
-  function initializeNetworkInfo() {
+  /**
+   * @param {string} guid
+   * @param {!Array<!Network>} networkStateList
+   */
+  function initializeNetworkInfo(guid, networkStateList) {
     assertFalse(!!networkInfoElement);
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState(guid, networkStateList);
 
     // Add the network info to the DOM.
     networkInfoElement = /** @type {!NetworkInfoElement} */ (
         document.createElement('network-info'));
     assertTrue(!!networkInfoElement);
+    networkInfoElement.guid = guid;
     document.body.appendChild(networkInfoElement);
 
     return flushTasks();
   }
 
-  test('NetworkInfoPopulated', () => {
-    return initializeNetworkInfo().then(() => {
+  test('NetworkStatePopulated', () => {
+    return initializeNetworkInfo('wifiGuid', [fakeWifiNetwork]).then(() => {
       dx_utils.assertElementContainsText(
-          networkInfoElement.$$('#cardTitle'), 'Network');
-    });
-  });
-
-  test('WifiInfoPresent', () => {
-    return initializeNetworkInfo().then(() => {
-      const wifiInfoElement = networkInfoElement.$$('wifi-info');
-      assertTrue(!!wifiInfoElement);
-    });
-  });
-
-  test('EthernetInfoPresent', () => {
-    return initializeNetworkInfo().then(() => {
-      const ethernetInfoElement = networkInfoElement.$$('ethernet-info');
-      assertTrue(!!ethernetInfoElement);
-    });
-  });
-
-  test('CellularInfoPresent', () => {
-    return initializeNetworkInfo().then(() => {
-      const cellularInfoElement = networkInfoElement.$$('cellular-info');
-      assertTrue(!!cellularInfoElement);
+          networkInfoElement.$$('#guid'), fakeWifiNetwork.guid);
     });
   });
 }

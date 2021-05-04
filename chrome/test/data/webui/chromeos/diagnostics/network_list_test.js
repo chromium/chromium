@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/network_list.js';
 
 import {NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeNetworkGuidInfoList} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -42,6 +42,9 @@ export function networkListTestSuite() {
   function initializeNetworkList(fakeNetworkGuidInfoList) {
     assertFalse(!!networkListElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
+    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
 
     // Add the network list to the DOM.
     networkListElement = /** @type {!NetworkListElement} */ (
@@ -138,5 +141,19 @@ export function networkListTestSuite() {
             assertEquals(networkInfoElements[i].guid, networkGuids[i]);
           }
         });
+  });
+
+  test('NetworkInfoElementsPopulated', () => {
+    let networkInfoElements;
+    return initializeNetworkList(fakeNetworkGuidInfoList).then(async () => {
+      networkInfoElements = getNetworkInfoElements();
+      // The first network list observation provides guids for Cellular
+      // and WiFi. The connectivity-card is responsbile for the Ethernet
+      // guid as it's the currently active guid.
+      dx_utils.assertElementContainsText(
+          networkInfoElements[0].$$('#guid'), fakeWifiNetwork.guid);
+      dx_utils.assertElementContainsText(
+          networkInfoElements[1].$$('#guid'), fakeCellularNetwork.guid);
+    });
   });
 }
