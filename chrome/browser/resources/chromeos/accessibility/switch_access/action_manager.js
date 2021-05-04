@@ -69,7 +69,8 @@ export class ActionManager {
    */
   static onSelect() {
     const node = Navigator.byItem.currentNode;
-    if (node.actions.length <= 1 || !node.location) {
+    if (MenuManager.isMenuOpen() || node.actions.length <= 1 ||
+        !node.location) {
       node.doDefaultAction();
       return;
     }
