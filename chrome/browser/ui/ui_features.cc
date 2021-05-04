@@ -162,6 +162,9 @@ const base::FeatureParam<int> kTabSearchRecentlyClosedMaxEntries{
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUseRelaunchToUpdateString{
+    "UseRelaunchToUpdateString", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a web-based separator that's only used for performance testing. See
 // https://crbug.com/993502.
 const base::Feature kWebFooterExperiment{"WebFooterExperiment",

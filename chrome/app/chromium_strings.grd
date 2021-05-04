@@ -625,6 +625,9 @@ Chromium is unable to recover your settings.
         <message name="IDS_UPDATE_NOW" desc="In Title Case: The text label of the Update Chrome Now menu item">
           Update &amp;Chromium
         </message>
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+          Relaunch to Update &amp;Chromium
+        </message>
       </if>
       <if expr="not use_titlecase and not chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
@@ -633,6 +636,9 @@ Chromium is unable to recover your settings.
         <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome Now menu item">
           Update &amp;Chromium
         </message>
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+          Relaunch to update &amp;Chromium
+        </message>
       </if>
       <if expr="chromeos">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
@@ -640,6 +646,9 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome OS Now menu item">
           Update &amp;Chromium OS
+        </message>
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome OS menu item, when relaunch to update experiment is enabled">
+          Relaunch to update &amp;Chromium OS
         </message>
       </if>
 
