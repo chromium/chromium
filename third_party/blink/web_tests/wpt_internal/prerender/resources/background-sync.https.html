@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<script src="deferred-promise-utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+
+const params = new URLSearchParams(location.search);
+
+// The main test page (restriction-background-sync.https.html) loads the
+// initiator page, then the initiator page will prerender itself with the
+// `prerendering` parameter.
+const isPrerendering = params.has('prerendering');
+
+async function service_worker_install() {
+  const scope = "resources/";
+  const script = "background-sync.js";
+
+  const t = async_test("Test background sync");
+  const registration =
+      await service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(() => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+  return registration;
+}
+
+if (!isPrerendering) {
+  loadInitiatorPage();
+} else {
+  const prerenderEventCollector = new PrerenderEventCollector();
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      // TODO(crbug.com/1203619): The service worker registration is deferred in
+      // the prerendering. So, we need to test only periodicSync.register in
+      // this promise in order to test if it is deferred correctly. We will move
+      // the service worker installation out of this promise after its
+      // registration is granted.
+      const registration = await service_worker_install();
+      await registration.periodicSync.register(
+          'periodic', { minInterval: 1000 });
+      resolve();
+    } catch (e) {
+      reject(`periodicSync.register error: ${e.toString()}`);
+    }
+  });
+  prerenderEventCollector.start(promise, 'periodicSync.register');
+}
+
+</script>
