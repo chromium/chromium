@@ -56,7 +56,8 @@ https://docs.google.com/drawings/d/1AQDT_DBgu0Ceq_84jGdhLTELMUpmF4h292EWFHTMnkc/
 Elements with a large fixed width can expand the layout width from the normal
 value (980 or device-width). This can happen when a mobile site includes a huge
 image for example. We respect the implied width of the page instead of the one
-stated by the viewport tag; this makes us robust to webmaster mistakes.
+stated by the viewport tag; this makes us robust to website administrator
+mistakes.
 ***
 
 Font Scale is only affected by the TextZoom setting.
