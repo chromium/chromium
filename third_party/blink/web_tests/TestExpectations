@@ -3564,6 +3564,9 @@ crbug.com/626703 [ Win ] external/wpt/resource-timing/cross-origin-start-end-tim
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-url-with-space.any.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
 
+# this test blocks import due to an issue with rebaselining it (crbug.com/1205249)
+crbug.com/1205249 [ Linux ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
+
 # crbug.com/1203344 idlharness failures:
 crbug.com/1203344 [ Mac10.15 ] external/wpt/dom/idlharness.window.html?exclude=Node [ Failure Crash ]
 crbug.com/1203344 [ Mac10.15 ] external/wpt/webxr/idlharness.https.window.html [ Failure Timeout ]
