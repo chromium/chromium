@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_delegate_impl.h"
+#include "ash/app_list/bubble/app_list_bubble.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -260,6 +261,9 @@ AppListControllerImpl::AppListControllerImpl()
       presenter_(this, std::make_unique<AppListPresenterDelegateImpl>(this)),
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
+  if (features::IsAppListBubbleEnabled())
+    app_list_bubble_ = std::make_unique<AppListBubble>();
+
   model_->AddObserver(this);
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
@@ -540,6 +544,11 @@ void AppListControllerImpl::DismissAppList() {
     tracked_app_window_ = nullptr;
   }
 
+  // Don't check tablet mode here. This function can be called during tablet
+  // mode transitions and we always want to close anyway.
+  if (features::IsAppListBubbleEnabled())
+    app_list_bubble_->Dismiss();
+
   presenter_.Dismiss(base::TimeTicks());
 }
 
@@ -553,6 +562,12 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 }
 
 void AppListControllerImpl::ShowAppList() {
+  if (features::IsAppListBubbleEnabled() && !IsTabletMode()) {
+    DCHECK(!presenter_.GetTargetVisibility());
+    app_list_bubble_->Show(GetDisplayIdToShowAppListOn());
+    return;
+  }
+  DCHECK(!features::IsAppListBubbleEnabled() || !app_list_bubble_->IsShowing());
   presenter_.Show(AppListViewState::kPeeking, GetDisplayIdToShowAppListOn(),
                   base::TimeTicks());
 }
@@ -695,6 +710,10 @@ void AppListControllerImpl::Show(int64_t display_id,
   if (show_source.has_value())
     LogAppListShowSource(show_source.value());
 
+  if (features::IsAppListBubbleEnabled() && !IsTabletMode()) {
+    app_list_bubble_->Show(display_id);
+    return;
+  }
   presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp);
 }
 
@@ -738,6 +757,12 @@ ShelfAction AppListControllerImpl::ToggleAppList(
 
     LogAppListShowSource(show_source);
     return SHELF_ACTION_APP_LIST_SHOWN;
+  }
+
+  if (features::IsAppListBubbleEnabled()) {
+    app_list_bubble_->Toggle(display_id);
+    return app_list_bubble_->IsShowing() ? SHELF_ACTION_APP_LIST_SHOWN
+                                         : SHELF_ACTION_APP_LIST_DISMISSED;
   }
 
   base::AutoReset<bool> auto_reset(&should_dismiss_immediately_,
@@ -988,6 +1013,10 @@ void AppListControllerImpl::OnTabletModeStarted() {
   // switching to tablet mode from side shelf app list, to ensure the app list
   // is re-shown and laid out with correct "side shelf" value.
   if (app_list_view && app_list_view->is_side_shelf())
+    DismissAppList();
+
+  // AppListBubble is only used in clamshell mode.
+  if (features::IsAppListBubbleEnabled())
     DismissAppList();
 
   presenter_.OnTabletModeChanged(true);

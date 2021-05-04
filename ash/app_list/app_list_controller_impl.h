@@ -52,6 +52,7 @@ class MouseWheelEvent;
 
 namespace ash {
 
+class AppListBubble;
 class AppListControllerObserver;
 
 // Ash's AppListController owns the AppListModel and implements interface
@@ -370,6 +371,8 @@ class ASH_EXPORT AppListControllerImpl
   void SetHomeLauncherAnimationCallbackForTesting(
       HomeLauncherAnimationCallback callback);
 
+  AppListBubble* app_list_bubble_for_test() { return app_list_bubble_.get(); }
+
   void RecordShelfAppLaunched();
 
   // Updates which container the launcher window should be in.
@@ -470,6 +473,10 @@ class ASH_EXPORT AppListControllerImpl
   // |presenter_| should be put below |client_| and |model_| to prevent a crash
   // in destruction.
   AppListPresenterImpl presenter_;
+
+  // Manages the clamshell launcher bubble. Null when the feature AppListBubble
+  // is disabled.
+  std::unique_ptr<AppListBubble> app_list_bubble_;
 
   // True if the on-screen keyboard is shown.
   bool onscreen_keyboard_shown_ = false;

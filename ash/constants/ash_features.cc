@@ -83,6 +83,10 @@ const base::Feature kAmbientModeDevUseProdFeature{
     "ChromeOSAmbientModeDevChannelUseProdServer",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// See https://crbug.com/1204551
+const base::Feature kAppListBubble{"AppListBubble",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable ARC ADB sideloading support.
 const base::Feature kArcAdbSideloadingFeature{
     "ArcAdbSideloading", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -792,6 +796,10 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
+}
+
+bool IsAppListBubbleEnabled() {
+  return base::FeatureList::IsEnabled(kAppListBubble);
 }
 
 bool IsCellularActivationUiEnabled() {

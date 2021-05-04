@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
+#include "ash/app_list/bubble/app_list_bubble.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -19,6 +20,7 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -109,6 +111,10 @@ void DismissAppListNow() {
 
 aura::Window* GetAppListViewNativeWindow() {
   return GetAppListView()->GetWidget()->GetNativeView();
+}
+
+void EnableTabletMode() {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 }
 
 }  // namespace
@@ -1223,6 +1229,75 @@ TEST_F(AppListControllerImplMetricsTest,
 
   histogram_tester_.ExpectTotalCount(
       "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 1);
+}
+
+// Tests with feature AppListBubble enabled. This is a separate test suite
+// because the feature must be enabled before ash::Shell constructs the
+// AppListControllerImpl.
+class AppListControllerImplAppListBubbleTest : public AshTestBase {
+ public:
+  AppListControllerImplAppListBubbleTest() {
+    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+  }
+  ~AppListControllerImplAppListBubbleTest() override = default;
+
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_F(AppListControllerImplAppListBubbleTest, ShowAppListOpensBubble) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  EXPECT_TRUE(controller->app_list_bubble_for_test()->IsShowing());
+}
+
+TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kShelfButton,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_TRUE(controller->app_list_bubble_for_test()->IsShowing());
+}
+
+TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  controller->DismissAppList();
+
+  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+}
+
+TEST_F(AppListControllerImplAppListBubbleTest,
+       ShowAppListDoesNotOpenBubbleInTabletMode) {
+  EnableTabletMode();
+
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+}
+
+TEST_F(AppListControllerImplAppListBubbleTest,
+       ToggleAppListDoesNotOpenBubbleInTabletMode) {
+  EnableTabletMode();
+
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kShelfButton,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+}
+
+TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  EnableTabletMode();
+
+  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
 }
 
 }  // namespace ash
