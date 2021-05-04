@@ -641,6 +641,13 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineMeasurements.IsRoaming";
 
     /**
+     * Comma separated list of the user states from the OfflineMeasurementsBackgroundTask. When
+     * possible, values will be recorded to UMA then cleared.
+     */
+    public static final String OFFLINE_MEASUREMENTS_USER_STATE_LIST =
+            "Chrome.OfflineMeasurements.UserStateList";
+
+    /**
      * Prefix of the preferences to persist pushed notifications when native is not initialized.
      * Each suffix pertains to a specific OptimizationType. All entries are cleared when native is
      * initialized.
@@ -1034,9 +1041,10 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST,
                 OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST,
                 OFFLINE_MEASUREMENTS_IS_ROAMING_LIST,
-                OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
+                OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
+                OFFLINE_MEASUREMENTS_USER_STATE_LIST,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,

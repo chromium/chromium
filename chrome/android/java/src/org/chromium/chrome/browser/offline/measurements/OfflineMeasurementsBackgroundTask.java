@@ -8,11 +8,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -59,6 +63,8 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     private static int sNewMeasurementIntervalInMinutesTestingOverride;
     private static Boolean sIsAirplaneModeEnabledTestingOverride;
     private static Boolean sIsRoamingTestingOverride;
+    private static Boolean sIsInteractiveTestingOverride;
+    private static Boolean sIsApplicationForegroundTestingOverride;
 
     // UMA histograms.
     public static final String OFFLINE_MEASUREMENTS_MEASUREMENT_INTERVAL =
@@ -70,15 +76,16 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     public static final String OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED =
             "Offline.Measurements.IsAirplaneModeEnabled";
     public static final String OFFLINE_MEASUREMENTS_IS_ROAMING = "Offline.Measurements.IsRoaming";
+    public static final String OFFLINE_MEASUREMENTS_USER_STATE = "Offline.Measurements.UserState";
 
     // The result of the HTTP probing. Defined in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR, ProbeResult.UNEXPECTED_RESPONSE,
-            ProbeResult.VALIDATED, ProbeResult.CANCELLED})
+    @IntDef({ProbeResult.INVALID, ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR,
+            ProbeResult.UNEXPECTED_RESPONSE, ProbeResult.VALIDATED, ProbeResult.CANCELLED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ProbeResult {
-        // Value could not be prased from Prefs.
+        // Value could not be parsed from Prefs.
         int INVALID = 0;
         // The HTTP probe could not connect to the Internet.
         int NO_INTERNET = 1;
@@ -96,13 +103,40 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         int RESULT_COUNT = 6;
     }
 
+    // The state of the phone and how / if the user is interacting with it. Defined in
+    // tools/metrics/histograms/enums.xml. These values are persisted to logs. Entries should not be
+    // renumbered and numeric values should never be reused.
+    @IntDef({UserState.INVALID, UserState.PHONE_OFF, UserState.NOT_USING_PHONE,
+            UserState.USING_CHROME})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UserState {
+        // Value could not be parsed from Prefs.
+        int INVALID = 0;
+        // The user's phone was off..
+        int PHONE_OFF = 1;
+        // The user's phone screen is not interactive.
+        int NOT_USING_PHONE = 2;
+        // The user's phone screen is interactive and Chrome is not in the foreground.
+        int USING_PHONE_NOT_CHROME = 3;
+        // The user's phone screen is interactive and Chrome is in the foreground.
+        int USING_CHROME = 4;
+        // Count.
+        int RESULT_COUNT = 5;
+    }
+
     /**
      * Clock to use so we can mock the time in tests.
      */
-    public interface Clock {
-        long currentTimeMillis();
+    public static class Clock {
+        long currentTimeMillis() {
+            return System.currentTimeMillis();
+        }
+
+        long elapsedRealtime() {
+            return SystemClock.elapsedRealtime();
+        }
     }
-    private static Clock sClock = System::currentTimeMillis;
+    private static Clock sClock = new Clock();
 
     @VisibleForTesting
     static void setClockForTesting(Clock clock) {
@@ -151,11 +185,18 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
             RecordHistogram.recordBooleanHistogram(OFFLINE_MEASUREMENTS_IS_ROAMING, isRoaming);
         }
 
+        long[] userStateList = getUserStatesFromPrefs();
+        for (long userState : userStateList) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    OFFLINE_MEASUREMENTS_USER_STATE, (int) userState, UserState.RESULT_COUNT);
+        }
+
         // After logging the data to UMA, clear the data from prefs so it isn't logged again.
         clearTimeBetweenChecksFromPrefs();
         clearHttpProbeResultsFromPrefs();
         clearIsAirplaneModeEnabledListFromPrefs();
         clearIsRoamingListFromPrefs();
+        clearUserStatesFromPrefs();
     }
 
     private static void scheduleTask() {
@@ -182,8 +223,9 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                         .setIntervalMs(TimeUnit.MINUTES.toMillis(newMeasurementIntervalInMinutes))
                         .build();
 
-        TaskInfo taskInfo =
-                TaskInfo.createTask(TaskIds.OFFLINE_MEASUREMENT_JOB_ID, timingInfo).build();
+        TaskInfo taskInfo = TaskInfo.createTask(TaskIds.OFFLINE_MEASUREMENT_JOB_ID, timingInfo)
+                                    .setIsPersisted(true)
+                                    .build();
 
         BackgroundTaskSchedulerFactory.getScheduler().schedule(
                 ContextUtils.getApplicationContext(), taskInfo);
@@ -245,7 +287,7 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_AGENT_STRING, userAgentString);
 
         // Gets the parameters from Finch. If there is a value for a given parameter and it doesn't
-        // match the default value, then it is written to Prefs..
+        // match the default value, then it is written to Prefs.
         String httpProbeUrl = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK, HTTP_PROBE_URL);
         if (!httpProbeUrl.isEmpty() && !httpProbeUrl.equals(DEFAULT_HTTP_PROBE_URL)) {
@@ -347,16 +389,27 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         long currentCheckMillis = sClock.currentTimeMillis();
         setLastCheckMillis(currentCheckMillis);
 
+        boolean didSystemBootSinceLastCheck = false;
         if (lastCheckMillis > 0) {
             long timeBetweenChecksMillis = currentCheckMillis - lastCheckMillis;
             addTimeBetweenChecksToPrefs(timeBetweenChecksMillis);
+
+            long timeSinceBootMillis = sClock.elapsedRealtime();
+            didSystemBootSinceLastCheck = timeSinceBootMillis < timeBetweenChecksMillis;
         }
 
         // Gets whether airplane mode is enabled or disabled.
         boolean isAirplaneModeEnabled = isAirplaneModeEnabled(context);
         boolean isRoaming = isRoaming(context);
+        boolean isInteractive = isInteractive(context);
+        boolean isApplicationForeground = isApplicationForeground();
+
+        int userState = convertToUserState(
+                didSystemBootSinceLastCheck, isInteractive, isApplicationForeground);
+
         addIsAirplaneModeEnabledToPrefs(isAirplaneModeEnabled);
         addIsRoamingToPrefs(isRoaming);
+        addUserStateToPrefs(userState);
 
         // Starts the HTTP probe.
         sendHttpProbe((Integer result) -> { processResult(result, callback); });
@@ -504,12 +557,30 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         // If and only if all networks are roaming, then the system is roaming.
         for (Network network : allNetworks) {
             NetworkCapabilities networkCapabilities =
-                    connectivityManager.getNetworkCapabilities(allNetworks[0]);
+                    connectivityManager.getNetworkCapabilities(network);
             if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static boolean isInteractive(Context context) {
+        if (sIsInteractiveTestingOverride != null) {
+            return sIsInteractiveTestingOverride;
+        }
+
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return powerManager.isInteractive();
+    }
+
+    private static boolean isApplicationForeground() {
+        if (sIsApplicationForegroundTestingOverride != null) {
+            return sIsApplicationForegroundTestingOverride;
+        }
+
+        return ApplicationStatus.getStateForApplication()
+                == ApplicationState.HAS_RUNNING_ACTIVITIES;
     }
 
     @VisibleForTesting
@@ -520,6 +591,30 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     @VisibleForTesting
     static void setIsRoamingForTesting(boolean isRoaming) {
         sIsRoamingTestingOverride = isRoaming;
+    }
+
+    @VisibleForTesting
+    static void setIsInteractiveForTesting(boolean isInteractive) {
+        sIsInteractiveTestingOverride = isInteractive;
+    }
+
+    @VisibleForTesting
+    static void setIsApplicationForegroundForTesting(boolean isApplicationForeground) {
+        sIsApplicationForegroundTestingOverride = isApplicationForeground;
+    }
+
+    private static int convertToUserState(boolean didSystemBootSinceLastCheck,
+            boolean isInteractive, boolean isApplicationForeground) {
+        if (didSystemBootSinceLastCheck) {
+            return UserState.PHONE_OFF;
+        }
+        if (!isInteractive) {
+            return UserState.NOT_USING_PHONE;
+        }
+        if (isApplicationForeground) {
+            return UserState.USING_CHROME;
+        }
+        return UserState.USING_PHONE_NOT_CHROME;
     }
 
     private static String getTimeBetweenChecksFromPrefsAsString() {
@@ -548,9 +643,8 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     }
 
     private static String getHttpProbeResultsFromPrefsAsString() {
-        String rv = SharedPreferencesManager.getInstance().readString(
+        return SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST, "");
-        return rv;
     }
 
     private static void addHttpProbeResultToPrefs(int newValue) {
@@ -645,6 +739,32 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     private static void clearIsRoamingListFromPrefs() {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST);
+    }
+
+    private static String getUserStatesFromPrefsAsString() {
+        return SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST, "");
+    }
+
+    private static void addUserStateToPrefs(int newValue) {
+        // Add new value to comma separate list currently in Prefs.
+        String existingList = getUserStatesFromPrefsAsString();
+        String newList = addValueToStringList(newValue, existingList);
+
+        // Write the new list to Prefs.
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST, newList);
+    }
+
+    private static long[] getUserStatesFromPrefs() {
+        // Get values as an array of longs.
+        String rawList = getUserStatesFromPrefsAsString();
+        return getValuesFromStringList(rawList, UserState.INVALID);
+    }
+
+    private static void clearUserStatesFromPrefs() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST);
     }
 
     /**

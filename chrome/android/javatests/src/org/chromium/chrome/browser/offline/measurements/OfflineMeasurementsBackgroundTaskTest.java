@@ -86,11 +86,13 @@ public class OfflineMeasurementsBackgroundTaskTest {
      * Fake of OfflineMeasurementsBackgroundTask.Clock that can be used to test the timing parts of
      * OfflineMeasurementsBackgroundTask.
      */
-    public static class FakeClock implements OfflineMeasurementsBackgroundTask.Clock {
+    public static class FakeClock extends OfflineMeasurementsBackgroundTask.Clock {
         private long mCurrentTimeMillis;
+        private long mElapsedRealtime;
 
         public FakeClock() {
             mCurrentTimeMillis = 0;
+            mElapsedRealtime = 0;
         }
 
         @Override
@@ -98,12 +100,22 @@ public class OfflineMeasurementsBackgroundTaskTest {
             return mCurrentTimeMillis;
         }
 
+        @Override
+        public long elapsedRealtime() {
+            return mElapsedRealtime;
+        }
+
         public void setCurrentTimeMillis(long currentTimeMillis) {
             mCurrentTimeMillis = currentTimeMillis;
         }
 
+        public void setElapsedRealtime(long elapsedRealtime) {
+            mElapsedRealtime = elapsedRealtime;
+        }
+
         public void advanceCurrentTimeMillis(long millis) {
             mCurrentTimeMillis += millis;
+            mElapsedRealtime += millis;
         }
     }
 
@@ -131,10 +143,12 @@ public class OfflineMeasurementsBackgroundTaskTest {
 
         mNumTaskFinishedCallbacksTriggered = 0;
 
-        // Overrides the checks for airplane mode and roaming so that we don't run the full checks
-        // in any tests.
+        // Overrides the checks for airplane mode, roaming, screen interactivity, and application
+        // state so that we don't run the full checks in any tests.
         OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(false); // IN-TEST
         OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(false); // IN-TEST
+        OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(false); // IN-TEST
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(false); // IN-TEST
     }
 
     private void maybeScheduleTaskAndReportMetrics() {
@@ -795,5 +809,195 @@ public class OfflineMeasurementsBackgroundTaskTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_IS_ROAMING,
                         /*true*/ 1));
+    }
+
+    /**
+     * Tests running the background task when the phone's screen is not interative. Checks that the
+     * expected values are recorded to the UMA histogram Offline.Measurements.UserState.
+     */
+    @Test
+    @MediumTest
+    public void recordUserState_NotUsingPhone() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        // Tests running the background task when the screen is not interactive. This should record
+        // a value of UserState.NOT_USING_PHONE regardless of whehter Chrome is in the foreground or
+        // not.
+        OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(false);
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check that the expected values were recorded to Offline.Measurements.UserState.
+        assertEquals("There should be one sample for each time the task was ran", 2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE));
+        assertEquals("There should be two entries for NOT_USING_PHONE", 2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE,
+                        OfflineMeasurementsBackgroundTask.UserState.NOT_USING_PHONE));
+    }
+
+    /**
+     * Tests running the background task when the phone screen is interative, but Chrome is not in
+     * the foreground. Checks that the expected values are recorded to the UMA histogram
+     * Offline.Measurements.UserState.
+     */
+    @Test
+    @MediumTest
+    public void recordUserState_UsingPhoneNotChrome() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        // Tests running the background task when the screen is on and Chrome is not in the
+        // foreground. This should record a value of UserState.USING_PHONE_NOT_CHROME.
+        OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(true);
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check that the expected values were recorded to Offline.Measurements.UserState.
+        assertEquals("There should be one sample for each time the task was ran", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE));
+        assertEquals("There should be one entry for USING_PHONE_NOT_CHROME", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE,
+                        OfflineMeasurementsBackgroundTask.UserState.USING_PHONE_NOT_CHROME));
+    }
+
+    /**
+     * Tests running the background task when chrome is in the foreground. Checks that the expected
+     * values are recorded to the UMA histogram Offline.Measurements.UserState.
+     */
+    @Test
+    @MediumTest
+    public void recordUserState_UsingChrome() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        // Tests running the background task when the screen is on and Chrome is in the foreground.
+        // This should record a value of UserState.USING_CHROME.
+        OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(true);
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check that the expected values were recorded to Offline.Measurements.UserState.
+        assertEquals("There should be one sample for each time the task was ran", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE));
+        assertEquals("There should be one entry for USING_CHROME", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE,
+                        OfflineMeasurementsBackgroundTask.UserState.USING_CHROME));
+    }
+
+    /**
+     * Tests running the background task after the device boots up. Checks that the expected values
+     * are recorded to the UMA histogram Offline.Measurements.UserState.
+     */
+    @Test
+    @MediumTest
+    public void recordUserState_PhoneOff() throws Exception {
+        // Enable feature and initialize the HTTP probe parameters.
+        setFeatureStatusForTest(true);
+
+        // Schedule the task, so that we initialize the "lastCheckMillis" timestamp in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Set the task parameters.
+        TaskParameters testParameters =
+                TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+
+        OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(true);
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
+
+        // Advance the clock then reset elapsed realtime to zero in order to simulate the system
+        // restarting.
+        mFakeClock.advanceCurrentTimeMillis(1000);
+        mFakeClock.setElapsedRealtime(0);
+
+        // Tests running the background task immediately after booting up. Since this is the first
+        // time the task is run, we can't tell if the system just booted up.
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check that the expected values were recorded to Offline.Measurements.UserState.
+        assertEquals("There should be one sample for each time the task was ran", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE));
+        assertEquals("There should be one entry for USING_CHROME", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE,
+                        OfflineMeasurementsBackgroundTask.UserState.USING_CHROME));
+
+        // Simulate the system restarting again.
+        mFakeClock.advanceCurrentTimeMillis(1000);
+        mFakeClock.setElapsedRealtime(0);
+
+        // Run the task again. Since the time since the last check is longer than the time since
+        // last boot up, then we know that system was just restarted.
+        OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
+            task.onStartTask(null, testParameters, testCallback);
+        });
+
+        // Reports the metrics stored in Prefs.
+        maybeScheduleTaskAndReportMetrics();
+
+        // Check that the expected values were recorded to Offline.Measurements.UserState.
+        assertEquals("There should be one sample for each time the task was ran", 2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE));
+        assertEquals("There should be one entry for PHONE_OFF", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        OfflineMeasurementsBackgroundTask.OFFLINE_MEASUREMENTS_USER_STATE,
+                        OfflineMeasurementsBackgroundTask.UserState.PHONE_OFF));
     }
 }

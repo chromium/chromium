@@ -57073,6 +57073,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Cancelled"/>
 </enum>
 
+<enum name="OfflineMeasurementsUserState">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Phone is off"/>
+  <int value="2" label="Phone is on, but screen is off"/>
+  <int value="3" label="Screen is on, Chrome is not in the foreground"/>
+  <int value="4" label="Screen is on, Chrome is in the foreground"/>
+</enum>
+
 <enum name="OfflinePagePrefetchNotificationAction">
   <int value="0" label="Attempt to show pending content check"/>
   <int value="1" label="Showed notification"/>

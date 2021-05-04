@@ -90,6 +90,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Offline.Measurements.UserState"
+    enum="OfflineMeasurementsUserState" expires_after="M95">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The state of the phone and how the user is interacting with it when the
+    Offline Measurements background task runs.
+
+    Each time the background task runs, it determines the user state, and then
+    that value is stored to prefs. At a later time, when Chrome is starting up,
+    all stored values are recorded to this histogram. The stored values are then
+    cleared so they are only recorded once each.
+  </summary>
+</histogram>
+
 <histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
     enum="OfflineIndicatorSurfaceState" expires_after="2021-09-12">
   <owner>curranmax@chromium.org</owner>
