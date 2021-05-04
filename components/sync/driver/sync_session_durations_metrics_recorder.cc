@@ -133,6 +133,12 @@ void SyncSessionDurationsMetricsRecorder::OnStateChanged(SyncService* sync) {
   HandleSyncAndAccountChange();
 }
 
+void SyncSessionDurationsMetricsRecorder::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  DVLOG(1) << __func__;
+  HandleSyncAndAccountChange();
+}
+
 void SyncSessionDurationsMetricsRecorder::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DVLOG(1) << __func__;
@@ -182,7 +188,8 @@ void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
 void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
   if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
     // Only the account status needs to be updated when sync is off.
-    UpdateSyncAndAccountStatus(FeatureState::OFF, DetermineAccountStatus());
+    UpdateSyncAndAccountStatus(FeatureState::OFF,
+                               DeterminePrimaryAccountStatus());
     return;
   }
 
@@ -199,12 +206,7 @@ void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
     // We don't know yet if sync is going to work.
     // At least update the account status, so that if we never learn what the
     // sync state is, we know the signin state.
-    //
-    // TODO(msarda): The current code uses the account status for all accounts
-    // (i.e. it is not scoped to the sync account). Figure out whether this
-    // should be changed to only capture the status of the sync account when
-    // the user has opted in to sync.
-    account_status_ = DetermineAccountStatus();
+    account_status_ = DeterminePrimaryAccountStatus();
   }
 }
 
@@ -262,15 +264,17 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
 }
 
 SyncSessionDurationsMetricsRecorder::FeatureState
-SyncSessionDurationsMetricsRecorder::DetermineAccountStatus() const {
-  for (const auto& account :
-       identity_manager_->GetAccountsWithRefreshTokens()) {
-    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account.account_id)) {
-      return SyncSessionDurationsMetricsRecorder::FeatureState::ON;
-    }
-  }
-  return SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+SyncSessionDurationsMetricsRecorder::DeterminePrimaryAccountStatus() const {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+    return SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+
+  CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return (identity_manager_->HasAccountWithRefreshToken(primary_account_id) &&
+          !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+              primary_account_id))
+             ? SyncSessionDurationsMetricsRecorder::FeatureState::ON
+             : SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
 }
 
 }  // namespace syncer

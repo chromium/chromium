@@ -38,6 +38,8 @@ class SyncSessionDurationsMetricsRecorder
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
@@ -67,9 +69,9 @@ class SyncSessionDurationsMetricsRecorder
 
   void HandleSyncAndAccountChange();
 
-  // Returns |FeatureState::ON| iff there is at least one account in
-  // |identity_manager| that has a valid refresh token.
-  FeatureState DetermineAccountStatus() const;
+  // Returns |FeatureState::ON| iff there is a primary account with a valid
+  // refresh token in the identity manager.
+  FeatureState DeterminePrimaryAccountStatus() const;
 
   SyncService* const sync_service_;
   signin::IdentityManager* const identity_manager_;
