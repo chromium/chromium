@@ -65,6 +65,29 @@ void FetchHistogramsFromChildProcesses(
       kChildProcessHistogramFetchTimeout);
 }
 
+// Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
+// incognito browser context.
+class FrameHostImpl : public fuchsia::web::FrameHost {
+ public:
+  explicit FrameHostImpl(WebEngineDevToolsController* devtools_controller)
+      : context_(WebEngineBrowserContext::CreateIncognito(),
+                 devtools_controller) {}
+  ~FrameHostImpl() final = default;
+
+  FrameHostImpl(const FrameHostImpl&) = delete;
+  FrameHostImpl& operator=(const FrameHostImpl&) = delete;
+
+  // fuchsia.web.FrameHost implementation.
+  void CreateFrameWithParams(
+      fuchsia::web::CreateFrameParams params,
+      fidl::InterfaceRequest<fuchsia::web::Frame> request) final {
+    context_.CreateFrameWithParams(std::move(params), std::move(request));
+  }
+
+ private:
+  ContextImpl context_;
+};
+
 }  // namespace
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
@@ -159,10 +182,13 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // Make sure temporary files associated with this process are cleaned up.
   base::ImportantFileWriterCleaner::GetInstance().Start();
 
-  // Publish the fuchsia.web.Context service, and allow exactly one connection.
+  // Publish the fuchsia.web.Context and fuchsia.web.FrameHost capabilities.
   base::ComponentContextForProcess()->outgoing()->AddPublicService(
       fidl::InterfaceRequestHandler<fuchsia::web::Context>(fit::bind_member(
           this, &WebEngineBrowserMainParts::HandleContextRequest)));
+  base::ComponentContextForProcess()->outgoing()->AddPublicService(
+      fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>(fit::bind_member(
+          this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
   // Now that all services have been published, it is safe to start processing
   // requests to the service directory.
@@ -254,6 +280,13 @@ void WebEngineBrowserMainParts::HandleContextRequest(
             << " Context disconnected.";
         std::move(quit_closure_).Run();
       });
+}
+
+void WebEngineBrowserMainParts::HandleFrameHostRequest(
+    fidl::InterfaceRequest<fuchsia::web::FrameHost> request) {
+  frame_host_bindings_.AddBinding(
+      std::make_unique<FrameHostImpl>(devtools_controller_.get()),
+      std::move(request));
 }
 
 void WebEngineBrowserMainParts::OnIntlProfileChanged(

@@ -68,9 +68,11 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   ContextImpl* context_for_test() const;
 
  private:
-  // Receives requests for the fuchsia.web.Context capability.
+  // Handle fuchsia.web.Context and fuchsia.web.FrameHost connection requests.
   void HandleContextRequest(
       fidl::InterfaceRequest<fuchsia::web::Context> request);
+  void HandleFrameHostRequest(
+      fidl::InterfaceRequest<fuchsia::web::FrameHost> request);
 
   // Notified if the system timezone, language, settings change.
   void OnIntlProfileChanged(const fuchsia::intl::Profile& profile);
@@ -81,6 +83,9 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   std::unique_ptr<display::Screen> screen_;
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
       context_bindings_;
+  fidl::BindingSet<fuchsia::web::FrameHost,
+                   std::unique_ptr<fuchsia::web::FrameHost>>
+      frame_host_bindings_;
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
   std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
   std::unique_ptr<MediaResourceProviderService>
