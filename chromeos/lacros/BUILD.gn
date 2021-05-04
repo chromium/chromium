@@ -63,7 +63,9 @@ if (is_chromeos_device) {
       #"lacros.AudioPlay",
       "lacros.AppLauncherLaunch",
       "lacros.Basic",
-      "lacros.ShelfLaunch",
+
+      # TODO(crbug.com/1205526): Enable this test again.
+      #"lacros.ShelfLaunch",
     ]
   }
 
