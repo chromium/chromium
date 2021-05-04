@@ -216,6 +216,12 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
               ->GetWebContentsModalDialogHost()) {}
 
 PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
+  if (web_contents()) {
+    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_contents());
+    if (manager)
+      manager->SetDelegate(nullptr);
+  }
   state()->OnPaymentAppWindowClosed();
 }
 
