@@ -467,7 +467,9 @@
 }
 
 - (void)updateDiscoverFeedLayout {
-  if (self.discoverFeedViewController) {
+  // If this coordinator has not finished [self start], the below will start
+  // viewDidLoad before the UI is ready, failing DCHECKS.
+  if (self.started && self.discoverFeedViewController) {
     [self.containedViewController.view setNeedsLayout];
     [self.containedViewController.view layoutIfNeeded];
     [self.ntpViewController updateContentSuggestionForCurrentLayout];
