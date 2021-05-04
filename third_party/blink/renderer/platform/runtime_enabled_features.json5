@@ -2144,6 +2144,7 @@
     {
       name: "WebAppLinkCapturing",
       origin_trial_feature_name: "WebAppLinkCapturing",
+      origin_trial_os: ["chromeos"],
     },
     {
       name:"WebAppsLockScreen",

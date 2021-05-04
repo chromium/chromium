@@ -512,6 +512,8 @@ constexpr char kOriginTrialToken[] =
 
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
                        OriginTrial) {
+  WebAppProvider& provider = *WebAppProvider::Get(browser()->profile());
+
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&serve_token](
@@ -544,8 +546,8 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
   AppId app_id =
       web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Origin trial should grant the app access.
-  WebAppProvider& provider = *WebAppProvider::Get(browser()->profile());
   EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
             blink::mojom::CaptureLinks::kNewClient);
 
@@ -580,6 +582,13 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
   // origin trial.
   EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
             blink::mojom::CaptureLinks::kUndefined);
+#else
+  // The origin trial is not available outside of Chrome OS.
+  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
+            blink::mojom::CaptureLinks::kUndefined);
+
+  ALLOW_UNUSED_LOCAL(app_web_contents);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace web_app
