@@ -110,10 +110,6 @@ class SaveUpdateWithAccountStoreBubbleController
 #if defined(UNIT_TEST)
   void set_clock(base::Clock* clock) { clock_ = clock; }
 
-  void allow_passwords_revealing() {
-    password_revealing_requires_reauth_ = false;
-  }
-
   bool password_revealing_requires_reauth() const {
     return password_revealing_requires_reauth_;
   }

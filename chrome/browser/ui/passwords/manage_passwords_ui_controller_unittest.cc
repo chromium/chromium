@@ -1346,6 +1346,8 @@ TEST_F(ManagePasswordsUIControllerTest, AuthenticateUserToRevealPasswords) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(controller()->opened_bubble());
+  // That check is important because if reauth fails, we should be requiring it
+  // again unlike in the automatically shown bubble.
   EXPECT_FALSE(controller()->opened_automatic_bubble());
   EXPECT_TRUE(controller()->are_passwords_revealed_in_opened_bubble());
   // Since the bubble is opened, this property is already cleared.

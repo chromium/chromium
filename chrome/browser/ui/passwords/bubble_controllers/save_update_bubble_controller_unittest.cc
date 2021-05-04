@@ -583,24 +583,21 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
       .WillRepeatedly(Return(is_manual_fallback_for_saving));
 
   PretendPasswordWaiting(display_reason);
-  bool reauth_expected = form_has_autofilled_value;
-  if (!reauth_expected) {
+  bool reauth_expected = false;
+  if (display_reason ==
+      PasswordBubbleControllerBase::DisplayReason::kUserAction) {
     reauth_expected =
-        !is_manual_fallback_for_saving &&
-        display_reason ==
-            PasswordBubbleControllerBase::DisplayReason::kUserAction;
+        form_has_autofilled_value || !is_manual_fallback_for_saving;
   }
   EXPECT_EQ(reauth_expected,
             controller()->password_revealing_requires_reauth());
 
-  // delegate()->AuthenticateUser() is called only when reauth is expected.
-  EXPECT_CALL(*delegate(), AuthenticateUser())
-      .Times(reauth_expected)
-      .WillOnce(Return(!does_os_support_user_auth));
-
   if (reauth_expected) {
+    EXPECT_CALL(*delegate(), AuthenticateUser())
+        .WillOnce(Return(!does_os_support_user_auth));
     EXPECT_EQ(controller()->RevealPasswords(), !does_os_support_user_auth);
   } else {
+    EXPECT_CALL(*delegate(), AuthenticateUser()).Times(0);
     EXPECT_TRUE(controller()->RevealPasswords());
   }
 }
