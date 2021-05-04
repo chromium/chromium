@@ -2511,6 +2511,7 @@
 
       このポリシーが false の場合、OS のアップグレード後に初めてブラウザを起動したときにウェルカム ページは再表示されません。</translation>
 <translation id="4423597592074154136">プロキシ設定を手動で指定する</translation>
+<translation id="4424004842303301809">データ漏洩防止イベントのレポートを無効にする</translation>
 <translation id="4427173305799125784">PDF ビューアで PDF に注釈を追加できない</translation>
 <translation id="4432762137771104529">セーフ ブラウジングの詳細レポートを有効にする</translation>
 <translation id="443454694385851356">以前の暗号化タイプ（安全ではありません）</translation>
@@ -3066,6 +3067,7 @@
       登録ユーザーがチャンネル ダウングレードを行う場合は、このポリシーの値に応じて、リセットまたは待機を自分で選択するか、自動で選択されます。管理者が <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> の設定でチャンネル ダウングレードを行う場合は、ロールバックを選択したときのみ、次回のアップデート確認時にデバイスがロールバックされます。それ以外の場合は、ターゲット チャンネルが現在のバージョンと同じになるまで待機します。
 
       このポリシーを未設定のままにした場合や無効な場合、「ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する」と同じ動作になります。</translation>
+<translation id="5229339291699779956">Thunderbolt / USB4 周辺機器の PCIe トンネリングを有効にする（周辺機器の機能は制限されません）</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="52393120393725840">このポリシーを有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でパスワードを保存して、次回サイトにログインする際に提示するように設定できます。
 
@@ -3225,6 +3227,7 @@
 <translation id="5418892536013005088">このポリシーを有効に設定するか未設定のままにした場合、閲覧とダウンロードの履歴が Chrome で削除できるようになり、ユーザーはこの設定を変更できません。
 
       このポリシーを無効に設定した場合、閲覧とダウンロードの履歴は削除できません。なお、このポリシーを無効にした場合も、閲覧とダウンロードの履歴が保持される保証はありません。ユーザーが履歴データベースのファイルを直接編集または削除できる可能性もあります。また、ブラウザ自体で履歴の有効期限が切れたりすべての履歴アイテムがアーカイブされたりする場合もあります。</translation>
+<translation id="5420245232720940848">Thunderbolt / USB4 周辺機器の PCIe トンネリングを無効にする（周辺機器の機能は制限されます）</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> のライセンスキー</translation>
 <translation id="5423197884968724595">Android WebView の制限名:</translation>
 <translation id="5424147596523390018">すべてのカラー印刷モードを許可する</translation>
@@ -4878,6 +4881,10 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">システム通知の使用を許可する</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> に表示されるアカウントを制限する</translation>
+<translation id="7648664871086956188">このポリシーは、DataLeakPreventionRulesList ポリシーで定義されたすべてのルールに対する一般的なスイッチです。
+      このポリシーを True に設定すると、データ漏洩防止イベントのリアルタイム レポートがオンになります。
+      このポリシーを False に設定するか未設定のままにした場合、レポートはオフになります。
+      DataLeakPreventionRulesList で ALLOW レベルの制限とともに定義されたルールについては、どちらの場合でもイベントはレポートされません。</translation>
 <translation id="7648907905084499629">すべてのサイトの Cookie に <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 動作を使用する</translation>
 <translation id="7657261947024629645">パフォーマンスを重視します。</translation>
 <translation id="7666228839913571182">サードパーティ Cookie を許可する</translation>
@@ -5167,6 +5174,7 @@
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
 <translation id="7995610550667275367">スキャン（バージョン 87 以降でサポート）</translation>
 <translation id="7999023147219236247">アプリへの権限付与のリクエストに関するポリシーです。PERMISSION_POLICY_UNSPECIFIED: ポリシーを指定しません。権限に関するポリシーがどのレベルでも指定されていなければ、デフォルトで「PROMPT」の動作が適用されます。PROMPT: 権限を付与するよう促すメッセージをユーザーに表示します。GRANT: 自動的に権限を付与します。DENY: 自動的に権限の付与を拒否します。</translation>
+<translation id="7999818120028621358">データ漏洩防止イベントのレポートを有効にする</translation>
 <translation id="8001701200415781021"><ph name="PRODUCT_NAME" /> でブラウザのメイン アカウントとして設定できる Google アカウントを制限する</translation>
 <translation id="8006219716745491366"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> では、検索エンジンからの検索キーワードの抽出に使用する代替 URL のリストを指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。
 
@@ -5263,6 +5271,7 @@
 
       このポリシーが無効に設定されているか未設定の場合は、ログイン時に通常のプロフィールが適用されます。</translation>
 <translation id="8151299379693359769">リモート認証に基づく追加のセキュリティ チェックを有効にします（省略可、デフォルト値は True）。</translation>
+<translation id="8151490482515839285">データ漏洩防止レポートを有効にする</translation>
 <translation id="8158758865057576716"><ph name="PRODUCT_NAME" /> プロフィール データのローミング コピーの作成を有効にする。</translation>
 <translation id="8158897487095710470">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> にブックマーク バーが表示されます。このポリシーを False に設定した場合、ブックマーク バーは表示されません。このポリシーを設定した場合、ユーザーは設定を変更できません。ポリシーが設定されていない場合は、この機能を使用するかどうかをユーザーが指定します。</translation>
 <translation id="8159760979508295709">「カーソルによるハイライト表示」のユーザー補助機能を有効にします。
