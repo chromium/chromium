@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -254,8 +253,7 @@ void OnSyncSetupComplete(Profile* profile,
             SAVED_ON_CHROME_SIGNIN);
   }
 
-  if (has_primary_account && is_force_sign_in_with_usermanager &&
-      base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+  if (has_primary_account && is_force_sign_in_with_usermanager) {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     base::Optional<AccountInfo> primary_account_info =
