@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.getVisibleMenuSize;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.app.Activity;
@@ -39,9 +38,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.support.test.InstrumentationRegistry;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -50,7 +47,6 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -95,7 +91,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
@@ -171,8 +166,6 @@ public class CustomTabActivityTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
-    private static final int MAX_MENU_CUSTOM_ITEMS = 5;
-    private static final int NUM_CHROME_MENU_ITEMS = 5;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
     private static final String POPUP_PAGE =
@@ -181,7 +174,6 @@ public class CustomTabActivityTest {
     private static final String FRAGMENT_TEST_PAGE = "/chrome/test/data/android/fragment.html";
     private static final String TARGET_BLANK_TEST_PAGE =
             "/chrome/test/data/android/cct_target_blank.html";
-    private static final String TEST_MENU_TITLE = "testMenuTitle";
     private static final String JS_MESSAGE = "from_js";
     private static final String TITLE_FROM_POSTMESSAGE_TO_CHANNEL =
             "<!DOCTYPE html><html><body>"
@@ -352,24 +344,6 @@ public class CustomTabActivityTest {
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
     }
 
-    private void assertAppMenuItemNotVisible(Menu menu, @IdRes int id, String itemName) {
-        MenuItem item = menu.findItem(id);
-        Assert.assertNotNull(String.format("Cannot find <%s>", itemName), item);
-        Assert.assertFalse(String.format("<%s> is visible", itemName), item.isVisible());
-    }
-
-    /**
-     * @return The number of visible and enabled items in the given menu.
-     */
-    private int getActualMenuSize(Menu menu) {
-        int actualMenuSize = 0;
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            if (item.isVisible() && item.isEnabled()) actualMenuSize++;
-        }
-        return actualMenuSize;
-    }
-
     private Bitmap createVectorDrawableBitmap(@DrawableRes int resId, int widthDp, int heightDp) {
         Context context = InstrumentationRegistry.getTargetContext();
         Drawable vectorDrawable = AppCompatResources.getDrawable(context, resId);
@@ -536,277 +510,6 @@ public class CustomTabActivityTest {
 
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_text));
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_address));
-    }
-
-    /**
-     * Test the entries in the app menu.
-     */
-    @Test
-    @SmallTest
-    public void testAppMenu() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        int numMenuEntries = 1;
-        CustomTabsTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS;
-
-        Assert.assertNotNull("App menu is not initialized: ", menu);
-        assertEquals(expectedMenuSize, getActualMenuSize(menu));
-        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
-        Assert.assertNotNull(menu.findItem(R.id.forward_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.bookmark_this_page_id));
-        Assert.assertNotNull(menu.findItem(R.id.offline_page_id));
-        Assert.assertNotNull(menu.findItem(R.id.info_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.reload_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.open_in_browser_id));
-        Assert.assertFalse(menu.findItem(R.id.share_row_menu_id).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.share_row_menu_id).isEnabled());
-        Assert.assertNotNull(menu.findItem(R.id.find_in_page_id));
-        Assert.assertNotNull(menu.findItem(R.id.add_to_homescreen_id));
-        Assert.assertNotNull(menu.findItem(R.id.request_desktop_site_row_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.translate_id));
-
-        mScreenShooter.shoot("Testtttt");
-    }
-
-    /**
-     * Test the App Menu does not show for media viewer.
-     */
-    @Test
-    @SmallTest
-    public void testAppMenuForMediaViewer() {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.MEDIA_VIEWER);
-        IntentHandler.addTrustedIntentExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            getActivity().onMenuOrKeyboardAction(R.id.show_menu, false);
-            Assert.assertNull(mCustomTabActivityTestRule.getAppMenuCoordinator());
-        });
-    }
-
-    /**
-     * Test the entries in app menu for Reader Mode.
-     */
-    @Test
-    @SmallTest
-    public void testAppMenuForReaderMode() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
-        IntentHandler.addTrustedIntentExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        final int expectedMenuSize = 2;
-
-        Assert.assertNotNull("App menu is not initialized: ", menu);
-        assertEquals(expectedMenuSize, getActualMenuSize(menu));
-        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
-        Assert.assertTrue(menu.findItem(R.id.find_in_page_id).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.reader_mode_prefs_id).isVisible());
-    }
-
-    /**
-     * Test the entries in app menu for media viewer.
-     */
-    @Test
-    @SmallTest
-    public void testAppMenuForOfflinePage() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE,
-                CustomTabIntentDataProvider.CustomTabsUiType.OFFLINE_PAGE);
-        IntentHandler.addTrustedIntentExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        final int expectedMenuSize = 3;
-
-        Assert.assertNotNull("App menu is not initialized: ", menu);
-        assertEquals(expectedMenuSize, getActualMenuSize(menu));
-        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
-        Assert.assertTrue(menu.findItem(R.id.find_in_page_id).isVisible());
-        Assert.assertNotNull(menu.findItem(R.id.request_desktop_site_row_menu_id));
-
-        MenuItem icon_row = menu.findItem(R.id.icon_row_menu_id);
-        Assert.assertNotNull(icon_row);
-        Assert.assertNotNull(icon_row.hasSubMenu());
-        SubMenu icon_row_menu = icon_row.getSubMenu();
-        final int expectedIconMenuSize = 4;
-        assertEquals(expectedIconMenuSize, getVisibleMenuSize(icon_row_menu));
-        Assert.assertNotNull(icon_row_menu.findItem(R.id.forward_menu_id));
-        Assert.assertNotNull(icon_row_menu.findItem(R.id.bookmark_this_page_id));
-        Assert.assertNotNull(icon_row_menu.findItem(R.id.info_menu_id));
-        Assert.assertNotNull(icon_row_menu.findItem(R.id.reload_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    public void testAppMenuBeforeFirstRun() throws Exception {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        // Mark the first run as not completed. This has to be done after we start the intent,
-        // otherwise we are going to hit the FRE.
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        final int expectedMenuSize = 3;
-
-        Assert.assertNotNull("App menu is not initialized: ", menu);
-        assertEquals(expectedMenuSize, getActualMenuSize(menu));
-        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
-
-        // Checks the first row (icons).
-        Assert.assertNotNull(menu.findItem(R.id.forward_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.info_menu_id));
-        Assert.assertNotNull(menu.findItem(R.id.reload_menu_id));
-        assertAppMenuItemNotVisible(menu, R.id.offline_page_id, "offline_page");
-        assertAppMenuItemNotVisible(menu, R.id.bookmark_this_page_id, "bookmark_this_page");
-
-        // Following rows.
-        Assert.assertNotNull(menu.findItem(R.id.find_in_page_id));
-        Assert.assertNotNull(menu.findItem(R.id.request_desktop_site_row_menu_id));
-        assertAppMenuItemNotVisible(menu, R.id.open_in_browser_id, "open_in_browser");
-        assertAppMenuItemNotVisible(menu, R.id.add_to_homescreen_id, "add_to_homescreen");
-    }
-
-    /**
-     * Tests if the default share item can be shown in the app menu.
-     */
-    @Test
-    @SmallTest
-    public void testShareMenuItem() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        Assert.assertTrue(menu.findItem(R.id.share_menu_id).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.share_menu_id).isEnabled());
-    }
-
-
-    /**
-     * Test that only up to 5 entries are added to the custom menu.
-     */
-    @Test
-    @SmallTest
-    public void testMaxMenuItems() throws Exception {
-        Intent intent = createMinimalCustomTabIntent();
-        int numMenuEntries = 7;
-        Assert.assertTrue(MAX_MENU_CUSTOM_ITEMS < numMenuEntries);
-        CustomTabsTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        openAppMenuAndAssertMenuShown();
-        Menu menu = mCustomTabActivityTestRule.getMenu();
-        final int expectedMenuSize = MAX_MENU_CUSTOM_ITEMS + NUM_CHROME_MENU_ITEMS;
-        Assert.assertNotNull("App menu is not initialized: ", menu);
-        assertEquals(expectedMenuSize, getActualMenuSize(menu));
-        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
-    }
-
-    /**
-     * Test whether the custom menu is correctly shown and clicking it sends the right
-     * {@link PendingIntent}.
-     */
-    @Test
-    @SmallTest
-    public void testCustomMenuEntry() throws TimeoutException {
-        Intent customTabIntent = createMinimalCustomTabIntent();
-        Intent baseCallbackIntent = new Intent();
-        baseCallbackIntent.putExtra("FOO", 42);
-        final PendingIntent pi = CustomTabsTestUtils.addMenuEntriesToIntent(
-                customTabIntent, 1, baseCallbackIntent, TEST_MENU_TITLE);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
-
-        final OnFinishedForTest onFinished = new OnFinishedForTest(pi);
-        getCustomTabIntentDataProvider().setPendingIntentOnFinishedForTesting(onFinished);
-
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item = ((CustomTabAppMenuPropertiesDelegate)
-                                     AppMenuTestSupport.getAppMenuPropertiesDelegate(
-                                             mCustomTabActivityTestRule.getAppMenuCoordinator()))
-                                    .getMenuItemForTitle(TEST_MENU_TITLE);
-            Assert.assertNotNull(item);
-            AppMenuTestSupport.onOptionsItemSelected(
-                    mCustomTabActivityTestRule.getAppMenuCoordinator(), item);
-        });
-
-        onFinished.waitForCallback("Pending Intent was not sent.");
-        Intent callbackIntent = onFinished.getCallbackIntent();
-        Assert.assertThat(callbackIntent.getDataString(), equalTo(mTestPage));
-
-        // Verify that the callback intent has the page title as the subject, but other extras are
-        // kept intact.
-        Assert.assertThat(
-                callbackIntent.getStringExtra(Intent.EXTRA_SUBJECT), equalTo("The Google"));
-        Assert.assertThat(callbackIntent.getIntExtra("FOO", 0), equalTo(42));
-    }
-
-    /**
-     * Test whether clicking "Open in Chrome" takes us to a chrome normal tab, loading the same url.
-     */
-    @Test
-    @SmallTest
-    public void testOpenInBrowser() throws Exception {
-        // Augment the CustomTabsSession to catch the callback.
-        CallbackHelper callbackTriggered = new CallbackHelper();
-        CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(new CustomTabsCallback() {
-            @Override
-            public void extraCallback(String callbackName, Bundle args) {
-                if (callbackName.equals(CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK)) {
-                    callbackTriggered.notifyCalled();
-                }
-            }
-        }).session;
-
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.setData(Uri.parse(mTestPage));
-        intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // These ensure the open in chrome chooser is not shown.
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
-        IntentHandler.setForceIntentSenderChromeToTrue(true);
-
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme(Uri.parse(mTestServer.getURL("/")).getScheme());
-        final ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item =
-                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
-                            .findItem(R.id.open_in_browser_id);
-            Assert.assertNotNull(item);
-            getActivity().onMenuOrKeyboardAction(R.id.open_in_browser_id, false);
-        });
-        final Activity activity =
-                monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-
-        callbackTriggered.waitForCallback(0);
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(RecordHistogram.getHistogramValueCountForTesting(
-                                       LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                                       LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU),
-                    Matchers.is(1));
-        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        activity.finish();
     }
 
     /**
@@ -2722,66 +2425,6 @@ public class CustomTabActivityTest {
         });
     }
 
-    @Test
-    @SmallTest
-    public void testHideOpenInChromeMenuItem() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        intent.setData(Uri.parse(mTestPage));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, true);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(
-                token, "com.google.android.googlequicksearchbox");
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        final ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item =
-                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
-                            .findItem(R.id.open_in_browser_id);
-            // The menu item should be there, but hidden.
-            Assert.assertNotNull(item);
-            Assert.assertFalse(item.isVisible());
-        });
-    }
-
-    @Test
-    @SmallTest
-    public void testHideOpenInChromeMenuItemVisibleWithWrongPackage() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        intent.setData(Uri.parse(mTestPage));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, true);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        final ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
-        openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            MenuItem item =
-                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
-                            .findItem(R.id.open_in_browser_id);
-            // As the package name doesn't match the expected package, the item should be visible.
-            Assert.assertNotNull(item);
-            Assert.assertTrue(item.isVisible());
-        });
-    }
-
     /**
      * The following test that history only has a single final page after speculation,
      * whether it was a hit or a miss.
@@ -3143,9 +2786,5 @@ public class CustomTabActivityTest {
 
     private SessionDataHolder getSessionDataHolder() {
         return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
-    }
-
-    private CustomTabIntentDataProvider getCustomTabIntentDataProvider() {
-        return (CustomTabIntentDataProvider) getActivity().getIntentDataProvider();
     }
 }
