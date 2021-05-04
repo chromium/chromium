@@ -750,6 +750,7 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorNotificationActionsBackground:
     case ui::kColorNotificationBackgroundActive:
     case ui::kColorNotificationImageBackground:
+    case ui::kColorSyncInfoBackground:
       return GetBgColor("#statusbar");
 
     // FocusableBorder
@@ -929,6 +930,7 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
           "GtkTreeView#treeview.view "
           "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label");
     case ui::kColorButtonBackgroundProminentDisabled:
+    case ui::kColorButtonBorderDisabled:
       return GetBgColor("GtkButton#button.text-button:disabled");
     case ui::kColorButtonBorder:
       return GetBorderColor("GtkButton#button.text-button");
