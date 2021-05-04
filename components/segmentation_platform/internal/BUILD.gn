@@ -22,6 +22,7 @@ static_library("internal") {
     "//base",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
+    "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
   ]
 }

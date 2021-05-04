@@ -1,4 +1,6 @@
 include_rules = [
   "+components/keyed_service",
   "+components/leveldb_proto",
+  "+components/optimization_guide/proto/models.pb.h",
+  "+components/optimization_guide/proto/models.proto",
 ]

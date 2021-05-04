@@ -1,0 +1,63 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+// Describes how a feature will be aggregated inside a timed bucket for
+// forming the input tensor to the model. |length| here refers to the field
+// Feature.length.
+enum Aggregation {
+  UNKNOWN = 0;
+
+  // TENSOR RESULT: Data type: int, Length: |length|
+  // Each entry is the count of times the event happened within each bucket.
+  BUCKETED_COUNT = 1;
+
+  // TENSOR RESULT: Data type: bool, Length: |length|
+  // Each entry is True if BUCKETED_COUNT for that bucket would yield > 0, else
+  // False.
+  BUCKETED_COUNT_BOOLEAN = 2;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The sum of BUCKETED_COUNT_BOOLEAN True values over the same |length|.
+  BUCKETED_COUNT_BOOLEAN_TRUE_COUNT = 3;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The sum of all buckets in a BUCKETED_COUNT result.
+  SUM_COUNT = 4;
+
+  // TENSOR RESULT: Data type: int, Length: |length|
+  // First value is the count for the current bucket.
+  // Second value is the count for the current + previous bucket.
+  // Third value is the count for the current + previous + before previous
+  // bucket, etc. The last value is the same value as a SUM_COUNT aggregation
+  // for the same |length|.
+  BUCKETED_CUMULATIVE_COUNT = 5;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // Value for each User Action is 1.
+  // Sum of all values from now back to |length| number of buckets.
+  SUM_VALUES = 6;
+
+  // TENSOR RESULT: Data type: bool, Length: 1
+  // If a SUM_VALUES aggregation yields 0, then False, else True.
+  SUM_VALUES_BOOLEAN = 7;
+
+  // TENSOR RESULT: Data type: int, Length: |length|
+  // Value for each User Action is 1.
+  // First value is the sum for the current bucket.
+  // Second value is the sum for the current + previous bucket.
+  // Third value is the sum for the current + previous + before previous bucket,
+  // etc. The last value is the same value as a SUM_VALUES aggregation for the
+  // same |length|.
+  BUCKETED_CUMULATIVE_SUM_VALUES = 8;
+
+  // TENSOR RESULT: Data type: int, Length: |length|
+  // Value for each User Action is 1.
+  // Each entry is the sum for that event within each bucket.
+  BUCKETED_SUM_VALUES = 9;
+}

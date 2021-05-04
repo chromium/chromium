@@ -9,7 +9,7 @@ option java_outer_classname = "ModelsProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
+import "components/optimization_guide/proto/common_types.proto";
 
 // A generic handle for any type of model.
 message Model {

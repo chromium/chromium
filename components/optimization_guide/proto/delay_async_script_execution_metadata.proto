@@ -10,7 +10,7 @@ option java_outer_classname = "DelayAsyncScriptExecutionMetadataProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
+import "components/optimization_guide/proto/common_types.proto";
 
 // Optimization metadata for OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION.
 message DelayAsyncScriptExecutionMetadata {

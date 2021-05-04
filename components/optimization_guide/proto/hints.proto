@@ -9,10 +9,10 @@ option java_outer_classname = "HintsProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
-import "loading_predictor_metadata.proto";
-import "performance_hints_metadata.proto";
-import "public_image_metadata.proto";
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/loading_predictor_metadata.proto";
+import "components/optimization_guide/proto/performance_hints_metadata.proto";
+import "components/optimization_guide/proto/public_image_metadata.proto";
 
 // Information about the hint that the client already has for a host.
 message MatchedHintInfo {

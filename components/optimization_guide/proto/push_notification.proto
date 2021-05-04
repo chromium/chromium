@@ -9,8 +9,8 @@ option java_outer_classname = "PushNotificationProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
-import "hints.proto";
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/hints.proto";
 
 // This message is attached as a payload to push notifications in Optimization
 // Guide and contains all the needed information to invalidate stored hints that

@@ -9,6 +9,7 @@ if (is_android) {
 }
 
 proto_library("optimization_guide_proto") {
+  proto_in_dir = "//"
   sources = [
     "common_types.proto",
     "delay_async_script_execution_metadata.proto",
@@ -27,7 +28,7 @@ proto_library("optimization_guide_proto") {
 
 if (is_android) {
   proto_java_library("optimization_guide_proto_java") {
-    proto_path = "."
+    proto_path = "//"
     sources = [
       "common_types.proto",
       "delay_async_script_execution_metadata.proto",

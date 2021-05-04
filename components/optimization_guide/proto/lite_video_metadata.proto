@@ -10,7 +10,7 @@ option java_outer_classname = "LiteVideoMetadataProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
+import "components/optimization_guide/proto/common_types.proto";
 
 message LiteVideoHint {
   // The target video resolution for throttling. Initially unused.
