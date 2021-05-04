@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, DestinationStore, InvitationStore, NativeLayer, NativeLayerImpl} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, DestinationStore, InvitationStore, NativeLayer, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from 'chrome://test/print_preview/print_preview_test_utils.js';
 
-import {eventToPromise} from '../test_util.m.js';
-
 // <if expr="chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-
 // </if>
 
 suite('UserManagerTest', function() {
@@ -50,9 +47,6 @@ suite('UserManagerTest', function() {
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(account1));
-    const whenSearchDone = eventToPromise(
-        CloudPrintInterfaceEventType.SEARCH_DONE,
-        cloudPrintInterface.getEventTarget());
 
     userManager = document.createElement('print-preview-user-manager');
 
@@ -75,25 +69,18 @@ suite('UserManagerTest', function() {
         false /* pdfPrinterDisabled */, true /* isDriveMounted */,
         'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */, []);
-
-    // <if expr="not chromeos">
-    return whenSearchDone;
-    // </if>
   });
 
   // Checks that initializing and updating user accounts works as expected.
   test('update users without sync', function() {
-    // Destination store will trigger a call to cloud print to determine the
-    // state of the Drive printer, which will in turn set the account state.
-    // This doesn't happen on Chrome OS which uses a different Drive.
     userManager.initUserAccounts();
-    assertEquals(isChromeOS ? undefined : account1, userManager.activeUser);
-    assertEquals(isChromeOS ? 0 : 1, userManager.users.length);
-    assertEquals(
-        isChromeOS ? 0 : 2, cloudPrintInterface.getCallCount('search'));
+    assertEquals(undefined, userManager.activeUser);
+    assertEquals(0, userManager.users.length);
+    assertEquals(0, cloudPrintInterface.getCallCount('search'));
 
-    // Start reloading everything. This will set up the account on Chrome OS,
-    // which doesn't use the Google Cloud Print Drive in the dropdown.
+    // Simulate triggering the dialog since we have set a cloud printer. This
+    // should update the list of users and the active user and trigger a call to
+    // search.
     destinationStore.startLoadAllDestinations();
     return cloudPrintInterface.whenCalled('search')
         .then(() => {

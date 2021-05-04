@@ -111,10 +111,6 @@
              desc="Option shown on printer drop-down list for saving previewed document as a PDF.">
       Save as PDF
     </message>
-    <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
-             desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
-      Save to Google Drive
-    </message>
     <message name="IDS_PRINT_PREVIEW_SHEET_SUMMARY_LABEL" desc="Print summary, explaining to the user how many pages will be printed.">
     {COUNT, plural,
       =1 {1 sheet of paper}
@@ -306,6 +302,10 @@
       These settings are enforced by your administrator
     </message>
     <if expr="chromeos">
+      <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
+               desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
+        Save to Google Drive
+      </message>
       <message name="IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a print server search box when user has not entered a search query.">
         Print servers
       </message>

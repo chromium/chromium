@@ -315,7 +315,9 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
     {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
     {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
+#endif
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
     {"printerSharingInviteText", IDS_PRINT_PREVIEW_INVITE_TEXT},
     {"printing", IDS_PRINT_PREVIEW_PRINTING},
