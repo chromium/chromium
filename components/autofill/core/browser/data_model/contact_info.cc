@@ -101,16 +101,21 @@ bool NameInfo::operator==(const NameInfo& other) const {
 std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
 
+  // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
+  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX &&
+      !structured_address::HonorificPrefixEnabled()) {
+    type = NAME_FULL;
+  }
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
   if (structured_address::StructuredNamesEnabled()) {
     // Without the second generation of the structured name tree, honorific
     // prefixes and the name including the prefix are unsupported types.
-    if ((type == NAME_HONORIFIC_PREFIX ||
-         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
+    if (type == NAME_HONORIFIC_PREFIX &&
         !structured_address::HonorificPrefixEnabled()) {
       return std::u16string();
     }
+
     return name_->GetValueForType(type);
   }
   switch (type) {
