@@ -368,14 +368,13 @@ MultiplexRouter::MultiplexRouter(
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  if (config_ == MULTI_INTERFACE)
+    lock_.emplace();
 }
 
 void MultiplexRouter::BindToCurrentSequence() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (config_ == MULTI_INTERFACE)
-    lock_.emplace();
 
   if (config_ == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
       config_ == MULTI_INTERFACE) {
