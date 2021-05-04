@@ -145,7 +145,8 @@ void DownloadReporter::OnManagerGoingDown(
 
 void DownloadReporter::OnDownloadCreated(download::DownloadItem* download) {
   danger_types_[download] = download->GetDangerType();
-  observed_downloads_.Add(download);
+  if (!observed_downloads_.IsObserving(download))
+    observed_downloads_.Add(download);
 }
 
 void DownloadReporter::OnDownloadDestroyed(download::DownloadItem* download) {

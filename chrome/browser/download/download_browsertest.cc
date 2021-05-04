@@ -4755,7 +4755,7 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
 // same GUID.
 // TODO(crbug.com/1204298): Disabled due to flakines.
 IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
-                       DISABLED_DownloadURLWithInProgressManager) {
+                       DownloadURLWithInProgressManager) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
