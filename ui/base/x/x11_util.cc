@@ -719,10 +719,10 @@ bool EnumerateChildren(EnumerateWindowsDelegate* delegate,
     return false;
 
   std::vector<x11::Window> windows;
-  std::vector<x11::Window>::iterator iter;
   if (depth == 0) {
     XMenuList::GetInstance()->InsertMenuWindows(&windows);
     // Enumerate the menus first.
+    std::vector<x11::Window>::iterator iter;
     for (iter = windows.begin(); iter != windows.end(); iter++) {
       if (delegate->ShouldStopIterating(*iter))
         return true;
@@ -737,7 +737,8 @@ bool EnumerateChildren(EnumerateWindowsDelegate* delegate,
 
   // XQueryTree returns the children of |window| in bottom-to-top order, so
   // reverse-iterate the list to check the windows from top-to-bottom.
-  for (iter = windows.begin(); iter != windows.end(); iter++) {
+  std::vector<x11::Window>::reverse_iterator iter;
+  for (iter = windows.rbegin(); iter != windows.rend(); iter++) {
     if (IsWindowNamed(*iter) && delegate->ShouldStopIterating(*iter))
       return true;
   }
@@ -747,7 +748,7 @@ bool EnumerateChildren(EnumerateWindowsDelegate* delegate,
   // loop because the recursion and call to XQueryTree are expensive and is only
   // needed for a small number of cases.
   if (++depth <= max_depth) {
-    for (iter = windows.begin(); iter != windows.end(); iter++) {
+    for (iter = windows.rbegin(); iter != windows.rend(); iter++) {
       if (EnumerateChildren(delegate, *iter, max_depth, depth))
         return true;
     }
