@@ -13,6 +13,15 @@
 
 namespace chromeos {
 namespace help_app {
+namespace {
+
+// Order search results by relevance score. Higher relevance first.
+bool CompareSearchResults(const mojom::SearchResultPtr& first,
+                          const mojom::SearchResultPtr& second) {
+  return first->relevance_score > second->relevance_score;
+}
+
+}  // namespace
 
 SearchHandler::SearchHandler(
     SearchTagRegistry* search_tag_registry,
@@ -73,16 +82,15 @@ std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
     uint32_t max_num_results) const {
   std::vector<mojom::SearchResultPtr> search_results;
   for (const auto& result : local_search_service_results) {
+    if (search_results.size() == max_num_results) {
+      break;
+    }
     mojom::SearchResultPtr result_ptr = ResultToSearchResult(result);
     if (result_ptr)
       search_results.push_back(std::move(result_ptr));
   }
-  // TODO(b/182855408): Sort the search results.
+  std::sort(search_results.begin(), search_results.end(), CompareSearchResults);
 
-  // Now that the results have been sorted, limit the size of to
-  // |max_num_results|.
-  search_results.resize(
-      std::min(static_cast<size_t>(max_num_results), search_results.size()));
   return search_results;
 }
 

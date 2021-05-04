@@ -145,5 +145,44 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultMetadata) {
   EXPECT_GT(search_results[0]->relevance_score, 0.01);
 }
 
+TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
+  // Add some search tags.
+  std::vector<mojom::SearchConceptPtr> search_concepts;
+  mojom::SearchConceptPtr new_concept_1 = mojom::SearchConcept::New(
+      /*id=*/"test-id-less",
+      /*title=*/u"Title 1",
+      /*main_category=*/u"Help",
+      /*tags=*/std::vector<std::u16string>{u"less relevance"},
+      /*url_path_with_parameters=*/"help",
+      /*locale=*/"");
+  mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
+      /*id=*/"test-id-more",
+      /*title=*/u"Title 2",
+      /*main_category=*/u"Help",
+      /*tags=*/std::vector<std::u16string>{u"more relevant tag", u"Tag 2"},
+      /*url_path_with_parameters=*/"help",
+      /*locale=*/"");
+  search_concepts.push_back(std::move(new_concept_1));
+  search_concepts.push_back(std::move(new_concept_2));
+
+  search_tag_registry_.Update(search_concepts, base::BindOnce([]() {}));
+  handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
+
+  std::vector<mojom::SearchResultPtr> search_results;
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"relevant tag",
+              /*max_num_results=*/3u, &search_results);
+
+  // The more relevant concept should be first, but the other concept still has
+  // some relevance.
+  ASSERT_EQ(search_results.size(), 2u);
+  EXPECT_EQ(search_results[0]->id, "test-id-more");
+  EXPECT_EQ(search_results[1]->id, "test-id-less");
+  EXPECT_GT(search_results[0]->relevance_score,
+            search_results[1]->relevance_score);
+  EXPECT_GT(search_results[1]->relevance_score, 0.01);
+}
+
 }  // namespace help_app
 }  // namespace chromeos
