@@ -4871,7 +4871,7 @@
       },
       'Cast Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'cast_shell',
@@ -4911,7 +4911,7 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'linux',
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
@@ -5111,9 +5111,6 @@
         ],
       },
       'linux-ozone-rel': {
-        'mixins': [
-          'linux-xenial',
-        ],
         'additional_compile_targets': [
           'chrome',
         ],
