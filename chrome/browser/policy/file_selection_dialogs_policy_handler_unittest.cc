@@ -50,10 +50,8 @@ TEST_F(FileSelectionDialogsPolicyTest, DisableFileSelectionDialogs) {
   const base::Value* value = NULL;
   EXPECT_TRUE(prefs_.GetValue(prefs::kPromptForDownload, &value));
   ASSERT_TRUE(value);
-  bool prompt_for_download = true;
-  bool result = value->GetAsBoolean(&prompt_for_download);
-  EXPECT_TRUE(result);
-  EXPECT_FALSE(prompt_for_download);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 }  // namespace policy

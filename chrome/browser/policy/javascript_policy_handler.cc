@@ -56,10 +56,8 @@ void JavascriptPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   } else {
     const base::Value* javascript_enabled =
         policies.GetValue(key::kJavascriptEnabled);
-    bool enabled = true;
-    if (javascript_enabled &&
-        javascript_enabled->GetAsBoolean(&enabled) &&
-        !enabled) {
+    if (javascript_enabled && javascript_enabled->is_bool() &&
+        !javascript_enabled->GetBool()) {
       setting = CONTENT_SETTING_BLOCK;
     }
   }
