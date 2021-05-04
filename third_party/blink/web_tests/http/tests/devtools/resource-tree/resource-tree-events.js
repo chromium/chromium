@@ -20,8 +20,11 @@
   function eventHandler(eventName, event) {
     switch (eventName) {
       case 'FrameAdded':
-      case 'FrameDetached':
         var frame = event.data;
+        TestRunner.addResult(`    ${eventName} : ${frame.id}`);
+        break;
+      case 'FrameDetached':
+        var frame = event.data.frame;
         TestRunner.addResult(`    ${eventName} : ${frame.id}`);
         break;
       case 'FrameNavigated':
