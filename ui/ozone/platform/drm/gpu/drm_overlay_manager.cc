@@ -167,8 +167,8 @@ bool DrmOverlayManager::CanHandleCandidate(
   if (!gfx::IsNearestRectWithinDistance(crop, 0.01f))
     return false;
 
-  if (candidate.is_clipped && !candidate.clip_rect.Contains(
-                                  gfx::ToNearestRect(candidate.display_rect))) {
+  if (candidate.clip_rect && !candidate.clip_rect->Contains(
+                                 gfx::ToNearestRect(candidate.display_rect))) {
     return false;
   }
 

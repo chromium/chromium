@@ -50,7 +50,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
                                         gfx::Rect* clip_rect) const {
     *transform = visual_info_.transform;
     *offset = visual_info_.offset;
-    *clip_rect = visual_info_.clip_rect;
+    *clip_rect = visual_info_.clip_rect.value_or(gfx::Rect());
   }
 
  private:
@@ -238,10 +238,12 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // being presented so that properties that aren't changed aren't sent to
   // DirectComposition.
   struct VisualInfo {
+    VisualInfo();
+    ~VisualInfo();
+
     gfx::Point offset;
     gfx::Transform transform;
-    bool is_clipped = false;
-    gfx::Rect clip_rect;
+    base::Optional<gfx::Rect> clip_rect;
     int z_order = 0;
   } visual_info_;
 

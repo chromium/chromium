@@ -13,8 +13,6 @@ TEST(OverlayCandidateValidatorSurfaceControlTest, NoClipOrNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
@@ -30,7 +28,6 @@ TEST(OverlayProcessorSurfaceControlTest, Clipped) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(2, 2, 5, 5);
   candidate.overlay_handled = false;
 
@@ -49,8 +46,6 @@ TEST(OverlayProcessorSurfaceControlTest, NegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-2.f, -4.f, 10.f, 10.f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
@@ -68,7 +63,6 @@ TEST(OverlayProcessorSurfaceControlTest, ClipAndNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-5.0f, -5.0f, 10.0f, 10.0f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 

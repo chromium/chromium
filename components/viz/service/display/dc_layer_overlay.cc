@@ -152,7 +152,6 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   quad_to_root_transform.FlattenTo2d();
   dc_layer->transform = quad_to_root_transform;
 
-  dc_layer->is_clipped = quad->shared_quad_state->clip_rect.has_value();
   if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
@@ -219,7 +218,6 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   quad_to_root_transform.FlattenTo2d();
   dc_layer->transform = quad_to_root_transform;
 
-  dc_layer->is_clipped = quad->shared_quad_state->clip_rect.has_value();
   if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
@@ -542,8 +540,8 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
   for (const auto& dc_layer : *dc_layer_overlays) {
     gfx::RectF overlay_rect(dc_layer.quad_rect);
     dc_layer.transform.TransformRect(&overlay_rect);
-    if (dc_layer.is_clipped)
-      overlay_rect.Intersect(gfx::RectF(dc_layer.clip_rect));
+    if (dc_layer.clip_rect)
+      overlay_rect.Intersect(gfx::RectF(*dc_layer.clip_rect));
 
     // Overlay:red, Underlay:blue.
     SkColor border_color = dc_layer.z_order > 0 ? SK_ColorRED : SK_ColorBLUE;

@@ -167,8 +167,7 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
               kAbsoluteError) {
         EXPECT_FLOAT_RECT_EQ(BoundingRect(kUVTopLeft, kUVBottomRight),
                              candidate.uv_rect);
-        if (!candidate.clip_rect.IsEmpty()) {
-          EXPECT_EQ(true, candidate.is_clipped);
+        if (candidate.clip_rect) {
           EXPECT_EQ(kOverlayClipRect, candidate.clip_rect);
         }
         candidate.overlay_handled = true;
@@ -4427,7 +4426,7 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
                 candidate.uv_rect, candidate.resource_size_in_pixels.width(),
                 candidate.resource_size_in_pixels.height())));
   EXPECT_TRUE(candidate.requires_overlay);
-  EXPECT_FALSE(candidate.is_clipped);
+  EXPECT_FALSE(candidate.clip_rect);
   EXPECT_EQ(gfx::ToRoundedRect(candidate.display_rect), kOverlayClipRect);
 }
 
@@ -4462,7 +4461,7 @@ TEST_F(SingleOverlayOnTopTest,
                 candidate.uv_rect, candidate.resource_size_in_pixels.width(),
                 candidate.resource_size_in_pixels.height())));
   EXPECT_TRUE(candidate.requires_overlay);
-  EXPECT_FALSE(candidate.is_clipped);
+  EXPECT_FALSE(candidate.clip_rect);
   EXPECT_EQ(candidate.display_rect, primary_rect);
 }
 

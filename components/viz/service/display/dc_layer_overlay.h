@@ -58,9 +58,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
   // after applying the |quad_rect.origin()| as an offset.
   gfx::Transform transform;
 
-  // If |is_clipped| is true, then clip to |clip_rect| in root target space.
-  bool is_clipped = false;
-  gfx::Rect clip_rect;
+  // If |clip_rect| is present, then clip to it in root target space.
+  base::Optional<gfx::Rect> clip_rect;
 
   // This is the color-space the texture should be displayed as. If invalid,
   // then the default for the texture should be used. For YUV textures, that's

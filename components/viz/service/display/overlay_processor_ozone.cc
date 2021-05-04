@@ -33,8 +33,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->format = primary_plane.format;
   ozone_candidate->display_rect = primary_plane.display_rect;
   ozone_candidate->crop_rect = primary_plane.uv_rect;
-  ozone_candidate->clip_rect = gfx::ToEnclosingRect(primary_plane.display_rect);
-  ozone_candidate->is_clipped = false;
+  ozone_candidate->clip_rect.reset();
   ozone_candidate->is_opaque = !primary_plane.enable_blending;
   ozone_candidate->plane_z_order = 0;
   ozone_candidate->buffer_size = primary_plane.resource_size;
@@ -48,7 +47,6 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
   ozone_candidate->clip_rect = overlay_candidate.clip_rect;
-  ozone_candidate->is_clipped = overlay_candidate.is_clipped;
   ozone_candidate->is_opaque = overlay_candidate.is_opaque;
   ozone_candidate->plane_z_order = overlay_candidate.plane_z_order;
   ozone_candidate->buffer_size = overlay_candidate.resource_size_in_pixels;

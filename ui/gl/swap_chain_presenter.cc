@@ -206,6 +206,9 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain) {
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
 SwapChainPresenter::PresentationHistory::~PresentationHistory() = default;
 
+SwapChainPresenter::VisualInfo::VisualInfo() = default;
+SwapChainPresenter::VisualInfo::~VisualInfo() = default;
+
 void SwapChainPresenter::PresentationHistory::AddSample(
     DXGI_FRAME_PRESENTATION_MODE mode) {
   if (mode == DXGI_FRAME_PRESENTATION_MODE_COMPOSED)
@@ -441,7 +444,7 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
     gfx::Transform* transform,
     gfx::Rect* clip_rect) {
   gfx::Rect onscreen_rect = overlay_onscreen_rect;
-  if (params.is_clipped)
+  if (params.clip_rect)
     onscreen_rect.Intersect(*clip_rect);
 
   // Because of the rounding when converting between pixels and DIPs, a
@@ -480,7 +483,7 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   }
 
   // Adjust the clip rect.
-  if (params.is_clipped) {
+  if (params.clip_rect) {
     *clip_rect = gfx::Rect(monitor_size);
   }
 
@@ -605,15 +608,16 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
     content_visual_->SetTransform(dcomp_transform.Get());
   }
 
-  if (visual_info_.is_clipped != params.is_clipped ||
+  if (visual_info_.clip_rect.has_value() != params.clip_rect.has_value() ||
       visual_info_.clip_rect != clip_rect) {
-    visual_info_.is_clipped = params.is_clipped;
-    visual_info_.clip_rect = clip_rect;
+    if (params.clip_rect) {
+      visual_info_.clip_rect = clip_rect;
+    }
     layer_tree_->SetNeedsRebuildVisualTree();
     // DirectComposition clips happen in the pre-transform visual space, while
     // cc/ clips happen post-transform. So the clip needs to go on a separate
     // parent visual that's untransformed.
-    if (params.is_clipped) {
+    if (params.clip_rect) {
       Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
       dcomp_device_->CreateRectangleClip(&clip);
       DCHECK(clip);
@@ -895,7 +899,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   }
 
   gfx::Transform transform = params.transform;
-  gfx::Rect clip_rect = params.clip_rect;
+  gfx::Rect clip_rect = params.clip_rect.value_or(gfx::Rect());
   gfx::Size swap_chain_size;
   if (swap_chain_image) {
     swap_chain_size = swap_chain_image->GetSize();

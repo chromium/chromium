@@ -1113,7 +1113,6 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     params.content_rect = gfx::Rect(50, 50);
     params.quad_rect = on_screen_rect;
     params.clip_rect = on_screen_rect;
-    params.is_clipped = true;
     surface_->ScheduleDCLayer(params);
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,

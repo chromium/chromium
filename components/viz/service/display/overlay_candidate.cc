@@ -310,8 +310,7 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->display_rect = gfx::RectF(quad->rect);
   transform.TransformRect(&candidate->display_rect);
 
-  candidate->clip_rect = sqs->clip_rect.value_or(gfx::Rect());
-  candidate->is_clipped = sqs->clip_rect.has_value();
+  candidate->clip_rect = sqs->clip_rect;
   candidate->is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();
@@ -415,7 +414,7 @@ void OverlayCandidate::HandleClipAndSubsampling(
   // the Intel DRM driver. This should not be used in cases where the surface
   // will not always be promoted to an overlay as it will lead to shifting of
   // the content when it switches between composition and overlay.
-  if (!candidate->is_clipped)
+  if (!candidate->clip_rect)
     return;
 
   // Make sure it's in a format we can deal with, we only support YUV and P010.
@@ -427,20 +426,20 @@ void OverlayCandidate::HandleClipAndSubsampling(
   // a single display, so we want to perform our calculations within the bounds
   // of that display.
   if (!primary_rect.IsEmpty())
-    candidate->clip_rect.Intersect(gfx::ToNearestRect(primary_rect));
+    candidate->clip_rect->Intersect(gfx::ToNearestRect(primary_rect));
 
   // Calculate |uv_rect| of |clip_rect| in |display_rect|
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
       candidate->uv_rect, candidate->display_rect,
-      gfx::RectF(candidate->clip_rect));
+      gfx::RectF(*candidate->clip_rect));
 
   // In case that |uv_rect| of candidate is not (0, 0, 1, 1)
   candidate->uv_rect.Intersect(uv_rect);
 
   // Update |display_rect| to avoid unexpected scaling and the candidate should
   // not be regarded as clippped after this.
-  candidate->display_rect.Intersect(gfx::RectF(candidate->clip_rect));
-  candidate->is_clipped = false;
+  candidate->display_rect.Intersect(gfx::RectF(*candidate->clip_rect));
+  candidate->clip_rect.reset();
 
   // Now correct |uv_rect| if required so that the source rect aligns on a pixel
   // boundary that is a multiple of the chroma subsampling.

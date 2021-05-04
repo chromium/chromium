@@ -66,8 +66,8 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
 
     gfx::RectF orig_display_rect = candidate.display_rect;
     gfx::RectF display_rect = orig_display_rect;
-    if (candidate.is_clipped)
-      display_rect.Intersect(gfx::RectF(candidate.clip_rect));
+    if (candidate.clip_rect)
+      display_rect.Intersect(gfx::RectF(*candidate.clip_rect));
     // The framework doesn't support display rects positioned at a negative
     // offset.
     display_rect = ClipFromOrigin(display_rect);

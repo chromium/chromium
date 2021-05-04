@@ -19825,8 +19825,9 @@ void GLES2DecoderImpl::DoScheduleDCLayerCHROMIUM(GLuint texture_0,
   params.transform =
       gfx::Transform(transform_c1r1, transform_c2r1, transform_c1r2,
                      transform_c2r2, transform_tx, transform_ty);
-  params.is_clipped = is_clipped;
-  params.clip_rect = gfx::Rect(clip_x, clip_y, clip_width, clip_height);
+  if (is_clipped) {
+    params.clip_rect = gfx::Rect(clip_x, clip_y, clip_width, clip_height);
+  }
   params.protected_video_type =
       static_cast<gfx::ProtectedVideoType>(protected_video_type);
 

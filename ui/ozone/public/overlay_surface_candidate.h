@@ -31,8 +31,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   ~OverlaySurfaceCandidate();
   OverlaySurfaceCandidate& operator=(const OverlaySurfaceCandidate& other);
 
-  // Note that |clip_rect|, |is_clipped|, |overlay_handled| and |native_pixmap|
-  // are *not* used as part of the comparison.
+  // Note that |clip_rect|, |overlay_handled| and |native_pixmap| are *not* used
+  // as part of the comparison.
   bool operator<(const OverlaySurfaceCandidate& other) const;
 
   // Transformation to apply to layer during composition.
@@ -50,10 +50,9 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF crop_rect;
-  // Clip rect in the target content space after composition.
-  gfx::Rect clip_rect;
-  // If the quad is clipped after composition.
-  bool is_clipped = false;
+  // If the quad is clipped, the clip rect in the target content space after
+  // composition.
+  base::Optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
   // Optionally contains a pointer to the NativePixmap corresponding to this
