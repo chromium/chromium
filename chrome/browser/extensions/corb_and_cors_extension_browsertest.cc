@@ -2346,8 +2346,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       } )";
   extension_dir.WriteManifest(kManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
-  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath(),
+                                             {.allow_in_incognito = false});
   ASSERT_TRUE(extension);
+
+  // This test covers the default incognito mode (spanning mode) where there is
+  // only a single background page (i.e. no separate incognito background page).
+  EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension));
 
   // Set up a test scenario:
   // - top-level frame: kActiveTabHost
@@ -2357,6 +2362,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   GURL cross_site_resource(
       embedded_test_server()->GetURL(kActiveTabHost, "/nosniff.xml"));
   ui_test_utils::NavigateToURL(browser(), original_document_url);
+
+  // Open an incognito window.  Since the extension is not enabled for
+  // incognito, OriginAccessList should not be sent to the incognito-related
+  // NetworkContext (this is verified by a DCHECK in
+  // SetCorsOriginAccessListForExtensionHelper in
+  // //extensions/browser/extension_util.cc.
+  CreateIncognitoBrowser();
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
   {

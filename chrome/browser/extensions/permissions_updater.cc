@@ -128,8 +128,12 @@ void SetCorsOriginAccessListForAllRelatedProfiles(
     content::BrowserContext* browser_context,
     const Extension& extension,
     base::OnceClosure closure) {
+  // Non-tab-specific extension permissions are shared across profiles (even for
+  // split-mode extensions), so we update all profiles the extension is enabled
+  // for.
   util::SetCorsOriginAccessListForExtension(
-      util::GetAllRelatedProfiles(Profile::FromBrowserContext(browser_context)),
+      util::GetAllRelatedProfiles(Profile::FromBrowserContext(browser_context),
+                                  extension),
       extension, std::move(closure));
 }
 
