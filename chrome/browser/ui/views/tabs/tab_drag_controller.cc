@@ -277,10 +277,19 @@ class TabDragController::DraggedTabsClosedTracker
       TabStripModel* model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::Type::kRemoved)
-      return;
-    for (const auto& contents : change.GetRemove()->contents)
-      parent_->OnActiveStripWebContentsRemoved(contents.contents);
+    switch (change.type()) {
+      case TabStripModelChange::Type::kRemoved:
+        for (const auto& contents : change.GetRemove()->contents)
+          parent_->OnActiveStripWebContentsRemoved(contents.contents);
+        break;
+      case TabStripModelChange::Type::kReplaced:
+        parent_->OnActiveStripWebContentsReplaced(
+            change.GetReplace()->old_contents,
+            change.GetReplace()->new_contents);
+        break;
+      default:
+        break;
+    }
   }
 
  private:
@@ -708,9 +717,20 @@ void TabDragController::OnSourceTabStripEmpty() {
 void TabDragController::OnActiveStripWebContentsRemoved(
     content::WebContents* contents) {
   // Mark closed tabs as destroyed so we don't try to manipulate them later.
-  for (auto it = drag_data_.begin(); it != drag_data_.end(); it++) {
-    if (it->contents == contents) {
-      it->contents = nullptr;
+  for (auto& drag_datum : drag_data_) {
+    if (drag_datum.contents == contents) {
+      drag_datum.contents = nullptr;
+      break;
+    }
+  }
+}
+
+void TabDragController::OnActiveStripWebContentsReplaced(
+    content::WebContents* previous,
+    content::WebContents* next) {
+  for (auto& drag_datum : drag_data_) {
+    if (drag_datum.contents == previous) {
+      drag_datum.contents = next;
       break;
     }
   }
