@@ -38,7 +38,11 @@ namespace {
 // Templatized base::Value::GetAs*().
 template <typename T> bool GetAs(const base::Value& in, T* out);
 template<> bool GetAs(const base::Value& in, bool* out) {
-  return in.GetAsBoolean(out);
+  if (out && in.is_bool()) {
+    *out = in.GetBool();
+    return true;
+  }
+  return in.is_bool();
 }
 template <>
 bool GetAs(const base::Value& in, double* out) {
