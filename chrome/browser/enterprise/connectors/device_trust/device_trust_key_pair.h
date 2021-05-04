@@ -50,6 +50,13 @@ class DeviceTrustKeyPair {
   // Return strue on success.
   bool Init();
 
+  // Sign `message` using elliptic curve (EC) private key.
+  bool SignMessage(const std::string& message, std::vector<uint8_t>& signature);
+
+  // Sign `message` using `SignMessage` method and return the signature as a
+  // base64 encode string.
+  bool GetSignatureInBase64(const std::string& message, std::string* signature);
+
  private:
   std::unique_ptr<crypto::ECPrivateKey> key_pair_;
 

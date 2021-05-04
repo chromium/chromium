@@ -4,9 +4,15 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "base/base64.h"
+#include "base/base64url.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -25,6 +31,7 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
   key_pair_ = std::make_unique<DeviceTrustKeyPair>();
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
+  attestation_service_ = std::make_unique<attestation::AttestationService>();
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
@@ -124,5 +131,18 @@ std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
   return key_pair_->ExportPEMPublicKey();
 }
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+std::string DeviceTrustService::BuildChallengeResponse(
+    const std::string& challenge) {
+  ::attestation::SignEnterpriseChallengeRequest request;
+  ::attestation::SignEnterpriseChallengeReply result;
+  // Get the challenge from the SignedData json and create request.
+  request.set_challenge(
+      attestation_service_->JsonChallengeToProtobufChallenge(challenge));
+  attestation_service_->SignEnterpriseChallenge(request, &result);
+
+  return attestation_service_->ProtobufChallengeToJsonChallenge(
+      result.challenge_response());
+}
 
 }  // namespace enterprise_connectors
