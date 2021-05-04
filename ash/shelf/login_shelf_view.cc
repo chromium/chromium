@@ -260,10 +260,8 @@ class LoginShelfButton : public views::LabelButton {
   }
 
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
-    ink_drop->SetShowHighlightOnHover(false);
-    ink_drop->SetShowHighlightOnFocus(false);
-    return ink_drop;
+    return views::InkDrop::CreateInkDropWithoutAutoHighlight(
+        this, /*highlight_on_hover=*/false);
   }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
@@ -397,10 +395,8 @@ class KioskAppsButton : public views::MenuButton,
   }
 
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
-    auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
-    ink_drop->SetShowHighlightOnHover(false);
-    ink_drop->SetShowHighlightOnFocus(false);
-    return ink_drop;
+    return views::InkDrop::CreateInkDropWithoutAutoHighlight(
+        this, /*highlight_on_hover=*/false);
   }
 
   void UpdateButtonColors() {

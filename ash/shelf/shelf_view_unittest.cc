@@ -2388,9 +2388,8 @@ class ShelfViewInkDropTest : public ShelfViewTest {
   void InitHomeButtonInkDrop() {
     home_button_ = GetPrimaryShelf()->navigation_widget()->GetHomeButton();
 
-    auto home_button_ink_drop =
-        std::make_unique<InkDropSpy>(std::make_unique<views::InkDropImpl>(
-            home_button_, home_button_->size()));
+    auto home_button_ink_drop = std::make_unique<InkDropSpy>(
+        views::InkDrop::CreateInkDropWithoutAutoHighlight(home_button_));
     home_button_ink_drop_ = home_button_ink_drop.get();
     views::test::InkDropHostViewTestApi(home_button_)
         .SetInkDrop(std::move(home_button_ink_drop), false);

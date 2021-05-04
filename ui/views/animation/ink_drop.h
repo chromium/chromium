@@ -45,6 +45,12 @@ class VIEWS_EXPORT InkDrop {
       bool highlight_on_hover = true,
       bool highlight_on_focus = false);
 
+  // Create an InkDrop whose highlight does not react to its ripple.
+  static std::unique_ptr<InkDrop> CreateInkDropWithoutAutoHighlight(
+      InkDropHostView* host,
+      bool highlight_on_hover = true,
+      bool highlight_on_focus = false);
+
   // Called by ink drop hosts when their size is changed.
   virtual void HostSizeChanged(const gfx::Size& new_size) = 0;
 

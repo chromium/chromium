@@ -154,10 +154,8 @@ void Checkbox::OnThemeChanged() {
 }
 
 std::unique_ptr<InkDrop> Checkbox::CreateInkDrop() {
-  auto ink_drop = std::make_unique<InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(InkDropImpl::AutoHighlightMode::NONE);
-  ink_drop->SetShowHighlightOnHover(false);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
+      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<InkDropRipple> Checkbox::CreateInkDropRipple() const {

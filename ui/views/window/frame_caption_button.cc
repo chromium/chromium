@@ -186,10 +186,8 @@ views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
 }
 
 std::unique_ptr<views::InkDrop> FrameCaptionButton::CreateInkDrop() {
-  auto ink_drop = std::make_unique<views::InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::NONE);
-  ink_drop->SetShowHighlightOnHover(false);
-  return ink_drop;
+  return views::InkDrop::CreateInkDropWithoutAutoHighlight(
+      this, /*highlight_on_hover=*/false);
 }
 
 std::unique_ptr<views::InkDropRipple> FrameCaptionButton::CreateInkDropRipple()
