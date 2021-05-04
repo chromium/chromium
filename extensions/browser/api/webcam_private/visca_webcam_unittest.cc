@@ -129,8 +129,8 @@ TEST_F(ViscaWebcamTest, Zoom) {
   const char kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
   serial_connection()->SetReceiveBuffer(ToByteVector(kGetZoomResponse));
   Webcam::GetPTZCompleteCallback receive_callback =
-      base::Bind(&GetPTZExpectations::OnCallback,
-                 base::Owned(new GetPTZExpectations(true, 0x1234)));
+      base::BindRepeating(&GetPTZExpectations::OnCallback,
+                          base::Owned(new GetPTZExpectations(true, 0x1234)));
   webcam()->GetZoom(receive_callback);
   base::RunLoop().RunUntilIdle();
   serial_connection()->CheckSendBufferAndClear(ToByteVector(kGetZoomCommand));
@@ -142,8 +142,8 @@ TEST_F(ViscaWebcamTest, Zoom) {
   const char kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
   serial_connection()->SetReceiveBuffer(ToByteVector(kSetZoomResponse));
   Webcam::SetPTZCompleteCallback send_callback =
-      base::Bind(&SetPTZExpectations::OnCallback,
-                 base::Owned(new SetPTZExpectations(true)));
+      base::BindRepeating(&SetPTZExpectations::OnCallback,
+                          base::Owned(new SetPTZExpectations(true)));
   serial_connection()->SetReceiveBuffer(ToByteVector(kSetZoomResponse));
   webcam()->SetZoom(0x6253, send_callback);
   base::RunLoop().RunUntilIdle();
