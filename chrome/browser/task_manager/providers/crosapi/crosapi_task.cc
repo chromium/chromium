@@ -124,10 +124,12 @@ blink::WebCacheResourceTypeStats CrosapiTask::GetWebCacheStats() const {
 }
 
 void CrosapiTask::Activate() {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->task_manager_ash()
-      ->ActivateTask(mojo_task_->task_uuid);
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->task_manager_ash()
+        ->ActivateTask(mojo_task_->task_uuid);
+  }
 }
 
 void CrosapiTask::Refresh(const base::TimeDelta& update_interval,

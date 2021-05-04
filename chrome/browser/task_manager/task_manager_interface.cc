@@ -165,7 +165,8 @@ void TaskManagerInterface::SetEnabledResourceFlags(int64_t flags) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set refresh flags of the remote task manager if lacros is enabled.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
+  if (crosapi::browser_util::IsLacrosEnabled() &&
+      crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->task_manager_ash()

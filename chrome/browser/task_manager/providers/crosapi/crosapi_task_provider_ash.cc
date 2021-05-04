@@ -14,6 +14,7 @@
 namespace task_manager {
 
 CrosapiTaskProviderAsh::CrosapiTaskProviderAsh() {
+  DCHECK(crosapi::CrosapiManager::IsInitialized());
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->task_manager_ash()
@@ -21,10 +22,16 @@ CrosapiTaskProviderAsh::CrosapiTaskProviderAsh() {
 }
 
 CrosapiTaskProviderAsh::~CrosapiTaskProviderAsh() {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->task_manager_ash()
-      ->RemoveObserver();
+  // When user signs out from ash, CrospaiManager instance owned by
+  // ChromeBrowserMainPartsChromeos is destroyed before TaskManagerImpl
+  // instance, which is a lazy instance. We should always make sure
+  // CrosapiManager::IsInitialized  before accessing it.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->task_manager_ash()
+        ->RemoveObserver();
+  }
 }
 
 Task* CrosapiTaskProviderAsh::GetTaskOfUrlRequest(int child_id, int route_id) {
@@ -73,10 +80,12 @@ void CrosapiTaskProviderAsh::StopUpdating() {
   refresh_timer_.Stop();
   CleanupCachedData();
 
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->task_manager_ash()
-      ->OnTaskManagerClosed();
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->task_manager_ash()
+        ->OnTaskManagerClosed();
+  }
 }
 
 void CrosapiTaskProviderAsh::OnTaskManagerProviderDisconnected() {
@@ -89,6 +98,9 @@ void CrosapiTaskProviderAsh::OnTaskManagerProviderDisconnected() {
 }
 
 void CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks() {
+  if (!crosapi::CrosapiManager::IsInitialized())
+    return;
+
   // Get lacros tasks if there is any task manager provider registered and ash
   // task manager has been set up to refresh with a valid refresh interval.
   auto* task_manager_ash =
