@@ -1017,7 +1017,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(shell_surface->GetWidget()->widget_delegate()->CanResize());
 }
 
-// The shell surface in SystemModal container should not become target
+// The shell surface in SystemModal container should be a target
 // at the edge.
 TEST_F(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
   std::unique_ptr<Surface> surface(new Surface);
@@ -1043,7 +1043,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
   aura::WindowTargeter targeter;
   aura::Window* found =
       static_cast<aura::Window*>(targeter.FindTargetForEvent(root, &event));
-  EXPECT_FALSE(window->Contains(found));
+  EXPECT_TRUE(window->Contains(found));
 }
 
 // Test the snap functionalities in splitscreen in tablet mode.

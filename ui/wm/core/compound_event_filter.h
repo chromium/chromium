@@ -41,6 +41,10 @@ class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
   // Returns the cursor for the specified component.
   static gfx::NativeCursor CursorForWindowComponent(int window_component);
 
+  // Returns the not-resizable cursor for the specified component.
+  static gfx::NativeCursor NoResizeCursorForWindowComponent(
+      int window_component);
+
   // Adds/removes additional event filters. This does not take ownership of
   // the EventHandler.
   // NOTE: These handlers are deprecated. Use env::AddPreTargetEventHandler etc.

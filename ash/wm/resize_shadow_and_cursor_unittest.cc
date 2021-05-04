@@ -12,12 +12,14 @@
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -179,6 +181,96 @@ TEST_F(ResizeShadowAndCursorTest, MouseHover) {
   generator.MoveMouseTo(50, 100 - kResizeInsideBoundsSize - 10);
   VerifyResizeShadow(false);
   EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+}
+
+// For windows that are not resizable, checks that there is no resize shadow,
+// and for the correct cursor type for the cursor position.
+TEST_F(ResizeShadowAndCursorTest, MouseHoverOverNonresizable) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+
+  // Make the window nonresizable.
+  auto* const widget = views::Widget::GetWidgetForNativeWindow(window());
+  auto* widget_delegate = widget->widget_delegate();
+  widget_delegate->SetCanResize(false);
+
+  generator.MoveMouseTo(gfx::Point(50, 50));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 0));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 50));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(199, 99));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthWestSouthEastNoResize,
+            GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 99));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 + kResizeOutsideBoundsSize - 1));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 + kResizeOutsideBoundsSize + 10));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 - kResizeInsideBoundsSize));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 - kResizeInsideBoundsSize - 10));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+}
+
+TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+
+  // Create a dummy view for the bubble, adding it to the window.
+  views::View* child_view = new views::View();
+  child_view->SetBounds(200, 200, 10, 10);
+  views::Widget::GetWidgetForNativeWindow(window())
+      ->GetRootView()
+      ->AddChildView(child_view);
+
+  // Create the bubble widget.
+  views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(
+      new views::BubbleDialogDelegateView(child_view,
+                                          views::BubbleBorder::NONE)));
+  bubble->Show();
+
+  // Get the screen rectangle for the bubble frame
+  const gfx::Rect bounds = bubble->GetNativeView()->GetBoundsInScreen();
+  EXPECT_THAT(
+      bounds,
+      ::testing::AllOf(::testing::Property(&gfx::Rect::x, ::testing::Gt(0)),
+                       ::testing::Property(&gfx::Rect::y, ::testing::Gt(0))));
+
+  // The cursor at the frame corners should be the default cursor.
+  generator.MoveMouseTo(bounds.origin());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.top_right());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.bottom_left());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.bottom_right());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
 }
 
 TEST_F(ResizeShadowAndCursorTest, NoResizeShadowOnNonToplevelWindow) {

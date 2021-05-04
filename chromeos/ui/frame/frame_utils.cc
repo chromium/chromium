@@ -34,18 +34,16 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  bool can_ever_resize = widget->widget_delegate()->CanResize();
-  // Don't allow overlapping resize handles when the window is maximized or
-  // fullscreen, as it can't be resized in those states.
-  int resize_border = chromeos::kResizeInsideBoundsSize;
-  if (widget->IsMaximized() || widget->IsFullscreen()) {
-    resize_border = 0;
-    can_ever_resize = false;
-  }
+  // Ignore the resize border when maximized or full screen.
+  const bool has_resize_border =
+      !widget->IsMaximized() && !widget->IsFullscreen();
+  const int resize_border_size =
+      has_resize_border ? chromeos::kResizeInsideBoundsSize : 0;
+
   int frame_component = view->GetHTComponentForFrame(
-      point_in_widget, resize_border, resize_border,
+      point_in_widget, resize_border_size, resize_border_size,
       chromeos::kResizeAreaCornerSize, chromeos::kResizeAreaCornerSize,
-      can_ever_resize);
+      has_resize_border);
   if (frame_component != HTNOWHERE)
     return frame_component;
 
