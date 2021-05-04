@@ -52,6 +52,8 @@ public class LensUtils {
             "minAgsaVersionForDirectIntent";
     private static final String MIN_AGSA_VERSION_DIRECT_INTENT_SDK_FEATURE_PARAM_NAME =
             "minAgsaVersionForDirectIntentSdk";
+    private static final String MIN_AGSA_VERSION_LENS_INTENT_API_FEATURE_PARAM_NAME =
+            "minAgsaVersionForLensIntentApi";
     private static final String LENS_SHOPPING_ALLOWLIST_ENTRIES_FEATURE_PARAM_NAME =
             "allowlistEntries";
     private static final String LENS_SHOPPING_URL_PATTERNS_FEATURE_PARAM_NAME =
@@ -72,6 +74,7 @@ public class LensUtils {
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_CHROME_SHOPPING_INTENT = "11.16";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_DIRECT_INTENT = "11.34";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_DIRECT_INTENT_SDK = "11.39.7";
+    private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_INTENT_API = "12.10";
     private static final int LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = 18;
     private static final String LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME = "lensShopVariation";
     private static final String LENS_DEFAULT_SHOPPING_URL_PATTERNS =
@@ -252,6 +255,27 @@ public class LensUtils {
             return serverProvidedMinAgsaVersion;
         }
         return "";
+    }
+
+    /**
+     * Gets the minimum AGSA version required to support the LensIntent APIs
+     * on this device. Takes the value from a server provided value if a
+     * field trial is active but otherwise will take the value from a client side
+     * default (unless the lens feature is not enabled at all, in which case return
+     * an empty string).
+     *
+     * @return The minimum version name string or an empty string if not available.
+     */
+    public static String getMinimumAgsaVersionForLensIntentApiSupport() {
+        final String serverProvidedMinAgsaVersion = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.GOOGLE_LENS_SDK_INTENT,
+                MIN_AGSA_VERSION_LENS_INTENT_API_FEATURE_PARAM_NAME);
+        if (TextUtils.isEmpty(serverProvidedMinAgsaVersion)) {
+            // Falls into this block if the user enabled the feature using chrome://flags
+            // and the param was not set by the server.
+            return MIN_AGSA_VERSION_NAME_FOR_LENS_INTENT_API;
+        }
+        return serverProvidedMinAgsaVersion;
     }
 
     /**
@@ -485,8 +509,10 @@ public class LensUtils {
     /**
      * Enables the starting of LenActivity directly, rather than going through the Lens
      * session running in AGSA. Also checks if the required AGSA version for direct intent
-     * is below or equal to the provided version.
+     * is below or equal to the provided version. This feature will not be launched and is
+     * experimental.
      */
+    @Deprecated
     public static boolean useDirectIntentSdkIntegration(final Context context) {
         // TODO(https://crbug.com/1146591): Refactor GSA state checks to avoid multiple version
         // grabs.
@@ -498,6 +524,23 @@ public class LensUtils {
                        USE_DIRECT_INTENT_SDK_INTEGRATION_PARAM_NAME, false)
                 && !GSAState.getInstance(context).isAgsaVersionBelowMinimum(
                         agsaVersionName, getMinimumAgsaVersionForDirectIntentSdkSupport());
+    }
+
+    /**
+     * Enables the starting of LenActivity via LensIntent API, rather than using a deeplink or
+     * bundle clients via SDK. This will allow Chrome to share the intent library with other
+     * surfaces, while still entering LensActivity directly.
+     */
+    public static boolean useLensIntentApi() {
+        // TODO(https://crbug.com/1146591): Refactor GSA state checks to avoid multiple version
+        // grabs.
+        String agsaVersionName = sFakeInstalledAgsaVersion != null
+                ? sFakeInstalledAgsaVersion
+                : getLensActivityVersionNameIfAvailable(ContextUtils.getApplicationContext());
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.GOOGLE_LENS_SDK_INTENT)
+                && !GSAState.getInstance(ContextUtils.getApplicationContext())
+                            .isAgsaVersionBelowMinimum(agsaVersionName,
+                                    getMinimumAgsaVersionForLensIntentApiSupport());
     }
 
     /**

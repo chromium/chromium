@@ -87,6 +87,7 @@ extern const base::Feature kEphemeralTabUsingBottomSheet;
 extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;
 extern const base::Feature kFocusOmniboxInIncognitoTabIntents;
+extern const base::Feature kGoogleLensSdkIntent;
 extern const base::Feature kHandleMediaIntents;
 extern const base::Feature kHomepagePromoCard;
 extern const base::Feature kImmersiveUiMode;

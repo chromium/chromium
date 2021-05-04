@@ -763,6 +763,9 @@ extern const char kGlobalMediaControlsModernUIDescription[];
 extern const char kGlobalMediaControlsOverlayControlsName[];
 extern const char kGlobalMediaControlsOverlayControlsDescription[];
 
+extern const char kGoogleLensSdkIntentName[];
+extern const char kGoogleLensSdkIntentDescription[];
+
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 

@@ -3116,6 +3116,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "google-lens-sdk-intent",
+    "owners": [ "juanmojica@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "handwriting-gesture-editing",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 95
