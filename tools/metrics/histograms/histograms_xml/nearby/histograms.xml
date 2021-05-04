@@ -342,6 +342,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Connection.EstablishOutgoingConnection.Success"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether an attempt to establish a connection to a receiving device
+    succeeded or failed; cancellations are ignored. Emitted after the user
+    selects a device to send a payload to but before the payload begins its
+    transfer. Because the sending device initiates the connection--via the
+    Nearby Connections library--this metric is only emitted for outgoing
+    transfers.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Connection.EstablishOutgoingConnectionStatus"
     enum="NearbyShareFinalStatus" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
@@ -1073,6 +1087,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name=".Cancelled" summary="was cancelled"/>
     <variant name=".Failed" summary="failed"/>
     <variant name=".Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Transfer.Success" enum="BooleanSuccess"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the success/failure of a Nearby Share transfer. Emitted when a
+    transfer completes successfully or definitively fails, but not for
+    indeterminate states like cancellation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Transfer.Success.{Direction}.{ShareTargetType}.{ContactStatus}"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the success/failure of a Nearby Share {Direction} transfer with
+    {ShareTargetType} using {ContactStatus}. Emitted when a transfer completes
+    successfully or definitively fails, but not for indeterminate states like
+    cancellation.
+  </summary>
+  <token key="Direction">
+    <variant name="Receive" summary="incoming (receive)"/>
+    <variant name="Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="Laptop" summary="a laptop"/>
+    <variant name="Phone" summary="a phone"/>
+    <variant name="Tablet" summary="a tablet"/>
+    <variant name="UnknownDeviceType" summary="an unknown device type"/>
+  </token>
+  <token key="ContactStatus">
+    <variant name="Contact" summary="contact-based sharing"/>
+    <variant name="NonContact" summary="non-contact-based sharing"/>
   </token>
 </histogram>
 

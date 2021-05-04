@@ -48,7 +48,16 @@ class TransferMetadata {
     kMaxValue = kUnexpectedDisconnection
   };
 
+  enum class Result {
+    kIndeterminate,
+    kSuccess,
+    kFailure,
+    kMaxValue = kFailure
+  };
+
   static bool IsFinalStatus(Status status);
+
+  static Result ToResult(Status status);
 
   static std::string StatusToString(TransferMetadata::Status status);
 
