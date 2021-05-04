@@ -99,6 +99,122 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
                              : ash::AppListSearchResultType::kPlayStoreApp);
   }
 }
+// Tests that provider reports valid results if the app instance responds with a
+// non empty result list and PHONESKY_RESULT_INVALID_DATA status code (which can
+// happen if the Play Store returns a list of results that contains some invalid
+// items).
+TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
+  constexpr size_t kMaxResults = 12;
+
+  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
+      CreateSearch(kMaxResults);
+  EXPECT_TRUE(provider->results().empty());
+  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
+
+  AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
+
+  const std::string kQuery = base::StringPrintf(
+      "PartiallyFailedQueryWithCode-%d",
+      arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA);
+
+  provider->Start(base::UTF8ToUTF16(kQuery));
+
+  const SearchProvider::Results& results = provider->results();
+  ASSERT_GT(results.size(), 0u);
+  // Play Store returns |kMaxResults / 2| results, but the first one (GMail)
+  // already has Chrome extension installed, so it will be skipped.
+  ASSERT_EQ(kMaxResults / 2 - 1, results.size());
+
+  // Check that information is correctly set in each result.
+  for (size_t i = 0; i < results.size(); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
+              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
+              base::StringPrintf("$%zu.22", i));
+    EXPECT_EQ(results[i]->rating(), i);
+    const bool is_instant_app = i % 2 == 0;
+    EXPECT_EQ(results[i]->result_type(),
+              is_instant_app ? ash::AppListSearchResultType::kInstantApp
+                             : ash::AppListSearchResultType::kPlayStoreApp);
+  }
+}
+
+// Tests that the search provider can handle Play Store suggestions without
+// rating and formatted price.
+TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
+  constexpr size_t kMaxResults = 12;
+
+  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
+      CreateSearch(kMaxResults);
+  EXPECT_TRUE(provider->results().empty());
+  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
+
+  AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
+
+  const std::string kQuery = "QueryWithoutRatingAndPrice";
+
+  provider->Start(base::UTF8ToUTF16(kQuery));
+
+  const SearchProvider::Results& results = provider->results();
+  ASSERT_GT(results.size(), 0u);
+  // Play Store returns |kMaxResults| results, but the first one (GMail) already
+  // has Chrome extension installed, so it will be skipped.
+  ASSERT_EQ(kMaxResults - 1, results.size());
+
+  // Check that information is correctly set in each result.
+  for (size_t i = 0; i < results.size(); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
+              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()), "");
+    EXPECT_EQ(results[i]->rating(), -1);
+    const bool is_instant_app = i % 2 == 0;
+    EXPECT_EQ(results[i]->result_type(),
+              is_instant_app ? ash::AppListSearchResultType::kInstantApp
+                             : ash::AppListSearchResultType::kPlayStoreApp);
+  }
+}
+
+// Tests that results without icon are ignored.
+TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
+  constexpr size_t kMaxResults = 12;
+
+  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
+      CreateSearch(kMaxResults);
+  EXPECT_TRUE(provider->results().empty());
+  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
+
+  AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
+
+  const std::string kQuery = "QueryWithSomeResultsMissingIcon";
+
+  provider->Start(base::UTF8ToUTF16(kQuery));
+
+  const SearchProvider::Results& results = provider->results();
+  ASSERT_GT(results.size(), 0u);
+  // Play Store returns |kMaxResults| results, but the first one (GMail) already
+  // has Chrome extension installed, so it will be skipped, and items after
+  // kMaxResults / 2 are missing the icon and are expected to be ignored.
+  ASSERT_EQ(kMaxResults / 2, results.size());
+
+  // Check that information is correctly set in each result.
+  for (size_t i = 0; i < results.size(); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
+              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
+    EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
+              base::StringPrintf("$%zu.22", i));
+    EXPECT_EQ(results[i]->rating(), i);
+    const bool is_instant_app = i % 2 == 0;
+    EXPECT_EQ(results[i]->result_type(),
+              is_instant_app ? ash::AppListSearchResultType::kInstantApp
+                             : ash::AppListSearchResultType::kPlayStoreApp);
+  }
+}
 
 TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   constexpr size_t kMaxResults = 12;
@@ -153,4 +269,5 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
     EXPECT_EQ(0u, provider->results().size());
   }
 }
+
 }  // namespace app_list

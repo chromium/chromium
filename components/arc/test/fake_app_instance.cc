@@ -386,25 +386,45 @@ void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
     return;
   }
 
+  const std::string kPartiallyFailedQueryPrefix(
+      "PartiallyFailedQueryWithCode-");
+  if (!query.compare(0, kPartiallyFailedQueryPrefix.size(),
+                     kPartiallyFailedQueryPrefix)) {
+    state_code = static_cast<ArcPlayStoreSearchRequestState>(
+        stoi(query.substr(kPartiallyFailedQueryPrefix.size())));
+    DCHECK_EQ(state_code,
+              ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA);
+  }
+
   auto icon = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
   const auto& fake_icon_png_data = (!icon || !icon->icon_png_data)
                                        ? std::vector<uint8_t>()
                                        : icon->icon_png_data.value();
+
+  const int num_results =
+      (state_code == ArcPlayStoreSearchRequestState::SUCCESS) ? max_results
+                                                              : max_results / 2;
+  const bool has_price_and_rating = query != "QueryWithoutRatingAndPrice";
+
   fake_apps.push_back(mojom::AppDiscoveryResult::New(
-      std::string("LauncherIntentUri"),      // launch_intent_uri
-      std::string("InstallIntentUri"),       // install_intent_uri
-      std::string(query),                    // label
-      false,                                 // is_instant_app
-      false,                                 // is_recent
-      std::string("Publisher"),              // publisher_name
-      std::string("$7.22"),                  // formatted_price
-      5,                                     // review_score
+      std::string("LauncherIntentUri"),  // launch_intent_uri
+      std::string("InstallIntentUri"),   // install_intent_uri
+      std::string(query),                // label
+      false,                             // is_instant_app
+      false,                             // is_recent
+      std::string("Publisher"),          // publisher_name
+      has_price_and_rating ? std::string("$7.22")
+                           : std::string(),  // formatted_price
+      has_price_and_rating ? 5 : -1,         // review_score
       fake_icon_png_data,                    // icon_png_data
       std::string("com.google.android.gm"),  // package_name
       std::move(icon)));                     // icon
 
-  for (int i = 0; i < max_results - 1; ++i) {
-    auto icon = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
+  for (int i = 0; i < num_results - 1; ++i) {
+    const bool has_icon =
+        query != "QueryWithSomeResultsMissingIcon" || i < num_results / 2;
+    auto icon =
+        has_icon ? GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P) : nullptr;
     const auto& fake_icon_png_data = (!icon || !icon->icon_png_data)
                                          ? std::vector<uint8_t>()
                                          : icon->icon_png_data.value();
@@ -415,11 +435,12 @@ void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
         i % 2 == 0,                                     // is_instant_app
         i % 4 == 0,                                     // is_recent
         base::StringPrintf("Publisher %d", i),          // publisher_name
-        base::StringPrintf("$%d.22", i),                // formatted_price
-        i,                                              // review_score
-        fake_icon_png_data,                             // icon_png_data
-        base::StringPrintf("test.package.%d", i),       // package_name
-        std::move(icon)));                              // icon
+        has_price_and_rating ? base::StringPrintf("$%d.22", i)
+                             : std::string(),      // formatted_price
+        has_price_and_rating ? i : -1,             // review_score
+        fake_icon_png_data,                        // icon_png_data
+        base::StringPrintf("test.package.%d", i),  // package_name
+        std::move(icon)));                         // icon
   }
 
   std::move(callback).Run(state_code, std::move(fake_apps));
