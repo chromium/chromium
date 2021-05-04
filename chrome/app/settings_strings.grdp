@@ -1803,7 +1803,7 @@
     All sites can show any ads to you
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCKED" desc="Label for the disabled option of the ads content setting.">
-    Block ads on sites that show intrusive or misleading ads (recommended)
+    Block ads on sites that show intrusive or misleading ads
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the ads content setting.">
     Allowed to show any ads
@@ -1830,7 +1830,7 @@
     Sites might automatically download related files together to save you time
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALLOWED" desc="Label for the enabled option of the automatic downloads content setting.">
-    Sites can ask to automatically download multiple files (recommended)
+    Sites can ask to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_BLOCKED" desc="Label for the disabled option of the automatic downloads content setting.">
     Don't allow sites to automatically download multiple files
@@ -1845,10 +1845,13 @@
     After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_ALLOWED" desc="Label for the enabled option of the background sync content setting.">
-    Recently closed sites can finish sending and receiving data (recommended)
+    Recently closed sites can finish sending and receiving data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED" desc="Label for the disabled option of the background sync content setting.">
     Don't allow closed sites to finish sending or receiving data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the background sync content setting.">
+    After closing a page, tasks you started might not finish
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the background sync content setting.">
     Allowed to finish sending and receiving data
@@ -1869,7 +1872,7 @@
     Sites usually use your video camera for communication features like video chatting
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_ALLOWED" desc="Label for the enabled option of the camera content setting.">
-    Sites can ask to use your camera (recommended)
+    Sites can ask to use your camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED" desc="Label for the disabled option of the camera content setting.">
     Don't allow sites to use your camera
@@ -1932,7 +1935,7 @@
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_ALLOWED" desc="Label for the enabled option of the file system write content setting.">
-    Sites can ask to edit files and folders on your device (recommended)
+    Sites can ask to edit files and folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED" desc="Label for the disabled option of the file system write content setting.">
     Don't allow sites to edit files or folders on your device
@@ -1968,10 +1971,13 @@
     Sites usually show images to provide illustration, like photos for online stores or news articles
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED" desc="Label for the enabled option of the images content setting.">
-    Sites can show images (recommended)
+    Sites can show images
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
     Don't allow sites to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the images content setting.">
+    Features that need images won't work
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
     Allowed to show images
@@ -1992,7 +1998,7 @@
     Sites usually use Javascript to display interactive features, like video games or web forms
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
-    Sites can use Javascript (recommended)
+    Sites can use Javascript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
     Don't allow sites to use Javascript
@@ -2007,7 +2013,7 @@
     Sites usually use your location for relevant features or info, like local news or nearby shops
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED" desc="Label for the enabled option of the location content setting.">
-    Sites can ask for your location (recommended)
+    Sites can ask for your location
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED" desc="Label for the disabled option of the location content setting.">
     Don't allow sites to see your location
@@ -2025,7 +2031,7 @@
     Sites usually use your microphone for communication features like video chatting
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_ALLOWED" desc="Label for the enabled option of the microphone content setting.">
-    Sites can ask to use your microphone (recommended)
+    Sites can ask to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED" desc="Label for the disabled option of the microphone content setting.">
     Don't allow sites to use your microphone
@@ -2100,7 +2106,7 @@
     Sites usually install payment handlers for shopping features like easier checkout
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_ALLOWED" desc="Label for the enabled option of the payment handlers content setting.">
-    Sites can install payment handlers (recommended)
+    Sites can install payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED" desc="Label for the disabled option of the payment handlers content setting.">
     Don't allow sites to install payment handlers
@@ -2124,7 +2130,7 @@
     Sites can send pop-ups and use redirects
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED" desc="Label for the disabled option of the pop-ups content setting.">
-    Don't allow sites to send pop-ups or use redirects (recommended)
+    Don't allow sites to send pop-ups or use redirects
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the pop-ups content setting.">
     Allowed to send pop-ups and use redirects
@@ -2136,10 +2142,13 @@
     When a site plays content protected by copyright, it might ask to recognize your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED" desc="Label for the enabled option of the protected content content setting.">
-    Sites can ask to play protected content (recommended)
+    Sites can ask to play protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
     Don't allow sites to play protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
+    Media with a copyright might not play
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the protected content content setting.">
     Allowed to play protected content
@@ -2172,10 +2181,13 @@
     Sites might play sound to provide audio for music, videos, and other media
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOWED" desc="Label for the enabled option of the sound content setting.">
-    Sites can play sound (recommended)
+    Sites can play sound
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED" desc="Label for the disabled option of the sound content setting.">
     Don't allow sites to play sound
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED_SUB_LABEL" desc=" Sub label for the disabled option of the sound content setting.">
+    Features that need sound won't work
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the sound content setting.">
     Allowed to play sound

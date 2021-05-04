@@ -171,6 +171,8 @@
                     "$i18n{siteSettingsBackgroundSyncAllowed}"
                 allow-option-icon="cr:sync"
                 block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
+                block-option-sub-label=
+                    "$i18n{siteSettingsBackgroundSyncBlockedSubLabel}"
                 block-option-icon="settings:sync-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
@@ -276,6 +278,8 @@
                 allow-option-label="$i18n{siteSettingsImagesAllowed}"
                 allow-option-icon="settings:photo"
                 block-option-label="$i18n{siteSettingsImagesBlocked}"
+                block-option-sub-label=
+                    "$i18n{siteSettingsImagesBlockedSubLabel}"
                 block-option-icon="settings:photo-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
@@ -474,6 +478,7 @@
                 allow-option-label="$i18n{siteSettingsSoundAllowed}"
                 allow-option-icon="settings:volume-up"
                 block-option-label="$i18n{siteSettingsSoundBlocked}"
+                block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
                 block-option-icon="settings:volume-up-off">
             </settings-category-default-radio-group>
           </template>
@@ -1003,6 +1008,8 @@
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
                     label="$i18n{siteSettingsProtectedContentBlocked}"
+                    sub-label=
+                        "$i18n{siteSettingsProtectedContentBlockedSubLabel}"
                     name="false"
                     disabled$="[[isGuest_]]"
                     icon="settings:protected-content-off">
