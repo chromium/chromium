@@ -394,17 +394,13 @@ net::SiteForCookies PdfViewWebPlugin::SiteForCookies() const {
 void PdfViewWebPlugin::SetReferrerForRequest(
     blink::WebURLRequest& request,
     const blink::WebURL& referrer_url) {
-  DCHECK(IsValid());
-  Container()->GetDocument().GetFrame()->SetReferrerForRequest(request,
-                                                               referrer_url);
+  GetValidContainerFrame()->SetReferrerForRequest(request, referrer_url);
 }
 
 std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPlugin::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
-  DCHECK(IsValid());
-  return Container()->GetDocument().GetFrame()->CreateAssociatedURLLoader(
-      options);
+  return GetValidContainerFrame()->CreateAssociatedURLLoader(options);
 }
 
 void PdfViewWebPlugin::OnMessage(const base::Value& message) {
@@ -501,6 +497,11 @@ void PdfViewWebPlugin::OnPrintPreviewLoaded() {
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
+}
+
+blink::WebLocalFrame* PdfViewWebPlugin::GetValidContainerFrame() const {
+  DCHECK(IsValid());
+  return Container()->GetDocument().GetFrame();
 }
 
 void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,

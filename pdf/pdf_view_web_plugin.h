@@ -19,6 +19,7 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+class WebLocalFrame;
 class WebPluginContainer;
 }  // namespace blink
 
@@ -152,6 +153,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   ~PdfViewWebPlugin() override;
 
   bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper);
+
+  // Returns the local frame to which the web plugin container belongs to. May
+  // only be called when the plugin has the container inside a valid frame.
+  blink::WebLocalFrame* GetValidContainerFrame() const;
 
   void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 
