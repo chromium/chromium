@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed.v2;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
-import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewParent;
@@ -425,7 +424,6 @@ public class FeedStream implements Stream {
     private @Nullable NtpListContentManager mContentManager;
     private @Nullable SurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
-    private @Nullable RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector;
     private FeedSurfaceMediator.ScrollState mScrollStateToRestore;
     private int mHeaderCount;
     private boolean mIsPlaceholderShown;
@@ -531,7 +529,6 @@ public class FeedStream implements Stream {
         mSurfaceScope = surfaceScope;
         mRenderer = renderer;
         mHeaderCount = manager.getItemCount();
-        mRecyclerViewAnimationFinishDetector = new RecyclerViewAnimationFinishDetector();
         if (mWindowAndroid.getDisplay() != null) {
             mWindowAndroid.getDisplay().addObserver(mRotationObserver);
         }
@@ -565,13 +562,12 @@ public class FeedStream implements Stream {
         int feedCount = mContentManager.getItemCount() - mHeaderCount;
         if (feedCount > 0) {
             mContentManager.removeContents(mHeaderCount, feedCount);
-            notifyContentChangeOnAnimationFinish();
+            notifyContentChange();
         }
 
         mContentManager.setHandlers(new HashMap<>());
         mContentManager = null;
 
-        mRecyclerViewAnimationFinishDetector = null;
         mRecyclerView.removeOnScrollListener(mMainScrollListener);
         mRecyclerView.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = null;
@@ -891,7 +887,7 @@ public class FeedStream implements Stream {
         }
 
         if (hasContentChange) {
-            notifyContentChangeOnAnimationFinish();
+            notifyContentChange();
         }
     }
 
@@ -915,17 +911,11 @@ public class FeedStream implements Stream {
         return true;
     }
 
-    private void notifyContentChangeOnAnimationFinish() {
-        // This works around the bug that the out-of-screen toolbar is not brought back together
-        // with the new tab page view when it slides down. This is because the RecyclerView
-        // animation may not finish when content changed event is triggered and thus the new tab
-        // page layout view may still be partially off screen.
-        mRecyclerViewAnimationFinishDetector.asyncWait(mRecyclerView, () -> {
-            for (ContentChangedListener listener : mContentChangedListeners) {
-                listener.onContentChanged(
-                        mContentManager != null ? mContentManager.getContentList() : null);
-            }
-        });
+    private void notifyContentChange() {
+        for (ContentChangedListener listener : mContentChangedListeners) {
+            listener.onContentChanged(
+                    mContentManager != null ? mContentManager.getContentList() : null);
+        }
     }
 
     @VisibleForTesting
@@ -970,57 +960,6 @@ public class FeedStream implements Stream {
         @Override
         public void feedContentVisible() {
             FeedStreamJni.get().reportFeedViewed(mNativeFeedStream, FeedStream.this);
-        }
-    }
-
-    // Detects animation finishes in RecyclerView.
-    // https://stackoverflow.com/questions/33710605/detect-animation-finish-in-androids-recyclerview
-    private static class RecyclerViewAnimationFinishDetector
-            implements RecyclerView.ItemAnimator.ItemAnimatorFinishedListener {
-        private RecyclerView mRecyclerView;
-        private Runnable mFinishedCallback;
-
-        /**
-         * Asynchronously waits for the animation to finish.
-         *
-         * @param recyclerView RecyclerView to wait for animation to finish.
-         * @param finishedCallback Callback to invoke when the animation finishes.
-         */
-        public void asyncWait(RecyclerView recyclerView, Runnable finishedCallback) {
-            if (mRecyclerView != null) {
-                return;
-            }
-            mRecyclerView = recyclerView;
-            mFinishedCallback = finishedCallback;
-
-            // The RecyclerView has not started animating yet, so post a message to the
-            // message queue that will be run after the RecyclerView has started animating.
-            new Handler().post(() -> { checkFinish(); });
-        }
-
-        private void checkFinish() {
-            if (mRecyclerView != null && mRecyclerView.isAnimating()) {
-                // The RecyclerView is still animating, try again when the animation has finished.
-                mRecyclerView.getItemAnimator().isRunning(this);
-                return;
-            }
-
-            // The RecyclerView has animated all it's views.
-            onFinished();
-        }
-
-        private void onFinished() {
-            mRecyclerView = null;
-            if (mFinishedCallback != null) {
-                mFinishedCallback.run();
-                mFinishedCallback = null;
-            }
-        }
-
-        @Override
-        public void onAnimationsFinished() {
-            // There might still be more items that will be animated after this one.
-            new Handler().post(() -> { checkFinish(); });
         }
     }
 

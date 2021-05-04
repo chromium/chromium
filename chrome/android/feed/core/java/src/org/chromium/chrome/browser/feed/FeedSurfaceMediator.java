@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.ScrollView;
@@ -211,6 +212,8 @@ public class FeedSurfaceMediator
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SignInPromo mSignInPromo;
+    private RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector =
+            new RecyclerViewAnimationFinishDetector();
 
     private boolean mFeedEnabled;
     private boolean mHasHeader;
@@ -272,6 +275,14 @@ public class FeedSurfaceMediator
         }
 
         mSectionHeaderModel = headerModel;
+
+        // This works around the bug that the out-of-screen toolbar is not brought back together
+        // with the new tab page view when it slides down. This is because the RecyclerView
+        // animation may not finish when content changed event is triggered and thus the new tab
+        // page layout view may still be partially off screen.
+        mStreamContentChangedListener = contents
+                -> mRecyclerViewAnimationFinishDetector.runWhenAnimationComplete(
+                        this::onContentsChanged);
 
         initialize();
     }
@@ -444,11 +455,12 @@ public class FeedSurfaceMediator
         if (mCurrentStream != null) {
             unbindStream();
         }
-        stream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
+        mCurrentStream = stream;
+        mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
+        mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
                 mCoordinator.getHybridListRenderer());
         mRestoreScrollState = null;
-        mCurrentStream = stream;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
         if (mSnapScrollHelper != null) {
             mStreamScrollListener = new ScrollListener() {
@@ -465,21 +477,20 @@ public class FeedSurfaceMediator
             };
             mCurrentStream.addScrollListener(mStreamScrollListener);
         }
+    }
 
-        mStreamContentChangedListener = contents -> {
-            if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
+    void onContentsChanged() {
+        if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
 
-            if (mContentFirstAvailableTimeMs == 0) {
-                mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
-                if (mHasPendingUmaRecording) {
-                    maybeRecordContentLoadingTime();
-                    mHasPendingUmaRecording = false;
-                }
+        if (mContentFirstAvailableTimeMs == 0) {
+            mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
+            if (mHasPendingUmaRecording) {
+                maybeRecordContentLoadingTime();
+                mHasPendingUmaRecording = false;
             }
-            mIsLoadingFeed = false;
-            mStreamContentChanged = true;
-        };
-        mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
+        }
+        mIsLoadingFeed = false;
+        mStreamContentChanged = true;
     }
 
     void unbindStream() {
@@ -488,10 +499,9 @@ public class FeedSurfaceMediator
             mCurrentStream.removeScrollListener(mStreamScrollListener);
             mStreamScrollListener = null;
         }
-        mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
-
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
         mCurrentStream.unbind();
+        mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
     }
 
@@ -931,5 +941,55 @@ public class FeedSurfaceMediator
         StartSurfaceConfiguration.recordHistogram(FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                 mContentFirstAvailableTimeMs - mActivityCreationTimeMs, mIsInstantStart);
         return true;
+    }
+
+    // Detects animation finishes in RecyclerView.
+    // https://stackoverflow.com/questions/33710605/detect-animation-finish-in-androids-recyclerview
+    private class RecyclerViewAnimationFinishDetector
+            implements RecyclerView.ItemAnimator.ItemAnimatorFinishedListener {
+        private Runnable mFinishedCallback;
+
+        /**
+         * Asynchronously waits for the animation to finish. If there's already a callback waiting,
+         * this replaces the existing callback.
+         *
+         * @param finishedCallback Callback to invoke when the animation finishes.
+         */
+        public void runWhenAnimationComplete(Runnable finishedCallback) {
+            if (mCoordinator.getRecyclerView() == null) {
+                return;
+            }
+            mFinishedCallback = finishedCallback;
+
+            // The RecyclerView has not started animating yet, so post a message to the
+            // message queue that will be run after the RecyclerView has started animating.
+            new Handler().post(() -> { checkFinish(); });
+        }
+
+        private void checkFinish() {
+            RecyclerView recyclerView = mCoordinator.getRecyclerView();
+
+            if (recyclerView != null && recyclerView.isAnimating()) {
+                // The RecyclerView is still animating, try again when the animation has finished.
+                recyclerView.getItemAnimator().isRunning(this);
+                return;
+            }
+
+            // The RecyclerView has animated all it's views.
+            onFinished();
+        }
+
+        private void onFinished() {
+            if (mFinishedCallback != null) {
+                mFinishedCallback.run();
+                mFinishedCallback = null;
+            }
+        }
+
+        @Override
+        public void onAnimationsFinished() {
+            // There might still be more items that will be animated after this one.
+            new Handler().post(() -> { checkFinish(); });
+        }
     }
 }
