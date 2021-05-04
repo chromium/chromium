@@ -186,7 +186,7 @@ void PhishingClassifier::ExtractVisualFeatures() {
       {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
       SkNamedGamut::kRec2020);
   SkImageInfo bitmap_info = SkImageInfo::Make(
-      bounds.width(), bounds.height(), SkColorType::kRGBA_8888_SkColorType,
+      bounds.width(), bounds.height(), SkColorType::kN32_SkColorType,
       SkAlphaType::kUnpremul_SkAlphaType, rec2020);
   if (!bitmap_->tryAllocPixels(bitmap_info))
     return VisualExtractionFinished(/*success=*/false);

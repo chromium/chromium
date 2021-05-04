@@ -7,40 +7,30 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorPriv.h"
 
 namespace safe_browsing {
 namespace visual_utils {
 
 namespace {
 
-// Pixel value constants, all in BGR order.
-const unsigned int kWhite = 0xffffffff;
-const unsigned int kBlack = 0xff000000;
-const unsigned int kRed = 0xff0000ff;
-const unsigned int kGreen = 0xff00ff00;
-const unsigned int kBlue = 0xffff0000;
+const SkPMColor kSkPMRed = SkPackARGB32(255, 255, 0, 0);
+const SkPMColor kSkPMGreen = SkPackARGB32(255, 0, 255, 0);
+const SkPMColor kSkPMBlue = SkPackARGB32(255, 0, 0, 255);
 
 // Use to add noise to the 5 lower bits of each color component. Use to
-// diversify input in tests that cover function that will only look at the most
-// significant three bits of each component. |i| is used to get different noise
-// that changes in sequence. Any number can be provided. Noise applied can be
-// identical for two different values of |i|.
-unsigned int AddNoiseToLowerBits(unsigned int color, unsigned int i) {
+// introduce values directly into an N32 bitmap's memory. Use to diversify input
+// in tests that cover function that will only look at the most significant
+// three bits of each component. |i| is used to get different noise that changes
+// in sequence. Any number can be provided. Noise applied can be identical for
+// two different values of |i|.
+SkPMColor AddNoiseToLowerBits(SkColor color, unsigned int i) {
   // Get a mask between 00000 and 11111 from index.
   unsigned int mask = i % 0x1f;
 
   // Apply noise to each color component separately.
-  color &= 0xffffffe0;
-  color |= mask << 0;
-
-  color &= 0xffffe0ff;
-  color |= mask << 8;
-
-  color &= 0xffe0ffff;
-  color |= mask << 16;
-
-  color &= 0xe0ffffff;
-  color |= mask << 24;
+  color = SkColorSetARGB(SkColorGetA(color) | mask, SkColorGetR(color) | mask,
+                         SkColorGetG(color) | mask, SkColorGetB(color) | mask);
 
   return color;
 }
@@ -57,9 +47,8 @@ class VisualUtilsTest : public testing::Test {
     sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
         {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
         SkNamedGamut::kRec2020);
-    SkImageInfo bitmap_info =
-        SkImageInfo::Make(1000, 1000, SkColorType::kRGBA_8888_SkColorType,
-                          SkAlphaType::kUnpremul_SkAlphaType, rec2020);
+    SkImageInfo bitmap_info = SkImageInfo::MakeN32(
+        1000, 1000, SkAlphaType::kUnpremul_SkAlphaType, rec2020);
 
     ASSERT_TRUE(bitmap_.tryAllocPixels(bitmap_info));
   }
@@ -127,14 +116,13 @@ TEST_F(VisualUtilsTest, GetQuantizedB) {
 
 TEST_F(VisualUtilsTest, GetHistogramForImageWhite) {
   VisualFeatures::ColorHistogram histogram;
-  SkBitmap bitmap;
 
   // Draw white over half the image
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
-
-  *bitmap_.getAddr32(10, 10) = 0xffe0ffff;
+      // NOTE: getAddr32 used since byte ordering does not matter for white and
+      // repeated erase() calls might make tests time out.
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(SK_ColorWHITE, x + y);
 
   ASSERT_TRUE(GetHistogramForImage(bitmap_, &histogram));
   ASSERT_EQ(histogram.bins_size(), 1);
@@ -154,12 +142,16 @@ TEST_F(VisualUtilsTest, GetHistogramForImageHalfWhiteHalfBlack) {
   // Draw white over half the image
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 500; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
+      // NOTE: getAddr32 used since byte ordering does not matter for white and
+      // repeated erase() calls might make tests time out.
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(SK_ColorWHITE, x + y);
 
   // Draw black over half the image.
   for (int x = 0; x < 1000; x++)
     for (int y = 500; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kBlack, x + y);
+      // NOTE: getAddr32 used since byte ordering does not matter for black and
+      // repeated erase() calls might make tests time out.
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(SK_ColorBLACK, x + y);
 
   ASSERT_TRUE(GetHistogramForImage(bitmap_, &histogram));
   ASSERT_EQ(histogram.bins_size(), 2);
@@ -183,9 +175,7 @@ TEST_F(VisualUtilsTest, BlurImageWhite) {
   VisualFeatures::BlurredImage blurred;
 
   // Draw white over the image
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
   ASSERT_EQ(48, blurred.width());
@@ -204,7 +194,7 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
   // Draw red over the image.
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kRed;
+      *bitmap_.getAddr32(x, y) = kSkPMRed;
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
   ASSERT_EQ(48, blurred.width());
@@ -221,14 +211,10 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   VisualFeatures::BlurredImage blurred;
 
   // Draw black over half the image.
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 500; y++)
-      *bitmap_.getAddr32(x, y) = kBlack;
+  bitmap_.erase(SK_ColorBLACK, SkIRect::MakeXYWH(0, 0, 1000, 500));
 
   // Draw white over half the image
-  for (int x = 0; x < 1000; x++)
-    for (int y = 500; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 500, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
   ASSERT_EQ(48, blurred.width());
@@ -251,14 +237,10 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
 
 TEST_F(VisualUtilsTest, BlockMeanAverageOneBlock) {
   // Draw black over half the image.
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 500; y++)
-      *bitmap_.getAddr32(x, y) = kBlack;
+  bitmap_.erase(SK_ColorBLACK, SkIRect::MakeXYWH(0, 0, 1000, 500));
 
   // Draw white over half the image
-  for (int x = 0; x < 1000; x++)
-    for (int y = 500; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 500, 1000, 1000));
 
   std::unique_ptr<SkBitmap> blocks = BlockMeanAverage(bitmap_, 1000);
   ASSERT_EQ(1, blocks->width());
@@ -268,37 +250,34 @@ TEST_F(VisualUtilsTest, BlockMeanAverageOneBlock) {
 
 TEST_F(VisualUtilsTest, BlockMeanAveragePartialBlocks) {
   // Draw a white, red, green, and blue box with the expected block sizes.
-  for (int x = 0; x < 600; x++)
-    for (int y = 0; y < 600; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 600, 600));
 
   for (int x = 600; x < 1000; x++)
     for (int y = 0; y < 600; y++)
-      *bitmap_.getAddr32(x, y) = kRed;
+      *bitmap_.getAddr32(x, y) = kSkPMRed;
 
   for (int x = 0; x < 600; x++)
     for (int y = 600; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kGreen;
+      *bitmap_.getAddr32(x, y) = kSkPMGreen;
 
   for (int x = 600; x < 1000; x++)
     for (int y = 600; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kBlue;
+      *bitmap_.getAddr32(x, y) = kSkPMBlue;
 
   std::unique_ptr<SkBitmap> blocks = BlockMeanAverage(bitmap_, 600);
   ASSERT_EQ(2, blocks->width());
   ASSERT_EQ(2, blocks->height());
-  EXPECT_EQ(*blocks->getAddr32(0, 0), kWhite);
-  EXPECT_EQ(*blocks->getAddr32(1, 0), kRed);
-  EXPECT_EQ(*blocks->getAddr32(0, 1), kGreen);
-  EXPECT_EQ(*blocks->getAddr32(1, 1), kBlue);
+  EXPECT_EQ(blocks->getColor(0, 0), SK_ColorWHITE);
+
+  EXPECT_EQ(*blocks->getAddr32(1, 0), kSkPMRed);
+  EXPECT_EQ(*blocks->getAddr32(0, 1), kSkPMGreen);
+  EXPECT_EQ(*blocks->getAddr32(1, 1), kSkPMBlue);
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchHash) {
   {
     // An all-white image should hash to all 1-bits.
-    for (int x = 0; x < 1000; x++)
-      for (int y = 0; y < 1000; y++)
-        *bitmap_.getAddr32(x, y) = kWhite;
+    bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
 
     std::vector<unsigned char> target_hash;
     target_hash.push_back('\x30');
@@ -316,9 +295,7 @@ TEST_F(VisualUtilsTest, IsVisualMatchHash) {
   {
     // Make the top quarter black, and the corresponding bits of the hash should
     // be 0.
-    for (int x = 0; x < 1000; x++)
-      for (int y = 0; y < 250; y++)
-        *bitmap_.getAddr32(x, y) = kBlack;
+    bitmap_.erase(SK_ColorBLACK, SkIRect::MakeXYWH(0, 0, 1000, 250));
 
     std::vector<unsigned char> target_hash;
     target_hash.push_back('\x30');
@@ -339,12 +316,8 @@ TEST_F(VisualUtilsTest, IsVisualMatchHash) {
 TEST_F(VisualUtilsTest, IsVisualMatchHashPartialMatch) {
   // Make the top quarter black, and the corresponding bits of the hash should
   // be 0.
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 250; y++)
-      *bitmap_.getAddr32(x, y) = kBlack;
-  for (int x = 0; x < 1000; x++)
-    for (int y = 250; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorBLACK, SkIRect::MakeXYWH(0, 0, 1000, 250));
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 250, 1000, 1000));
 
   std::vector<unsigned char> target_hash;
   target_hash.push_back('\x30');
@@ -366,9 +339,7 @@ TEST_F(VisualUtilsTest, IsVisualMatchHashPartialMatch) {
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchHashStrideComparison) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
 
   std::vector<unsigned char> target_hash;
   target_hash.push_back('\x30');
@@ -392,7 +363,9 @@ TEST_F(VisualUtilsTest, IsVisualMatchHashStrideComparison) {
 TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
   for (int x = 0; x < 1000; x++)
     for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
+      // NOTE: getAddr32 used since byte ordering does not matter for white and
+      // repeated erase calls might make tests time out.
+      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(SK_ColorWHITE, x + y);
 
   {
     VisualTarget target;
@@ -461,10 +434,9 @@ TEST_F(VisualUtilsTest, IsVisualMatchHistogramOnly) {
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchColorRange) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
-  *bitmap_.getAddr32(0, 0) = kBlue;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
+
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
 
   SkScalar hsv[3];
   SkColorToHSV(bitmap_.getColor(0, 0), hsv);
@@ -495,18 +467,17 @@ TEST_F(VisualUtilsTest, IsVisualMatchColorRange) {
                    .has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = AddNoiseToLowerBits(kWhite, x + y);
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kGreen;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
+
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  *bitmap_.getAddr32(1, 0) = kSkPMGreen;
 
   SkScalar hsv[3];
   SkColorToHSV(bitmap_.getColor(0, 0), hsv);
@@ -529,31 +500,31 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleColorRanges) {
                   .has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 
   // No green hue present
-  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kBlue, 1);
-  *bitmap_.getAddr32(1, 0) = AddNoiseToLowerBits(kWhite, 1);
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(1, 0, 1, 1));
+
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 
   // Neither hue present
-  *bitmap_.getAddr32(0, 0) = AddNoiseToLowerBits(kWhite, 1);
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleMatchRules) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kGreen;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
+
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  *bitmap_.getAddr32(1, 0) = kSkPMGreen;
 
   // Create a target with two match rules, one matching blue pixels and one
   // matching green.
@@ -579,33 +550,31 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleMatchRules) {
                   .has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                             GetBitmapHistogram(), target)
                   .has_value());
 
   // No green hue present
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(1, 0, 1, 1));
   EXPECT_TRUE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                             GetBitmapHistogram(), target)
                   .has_value());
 
   // Neither hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchFloatColorRange) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
 
   // Adding a little noise in the red component makes the target_hue not an
   // integer. Testing for this color requires float ranges.
-  *bitmap_.getAddr32(0, 0) = kBlue | 0x0f;
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue | 0x0f;
 
   SkScalar hsv[3];
   SkColorToHSV(bitmap_.getColor(0, 0), hsv);
@@ -636,18 +605,17 @@ TEST_F(VisualUtilsTest, IsVisualMatchFloatColorRange) {
                    .has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 }
 
 TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = kWhite;
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kGreen;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
+
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  *bitmap_.getAddr32(1, 0) = kSkPMGreen;
 
   SkScalar hsv[3];
   SkColorToHSV(bitmap_.getColor(0, 0), hsv);
@@ -670,20 +638,20 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
                   .has_value());
 
   // No blue hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 
   // No green hue present
-  *bitmap_.getAddr32(0, 0) = kBlue;
-  *bitmap_.getAddr32(1, 0) = kWhite;
+  *bitmap_.getAddr32(0, 0) = kSkPMBlue;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(1, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
 
   // Neither hue present
-  *bitmap_.getAddr32(0, 0) = kWhite;
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1, 1));
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());

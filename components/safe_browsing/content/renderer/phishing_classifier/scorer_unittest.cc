@@ -91,7 +91,7 @@ class PhishingScorerTest : public ::testing::Test {
         {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
         SkNamedGamut::kRec2020);
     SkImageInfo bitmap_info =
-        SkImageInfo::Make(1000, 1000, SkColorType::kRGBA_8888_SkColorType,
+        SkImageInfo::Make(1000, 1000, SkColorType::kN32_SkColorType,
                           SkAlphaType::kUnpremul_SkAlphaType, rec2020);
 
     ASSERT_TRUE(bitmap_.tryAllocPixels(bitmap_info));

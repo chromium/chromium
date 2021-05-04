@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/opencv/src/emd_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_utils.h"
 
@@ -169,9 +170,9 @@ bool GetHistogramForImage(const SkBitmap& image,
   std::unordered_map<uint32_t, ColorStats> stats_map;
   auto it = stats_map.end();
 
-  // The mask that will be applied needs the image in a specific format.
-  DCHECK_EQ(image.colorType(), SkColorType::kRGBA_8888_SkColorType);
-
+  // This code uses the unsafe getAddr32 function which assumes 32bpp depth.
+  // Make sure the color type reflects that.
+  CHECK_EQ(image.colorType(), SkColorType::kN32_SkColorType);
   for (int x = 0; x < image.width(); x++) {
     for (int y = 0; y < image.height(); y++) {
       // The conversions to QuantizedColor are avoided when possible to save
@@ -235,9 +236,8 @@ bool GetBlurredImage(const SkBitmap& image,
   // TODO(drubery): Investigate whether this is necessary for performance or
   // not.
   SkImageInfo downsampled_info =
-      SkImageInfo::Make(kPHashDownsampleWidth, kPHashDownsampleHeight,
-                        SkColorType::kRGBA_8888_SkColorType,
-                        SkAlphaType::kUnpremul_SkAlphaType, rec2020);
+      SkImageInfo::MakeN32(kPHashDownsampleWidth, kPHashDownsampleHeight,
+                           SkAlphaType::kUnpremul_SkAlphaType, rec2020);
   SkBitmap downsampled;
   if (!downsampled.tryAllocPixels(downsampled_info))
     return false;
@@ -251,15 +251,16 @@ bool GetBlurredImage(const SkBitmap& image,
   blurred_image->set_width(blurred->width());
   blurred_image->set_height(blurred->height());
 
-  const uint32_t* rgba = blurred->getAddr32(0, 0);
   const int data_size = blurred->width() * blurred->height();
   blurred_image->mutable_data()->reserve(data_size);
 
-  for (int i = 0; i < data_size; i++) {
-    // Data is stored in BGR order.
-    *blurred_image->mutable_data() += static_cast<char>((rgba[i] >> 0) & 0xff);
-    *blurred_image->mutable_data() += static_cast<char>((rgba[i] >> 8) & 0xff);
-    *blurred_image->mutable_data() += static_cast<char>((rgba[i] >> 16) & 0xff);
+  for (int x = 0; x < blurred->width(); ++x) {
+    for (int y = 0; y < blurred->height(); ++y) {
+      SkColor color = blurred->getColor(y, x);
+      *blurred_image->mutable_data() += static_cast<char>(SkColorGetR(color));
+      *blurred_image->mutable_data() += static_cast<char>(SkColorGetG(color));
+      *blurred_image->mutable_data() += static_cast<char>(SkColorGetB(color));
+    }
   }
 
   return true;
@@ -274,9 +275,9 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
   int num_blocks_wide =
       std::ceil(static_cast<float>(image.width()) / block_size);
 
-  SkImageInfo target_info = SkImageInfo::Make(
-      num_blocks_wide, num_blocks_high, SkColorType::kRGBA_8888_SkColorType,
-      SkAlphaType::kUnpremul_SkAlphaType, image.refColorSpace());
+  SkImageInfo target_info = SkImageInfo::MakeN32(
+      num_blocks_wide, num_blocks_high, SkAlphaType::kUnpremul_SkAlphaType,
+      image.refColorSpace());
   auto target = std::make_unique<SkBitmap>();
   if (!target->tryAllocPixels(target_info))
     return target;
@@ -307,7 +308,7 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
       int b_mean = b_total / sample_count;
 
       *target->getAddr32(block_x, block_y) =
-          (255 << 24) | (b_mean << 16) | (g_mean << 8) | (r_mean << 0);
+          SkPackARGB32(255, r_mean, g_mean, b_mean);
     }
   }
 
