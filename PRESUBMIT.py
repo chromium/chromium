@@ -684,9 +684,10 @@ _BANNED_CPP_FUNCTIONS = (
        # Needed for interop with third-party library.
        '^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
          'array_buffer_contents\.(cc|h)',
-       'gin/array_buffer.cc',
-       'gin/array_buffer.h',
-       'chrome/services/sharing/nearby/',
+       '^gin/array_buffer\.(cc|h)',
+       '^chrome/services/sharing/nearby/',
+       # Fuchsia provides C++ libraries that use std::shared_ptr<>.
+       '.*fuchsia.*test\.(cc|h)',
        _THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     (
