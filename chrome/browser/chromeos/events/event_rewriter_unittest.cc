@@ -2132,18 +2132,18 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysNonCustomLayouts) {
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
        {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_ALT_DOWN,
         ui::DomKey::BROWSER_REFRESH}},
-      // F4 -> Launch App 2
+      // F4 -> Zoom (aka Fullscreen)
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE,
-        ui::EF_CONTROL_DOWN, ui::DomKey::ZOOM_TOGGLE}},
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_CONTROL_DOWN,
+        ui::DomKey::ZOOM_TOGGLE}},
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_ALT_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_ALT_DOWN,
         ui::DomKey::ZOOM_TOGGLE}},
       // F5 -> Launch App 1
       {ui::ET_KEY_PRESSED,
@@ -2604,19 +2604,19 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysLayout2) {
            {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
            {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
             ui::EF_ALT_DOWN, ui::DomKey::BROWSER_REFRESH}},
-          // F3 -> Launch App 2
+          // F3 -> Zoom (aka Fullscreen)
           {ui::ET_KEY_PRESSED,
            {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-           {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
             ui::DomKey::ZOOM_TOGGLE}},
           {ui::ET_KEY_PRESSED,
            {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
-           {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE,
-            ui::EF_CONTROL_DOWN, ui::DomKey::ZOOM_TOGGLE}},
+           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_CONTROL_DOWN,
+            ui::DomKey::ZOOM_TOGGLE}},
           {ui::ET_KEY_PRESSED,
            {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
-           {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE,
-            ui::EF_ALT_DOWN, ui::DomKey::ZOOM_TOGGLE}},
+           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_ALT_DOWN,
+            ui::DomKey::ZOOM_TOGGLE}},
           // F4 -> Launch App 1
           {ui::ET_KEY_PRESSED,
            {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
@@ -2768,13 +2768,13 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
        {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2}},
-      // F3 -> F3, Search + F3 -> Full Screen
+      // F3 -> F3, Search + F3 -> Zoom (aka Fullscreen)
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
@@ -3018,11 +3018,10 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   });
 
   KeyTestCase wilco_1_test =
-      // Search + F12 -> Ctrl + Launch App 2 (Display toggle)
+      // Search + F12 -> Ctrl + Zoom (aka Fullscreen) (Display toggle)
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-        ui::DomKey::F12}};
+       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}};
 
   KeyTestCase drallion_test_no_privacy_screen =
       // Search + F12 -> F12 (Privacy screen not supported)
@@ -3088,7 +3087,7 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
@@ -3170,15 +3169,13 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}}};
 
   KeyTestCase wilco_1_tests[] = {
-      // Ctrl + Launch App 1 (Display toggle) -> Unchanged
-      // Search + Ctrl + Launch App 1 (Display toggle) -> F12
+      // Ctrl + Zoom (Display toggle) -> Unchanged
+      // Search + Ctrl + Zoom (Display toggle) -> F12
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-        ui::DomKey::F12},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-        ui::DomKey::F12}},
+       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
+       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}},
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12,
+       {ui::VKEY_ZOOM, ui::DomCode::F12,
         ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}}};
 
@@ -3193,17 +3190,17 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
        {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
         ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Launch App 1 (Display toggle) -> Unchanged
-      // Search + Ctrl + Launch App 1 (Display toggle) -> Unchanged
+      // Ctrl + Zoom (Display toggle) -> Unchanged
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}},
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
         ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}}};
 
   KeyTestCase drallion_tests_privacy_screen[] = {
@@ -3218,17 +3215,17 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
        {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
         ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Launch App 1 (Display toggle) -> Unchanged
-      // Search + Ctrl + Launch App 1 (Display toggle) -> Unchanged
+      // Ctrl + Zoom (Display toggle) -> Unchanged
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}},
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
         ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}}};
 
   // Set keyboard layout to Wilco 1.0
@@ -3297,7 +3294,7 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
         ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       // Launch App 1 -> F4, Search + Launch App 1 -> Launch App 1
       {ui::ET_KEY_PRESSED,
@@ -3375,16 +3372,15 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}}};
 
   KeyTestCase wilco_1_tests[] = {
-      // Ctrl + Launch App 1 (Display toggle) -> F12
-      // Search + Ctrl + Launch App 1 (Display toggle) -> Unchanged
+      // Ctrl + Zoom (Display toggle) -> F12
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-        ui::DomKey::F12},
+       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12,
+       {ui::VKEY_ZOOM, ui::DomCode::F12,
         ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
         ui::DomKey::F12}}};
 
   KeyTestCase drallion_tests_no_privacy_screen[] = {
@@ -3398,17 +3394,17 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
        {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
         ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Launch App 1 (Display toggle) -> Unchanged
-      // Search + Ctrl + Launch App 1 (Display toggle) -> Unchanged
+      // Ctrl + Zoom (Display toggle) -> Unchanged
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}},
       {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
         ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
         ui::DomKey::UNIDENTIFIED}}};
 
   KeyTestCase drallion_tests_privacy_screen[] = {
@@ -3467,10 +3463,10 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
        {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
         ui::DomKey::BROWSER_REFRESH}},
-      // F4 -> Launch App 2
+      // F4 -> Zoom (aka Fullscreen)
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       // F7 -> Brightness up
       {ui::ET_KEY_PRESSED,
@@ -3489,10 +3485,10 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
        {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
        {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
         ui::DomKey::BROWSER_REFRESH}},
-      // F3 -> Launch App 2
+      // F3 -> Zoom (aka Fullscreen)
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_MEDIA_LAUNCH_APP2, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
         ui::DomKey::ZOOM_TOGGLE}},
       // F4 -> Launch App 1
       {ui::ET_KEY_PRESSED,

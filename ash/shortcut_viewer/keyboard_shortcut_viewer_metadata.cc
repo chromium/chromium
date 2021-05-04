@@ -84,7 +84,7 @@ base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
     case ui::VKEY_MEDIA_LAUNCH_APP1:
       msg_id = IDS_KSV_KEY_OVERVIEW;
       break;
-    case ui::VKEY_MEDIA_LAUNCH_APP2:
+    case ui::VKEY_ZOOM:
       msg_id = IDS_KSV_KEY_FULLSCREEN;
       break;
     case ui::VKEY_SNAPSHOT:
@@ -250,7 +250,7 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &kKsvBrowserForwardIcon;
     case ui::VKEY_BROWSER_REFRESH:
       return &kKsvReloadIcon;
-    case ui::VKEY_MEDIA_LAUNCH_APP2:
+    case ui::VKEY_ZOOM:
       return &kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
       return &kKsvOverviewIcon;
@@ -1204,14 +1204,14 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        IDS_KSV_DESCRIPTION_TOGGLE_MIRROR_MODE,
        {},
        // |accelerator_ids|
-       {{ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_CONTROL_DOWN}}},
+       {{ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN}}},
 
       {// |categories|
        {ShortcutCategory::kSystemAndDisplay},
        IDS_KSV_DESCRIPTION_SWAP_PRIMARY_DISPLAY,
        {},
        // |accelerator_ids|
-       {{ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_ALT_DOWN}}},
+       {{ui::VKEY_ZOOM, ui::EF_ALT_DOWN}}},
 
       {// |categories|
        {ShortcutCategory::kSystemAndDisplay},
@@ -1274,7 +1274,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        IDS_KSV_DESCRIPTION_TOGGLE_FULLSCREEN,
        {},
        // |accelerator_ids|
-       {{ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE}}},
+       {{ui::VKEY_ZOOM, ui::EF_NONE}}},
 
       {// |categories|
        {ShortcutCategory::kTabAndWindow},

@@ -1486,23 +1486,6 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
   CHECK(key_event.type() == ET_KEY_PRESSED ||
         key_event.type() == ET_KEY_RELEASED);
 
-  // Some action key codes are mapped to standard VKEY and DomCode values
-  // during event to KeyEvent translation. However, in Chrome, different VKEY
-  // combinations trigger those actions. This table maps event VKEYs to the
-  // right action VKEYs.
-  // TODO(dtor): Either add proper accelerators for VKEY_ZOOM or move
-  // from VKEY_MEDIA_LAUNCH_APP2 to VKEY_ZOOM.
-  static const KeyboardRemapping kActionToActionKeys[] = {
-      // Zoom toggle is actually through VKEY_MEDIA_LAUNCH_APP2.
-      {{EF_NONE, VKEY_ZOOM},
-       {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE,
-        VKEY_MEDIA_LAUNCH_APP2}},
-  };
-
-  // Map certain action keys to the right VKey and modifier.
-  RewriteWithKeyboardRemappings(kActionToActionKeys,
-                                base::size(kActionToActionKeys), *state, state);
-
   // Some key codes have a Dom code but no VKEY value assigned. They're mapped
   // to VKEY values here.
   if (state->key_code == VKEY_UNKNOWN) {
@@ -1511,9 +1494,9 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
       state->key_code = VKEY_MEDIA_LAUNCH_APP1;
       state->key = DomKey::F4;
     } else if (state->code == DomCode::DISPLAY_TOGGLE_INT_EXT) {
-      // Display toggle is through control + VKEY_MEDIA_LAUNCH_APP2.
+      // Display toggle is through control + VKEY_ZOOM.
       state->flags |= EF_CONTROL_DOWN;
-      state->key_code = VKEY_MEDIA_LAUNCH_APP2;
+      state->key_code = VKEY_ZOOM;
       state->key = DomKey::F12;
     }
   }
@@ -1557,8 +1540,7 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
            {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
             VKEY_BROWSER_REFRESH}},
           {{EF_NONE, VKEY_F4},
-           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE,
-            VKEY_MEDIA_LAUNCH_APP2}},
+           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
           {{EF_NONE, VKEY_F5},
            {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
             VKEY_MEDIA_LAUNCH_APP1}},
@@ -1587,8 +1569,7 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
            {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
             VKEY_BROWSER_REFRESH}},
           {{EF_NONE, VKEY_F3},
-           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE,
-            VKEY_MEDIA_LAUNCH_APP2}},
+           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
           {{EF_NONE, VKEY_F4},
            {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
             VKEY_MEDIA_LAUNCH_APP1}},
@@ -1984,10 +1965,9 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_F2},
        {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
         VKEY_BROWSER_REFRESH}},
-      // Map F3 to VKEY_MEDIA_LAUNCH_APP2 + EF_NONE == toggle full screen:
+      // Map F3 to VKEY_ZOOM + EF_NONE == toggle full screen:
       {{EF_NONE, VKEY_F3},
-       {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE,
-        VKEY_MEDIA_LAUNCH_APP2}},
+       {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
       // Map F4 to VKEY_MEDIA_LAUNCH_APP1 + EF_NONE == overview:
       {{EF_NONE, VKEY_F4},
        {EF_NONE, DomCode::F4, DomKey::F4, VKEY_MEDIA_LAUNCH_APP1}},
@@ -2010,9 +1990,9 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_F10}, {EF_NONE, DomCode::F10, DomKey::F10, VKEY_F10}},
       {{EF_NONE, VKEY_F11}, {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11}},
       {{EF_NONE, VKEY_F12},
-       // Map F12 to VKEY_MEDIA_LAUNCH_APP2 + EF_CONTROL_DOWN == toggle mirror
+       // Map F12 to VKEY_ZOOM + EF_CONTROL_DOWN == toggle mirror
        // mode:
-       {EF_CONTROL_DOWN, DomCode::F12, DomKey::F12, VKEY_MEDIA_LAUNCH_APP2}},
+       {EF_CONTROL_DOWN, DomCode::F12, DomKey::F12, VKEY_ZOOM}},
   };
 
   // When the kernel issues an action key (default mode) and the search key is
@@ -2036,12 +2016,11 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
        {EF_NONE, DomCode::F8, DomKey::F8, VKEY_F8}},
       {{EF_NONE, VKEY_VOLUME_UP}, {EF_NONE, DomCode::F9, DomKey::F9, VKEY_F9}},
       // Do not change the order of the next two entries. The remapping of
-      // VKEY_MEDIA_LAUNCH_APP2 with Control held down must appear before
-      // VKEY_MEDIA_LAUNCH_APP2 by itself to be considered.
-      {{EF_CONTROL_DOWN, VKEY_MEDIA_LAUNCH_APP2},
+      // VKEY_ZOOM with Control held down must appear before
+      // VKEY_ZOOM by itself to be considered.
+      {{EF_CONTROL_DOWN, VKEY_ZOOM},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
-      {{EF_NONE, VKEY_MEDIA_LAUNCH_APP2},
-       {EF_NONE, DomCode::F3, DomKey::F3, VKEY_F3}},
+      {{EF_NONE, VKEY_ZOOM}, {EF_NONE, DomCode::F3, DomKey::F3, VKEY_F3}},
       // VKEY_PRIVACY_SCREEN_TOGGLE shares a key with F12 on Drallion.
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
@@ -2077,8 +2056,7 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
     if (search_is_pressed != ForceTopRowAsFunctionKeys()) {
       // On Drallion, mirror mode toggle is on its own key so don't remap it.
       if (layout == kKbdTopRowLayoutDrallion &&
-          MatchKeyboardRemapping(*state,
-                                 {EF_CONTROL_DOWN, VKEY_MEDIA_LAUNCH_APP2})) {
+          MatchKeyboardRemapping(*state, {EF_CONTROL_DOWN, VKEY_ZOOM})) {
         // Clear command flag before returning
         state->flags = (state->flags & ~EF_COMMAND_DOWN);
         return true;

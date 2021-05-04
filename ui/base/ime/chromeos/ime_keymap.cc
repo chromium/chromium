@@ -139,7 +139,8 @@ const struct KeyCodeTable {
                      {VKEY_BRIGHTNESS_DOWN, "BrightnessDown"},
                      {VKEY_BRIGHTNESS_UP, "BrightnessUp"},
                      {VKEY_MEDIA_LAUNCH_APP1, "ChromeOSSwitchWindow"},
-                     {VKEY_MEDIA_LAUNCH_APP2, "ChromeOSFullscreen"},
+                     // LaunchApplication2 is calculator.
+                     {VKEY_MEDIA_LAUNCH_APP2, "LaunchApplication2"},
                      {VKEY_MEDIA_NEXT_TRACK, "MediaTrackNext"},
                      {VKEY_MEDIA_PREV_TRACK, "MediaTrackPrevious"},
                      {VKEY_MEDIA_STOP, "MediaStop"},
@@ -155,7 +156,8 @@ const struct KeyCodeTable {
                      {VKEY_OEM_4, "BracketLeft"},
                      {VKEY_OEM_5, "Backslash"},
                      {VKEY_OEM_6, "BracketRight"},
-                     {VKEY_OEM_7, "Quote"}};
+                     {VKEY_OEM_7, "Quote"},
+                     {VKEY_ZOOM, "ChromeOSFullscreen"}};
 
 class KeyCodeMap {
  public:

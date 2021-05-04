@@ -1025,7 +1025,7 @@ TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
 
   // Toggle overview and fullscreen immediately after.
   generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
-  generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_ZOOM, ui::EF_NONE);
   EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFullscreen());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(Shell::Get()

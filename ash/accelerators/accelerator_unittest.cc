@@ -300,9 +300,9 @@ TEST_F(AcceleratorTest, NonRepeatableNeedingWindowActions) {
   // Test TOGGLE_FULLSCREEN.
   WindowState* active_window_state = WindowState::ForActiveWindow();
   EXPECT_FALSE(active_window_state->IsFullscreen());
-  SendKeyPressSync(ui::VKEY_MEDIA_LAUNCH_APP2, false, false, false);
+  SendKeyPressSync(ui::VKEY_ZOOM, false, false, false);
   EXPECT_TRUE(active_window_state->IsFullscreen());
-  SendKeyPressSync(ui::VKEY_MEDIA_LAUNCH_APP2, false, false, false);
+  SendKeyPressSync(ui::VKEY_ZOOM, false, false, false);
   EXPECT_FALSE(active_window_state->IsFullscreen());
 }
 

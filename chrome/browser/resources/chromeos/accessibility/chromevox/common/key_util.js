@@ -242,7 +242,7 @@ KeyUtil = class {
         return msg('forward_key');
       case KeyCode.BROWSER_REFRESH:
         return msg('refresh_key');
-      case KeyCode.MEDIA_LAUNCH_APP2:
+      case KeyCode.ZOOM:
         return msg('toggle_full_screen_key');
       case KeyCode.MEDIA_LAUNCH_APP1:
         return msg('window_overview_key');

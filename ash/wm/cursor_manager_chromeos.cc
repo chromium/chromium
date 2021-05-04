@@ -70,6 +70,7 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
     case ui::VKEY_KBD_BRIGHTNESS_UP:
     case ui::VKEY_KBD_BRIGHTNESS_DOWN:
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
+    case ui::VKEY_ZOOM:
       return false;
     default:
       return true;

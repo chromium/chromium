@@ -67,7 +67,7 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
     case ui::VKEY_BROWSER_REFRESH:
     case ui::VKEY_F3:
       return "BrowserRefresh";
-    case ui::VKEY_MEDIA_LAUNCH_APP2:
+    case ui::VKEY_ZOOM:
     case ui::VKEY_F4:
       return "ChromeOSFullscreen";
     case ui::VKEY_MEDIA_LAUNCH_APP1:

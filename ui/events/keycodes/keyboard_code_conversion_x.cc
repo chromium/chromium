@@ -1177,7 +1177,12 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       case 0xB5:  // KEY_REFRESH
         return VKEY_BROWSER_REFRESH;
       case 0xD4:  // KEY_DASHBOARD
-        return VKEY_MEDIA_LAUNCH_APP2;
+        // This was changed from VKEY_MEDIA_LAUNCH_APP2 when the full screen
+        // key was moved to VKEY_ZOOM with crbug.com/1204710. In order to
+        // maintain existing behavior this was kept consistent but it
+        // seems like this should have been VKEY_MEDIA_LAUNCH_APP1 aka
+        // overview in the first place.
+        return VKEY_ZOOM;
       case 0xE8:  // KEY_BRIGHTNESSDOWN
         return VKEY_BRIGHTNESS_DOWN;
       case 0xE9:  // KEY_BRIGHTNESSUP

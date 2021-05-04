@@ -36,8 +36,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE, KEYBOARD_BRIGHTNESS_DOWN},
     {true, ui::VKEY_KBD_BRIGHTNESS_UP, ui::EF_NONE, KEYBOARD_BRIGHTNESS_UP},
     // Maximize button.
-    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_CONTROL_DOWN, TOGGLE_MIRROR_MODE},
-    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_ALT_DOWN, SWAP_PRIMARY_DISPLAY},
+    {true, ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN, TOGGLE_MIRROR_MODE},
+    {true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN, SWAP_PRIMARY_DISPLAY},
     // Cycle windows button.
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN, TAKE_SCREENSHOT},
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
@@ -127,8 +127,8 @@ const AcceleratorData kAcceleratorData[] = {
     // extended keyboard shortcuts.
     {false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
     {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST_FULLSCREEN},
-    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE, TOGGLE_FULLSCREEN},
-    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_SHIFT_DOWN, TOGGLE_FULLSCREEN},
+    {true, ui::VKEY_ZOOM, ui::EF_NONE, TOGGLE_FULLSCREEN},
+    {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN, TOGGLE_FULLSCREEN},
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, UNPIN},
     {true, ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_SHELF},
     {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_PIP},
