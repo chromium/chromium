@@ -226,8 +226,8 @@ def main():
     'bin/llvm-undname' + exe_ext,
     # Copy built-in headers (lib/clang/3.x.y/include).
     'lib/clang/$V/include/*',
-    'lib/clang/$V/share/asan_blacklist.txt',
-    'lib/clang/$V/share/cfi_blacklist.txt',
+    'lib/clang/$V/share/asan_*list.txt',
+    'lib/clang/$V/share/cfi_*list.txt',
   ]
   if sys.platform == 'win32':
     want.extend([
@@ -340,8 +340,8 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-arm-android.so',
 
-        # Blacklist for MemorySanitizer (used on Linux only).
-        'lib/clang/$V/share/msan_blacklist.txt',
+        # Ignorelist for MemorySanitizer (used on Linux only).
+        'lib/clang/$V/share/msan_*list.txt',
     ])
   elif sys.platform == 'win32':
     want.extend([
