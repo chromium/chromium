@@ -1324,7 +1324,6 @@
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2435579801172349831">सबै (<ph name="URL_COUNT" />) URL इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> लाई सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिने?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{एप}other{# वटा एप}}</translation>
 <translation id="2440604414813129000">स्रो&amp;त हेर्नुहोस्</translation>
 <translation id="244231003699905658">अमान्य ठेगाना कृपया उक्त ठेगानाको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2442916515643169563">पाठको छायाँ</translation>
@@ -2386,8 +2385,8 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> स्क्यान गरिँदै छ।</translation>
 <translation id="3616741288025931835">&amp;ब्राउजिङ लगत खालि गर्नुहोस्...</translation>
 <translation id="3617891479562106823">पृष्ठभूमिहरू उपलब्ध छैनन्। पछि फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{भिडियो}other{# वटा भिडियो}}</translation>
 <translation id="3619115746895587757">कापाचिनो</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{एउटा एप}other{# वटा एप}}</translation>
 <translation id="362333465072914957">CA ले प्रमाणपत्र जारी गर्ने प्रतीक्षा गर्दै</translation>
 <translation id="3624567683873126087">यन्त्र अनलक गरी Google खातामा साइन इन गर्नुहोस्।</translation>
 <translation id="3625481642044239431">अमान्य फाइल चयन गरियो। फेरि प्रयास गर्नुहोस्।</translation>
@@ -2660,6 +2659,7 @@
 <translation id="3895076768659607631">&amp;सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="3895090224522145010">Kerberos को युजरनेम</translation>
 <translation id="389521680295183045">साइटहरूले तपाईं आफ्नो यन्त्र चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छन्</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{एउटा फोटो}other{# वटा फोटो}}</translation>
 <translation id="3898233949376129212">यन्त्रको भाषा</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> निम्न कुराहरू गर्न चाहन्छ: <ph name="FIRST_PERMISSION" /> र <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">किबोर्ड चयन गर्नुहोस्</translation>
@@ -3238,7 +3238,6 @@
 <translation id="4568025708905928793">सुरक्षा साँचो मागिँदै छ</translation>
 <translation id="4568213207643490790">माफ गर्नुहोस्, यस यन्त्रमा Google खाताहरूलाई अनुमति छैन।</translation>
 <translation id="4569747168316751899">निष्क्रिय भएको बेला</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{ठेगाना}other{# वटा ठेगाना}}</translation>
 <translation id="4572659312570518089">"<ph name="DEVICE_NAME" />" मा जडान गर्दा प्रमाणीकरण रद्द भयो।</translation>
 <translation id="4572779512957829735">तपाईंको सुरक्षा साँचो प्रयोग गर्नका लागि उक्त PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="4573515936045019911">Linux को स्तरवृद्धि गर्न नेटवर्क जडान चाहिन्छ। कृपया इन्टरनेटमा जोडी फेरि प्रयास गर्नुहोस्।</translation>
@@ -3425,7 +3424,6 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />तपाईंका प्रशासक<ph name="END_LINK" /> ले अध्यावधिकसम्बन्धी काम गर्छन्</translation>
 <translation id="479536056609751218">वेबपृष्ठ, HTML मात्रै</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ब्लुटुथ लगहरू<ph name="END_LINK" /> संलग्न गर्नुहोस् (Google आन्तरिक)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{वस्तु}other{# वटा वस्तु}}</translation>
 <translation id="4801448226354548035">खाताहरू लुकाउनुहोस्</translation>
 <translation id="4801512016965057443">मोबाइल डाटा रोमिङको लागि अनुमति दिनुहोस्</translation>
 <translation id="4804818685124855865">जडान विच्छेद</translation>
@@ -3568,6 +3566,7 @@
 <translation id="4943368462779413526">फुटबल</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" कुनै क्रमिक पोर्टमा जडान गर्न चाहन्छ</translation>
 <translation id="4944310289250773232">यो प्रमाणीकरण सेवा <ph name="SAML_DOMAIN" /> ले होस्ट गरेको हो</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
 <translation id="4955710816792587366">आफ्नो PIN छनौट गर्नुहोस्</translation>
@@ -3876,7 +3875,6 @@
 <translation id="5310281978693206542">आफ्ना यन्त्रहरूमा लिंक पठाउनुहोस्</translation>
 <translation id="5311304534597152726">यस रूपमा साइन इन गर्दै</translation>
 <translation id="5311565231560644461">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंका यन्त्रहरू र तिनमा भएका डेटा प्रयोग गर्न नदिनुहोस्</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{फोटो}other{# वटा फोटो}}</translation>
 <translation id="5315179276708231080">Lacros ब्राउजरको परीक्षण हुँदै छ। कृपया यहाँ गई यस ब्राउजरमा देखिएका समस्याबारे रिपोर्ट गर्नुहोस्: मद्दत &gt; "समस्याबारे रिपोर्ट गर्नुहोस्..." तपाईं लन्चरमा "Chrome" टाइप गरेर डिफल्ट ब्राउजर भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="5315738755890845852">अतिरिक्त मझौला कोष्ठक: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
@@ -5067,6 +5065,7 @@
 <translation id="6664237456442406323">दुर्भाग्यवश, तपाइँको कम्प्युटर एक विकृत हार्डवेयर आइडीद्वारा विन्यास गरिएको छ। यसले Chrome OS लाई सबैभन्दा नयाँ सुरक्षा निर्धारणहरू अद्यावधिक गर्नबाट रोक्छ र तपाइँको कम्प्युटर <ph name="BEGIN_BOLD" />मालिसियस आक्रमणहरू देखि भेद्य हुन सक्छ<ph name="END_BOLD" />।</translation>
 <translation id="6664774537677393800">तपाईँको प्रोफाइल खोल्दा केही गडबड भयो। कृपया साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> अब उपलब्ध छ</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{एउटा ठेगाना}other{# वटा ठेगाना}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">सिंक गर्ने कार्य सुरु गर्न आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6675665718701918026">निर्देशित गरिएको यन्त्र जडान गरियो</translation>
@@ -5192,7 +5191,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> लाई रूटको रूपमा चलाउन सकिन्न।</translation>
 <translation id="6812841287760418429">परिवर्तनहरू राख्नुहोस्</translation>
 <translation id="6813907279658683733">पूर्ण स्क्रिन</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{फाइल}other{# वटा फाइल}}</translation>
 <translation id="6817174620439930047">कुनै साइटले MIDI यन्त्रहरूमाथि पहुँच गर्नका लागि प्रणालीका विशिष्ट सन्देशहरू प्रयोग गर्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6818198425579322765">अनुवाद गरिनु पर्ने पृष्ठको भाषा</translation>
 <translation id="6818802132960437751">अन्तर्निर्मित भाइरस प्रोटेक्सन</translation>
@@ -5214,7 +5212,6 @@
 <translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा जडान गर्नुहोस्।</translation>
 <translation id="6838034009068684089">कुनै साइटले मेरा स्क्रिनहरूमा विन्डो राख्न र त्यहाँ भएका विन्डो खोल्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस् (सिफारिस गरिएको)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
 <translation id="6839916869147598086">साइन इन परिवर्तन गरिएको छ</translation>
 <translation id="6840155290835956714">पठाउनु अघि सोध्नुहोस्</translation>
@@ -5323,7 +5320,6 @@
 <translation id="6955446738988643816">पपअप निरीक्षण गर्नुहोस्</translation>
 <translation id="6955535239952325894">व्यवस्थापन गरिएका ब्राउजरहरूमा यो सेटिङ असक्षम पारिएको हुन्छ</translation>
 <translation id="6957044667612803194">यस सुरक्षा साँचोमा PIN हरू सेट गर्न मिल्दैन</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{लिंक}other{# वटा लिंक}}</translation>
 <translation id="6960507406838246615">Linux अपडेट गर्न आवश्यक छ</translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="696103774840402661">यो <ph name="DEVICE_TYPE" /> का सबै प्रयोगकर्ताका सबै फाइल तथा स्थानीय डेटा सदाका लागि मेटाइएका छन्।</translation>
@@ -5770,6 +5766,7 @@
 <translation id="7456142309650173560">देव</translation>
 <translation id="7456847797759667638">खुला स्थान...</translation>
 <translation id="7457384018036134905">Chrome OS का सेटिङमा गई भाषाहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{एउटा लिंक}other{# वटा लिंक}}</translation>
 <translation id="7458168200501453431">Google खोजमा प्रयोग हुने हिज्जे-जाँचकर्ता नै प्रयोग गर्छ। तपाईंले ब्राउजरमा टाइप गर्नुभएको पाठ Google लाई पठाइन्छ।</translation>
 <translation id="7460045493116006516">तपाईंले स्थापना गर्नुभएको हालको विषयवस्तु</translation>
 <translation id="7461924472993315131">पिन</translation>
@@ -6170,6 +6167,7 @@
 <translation id="7883792253546618164">जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="788453346724465748">खातासम्बन्धी जानकारी लोड गरिँदै छ...</translation>
 <translation id="7885253890047913815">हालैका गन्तव्यहरू</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{एउटा वस्तु}other{# वटा वस्तु}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
 <translation id="7887864092952184874">ब्लुटुथ माउस जोडा मिलाइएको</translation>
@@ -6407,6 +6405,7 @@
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8141584439523427891">अहिले वैकल्पिक ब्राउजरमा खोल्दै</translation>
 <translation id="8141725884565838206">तपाइँका पासवर्डहरू व्यवस्थापित गर्नुहोस्</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{एउटा भिडियो}other{# वटा भिडियो}}</translation>
 <translation id="8143442547342702591">अमान्य एप</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गर्नुहोस्</translation>
 <translation id="8146177459103116374">यदि तपाईंले यो डिभाइसमा पहिले नै दर्ता गराउनुभएको छ भने, तपाईंले <ph name="LINK2_START" />एउटा विद्यमान प्रयोगकर्ताको रूपमा साइन इन<ph name="LINK2_END" /> गर्न सक्नुहुन्छ।</translation>
@@ -6426,6 +6425,7 @@
 <translation id="8161293209665121583">पाठक मोडमा वेब पृष्ठहरू पढ्ने सुविधा</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ट्याब सारेर नयाँ विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर नयाँ विन्डोमा लैजानुहोस्}}</translation>
 <translation id="8165997195302308593">Crostini मा पोर्ट फर्वार्ड गर्ने सुविधा</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{एउटा फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8168943654413034772">'चयन' गर्ने कार्यका निम्ति तोकिएको एक मात्र स्विच हटाउन मिल्दैन। बाहिर निस्कन कुनै पनि की थिच्नुहोस्।</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{पढ्ने सामग्रीको सूचीमा ट्याब हाल्नुहोस्}other{पढ्ने सामग्रीको सूचीमा ट्याबहरू हाल्नुहोस्}}</translation>

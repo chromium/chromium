@@ -1325,7 +1325,6 @@
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2435579801172349831">Отваряне на всички (<ph name="URL_COUNT" />) в прозорец в режим „инкогнито“</translation>
 <translation id="2436186046335138073">Да се разреши ли на <ph name="HANDLER_HOSTNAME" /> да отваря всички връзки от типа „<ph name="PROTOCOL" />“?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{приложение}other{# приложения}}</translation>
 <translation id="2440604414813129000">&amp;Преглед на изходния код</translation>
 <translation id="244231003699905658">Невалиден адрес. Моля, проверете адреса и опитайте отново.</translation>
 <translation id="2442916515643169563">Сянка на текста</translation>
@@ -2386,8 +2385,8 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> се сканира.</translation>
 <translation id="3616741288025931835">&amp;Изчистване на данните за сърфирането...</translation>
 <translation id="3617891479562106823">Фоновете не са налице. Опитайте отново по-късно.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{видеоклип}other{# видеоклипа}}</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{приложение}other{# приложения}}</translation>
 <translation id="362333465072914957">Изчаква се издаването на сертификат от сертифициращия орган</translation>
 <translation id="3624567683873126087">Отключване на устройството и влизане в профила в Google</translation>
 <translation id="3625481642044239431">Избран е невалиден файл. Опитайте отново.</translation>
@@ -2661,6 +2660,7 @@
 <translation id="3895076768659607631">&amp;Управление на търсещите машини…</translation>
 <translation id="3895090224522145010">Потребителско име за Kerberos</translation>
 <translation id="389521680295183045">Сайтовете могат да извеждат запитване за разпознаване на това кога използвате устройството си активно</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{изображение}other{# изображения}}</translation>
 <translation id="3898233949376129212">Език на устройството</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> иска да <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
@@ -3240,7 +3240,6 @@
 <translation id="4568025708905928793">Изисква се ключ за сигурност</translation>
 <translation id="4568213207643490790">За съжаление, профилите в Google не са разрешени на това устройство.</translation>
 <translation id="4569747168316751899">При неактивност</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{адрес}other{# адреса}}</translation>
 <translation id="4572659312570518089">Удостоверяването бе анулирано при установяването на връзка с/ъс <ph name="DEVICE_NAME" />.</translation>
 <translation id="4572779512957829735">Въведете ПИН кода за ключа си за сигурност</translation>
 <translation id="4573515936045019911">За надстройването на Linux е необходима връзка с мрежата. Моля, свържете се с интернет и опитайте отново.</translation>
@@ -3427,7 +3426,6 @@
 <translation id="4794810983896241342">Актуализациите се управляват от <ph name="BEGIN_LINK" />администратора ви<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Уеб страница, само HTML</translation>
 <translation id="4798236378408895261">Прикачване на <ph name="BEGIN_LINK" />регистрационните файлове за Bluetooth<ph name="END_LINK" /> (вътрешно за Google)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{елемент}other{# елемента}}</translation>
 <translation id="4801448226354548035">Скриване на профилите</translation>
 <translation id="4801512016965057443">Разрешаване на роуминг за данни</translation>
 <translation id="4804818685124855865">Изключване</translation>
@@ -3570,6 +3568,7 @@
 <translation id="4943368462779413526">Футболна топка</translation>
 <translation id="4943691134276646401">„<ph name="CHROME_EXTENSION_NAME" />“ иска да се свърже със сериен порт</translation>
 <translation id="4944310289250773232">Тази услуга за удостоверяване се хоства от <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
@@ -3878,7 +3877,6 @@
 <translation id="5310281978693206542">Изпращане на връзката до устройствата ви</translation>
 <translation id="5311304534597152726">Влизате като</translation>
 <translation id="5311565231560644461">Да не се разрешава на сайтовете да използват устройствата и данните ви за виртуална реалност</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{изображение}other{# изображения}}</translation>
 <translation id="5315179276708231080">Lacros е експериментален браузър. Отворете „Помощ &gt; Подаване на сигнал за проблем...“, за да сигнализирате за проблеми. Стандартният браузър може да бъде намерен, като въведете Chrome в стартовия панел.</translation>
 <translation id="5315738755890845852">Излишна фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
@@ -5071,6 +5069,7 @@
 <translation id="6664237456442406323">За съжаление компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на Chrome OS да се актуализира с най-новите корекции за сигурност и машината ви <ph name="BEGIN_BOLD" />може да е уязвима към злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Нещо се обърка при отварянето на потребителския ви профил. Моля, излезте от профила си и влезте отново.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> вече е налице</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{адрес}other{# адреса}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="6675665718701918026">Свързано е посочващо устройство</translation>
@@ -5196,7 +5195,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> не може да се изпълнява като „root“.</translation>
 <translation id="6812841287760418429">Запазване на промените</translation>
 <translation id="6813907279658683733">Цял екран</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="6817174620439930047">Получаване на запитване, когато сайт иска да използва специални системни съобщения за достъп до MIDI устройствата (препоръчително)</translation>
 <translation id="6818198425579322765">Изходен език на страницата</translation>
 <translation id="6818802132960437751">Вградена защита от вируси</translation>
@@ -5218,7 +5216,6 @@
 <translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Извеждане на запитване, когато сайт иска да отваря и разполага прозорци на екраните ви (препоръчително)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{телефонен номер}other{# телефонни номера}}</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6840155290835956714">Извеждане на запитване преди изпращане</translation>
@@ -5327,7 +5324,6 @@
 <translation id="6955446738988643816">Инспектиране на изскачащ прозорец</translation>
 <translation id="6955535239952325894">Тази настройка е деактивирана за управлявани браузъри</translation>
 <translation id="6957044667612803194">Този ключ за сигурност не поддържа ПИН кодове</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{връзка}other{# връзки}}</translation>
 <translation id="6960507406838246615">Изисква се актуализиране на Linux</translation>
 <translation id="6960565108681981554">Не е активирана. Свържете се с оператора си.</translation>
 <translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
@@ -5774,6 +5770,7 @@
 <translation id="7456142309650173560">за програмисти</translation>
 <translation id="7456847797759667638">Отваряне на местоположение...</translation>
 <translation id="7457384018036134905">Управление на езиците в настройките на Chrome OS</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{връзка}other{# връзки}}</translation>
 <translation id="7458168200501453431">Използва същата система за проверка на правописа като в Google Търсене. Текстът, който въвеждате в браузъра, се изпраща до Google.</translation>
 <translation id="7460045493116006516">Текущата тема, която сте инсталирали</translation>
 <translation id="7461924472993315131">Фиксиране</translation>
@@ -6174,6 +6171,7 @@
 <translation id="7883792253546618164">Можете да се отпишете по всяко време.</translation>
 <translation id="788453346724465748">Информацията за профила се зарежда...</translation>
 <translation id="7885253890047913815">Скорошни местоназначения</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{елемент}other{# елемента}}</translation>
 <translation id="7886605625338676841">Електронна SIM карта</translation>
 <translation id="7887334752153342268">Дублиране</translation>
 <translation id="7887864092952184874">Мишката с Bluetooth е сдвоена</translation>
@@ -6412,6 +6410,7 @@
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8141584439523427891">Страницата се отваря в алтернативен браузър</translation>
 <translation id="8141725884565838206">Управление на паролите ви</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{видеоклип}other{# видеоклипа}}</translation>
 <translation id="8143442547342702591">Невалидно приложение</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Ако вече сте регистрирани на това устройство, можете <ph name="LINK2_START" />да влезете като съществуващ потребител<ph name="LINK2_END" />.</translation>
@@ -6431,6 +6430,7 @@
 <translation id="8161293209665121583">Режим за четене за уеб страниците</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на разделите в нов прозорец}}</translation>
 <translation id="8165997195302308593">Пренасочване на портове за Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{телефонен номер}other{# телефонни номера}}</translation>
 <translation id="8168435359814927499">Съдържание</translation>
 <translation id="8168943654413034772">Единственият превключвател за избиране не може да бъде премахнат. Натиснете произволен клавиш, за да излезете.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
