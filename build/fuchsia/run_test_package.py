@@ -259,7 +259,9 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
                                        BuildIdsPaths(package_paths))
 
       for next_line in output_stream:
-        print(next_line.rstrip())
+        # TODO(crbug/1198733): Switch to having stream encode to utf-8 directly
+        # once we drop Python 2 support.
+        print(next_line.encode('utf-8').rstrip())
 
       process.wait()
       if process.returncode == 0:
