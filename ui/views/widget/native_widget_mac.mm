@@ -25,6 +25,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer_impl_mac.h"

@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"

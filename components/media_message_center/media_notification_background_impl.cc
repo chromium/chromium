@@ -12,6 +12,7 @@
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"

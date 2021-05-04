@@ -12,6 +12,7 @@
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"

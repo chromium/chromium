@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 
+#include "base/timer/timer.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

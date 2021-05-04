@@ -15,6 +15,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 

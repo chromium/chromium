@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
 

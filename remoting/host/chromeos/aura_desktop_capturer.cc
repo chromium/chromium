@@ -13,6 +13,7 @@
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"

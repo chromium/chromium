@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace web_app {

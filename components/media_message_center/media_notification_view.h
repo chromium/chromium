@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_H_
 
+#include "base/containers/flat_set.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
 

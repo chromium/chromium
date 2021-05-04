@@ -19,6 +19,7 @@
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"

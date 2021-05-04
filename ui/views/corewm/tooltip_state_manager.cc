@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/gfx/text_elider.h"

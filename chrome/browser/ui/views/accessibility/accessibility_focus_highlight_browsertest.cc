@@ -23,6 +23,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/compositor_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
 

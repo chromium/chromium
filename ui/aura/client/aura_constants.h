@@ -13,6 +13,10 @@
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace ws {
 namespace mojom {
 enum class WindowType;

@@ -19,6 +19,11 @@
 #include "ui/display/display.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace gfx {
+class ImageSkia;
+class ImageSkiaRep;
+}  // namespace gfx
+
 namespace ash {
 
 class CursorWindowControllerTest;

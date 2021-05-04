@@ -7,10 +7,10 @@
 #include <ostream>
 
 #include "base/logging.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 
 #if !defined(NDEBUG)
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/transform_util.h"
 #endif
