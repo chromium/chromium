@@ -691,11 +691,37 @@ TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
                                        window_2, window_1});
 }
 
+// Tests that the splitview data in tablet is saved properly.
+TEST_F(FullRestoreControllerTest, TabletSplitviewWindow) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  const gfx::Rect bounds(300, 300);
+  auto window1 = CreateAppWindow(gfx::Rect(300, 300), AppType::BROWSER);
+  auto window2 = CreateAppWindow(gfx::Rect(300, 300), AppType::BROWSER);
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
+
+  full_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
+  full_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
+  ASSERT_TRUE(window1_info);
+  ASSERT_TRUE(window2_info);
+  ASSERT_TRUE(window1_info->window_state_type);
+  ASSERT_TRUE(window2_info->window_state_type);
+
+  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped,
+            *window1_info->window_state_type);
+  EXPECT_EQ(chromeos::WindowStateType::kRightSnapped,
+            *window2_info->window_state_type);
+  EXPECT_EQ(bounds, *window1_info->current_bounds);
+  EXPECT_EQ(bounds, *window2_info->current_bounds);
+}
+
 // Tests tablet snapped window functionality when creating a window from full
 // restore.
 TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
-  UpdateDisplay("800x800");
-
   // Add two entries to our fake full restore file, one snapped left and the
   // other snapped right.
   const gfx::Rect restored_bounds(200, 200);

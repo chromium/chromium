@@ -67,25 +67,26 @@ aura::Window* GetSiblingToStackBelow(aura::Window* window) {
   DCHECK(window->parent());
   auto siblings = window->parent()->children();
 #if DCHECK_IS_ON()
-  // Verify that the activation keys are descending and that non-restored
-  // windows are all at the end.
-  for (int i = 0; i < int{siblings.size()} - 2; ++i) {
+  // Verify that the activation keys are descending. Non-restored windows may be
+  // stacked in certain ways by other window manager features so there may be
+  // non-restored windows at any point but the windows that have the
+  // `full_restore::kActivationIndexKey` should be in relative descending order.
+  base::Optional<int32_t> last_activation_key;
+  for (size_t i = 0; i < siblings.size(); ++i) {
+    // The current window needs to be stacked, so there is a chance it is
+    // initially out of order.
+    if (window == siblings[i])
+      continue;
+
     int32_t* current_activation_key =
         siblings[i]->GetProperty(full_restore::kActivationIndexKey);
-    size_t next_index = i + 1;
-    int32_t* next_activation_key =
-        siblings[next_index]->GetProperty(full_restore::kActivationIndexKey);
+    if (!current_activation_key)
+      continue;
 
-    const bool descending_order =
-        current_activation_key &&
-        (!next_activation_key ||
-         *current_activation_key > *next_activation_key);
-    const bool both_null = !current_activation_key && !next_activation_key;
-
-    DCHECK(descending_order || both_null);
+    if (last_activation_key)
+      DCHECK_LT(*current_activation_key, *last_activation_key);
+    last_activation_key = *current_activation_key;
   }
-
-  DCHECK_EQ(siblings.back(), window);
 #endif
 
   int32_t* restore_activation_key =
@@ -200,11 +201,6 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
     }
   }
 
-  int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
-  if (!activation_index)
-    return;
-
   // Window that are launched from full restore are not activatable initially to
   // prevent them from taking activation when Widget::Show() is called. Make
   // these windows activatable once they are launched. Use a post task since it
@@ -220,6 +216,11 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
                            full_restore::kLaunchedFromFullRestoreKey, false);
                      },
                      window));
+
+  int32_t* activation_index =
+      window->GetProperty(full_restore::kActivationIndexKey);
+  if (!activation_index)
+    return;
 
   // Stack the window.
   auto* target_sibling = GetSiblingToStackBelow(window);
@@ -304,8 +305,12 @@ void FullRestoreController::SaveWindowImpl(
   gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
   if (override_bounds) {
     window_info.current_bounds = *override_bounds;
+    // Snapped state can be restored from tablet onto clamshell, so we do not
+    // use the restore override state here.
     window_info.window_state_type =
-        window->GetProperty(kRestoreWindowStateTypeOverrideKey);
+        window_state->IsSnapped()
+            ? window_state->GetStateType()
+            : window->GetProperty(kRestoreWindowStateTypeOverrideKey);
   } else {
     // If there are restore bounds, use those as current bounds. On restore, for
     // states with restore bounds (maximized, minimized, snapped, etc), they
@@ -317,7 +322,7 @@ void FullRestoreController::SaveWindowImpl(
     // Full restore does not support restoring fullscreen windows. If a window
     // is fullscreen save the pre-fullscreen window state instead.
     window_info.window_state_type =
-        window_state->IsInImmersiveFullscreen()
+        window_state->IsFullscreen()
             ? chromeos::ToWindowStateType(
                   window->GetProperty(aura::client::kPreFullscreenShowStateKey))
             : window_state->GetStateType();
