@@ -340,8 +340,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Network.Cellular.{SimType}.ConnectionResult.All"
+    enum="ShillCellularConnectResult" expires_after="2022-04-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of all connection attempts. A success is emitted when a
+    {SimType} network becomes connected from a non-connected state. When a
+    {SimType} network goes from a connecting state to a disconnected state, a
+    shill failure reason is emitted.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.ConnectionResult.UserInitiated"
+    enum="UserInitiatedCellularConnectResult" expires_after="2022-04-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of a user initiated connection attempt. Logged when a
+    {SimType} connection succeeds or fails. This histogram logs failure reasons
+    exposed by NetworkConnectionHandler.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Cellular.{SimType}.ConnectionSuccess"
     enum="CellularConnectResult" expires_after="2022-03-01">
+  <obsolete>
+    Removed 04/2021. Split to
+    Network.Cellular.{SimType}.ConnectionResult.UserInitiated and
+    Network.Cellular.{SimType}.ConnectionResult.All.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>

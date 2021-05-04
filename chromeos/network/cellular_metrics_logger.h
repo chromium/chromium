@@ -56,6 +56,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   static const char kSimPinUnblockSuccessHistogram[];
   static const char kSimPinChangeSuccessHistogram[];
 
+  // Histograms associated with user initiated connection success.
+  static const char kESimUserInitiatedConnectionResultHistogram[];
+  static const char kPSimUserInitiatedConnectionResultHistogram[];
+
+  // Histograms associated with all connection success.
+  static const char kESimAllConnectionResultHistogram[];
+  static const char kPSimAllConnectionResultHistogram[];
+
   // PIN operations that are tracked by metrics.
   enum class SimPinOperation {
     kLock = 0,
@@ -90,6 +98,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   void OnShuttingDown() override;
 
   // NetworkConnectionObserver::
+  void ConnectSucceeded(const std::string& service_path) override;
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override;
   void DisconnectRequested(const std::string& service_path) override;
@@ -101,6 +110,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            DuplicateCellularServiceGuids);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularConnectResult);
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
+                           CancellationDuringConnecting);
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
+                           UserInitiatedConnectionResult);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularESimProfileStatusAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
@@ -137,6 +150,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     const std::string network_guid;
     base::Optional<bool> is_connected;
     bool is_connecting = false;
+    // Tracks whether a disconnect was requested from chrome on a network that
+    // was previously in the connecting state. This field is set back to false
+    // when shill connection failures are checked in
+    // NetworkConnectionStateChanged().
+    bool disconnect_requested = false;
     base::Optional<base::TimeTicks> last_disconnect_request_time;
     base::Optional<base::TimeTicks> last_connect_start_time;
   };
@@ -202,37 +220,85 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kErrorUnknown,
   };
 
-  // Result of connecting to a cellular network. These values are persisted to
-  // logs. Entries should not be renumbered and numeric values should never be
-  // reused.
+  // This enum is used to track the connection results from
+  // NetworkConnectionHandler. With the exception of kSuccess and kUnknown,
+  // these enums are mapped to relevant NetworkConnectionHandler errors
+  // associated to user initiated connection errors.
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
   enum class ConnectResult {
-    kUnknown = 0,
-    kInvalidGuid = 1,
-    kInvalidState = 2,
-    kCanceled = 3,
-    kNotConfigured = 4,
-    kBlocked = 5,
-    kSuccess = 6,
-    kMaxValue = kSuccess
+    kSuccess = 0,
+    kUnknown = 1,
+    kInvalidGuid = 2,
+    kInvalidState = 3,
+    kCanceled = 4,
+    kNotConfigured = 5,
+    kBlocked = 6,
+    kCellularInhibitFailure = 7,
+    kESimProfileIssue = 8,
+    kCellularOutOfCredits = 9,
+    kSimLocked = 10,
+    kConnectFailed = 11,
+    kNotConnected = 12,
+    kActivateFailed = 13,
+    kEnabledOrDisabledWhenNotAvailable = 14,
+    kMaxValue = kEnabledOrDisabledWhenNotAvailable,
+  };
+
+  // Result of state changes to a cellular network triggered by any connection
+  // attempt. With the exception of kSuccess and kUnknown, these enums are
+  // mapped directly to Shill errors. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  enum class ShillConnectResult {
+    kSuccess = 0,
+    kUnknown = 1,
+    kFailedToConnect = 2,
+    kDhcpFailure = 3,
+    kDnsLookupFailure = 4,
+    kEapAuthentication = 5,
+    kEapLocalTls = 6,
+    kEapRemoteTls = 7,
+    kOutOfRange = 8,
+    kPinMissing = 9,
+    kNoFailure = 10,
+    kNotAssociated = 11,
+    kNotAuthenticated = 12,
+    kTooManySTAs = 13,
+    kBadPassphrase = 14,
+    kBadWepKey = 15,
+    kMaxValue = kBadWepKey,
   };
 
   // Convert shill error name string to SimPinOperationResult enum.
   static SimPinOperationResult GetSimPinOperationResultForShillError(
       const std::string& shill_error_name);
 
+  // Converts a NetworkConnectionHandler string error to a ConnectResult enum.
+  static ConnectResult NetworkConnectionErrorToConnectResult(
+      const std::string& error_name);
+
+  // Converts a Shill error string to a ShillConnectResult enum.
+  static ShillConnectResult ShillErrorToConnectResult(
+      const std::string& error_name);
+
+  static void LogCellularUserInitiatedConnectionSuccessHistogram(
+      ConnectResult start_connect_result,
+      SimType sim_type);
+
+  // Returns null if there is no network with the given path or if the
+  // network is non-cellular.
+  const NetworkState* GetCellularNetwork(const std::string& service_path);
+
   // Convert shill activation state string to PSimActivationState enum
   PSimActivationState PSimActivationStateToEnum(const std::string& state);
-
-  // Converts a NetworkConnectionHandler string error to a ConnectResult enum.
-  ConnectResult NetworkConnectionErrorToConnectResult(
-      const std::string& error_name);
 
   // Helper method to save cellular disconnections histogram.
   void LogCellularDisconnectionsHistogram(ConnectionState connection_state,
                                           SimType sim_type);
 
-  void LogCellularConnectionSuccessHistogram(ConnectResult start_connect_result,
-                                             SimType sim_type);
+  void LogCellularAllConnectionSuccessHistogram(
+      ShillConnectResult start_connect_result,
+      SimType sim_type);
 
   void OnInitializationTimeout();
 
@@ -251,7 +317,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // if |is_esim_profile_status_logged_| is false.
   void CheckForESimProfileStatusMetric();
 
-  // Tracks errors from shill that result in an unsuccessful connection.
+  // Tracks failed connection attempts.
   void CheckForShillConnectionFailureMetric(const NetworkState* network);
 
   // This checks the state of connected networks and logs

@@ -64,11 +64,6 @@ const char kPSimDisconnectionsHistogram[] =
 const char kESimDisconnectionsHistogram[] =
     "Network.Cellular.ESim.Disconnections";
 
-const char kPSimConnectionSuccessHistogram[] =
-    "Network.Cellular.PSim.ConnectionSuccess";
-const char kESimConnectionSuccessHistogram[] =
-    "Network.Cellular.ESim.ConnectionSuccess";
-
 }  // namespace
 
 class CellularMetricsLoggerTest : public testing::Test {
@@ -242,8 +237,10 @@ TEST_F(CellularMetricsLoggerTest, DuplicateCellularServiceGuids) {
 
   // Only the PSim histogram is logged to because it was the first to be
   // connected to.
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 1);
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 0);
 }
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
@@ -569,9 +566,10 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kAssocStateValue);
   base::RunLoop().RunUntilIdle();
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 0);
 
   // Set cellular networks to failed state.
   service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
@@ -581,16 +579,18 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
                                             shill::kStateProperty,
                                             base::Value(shill::kStateFailure));
   base::RunLoop().RunUntilIdle();
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 1);
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 1);
-  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 1);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 1);
 
   histogram_tester_->ExpectBucketCount(
-      kESimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kUnknown, 1);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kUnknown, 1);
   histogram_tester_->ExpectBucketCount(
-      kPSimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kUnknown, 1);
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kUnknown, 1);
+
   histogram_tester_->ExpectBucketCount(
       kESimFeatureUsageMetric,
       static_cast<int>(
@@ -612,55 +612,23 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
                                             shill::kStateProperty,
                                             base::Value(shill::kStateOnline));
   base::RunLoop().RunUntilIdle();
-
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 2);
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 2);
-  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 2);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 2);
 
   histogram_tester_->ExpectBucketCount(
-      kESimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kSuccess, 1);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 1);
   histogram_tester_->ExpectBucketCount(
-      kPSimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kSuccess, 1);
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 1);
+
   histogram_tester_->ExpectBucketCount(
       kESimFeatureUsageMetric,
       static_cast<int>(
           feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess),
       1);
-
-  // Simulate chrome connect failure
-  cellular_metrics_logger()->ConnectFailed(
-      kTestPSimCellularServicePath,
-      NetworkConnectionHandler::kErrorConnectCanceled);
-  cellular_metrics_logger()->ConnectFailed(
-      kTestESimCellularServicePath,
-      NetworkConnectionHandler::kErrorConnectCanceled);
-
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 3);
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 3);
-  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 3);
-
-  histogram_tester_->ExpectBucketCount(
-      kESimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kCanceled, 1);
-  histogram_tester_->ExpectBucketCount(
-      kPSimConnectionSuccessHistogram,
-      CellularMetricsLogger::ConnectResult::kCanceled, 1);
-  histogram_tester_->ExpectBucketCount(
-      kESimFeatureUsageMetric,
-      static_cast<int>(
-          feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure),
-      2);
-
-  // Set cellular networks to connected state.
-  service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
-                                            shill::kStateProperty,
-                                            base::Value(shill::kStateOnline));
-  service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
-                                            shill::kStateProperty,
-                                            base::Value(shill::kStateOnline));
-  base::RunLoop().RunUntilIdle();
 
   // Set cellular networks to disconnected state.
   service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
@@ -673,8 +641,136 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
 
   // A connected to disconnected state change should not impact connection
   // success.
-  histogram_tester_->ExpectTotalCount(kESimConnectionSuccessHistogram, 3);
-  histogram_tester_->ExpectTotalCount(kPSimConnectionSuccessHistogram, 3);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 2);
+
+  // Set cellular networks to connected state.
+  service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateOnline));
+  service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
+
+  // A disconnected to connected state, skipping the connecting state change
+  // should emit a success.
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 3);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 3);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 2);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 2);
+
+  // User initiated connection histograms should be 0 the entire time because
+  // the previous connection state changes occured from Shill.
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimUserInitiatedConnectionResultHistogram, 0);
+}
+
+TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
+  SetUpMetricsLogger();
+  InitCellular();
+  ResetHistogramTester();
+  base::RunLoop().RunUntilIdle();
+
+  // Set cellular networks to connecting state.
+  service_client_test()->SetServiceProperty(
+      kTestPSimCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
+  service_client_test()->SetServiceProperty(
+      kTestESimCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate chrome disconnect request.
+  cellular_metrics_logger()->DisconnectRequested(kTestESimCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(kTestPSimCellularServicePath);
+
+  // Set cellular networks to failed state via shill.
+  service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
+  service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 0);
+
+  // Set cellular networks to connecting state.
+  service_client_test()->SetServiceProperty(
+      kTestPSimCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
+  service_client_test()->SetServiceProperty(
+      kTestESimCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
+  base::RunLoop().RunUntilIdle();
+
+  // Set cellular networks to failed state via shill.
+  service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
+  service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kPSimAllConnectionResultHistogram, 1);
+}
+
+TEST_F(CellularMetricsLoggerTest, UserInitiatedConnectionResult) {
+  SetUpMetricsLogger();
+  InitCellular();
+  ResetHistogramTester();
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate chrome connect success
+  cellular_metrics_logger()->ConnectSucceeded(kTestPSimCellularServicePath);
+  cellular_metrics_logger()->ConnectSucceeded(kTestESimCellularServicePath);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram,
+      CellularMetricsLogger::ConnectResult::kSuccess, 1);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kPSimUserInitiatedConnectionResultHistogram,
+      CellularMetricsLogger::ConnectResult::kSuccess, 1);
+
+  // Simulate chrome connect failure
+  cellular_metrics_logger()->ConnectFailed(
+      kTestESimCellularServicePath,
+      NetworkConnectionHandler::kErrorConnectCanceled);
+  cellular_metrics_logger()->ConnectFailed(
+      kTestPSimCellularServicePath,
+      NetworkConnectionHandler::kErrorConnectCanceled);
+
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram,
+      CellularMetricsLogger::ConnectResult::kCanceled, 1);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kPSimUserInitiatedConnectionResultHistogram,
+      CellularMetricsLogger::ConnectResult::kCanceled, 1);
 }
 
 TEST_F(CellularMetricsLoggerTest, CellularTimeToConnectedTest) {

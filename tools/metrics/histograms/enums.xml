@@ -10297,6 +10297,9 @@ histogram as enum -->
 </enum>
 
 <enum name="CellularConnectResult">
+  <obsolete>
+    Deprecated as of 04/2021.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Invalid GUID"/>
   <int value="2" label="Invalid state"/>
@@ -71674,6 +71677,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Drag is canceled instead of ending normally"/>
 </enum>
 
+<enum name="ShillCellularConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Failed to connect"/>
+  <int value="3" label="DHCP Failure"/>
+  <int value="4" label="DNS Lookup Failure"/>
+  <int value="5" label="EAP Authentication"/>
+  <int value="6" label="Eap Local Tls"/>
+  <int value="7" label="Eap Remote Tls"/>
+  <int value="8" label="Out of Range"/>
+  <int value="9" label="Pin Missing"/>
+  <int value="10" label="No failure"/>
+  <int value="11" label="Not Associated"/>
+  <int value="12" label="Not Authenticated"/>
+  <int value="13" label="Too Many STAs"/>
+  <int value="14" label="Bad Passphrase"/>
+  <int value="15" label="Bad Wep Key"/>
+</enum>
+
 <enum name="ShillSuspendTerminationDarkResumeActionResult">
   <summary>
     The termination/suspend/dark resume action result types come from
@@ -79776,6 +79798,24 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Required and not available"/>
   <int value="2" label="Not required and available"/>
   <int value="3" label="Not required and not available"/>
+</enum>
+
+<enum name="UserInitiatedCellularConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Invalid GUID"/>
+  <int value="3" label="Invalid State"/>
+  <int value="4" label="Canceled"/>
+  <int value="5" label="Not configured"/>
+  <int value="6" label="Blocked"/>
+  <int value="7" label="Cellular Inhibit Failure"/>
+  <int value="8" label="ESim profile issue"/>
+  <int value="9" label="Cellular out of credits"/>
+  <int value="10" label="Sim locked"/>
+  <int value="11" label="Connect failed"/>
+  <int value="12" label="Not connected"/>
+  <int value="13" label="Activate Failed"/>
+  <int value="14" label="Enabled or disabled when not available"/>
 </enum>
 
 <enum name="UserInitiatedEvent">
