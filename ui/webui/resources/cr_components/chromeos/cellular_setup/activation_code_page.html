@@ -112,6 +112,10 @@
         --iron-icon-fill-color: #1A73E8;
       }
 
+      .hidden {
+        visibility: hidden;
+      }
+
       #scanSucessHeader {
         --iron-icon-fill-color: #1E8E3E;
         margin-bottom: 8px;
@@ -219,7 +223,7 @@
                       [[i18n('scanQrCodeInvalid')]]
                     </span>
                   </div>
-                  <cr-button id="useCameraAgainButton" class="blue-icon"
+                  <cr-button id="useCameraAgainButton" class$="[[getUseCameraAgainClass_(showBusy)]]"
                       on-click="startScanning_"
                       disabled="[[isUiElementDisabled_(UiElement.SCAN_SUCCESS, state_, showBusy)]]">
                     <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>

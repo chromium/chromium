@@ -171,6 +171,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     activationCodePage.showBusy = true;
     await flushAsync();
     assertTrue(!!activationCodePage.$$('paper-spinner-lite'));
+    assertTrue(useCameraAgainButton.classList.contains('hidden'));
 
     // Mock, no media devices present
     mediaDevices.removeDevice();
