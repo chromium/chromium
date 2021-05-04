@@ -59,12 +59,34 @@ os = struct(
     ANDROID = os_enum("Android", os_category.ANDROID),
     LINUX_TRUSTY = os_enum("Ubuntu-14.04", os_category.LINUX),
     LINUX_XENIAL = os_enum("Ubuntu-16.04", os_category.LINUX),
-    LINUX_XENIAL_OR_BIONIC = os_enum(
+    LINUX_BIONIC = os_enum("Ubuntu-18.04", os_category.LINUX),
+    # xenial -> bionic migration
+    # * If a builder does not already explicitly set an os value, use
+    #   LINUX_BIONIC_REMOVE or LINUX_XENIAL_OR_BIONIC_REMOVE
+    # * If a builder explicitly sets LINUX_DEFAULT, use
+    #   LINUX_BIONIC_SWITCH_TO_DEFAULT or
+    #   LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT
+    #
+    # When the migration is complete, LINUX_DEFAULT can be switched to
+    # Ubunutu-18.04, all instances of LINUX_BIONIC_REMOVE can be removed and all
+    # instances of LINUX_BIONIC_SWITCH_TO_DEFAULT can be replaced with
+    # LINUX_DEFAULT, the only changes to the generated files should be
+    # Ubuntu-16.04|Ubuntu-18.04 -> Ubuntu-18.04
+    LINUX_DEFAULT = os_enum("Ubuntu-16.04", os_category.LINUX),
+    # 100% switch to bionic
+    LINUX_BIONIC_REMOVE = os_enum("Ubuntu-18.04", os_category.LINUX),
+    LINUX_BIONIC_SWITCH_TO_DEFAULT = os_enum("Ubuntu-18.04", os_category.LINUX),
+    # Staged switch to bionic: we can gradually shift the matching capacity
+    # towards bionic and the builder will continue to run on whatever is
+    # available
+    LINUX_XENIAL_OR_BIONIC_REMOVE = os_enum(
         "Ubuntu-16.04|Ubuntu-18.04",
         os_category.LINUX,
     ),
-    LINUX_BIONIC = os_enum("Ubuntu-18.04", os_category.LINUX),
-    LINUX_DEFAULT = os_enum("Ubuntu-16.04", os_category.LINUX),
+    LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT = os_enum(
+        "Ubuntu-16.04|Ubuntu-18.04",
+        os_category.LINUX,
+    ),
     MAC_10_12 = os_enum("Mac-10.12", os_category.MAC),
     MAC_10_13 = os_enum("Mac-10.13", os_category.MAC),
     MAC_10_14 = os_enum("Mac-10.14", os_category.MAC),
