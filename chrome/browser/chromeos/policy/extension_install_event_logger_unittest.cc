@@ -12,10 +12,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -144,18 +143,13 @@ class ExtensionInstallEventLoggerTest : public testing::Test {
     RegisterLocalState(pref_service_.registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
 
-    chromeos::DBusThreadManager::Initialize();
     chromeos::PowerManagerClient::InitializeFake();
-
-    chromeos::NetworkHandler::Initialize();
   }
 
   void TearDown() override {
     logger_.reset();
     task_environment_.RunUntilIdle();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
@@ -204,6 +198,7 @@ class ExtensionInstallEventLoggerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingProfile profile_;
   TestingPrefServiceSimple pref_service_;
 

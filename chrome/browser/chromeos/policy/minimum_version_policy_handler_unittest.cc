@@ -22,7 +22,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/pref_service.h"
@@ -98,6 +98,8 @@ class MinimumVersionPolicyHandlerTest
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
@@ -113,12 +115,11 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
   fake_update_engine_client_ = fake_update_engine_client.get();
   chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
       std::move(fake_update_engine_client));
-  chromeos::NetworkHandler::Initialize();
+  network_handler_test_helper_ =
+      std::make_unique<chromeos::NetworkHandlerTestHelper>();
 
   chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface();
+      network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",
                            shill::kTypeEthernet, shill::kStateOnline,
@@ -133,7 +134,7 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
 
 void MinimumVersionPolicyHandlerTest::TearDown() {
   minimum_version_policy_handler_.reset();
-  chromeos::NetworkHandler::Shutdown();
+  network_handler_test_helper_.reset();
 }
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {

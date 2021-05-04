@@ -17,10 +17,8 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -262,9 +260,6 @@ class ProxyConfigServiceImplTest : public testing::Test {
   ProxyConfigServiceImplTest() = default;
 
   void SetUp() override {
-    DBusThreadManager::Initialize();
-    NetworkHandler::Initialize();
-
     PrefProxyConfigTrackerImpl::RegisterPrefs(pref_service_.registry());
     ::onc::RegisterPrefs(pref_service_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(profile_prefs_.registry());
@@ -286,9 +281,9 @@ class ProxyConfigServiceImplTest : public testing::Test {
 
   void SetUpPrivateWiFi() {
     ShillProfileClient::TestInterface* profile_test =
-        DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface();
+        network_handler_test_helper_.profile_test();
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        network_handler_test_helper_.service_test();
 
     // Process any pending notifications before clearing services.
     base::RunLoop().RunUntilIdle();
@@ -309,9 +304,9 @@ class ProxyConfigServiceImplTest : public testing::Test {
 
   void SetUpSharedEthernet() {
     ShillProfileClient::TestInterface* profile_test =
-        DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface();
+        network_handler_test_helper_.profile_test();
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        network_handler_test_helper_.service_test();
 
     // Process any pending notifications before clearing services.
     base::RunLoop().RunUntilIdle();
@@ -334,8 +329,6 @@ class ProxyConfigServiceImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     config_service_impl_.reset();
     proxy_config_service_.reset();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   base::Value InitConfigWithTestInput(const Input& input) {
@@ -364,11 +357,9 @@ class ProxyConfigServiceImplTest : public testing::Test {
         NetworkHandler::Get()->network_state_handler();
     const NetworkState* network = network_state_handler->DefaultNetwork();
     ASSERT_TRUE(network);
-    DBusThreadManager::Get()
-        ->GetShillServiceClient()
-        ->GetTestInterface()
-        ->SetServiceProperty(network->path(), shill::kProxyConfigProperty,
-                             base::Value(proxy_config));
+    network_handler_test_helper_.service_test()->SetServiceProperty(
+        network->path(), shill::kProxyConfigProperty,
+        base::Value(proxy_config));
   }
 
   // Synchronously gets the latest proxy config.
@@ -385,6 +376,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   std::unique_ptr<ProxyConfigServiceImpl> config_service_impl_;
   TestingPrefServiceSimple pref_service_;

@@ -18,10 +18,10 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 
@@ -49,8 +49,8 @@ class SystemProxyHandlerTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     testing::Test::SetUp();
-    chromeos::shill_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
+    network_handler_test_helper_ =
+        std::make_unique<chromeos::NetworkHandlerTestHelper>();
     chromeos::SystemProxyClient::InitializeFake();
 
     system_proxy_handler_ =
@@ -70,8 +70,7 @@ class SystemProxyHandlerTest : public testing::Test {
     system_proxy_manager_->StopObservingPrimaryProfilePrefs();
     system_proxy_manager_.reset();
     chromeos::SystemProxyClient::Shutdown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::shill_clients::Shutdown();
+    network_handler_test_helper_.reset();
   }
 
  protected:
@@ -104,6 +103,8 @@ class SystemProxyHandlerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;

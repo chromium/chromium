@@ -10,10 +10,8 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
@@ -118,14 +116,11 @@ TEST(NetworkChangeManagerClientTest,
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
             net::NetworkChangeNotifier::GetConnectionType());
 
-  // Initialize DBus and clear services so NetworkHandler thinks we're offline.
-  DBusThreadManager::Initialize();
+  // Initialize DBus clients and clear services so NetworkHandler thinks we're
+  // offline.
   PowerManagerClient::InitializeFake();
-  NetworkHandler::Initialize();
-  DBusThreadManager::Get()
-      ->GetShillServiceClient()
-      ->GetTestInterface()
-      ->ClearServices();
+  NetworkHandlerTestHelper network_handler_test_helper;
+  network_handler_test_helper.service_test()->ClearServices();
 
   auto client = std::make_unique<NetworkChangeManagerClient>(
       network_change_notifier.get());
@@ -138,9 +133,7 @@ TEST(NetworkChangeManagerClientTest,
             net::NetworkChangeNotifier::GetConnectionType());
 
   client.reset();
-  NetworkHandler::Shutdown();
   PowerManagerClient::Shutdown();
-  DBusThreadManager::Shutdown();
 }
 
 class NetworkChangeManagerClientUpdateTest : public testing::Test {
@@ -150,9 +143,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void SetUp() override {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
-    DBusThreadManager::Initialize();
     PowerManagerClient::InitializeFake();
-    NetworkHandler::Initialize();
     proxy_ = std::make_unique<NetworkChangeManagerClient>(
         static_cast<net::NetworkChangeNotifierPosix*>(
             network_change_notifier_.get()));
@@ -160,9 +151,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void TearDown() override {
     proxy_.reset();
-    NetworkHandler::Shutdown();
     PowerManagerClient::Shutdown();
-    DBusThreadManager::Shutdown();
     network_change_notifier_.reset();
   }
 
@@ -217,6 +206,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   NetworkState default_network_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   std::unique_ptr<NetworkChangeManagerClient> proxy_;

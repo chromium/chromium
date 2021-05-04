@@ -13,9 +13,8 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/services/service_provider_test_helper.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -228,8 +227,6 @@ class ProxyResolutionServiceWithSystemProxyTest
         ash::features::kSystemProxyForSystemServices);
     ProxyResolutionServiceProviderTest::SetUp();
 
-    shill_clients::InitializeFakes();
-    NetworkHandler::Initialize();
     SystemProxyClient::InitializeFake();
     SystemProxyManager::Initialize(local_state_.Get());
     SystemProxyManager::Get()->SetSystemServicesProxyUrlForTest(
@@ -238,8 +235,6 @@ class ProxyResolutionServiceWithSystemProxyTest
 
   void TearDown() override {
     SystemProxyManager::Shutdown();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
     SystemProxyClient::Shutdown();
   }
 
@@ -270,6 +265,7 @@ class ProxyResolutionServiceWithSystemProxyTest
   ScopedTestingLocalState local_state_;
 
  private:
+  NetworkHandlerTestHelper network_handler_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

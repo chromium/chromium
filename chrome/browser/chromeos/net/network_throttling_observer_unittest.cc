@@ -7,9 +7,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/net/network_throttling_observer.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +20,6 @@ namespace test {
 class NetworkThrottlingObserverTest : public ::testing::Test {
  public:
   NetworkThrottlingObserverTest() {
-    DBusThreadManager::Initialize();
-    network_state_handler_ = NetworkStateHandler::InitializeForTest();
-    NetworkHandler::Initialize();
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     local_state_->registry()->RegisterDictionaryPref(
         prefs::kNetworkThrottlingEnabled);
@@ -31,27 +27,21 @@ class NetworkThrottlingObserverTest : public ::testing::Test {
   }
 
   ~NetworkThrottlingObserverTest() override {
-    network_state_handler_->Shutdown();
     observer_.reset();
     local_state_.reset();
-    network_state_handler_.reset();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   TestingPrefServiceSimple* local_state() { return local_state_.get(); }
 
   const ShillManagerClient::NetworkThrottlingStatus&
   GetNetworkThrottlingStatus() {
-    return DBusThreadManager::Get()
-        ->GetShillManagerClient()
-        ->GetTestInterface()
+    return network_handler_test_helper_.manager_test()
         ->GetNetworkThrottlingStatus();
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<NetworkThrottlingObserver> observer_;
 

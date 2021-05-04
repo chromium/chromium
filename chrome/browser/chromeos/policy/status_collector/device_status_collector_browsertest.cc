@@ -73,6 +73,7 @@
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -3730,21 +3731,12 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
   void SetUp() override {
     RestartStatusCollector();
 
-    chromeos::NetworkHandler::Initialize();
-    base::RunLoop().RunUntilIdle();
-
     chromeos::ShillDeviceClient::TestInterface* device_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillDeviceClient()
-            ->GetTestInterface();
+        network_handler_test_helper_.device_test();
     chromeos::ShillServiceClient::TestInterface* service_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        network_handler_test_helper_.service_test();
     chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillIPConfigClient()
-            ->GetTestInterface();
+        network_handler_test_helper_.ip_config_test();
 
     device_client->ClearDevices();
     service_client->ClearServices();
@@ -3768,10 +3760,8 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
       }
     }
 
-    chromeos::DBusThreadManager::Get()
-        ->GetShillProfileClient()
-        ->GetTestInterface()
-        ->AddProfile(kShillFakeProfilePath, kShillFakeUserhash);
+    network_handler_test_helper_.profile_test()->AddProfile(
+        kShillFakeProfilePath, kShillFakeUserhash);
 
     // Now add services for every fake network.
     for (const FakeNetworkState& fake_network : kFakeNetworks) {
@@ -3842,11 +3832,13 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
   }
 
   void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
     DeviceStatusCollectorTest::TearDown();
   }
 
   virtual void VerifyReporting() = 0;
+
+ private:
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 class DeviceStatusCollectorNetworkInterfacesTest

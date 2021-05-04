@@ -28,7 +28,6 @@
 #include "chromeos/components/tether/fake_tether_host_fetcher.h"
 #include "chromeos/components/tether/tether_component_impl.h"
 #include "chromeos/components/tether/tether_host_fetcher_impl.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -37,6 +36,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager.h"
@@ -306,12 +306,6 @@ class TetherServiceTest : public testing::Test {
     fake_notification_presenter_ = nullptr;
     mock_timer_ = nullptr;
 
-    chromeos::DBusThreadManager::Initialize();
-    manager_test_ = chromeos::DBusThreadManager::Get()
-                        ->GetShillManagerClient()
-                        ->GetTestInterface();
-
-    chromeos::NetworkHandler::Initialize();
     chromeos::NetworkConnect::Initialize(nullptr);
 
     TestingProfile::Builder builder;
@@ -408,8 +402,6 @@ class TetherServiceTest : public testing::Test {
 
     chromeos::PowerManagerClient::Shutdown();
     chromeos::NetworkConnect::Shutdown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetPrimaryUserLoggedIn() {
@@ -490,18 +482,16 @@ class TetherServiceTest : public testing::Test {
   bool IsBluetoothPowered() { return is_adapter_powered_; }
 
   void RemoveWifiFromSystem() {
-    manager_test_->RemoveTechnology(shill::kTypeWifi);
+    manager_test()->RemoveTechnology(shill::kTypeWifi);
     base::RunLoop().RunUntilIdle();
   }
 
   void DisconnectDefaultShillNetworks() {
     const chromeos::NetworkState* default_state;
     while ((default_state = network_state_handler()->DefaultNetwork())) {
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface()
-          ->SetServiceProperty(default_state->path(), shill::kStateProperty,
-                               base::Value(shill::kStateIdle));
+      network_handler_test_helper_.service_test()->SetServiceProperty(
+          default_state->path(), shill::kStateProperty,
+          base::Value(shill::kStateIdle));
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -529,7 +519,7 @@ class TetherServiceTest : public testing::Test {
   }
 
   chromeos::ShillManagerClient::TestInterface* manager_test() {
-    return manager_test_;
+    return network_handler_test_helper_.manager_test();
   }
 
   chromeos::NetworkStateHandler* network_state_handler() {
@@ -539,6 +529,7 @@ class TetherServiceTest : public testing::Test {
   const chromeos::multidevice::RemoteDeviceRefList test_devices_;
   const content::BrowserTaskEnvironment task_environment_;
 
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   ash::FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
@@ -579,8 +570,6 @@ class TetherServiceTest : public testing::Test {
   std::unique_ptr<TestTetherService> tether_service_;
 
   base::HistogramTester histogram_tester_;
-
-  chromeos::ShillManagerClient::TestInterface* manager_test_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TetherServiceTest);

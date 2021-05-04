@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
@@ -43,17 +43,12 @@ class NetworkPrefStateObserverTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    DBusThreadManager::Initialize();
-    NetworkHandler::Initialize();
-    base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(profile_manager_.SetUp());
     network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
   }
 
   void TearDown() override {
     network_pref_state_observer_.reset();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -69,6 +64,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   TestingProfileManager profile_manager_;

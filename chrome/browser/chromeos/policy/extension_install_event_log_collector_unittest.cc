@@ -16,10 +16,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -127,31 +126,27 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
     RegisterLocalState(pref_service_.registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
 
-    chromeos::DBusThreadManager::Initialize();
+    network_handler_test_helper_ =
+        std::make_unique<chromeos::NetworkHandlerTestHelper>();
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::NetworkHandler::Initialize();
     profile_ = std::make_unique<TestingProfile>();
     registry_ = extensions::ExtensionRegistry::Get(profile_.get());
     install_stage_tracker_ =
         extensions::InstallStageTracker::Get(profile_.get());
     InitExtensionSystem();
-    service_test_ = chromeos::DBusThreadManager::Get()
-                        ->GetShillServiceClient()
-                        ->GetTestInterface();
-    service_test_->AddService(kEthernetServicePath, "eth1_guid", "eth1",
-                              shill::kTypeEthernet, shill::kStateOffline,
-                              true /* visible */);
-    service_test_->AddService(kWifiServicePath, "wifi1_guid", "wifi1",
-                              shill::kTypeEthernet, shill::kStateOffline,
-                              true /* visible */);
+    network_handler_test_helper_->service_test()->AddService(
+        kEthernetServicePath, "eth1_guid", "eth1", shill::kTypeEthernet,
+        shill::kStateOffline, true /* visible */);
+    network_handler_test_helper_->service_test()->AddService(
+        kWifiServicePath, "wifi1_guid", "wifi1", shill::kTypeEthernet,
+        shill::kStateOffline, true /* visible */);
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
     profile_.reset();
-    chromeos::NetworkHandler::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    network_handler_test_helper_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
@@ -169,19 +164,21 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
       network::NetworkConnectionTracker::NetworkConnectionObserver* observer,
       const std::string& service_path,
       const std::string& state) {
-    service_test_->SetServiceProperty(service_path, shill::kStateProperty,
-                                      base::Value(state));
+    network_handler_test_helper_->service_test()->SetServiceProperty(
+        service_path, shill::kStateProperty, base::Value(state));
     base::RunLoop().RunUntilIdle();
 
     network::mojom::ConnectionType connection_type =
         network::mojom::ConnectionType::CONNECTION_NONE;
     const std::string* network_state =
-        service_test_->GetServiceProperties(kWifiServicePath)
+        network_handler_test_helper_->service_test()
+            ->GetServiceProperties(kWifiServicePath)
             ->FindStringKey(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_WIFI;
     }
-    network_state = service_test_->GetServiceProperties(kEthernetServicePath)
+    network_state = network_handler_test_helper_->service_test()
+                        ->GetServiceProperties(kEthernetServicePath)
                         ->FindStringKey(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_ETHERNET;
@@ -223,10 +220,10 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
     return install_stage_tracker_;
   }
 
-  chromeos::ShillServiceClient::TestInterface* service_test_ = nullptr;
-
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   extensions::ExtensionRegistry* registry_;
   extensions::InstallStageTracker* install_stage_tracker_;
