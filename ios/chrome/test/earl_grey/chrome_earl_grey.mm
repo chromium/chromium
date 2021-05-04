@@ -1323,11 +1323,13 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)verifyShareActionWithPageTitle:(NSString*)pageTitle {
+- (void)verifyShareActionWithURL:(const GURL&)URL
+                       pageTitle:(NSString*)pageTitle {
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
   // Page title is added asynchronously, so wait for its appearance.
-  [self waitForMatcher:grey_allOf(ActivityViewHeader(pageTitle),
+  NSString* hostString = base::SysUTF8ToNSString(URL.host());
+  [self waitForMatcher:grey_allOf(ActivityViewHeader(hostString, pageTitle),
                                   grey_sufficientlyVisible(), nil)];
 
   // Dismiss the Activity View by tapping outside its bounds.

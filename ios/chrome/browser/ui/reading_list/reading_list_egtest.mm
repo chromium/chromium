@@ -1280,7 +1280,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
 
-  [ChromeEarlGrey verifyShareActionWithPageTitle:kDistillableTitle];
+  [ChromeEarlGrey verifyShareActionWithURL:distillablePageURL
+                                 pageTitle:kDistillableTitle];
 }
 
 // Tests the Delete context menu action for a reading list entry.

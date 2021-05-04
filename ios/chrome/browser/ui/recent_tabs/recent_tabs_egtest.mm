@@ -392,7 +392,9 @@ GURL TestPageURL() {
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
-  [ChromeEarlGrey verifyShareActionWithPageTitle:kTitleOfTestPage];
+  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+  [ChromeEarlGrey verifyShareActionWithURL:testPageURL
+                                 pageTitle:kTitleOfTestPage];
 }
 
 #pragma mark Helper Methods
