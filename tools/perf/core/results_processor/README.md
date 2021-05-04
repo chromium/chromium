@@ -15,7 +15,7 @@ contents:
 ## Test results file
 
 The `_test_results.jsonl` file tries to follow the
-[LUCI test results format](https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/resultdb/proto/sink/v1/test_result.proto).
+[LUCI test results format](https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto).
 Its every line is a json message of the `testResult` type. There are following
 additional conventions:
 
