@@ -326,6 +326,8 @@ try_.chromium_android_builder(
         },
     },
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -373,6 +375,8 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -385,6 +389,8 @@ try_.chromium_android_builder(
     ssd = True,
     use_java_coverage = True,
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 # Experimental builder to check dual coverage on android platform.
@@ -406,6 +412,8 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J300,
     ssd = True,
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -479,6 +487,8 @@ try_.chromium_android_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -573,6 +583,8 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -617,6 +629,8 @@ try_.chromium_android_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
@@ -637,6 +651,8 @@ try_.chromium_android_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_android_builder(
