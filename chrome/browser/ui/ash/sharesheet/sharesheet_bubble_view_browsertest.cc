@@ -50,8 +50,7 @@ class SharesheetBubbleViewBrowserTest
         ::sharesheet::SharesheetServiceFactory::GetForProfile(
             browser()->profile());
 
-    GURL test_url = GURL("https://www.google.com/");
-    auto intent = apps_util::CreateIntentFromUrl(test_url);
+    auto intent = apps_util::CreateShareIntentFromText("text", "");
     intent->action = apps_util::kIntentActionSend;
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
