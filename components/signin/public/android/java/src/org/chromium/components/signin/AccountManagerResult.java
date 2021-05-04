@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
  *
  * @param <T> The type of value this class should contain.
  */
-public class AccountManagerResult<T> {
+class AccountManagerResult<T> {
     /**
      * Two possible states of AccountManagerResult are distinguished by mException field. If
      * mException is null, then this instance is in 'value' state. If mException is non-null,

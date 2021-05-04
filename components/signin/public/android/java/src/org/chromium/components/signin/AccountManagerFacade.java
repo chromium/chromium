@@ -66,12 +66,6 @@ public interface AccountManagerFacade {
     List<Account> getGoogleAccounts() throws AccountManagerDelegateException;
 
     /**
-     * Asynchronous version of {@link #getGoogleAccounts()}.
-     */
-    @MainThread
-    void getGoogleAccounts(Callback<AccountManagerResult<List<Account>>> callback);
-
-    /**
      * Retrieves all Google accounts on the device.
      * Returns an empty array if an error occurs while getting account list.
      */

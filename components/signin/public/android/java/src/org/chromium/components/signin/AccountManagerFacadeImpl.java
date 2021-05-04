@@ -141,14 +141,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Asynchronous version of {@link #getGoogleAccounts()}.
-     */
-    @Override
-    public void getGoogleAccounts(Callback<AccountManagerResult<List<Account>>> callback) {
-        runAfterCacheIsPopulated(() -> callback.onResult(mFilteredAccounts.get()));
-    }
-
-    /**
      * Asynchronous version of {@link #tryGetGoogleAccounts()}.
      */
     @Override
