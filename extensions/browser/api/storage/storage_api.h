@@ -10,20 +10,12 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/browser/value_store/value_store.h"
 
 namespace extensions {
-
-// Enumerates all the namespaces of the storage areas.
-enum class StorageAreaNamespace {
-  kLocal,    // "local"    i.e. chrome.storage.local
-  kSync,     // "sync"     i.e. chrome.storage.sync
-  kManaged,  // "managed"  i.e. chrome.storage.managed
-  kSession,  // "session"  i.e. chrome.storage.session
-  kInvalid,
-};
 
 // Superclass of all settings functions.
 class SettingsFunction : public ExtensionFunction {

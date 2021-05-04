@@ -11,7 +11,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
-#include "extensions/browser/value_store/settings_namespace.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/value_store/value_store_change.h"
 
 namespace extensions {
@@ -100,7 +100,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
 
   if (!changes.empty()) {
     observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                       extension_id_, settings_namespace::MANAGED,
+                       extension_id_, StorageAreaNamespace::kManaged,
                        ValueStoreChange::ToValue(std::move(changes)));
   }
 }

@@ -21,6 +21,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -37,16 +38,20 @@ namespace {
 base::LazyInstance<BrowserContextKeyedAPIFactory<StorageFrontend>>::
     DestructorAtExit g_factory = LAZY_INSTANCE_INITIALIZER;
 
-events::HistogramValue NamespaceToEventHistogram(
-    settings_namespace::Namespace settings_namespace) {
-  switch (settings_namespace) {
-    case settings_namespace::LOCAL:
+events::HistogramValue StorageAreaToEventHistogram(
+    StorageAreaNamespace storage_area) {
+  switch (storage_area) {
+    case StorageAreaNamespace::kLocal:
       return events::STORAGE_LOCAL_ON_CHANGE;
-    case settings_namespace::SYNC:
+    case StorageAreaNamespace::kSync:
       return events::STORAGE_SYNC_ON_CHANGE;
-    case settings_namespace::MANAGED:
+    case StorageAreaNamespace::kManaged:
       return events::STORAGE_MANAGED_ON_CHANGE;
-    case settings_namespace::INVALID:
+    case StorageAreaNamespace::kSession:
+      // TODO(emiliapaz): Update after onChangedEvent is implemented for
+      // `session`.
+      break;
+    case StorageAreaNamespace::kInvalid:
       break;
   }
   NOTREACHED();
@@ -62,7 +67,7 @@ class DefaultObserver : public SettingsObserver {
 
   // SettingsObserver implementation.
   void OnSettingsChanged(const std::string& extension_id,
-                         settings_namespace::Namespace settings_namespace,
+                         StorageAreaNamespace storage_area,
                          const base::Value& changes) override {
     TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged",
                  "extension_id", extension_id);
@@ -75,8 +80,7 @@ class DefaultObserver : public SettingsObserver {
                   base::size(extension_id_str));
     base::debug::Alias(extension_id_str);
 
-    const std::string namespace_string =
-        settings_namespace::ToString(settings_namespace);
+    const std::string namespace_string = StorageAreaToString(storage_area);
     EventRouter* event_router = EventRouter::Get(browser_context_);
 
     // We only dispatch the events if there's a valid listener (even though
@@ -102,7 +106,7 @@ class DefaultObserver : public SettingsObserver {
       auto args = std::make_unique<base::ListValue>();
       args->Append(changes.Clone());
       auto event =
-          std::make_unique<Event>(NamespaceToEventHistogram(settings_namespace),
+          std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
                                   area_event_name, std::move(args));
       event_router->DispatchEventToExtension(extension_id, std::move(event));
     }

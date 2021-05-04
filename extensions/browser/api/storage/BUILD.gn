@@ -20,6 +20,8 @@ source_set("storage") {
     "settings_storage_quota_enforcer.h",
     "storage_api.cc",
     "storage_api.h",
+    "storage_area_namespace.cc",
+    "storage_area_namespace.h",
     "storage_frontend.cc",
     "storage_frontend.h",
     "value_store_cache.cc",

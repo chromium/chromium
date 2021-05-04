@@ -7,18 +7,18 @@
 
 #include "base/observer_list_threadsafe.h"
 #include "base/values.h"
-#include "extensions/browser/value_store/settings_namespace.h"
 
 namespace extensions {
+
+enum class StorageAreaNamespace;
 
 // Interface for classes that listen to changes to extension settings.
 class SettingsObserver {
  public:
   // Called when a list of settings have changed for an extension.
-  virtual void OnSettingsChanged(
-      const std::string& extension_id,
-      settings_namespace::Namespace settings_namespace,
-      const base::Value& changes) = 0;
+  virtual void OnSettingsChanged(const std::string& extension_id,
+                                 StorageAreaNamespace storage_area,
+                                 const base::Value& changes) = 0;
 
   virtual ~SettingsObserver() {}
 };

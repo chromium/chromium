@@ -20,6 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
 #include "extensions/browser/value_store/value_store_unittest.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,14 +52,13 @@ class MockSettingsObserver : public SettingsObserver {
  public:
   MOCK_METHOD3(OnSettingsChangedJSON,
                void(const std::string& extension_id,
-                    settings_namespace::Namespace settings_namespace,
+                    StorageAreaNamespace storage_area,
                     const std::string& changes_json));
 
   void OnSettingsChanged(const std::string& extension_id,
-                         settings_namespace::Namespace settings_namespace,
+                         StorageAreaNamespace storage_area,
                          const base::Value& changes) override {
-    OnSettingsChangedJSON(extension_id, settings_namespace,
-                          ValueToJson(changes));
+    OnSettingsChangedJSON(extension_id, storage_area, ValueToJson(changes));
   }
 };
 
@@ -195,7 +195,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange("aaa", base::nullopt, value.Clone()));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
-                               kTestExtensionId, settings_namespace::MANAGED,
+                               kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -210,7 +210,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange("bbb", base::nullopt, value.Clone()));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
-                               kTestExtensionId, settings_namespace::MANAGED,
+                               kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -226,7 +226,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     changes.push_back(
         ValueStoreChange("bbb", value.Clone(), new_value.Clone()));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
-                               kTestExtensionId, settings_namespace::MANAGED,
+                               kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -241,7 +241,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     changes.push_back(
         ValueStoreChange("bbb", new_value.Clone(), base::nullopt));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
-                               kTestExtensionId, settings_namespace::MANAGED,
+                               kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
   }
 

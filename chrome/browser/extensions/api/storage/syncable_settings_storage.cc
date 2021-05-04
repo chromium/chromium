@@ -15,7 +15,7 @@
 #include "components/sync/model/sync_error.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
-#include "extensions/browser/value_store/settings_namespace.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 
 namespace extensions {
 
@@ -336,7 +336,7 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   sync_processor_->NotifyChanges(changes);
 
   observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                     extension_id_, settings_namespace::SYNC,
+                     extension_id_, StorageAreaNamespace::kSync,
                      ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.

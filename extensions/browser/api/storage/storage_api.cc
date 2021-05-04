@@ -26,11 +26,6 @@ namespace extensions {
 
 namespace {
 
-constexpr char kLocalString[] = "local";
-constexpr char kSyncString[] = "sync";
-constexpr char kManagedString[] = "managed";
-constexpr char kSessionString[] = "session";
-
 // Adds all StringValues from a ListValue to a vector of strings.
 void AddAllStringValues(const base::ListValue& from,
                         std::vector<std::string>* to) {
@@ -71,40 +66,6 @@ void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
       "MAX_WRITE_OPERATIONS_PER_HOUR"));
 }
 
-// Returns the settings namespace of `storage_area`, or `Namespace::INVALID` if
-// the StorageArea doesn't map to one.
-settings_namespace::Namespace StorageAreaToSettingsNamespace(
-    StorageAreaNamespace storage_area) {
-  switch (storage_area) {
-    case StorageAreaNamespace::kLocal:
-      return settings_namespace::LOCAL;
-    case StorageAreaNamespace::kSync:
-      return settings_namespace::SYNC;
-    case StorageAreaNamespace::kManaged:
-      return settings_namespace::MANAGED;
-    case StorageAreaNamespace::kSession:
-      return settings_namespace::INVALID;
-    case StorageAreaNamespace::kInvalid:
-      NOTREACHED();
-      return settings_namespace::INVALID;
-  }
-}
-
-// Returns the StorageArea of `storage_area_string`, or
-// `StorageAreaNamespace::kInvalid` if the string doesn't map to one.
-StorageAreaNamespace StorageAreaFromString(
-    const std::string& storage_area_string) {
-  if (storage_area_string == kLocalString)
-    return StorageAreaNamespace::kLocal;
-  if (storage_area_string == kSyncString)
-    return StorageAreaNamespace::kSync;
-  if (storage_area_string == kManagedString)
-    return StorageAreaNamespace::kManaged;
-  if (storage_area_string == kSessionString)
-    return StorageAreaNamespace::kSession;
-  return StorageAreaNamespace::kInvalid;
-}
-
 }  // namespace
 
 // SettingsFunction
@@ -121,7 +82,8 @@ bool SettingsFunction::ShouldSkipQuotaLimiting() const {
     // to signify that from this function. It will be caught in Run().
     return false;
   }
-  return storage_area_string != kSyncString;
+  return StorageAreaFromString(storage_area_string) !=
+         StorageAreaNamespace::kSync;
 }
 
 ExtensionFunction::ResponseAction SettingsFunction::Run() {
@@ -189,7 +151,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
 
   if (!result.changes().empty()) {
     observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                       extension_id(), settings_namespace_,
+                       extension_id(), storage_area_,
                        ValueStoreChange::ToValue(result.PassChanges()));
   }
 

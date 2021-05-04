@@ -35,7 +35,7 @@
 #include "components/sync/test/model/sync_error_factory_mock.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
-#include "extensions/browser/api/storage/storage_api.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/value_store/settings_namespace.h"
@@ -217,22 +217,6 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
     std::string message_json;
     base::JSONWriter::Write(message, &message_json);
     return message_json;
-  }
-
-  std::string StorageAreaToString(StorageAreaNamespace storage_area) {
-    DCHECK(storage_area != StorageAreaNamespace::kInvalid);
-    switch (storage_area) {
-      case StorageAreaNamespace::kLocal:
-        return "local";
-      case StorageAreaNamespace::kSync:
-        return "sync";
-      case StorageAreaNamespace::kManaged:
-        return "managed";
-      case StorageAreaNamespace::kSession:
-        return "session";
-      case StorageAreaNamespace::kInvalid:
-        return std::string();
-    }
   }
 
   void SendChangesToSyncableService(
