@@ -439,7 +439,10 @@ void ExtensionManagement::Refresh() {
   // Parse default settings.
   const base::Value wildcard("*");
   if ((denied_list_pref &&
-       denied_list_pref->Find(wildcard) != denied_list_pref->end()) ||
+       // TODO(crbug.com/1187106): Use base::Contains once |denied_list_pref| is
+       // not a ListValue.
+       std::find(denied_list_pref->begin(), denied_list_pref->end(),
+                 wildcard) != denied_list_pref->end()) ||
       (extension_request_pref && extension_request_pref->GetBool())) {
     default_settings_->installation_mode = INSTALLATION_BLOCKED;
   }
