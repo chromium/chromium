@@ -37,7 +37,7 @@ interface GpuService {
   // |gpu_feature_info| are returned so that if this method is called
   // synchronously they are available (since the PostTask for
   // GpuHost::DidInitialize might not be dispatched yet.
-  [Sync]
+  [Sync, NoInterrupt]
   EstablishGpuChannel(int32 client_id,
                       uint64 client_tracing_id,
                       bool is_gpu_host,
@@ -85,7 +85,7 @@ interface GpuService {
       pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
           vea_provider);
 
-  [Sync]
+  [Sync, NoInterrupt]
   CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
                         gfx.mojom.Size size,
                         gfx.mojom.BufferFormat format,
