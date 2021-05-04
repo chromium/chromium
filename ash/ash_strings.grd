@@ -1521,6 +1521,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT" desc="Accessibility label used for a network in quick settings network list that connects to the network.">
         Connect to <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE" desc="Accessibility label used for an unactivated cellular network in quick settings network list that opens the activation flow when clicked.">
+        Click to activate <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL" desc="Accessibility label used for a button to disconnect from a network in quick settings network list.">
         Disconnect from <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph>
       </message>
