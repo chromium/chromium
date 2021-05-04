@@ -168,6 +168,9 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   // would have been a save prompt.
   DCHECK(controller_->GetOriginalProfile());
 
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
@@ -176,6 +179,28 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetCollapseMargins(true)
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets(
+              /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_CONTROL_LIST_VERTICAL),
+              /*horizontal=*/0));
+
+  views::Label* subtitle_label = AddChildView(std::make_unique<views::Label>(
+      GetDescriptionForProfileToUpdate(
+          *controller_->GetOriginalProfile(),
+          g_browser_process->GetApplicationLocale()),
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+  subtitle_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  views::View* main_content_view =
+      AddChildView(std::make_unique<views::View>());
 
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
       profile_diff_map =
@@ -188,8 +213,8 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       HasNonEmptySecondValues(profile_diff_map);
 
   // Build the GridLayout column set.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::GridLayout* layout = main_content_view->SetLayoutManager(
+      std::make_unique<views::GridLayout>());
   views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
   const int column_divider = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
@@ -231,8 +256,6 @@ UpdateAddressProfileView::UpdateAddressProfileView(
     AddValuesRow(layout, profile_diff_map, /*show_row_label=*/true,
                  /*edit_button_callback=*/{});
   }
-
-  // TODO(crbug.com/1167060): Add support for dark mode.
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
