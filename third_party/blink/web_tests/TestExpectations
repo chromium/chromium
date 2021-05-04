@@ -566,7 +566,6 @@ crbug.com/1114280 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-003.xht [
 
 #### external/wpt/css/css-position
 crbug.com/752022 external/wpt/css/css-position/sticky/position-sticky-offset-overflow.html [ Failure ]
-crbug.com/664246 external/wpt/css/css-position/sticky/position-sticky-scrollIntoView.html [ Failure ]
 
 #### external/wpt/css/css-sizing
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Failure ]

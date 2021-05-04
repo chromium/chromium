@@ -2341,8 +2341,16 @@ void PaintLayerScrollableArea::Resize(const IntPoint& pos,
 PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     const PhysicalRect& absolute_rect,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
+  // Ignore sticky position offsets for the purposes of scrolling elements into
+  // view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
+  // details
+  const MapCoordinatesFlags flag =
+      (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
+          ? kIgnoreStickyOffset
+          : 0;
+
   PhysicalRect local_expose_rect =
-      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect);
+      GetLayoutBox()->AbsoluteToLocalRect(absolute_rect, flag);
   PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
                                                 -GetLayoutBox()->BorderTop());
   // There might be scroll bar between border_origin and scroll_origin.
@@ -2404,9 +2412,10 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
 
   if (intersect.IsEmpty() && !scroll_snapport_rect.IsEmpty() &&
       !local_expose_rect.IsEmpty()) {
-    return GetLayoutBox()->LocalToAbsoluteRect(local_expose_rect);
+    return GetLayoutBox()->LocalToAbsoluteRect(local_expose_rect, flag);
   }
-  intersect = GetLayoutBox()->LocalToAbsoluteRect(intersect);
+  intersect = GetLayoutBox()->LocalToAbsoluteRect(intersect, flag);
+
   return intersect;
 }
 

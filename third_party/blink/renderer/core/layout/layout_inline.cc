@@ -1053,7 +1053,8 @@ PhysicalOffset LayoutInline::AnchorPhysicalLocation() const {
   return PhysicalOffset();
 }
 
-PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline() const {
+PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline(
+    MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
       PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);

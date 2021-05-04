@@ -1575,14 +1575,24 @@ IntRect LayoutObject::AbsoluteBoundingBoxRect(MapCoordinatesFlags flags) const {
   return result;
 }
 
-PhysicalRect LayoutObject::AbsoluteBoundingBoxRectHandlingEmptyInline() const {
+PhysicalRect LayoutObject::AbsoluteBoundingBoxRectHandlingEmptyInline(
+    MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
-  return PhysicalRect::EnclosingRect(AbsoluteBoundingBoxFloatRect());
+  return PhysicalRect::EnclosingRect(AbsoluteBoundingBoxFloatRect(flags));
 }
 
 PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
   NOT_DESTROYED();
-  PhysicalRect rect = AbsoluteBoundingBoxRectHandlingEmptyInline();
+  // Ignore sticky position offsets for the purposes of scrolling elements into
+  // view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
+  // details
+
+  const MapCoordinatesFlags flag =
+      (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
+          ? kIgnoreStickyOffset
+          : 0;
+
+  PhysicalRect rect = AbsoluteBoundingBoxRectHandlingEmptyInline(flag);
   const auto& style = StyleRef();
   rect.ExpandEdges(LayoutUnit(style.ScrollMarginTop()),
                    LayoutUnit(style.ScrollMarginRight()),

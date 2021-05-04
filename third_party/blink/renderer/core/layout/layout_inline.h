@@ -262,7 +262,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                           TransformState&,
                           MapCoordinatesFlags mode) const override;
 
-  PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline() const final;
+  PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
+      MapCoordinatesFlags = 0) const final;
 
   PhysicalRect VisualRectInDocument(
       VisualRectFlags = kDefaultVisualRectFlags) const override;

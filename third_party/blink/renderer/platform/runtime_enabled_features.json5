@@ -628,6 +628,10 @@
       depends_on: ["PictureInPictureAPI"],
     },
     {
+      name: "CSSPositionStickyStaticScrollPosition",
+      status: "experimental",
+    },
+    {
       name: "CSSPseudoDir",
       status: "experimental",
     },

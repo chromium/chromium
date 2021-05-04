@@ -2449,7 +2449,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // box of named anchors.
   // TODO(crbug.com/953479): After the bug is fixed, investigate whether we
   // can combine this with AbsoluteBoundingBoxRect().
-  virtual PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline() const;
+  virtual PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
+      MapCoordinatesFlags flags = 0) const;
   // This returns an IntRect expanded from
   // AbsoluteBoundingBoxRectHandlingEmptyInline by ScrollMargin.
   PhysicalRect AbsoluteBoundingBoxRectForScrollIntoView() const;
