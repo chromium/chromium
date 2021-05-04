@@ -236,7 +236,7 @@ class CONTENT_EXPORT StoragePartition {
   // Similar to ClearData().
   // Deletes all data out for the StoragePartition.
   // * |origin_matcher| is present if special storage policy is to be handled,
-  //   otherwise the callback should be null (base::Callback::is_null()==true).
+  //   otherwise the callback should be null (!origin_matcher == true).
   //   The origin matcher does not apply to cookies, instead use:
   // * |cookie_deletion_filter| identifies the cookies to delete and will be
   //   used if |remove_mask| has the REMOVE_DATA_MASK_COOKIES bit set. Note:

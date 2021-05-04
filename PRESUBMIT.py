@@ -342,22 +342,9 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^base/cancelable_callback.h',  # Intentional.
-  "^chrome/browser/ash/accessibility/",
-  "^chrome/browser/metrics/",
-  "^chrome/browser/prefetch/no_state_prefetch/",
-  '^chrome/browser/previews/',
-  '^chrome/browser/resources/chromeos/accessibility/',
-  '^chrome/browser/sync_file_system/',
-  "^components/browsing_data/content/",
-  "^components/feature_engagement/internal/",
   "^docs/callback\\.md",  # Intentional
-  "^docs/webui_explainer\\.md",
   "^docs/process/lsc/large_scale_changes\\.md",  # Intentional
-  "^docs/security/mojo\\.md",
-  "^docs/threading_and_tasks\\.md",
-  "^docs/ui/learn/bestpractices/layout\\.md",
   '^extensions/browser/',
-  '^extensions/renderer/',
   '^third_party/blink/PRESUBMIT_test.py', # Intentional.
   '^third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py' # Intentional pylint: disable=line-too-long
   '^tools/clang/base_bind_rewriters/',  # Intentional.
