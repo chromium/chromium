@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
@@ -295,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   specifics.mutable_extension()->set_update_url(
       "http://localhost/autoupdate/updates.xml");
   specifics.mutable_extension()->set_version("2");
-  syncer::SyncData sync_data = syncer::SyncData::CreateRemoteData(specifics);
+  syncer::SyncData sync_data = syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 
   ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
   sync_service->MergeDataAndStartSyncing(

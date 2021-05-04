@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
@@ -66,7 +67,8 @@ CreatePrefSyncData(const std::string& name, const base::Value& value) {
           : specifics.mutable_preference();
   pref->set_name(name);
   pref->set_value(serialized);
-  return syncer::SyncData::CreateRemoteData(specifics);
+  return syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
 
 }  // anonymous namespace

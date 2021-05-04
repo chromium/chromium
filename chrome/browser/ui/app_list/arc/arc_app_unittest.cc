@@ -83,6 +83,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -1546,7 +1547,8 @@ TEST_P(ArcAppModelBuilderTest, IsUnknownSyncTest) {
   auto data_list = syncer::SyncDataList();
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_arc_package()->set_package_name(sync_package_name);
-  data_list.push_back(syncer::SyncData::CreateRemoteData(specifics));
+  data_list.push_back(syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused")));
   auto* sync_service = arc::ArcPackageSyncableServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile_.get());
   ASSERT_NE(nullptr, sync_service);

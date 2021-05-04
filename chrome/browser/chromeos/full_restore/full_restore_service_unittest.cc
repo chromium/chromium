@@ -20,6 +20,7 @@
 #include "components/account_id/account_id.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
@@ -55,7 +56,8 @@ syncer::SyncData CreatePrefSyncData(const std::string& name,
           : specifics.mutable_preference();
   pref->set_name(name);
   pref->set_value(serialized);
-  return syncer::SyncData::CreateRemoteData(specifics);
+  return syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
 
 }  // namespace

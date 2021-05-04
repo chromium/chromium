@@ -51,9 +51,8 @@ class SyncData {
                                   const sync_pb::EntitySpecifics& specifics);
 
   // Helper method for creating SyncData objects originating from the syncer.
-  static SyncData CreateRemoteData(
-      sync_pb::EntitySpecifics specifics,
-      const ClientTagHash& client_tag_hash = ClientTagHash());
+  static SyncData CreateRemoteData(sync_pb::EntitySpecifics specifics,
+                                   const ClientTagHash& client_tag_hash);
 
   // Whether this SyncData holds valid data. The only way to have a SyncData
   // without valid data is to use the default constructor.
