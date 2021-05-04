@@ -34,10 +34,6 @@ class TabHoverCardMetrics {
     // Returns true if preview images are enabled.
     virtual bool ArePreviewsEnabled() const = 0;
 
-    // Returns true if the current hover card is visible and displaying a valid
-    // preview image.
-    virtual bool HasPreviewImage() const = 0;
-
     // Returns the hover card widget, or nullptr if none. Can be stubbed to
     // return nullptr for tests (low-level performance metrics may not be
     // recorded).
@@ -70,9 +66,10 @@ class TabHoverCardMetrics {
   void CardFadeComplete();
   void CardFadeCanceled();
 
-  // Notes that a card becomes fully visible or lands on|tab|. Set
-  // |has_thumbnail| to true if the thumbnail for the tab is already loaded.
-  void CardFullyVisibleOnTab(TabHandle tab, bool is_active);
+  // Notes that a card becomes fully visible or lands on `tab`. Set
+  // `has_preview` to true if there is already a preview image loaded for the
+  // tab.
+  void CardFullyVisibleOnTab(TabHandle tab, bool has_preview);
 
   // Note that an image was shown for |tab|.
   void ImageLoadedForTab(TabHandle tab);

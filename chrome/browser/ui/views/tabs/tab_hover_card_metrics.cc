@@ -80,11 +80,13 @@ void RecordTimeSinceLastSeenMetric(base::TimeTicks last_seen_time) {
   constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta =
       base::TimeDelta::FromSeconds(5);
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - last_seen_time;
-  if (elapsed_time > kMaxHoverCardReshowTimeDelta)
-    return;
-
   constexpr base::TimeDelta kMinHoverCardReshowTimeDelta =
       base::TimeDelta::FromMilliseconds(1);
+  if (elapsed_time < kMinHoverCardReshowTimeDelta ||
+      elapsed_time > kMaxHoverCardReshowTimeDelta) {
+    return;
+  }
+
   constexpr int kHoverCardHistogramBucketCount = 50;
   UMA_HISTOGRAM_CUSTOM_TIMES(
       TabHoverCardMetrics::kHistogramTimeSinceLastVisible, elapsed_time,
@@ -187,7 +189,8 @@ void TabHoverCardMetrics::CardFadeCanceled() {
 #endif
 }
 
-void TabHoverCardMetrics::CardFullyVisibleOnTab(TabHandle tab, bool is_active) {
+void TabHoverCardMetrics::CardFullyVisibleOnTab(TabHandle tab,
+                                                bool has_preview) {
   if (tab == last_tab_)
     return;
 
@@ -202,7 +205,7 @@ void TabHoverCardMetrics::CardFullyVisibleOnTab(TabHandle tab, bool is_active) {
 
   // If the tab isn't active and we're done waiting for a preview image, mark
   // the image as seen now.
-  if (!is_active && delegate_->HasPreviewImage()) {
+  if (has_preview) {
     ImageLoadedForTab(tab);
     last_image_time_ = base::TimeTicks::Now();
   } else {
@@ -273,10 +276,8 @@ void TabHoverCardMetrics::RecordTabTimeMetrics() {
                        bucket);
   }
 
-  if (delegate_->ArePreviewsEnabled()) {
-    if (!last_image_time_.is_null()) {
-      RECORD_TIME_METRIC(kHistogramPrefixTabPreviewTime, last_image_time_,
-                         bucket);
-    }
+  if (delegate_->ArePreviewsEnabled() && !last_image_time_.is_null()) {
+    RECORD_TIME_METRIC(kHistogramPrefixTabPreviewTime, last_image_time_,
+                       bucket);
   }
 }

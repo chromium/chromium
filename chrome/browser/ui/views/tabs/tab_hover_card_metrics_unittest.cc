@@ -27,24 +27,16 @@ class MockHoverCardMetricsDelegate : public TabHoverCardMetrics::Delegate {
 
   void set_previews_enabled(bool previews_enabled) {
     previews_enabled_ = previews_enabled;
-    thumbnail_loaded_ &= previews_enabled_;
-  }
-
-  void set_thumbnail_loaded(bool thumbnail_loaded) {
-    DCHECK(previews_enabled_);
-    thumbnail_loaded_ = thumbnail_loaded;
   }
 
   // TabHoverCardMetrics::Delegate:
   size_t GetTabCount() const override { return tab_count_; }
   bool ArePreviewsEnabled() const override { return previews_enabled_; }
-  bool HasPreviewImage() const override { return thumbnail_loaded_; }
   views::Widget* GetHoverCardWidget() override { return nullptr; }
 
  private:
   size_t tab_count_ = 1U;
   bool previews_enabled_ = false;
-  bool thumbnail_loaded_ = false;
 };
 
 // Create some sample tab handles that don't correspond to real tabs, but which
@@ -128,7 +120,7 @@ class TabHoverCardMetricsTest : public ::testing::Test {
 
 TEST_F(TabHoverCardMetricsTest, SimpleSequenceWithoutPreviews) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kMediumDelay);
@@ -147,7 +139,7 @@ TEST_F(TabHoverCardMetricsTest, SimpleSequenceWithoutPreviews) {
 
 TEST_F(TabHoverCardMetricsTest, HideSignalFollowsSelection) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kMediumDelay);
@@ -168,7 +160,7 @@ TEST_F(TabHoverCardMetricsTest, SimpleSequenceWithPreviews) {
   delegate_->set_previews_enabled(true);
 
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kShortDelay);
@@ -209,8 +201,7 @@ TEST_F(TabHoverCardMetricsTest, ImageAlreadyLoadedForTab) {
   delegate_->set_previews_enabled(true);
 
   metrics_->InitialCardBeingShown();
-  delegate_->set_thumbnail_loaded(true);
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardWillBeHidden();
   metrics_->TabSelectedViaMouse(kTabHandle1);
@@ -257,7 +248,7 @@ TEST_F(TabHoverCardMetricsTest, VeryLargeTabCount) {
 
 TEST_F(TabHoverCardMetricsTest, RepeatingSequence) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kMediumDelay);
@@ -276,7 +267,7 @@ TEST_F(TabHoverCardMetricsTest, RepeatingSequence) {
 
 TEST_F(TabHoverCardMetricsTest, MultipleSequences) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kMediumDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kShortDelay);
@@ -286,7 +277,7 @@ TEST_F(TabHoverCardMetricsTest, MultipleSequences) {
   metrics_->InitialCardBeingShown();
   metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kLongDelay);
-  metrics_->CardFullyVisibleOnTab(kTabHandle2, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle3, false);
   task_environment_.AdvanceClock(kMediumDelay);
@@ -302,7 +293,7 @@ TEST_F(TabHoverCardMetricsTest, MultipleSequences) {
 
 TEST_F(TabHoverCardMetricsTest, ResumeSequenceFromSameTab) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kMediumDelay);
@@ -327,7 +318,7 @@ TEST_F(TabHoverCardMetricsTest, ResumeSequenceFromSameTab) {
 
 TEST_F(TabHoverCardMetricsTest, ResumeSequenceFromDifferentTab) {
   metrics_->InitialCardBeingShown();
-  metrics_->CardFullyVisibleOnTab(kTabHandle1, true);
+  metrics_->CardFullyVisibleOnTab(kTabHandle1, false);
   task_environment_.AdvanceClock(kShortDelay);
   metrics_->CardFullyVisibleOnTab(kTabHandle2, false);
   task_environment_.AdvanceClock(kMediumDelay);
