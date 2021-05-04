@@ -48,8 +48,7 @@ std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
     const extensions::ExtensionId& extension_id,
     Browser* browser,
-    ExtensionsContainer* extensions_container,
-    bool in_overflow_mode) {
+    ExtensionsContainer* extensions_container) {
   DCHECK(browser);
   DCHECK(extensions_container);
 
@@ -65,7 +64,7 @@ ExtensionActionViewController::Create(
   // WrapUnique() because the constructor is private.
   return base::WrapUnique(new ExtensionActionViewController(
       std::move(extension), browser, extension_action, registry,
-      extensions_container, in_overflow_mode));
+      extensions_container));
 }
 
 ExtensionActionViewController::ExtensionActionViewController(
@@ -73,11 +72,9 @@ ExtensionActionViewController::ExtensionActionViewController(
     Browser* browser,
     extensions::ExtensionAction* extension_action,
     extensions::ExtensionRegistry* extension_registry,
-    ExtensionsContainer* extensions_container,
-    bool in_overflow_mode)
+    ExtensionsContainer* extensions_container)
     : extension_(std::move(extension)),
       browser_(browser),
-      in_overflow_mode_(in_overflow_mode),
       extension_action_(extension_action),
       extensions_container_(extensions_container),
       popup_host_(nullptr),
@@ -394,8 +391,6 @@ bool ExtensionActionViewController::TriggerPopupWithUrl(
     PopupShowAction show_action,
     const GURL& popup_url,
     bool grant_tab_permissions) {
-  DCHECK(!in_overflow_mode_)
-      << "Only the main bar's extensions should ever try to show a popup";
   if (!ExtensionIsValid())
     return false;
 
@@ -479,22 +474,7 @@ ExtensionActionViewController::GetIconImageSource(
   image_source->set_grayscale(grayscale);
   image_source->set_paint_blocked_actions_decoration(was_blocked);
 
-  // If the action has an active page action on the web contents and is also
-  // overflowed, we add a decoration so that the user can see which overflowed
-  // action wants to run (since they wouldn't be able to see the change from
-  // grayscale to color).
-  image_source->set_paint_page_action_decoration(
-      !was_blocked && in_overflow_mode_ && PageActionWantsToRun(web_contents));
-
   return image_source;
-}
-
-bool ExtensionActionViewController::PageActionWantsToRun(
-    content::WebContents* web_contents) const {
-  return extension_action_->action_type() ==
-             extensions::ActionInfo::TYPE_PAGE &&
-         extension_action_->GetIsVisible(
-             sessions::SessionTabHelper::IdForTab(web_contents).id());
 }
 
 bool ExtensionActionViewController::HasActiveTabAndCanAccess(

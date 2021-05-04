@@ -502,9 +502,8 @@ void ExtensionsToolbarContainer::CreateActions() {
 
 void ExtensionsToolbarContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  constexpr bool kIsInOverflowMenu = false;
-  actions_.push_back(ExtensionActionViewController::Create(
-      action_id, browser_, this, kIsInOverflowMenu));
+  actions_.push_back(
+      ExtensionActionViewController::Create(action_id, browser_, this));
   auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(CanShowIconInToolbar() && model_->IsActionPinned(action_id));

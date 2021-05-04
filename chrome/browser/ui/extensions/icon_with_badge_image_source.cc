@@ -161,9 +161,6 @@ void IconWithBadgeImageSource::Draw(gfx::Canvas* canvas) {
 
   // Draw a badge on the provided browser action icon's canvas.
   PaintBadge(canvas);
-
-  if (paint_page_action_decoration_)
-    PaintPageActionDecoration(canvas);
 }
 
 // Paints badge with specified parameters to |canvas|.
@@ -195,24 +192,6 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
 
   // Paint the text.
   badge_text_->Draw(canvas);
-}
-
-void IconWithBadgeImageSource::PaintPageActionDecoration(gfx::Canvas* canvas) {
-  const gfx::Rect icon_area = GetIconAreaRect();
-  constexpr float kMajorRadius = 4.5;
-  constexpr float kMinorRadius = 3;
-  // This decoration is positioned at the bottom left corner of the icon area.
-  gfx::PointF center_point = gfx::PointF(icon_area.bottom_left());
-  center_point.Offset(kMajorRadius + 1, -kMajorRadius - 1);
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorTRANSPARENT);
-  flags.setBlendMode(SkBlendMode::kSrc);
-  canvas->DrawCircle(center_point, kMajorRadius, flags);
-  constexpr SkColor decoration_color = SkColorSetARGB(255, 70, 142, 226);
-  flags.setColor(decoration_color);
-  canvas->DrawCircle(center_point, kMinorRadius, flags);
 }
 
 void IconWithBadgeImageSource::PaintBlockedActionDecoration(

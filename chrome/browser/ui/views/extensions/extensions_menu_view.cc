@@ -287,14 +287,9 @@ void ExtensionsMenuView::SortMenuItemsByName() {
 
 void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
-  // For the extensions menu UI, we pretend the the overflow menu isn't
-  // "overflow", because the UI shouldn't react differently.
-  // TODO(https://crbug.com/1197766): Remove the is_in_overflow_menu bool
-  // entirely.
-  constexpr bool kIsInOverflowMenu = false;
   std::unique_ptr<ExtensionActionViewController> controller =
-      ExtensionActionViewController::Create(id, browser_, extensions_container_,
-                                            kIsInOverflowMenu);
+      ExtensionActionViewController::Create(id, browser_,
+                                            extensions_container_);
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.

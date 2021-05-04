@@ -155,14 +155,12 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   std::unique_ptr<IconWithBadgeImageSource> image_source =
       action->GetIconImageSourceForTesting(web_contents, view_size());
   EXPECT_TRUE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
   SetActionWantsToRunOnTab(action->extension_action(), web_contents, true);
   image_source =
       action->GetIconImageSourceForTesting(web_contents, view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 }
 
@@ -194,7 +192,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
       action_controller->GetIconImageSourceForTesting(web_contents,
                                                       view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
   extensions::ExtensionActionRunner* action_runner =
@@ -206,14 +203,12 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_TRUE(image_source->paint_blocked_actions_decoration());
 
   action_runner->RunForTesting(extension.get());
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 }
 
@@ -243,7 +238,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
       action_controller->GetIconImageSourceForTesting(web_contents,
                                                       view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
   extensions::ExtensionActionRunner* action_runner =
@@ -254,7 +248,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_TRUE(image_source->paint_blocked_actions_decoration());
 }
 
@@ -287,7 +280,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
                                                       view_size());
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
   EXPECT_EQ("just hosts",
             base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
@@ -300,7 +292,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(action_controller->IsEnabled(web_contents));
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
   EXPECT_EQ("just hosts\nWants access to this site",
             base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
@@ -313,7 +304,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
-  EXPECT_FALSE(image_source->paint_page_action_decoration());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
   EXPECT_EQ("just hosts\nHas access to this site",
             base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
@@ -657,7 +647,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_FALSE(image_source->grayscale());
-    EXPECT_FALSE(image_source->paint_page_action_decoration());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kWantsAccessTooltip,
               base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
@@ -677,7 +666,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_FALSE(image_source->grayscale());
-    EXPECT_FALSE(image_source->paint_page_action_decoration());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kHasAccessTooltip,
               base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
@@ -692,7 +680,6 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_TRUE(image_source->grayscale());
-    EXPECT_FALSE(image_source->paint_page_action_decoration());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kNoAccessTooltip,
               base::UTF16ToUTF8(controller->GetTooltip(web_contents)));

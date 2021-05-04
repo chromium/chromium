@@ -48,8 +48,7 @@ class ExtensionActionViewController
   static std::unique_ptr<ExtensionActionViewController> Create(
       const extensions::ExtensionId& extension_id,
       Browser* browser,
-      ExtensionsContainer* extensions_container,
-      bool in_overflow_mode);
+      ExtensionsContainer* extensions_container);
 
   ~ExtensionActionViewController() override;
 
@@ -110,8 +109,7 @@ class ExtensionActionViewController
       Browser* browser,
       extensions::ExtensionAction* extension_action,
       extensions::ExtensionRegistry* extension_registry,
-      ExtensionsContainer* extensions_container,
-      bool in_overflow_mode);
+      ExtensionsContainer* extensions_container);
 
   // ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
@@ -160,10 +158,6 @@ class ExtensionActionViewController
       content::WebContents* web_contents,
       const gfx::Size& size);
 
-  // Returns true if this extension has a page action and that page action wants
-  // to run on the given |web_contents|.
-  bool PageActionWantsToRun(content::WebContents* web_contents) const;
-
   // Returns true if this extension uses the activeTab permission and would
   // probably be able to to access the given |url|. The actual checks when an
   // activeTab extension tries to run are a little more complicated and can be
@@ -182,10 +176,6 @@ class ExtensionActionViewController
 
   // The corresponding browser.
   Browser* const browser_;
-
-  // Whether we are displayed in the 3-dot menu or not.
-  // TODO(pbos): Remove when 3-dot menu no longer contains extensions.
-  const bool in_overflow_mode_;
 
   // The browser action this view represents. The ExtensionAction is not owned
   // by this class.
