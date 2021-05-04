@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.view.View;
@@ -621,6 +622,8 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q,
+            supported_abis_includes = "x86", message = "https://crbug.com/1205234")
     public void testOrientationChanges() throws Throwable {
         setupTestFiles();
         createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
