@@ -368,6 +368,10 @@ class BrowserAutofillManager
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
+                           DoNotFillIfFormFieldChanged);
+  FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
+                           DoNotFillIfFormFieldRemoved);
+  FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
                            PageLanguageGetsCorrectlySet);
   FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
                            PageLanguageGetsCorrectlyDetected);
