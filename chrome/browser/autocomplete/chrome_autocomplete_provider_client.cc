@@ -192,17 +192,16 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
+#if !defined(OS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, true);
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, true);
 #else
-    pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, false);
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, false);
 #endif
-  }
+#endif
 }
 
-ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() {
-}
+ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() = default;
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutocompleteProviderClient::GetURLLoaderFactory() {
@@ -279,9 +278,7 @@ ChromeAutocompleteProviderClient::GetDocumentSuggestionsService(
 
 OmniboxPedalProvider* ChromeAutocompleteProviderClient::GetPedalProvider()
     const {
-  // If Pedals are disabled, we should never get here to use the provider.
-  DCHECK(OmniboxFieldTrial::IsPedalSuggestionsEnabled());
-  DCHECK(pedal_provider_);
+  // This may be null for systems that don't have Pedals (Android, e.g.).
   return pedal_provider_.get();
 }
 

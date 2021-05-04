@@ -1925,11 +1925,6 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
 }
 
 TEST_F(AutocompleteResultTest, AttachesPedals) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kOmniboxPedalSuggestions, omnibox::kOmniboxSuggestionButtonRow},
-      {});
-  EXPECT_TRUE(OmniboxFieldTrial::IsPedalSuggestionsEnabled());
   FakeAutocompleteProviderClient client;
   EXPECT_NE(nullptr, client.GetPedalProvider());
 

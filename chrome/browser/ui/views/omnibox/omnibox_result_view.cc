@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_tab_switch_button.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/omnibox/remove_suggestion_bubble.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -187,20 +186,6 @@ OmniboxResultView::OmniboxResultView(
           .WithWeight(4));
 
   const gfx::Insets child_insets(0, 0, 0, OmniboxMatchCellView::kMarginRight);
-  suggestion_tab_switch_button_ = suggestion_button_container->AddChildView(
-      std::make_unique<OmniboxTabSwitchButton>(
-          base::BindRepeating(&OmniboxResultView::ButtonPressed,
-                              base::Unretained(this),
-                              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-          popup_contents_view_, this,
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_SHORT_HINT),
-          omnibox::kSwitchIcon));
-  suggestion_tab_switch_button_->SetProperty(views::kMarginsKey, child_insets);
-  suggestion_tab_switch_button_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(OmniboxTabSwitchButton::GetFlexRule())
-          .WithWeight(1));
 
   // This is intentionally not in the tab order by default, but should be if the
   // user has full-acessibility mode on. This is because this is a tertiary
@@ -223,15 +208,13 @@ OmniboxResultView::OmniboxResultView(
             OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION);
   });
 
-  if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
-        popup_contents_view_, model_index));
+  button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
+      popup_contents_view_, model_index));
 
-    // Quickly mouse-exiting through the suggestion button row sometimes leaves
-    // the whole row highlighted. This fixes that. It doesn't seem necessary to
-    // further observe the child controls of |button_row_|.
-    mouse_enter_exit_handler_.ObserveMouseEnterExitOn(button_row_);
-  }
+  // Quickly mouse-exiting through the suggestion button row sometimes leaves
+  // the whole row highlighted. This fixes that. It doesn't seem necessary to
+  // further observe the child controls of |button_row_|.
+  mouse_enter_exit_handler_.ObserveMouseEnterExitOn(button_row_);
 
   keyword_view_ = suggestion_button_container->AddChildView(
       std::make_unique<OmniboxMatchCellView>(this));
@@ -274,7 +257,6 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 
   suggestion_view_->OnMatchUpdate(this, match_);
   keyword_view_->OnMatchUpdate(this, match_);
-  suggestion_tab_switch_button_->SetVisible(ShouldShowTabMatchButtonInline());
   UpdateRemoveSuggestionVisibility();
 
   suggestion_view_->content()->SetTextWithStyling(match_.contents,
@@ -303,9 +285,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
           keyword_match->description, keyword_match->description_class);
     }
   }
-  if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    button_row_->UpdateFromModel();
-  }
+  button_row_->UpdateFromModel();
 
   ApplyThemeAndRefreshIcons();
   SetWidths();
@@ -325,8 +305,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   suggestion_view_->separator()->ApplyTextColor(
       OmniboxPart::RESULTS_TEXT_DIMMED);
   keyword_view_->separator()->ApplyTextColor(OmniboxPart::RESULTS_TEXT_DIMMED);
-  if (suggestion_tab_switch_button_->GetVisible())
-    suggestion_tab_switch_button_->UpdateBackground();
   if (remove_suggestion_button_->GetVisible())
     remove_suggestion_focus_ring_->SchedulePaint();
 
@@ -374,10 +352,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
         OmniboxPart::RESULTS_TEXT_DIMMED);
   }
 
-  if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    button_row_->OnOmniboxBackgroundChange(GetOmniboxColor(
-        GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, GetThemeState()));
-  }
+  button_row_->OnOmniboxBackgroundChange(GetOmniboxColor(
+      GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, GetThemeState()));
 
   if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
     // The focus bar indicates when the suggestion is focused. Do not show the
@@ -434,14 +410,7 @@ views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
     return remove_suggestion_button_;
   }
 
-  if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    return button_row_->GetActiveButton();
-  } else if (popup_contents_view_->model()->selected_line_state() ==
-             OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH) {
-    return suggestion_tab_switch_button_;
-  }
-
-  return nullptr;
+  return button_row_->GetActiveButton();
 }
 
 OmniboxPartState OmniboxResultView::GetThemeState() const {
@@ -450,10 +419,8 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
 
   // If we don't highlight the whole row when the user has the mouse over the
   // remove suggestion button, it's unclear which suggestion is being removed.
-  // That does not apply to the tab switch button, which is much larger.
-  bool highlight_row =
-      IsMouseHovered() && !suggestion_tab_switch_button_->IsMouseHovered();
-  return highlight_row ? OmniboxPartState::HOVERED : OmniboxPartState::NORMAL;
+  return IsMouseHovered() ? OmniboxPartState::HOVERED
+                          : OmniboxPartState::NORMAL;
 }
 
 void OmniboxResultView::OnMatchIconUpdated() {
@@ -485,17 +452,8 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
     // When the drag enters or remains within the bounds of this view, either
     // set the state to be selected or hovered, depending on the mouse button.
     if (event.IsOnlyLeftMouseButton()) {
-      if (!GetMatchSelected())
+      if (!GetMatchSelected()) {
         popup_contents_view_->SetSelectedIndex(model_index_);
-      if (suggestion_tab_switch_button_) {
-        gfx::Point point_in_child_coords(event.location());
-        View::ConvertPointToTarget(this, suggestion_tab_switch_button_,
-                                   &point_in_child_coords);
-        if (suggestion_tab_switch_button_->HitTestPoint(
-                point_in_child_coords)) {
-          SetMouseAndGestureHandler(suggestion_tab_switch_button_);
-          return false;
-        }
       }
     } else {
       UpdateHoverState();
@@ -534,9 +492,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // The positional info is provided via
   // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
   // well would result in duplicate announcements.
-  // Pass false for |is_tab_switch_button_focused|, because the button will
-  // receive its own label in the case that a screen reader is listening to
-  // selection events on items rather than announcements or value change events.
 
   // TODO(tommycli): We re-fetch the original match from the popup model,
   // because |match_| already has its contents and description swapped by this
@@ -604,13 +559,6 @@ gfx::Image OmniboxResultView::GetIcon() const {
 void OmniboxResultView::UpdateHoverState() {
   UpdateRemoveSuggestionVisibility();
   ApplyThemeAndRefreshIcons();
-}
-
-bool OmniboxResultView::ShouldShowTabMatchButtonInline() {
-  return !OmniboxFieldTrial::IsSuggestionButtonRowEnabled() &&
-         popup_contents_view_->model()->IsControlPresentOnMatch(
-             OmniboxPopupModel::Selection(
-                 model_index_, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH));
 }
 
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {

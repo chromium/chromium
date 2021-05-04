@@ -364,15 +364,8 @@ bool ShortBookmarkSuggestionsByTotalInputLengthCounterfactual();
 // Returns the minimum input length to enable prefix matches.
 size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
 
-// Whether a single row of buttons is shown on suggestions with actionable
-// elements like keywords, tab-switch buttons, and Pedals.
-bool IsSuggestionButtonRowEnabled();
-
 // Returns true if the tab switch suggestions flag is enabled.
 bool IsTabSwitchSuggestionsEnabled();
-
-// Returns true if the Pedals and suggestion button row features are enabled.
-bool IsPedalSuggestionsEnabled();
 
 // Returns true if the second batch of Pedals is enabled.
 bool IsPedalsBatch2Enabled();

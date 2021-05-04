@@ -137,14 +137,6 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
   field_trial_triggered_ = true;
   field_trial_triggered_in_session_ = true;
 
-  // Some users may be in a counterfactual study arm in which the pedal button
-  // is not attached to the suggestion, even though it triggered.
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kOmniboxPedalSuggestions,
-          "PedalSuggestionsCounterfactualArm", false)) {
-    return nullptr;
-  }
-
   return found;
 }
 

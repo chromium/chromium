@@ -767,14 +767,6 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     }
   }
 
-  // Matches with |pedal| may be opened normally or executed, but when a match
-  // is a dedicated Pedal suggestion, it should always be executed. This only
-  // happens when the button row feature is disabled.
-  if (match.pedal && !OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    ExecutePedal(match, match_selection_timestamp);
-    return;
-  }
-
   std::u16string input_text(pasted_text);
   if (input_text.empty())
     input_text = user_input_in_progress_ ? user_text_ : url_for_editing_;

@@ -573,10 +573,10 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
     // add for every provider.
   }
 
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
-    // OmniboxPedalProvider is not a "true" AutocompleteProvider and isn't
-    // included in the list of providers, though needs to report information for
-    // its field trial.  Manually call AddProviderInfo for pedals.
+  // OmniboxPedalProvider is not a "true" AutocompleteProvider and isn't
+  // included in the list of providers, though needs to report information for
+  // its field trial.  Manually call AddProviderInfo for pedals.
+  if (provider_client_->GetPedalProvider()) {
     provider_client_->GetPedalProvider()->AddProviderInfo(
         &logs->providers_info);
   }
@@ -593,9 +593,9 @@ void AutocompleteController::ResetSession() {
     provider->ResetSession();
   }
 
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
-    // OmniboxPedalProvider is not included in the list of providers as it's not
-    // a "true" AutocompleteProvider.  Manually call ResetSession() for pedals.
+  // OmniboxPedalProvider is not included in the list of providers as it's not
+  // a "true" AutocompleteProvider.  Manually call ResetSession() for pedals.
+  if (provider_client_->GetPedalProvider()) {
     provider_client_->GetPedalProvider()->ResetSession();
   }
 
@@ -714,9 +714,7 @@ void AutocompleteController::UpdateResult(
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
-    result_.AttachPedalsToMatches(input_, *provider_client_);
-  }
+  result_.AttachPedalsToMatches(input_, *provider_client_);
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.

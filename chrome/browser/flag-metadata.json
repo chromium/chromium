@@ -3981,11 +3981,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "omnibox-pedal-suggestions",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "omnibox-pedals-batch2",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
@@ -4053,11 +4048,6 @@
   {
     "name": "omnibox-spare-renderer",
     "owners": [ "instant-nav@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
-    "name": "omnibox-suggestion-button-row",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 92
   },
   {

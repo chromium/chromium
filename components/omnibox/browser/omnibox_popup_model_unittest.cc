@@ -113,21 +113,12 @@ class OmniboxPopupModelSuggestionButtonRowTest : public OmniboxPopupModelTest {
 
  protected:
   // testing::Test:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(
-        omnibox::kOmniboxSuggestionButtonRow);
-    OmniboxPopupModelTest::SetUp();
-  }
-
   void TearDown() override { scoped_feature_list_.reset(); }
 
   void InitKeywordButtonFeature() {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(
-        {omnibox::kOmniboxSuggestionButtonRow,
-         omnibox::kOmniboxKeywordSearchButton},
-        {});
+        {omnibox::kOmniboxKeywordSearchButton}, {});
   }
 
  private:

@@ -641,17 +641,8 @@ OmniboxFieldTrial::ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
       kShortBookmarkSuggestionsByTotalInputLengthThresholdParam, 3);
 }
 
-bool OmniboxFieldTrial::IsSuggestionButtonRowEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxSuggestionButtonRow);
-}
-
 bool OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions);
-}
-
-bool OmniboxFieldTrial::IsPedalSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxSuggestionButtonRow) &&
-         base::FeatureList::IsEnabled(omnibox::kOmniboxPedalSuggestions);
 }
 
 bool OmniboxFieldTrial::IsPedalsBatch2Enabled() {
@@ -664,8 +655,7 @@ bool OmniboxFieldTrial::IsPedalsDefaultIconColored() {
 }
 
 bool OmniboxFieldTrial::IsKeywordSearchButtonEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxSuggestionButtonRow) &&
-         base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordSearchButton);
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordSearchButton);
 }
 
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {

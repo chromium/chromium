@@ -121,7 +121,6 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
 }
 
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {
-  NOTREACHED();
   return nullptr;
 }
 

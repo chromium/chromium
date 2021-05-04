@@ -254,15 +254,6 @@ const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
 const base::Feature kOmniboxSearchReadyIncognito{
     "OmniboxSearchReadyIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature that puts a single row of buttons on suggestions with actionable
-// elements like keywords, tab-switch buttons, and Pedals.
-const base::Feature kOmniboxSuggestionButtonRow{
-    "OmniboxSuggestionButtonRow", enabled_by_default_desktop_only};
-
-// Feature used to enable Pedal suggestions.
-const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
-                                             enabled_by_default_desktop_only};
-
 // Feature used to enable the second batch of Pedals (Safety Check, etc.).
 const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

@@ -33,10 +33,7 @@
 class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
  public:
   OmniboxSuggestionButtonRowBrowserTest() {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxSuggestionButtonRow,
-                                    omnibox::kOmniboxPedalSuggestions,
-                                    omnibox::kOmniboxKeywordSearchButton},
-                                   {});
+    feature_list_.InitWithFeatures({omnibox::kOmniboxKeywordSearchButton}, {});
   }
 
   OmniboxSuggestionButtonRowBrowserTest(

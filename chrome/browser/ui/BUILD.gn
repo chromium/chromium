@@ -3935,8 +3935,6 @@ static_library("ui") {
       "views/omnibox/omnibox_row_view.h",
       "views/omnibox/omnibox_suggestion_button_row_view.cc",
       "views/omnibox/omnibox_suggestion_button_row_view.h",
-      "views/omnibox/omnibox_tab_switch_button.cc",
-      "views/omnibox/omnibox_tab_switch_button.h",
       "views/omnibox/omnibox_text_view.cc",
       "views/omnibox/omnibox_text_view.h",
       "views/omnibox/omnibox_view_views.cc",

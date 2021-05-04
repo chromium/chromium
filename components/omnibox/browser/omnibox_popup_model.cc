@@ -361,8 +361,9 @@ OmniboxPopupModel::GetAllAvailableSelectionsSorted(Direction direction,
     }
 
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
-    if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled())
-      all_states.push_back(FOCUSED_BUTTON_PEDAL);
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+    all_states.push_back(FOCUSED_BUTTON_PEDAL);
+#endif
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
   }
   DCHECK(std::is_sorted(all_states.begin(), all_states.end()))
@@ -513,15 +514,12 @@ bool OmniboxPopupModel::IsControlPresentOnMatch(Selection selection) const {
       return match.pedal != nullptr;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       // Remove suggestion buttons are suppressed for matches with an associated
-      // keyword or tab match, unless the features that move those to the
-      // button row are enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
+      // keyword, unless the feature that moves it to the button row is enabled.
+      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
         return match.SupportsDeletion();
-      else if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled())
+      } else {
         return !match.associated_keyword && match.SupportsDeletion();
-      else
-        return !match.associated_keyword && !match.has_tab_match &&
-               match.SupportsDeletion();
+      }
     default:
       break;
   }

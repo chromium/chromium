@@ -28,7 +28,6 @@
 class OmniboxMatchCellView;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionButtonRowView;
-class OmniboxTabSwitchButton;
 class OmniboxResultSelectionIndicator;
 enum class OmniboxPart;
 enum class OmniboxPartState;
@@ -113,13 +112,6 @@ class OmniboxResultView : public views::View,
   // controls that are only visible on row hover.
   void UpdateHoverState();
 
-  // This returns true if the match has a matching tab and will use a
-  // switch-to-tab button inline in Result View. It returns false, for
-  // example, when the switch button is not shown because a keyword match is
-  // taking precedence or when Suggestion Button Row is enabled, as the
-  // Switch-to-tab button will appear in the button row.
-  bool ShouldShowTabMatchButtonInline();
-
   // Sets the visibility of the |remove_suggestion_button_| based on the current
   // state.
   void UpdateRemoveSuggestionVisibility();
@@ -154,7 +146,6 @@ class OmniboxResultView : public views::View,
   // Weak pointers for easy reference.
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
   OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
-  OmniboxTabSwitchButton* suggestion_tab_switch_button_;
 
   // The blue bar used to indicate selection. This is currently only used if
   // omnibox-refined-focus-state flag is enabled.
@@ -164,8 +155,8 @@ class OmniboxResultView : public views::View,
   views::ImageButton* remove_suggestion_button_;
   views::FocusRing* remove_suggestion_focus_ring_ = nullptr;
 
-  // The row of buttons, only assigned and used if OmniboxSuggestionButtonRow
-  // feature is enabled. It is owned by the base view, not this raw pointer.
+  // The row of buttons that appears when actions such as tab switch or Pedals
+  // are on the suggestion. It is owned by the base view, not this raw pointer.
   OmniboxSuggestionButtonRowView* button_row_ = nullptr;
 
   // Keeps track of mouse-enter and mouse-exit events of child Views.

@@ -449,6 +449,10 @@ void AutocompleteResult::AttachPedalsToMatches(
     const AutocompleteInput& input,
     const AutocompleteProviderClient& client) {
   OmniboxPedalProvider* provider = client.GetPedalProvider();
+  if (!provider) {
+    return;
+  }
+
   // Used to ensure we keep only one Pedal of each kind.
   std::unordered_set<OmniboxPedal*> pedals_found;
 
