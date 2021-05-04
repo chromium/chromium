@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedP
 import org.chromium.chrome.browser.ntp.snippets.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderProperties;
+import org.chromium.chrome.browser.ntp.snippets.SectionType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -402,10 +403,7 @@ public class FeedSurfaceMediator
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
 
-            if (WebFeedBridge.isWebFeedSubscriber() && FeedFeatures.isWebFeedUIEnabled()) {
-                addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
-                        mCoordinator.createFeedStream(/* isInterestFeed = */ false));
-            }
+            setUpWebFeedTab();
         } else {
             // Show feed if there is no header that would allow user to hide feed.
             // This is currently only relevant for the two panes start surface.
@@ -444,6 +442,40 @@ public class FeedSurfaceMediator
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
 
         mTabToStreamMap.put(tabId, stream);
+    }
+
+    private int getTabIdForSection(@SectionType int sectionType) {
+        for (int tabId : mTabToStreamMap.keySet()) {
+            if (mTabToStreamMap.get(tabId).getSectionType() == sectionType) {
+                return tabId;
+            }
+        }
+        return -1;
+    }
+
+    /** Adds or removes the WebFeed tab, depending on whether it should be shown. */
+    private void setUpWebFeedTab() {
+        // Skip if the for-you tab hasn't been added yet.
+        if (getTabIdForSection(SectionType.FOR_YOU_FEED) == -1) {
+            return;
+        }
+        int tabId = getTabIdForSection(SectionType.WEB_FEED);
+        boolean hasWebFeedTab = tabId != -1;
+        boolean shouldHaveWebFeedTab = mHasHeader && WebFeedBridge.isWebFeedSubscriber()
+                && FeedFeatures.isWebFeedUIEnabled();
+        if (hasWebFeedTab == shouldHaveWebFeedTab) return;
+        if (shouldHaveWebFeedTab) {
+            addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
+                    mCoordinator.createFeedStream(/* isInterestFeed = */ false));
+        } else {
+            if (mCurrentStream != null && mCurrentStream.getSectionType() == SectionType.WEB_FEED) {
+                unbindStream();
+            }
+            mTabToStreamMap.remove(tabId);
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .removeAt(tabId);
+            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
+        }
     }
 
     /**
@@ -493,7 +525,7 @@ public class FeedSurfaceMediator
         mStreamContentChanged = true;
     }
 
-    void unbindStream() {
+    private void unbindStream() {
         if (mCurrentStream == null) return;
         if (mStreamScrollListener != null) {
             mCurrentStream.removeScrollListener(mStreamScrollListener);
@@ -505,13 +537,20 @@ public class FeedSurfaceMediator
         mCurrentStream = null;
     }
 
-    void rebindStream() {
+    void onSurfaceOpened() {
+        setUpWebFeedTab();
+        rebindStream();
+    }
+
+    void onSurfaceClosed() {
+        unbindStream();
+    }
+
+    private void rebindStream() {
         // If a stream is already bound, then do nothing.
         if (mCurrentStream != null) return;
-
         // If feed shouldn't be shown, do nothing.
         if (!mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) return;
-
         // Find the stream that should be bound and bind it. If no stream matches, then we haven't
         // fully set up yet. This will be taken care of by setup.
         Stream stream = mTabToStreamMap.get(

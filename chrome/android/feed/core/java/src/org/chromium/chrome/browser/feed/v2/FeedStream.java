@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.ScrollListener;
+import org.chromium.chrome.browser.ntp.snippets.SectionType;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -399,6 +400,7 @@ public class FeedStream implements Stream {
             new ObserverList<ContentChangedListener>();
     private final ObserverList<InteractionsListener> mInteractionListeners = new ObserverList<>();
     private final NativePageNavigationDelegate mNavigationDelegate;
+    private final boolean mIsInterestFeed;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
     private SnackbarManager mSnackManager;
@@ -450,7 +452,7 @@ public class FeedStream implements Stream {
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
             boolean isInterestFeed) {
         this.mActivity = activity;
-
+        mIsInterestFeed = isInterestFeed;
         mNativeFeedStream = FeedStreamJni.get().init(this, isInterestFeed);
 
         mBottomSheetController = bottomSheetController;
@@ -510,6 +512,12 @@ public class FeedStream implements Stream {
         if (mUnreadContentObserver != null) {
             mUnreadContentObserver.destroy();
         }
+    }
+
+    @Override
+    @SectionType
+    public int getSectionType() {
+        return mIsInterestFeed ? SectionType.FOR_YOU_FEED : SectionType.WEB_FEED;
     }
 
     @Override

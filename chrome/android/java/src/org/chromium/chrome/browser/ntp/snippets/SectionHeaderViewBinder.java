@@ -62,8 +62,9 @@ public class SectionHeaderViewBinder
     @Override
     public void onItemsRemoved(PropertyListModel<PropertyModel, PropertyKey> model,
             SectionHeaderView view, int index, int count) {
-        // Do nothing. We don't expect to remove tabs.
-        assert false;
+        for (int i = index + count - 1; i >= index; i--) {
+            view.removeTabAt(i);
+        }
     }
 
     @Override

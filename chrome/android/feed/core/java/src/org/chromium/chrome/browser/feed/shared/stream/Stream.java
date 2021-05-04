@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
 import org.chromium.chrome.browser.ntp.ScrollListener;
+import org.chromium.chrome.browser.ntp.snippets.SectionType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 
@@ -22,6 +23,10 @@ import java.util.List;
 public interface Stream {
     /** Called when the Stream is no longer needed. */
     default void destroy() {}
+
+    /** Returns the section type for this stream. */
+    @SectionType
+    int getSectionType();
 
     /**
      * @param scrollState Previous saved scroll state to restore to.

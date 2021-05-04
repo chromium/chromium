@@ -141,6 +141,13 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
+    /** Removes a tab. */
+    void removeTabAt(int index) {
+        if (mTabLayout != null) {
+            mTabLayout.removeTabAt(index);
+        }
+    }
+
     /**
      * Set text for the header tab at a particular index to text.
      *

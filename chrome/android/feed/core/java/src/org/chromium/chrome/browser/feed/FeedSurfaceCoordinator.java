@@ -359,7 +359,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     /** @return Whether the placeholder is shown. */
     public boolean isPlaceholderShown() {
-        return mStream.isPlaceholderShown();
+        return mStream != null ? mStream.isPlaceholderShown() : false;
     }
 
     /** Launches autoplay settings activity. */
@@ -380,14 +380,14 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
         mIsActive = true;
 
-        mMediator.rebindStream();
+        mMediator.onSurfaceOpened();
     }
 
     /** Hides the feed. */
     public void onSurfaceClosed() {
         if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
         mIsActive = false;
-        mMediator.unbindStream();
+        mMediator.onSurfaceClosed();
     }
 
     /** Returns a string usable for restoring the UI to current state. */
@@ -454,6 +454,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * Create a {@link Stream} for this class.
      */
     void createStream() {
+        assert mStream == null;
+
         if (mScrollViewForPolicy != null) {
             mRootView.removeView(mScrollViewForPolicy);
             mScrollViewForPolicy = null;
