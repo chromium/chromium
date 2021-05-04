@@ -97,7 +97,9 @@ void SaveDevicePermissionEntry(BrowserContext* context,
   }
 
   std::unique_ptr<base::Value> device_entry(entry->ToValue());
-  DCHECK(devices->Find(*device_entry) == devices->end());
+  // TODO(crbug.com/1187106): Use base::Contains once |devices| not a ListValue.
+  DCHECK(std::find(devices->begin(), devices->end(), *device_entry) ==
+         devices->end());
   devices->Append(std::move(device_entry));
 }
 
