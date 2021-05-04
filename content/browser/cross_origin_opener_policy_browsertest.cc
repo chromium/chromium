@@ -3269,9 +3269,11 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 // Enable the reverse OriginTrial via a <meta> tag. Then send a Webassembly's
 // SharedArrayBuffer toward the iframe.
 // TODO(https://crbug.com/1201589) This currently crash.
+//
+// Temporarily disabled while merging a fix for this in v8.
 #if !defined(OS_ANDROID) // The SAB reverse origin trial only work on Desktop.
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
-                       CrashForBug1201589) {
+                       DISABLED_CrashForBug1201589) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         DCHECK_EQ(params->url_request.url, OriginTrialURL());
