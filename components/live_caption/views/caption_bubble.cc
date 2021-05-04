@@ -19,6 +19,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -42,6 +43,18 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+// The CaptionBubbleLabel needs to be focusable in order for NVDA to enable
+// document navigation. It is suspected that other screen readers on Windows and
+// Linux will need this behavior, too. VoiceOver and ChromeVox do not need the
+// label to be focusable.
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !defined(OS_MAC)
+#define NEED_FOCUS_FOR_ACCESSIBILITY
+#endif
+
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+#include "ui/accessibility/platform/ax_platform_node.h"
+#endif
 
 namespace {
 
@@ -195,6 +208,8 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
 BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
 END_METADATA
 
+class CaptionBubbleLabelAXModeObserver;
+
 // CaptionBubble implementation of Label. This class takes care of setting up
 // the accessible virtual views of the label in order to support braille
 // accessibility. The CaptionBubbleLabel is a readonly document with a paragraph
@@ -205,8 +220,15 @@ END_METADATA
 class CaptionBubbleLabel : public views::Label {
  public:
   METADATA_HEADER(CaptionBubbleLabel);
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+  CaptionBubbleLabel() {
+    ax_mode_observer_ =
+        std::make_unique<CaptionBubbleLabelAXModeObserver>(this);
+    SetFocusBehaviorForAccessibility();
+  }
+#else
   CaptionBubbleLabel() = default;
-
+#endif
   ~CaptionBubbleLabel() override = default;
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
@@ -216,10 +238,15 @@ class CaptionBubbleLabel : public views::Label {
     // `ViewAccessibility::IsValidRoleForViews` for more information) but we
     // make an exception here. The CaptionBubbleLabel is designed to be
     // interacted with by a braille display in virtual buffer mode. In order to
-    // activate the virtual buffer in NVDA, we set the top-level virtual view in
-    // CaptionBubbleLabel to be a readonly document.
+    // activate the virtual buffer in NVDA, we set the CaptionBubbleLabel to be
+    // a readonly document.
     node_data->role = ax::mojom::Role::kDocument;
     node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+    // Focusable nodes generally must have a name, but the purpose of focusing
+    // this document is to let the user read the static text nodes inside.
+    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+#endif
   }
 
   void SetText(const std::u16string& text) override {
@@ -253,6 +280,20 @@ class CaptionBubbleLabel : public views::Label {
     }
   }
 
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+  // The CaptionBubbleLabel needs to be focusable in order for NVDA to enable
+  // document navigation. Making the CaptionBubbleLabel focusable means it gets
+  // a tabstop, so it should only be focusable for screen reader users.
+  void SetFocusBehaviorForAccessibility() {
+    if (ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+            ui::AXMode::kScreenReader)) {
+      SetFocusBehavior(FocusBehavior::ALWAYS);
+    } else {
+      SetFocusBehavior(FocusBehavior::NEVER);
+    }
+  }
+#endif
+
  private:
   void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
@@ -279,10 +320,46 @@ class CaptionBubbleLabel : public views::Label {
           ax::mojom::Event::kTextChanged);
     }
   }
+
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+  std::unique_ptr<CaptionBubbleLabelAXModeObserver> ax_mode_observer_;
+#endif
 };
 
 BEGIN_METADATA(CaptionBubbleLabel, views::Label)
 END_METADATA
+
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+// A helper class to the CaptionBubbleLabel which observes AXMode changes and
+// updates the CaptionBubbleLabel focus behavior in response.
+// TODO(crbug.com/1191091): Implement a ui::AXModeObserver::OnAXModeRemoved
+// method which observes the removal of AXModes. Without that, the caption
+// bubble label will remain focusable once accessibility is enabled, even if
+// accessibility is later disabled.
+class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
+ public:
+  explicit CaptionBubbleLabelAXModeObserver(CaptionBubbleLabel* owner)
+      : owner_(owner) {
+    ui::AXPlatformNode::AddAXModeObserver(this);
+  }
+
+  ~CaptionBubbleLabelAXModeObserver() override {
+    ui::AXPlatformNode::RemoveAXModeObserver(this);
+  }
+
+  CaptionBubbleLabelAXModeObserver(const CaptionBubbleLabelAXModeObserver&) =
+      delete;
+  CaptionBubbleLabelAXModeObserver& operator=(
+      const CaptionBubbleLabelAXModeObserver&) = delete;
+
+  void OnAXModeAdded(ui::AXMode mode) override {
+    owner_->SetFocusBehaviorForAccessibility();
+  }
+
+ private:
+  CaptionBubbleLabel* owner_;
+};
+#endif
 
 CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
                              bool hide_on_inactivity)

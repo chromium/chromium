@@ -20,7 +20,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -948,6 +950,23 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
     EXPECT_EQ(base::NumberToString(i + 32) + line + " ", GetAXLineText()[i]);
   }
   EXPECT_EQ("a ", GetAXLineText()[8]);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextIsSometimesFocusable) {
+  OnPartialTranscription("Capybaras can sleep in water.");
+
+  // The label is not normally focusable.
+  EXPECT_FALSE(GetLabel()->IsFocusable());
+
+  // When screen reader mode turns on on Windows, the label is focusable. It
+  // remains unfocusable on other OS's.
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !defined(OS_MAC)
+  EXPECT_TRUE(GetLabel()->IsFocusable());
+#else
+  EXPECT_FALSE(GetLabel()->IsFocusable());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
