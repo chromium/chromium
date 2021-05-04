@@ -51,6 +51,6 @@ public class ChromePageInfo {
                 new ChromePageInfoControllerDelegate(activity, webContents,
                         mModalDialogManagerSupplier,
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                new ChromePermissionParamsListBuilderDelegate(), permission);
+                permission);
     }
 }

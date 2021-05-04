@@ -248,7 +248,7 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
 
             PageInfoController.show(mBrowserImpl.getWindowAndroid().getActivity().get(),
                     webContents, publisherUrl, PageInfoController.OpenedFromSource.TOOLBAR,
-                    PageInfoControllerDelegateImpl.create(webContents), null,
+                    PageInfoControllerDelegateImpl.create(webContents),
                     PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         }
 

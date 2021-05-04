@@ -596,7 +596,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     public static void show(final Activity activity, WebContents webContents,
             final String contentPublisher, @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
             @ContentSettingsType int highlightedPermission) {
         // If the activity's decor view is not attached to window, we don't show the dialog because
         // the window manager might have revoked the window token for this activity. See

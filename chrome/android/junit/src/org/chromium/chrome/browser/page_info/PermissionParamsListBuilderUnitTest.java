@@ -49,7 +49,6 @@ public class PermissionParamsListBuilderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ChromePermissionParamsListBuilderDelegate.setProfileForTesting(mProfileMock);
         FakePermissionDelegate.clearBlockedPermissions();
         AndroidPermissionDelegate permissionDelegate = new FakePermissionDelegate();
         mPermissionParamsListBuilder =
