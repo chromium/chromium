@@ -255,6 +255,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         std::make_unique<IncompatibleApplicationsHandler>());
 #endif  // OS_WIN && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  bool enable_landing_page_redesign =
+      base::FeatureList::IsEnabled(features::kSettingsLandingPageRedesign);
+  html_source->AddString(
+      "enableLandingPageRedesignAttribute",
+      enable_landing_page_redesign ? "enable-landing-page-redesign" : "");
+  html_source->AddBoolean("enableLandingPageRedesign",
+                          enable_landing_page_redesign);
+
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));

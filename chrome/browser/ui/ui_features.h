@@ -48,6 +48,10 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 
 extern const base::Feature kScrollableTabStripButtons;
 
+#if !defined(ANDROID)
+extern const base::Feature kSettingsLandingPageRedesign;
+#endif
+
 extern const base::Feature kSidePanel;
 
 extern const base::Feature kSyncConfirmationUpdatedText;
