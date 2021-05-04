@@ -109,15 +109,12 @@ no_check_targets = [
   "//third_party/libvpx:*",  # 164 errors
   "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
 
-  # //v8/*, https://crbug.com/v8/7330
-  "//v8/src/inspector:*",  # 20 errors
-  "//v8/test/cctest:*",  # 26 errors
-  "//v8/test/unittests:*",  # 11 errors
-  "//v8/test/wasm-api-tests:*",  # 13 errors
-  "//v8/third_party/inspector_protocol:*",  # 2 errors
-  "//v8/tools/debug_helper:*",  # 9 errors
-  "//v8/tools/v8windbg:*",  # 2 errors
-  "//v8:*",  # 1871 errors
+  # //v8, https://crbug.com/v8/7330
+  "//v8/src/inspector:inspector",  # 20 errors
+  "//v8/test/cctest:cctest_sources",  # 2 errors
+  "//v8:cppgc_base",  # 1 error
+  "//v8:v8_internal_headers",  # 11 errors
+  "//v8:v8_libplatform",  # 2 errors
 ]
 
 # These are the list of GN files that run exec_script. This whitelist exists
