@@ -199,6 +199,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplay>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TaskManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TestController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::UrlHandler>(),
@@ -224,7 +225,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 23,
+    crosapi::mojom::Crosapi::Version_ == 24,
     "if you add a new crosapi, please add it to the version map here");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

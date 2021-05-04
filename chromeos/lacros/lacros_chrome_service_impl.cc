@@ -21,6 +21,7 @@
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
@@ -216,6 +217,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::SelectFile,
                   &crosapi::mojom::Crosapi::BindSelectFile,
                   Crosapi::MethodMinVersions::kBindSelectFileMinVersion>();
+  ConstructRemote<crosapi::mojom::SystemDisplay, &Crosapi::BindSystemDisplay,
+                  Crosapi::MethodMinVersions::kBindSystemDisplayMinVersion>();
   ConstructRemote<crosapi::mojom::TaskManager,
                   &crosapi::mojom::Crosapi::BindTaskManager,
                   Crosapi::MethodMinVersions::kBindTaskManagerMinVersion>();

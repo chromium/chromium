@@ -982,6 +982,8 @@ static_library("extensions") {
       "api/platform_keys/platform_keys_api.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
+      "system_display/system_display_serialization.cc",
+      "system_display/system_display_serialization.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",
@@ -997,6 +999,8 @@ static_library("extensions") {
         "api/messaging/native_message_host_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.h",
+        "system_display/display_info_provider_lacros.cc",
+        "system_display/display_info_provider_lacros.h",
       ]
       deps += [ "//chromeos/lacros" ]
     } else {
@@ -1239,7 +1243,7 @@ static_library("extensions") {
       "setupapi.lib",
       "propsys.lib",
     ]
-  } else if (use_aura && !is_chromeos_ash) {
+  } else if (use_aura && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [
       "system_display/display_info_provider_aura.cc",
       "system_display/display_info_provider_aura.h",

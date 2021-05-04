@@ -33,6 +33,7 @@ class MetricsReportingAsh;
 class PrefsAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
+class SystemDisplayAsh;
 class TaskManagerAsh;
 class TestControllerAsh;
 class UrlHandlerAsh;
@@ -98,6 +99,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionAudioFocusDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           receiver) override;
+  void BindSystemDisplay(
+      mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
   void BindTaskManager(
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
@@ -141,6 +144,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
+  std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;

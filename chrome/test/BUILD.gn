@@ -5632,6 +5632,7 @@ test("unit_tests") {
         "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
+        "../browser/extensions/system_display/system_display_serialization_unittest.cc",
       ]
     }
 

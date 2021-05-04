@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
+#include "chrome/browser/ash/crosapi/system_display_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
@@ -73,6 +74,7 @@ CrosapiAsh::CrosapiAsh()
                                      g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
+      system_display_ash_(std::make_unique<SystemDisplayAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
@@ -209,6 +211,11 @@ void CrosapiAsh::BindMediaSessionAudioFocusDebug(
 void CrosapiAsh::BindCertDatabase(
     mojo::PendingReceiver<mojom::CertDatabase> receiver) {
   cert_database_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSystemDisplay(
+    mojo::PendingReceiver<mojom::SystemDisplay> receiver) {
+  system_display_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTaskManager(
