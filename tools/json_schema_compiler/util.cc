@@ -40,12 +40,18 @@ bool PopulateItem(const base::Value& from, int* out, std::u16string* error) {
 }
 
 bool PopulateItem(const base::Value& from, bool* out) {
-  return from.GetAsBoolean(out);
+  if (out && from.is_bool()) {
+    *out = from.GetBool();
+    return true;
+  }
+  return from.is_bool();
 }
 
 bool PopulateItem(const base::Value& from, bool* out, std::u16string* error) {
-  if (!from.GetAsBoolean(out))
+  if (!from.is_bool())
     return ReportError(from, base::Value::Type::BOOLEAN, error);
+  if (out)
+    *out = from.GetBool();
   return true;
 }
 
