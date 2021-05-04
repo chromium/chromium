@@ -660,6 +660,9 @@ android_library("chrome_java") {
   if (enable_basic_printing) {
     deps += [ "//printing:printing_java" ]
   }
+
+  # TODO(crbug.com/1174713): This is temporary to not break downstream targets.
+  public_deps = [ "//chrome/browser/notifications:java" ]
 }
 
 # Template for strict mode detection enabling/disabling so that proguard strips out
@@ -778,7 +781,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/installable/installed_webapp_geolocation_bridge.cc",
     "//chrome/browser/installable/quality_enforcer.cc",
     "//chrome/browser/long_screenshots/long_screenshots_tab_service.h",
-    "//chrome/browser/notifications/notification_channels_provider_android.h",
     "//chrome/browser/notifications/notification_handler.h",
     "//chrome/browser/notifications/notification_platform_bridge_android.cc",
   ]
@@ -898,6 +900,8 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/notifications:junit_tests",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/test/android:junit",
@@ -1188,6 +1192,8 @@ android_library("chrome_test_java") {
     "//chrome/browser/language/android:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/notifications:javatests",
     "//chrome/browser/offline_pages/android:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
@@ -3533,8 +3539,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/net/spdyproxy/DataReductionProxySettings.java",
     "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
-    "java/src/org/chromium/chrome/browser/notifications/NotificationSettingsBridge.java",
-    "java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtil.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
     "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
     "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",

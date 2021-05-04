@@ -18,7 +18,6 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  * Contains helper methods for checking if we should update channels and updating them if so.
  */
 public class ChannelsUpdater {
-
     private static final Object sLock = new Object();
 
     private final ChannelsInitializer mChannelsInitializer;

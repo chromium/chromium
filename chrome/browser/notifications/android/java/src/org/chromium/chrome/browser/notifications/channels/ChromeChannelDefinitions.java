@@ -11,8 +11,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.StringDef;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.webapps.WebApkServiceClient;
+import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.channels.ChannelDefinitions;
 
 import java.lang.annotation.Retention;
@@ -55,6 +54,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     private ChromeChannelDefinitions() {}
+
+    /**
+     * Keeps the value consistent with {@link
+     * org.chromium.webapk.shell_apk.WebApkServiceImplWrapper#DEFAULT_NOTIFICATION_CHANNEL_ID}.
+     */
+    public static final String CHANNEL_ID_WEBAPKS = "default_channel_id";
 
     /**
      * To define a new channel, add the channel ID to this StringDef and add a new entry to
@@ -290,6 +295,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     @Override
     public boolean isValidNonPredefinedChannelId(String channelId) {
         return SiteChannelsManager.isValidSiteChannelId(channelId)
-                || TextUtils.equals(channelId, WebApkServiceClient.CHANNEL_ID_WEBAPKS);
+                || TextUtils.equals(channelId, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
     }
 }

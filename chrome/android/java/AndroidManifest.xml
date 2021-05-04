@@ -1106,11 +1106,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.sharing.sms_fetcher.SmsFetcherMessageHandler$NotificationReceiver"
             android:exported="false"/>
 
-        <receiver android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$ClickReceiver"
-            android:exported="false"/>
-        <receiver android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$SettingsReceiver"
-            android:exported="false"/>
-
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$CompleteNotificationReceiver"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"

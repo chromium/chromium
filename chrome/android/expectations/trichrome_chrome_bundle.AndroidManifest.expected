@@ -955,14 +955,6 @@
         android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 05f19ac3
-    <receiver  # DIFF-ANCHOR: f2ef5c19
-        android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$ClickReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: f2ef5c19
-    <receiver  # DIFF-ANCHOR: 0267e562
-        android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$SettingsReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: 0267e562
     <receiver  # DIFF-ANCHOR: a3a6e991
         android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
         android:exported="false">

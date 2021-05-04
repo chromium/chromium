@@ -462,9 +462,9 @@ public class CustomTabActivityIncognitoTest {
         // views with the @RemoteView annotation.
         RemoteViews remoteViews =
                 new RemoteViews(InstrumentationRegistry.getTargetContext().getPackageName(),
-                        R.layout.web_notification);
-        remoteViews.setTextViewText(R.id.title, "Kittens!");
-        remoteViews.setTextViewText(R.id.body, "So fluffy");
+                        R.layout.share_sheet_item);
+        remoteViews.setTextViewText(R.id.text, "Kittens!");
+        remoteViews.setTextViewText(R.id.display_new, "So fluffy");
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_email_googblue_36dp);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS, new int[] {R.id.icon});

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
@@ -53,12 +54,6 @@ public class WebApkServiceClient {
             }
         }
     }
-
-    /**
-     * Keeps the value consistent with {@link
-     * org.chromium.webapk.shell_apk.WebApkServiceImplWrapper#DEFAULT_NOTIFICATION_CHANNEL_ID}.
-     */
-    public static final String CHANNEL_ID_WEBAPKS = "default_channel_id";
 
     private static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
     private static final String TAG = "WebApk";
@@ -98,7 +93,8 @@ public class WebApkServiceClient {
                 if (notificationPermissionEnabled) {
                     String channelName = null;
                     if (webApkTargetsAtLeastO(webApkPackage)) {
-                        notificationBuilder.setChannelId(CHANNEL_ID_WEBAPKS);
+                        notificationBuilder.setChannelId(
+                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
                         channelName = ContextUtils.getApplicationContext().getString(
                                 org.chromium.chrome.R.string.webapk_notification_channel_name);
                     }

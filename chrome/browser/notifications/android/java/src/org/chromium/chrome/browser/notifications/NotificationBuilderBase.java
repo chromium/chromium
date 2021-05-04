@@ -135,15 +135,18 @@ public abstract class NotificationBuilderBase {
     protected Bitmap mImage;
 
     protected int mSmallIconId;
-    @Nullable protected Bitmap mSmallIconBitmapForStatusBar;
-    @Nullable protected Bitmap mSmallIconBitmapForContent;
+    @Nullable
+    protected Bitmap mSmallIconBitmapForStatusBar;
+    @Nullable
+    protected Bitmap mSmallIconBitmapForContent;
 
     /**
      * Package name to use for creating remote package context to be passed to NotificationBuilder.
      * If null, Chrome's context is used. Currently only used as a workaround for a certain issue,
      * see {@link #setStatusBarIconForRemoteApp}, {@link #deviceSupportsBitmapStatusBarIcons}.
      */
-    @Nullable protected String mRemotePackageForBuilderContext;
+    @Nullable
+    protected String mRemotePackageForBuilderContext;
 
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
@@ -280,7 +283,7 @@ public abstract class NotificationBuilderBase {
                 // using remote app context: with that context iconId can be used.
                 mRemotePackageForBuilderContext = packageName;
                 setSmallIconId(iconId);
-            }  // else we're out of luck.
+            } // else we're out of luck.
         } else {
             // Pre Android M, the small icon has to be from the resources of the app whose
             // NotificationManager is used in NotificationManager#notify.
@@ -484,9 +487,8 @@ public abstract class NotificationBuilderBase {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
                         .createNotificationWrapperBuilder(shouldUseCompat(), mChannelId)
-                        .setContentText(context.getString(
-                                org.chromium.chrome.R.string.notification_hidden_text))
-                        .setSmallIcon(org.chromium.chrome.R.drawable.ic_chrome);
+                        .setContentText(context.getString(R.string.notification_hidden_text))
+                        .setSmallIcon(R.drawable.ic_chrome);
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             // On N, 'subtext' displays at the top of the notification and this looks better.
@@ -560,8 +562,8 @@ public abstract class NotificationBuilderBase {
             // Also, there are crashes on Lenovo M devices: https://crbug.com/894361. These include
             // Lenovo Zuk devices, which have Build.MANUFACTURER="ZUK": https://crbug.com/927271.
             // And some more crashes from Hisense and LeEco devices: https://crbug.com/903268.
-            for (String name : new String[] {"samsung", "yulong", "lenovo", "zuk", "hisense",
-                    "leeco"}) {
+            for (String name :
+                    new String[] {"samsung", "yulong", "lenovo", "zuk", "hisense", "leeco"}) {
                 if (Build.MANUFACTURER.equalsIgnoreCase(name)) {
                     return false;
                 }

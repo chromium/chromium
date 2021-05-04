@@ -171,7 +171,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // If we are on Android O+ the Notifications preference should lead to the Android
-            // Settings notifications page, not to Chrome's notifications settings page.
+            // Settings notifications page.
             Preference notifications = findPreference(PREF_NOTIFICATIONS);
             notifications.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent();
@@ -183,7 +183,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 return true;
             });
         } else {
-            // The per-website notification settings page. The latter can be accessed from Site
+            // The per-website notification settings page can be accessed from Site
             // Settings, so we don't need to show this here.
             getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
         }

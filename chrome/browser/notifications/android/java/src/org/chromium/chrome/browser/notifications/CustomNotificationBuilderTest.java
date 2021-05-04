@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.util.browser.Features;
@@ -259,8 +258,8 @@ public class CustomNotificationBuilderTest {
     public void statusBarIconAsBitmapIsIgnoredIfNotSupported() {
         Context context = InstrumentationRegistry.getTargetContext();
 
-        NotificationBuilderBase notificationBuilder = new CustomNotificationBuilder(context)
-                .setStatusBarIcon(createIcon(Color.RED));
+        NotificationBuilderBase notificationBuilder =
+                new CustomNotificationBuilder(context).setStatusBarIcon(createIcon(Color.RED));
 
         Assert.assertFalse(notificationBuilder.hasStatusBarIconBitmap());
     }

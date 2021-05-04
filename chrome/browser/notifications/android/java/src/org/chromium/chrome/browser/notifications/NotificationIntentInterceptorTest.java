@@ -32,7 +32,6 @@ import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -115,7 +114,6 @@ public class NotificationIntentInterceptorTest {
                 PendingIntentProvider.getBroadcast(mContext, 0, contentIntent, 0);
         builder.setContentIntent(contentPendingIntent);
         builder.setContentTitle(title);
-        builder.setSmallIcon(R.drawable.offline_pin);
 
         // Add a button.
         Intent actionIntent = new Intent(TestReceiver.TEST_ACTION);
