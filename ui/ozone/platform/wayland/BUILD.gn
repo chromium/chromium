@@ -71,8 +71,6 @@ source_set("wayland") {
     "host/wayland_connection.h",
     "host/wayland_cursor.cc",
     "host/wayland_cursor.h",
-    "host/wayland_cursor_factory.cc",
-    "host/wayland_cursor_factory.h",
     "host/wayland_cursor_position.cc",
     "host/wayland_cursor_position.h",
     "host/wayland_data_device.cc",
@@ -242,6 +240,13 @@ source_set("wayland") {
     ]
   }
 
+  if (!is_chromeos) {
+    sources += [
+      "host/wayland_cursor_factory.cc",
+      "host/wayland_cursor_factory.h",
+    ]
+  }
+
   defines = [ "OZONE_IMPLEMENTATION" ]
 
   if (use_system_libwayland) {
@@ -390,7 +395,6 @@ source_set("wayland_unittests") {
     "gpu/wayland_overlay_manager_unittest.cc",
     "host/wayland_clipboard_unittest.cc",
     "host/wayland_connection_unittest.cc",
-    "host/wayland_cursor_factory_unittest.cc",
     "host/wayland_data_drag_controller_unittest.cc",
     "host/wayland_event_source_unittest.cc",
     "host/wayland_input_method_context_unittest.cc",
@@ -433,6 +437,10 @@ source_set("wayland_unittests") {
     "//ui/ozone/common",
     "//ui/platform_window/wm",
   ]
+
+  if (!is_chromeos) {
+    sources += [ "host/wayland_cursor_factory_unittest.cc" ]
+  }
 
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {

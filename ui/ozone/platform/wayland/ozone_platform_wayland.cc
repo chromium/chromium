@@ -31,7 +31,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -60,6 +59,12 @@
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"  // nogncheck
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#else
+#include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #endif
 
 namespace ui {
@@ -173,7 +178,7 @@ class OzonePlatformWayland : public OzonePlatform {
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
         connection_->buffer_manager_host());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
     cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
 #else
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());
