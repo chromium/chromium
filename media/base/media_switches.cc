@@ -792,15 +792,16 @@ const base::Feature kMediaEngagementHTTPSOnly{
 
 // Enables Media Feeds to allow sites to provide specific recommendations for
 // users.
-const base::Feature kMediaFeeds{"MediaFeeds", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kMediaFeeds{"MediaFeeds",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables fetching Media Feeds periodically in the background.
 const base::Feature kMediaFeedsBackgroundFetching{
-    "MediaFeedsBackgroundFetching", base::FEATURE_ENABLED_BY_DEFAULT};
+    "MediaFeedsBackgroundFetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables checking Media Feeds against safe search to prevent adult content.
 const base::Feature kMediaFeedsSafeSearch{"MediaFeedsSafeSearch",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables experimental local learning for media. Used in the context of media
 // capabilities only. Adds reporting only; does not change media behavior.
