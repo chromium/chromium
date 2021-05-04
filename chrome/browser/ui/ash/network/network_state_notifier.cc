@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
@@ -14,7 +15,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/net/shill_error.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/network_configuration_handler.h"

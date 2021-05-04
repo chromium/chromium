@@ -13,7 +13,7 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -39,7 +39,7 @@ const char kMobileDataNotificationId[] =
 const char kNotifierMobileData[] = "ash.mobile-data";
 
 void MobileDataNotificationClicked(const std::string& network_id) {
-  SystemTrayClient::Get()->ShowNetworkSettings(network_id);
+  SystemTrayClientImpl::Get()->ShowNetworkSettings(network_id);
 }
 
 constexpr int kNotificationCheckDelayInSeconds = 2;

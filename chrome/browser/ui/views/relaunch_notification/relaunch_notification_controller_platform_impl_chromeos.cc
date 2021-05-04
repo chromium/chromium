@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,7 +52,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  SystemTrayClient::Get()->SetUpdateNotificationState(
+  SystemTrayClientImpl::Get()->SetUpdateNotificationState(
       ash::NotificationStyle::kDefault, std::u16string(), std::u16string());
   relaunch_required_timer_.reset();
   on_visible_.Reset();
@@ -72,14 +72,14 @@ void RelaunchNotificationControllerPlatformImpl::
           ->browser_policy_connector_chromeos()
           ->GetEnterpriseDomainManager();
   if (past_deadline) {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
+    SystemTrayClientImpl::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
         l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE),
         l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY,
                                    base::UTF8ToUTF16(enterprise_domain_manager),
                                    ui::GetChromeOSDeviceName()));
   } else {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
+    SystemTrayClientImpl::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
         l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE),
         l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_BODY,
@@ -95,11 +95,11 @@ bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
 
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRequiredTitle() {
-  // SystemTrayClient may not exist in unit tests.
-  if (SystemTrayClient::Get()) {
+  // SystemTrayClientImpl may not exist in unit tests.
+  if (SystemTrayClientImpl::Get()) {
     policy::BrowserPolicyConnectorChromeOS* connector =
         g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    SystemTrayClient::Get()->SetUpdateNotificationState(
+    SystemTrayClientImpl::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRequired,
         relaunch_required_timer_->GetWindowTitle(),
         l10n_util::GetStringFUTF16(

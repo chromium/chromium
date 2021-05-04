@@ -23,7 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler_delegate_impl.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
@@ -66,7 +66,7 @@ void OpenNetworkSettings() {
 }
 
 void OpenEnterpriseInfoPage() {
-  SystemTrayClient::Get()->ShowEnterpriseInfo();
+  SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
 }
 
 std::string GetEnterpriseManager() {

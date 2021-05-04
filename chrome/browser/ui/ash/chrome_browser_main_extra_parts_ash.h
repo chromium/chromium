@@ -38,7 +38,7 @@ class NightLightClient;
 class QuickAnswersBrowserClientImpl;
 class ScreenOrientationDelegateChromeos;
 class SessionControllerClientImpl;
-class SystemTrayClient;
+class SystemTrayClientImpl;
 class TabletModePageBehavior;
 class VpnListForwarder;
 class WallpaperControllerClientImpl;
@@ -91,7 +91,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
-  std::unique_ptr<SystemTrayClient> system_tray_client_;
+  std::unique_ptr<SystemTrayClientImpl> system_tray_client_;
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
   std::unique_ptr<VpnListForwarder> vpn_list_forwarder_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

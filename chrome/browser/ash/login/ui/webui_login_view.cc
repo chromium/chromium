@@ -31,7 +31,7 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -267,13 +267,13 @@ void WebUILoginView::OnPostponedShow() {
 }
 
 void WebUILoginView::SetStatusAreaVisible(bool visible) {
-  SystemTrayClient::Get()->SetPrimaryTrayVisible(visible);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(visible);
 }
 
 void WebUILoginView::SetUIEnabled(bool enabled) {
   forward_keyboard_event_ = enabled;
 
-  SystemTrayClient::Get()->SetPrimaryTrayEnabled(enabled);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(enabled);
 }
 
 // WebUILoginView protected: ---------------------------------------------------

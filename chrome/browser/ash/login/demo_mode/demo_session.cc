@@ -37,7 +37,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -521,13 +521,13 @@ void DemoSession::OnSessionStateChanged() {
       if (ShouldRemoveSplashScreen())
         RemoveSplashScreen();
 
-      // SystemTrayClient may not exist in unit tests.
-      if (SystemTrayClient::Get()) {
+      // SystemTrayClientImpl may not exist in unit tests.
+      if (SystemTrayClientImpl::Get()) {
         const std::string current_locale_iso_code =
             ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
                 language::prefs::kApplicationLocale);
-        SystemTrayClient::Get()->SetLocaleList(GetSupportedLocales(),
-                                               current_locale_iso_code);
+        SystemTrayClientImpl::Get()->SetLocaleList(GetSupportedLocales(),
+                                                   current_locale_iso_code);
       }
       RestoreDefaultLocaleForNextSession();
 

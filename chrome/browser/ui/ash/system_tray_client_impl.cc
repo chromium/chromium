@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/locale_update_controller.h"
@@ -73,7 +73,7 @@ using session_manager::SessionState;
 
 namespace {
 
-SystemTrayClient* g_system_tray_client_instance = nullptr;
+SystemTrayClientImpl* g_system_tray_client_instance = nullptr;
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -132,12 +132,13 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
 
 }  // namespace
 
-class SystemTrayClient::EnterpriseAccountObserver
+class SystemTrayClientImpl::EnterpriseAccountObserver
     : public user_manager::UserManager::UserSessionStateObserver,
       public policy::CloudPolicyStore::Observer,
       public session_manager::SessionManagerObserver {
  public:
-  explicit EnterpriseAccountObserver(SystemTrayClient* owner) : owner_(owner) {
+  explicit EnterpriseAccountObserver(SystemTrayClientImpl* owner)
+      : owner_(owner) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
     session_state_observation_.Observe(manager);
     session_observation_.Observe(session_manager::SessionManager::Get());
@@ -149,7 +150,7 @@ class SystemTrayClient::EnterpriseAccountObserver
   ~EnterpriseAccountObserver() override = default;
 
  private:
-  SystemTrayClient* const owner_;
+  SystemTrayClientImpl* const owner_;
   Profile* profile_ = nullptr;
 
   base::ScopedObservation<
@@ -202,7 +203,7 @@ class SystemTrayClient::EnterpriseAccountObserver
   }
 };
 
-SystemTrayClient::SystemTrayClient()
+SystemTrayClientImpl::SystemTrayClientImpl()
     : system_tray_(ash::SystemTray::Get()),
       update_notification_style_(ash::NotificationStyle::kDefault),
       enterprise_account_observer_(
@@ -234,7 +235,7 @@ SystemTrayClient::SystemTrayClient()
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
-SystemTrayClient::~SystemTrayClient() {
+SystemTrayClientImpl::~SystemTrayClientImpl() {
   DCHECK_EQ(this, g_system_tray_client_instance);
   g_system_tray_client_instance = nullptr;
 
@@ -252,11 +253,11 @@ SystemTrayClient::~SystemTrayClient() {
 }
 
 // static
-SystemTrayClient* SystemTrayClient::Get() {
+SystemTrayClientImpl* SystemTrayClientImpl::Get() {
   return g_system_tray_client_instance;
 }
 
-void SystemTrayClient::SetUpdateNotificationState(
+void SystemTrayClientImpl::SetUpdateNotificationState(
     ash::NotificationStyle style,
     const std::u16string& notification_title,
     const std::u16string& notification_body) {
@@ -266,45 +267,45 @@ void SystemTrayClient::SetUpdateNotificationState(
   HandleUpdateAvailable(ash::UpdateType::kSystem);
 }
 
-void SystemTrayClient::SetLacrosUpdateAvailable() {
+void SystemTrayClientImpl::SetLacrosUpdateAvailable() {
   HandleUpdateAvailable(ash::UpdateType::kLacros);
 }
 
-void SystemTrayClient::SetPrimaryTrayEnabled(bool enabled) {
+void SystemTrayClientImpl::SetPrimaryTrayEnabled(bool enabled) {
   system_tray_->SetPrimaryTrayEnabled(enabled);
 }
 
-void SystemTrayClient::SetPrimaryTrayVisible(bool visible) {
+void SystemTrayClientImpl::SetPrimaryTrayVisible(bool visible) {
   system_tray_->SetPrimaryTrayVisible(visible);
 }
 
-void SystemTrayClient::SetPerformanceTracingIconVisible(bool visible) {
+void SystemTrayClientImpl::SetPerformanceTracingIconVisible(bool visible) {
   system_tray_->SetPerformanceTracingIconVisible(visible);
 }
 
-void SystemTrayClient::SetLocaleList(
+void SystemTrayClientImpl::SetLocaleList(
     std::vector<ash::LocaleInfo> locale_list,
     const std::string& current_locale_iso_code) {
   system_tray_->SetLocaleList(std::move(locale_list), current_locale_iso_code);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ash::mojom::SystemTrayClient:
+// ash::SystemTrayClient:
 
-void SystemTrayClient::ShowSettings(int64_t display_id) {
+void SystemTrayClientImpl::ShowSettings(int64_t display_id) {
   // TODO(jamescook): Use different metric for OS settings.
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(), display_id);
 }
 
-void SystemTrayClient::ShowBluetoothSettings() {
+void SystemTrayClientImpl::ShowBluetoothSettings() {
   base::RecordAction(base::UserMetricsAction("ShowBluetoothSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
 }
 
-void SystemTrayClient::ShowBluetoothPairingDialog(
+void SystemTrayClientImpl::ShowBluetoothPairingDialog(
     const std::string& address,
     const std::u16string& name_for_display,
     bool paired,
@@ -316,57 +317,57 @@ void SystemTrayClient::ShowBluetoothPairingDialog(
   }
 }
 
-void SystemTrayClient::ShowDateSettings() {
+void SystemTrayClientImpl::ShowDateSettings() {
   base::RecordAction(base::UserMetricsAction("ShowDateOptions"));
   // Everybody can change the time zone (even though it is a device setting).
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kDateAndTimeSectionPath);
 }
 
-void SystemTrayClient::ShowSetTimeDialog() {
+void SystemTrayClientImpl::ShowSetTimeDialog() {
   chromeos::SetTimeDialog::ShowDialog();
 }
 
-void SystemTrayClient::ShowDisplaySettings() {
+void SystemTrayClientImpl::ShowDisplaySettings() {
   base::RecordAction(base::UserMetricsAction("ShowDisplayOptions"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kDisplaySubpagePath);
 }
 
-void SystemTrayClient::ShowPowerSettings() {
+void SystemTrayClientImpl::ShowPowerSettings() {
   base::RecordAction(base::UserMetricsAction("Tray_ShowPowerOptions"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPowerSubpagePath);
 }
 
-void SystemTrayClient::ShowPrivacyAndSecuritySettings() {
+void SystemTrayClientImpl::ShowPrivacyAndSecuritySettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);
 }
 
-void SystemTrayClient::ShowChromeSlow() {
+void SystemTrayClientImpl::ShowChromeSlow() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetPrimaryUserProfile());
   chrome::ShowSlow(displayer.browser());
 }
 
-void SystemTrayClient::ShowIMESettings() {
+void SystemTrayClientImpl::ShowIMESettings() {
   base::RecordAction(base::UserMetricsAction("OpenLanguageOptionsDialog"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kInputSubpagePath);
 }
 
-void SystemTrayClient::ShowConnectedDevicesSettings() {
+void SystemTrayClientImpl::ShowConnectedDevicesSettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
 }
 
-void SystemTrayClient::ShowTetherNetworkSettings() {
+void SystemTrayClientImpl::ShowTetherNetworkSettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kMobileDataNetworksSubpagePath);
 }
 
-void SystemTrayClient::ShowWifiSyncSettings() {
+void SystemTrayClientImpl::ShowWifiSyncSettings() {
   ShowSettingsSubPageForActiveUser(
       std::string(chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath) +
       "?settingId=" +
@@ -374,7 +375,7 @@ void SystemTrayClient::ShowWifiSyncSettings() {
           chromeos::settings::mojom::Setting::kWifiSyncOnOff)));
 }
 
-void SystemTrayClient::ShowAboutChromeOS() {
+void SystemTrayClientImpl::ShowAboutChromeOS() {
   // We always want to check for updates when showing the about page from the
   // Ash UI.
   ShowSettingsSubPageForActiveUser(
@@ -382,24 +383,24 @@ void SystemTrayClient::ShowAboutChromeOS() {
       "?checkForUpdate=true");
 }
 
-void SystemTrayClient::ShowHelp() {
+void SystemTrayClientImpl::ShowHelp() {
   chrome::ShowHelpForProfile(ProfileManager::GetActiveUserProfile(),
                              chrome::HELP_SOURCE_MENU);
 }
 
-void SystemTrayClient::ShowAccessibilityHelp() {
+void SystemTrayClientImpl::ShowAccessibilityHelp() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   ash::AccessibilityManager::ShowAccessibilityHelp(displayer.browser());
 }
 
-void SystemTrayClient::ShowAccessibilitySettings() {
+void SystemTrayClientImpl::ShowAccessibilitySettings() {
   base::RecordAction(base::UserMetricsAction("ShowAccessibilitySettings"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kManageAccessibilitySubpagePath);
 }
 
-void SystemTrayClient::ShowGestureEducationHelp() {
+void SystemTrayClientImpl::ShowGestureEducationHelp() {
   base::RecordAction(base::UserMetricsAction("ShowGestureEducationHelp"));
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile)
@@ -412,25 +413,25 @@ void SystemTrayClient::ShowGestureEducationHelp() {
                                    params);
 }
 
-void SystemTrayClient::ShowPaletteHelp() {
+void SystemTrayClientImpl::ShowPaletteHelp() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   ShowSingletonTab(displayer.browser(), GURL(chrome::kChromePaletteHelpURL));
 }
 
-void SystemTrayClient::ShowPaletteSettings() {
+void SystemTrayClientImpl::ShowPaletteSettings() {
   base::RecordAction(base::UserMetricsAction("ShowPaletteOptions"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kStylusSubpagePath);
 }
 
-void SystemTrayClient::ShowPublicAccountInfo() {
+void SystemTrayClientImpl::ShowPublicAccountInfo() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   chrome::ShowPolicy(displayer.browser());
 }
 
-void SystemTrayClient::ShowEnterpriseInfo() {
+void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // At the login screen, lock screen, etc. show enterprise help in a window.
   if (SessionManager::Get()->IsUserSessionBlocked()) {
     scoped_refptr<chromeos::HelpAppLauncher> help_app(
@@ -445,7 +446,7 @@ void SystemTrayClient::ShowEnterpriseInfo() {
   chrome::ShowEnterpriseManagementPageInTabbedBrowser(displayer.browser());
 }
 
-void SystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
+void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
   // UI is not available at the lock screen.
   if (SessionManager::Get()->IsScreenLocked())
     return;
@@ -465,7 +466,7 @@ void SystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
   chromeos::InternetConfigDialog::ShowDialogForNetworkId(network_id);
 }
 
-void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
+void SystemTrayClientImpl::ShowNetworkCreate(const std::string& type) {
   if (type == ::onc::network_type::kCellular) {
     if (chromeos::features::IsCellularActivationUiEnabled()) {
       ShowSettingsCellularSetup(/*show_psim_flow=*/false);
@@ -483,7 +484,7 @@ void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
 }
 
-void SystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {
+void SystemTrayClientImpl::ShowSettingsCellularSetup(bool show_psim_flow) {
   // TODO(crbug.com/1093185) Add metrics action recorder
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showCellularSetup=true";
@@ -492,7 +493,7 @@ void SystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {
   ShowSettingsSubPageForActiveUser(page);
 }
 
-void SystemTrayClient::ShowThirdPartyVpnCreate(
+void SystemTrayClientImpl::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
@@ -504,7 +505,7 @@ void SystemTrayClient::ShowThirdPartyVpnCreate(
       ->SendShowAddDialogToExtension(extension_id);
 }
 
-void SystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
+void SystemTrayClientImpl::ShowArcVpnCreate(const std::string& app_id) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
   if (!profile ||
@@ -516,7 +517,7 @@ void SystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
       app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
 }
 
-void SystemTrayClient::ShowSettingsSimUnlock() {
+void SystemTrayClientImpl::ShowSettingsSimUnlock() {
   // TODO(https://crbug.com/1093185) Add metrics action recorder.
   SessionManager* const session_manager = SessionManager::Get();
   DCHECK(session_manager->IsSessionStarted());
@@ -526,12 +527,13 @@ void SystemTrayClient::ShowSettingsSimUnlock() {
   ShowSettingsSubPageForActiveUser(page);
 }
 
-void SystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
+void SystemTrayClientImpl::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
 }
 
-void SystemTrayClient::ShowNetworkSettingsHelper(const std::string& network_id,
-                                                 bool show_configure) {
+void SystemTrayClientImpl::ShowNetworkSettingsHelper(
+    const std::string& network_id,
+    bool show_configure) {
   SessionManager* const session_manager = SessionManager::Get();
   if (session_manager->IsInSecondaryLoginScreen())
     return;
@@ -587,21 +589,22 @@ void SystemTrayClient::ShowNetworkSettingsHelper(const std::string& network_id,
   ShowSettingsSubPageForActiveUser(page);
 }
 
-void SystemTrayClient::ShowMultiDeviceSetup() {
+void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   chromeos::multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
-void SystemTrayClient::RequestRestartForUpdate() {
+void SystemTrayClientImpl::RequestRestartForUpdate() {
   browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
 }
 
-void SystemTrayClient::SetLocaleAndExit(const std::string& locale_iso_code) {
+void SystemTrayClientImpl::SetLocaleAndExit(
+    const std::string& locale_iso_code) {
   ProfileManager::GetActiveUserProfile()->ChangeAppLocale(
       locale_iso_code, Profile::APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY);
   chrome::AttemptUserExit();
 }
 
-void SystemTrayClient::HandleUpdateAvailable(ash::UpdateType update_type) {
+void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
   if (update_type == ash::UpdateType::kSystem && !detector->notify_upgrade()) {
     LOG(ERROR) << "Tried to show update notification when no update available";
@@ -624,38 +627,38 @@ void SystemTrayClient::HandleUpdateAvailable(ash::UpdateType update_type) {
 ////////////////////////////////////////////////////////////////////////////////
 // chromeos::system::SystemClockObserver:
 
-void SystemTrayClient::OnSystemClockChanged(
+void SystemTrayClientImpl::OnSystemClockChanged(
     chromeos::system::SystemClock* clock) {
   system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // UpgradeDetector::UpgradeObserver:
-void SystemTrayClient::OnUpdateOverCellularAvailable() {
+void SystemTrayClientImpl::OnUpdateOverCellularAvailable() {
   // Requests that ash show the update over cellular available icon.
   system_tray_->SetUpdateOverCellularAvailableIconVisible(true);
 }
 
-void SystemTrayClient::OnUpdateOverCellularOneTimePermissionGranted() {
+void SystemTrayClientImpl::OnUpdateOverCellularOneTimePermissionGranted() {
   // Requests that ash hide the update over cellular available icon.
   system_tray_->SetUpdateOverCellularAvailableIconVisible(false);
 }
 
-void SystemTrayClient::OnUpgradeRecommended() {
+void SystemTrayClientImpl::OnUpgradeRecommended() {
   HandleUpdateAvailable(ash::UpdateType::kSystem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // policy::CloudPolicyStore::Observer
-void SystemTrayClient::OnStoreLoaded(policy::CloudPolicyStore* store) {
+void SystemTrayClientImpl::OnStoreLoaded(policy::CloudPolicyStore* store) {
   UpdateEnterpriseDomainInfo();
 }
 
-void SystemTrayClient::OnStoreError(policy::CloudPolicyStore* store) {
+void SystemTrayClientImpl::OnStoreError(policy::CloudPolicyStore* store) {
   UpdateEnterpriseDomainInfo();
 }
 
-void SystemTrayClient::UpdateEnterpriseDomainInfo() {
+void SystemTrayClientImpl::UpdateEnterpriseDomainInfo() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   const std::string enterprise_domain_manager =
@@ -672,7 +675,7 @@ void SystemTrayClient::UpdateEnterpriseDomainInfo() {
   last_active_directory_managed_ = active_directory_managed;
 }
 
-void SystemTrayClient::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
+void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
   const std::string account_manager =
       profile ? ManagementUIHandler::GetAccountManager(profile) : std::string();
   if (account_manager == last_enterprise_account_domain_manager_)

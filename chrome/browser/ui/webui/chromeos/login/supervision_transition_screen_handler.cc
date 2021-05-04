@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
@@ -102,7 +102,7 @@ void SupervisionTransitionScreenHandler::Show() {
 
   // Disable system tray, shutdown button and prevent login as guest when
   // supervision transition screen is shown.
-  SystemTrayClient::Get()->SetPrimaryTrayEnabled(false);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(false);
   ash::LoginScreen::Get()->EnableShutdownButton(false);
   ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
   ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
@@ -148,7 +148,7 @@ void SupervisionTransitionScreenHandler::OnSupervisionTransitionFinished() {
   // RegisterMessages()). Once this screen exits, user session will be started,
   // so there's no need to re-enable shutdown button from login screen, only the
   // system tray.
-  SystemTrayClient::Get()->SetPrimaryTrayEnabled(true);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(true);
   if (screen_)
     screen_->OnSupervisionTransitionFinished();
 

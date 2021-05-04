@@ -2878,7 +2878,7 @@ if (!is_android) {
         "../browser/ui/ash/shelf/chrome_shelf_controller_test_util.cc",
         "../browser/ui/ash/shelf/chrome_shelf_controller_test_util.h",
         "../browser/ui/ash/shelf_browsertest.cc",
-        "../browser/ui/ash/system_tray_client_browsertest.cc",
+        "../browser/ui/ash/system_tray_client_impl_browsertest.cc",
         "../browser/ui/ash/system_tray_tray_cast_browsertest_media_router_chromeos.cc",
         "../browser/ui/ash/tab_scrubber_browsertest.cc",
         "../browser/ui/ash/tablet_mode_page_behavior_browsertest.cc",

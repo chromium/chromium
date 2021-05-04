@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
-  SystemTrayClient::Get()->ShowGestureEducationHelp();
+  SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
 
   EXPECT_NO_FATAL_FAILURE(
       WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));

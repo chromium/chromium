@@ -17,7 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_service.h"
 
@@ -112,7 +112,7 @@ class DelegateImpl : public BrowserLoader::Delegate {
   void SetLacrosUpdateAvailable() override {
     if (base::FeatureList::IsEnabled(kLacrosShowUpdateNotifications)) {
       // Show the update notification in ash.
-      SystemTrayClient::Get()->SetLacrosUpdateAvailable();
+      SystemTrayClientImpl::Get()->SetLacrosUpdateAvailable();
     }
   }
 };

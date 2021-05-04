@@ -46,7 +46,7 @@
 #include "chrome/browser/chromeos/input_method/input_method_syncer.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -724,7 +724,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       tracing_manager_ = ContentTracingManager::Create();
     else
       tracing_manager_.reset();
-    SystemTrayClient::Get()->SetPerformanceTracingIconVisible(enabled);
+    SystemTrayClientImpl::Get()->SetPerformanceTracingIconVisible(enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTapToClickEnabled) {

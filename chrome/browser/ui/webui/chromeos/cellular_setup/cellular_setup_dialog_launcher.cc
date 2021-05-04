@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_dialog.h"
 
 namespace chromeos {
@@ -14,7 +14,8 @@ namespace cellular_setup {
 
 void OpenCellularSetupDialog(const std::string& cellular_network_guid) {
   if (chromeos::features::IsCellularActivationUiEnabled())
-    SystemTrayClient::Get()->ShowSettingsCellularSetup(/*show_psim_flow=*/true);
+    SystemTrayClientImpl::Get()->ShowSettingsCellularSetup(
+        /*show_psim_flow=*/true);
   else
     MobileSetupDialog::ShowByNetworkId(cellular_network_guid);
 }
