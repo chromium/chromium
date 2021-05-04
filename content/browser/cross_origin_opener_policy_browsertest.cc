@@ -187,10 +187,10 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       "a.com", "/set-header?cross-origin-opener-policy: same-origin"));
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-  RenderFrameHostImpl* main_frame = current_frame_host();
+  RenderFrameHostImpl* main_rfh = current_frame_host();
 
   // Create same origin child frame.
-  ASSERT_TRUE(ExecJs(main_frame, R"(
+  ASSERT_TRUE(ExecJs(main_rfh, R"(
     let frame = document.createElement('iframe');
     frame.src = '/empty.html';
     document.body.appendChild(frame);
@@ -198,17 +198,17 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
-  RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-  EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
+  RenderFrameHostImpl* iframe_rfh = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(ExecJs(iframe_rfh, "window.open('about:blank')"));
 
-  RenderFrameHostImpl* popup_frame =
+  RenderFrameHostImpl* popup_rfh =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents())
           ->GetFrameTree()
           ->root()
           ->current_frame_host();
 
-  EXPECT_EQ(main_frame->cross_origin_opener_policy(), CoopSameOrigin());
-  EXPECT_EQ(popup_frame->cross_origin_opener_policy(), CoopSameOrigin());
+  EXPECT_EQ(main_rfh->cross_origin_opener_policy(), CoopSameOrigin());
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOrigin());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       "/set-header?cross-origin-opener-policy: same-origin-allow-popups"));
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-  RenderFrameHostImpl* main_frame = current_frame_host();
+  RenderFrameHostImpl* main_rfh = current_frame_host();
 
   // Create same origin child frame.
   ASSERT_TRUE(ExecJs(current_frame_host(), R"(
@@ -229,18 +229,18 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
-  RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-  EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
+  RenderFrameHostImpl* iframe_rfh = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(ExecJs(iframe_rfh, "window.open('about:blank')"));
 
-  RenderFrameHostImpl* popup_frame =
+  RenderFrameHostImpl* popup_rfh =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents())
           ->GetFrameTree()
           ->root()
           ->current_frame_host();
 
-  EXPECT_EQ(main_frame->cross_origin_opener_policy(),
+  EXPECT_EQ(main_rfh->cross_origin_opener_policy(),
             CoopSameOriginAllowPopups());
-  EXPECT_EQ(popup_frame->cross_origin_opener_policy(),
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopSameOriginAllowPopups());
 }
 
@@ -252,29 +252,29 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-  RenderFrameHostImpl* main_frame = current_frame_host();
+  RenderFrameHostImpl* main_rfh = current_frame_host();
 
   // Create cross origin child frame.
-  ASSERT_TRUE(ExecJs(main_frame, JsReplace(R"(
+  ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
     let frame = document.createElement('iframe');
     frame.src = $1;
     document.body.appendChild(frame);
   )",
-                                           url_b)));
+                                         url_b)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
-  RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-  EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
+  RenderFrameHostImpl* iframe_rfh = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(ExecJs(iframe_rfh, "window.open('about:blank')"));
 
-  RenderFrameHostImpl* popup_frame =
+  RenderFrameHostImpl* popup_rfh =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents())
           ->GetFrameTree()
           ->root()
           ->current_frame_host();
 
-  EXPECT_EQ(main_frame->cross_origin_opener_policy(), CoopSameOrigin());
-  EXPECT_EQ(popup_frame->cross_origin_opener_policy(), CoopUnsafeNone());
+  EXPECT_EQ(main_rfh->cross_origin_opener_policy(), CoopSameOrigin());
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopUnsafeNone());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -290,38 +290,40 @@ IN_PROC_BROWSER_TEST_P(
 
     EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-    RenderFrameHostImpl* main_frame = current_frame_host();
+    RenderFrameHostImpl* main_rfh = current_frame_host();
 
     // Create cross origin child frame.
-    ASSERT_TRUE(ExecJs(main_frame, JsReplace(R"(
+    ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
         let frame = document.createElement('iframe');
         frame.src = $1;
         document.body.appendChild(frame);
     )",
-                                             url_b)));
+                                           url_b)));
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     ShellAddedObserver new_shell_observer;
-    RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-    EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
+    RenderFrameHostImpl* iframe_rfh =
+        main_rfh->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(iframe_rfh, "window.open('about:blank')"));
 
     Shell* new_shell = new_shell_observer.GetShell();
-    RenderFrameHostImpl* popup_frame =
+    RenderFrameHostImpl* popup_rfh =
         static_cast<WebContentsImpl*>(new_shell->web_contents())
             ->GetFrameTree()
             ->root()
             ->current_frame_host();
 
-    scoped_refptr<SiteInstance> main_frame_site_instance(
-        main_frame->GetSiteInstance());
-    scoped_refptr<SiteInstance> iframe_site_instance(iframe->GetSiteInstance());
+    scoped_refptr<SiteInstance> main_rfh_site_instance(
+        main_rfh->GetSiteInstance());
+    scoped_refptr<SiteInstance> iframe_site_instance(
+        iframe_rfh->GetSiteInstance());
     scoped_refptr<SiteInstance> popup_site_instance(
-        popup_frame->GetSiteInstance());
+        popup_rfh->GetSiteInstance());
 
-    ASSERT_TRUE(main_frame_site_instance);
+    ASSERT_TRUE(main_rfh_site_instance);
     ASSERT_TRUE(iframe_site_instance);
     ASSERT_TRUE(popup_site_instance);
-    EXPECT_FALSE(main_frame_site_instance->IsRelatedSiteInstance(
+    EXPECT_FALSE(main_rfh_site_instance->IsRelatedSiteInstance(
         popup_site_instance.get()));
     EXPECT_FALSE(
         iframe_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
@@ -341,10 +343,10 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
   ShellAddedObserver shell_observer;
-  RenderFrameHostImpl* iframe =
+  RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
 
-  EXPECT_TRUE(ExecJs(iframe, JsReplace("window.open($1);", openee_url)));
+  EXPECT_TRUE(ExecJs(iframe_rfh, JsReplace("window.open($1);", openee_url)));
 
   auto* popup_webcontents =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
@@ -2322,9 +2324,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     same_origin_iframe_navigation.WaitForNavigationFinished();
     EXPECT_TRUE(same_origin_iframe_navigation.was_successful());
-    RenderFrameHostImpl* iframe =
+    RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
-    SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+    SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_EQ(iframe_si, main_si);
   }
 
@@ -2342,9 +2344,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     cross_origin_iframe_navigation.WaitForNavigationFinished();
     EXPECT_TRUE(cross_origin_iframe_navigation.was_successful());
-    RenderFrameHostImpl* iframe =
+    RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(1)->current_frame_host();
-    SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+    SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
     EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
     EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
@@ -2373,7 +2375,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // Open a non isolated popup.
   {
-    RenderFrameHostImpl* popup_frame =
+    RenderFrameHostImpl* popup_rfh =
         static_cast<WebContentsImpl*>(
             OpenPopup(current_frame_host(), non_isolated_page, "")
                 ->web_contents())
@@ -2381,31 +2383,29 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
             ->root()
             ->current_frame_host();
 
-    EXPECT_FALSE(
-        popup_frame->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
-    EXPECT_FALSE(popup_frame->GetSiteInstance()->IsRelatedSiteInstance(
+    EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
+    EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
-    EXPECT_FALSE(popup_frame->frame_tree_node()->opener());
+    EXPECT_FALSE(popup_rfh->frame_tree_node()->opener());
   }
 
   // Open an isolated popup.
   {
-    RenderFrameHostImpl* popup_frame =
+    RenderFrameHostImpl* popup_rfh =
         static_cast<WebContentsImpl*>(
             OpenPopup(current_frame_host(), isolated_page, "")->web_contents())
             ->GetFrameTree()
             ->root()
             ->current_frame_host();
 
-    EXPECT_TRUE(
-        popup_frame->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
-    EXPECT_EQ(popup_frame->GetSiteInstance(),
+    EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
+    EXPECT_EQ(popup_rfh->GetSiteInstance(),
               current_frame_host()->GetSiteInstance());
   }
 
   // Open an isolated popup, but cross-origin.
   {
-    RenderFrameHostImpl* popup_frame =
+    RenderFrameHostImpl* popup_rfh =
         static_cast<WebContentsImpl*>(
             OpenPopup(current_frame_host(), isolated_page_b, "")
                 ->web_contents())
@@ -2413,12 +2413,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
             ->root()
             ->current_frame_host();
 
-    EXPECT_TRUE(
-        popup_frame->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
-    EXPECT_FALSE(popup_frame->GetSiteInstance()->IsRelatedSiteInstance(
+    EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
+    EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
-    EXPECT_FALSE(popup_frame->frame_tree_node()->opener());
-    EXPECT_NE(popup_frame->GetSiteInstance()->GetProcess(),
+    EXPECT_FALSE(popup_rfh->frame_tree_node()->opener());
+    EXPECT_NE(popup_rfh->GetSiteInstance()->GetProcess(),
               current_frame_host()->GetSiteInstance()->GetProcess());
   }
 }
@@ -2457,13 +2456,13 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     iframe_navigation.WaitForNavigationFinished();
     EXPECT_FALSE(iframe_navigation.was_successful());
-    RenderFrameHostImpl* iframe =
+    RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
-    SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+    SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     // The load of the document with 404 status code is blocked by COEP.
     // An error page is expected in lieu of that document.
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
-              EvalJs(iframe, "document.location.href;"));
+              EvalJs(iframe_rfh, "document.location.href;"));
     EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   }
@@ -2481,15 +2480,15 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     iframe_navigation.WaitForNavigationFinished();
     EXPECT_FALSE(iframe_navigation.was_successful());
-    RenderFrameHostImpl* iframe =
+    RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
-    SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+    SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
 
     // The load of the document with 404 status code and custom body is blocked
     // by COEP. An error page is expected in lieu of that document.
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
-              EvalJs(iframe, "document.location.href;"));
+              EvalJs(iframe_rfh, "document.location.href;"));
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   }
 
@@ -2506,9 +2505,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     iframe_navigation.WaitForNavigationFinished();
     EXPECT_FALSE(iframe_navigation.was_successful());
-    RenderFrameHostImpl* iframe =
+    RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
-    SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+    SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   }
@@ -2581,28 +2580,27 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   cross_origin_iframe_navigation.WaitForNavigationFinished();
   EXPECT_TRUE(cross_origin_iframe_navigation.was_successful());
-  RenderFrameHostImpl* iframe =
+  RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
-  SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+  SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
   EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
   EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
 
   // Open an isolated popup, but cross-origin.
   {
-    RenderFrameHostImpl* popup_frame =
+    RenderFrameHostImpl* popup_rfh =
         static_cast<WebContentsImpl*>(
-            OpenPopup(iframe, isolated_page, "", "", false)->web_contents())
+            OpenPopup(iframe_rfh, isolated_page, "", "", false)->web_contents())
             ->GetFrameTree()
             ->root()
             ->current_frame_host();
 
-    EXPECT_TRUE(
-        popup_frame->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
-    EXPECT_FALSE(popup_frame->GetSiteInstance()->IsRelatedSiteInstance(
+    EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
+    EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
-    EXPECT_FALSE(popup_frame->frame_tree_node()->opener());
-    EXPECT_NE(popup_frame->GetSiteInstance()->GetProcess(),
+    EXPECT_FALSE(popup_rfh->frame_tree_node()->opener());
+    EXPECT_NE(popup_rfh->GetSiteInstance()->GetProcess(),
               current_frame_host()->GetSiteInstance()->GetProcess());
   }
 }
