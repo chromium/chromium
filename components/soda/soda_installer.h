@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_SODA_INSTALLER_H_
-#define CHROME_BROWSER_ACCESSIBILITY_SODA_INSTALLER_H_
+#ifndef COMPONENTS_SODA_SODA_INSTALLER_H_
+#define COMPONENTS_SODA_SODA_INSTALLER_H_
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
@@ -121,4 +121,4 @@ class SodaInstaller {
 
 }  // namespace speech
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_SODA_INSTALLER_H_
+#endif  // COMPONENTS_SODA_SODA_INSTALLER_H_

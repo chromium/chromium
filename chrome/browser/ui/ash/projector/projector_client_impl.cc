@@ -6,9 +6,9 @@
 
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "base/optional.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 
 namespace {

@@ -1,4 +1,8 @@
 include_rules = [
+  "+ash/public/cpp",
   "+components/component_updater/component_updater_paths.h",
+  "+components/live_caption",
+  "+components/prefs",
   "+components/strings/grit/components_strings.h",
+  "+media/base",
 ]

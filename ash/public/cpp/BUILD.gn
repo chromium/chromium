@@ -321,6 +321,7 @@ component("cpp") {
     "//ash/public/cpp/external_arc",
     "//components/arc",
     "//components/exo",
+    "//components/soda",
   ]
 
   deps = [

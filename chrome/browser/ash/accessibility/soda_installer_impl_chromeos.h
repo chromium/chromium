@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SODA_INSTALLER_IMPL_CHROMEOS_H_
 
 #include "base/files/file_path.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "components/soda/soda_installer.h"
 
 class PrefService;
 class OnDeviceSpeechRecognizerTest;

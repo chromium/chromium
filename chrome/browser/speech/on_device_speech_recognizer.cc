@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "components/soda/soda_installer.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_system.h"

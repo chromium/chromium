@@ -11,10 +11,10 @@
 
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
+#include "components/soda/soda_installer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 

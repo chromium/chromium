@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/soda/soda_installer.h"
 
 class PrefService;
 

@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 
 class PrefChangeRegistrar;

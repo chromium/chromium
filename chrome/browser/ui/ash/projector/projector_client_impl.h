@@ -10,8 +10,8 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "components/soda/soda_installer.h"
 
 class OnDeviceSpeechRecognizer;
 

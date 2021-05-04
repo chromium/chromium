@@ -4,10 +4,10 @@
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/media_switches.h"

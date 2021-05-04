@@ -4309,7 +4309,6 @@ test("unit_tests") {
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/patch/content",
     "//components/services/unzip/content",
-    "//components/soda:constants",
     "//components/spellcheck:buildflags",
     "//components/strings",
     "//components/subresource_filter/core/browser:test_support",
@@ -5002,7 +5001,10 @@ test("unit_tests") {
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
     ]
 
-    deps += [ "//services/network:test_support" ]
+    deps += [
+      "//components/soda:constants",
+      "//services/network:test_support",
+    ]
 
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:unit_tests_js" ]
