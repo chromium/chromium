@@ -43,7 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="OptimizationGuide.ApplyDecisionAsync"
-    enum="OptimizationGuideOptimizationTypeDecision" expires_after="M94">
+    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2021-10-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency"
-    units="ms" expires_after="M94">
+    units="ms" expires_after="2021-10-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus"
     enum="OptimizationGuideRaceNavigationFetchAttemptStatus"
-    expires_after="M94">
+    expires_after="2021-10-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -386,7 +386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
-    enum="OptimizationGuideOptimizationFilterStatus" expires_after="M94">
+    enum="OptimizationGuideOptimizationFilterStatus" expires_after="2021-10-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -708,7 +708,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.ProcessHintsResult"
-    enum="OptimizationGuideProcessHintsResult" expires_after="M94">
+    enum="OptimizationGuideProcessHintsResult" expires_after="2021-10-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -719,7 +719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.RemoteFetchingEnabled"
-    units="BooleanEnabled" expires_after="M94">
+    units="BooleanEnabled" expires_after="2021-10-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

@@ -2249,7 +2249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Port.SlipstreamRestricted" enum="SlipstreamPort"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>ricea@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <summary>

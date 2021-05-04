@@ -1038,7 +1038,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.ReferrerAttributionResult"
-    enum="SafeBrowsingAttributionResultTypes" expires_after="2021-08-29">
+    enum="SafeBrowsingAttributionResultTypes" expires_after="2021-10-31">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1148,7 +1148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetCache.Time" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1159,7 +1159,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetCacheResult"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2021-08-29">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2021-10-31">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

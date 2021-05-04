@@ -1438,7 +1438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
-    expires_after="2021-08-15">
+    expires_after="2021-10-31">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -2122,7 +2122,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.InteractionDelayAfterPause"
-    units="ms" expires_after="2021-08-29">
+    units="ms" expires_after="2021-10-31">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2641,7 +2641,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
-    expires_after="2021-08-30">
+    expires_after="2021-10-31">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>

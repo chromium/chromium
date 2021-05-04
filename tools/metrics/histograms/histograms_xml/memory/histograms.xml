@@ -263,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
-    expires_after="2021-08-27">
+    expires_after="2021-10-31">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -349,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
-    expires_after="2021-08-27">
+    expires_after="2021-10-31">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

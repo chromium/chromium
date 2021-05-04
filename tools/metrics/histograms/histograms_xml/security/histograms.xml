@@ -215,7 +215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.PasswordEntry.SiteEngagementLevel"
-    enum="SiteEngagementLevel" expires_after="2021-08-29">
+    enum="SiteEngagementLevel" expires_after="2021-10-31">
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.CloseTab" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -545,7 +545,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
-    enum="SecurityLevel" expires_after="M94">
+    enum="SecurityLevel" expires_after="2021-10-31">
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>

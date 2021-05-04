@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteBeforeWriteResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -249,7 +249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -269,7 +269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.DestroyResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -279,7 +279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.ExpiredNotificationCount"
-    units="notifications" expires_after="M94">
+    units="notifications" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -302,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.OpenAfterCorruptionResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -323,7 +323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.ReadForServiceWorkerResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -958,7 +958,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="M94">
+    enum="WindowsNotificationActivationStatus" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>chengx@chromium.org</owner>
@@ -1001,7 +1001,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="M94">
+    enum="WindowsNotificationDisplayStatus" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1036,7 +1036,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.GetNotificationLaunchIdStatus"
-    enum="WindowsNotificationGetNotificationLaunchIdStatus" expires_after="M94">
+    enum="WindowsNotificationGetNotificationLaunchIdStatus"
+    expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1057,7 +1058,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicyStartup"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="M94">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -1068,7 +1069,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingStatus"
-    enum="WindowsNotificationGetSettingStatus" expires_after="M94">
+    enum="WindowsNotificationGetSettingStatus" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1089,7 +1090,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Windows.HandleEventStatus"
-    enum="WindowsNotificationHandleEventStatus" expires_after="M94">
+    enum="WindowsNotificationHandleEventStatus" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

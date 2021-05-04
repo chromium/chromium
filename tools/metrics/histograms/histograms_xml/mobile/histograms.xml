@@ -515,7 +515,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.NotifyFailure"
-    enum="SystemNotificationType" expires_after="2021-08-22">
+    enum="SystemNotificationType" expires_after="2021-10-31">
   <owner>knollr@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>

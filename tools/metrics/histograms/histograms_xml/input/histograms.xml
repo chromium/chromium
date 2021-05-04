@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.InsufficientData"
-    enum="IMEAssistiveAction" expires_after="2021-08-29">
+    enum="IMEAssistiveAction" expires_after="2021-10-31">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -856,7 +856,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.SwitchMode" enum="IMEVKMode"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

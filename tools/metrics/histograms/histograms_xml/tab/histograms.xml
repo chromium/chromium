@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.ExternalApplicationOpened" enum="ExternalLauncherOption"
-    expires_after="2021-08-01">
+    expires_after="2021-10-31">
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

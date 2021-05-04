@@ -475,7 +475,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>maajid@google.com</owner>
   <owner>shaochuan@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -501,7 +501,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.ExternalStorage.MountedMediaVisibility"
-    enum="BooleanEnabled" expires_after="2021-09-01">
+    enum="BooleanEnabled" expires_after="2021-10-31">
   <owner>fukino@chromium.org</owner>
   <owner>yusukes@chromium.org</owner>
   <summary>
@@ -715,7 +715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode" enum="ArcOptInSilentAuthCode"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>elijahtaylor@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the ARC OptIn flow.
@@ -783,7 +783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.QueryTime" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>hejq@chromium.org</owner>
   <summary>
     Time between sending an Play Store app discovery request and the storing

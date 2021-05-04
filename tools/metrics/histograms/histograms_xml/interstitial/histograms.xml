@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.did_user_revoke_decisions2"
-    enum="BooleanRevoked" expires_after="M94">
+    enum="BooleanRevoked" expires_after="2021-10-31">
   <owner>carlosil@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
-    expires_after="M94">
+    expires_after="2021-10-31">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>

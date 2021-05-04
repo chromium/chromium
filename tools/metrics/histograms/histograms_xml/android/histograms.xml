@@ -344,7 +344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ChildProcessLauncher.OnServiceConnectedTimedOutResult"
-    enum="OnServiceConnectedTimedOutResult" expires_after="2021-08-29">
+    enum="OnServiceConnectedTimedOutResult" expires_after="2021-10-31">
   <owner>boliu@chromium.org</owner>
   <owner>src/base/android/OWNERS</owner>
   <summary>
@@ -895,7 +895,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DownloadManager.NotificationInteraction"
-    enum="DownloadNotificationInteractions" expires_after="2021-08-29">
+    enum="DownloadNotificationInteractions" expires_after="2021-10-31">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

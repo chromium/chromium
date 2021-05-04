@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
-    expires_after="2021-08-31">
+    expires_after="2021-10-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -321,7 +321,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
-    expires_after="2021-08-31">
+    expires_after="2021-10-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -1681,7 +1681,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.InteractiveTiming.FirstInputDelay.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2021-08-29">
+    units="ms" expires_after="2021-10-31">
   <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -1716,7 +1716,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.FirstInputTimestamp4" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2053,7 +2053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.LayoutInstability.CumulativeShiftScore.AfterBackForwardCacheRestore"
-    units="scorex10" expires_after="2021-08-29">
+    units="scorex10" expires_after="2021-10-31">
   <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -2078,7 +2078,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.AfterBackForwardCacheRestore"
-    units="scorex10" expires_after="2021-08-29">
+    units="scorex10" expires_after="2021-10-31">
   <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -2316,7 +2316,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToFirstPaint.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2021-08-29">
+    units="ms" expires_after="2021-10-31">
   <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -2616,7 +2616,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageSerialization.MhtmlLoading.LoadResult"
-    enum="MhtmlLoadResult" expires_after="2021-08-29">
+    enum="MhtmlLoadResult" expires_after="2021-10-31">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>Reports the result of an attempt to load an MHTML archive.</summary>

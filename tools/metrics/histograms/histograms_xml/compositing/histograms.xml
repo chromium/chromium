@@ -57,7 +57,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Browser.LayerTreeImpl.CalculateDrawPropertiesUs"
-    units="microseconds" expires_after="2021-08-29">
+    units="microseconds" expires_after="2021-10-31">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

@@ -57,7 +57,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-08-29">
+<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-10-31">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the backlight as a percentage when the user is on AC. Sampled
@@ -262,7 +262,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency" units="50 MHz"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -299,7 +299,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-10-25">
+    expires_after="2021-10-31">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -465,7 +465,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
@@ -885,7 +885,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -995,7 +995,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxPower" units="W"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>
@@ -1016,7 +1016,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>

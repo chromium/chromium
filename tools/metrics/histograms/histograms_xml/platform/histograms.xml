@@ -593,7 +593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.Meminfo" units="KB" expires_after="2021-10-25">
+<histogram name="Platform.Meminfo" units="KB" expires_after="2021-10-31">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -1005,7 +1005,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Temperature.Sensor00" units="Celsius"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>fletcherw@chromium.org</owner>
   <summary>
     Temperature reading from EC temperature sensor 0 (TSR0) taken every 30s.
@@ -1047,7 +1047,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Temperature.Sensor02" units="Celsius"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>fletcherw@chromium.org</owner>
   <summary>
     Temperature reading from EC temperature sensor 2 (TSR2) taken every 30s.
@@ -1122,7 +1122,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Thermal.Temperature.Cpu.0" units="Celsius"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>julanhsu@google.com</owner>
   <owner>caiz@google.com</owner>
   <summary>

@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -130,7 +130,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
-    enum="BooleanCorrect" expires_after="2021-09-01">
+    enum="BooleanCorrect" expires_after="2021-10-31">
   <owner>yichengli@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
-    enum="BooleanIgnored" expires_after="2021-09-01">
+    enum="BooleanIgnored" expires_after="2021-10-31">
   <owner>ravisadineni@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Overall" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -202,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2021-09-01">
+    enum="FingerprintRecordFormatVersion" expires_after="2021-10-31">
   <owner>yichengli@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>

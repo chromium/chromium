@@ -1152,7 +1152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutocompleteActionPredictor.DatabaseAction"
-    enum="AutocompleteActionPredictorDatabaseAction" expires_after="2021-08-29">
+    enum="AutocompleteActionPredictorDatabaseAction" expires_after="2021-10-31">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1172,7 +1172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutocompleteActionPredictor.MatchIsInDb" units="units"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1826,7 +1826,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>How users add a new bookmark.</summary>
@@ -1970,7 +1970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BootTime.Total2" units="ms" expires_after="2021-08-29">
+<histogram name="BootTime.Total2" units="ms" expires_after="2021-10-31">
   <owner>bccheng@chromium.org</owner>
   <owner>semenzato@chromium.org</owner>
   <summary>Time from power on to login panel ready (Chrome OS).</summary>
@@ -3251,7 +3251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.DelayedElementDetails"
-    enum="ContextMenuDelayedElementDetails" expires_after="2021-08-29">
+    enum="ContextMenuDelayedElementDetails" expires_after="2021-10-31">
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/OWNERS</owner>
   <summary>
@@ -3295,7 +3295,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.LensChip.Event" enum="LensChipEvent"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <summary>
@@ -3440,7 +3440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.URLClicked" enum="BooleanClicked"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>Logged when the URL is clicked. Android only.</summary>
@@ -6437,7 +6437,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.InvalidBeforeSwap" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6450,7 +6450,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.InvalidFromFuture" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6462,7 +6462,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.LargePresentationDelta"
-    units="ms" expires_after="2021-09-01">
+    units="ms" expires_after="2021-10-31">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6974,7 +6974,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnChange" units="units"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -6984,7 +6984,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Hardware.Display.Count.OnStartup" units="units"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -7445,7 +7445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>brucedawson@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -8920,7 +8920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.HintAgent.HasHint" units="boolean"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -8940,7 +8940,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.NavigationMetrics.FrameRebufferMapSize"
-    units="count" expires_after="M94">
+    units="count" expires_after="2021-10-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9153,7 +9153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9177,7 +9177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2021-09-15">
+    expires_after="2021-10-31">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -10226,7 +10226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NQE.ConnectivityMonitor.TimeToSwitchNetworks" units="ms"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>rockot@google.com</owner>
   <owner>zhongyi@chromium.org</owner>
   <summary>
@@ -11730,7 +11730,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -12403,7 +12403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.GetRegistrationStatus"
-    enum="PushGetRegistrationStatus" expires_after="M94">
+    enum="PushGetRegistrationStatus" expires_after="2021-10-31">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -12440,7 +12440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.RegistrationStatus"
-    enum="PushRegistrationStatus" expires_after="M94">
+    enum="PushRegistrationStatus" expires_after="2021-10-31">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -13267,7 +13267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ResourceScheduler.RequestQueuingDuration" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2021-10-31">
   <owner>tbansal@chromium.org</owner>
   <summary>
     The amount of time the ResourceScheduler queued a request. Recorded in
@@ -14289,7 +14289,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.LoadResult2" enum="SignedExchangeLoadResult"
-    expires_after="M94">
+    expires_after="2021-10-31">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -14381,7 +14381,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationResult"
-    enum="SignedExchangeSignatureVerificationResult" expires_after="M94">
+    enum="SignedExchangeSignatureVerificationResult" expires_after="2021-10-31">
   <owner>kinuko@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -17058,7 +17058,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpgradeDetector.DaysBeforeUpgrade" units="days"
-    expires_after="M94">
+    expires_after="2021-10-31">
   <owner>emshack@chromium.org</owner>
   <owner>pbos@chromium.org</owner>
   <summary>
@@ -17874,7 +17874,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
-    enum="AppTypeToMenuEntry" expires_after="2021-09-01">
+    enum="AppTypeToMenuEntry" expires_after="2021-10-31">
   <owner>finnur@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <summary>
@@ -17960,7 +17960,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>ericwilligers@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -18068,7 +18068,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Launcher.LaunchResult"
-    enum="WebAppLauncherLaunchResult" expires_after="2021-08-09">
+    enum="WebAppLauncherLaunchResult" expires_after="2021-10-31">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -19061,7 +19061,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WorkerThread.ExitCode" enum="WorkerThreadExitCode"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>Records the exit code of WorkerThread.</summary>

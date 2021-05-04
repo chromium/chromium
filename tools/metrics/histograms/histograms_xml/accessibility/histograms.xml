@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
-    expires_after="2021-08-30">
+    expires_after="2021-10-31">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -88,7 +88,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
-    expires_after="2021-08-30">
+    expires_after="2021-10-31">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -349,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
-    expires_after="2021-08-22">
+    expires_after="2021-10-31">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -526,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosVirtualKeyboard" enum="BooleanEnabled"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

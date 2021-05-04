@@ -162,7 +162,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Atlas" units="count"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -195,7 +195,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Kohaku" units="count"
-    expires_after="2021-08-29">
+    expires_after="2021-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Nocturne"
-    units="count" expires_after="2021-08-29">
+    units="count" expires_after="2021-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -300,7 +300,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.GlobalCurveResetOnInitialization"
-    enum="Boolean" expires_after="2021-08-29">
+    enum="Boolean" expires_after="2021-10-31">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
