@@ -64,10 +64,6 @@ const base::Feature kDownloadRequestWithToken{
 const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionReferringAppEnabledAndroid{
-    "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPasswordProtectionForSignedInUsers {
   "SafeBrowsingPasswordProtectionForSignedInUsers",
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -153,7 +149,6 @@ constexpr struct {
     {&kDelayedWarnings, true},
     {&kDownloadRequestWithToken, true},
     {&kLimitedListSizeForIOS, true},
-    {&kPasswordProtectionReferringAppEnabledAndroid, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupEnabled, true},

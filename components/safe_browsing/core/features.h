@@ -55,9 +55,6 @@ extern const base::Feature kDownloadRequestWithToken;
 // limits the number of entries stored in each Safe Browsing list.
 extern const base::Feature kLimitedListSizeForIOS;
 
-// Include referring app info in password protection requests on Android.
-extern const base::Feature kPasswordProtectionReferringAppEnabledAndroid;
-
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 

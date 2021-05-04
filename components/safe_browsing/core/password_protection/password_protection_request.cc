@@ -231,10 +231,6 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   SetReferringAppInfo();
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_ANDROID)
-  SetReferringAppInfo();
-#endif  // defined(OS_ANDROID)
-
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
       LoginReputationClientRequest::Frame::Form* password_form;
