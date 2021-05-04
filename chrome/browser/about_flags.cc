@@ -1193,23 +1193,6 @@ const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
         nullptr,
     },
 };
-
-const FeatureEntry::FeatureVariation
-    kOmniboxKeywordSpaceTriggeringVariations[] = {
-        {
-            "Single Space",
-            (FeatureEntry::FeatureParam[]){},
-            0,
-            nullptr,
-        },
-        {
-            "Double Space",
-            (FeatureEntry::FeatureParam[]){
-                {"KeywordSpaceTriggeringDoubleSpace", "true"}},
-            1,
-            nullptr,
-        }};
-
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 
@@ -4341,12 +4324,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDisableCGIParamMatchingName,
      flag_descriptions::kOmniboxDisableCGIParamMatchingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDisableCGIParamMatching)},
-    {"omnibox-keyword-space-triggering",
-     flag_descriptions::kOmniboxKeywordSpaceTriggeringName,
-     flag_descriptions::kOmniboxKeywordSpaceTriggeringDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kKeywordSpaceTriggering,
-                                    kOmniboxKeywordSpaceTriggeringVariations,
-                                    "OmniboxBundledExperimentV1")},
     {"omnibox-keyword-space-triggering-setting",
      flag_descriptions::kOmniboxKeywordSpaceTriggeringSettingName,
      flag_descriptions::kOmniboxKeywordSpaceTriggeringSettingDescription,

@@ -432,16 +432,6 @@ int UnelideURLOnHoverThresholdMs();
 // suggestions.
 bool ShouldDisableCGIParamMatching();
 
-enum KeywordSpaceTrigger {
-  SPACE_TRIGGERING_DISABLED = 0,
-  SINGLE_SPACE_TRIGGERS_KEYWORD = 1,
-  DOUBLE_SPACE_TRIGGERS_KEYWORD = 2,
-};
-
-// Returns whether space triggering is disabled, triggered by single space
-// (default), or double space (double space keyword triggering is enabled).
-KeywordSpaceTrigger GetKeywordSpaceTrigger();
-
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 
@@ -578,9 +568,6 @@ extern const char kBookmarkPathsUiReplaceTitle[];
 extern const char kBookmarkPathsUiReplaceUrl[];
 extern const char kBookmarkPathsUiAppendAfterTitle[];
 extern const char kBookmarkPathsUiDynamicReplaceUrl[];
-
-// Parameter names used for scoped search/keyword mode experiments.
-extern const char kKeywordSpaceTriggeringDoubleSpaceParam[];
 
 namespace internal {
 // The bundled omnibox experiment comes with a set of parameters

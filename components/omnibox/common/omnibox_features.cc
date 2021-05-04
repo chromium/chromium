@@ -299,11 +299,6 @@ const base::Feature kIntranetRedirectBehaviorPolicyRollout{
 const base::Feature kOmniboxAssistantVoiceSearch{
     "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to control whether space, double space, or neither triggers
-// keyword mode. When disabled, space triggering is disabled.
-const base::Feature kKeywordSpaceTriggering{"OmniboxKeywordSpaceTriggering",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, a setting is added to chrome://settings/searchEngines to
 // control whether <space> can be used to trigger keyword mode.
 const base::Feature kKeywordSpaceTriggeringSetting{

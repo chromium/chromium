@@ -45124,7 +45124,6 @@ from previous Chrome versions.
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
   <int value="-1421676705" label="force-webxr-runtime"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
-  <int value="-1420517225" label="OmniboxKeywordSpaceTriggering:enabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
@@ -47692,7 +47691,6 @@ from previous Chrome versions.
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>
   <int value="839798268" label="SafeBrowsingTelemetryForApkDownloads:disabled"/>
   <int value="840057845" label="HardwareMediaKeyHandling:enabled"/>
-  <int value="841123685" label="OmniboxKeywordSpaceTriggering:disabled"/>
   <int value="841276069" label="ChromeHomeDoodle:disabled"/>
   <int value="841343322" label="disable-new-korean-ime"/>
   <int value="841779535" label="password-export:enabled"/>

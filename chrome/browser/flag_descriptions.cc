@@ -1712,12 +1712,6 @@ const char kOmniboxExperimentalSuggestScoringDescription[] =
     "Enables an experimental scoring mode for suggestions when Google is the "
     "default search engine.";
 
-const char kOmniboxKeywordSpaceTriggeringName[] =
-    "Omnibox Keyword Space Triggering";
-const char kOmniboxKeywordSpaceTriggeringDescription[] =
-    "Controls whether keyword mode can be triggered by space, double space, or "
-    "neither.";
-
 const char kOmniboxKeywordSpaceTriggeringSettingName[] =
     "Omnibox Keyword Space Triggering Setting";
 const char kOmniboxKeywordSpaceTriggeringSettingDescription[] =

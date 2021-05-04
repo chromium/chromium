@@ -992,9 +992,6 @@ extern const char kOmniboxDisableCGIParamMatchingDescription[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
 
-extern const char kOmniboxKeywordSpaceTriggeringName[];
-extern const char kOmniboxKeywordSpaceTriggeringDescription[];
-
 extern const char kOmniboxKeywordSpaceTriggeringSettingName[];
 extern const char kOmniboxKeywordSpaceTriggeringSettingDescription[];
 
