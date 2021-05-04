@@ -39,6 +39,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler {
   void HandleSetStartupSoundEnabled(const base::ListValue* args);
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
       const base::ListValue* args);
+  void HandleShowChromeVoxTutorial(const base::ListValue* args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

@@ -1784,4 +1784,24 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
 
+void AccessibilityManager::ShowChromeVoxTutorial() {
+  if (!profile_)
+    return;
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event_args =
+      extensions::api::accessibility_private::OnShowChromeVoxTutorial::Create();
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL,
+      extensions::api::accessibility_private::OnShowChromeVoxTutorial::
+          kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kChromeVoxExtensionId, std::move(event));
+}
+
 }  // namespace ash

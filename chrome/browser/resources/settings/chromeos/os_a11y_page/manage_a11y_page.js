@@ -415,6 +415,11 @@ Polymer({
   },
 
   /** @private */
+  onChromeVoxTutorialTap_() {
+    this.manageBrowserProxy_.showChromeVoxTutorial();
+  },
+
+  /** @private */
   onCaptionsClick_() {
     settings.Router.getInstance().navigateTo(
         settings.routes.MANAGE_CAPTION_SETTINGS);

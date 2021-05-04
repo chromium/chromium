@@ -65,6 +65,10 @@ void AccessibilityHandler::RegisterMessages() {
       "manageA11yPageReady",
       base::BindRepeating(&AccessibilityHandler::HandleManageA11yPageReady,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "showChromeVoxTutorial",
+      base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxTutorial,
+                          base::Unretained(this)));
 }
 
 void AccessibilityHandler::HandleShowChromeVoxSettings(
@@ -103,6 +107,11 @@ void AccessibilityHandler::HandleManageA11yPageReady(
   FireWebUIListener(
       "initial-data-ready",
       base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
+}
+
+void AccessibilityHandler::HandleShowChromeVoxTutorial(
+    const base::ListValue* args) {
+  AccessibilityManager::Get()->ShowChromeVoxTutorial();
 }
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {

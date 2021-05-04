@@ -115,6 +115,9 @@ export class Background extends ChromeVoxState {
         (enabled) => {
           this.talkBackEnabled = enabled;
         });
+    chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
+      (new PanelCommand(PanelCommandType.TUTORIAL)).send();
+    });
 
     // Set the darkScreen state to false, since the display will be on whenever
     // ChromeVox starts.

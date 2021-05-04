@@ -555,3 +555,9 @@ chrome.accessibilityPrivate.onMagnifierBoundsChanged;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled;
+
+/**
+ * Fired when ChromeVox should show its tutorial
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onShowChromeVoxTutorial;

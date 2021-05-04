@@ -882,6 +882,9 @@
   <message name="IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL" desc="Label for button to open ChromeVox options.">
       Open ChromeVox settings
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL" desc="Label for button to open ChromeVox tutorial.">
+    Open ChromeVox tutorial
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
       Enable fullscreen magnifier
   </message>

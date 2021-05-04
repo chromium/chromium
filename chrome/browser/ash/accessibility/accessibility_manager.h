@@ -124,6 +124,8 @@ class AccessibilityManager
   // Returns true when the accessibility menu should be shown.
   bool ShouldShowAccessibilityMenu();
 
+  void ShowChromeVoxTutorial();
+
   // Enables or disables the large cursor.
   void EnableLargeCursor(bool enabled);
 

@@ -72,6 +72,12 @@
           label="$i18n{chromeVoxOptionsLabel}" external>
         </cr-link-row>
       </div>
+      <div class="sub-item">
+        <cr-link-row id="chromeVoxTutorialButton"
+          class="settings-box" on-click="onChromeVoxTutorialTap_"
+          label="$i18n{chromeVoxTutorialLabel}" external>
+        </cr-link-row>
+      </div>
     </iron-collapse>
     <settings-toggle-button
         pref="{{prefs.settings.a11y.select_to_speak}}"

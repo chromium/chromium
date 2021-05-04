@@ -782,6 +782,13 @@
           }
         ],
         "platforms": ["chromeos"]
+      },
+      {
+        "name": "onShowChromeVoxTutorial",
+        "type": "function",
+        "description": "Fired when ChromeVox should show its tutorial.",
+        "parameters": [],
+        "platforms": ["chromeos"]
       }
     ]
   }

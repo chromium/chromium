@@ -35,6 +35,11 @@
    * is returned by the 'initial-data-ready' WebUI listener event.
    */
   manageA11yPageReady() {}
+
+  /**
+   * Opens the ChromeVox tutorial.
+   */
+  showChromeVoxTutorial() {}
 }
 
 /**
@@ -64,6 +69,11 @@
   /** @override */
   manageA11yPageReady() {
     chrome.send('manageA11yPageReady');
+  }
+
+  /** @override */
+  showChromeVoxTutorial() {
+    chrome.send('showChromeVoxTutorial');
   }
 }
 

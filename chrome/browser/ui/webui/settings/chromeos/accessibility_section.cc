@@ -444,6 +444,7 @@ void AccessibilitySection::AddLoadTimeData(
       {"stickyKeysLabel", IDS_SETTINGS_STICKY_KEYS_LABEL},
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
       {"chromeVoxOptionsLabel", IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL},
+      {"chromeVoxTutorialLabel", IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL},
       {"screenMagnifierLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL},
       {"screenMagnifierHintLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_HINT_LABEL},
       {"screenMagnifierMouseFollowingModeContinuous",

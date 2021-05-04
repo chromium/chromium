@@ -25610,6 +25610,7 @@ Called by update_extension_histograms.py.-->
   <int value="474" label="TAB_GROUPS_ON_UPDATED"/>
   <int value="475" label="FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG"/>
   <int value="476" label="TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM"/>
+  <int value="477" label="ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
