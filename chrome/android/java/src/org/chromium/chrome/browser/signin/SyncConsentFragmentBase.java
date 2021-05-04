@@ -101,7 +101,7 @@ public abstract class SyncConsentFragmentBase
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
     private boolean mIsSigninInProgress;
-    private boolean mHasGmsError;
+    private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
     protected @SigninAccessPoint int mSigninAccessPoint;
 
@@ -166,6 +166,7 @@ public abstract class SyncConsentFragmentBase
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountsChangedObserver = this::triggerUpdateAccounts;
         mProfileDataCacheObserver = this::updateProfileData;
+        mCanUseGooglePlayServices = true;
     }
 
     /** The sign-in was refused. */
@@ -278,9 +279,9 @@ public abstract class SyncConsentFragmentBase
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boolean cancelable = !ChildAccountStatus.isChild(mChildAccountStatus);
-        mHasGmsError = !ExternalAuthUtils.getInstance().canUseGooglePlayServices(
+        mCanUseGooglePlayServices = ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
-        mView.getAcceptButton().setEnabled(!mHasGmsError);
+        mView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
     }
 
     /**
@@ -400,7 +401,7 @@ public abstract class SyncConsentFragmentBase
     private boolean areControlsEnabled() {
         // Ignore clicks if the fragment is being removed or the app is being backgrounded.
         if (!isResumed() || isStateSaved()) return false;
-        return !mAccountSelectionPending && !mIsSigninInProgress && !mHasGmsError;
+        return !mAccountSelectionPending && !mIsSigninInProgress && mCanUseGooglePlayServices;
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
@@ -508,7 +509,7 @@ public abstract class SyncConsentFragmentBase
 
     private void triggerUpdateAccounts() {
         mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
-            if (isResumed() && !mHasGmsError) {
+            if (isResumed() && mCanUseGooglePlayServices) {
                 updateAccounts(accounts);
             }
         });
