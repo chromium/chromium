@@ -30,10 +30,6 @@ const char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
 // Values are defined in omnibox::IntranetRedirectorBehavior.
 const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
 
-// Boolean that controls whether scoped search mode can be triggered by <space>.
-const char kKeywordSpaceTriggeringEnabled[] =
-    "omnibox.keyword_space_triggering_enabled";
-
 // A dictionary of visibility preferences for suggestion groups. The key is the
 // suggestion group ID serialized as a string, and the value is
 // SuggestionGroupVisibility serialized as an integer.
@@ -47,7 +43,6 @@ const char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
-  registry->RegisterBooleanPref(kKeywordSpaceTriggeringEnabled, true);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(

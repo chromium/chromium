@@ -81,7 +81,6 @@ extern const base::Feature kWebUIOmniboxPopup;
 extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
 extern const base::Feature kKeywordSpaceTriggering;
-extern const base::Feature kKeywordSpaceTriggeringSetting;
 // Experiment to introduce new security indicators for HTTPS.
 extern const base::Feature kUpdatedConnectionSecurityIndicators;
 

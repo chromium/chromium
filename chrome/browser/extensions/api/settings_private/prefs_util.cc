@@ -359,8 +359,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Search page.
   (*s_allowlist)[DefaultSearchManager::kDefaultSearchProviderDataPrefName] =
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
-  (*s_allowlist)[::omnibox::kKeywordSpaceTriggeringEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Site Settings prefs.
   (*s_allowlist)[::content_settings::kCookiePrimarySetting] =

@@ -4347,10 +4347,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kKeywordSpaceTriggering,
                                     kOmniboxKeywordSpaceTriggeringVariations,
                                     "OmniboxBundledExperimentV1")},
-    {"omnibox-keyword-space-triggering-setting",
-     flag_descriptions::kOmniboxKeywordSpaceTriggeringSettingName,
-     flag_descriptions::kOmniboxKeywordSpaceTriggeringSettingDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kKeywordSpaceTriggeringSetting)},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 
