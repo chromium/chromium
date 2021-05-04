@@ -29,7 +29,7 @@ component("cpp") {
 
 source_set("tests") {
   testonly = true
-  sources = [ "storage_keys_unittest.cc" ]
+  sources = [ "storage_key_unittest.cc" ]
   deps = [
     ":cpp",
     "//testing/gtest",
