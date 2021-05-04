@@ -48,6 +48,7 @@ aggregate_vector_icons("components_vector_icons") {
     "help.icon",
     "help_outline.icon",
     "https_valid.icon",
+    "https_valid_arrow.icon",
     "info_outline.icon",
     "insert_drive_file_outline.icon",
     "launch.icon",

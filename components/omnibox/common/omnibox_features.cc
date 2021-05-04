@@ -304,6 +304,11 @@ const base::Feature kOmniboxAssistantVoiceSearch{
 const base::Feature kKeywordSpaceTriggeringSetting{
     "OmniboxKeywordSpaceTriggeringSetting", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Experiment to introduce new security indicators for HTTPS.
+const base::Feature kUpdatedConnectionSecurityIndicators{
+    "OmniboxUpdatedConnectionSecurityIndicators",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to reveal the path, query and ref from steady state URLs
 // on hover.
 const base::Feature kRevealSteadyStateUrlPathQueryAndRefOnHover{
