@@ -39,21 +39,23 @@
 }
 
 - (void)removeDeliveredNotification:(NSUserNotification*)notification {
-  NSString* notificationId = [notification.userInfo
-      objectForKey:notification_constants::kNotificationId];
-  NSString* profileId = [notification.userInfo
-      objectForKey:notification_constants::kNotificationProfileId];
-  BOOL incognito = [[notification.userInfo
-      objectForKey:notification_constants::kNotificationIncognito] boolValue];
+  NSString* notificationId =
+      (notification.userInfo)[notification_constants::kNotificationId];
+  NSString* profileId =
+      (notification.userInfo)[notification_constants::kNotificationProfileId];
+  BOOL incognito =
+      [(notification.userInfo)[notification_constants::kNotificationIncognito]
+          boolValue];
   DCHECK(profileId);
   DCHECK(notificationId);
   for (NSUserNotification* toast in _banners.get()) {
     NSString* toastId =
-        [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+        (toast.userInfo)[notification_constants::kNotificationId];
+    NSString* toastProfileId =
+        (toast.userInfo)[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [(toast.userInfo)[notification_constants::kNotificationIncognito]
+            boolValue];
     if ([notificationId isEqualToString:toastId] &&
         [profileId isEqualToString:toastProfileId] &&
         incognito == toastIncognito) {

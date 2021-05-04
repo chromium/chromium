@@ -38,7 +38,8 @@ using content::RenderViewHost;
   BOOL _resigningFirstResponder;
 }
 
-- (id)initWithRenderWidgetHost:(content::RenderWidgetHost*)renderWidgetHost {
+- (instancetype)initWithRenderWidgetHost:
+    (content::RenderWidgetHost*)renderWidgetHost {
   self = [super init];
   if (self) {
     _renderWidgetHost = renderWidgetHost;

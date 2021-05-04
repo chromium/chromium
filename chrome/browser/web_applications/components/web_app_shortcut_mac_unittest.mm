@@ -224,16 +224,16 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcuts) {
   NSDictionary* plist = [NSDictionary
       dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
   EXPECT_NSEQ(base::SysUTF8ToNSString(info_->extension_id),
-              [plist objectForKey:app_mode::kCrAppModeShortcutIDKey]);
+              plist[app_mode::kCrAppModeShortcutIDKey]);
   EXPECT_NSEQ(base::SysUTF16ToNSString(info_->title),
-              [plist objectForKey:app_mode::kCrAppModeShortcutNameKey]);
+              plist[app_mode::kCrAppModeShortcutNameKey]);
   EXPECT_NSEQ(base::SysUTF8ToNSString(info_->url.spec()),
-              [plist objectForKey:app_mode::kCrAppModeShortcutURLKey]);
+              plist[app_mode::kCrAppModeShortcutURLKey]);
 
   EXPECT_NSEQ(base::SysUTF8ToNSString(version_info::GetVersionNumber()),
-              [plist objectForKey:app_mode::kCrBundleVersionKey]);
+              plist[app_mode::kCrBundleVersionKey]);
   EXPECT_NSEQ(base::SysUTF8ToNSString(info_->version_for_display),
-              [plist objectForKey:app_mode::kCFBundleShortVersionStringKey]);
+              plist[app_mode::kCFBundleShortVersionStringKey]);
 
   // Make sure all values in the plist are actually filled in.
   for (id key in plist) {
@@ -261,8 +261,7 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* doc_types_array =
-        [plist objectForKey:app_mode::kCFBundleDocumentTypesKey];
+    NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_EQ(doc_types_array, nil);
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
@@ -278,24 +277,21 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* doc_types_array =
-        [plist objectForKey:app_mode::kCFBundleDocumentTypesKey];
+    NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
     EXPECT_EQ(1u, [doc_types_array count]);
-    NSDictionary* doc_types_dict = [doc_types_array objectAtIndex:0];
+    NSDictionary* doc_types_dict = doc_types_array[0];
     EXPECT_NE(doc_types_dict, nil);
-    NSArray* mime_types =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeMIMETypesKey];
+    NSArray* mime_types = doc_types_dict[app_mode::kCFBundleTypeMIMETypesKey];
     EXPECT_NE(mime_types, nil);
-    NSArray* extensions =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeExtensionsKey];
+    NSArray* extensions = doc_types_dict[app_mode::kCFBundleTypeExtensionsKey];
     EXPECT_EQ(extensions, nil);
 
     // The mime types should be listed in sorted order (note that sorted order
     // does matter for correct behavior).
     EXPECT_EQ(2u, [mime_types count]);
-    EXPECT_NSEQ([mime_types objectAtIndex:0], @"foo/bar");
-    EXPECT_NSEQ([mime_types objectAtIndex:1], @"moo/cow");
+    EXPECT_NSEQ(mime_types[0], @"foo/bar");
+    EXPECT_NSEQ(mime_types[1], @"moo/cow");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 
@@ -308,26 +304,23 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* doc_types_array =
-        [plist objectForKey:app_mode::kCFBundleDocumentTypesKey];
+    NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
     EXPECT_EQ(1u, [doc_types_array count]);
-    NSDictionary* doc_types_dict = [doc_types_array objectAtIndex:0];
+    NSDictionary* doc_types_dict = doc_types_array[0];
     EXPECT_NE(doc_types_dict, nil);
-    NSArray* mime_types =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeMIMETypesKey];
+    NSArray* mime_types = doc_types_dict[app_mode::kCFBundleTypeMIMETypesKey];
     EXPECT_NE(mime_types, nil);
-    NSArray* extensions =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeExtensionsKey];
+    NSArray* extensions = doc_types_dict[app_mode::kCFBundleTypeExtensionsKey];
     EXPECT_NE(extensions, nil);
 
     EXPECT_EQ(2u, [mime_types count]);
-    EXPECT_NSEQ([mime_types objectAtIndex:0], @"foo/bar");
-    EXPECT_NSEQ([mime_types objectAtIndex:1], @"moo/cow");
+    EXPECT_NSEQ(mime_types[0], @"foo/bar");
+    EXPECT_NSEQ(mime_types[1], @"moo/cow");
     EXPECT_EQ(3u, [extensions count]);
-    EXPECT_NSEQ([extensions objectAtIndex:0], @"bbq");
-    EXPECT_NSEQ([extensions objectAtIndex:1], @"cow");
-    EXPECT_NSEQ([extensions objectAtIndex:2], @"pig");
+    EXPECT_NSEQ(extensions[0], @"bbq");
+    EXPECT_NSEQ(extensions[1], @"cow");
+    EXPECT_NSEQ(extensions[2], @"pig");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 
@@ -338,23 +331,20 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* doc_types_array =
-        [plist objectForKey:app_mode::kCFBundleDocumentTypesKey];
+    NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
     EXPECT_NE(doc_types_array, nil);
     EXPECT_EQ(1u, [doc_types_array count]);
-    NSDictionary* doc_types_dict = [doc_types_array objectAtIndex:0];
+    NSDictionary* doc_types_dict = doc_types_array[0];
     EXPECT_NE(doc_types_dict, nil);
-    NSArray* mime_types =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeMIMETypesKey];
+    NSArray* mime_types = doc_types_dict[app_mode::kCFBundleTypeMIMETypesKey];
     EXPECT_EQ(mime_types, nil);
-    NSArray* extensions =
-        [doc_types_dict objectForKey:app_mode::kCFBundleTypeExtensionsKey];
+    NSArray* extensions = doc_types_dict[app_mode::kCFBundleTypeExtensionsKey];
     EXPECT_NE(extensions, nil);
 
     EXPECT_EQ(3u, [extensions count]);
-    EXPECT_NSEQ([extensions objectAtIndex:0], @"bbq");
-    EXPECT_NSEQ([extensions objectAtIndex:1], @"cow");
-    EXPECT_NSEQ([extensions objectAtIndex:2], @"pig");
+    EXPECT_NSEQ(extensions[0], @"bbq");
+    EXPECT_NSEQ(extensions[1], @"cow");
+    EXPECT_NSEQ(extensions[2], @"pig");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 }
@@ -372,8 +362,7 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* protocol_types_value =
-        [plist objectForKey:app_mode::kCFBundleURLTypesKey];
+    NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
     EXPECT_EQ(protocol_types_value, nil);
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
@@ -386,26 +375,24 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
   {
     NSDictionary* plist = [NSDictionary
         dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-    NSArray* protocol_types_value =
-        [plist objectForKey:app_mode::kCFBundleURLTypesKey];
+    NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
     EXPECT_NE(protocol_types_value, nil);
     EXPECT_EQ(1u, [protocol_types_value count]);
-    NSDictionary* protocol_types_dict = [protocol_types_value objectAtIndex:0];
+    NSDictionary* protocol_types_dict = protocol_types_value[0];
     EXPECT_NE(protocol_types_dict, nil);
 
     // Verify CFBundleURLName is set.
     EXPECT_NSEQ(
-        [protocol_types_dict objectForKey:app_mode::kCFBundleURLNameKey],
+        protocol_types_dict[app_mode::kCFBundleURLNameKey],
         base::SysUTF8ToNSString(base::mac::BaseBundleID() +
                                 std::string(".app.") + info_->extension_id));
 
     // Verify CFBundleURLSchemes is set, and contains the expected values.
-    NSArray* handlers =
-        [protocol_types_dict objectForKey:app_mode::kCFBundleURLSchemesKey];
+    NSArray* handlers = protocol_types_dict[app_mode::kCFBundleURLSchemesKey];
     EXPECT_NE(handlers, nil);
     EXPECT_EQ(2u, [handlers count]);
-    EXPECT_NSEQ([handlers objectAtIndex:0], @"mailto");
-    EXPECT_NSEQ([handlers objectAtIndex:1], @"web+testing");
+    EXPECT_NSEQ(handlers[0], @"mailto");
+    EXPECT_NSEQ(handlers[1], @"web+testing");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 }

@@ -71,13 +71,13 @@
   base::scoped_nsobject<NSRunningApplication> _app;
   base::OnceClosure _callback;
 }
-- (id)initWithRunningApplication:(NSRunningApplication*)app
-                        callback:(base::OnceClosure)callback;
+- (instancetype)initWithRunningApplication:(NSRunningApplication*)app
+                                  callback:(base::OnceClosure)callback;
 @end
 
 @implementation TerminationObserver
-- (id)initWithRunningApplication:(NSRunningApplication*)app
-                        callback:(base::OnceClosure)callback {
+- (instancetype)initWithRunningApplication:(NSRunningApplication*)app
+                                  callback:(base::OnceClosure)callback {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (self = [super init]) {
     _callback = std::move(callback);
@@ -97,7 +97,7 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  NSNumber* newNumberValue = [change objectForKey:NSKeyValueChangeNewKey];
+  NSNumber* newNumberValue = change[NSKeyValueChangeNewKey];
   BOOL newValue = [newNumberValue boolValue];
   if (newValue) {
     base::scoped_nsobject<TerminationObserver> scoped_self(
@@ -544,7 +544,7 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
 base::scoped_nsobject<NSImageRep> ImageRepForGFXImage(const gfx::Image& image) {
   NSArray* image_reps = [image.AsNSImage() representations];
   DCHECK_EQ(1u, [image_reps count]);
-  return base::scoped_nsobject<NSImageRep>([image_reps objectAtIndex:0],
+  return base::scoped_nsobject<NSImageRep>(image_reps[0],
                                            base::scoped_policy::RETAIN);
 }
 
@@ -1093,12 +1093,12 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   NSString* extension_url = base::SysUTF8ToNSString(info_->url.spec());
   NSString* chrome_bundle_id =
       base::SysUTF8ToNSString(base::mac::BaseBundleID());
-  NSDictionary* replacement_dict = [NSDictionary
-      dictionaryWithObjectsAndKeys:
-          extension_id, app_mode::kShortcutIdPlaceholder, extension_title,
-          app_mode::kShortcutNamePlaceholder, extension_url,
-          app_mode::kShortcutURLPlaceholder, chrome_bundle_id,
-          app_mode::kShortcutBrowserBundleIDPlaceholder, nil];
+  NSDictionary* replacement_dict = @{
+    app_mode::kShortcutIdPlaceholder : extension_id,
+    app_mode::kShortcutNamePlaceholder : extension_title,
+    app_mode::kShortcutURLPlaceholder : extension_url,
+    app_mode::kShortcutBrowserBundleIDPlaceholder : chrome_bundle_id
+  };
 
   NSString* plist_path = GetPlistPath(app_path);
   NSMutableDictionary* plist =
@@ -1117,37 +1117,33 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
 
     NSString* substitution = [replacement_dict valueForKey:variable];
     if (substitution)
-      [plist setObject:substitution forKey:key];
+      plist[key] = substitution;
   }
 
   // 2. Fill in other values.
-  [plist setObject:base::SysUTF8ToNSString(version_info::GetVersionNumber())
-            forKey:app_mode::kCrBundleVersionKey];
-  [plist setObject:base::SysUTF8ToNSString(info_->version_for_display)
-            forKey:app_mode::kCFBundleShortVersionStringKey];
+  plist[app_mode::kCrBundleVersionKey] =
+      base::SysUTF8ToNSString(version_info::GetVersionNumber());
+  plist[app_mode::kCFBundleShortVersionStringKey] =
+      base::SysUTF8ToNSString(info_->version_for_display);
   if (IsMultiProfile()) {
-    [plist setObject:base::SysUTF8ToNSString(
-                         GetBundleIdentifier(info_->extension_id))
-              forKey:base::mac::CFToNSCast(kCFBundleIdentifierKey)];
+    plist[base::mac::CFToNSCast(kCFBundleIdentifierKey)] =
+        base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id));
     base::FilePath data_dir = GetMultiProfileAppDataDir(app_data_dir_);
-    [plist setObject:base::mac::FilePathToNSString(data_dir)
-              forKey:app_mode::kCrAppModeUserDataDirKey];
+    plist[app_mode::kCrAppModeUserDataDirKey] =
+        base::mac::FilePathToNSString(data_dir);
   } else {
-    [plist setObject:base::SysUTF8ToNSString(GetBundleIdentifier(
-                         info_->extension_id, info_->profile_path))
-              forKey:base::mac::CFToNSCast(kCFBundleIdentifierKey)];
-    [plist setObject:base::mac::FilePathToNSString(app_data_dir_)
-              forKey:app_mode::kCrAppModeUserDataDirKey];
-    [plist
-        setObject:base::mac::FilePathToNSString(info_->profile_path.BaseName())
-           forKey:app_mode::kCrAppModeProfileDirKey];
-    [plist setObject:base::SysUTF8ToNSString(info_->profile_name)
-              forKey:app_mode::kCrAppModeProfileNameKey];
+    plist[base::mac::CFToNSCast(kCFBundleIdentifierKey)] =
+        base::SysUTF8ToNSString(
+            GetBundleIdentifier(info_->extension_id, info_->profile_path));
+    plist[app_mode::kCrAppModeUserDataDirKey] =
+        base::mac::FilePathToNSString(app_data_dir_);
+    plist[app_mode::kCrAppModeProfileDirKey] =
+        base::mac::FilePathToNSString(info_->profile_path.BaseName());
+    plist[app_mode::kCrAppModeProfileNameKey] =
+        base::SysUTF8ToNSString(info_->profile_name);
   }
-  [plist setObject:[NSNumber numberWithBool:YES]
-            forKey:app_mode::kLSHasLocalizedDisplayNameKey];
-  [plist setObject:[NSNumber numberWithBool:YES]
-            forKey:app_mode::kNSHighResolutionCapableKey];
+  plist[app_mode::kLSHasLocalizedDisplayNameKey] = @YES;
+  plist[app_mode::kNSHighResolutionCapableKey] = @YES;
 
   // 3. Fill in file handlers.
   const auto file_handler_extensions =
@@ -1165,6 +1161,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
         [extensions addObject:base::SysUTF8ToNSString(file_extension)];
       [doc_types_dict setObject:extensions
                          forKey:app_mode::kCFBundleTypeExtensionsKey];
+      ;
     }
     if (!info_->file_handler_mime_types.empty()) {
       base::scoped_nsobject<NSMutableArray> mime_types(
@@ -1175,8 +1172,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
                          forKey:app_mode::kCFBundleTypeMIMETypesKey];
     }
     [doc_types_value addObject:doc_types_dict];
-    [plist setObject:doc_types_value
-              forKey:app_mode::kCFBundleDocumentTypesKey];
+    plist[app_mode::kCFBundleDocumentTypesKey] = doc_types_value;
   }
 
   // 4. Fill in protocol handlers
@@ -1186,25 +1182,23 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
     for (const auto& protocol_handler : info_->protocol_handlers)
       [handlers addObject:base::SysUTF8ToNSString(protocol_handler)];
 
-    [plist
-        setObject:@[ @{
-          app_mode::kCFBundleURLNameKey :
-              base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id)),
-          app_mode::kCFBundleURLSchemesKey : handlers
-        } ]
-           forKey:app_mode::kCFBundleURLTypesKey];
+    plist[app_mode::kCFBundleURLTypesKey] = @[ @{
+      app_mode::kCFBundleURLNameKey :
+          base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id)),
+      app_mode::kCFBundleURLSchemesKey : handlers
+    } ];
   }
 
   if (IsMultiProfile()) {
-    [plist setObject:base::SysUTF16ToNSString(info_->title)
-              forKey:base::mac::CFToNSCast(kCFBundleNameKey)];
+    plist[base::mac::CFToNSCast(kCFBundleNameKey)] =
+        base::SysUTF16ToNSString(info_->title);
   } else {
     // The appropriate bundle name is |info_->title|. Avoiding changing the
     // behavior of non-multi-profile apps when fixing
     // https://crbug.com/1021804.
     base::FilePath app_name = app_path.BaseName().RemoveFinalExtension();
-    [plist setObject:base::mac::FilePathToNSString(app_name)
-              forKey:base::mac::CFToNSCast(kCFBundleNameKey)];
+    plist[base::mac::CFToNSCast(kCFBundleNameKey)] =
+        base::mac::FilePathToNSString(app_name);
   }
 
   return [plist writeToFile:plist_path atomically:YES];
@@ -1216,7 +1210,7 @@ bool WebAppShortcutCreator::UpdateDisplayName(
   // filename). OSX searches for the best language in the order of preferred
   // languages, but one of them must be found otherwise it will default to
   // the filename.
-  NSString* language = [[NSLocale preferredLanguages] objectAtIndex:0];
+  NSString* language = [NSLocale preferredLanguages][0];
   base::FilePath localized_dir = GetResourcesPath(app_path).Append(
       base::SysNSStringToUTF8(language) + ".lproj");
   if (!base::CreateDirectory(localized_dir))

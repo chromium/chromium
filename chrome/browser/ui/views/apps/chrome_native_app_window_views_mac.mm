@@ -20,7 +20,8 @@
   // Weak. Owns us.
   ChromeNativeAppWindowViewsMac* _nativeAppWindow;
 }
-- (id)initForNativeAppWindow:(ChromeNativeAppWindowViewsMac*)nativeAppWindow;
+- (instancetype)initForNativeAppWindow:
+    (ChromeNativeAppWindowViewsMac*)nativeAppWindow;
 - (void)onWindowWillStartLiveResize:(NSNotification*)notification;
 - (void)onWindowWillExitFullScreen:(NSNotification*)notification;
 - (void)onWindowDidExitFullScreen:(NSNotification*)notification;
@@ -29,7 +30,8 @@
 
 @implementation ResizeNotificationObserver
 
-- (id)initForNativeAppWindow:(ChromeNativeAppWindowViewsMac*)nativeAppWindow {
+- (instancetype)initForNativeAppWindow:
+    (ChromeNativeAppWindowViewsMac*)nativeAppWindow {
   if ((self = [super init])) {
     _nativeAppWindow = nativeAppWindow;
     [[NSNotificationCenter defaultCenter]

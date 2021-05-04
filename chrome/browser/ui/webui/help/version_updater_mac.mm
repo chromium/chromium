@@ -35,7 +35,7 @@
 }
 
 // Initialize an observer with an updater. The updater owns this object.
-- (id)initWithUpdater:(VersionUpdaterMac*)updater;
+- (instancetype)initWithUpdater:(VersionUpdaterMac*)updater;
 
 // Notification callback, called with the status of keystone operations.
 - (void)handleStatusNotification:(NSNotification*)notification;
@@ -44,7 +44,7 @@
 
 @implementation KeystoneObserver
 
-- (id)initWithUpdater:(VersionUpdaterMac*)updater {
+- (instancetype)initWithUpdater:(VersionUpdaterMac*)updater {
   if ((self = [super init])) {
     _versionUpdater = updater;
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -201,12 +201,12 @@ void VersionUpdaterMac::PromoteUpdater() const {
 }
 
 void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
-  AutoupdateStatus keystone_status =
-      static_cast<AutoupdateStatus>([base::mac::ObjCCastStrict<NSNumber>(
-          [dictionary objectForKey:kAutoupdateStatusStatus]) intValue]);
+  AutoupdateStatus keystone_status = static_cast<AutoupdateStatus>(
+      [base::mac::ObjCCastStrict<NSNumber>(dictionary[kAutoupdateStatusStatus])
+          intValue]);
   std::string error_messages =
       base::SysNSStringToUTF8(base::mac::ObjCCastStrict<NSString>(
-          [dictionary objectForKey:kAutoupdateStatusErrorMessages]));
+          dictionary[kAutoupdateStatusErrorMessages]));
 
   bool enable_promote_button = true;
   std::u16string message;

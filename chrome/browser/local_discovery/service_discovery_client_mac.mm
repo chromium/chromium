@@ -442,7 +442,7 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
     [netService stopMonitoring];
     [netService setDelegate:nil];
 
-    netService = [_services objectAtIndex:index];
+    netService = _services[index];
     [netService stopMonitoring];
     [netService setDelegate:nil];
 

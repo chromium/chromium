@@ -77,10 +77,9 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
     [builder setProfileId:@"Default"];
     [builder setIncognito:false];
     [builder setCreatorPid:@(getpid())];
-    [builder setNotificationType:
-                 [NSNumber numberWithInteger:
-                               static_cast<int>(
-                                   NotificationHandler::Type::WEB_PERSISTENT)]];
+    [builder
+        setNotificationType:@(static_cast<int>(
+                                NotificationHandler::Type::WEB_PERSISTENT))];
     [builder setShowSettingsButton:true];
 
     return [builder buildUserNotification];
@@ -197,14 +196,13 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
 }
 
 TEST_F(NotificationPlatformBridgeMacUtilsTest, TestNotificationUnknownType) {
-  [response_ setValue:[NSNumber numberWithInt:210581]
-               forKey:notification_constants::kNotificationType];
+  [response_ setValue:@210581 forKey:notification_constants::kNotificationType];
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 
 TEST_F(NotificationPlatformBridgeMacUtilsTest,
        TestNotificationVerifyUnknownOperation) {
-  [response_ setValue:[NSNumber numberWithInt:40782]
+  [response_ setValue:@40782
                forKey:notification_constants::kNotificationOperation];
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
@@ -229,7 +227,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
 
 TEST_F(NotificationPlatformBridgeMacUtilsTest,
        TestNotificationVerifyInvalidButton) {
-  [response_ setValue:[NSNumber numberWithInt:-5]
+  [response_ setValue:@-5
                forKey:notification_constants::kNotificationButtonIndex];
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }

@@ -121,7 +121,7 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplay) {
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       ASSERT_EQ(1u, [notifications count]);
-      UNNotification* delivered_notification = [notifications objectAtIndex:0];
+      UNNotification* delivered_notification = notifications[0];
       UNNotificationContent* delivered_content =
           [[delivered_notification request] content];
       EXPECT_NSEQ(@"Title", [delivered_content title]);
@@ -159,15 +159,15 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplayAlert) {
     ASSERT_EQ(1u, [displayed_alerts count]);
 
     // Verify alert content.
-    NSDictionary* delivered_alert = [displayed_alerts objectAtIndex:0];
-    NSString* title = [delivered_alert
-        objectForKey:notification_constants::kNotificationTitle];
-    NSString* informative_text = [delivered_alert
-        objectForKey:notification_constants::kNotificationInformativeText];
-    NSString* subtitle = [delivered_alert
-        objectForKey:notification_constants::kNotificationSubTitle];
-    NSString* identifier = [delivered_alert
-        objectForKey:notification_constants::kNotificationIdentifier];
+    NSDictionary* delivered_alert = displayed_alerts[0];
+    NSString* title =
+        delivered_alert[notification_constants::kNotificationTitle];
+    NSString* informative_text =
+        delivered_alert[notification_constants::kNotificationInformativeText];
+    NSString* subtitle =
+        delivered_alert[notification_constants::kNotificationSubTitle];
+    NSString* identifier =
+        delivered_alert[notification_constants::kNotificationIdentifier];
     EXPECT_NSEQ(@"Title", title);
     EXPECT_NSEQ(@"Context", informative_text);
     EXPECT_NSEQ(@"gmail.com", subtitle);
@@ -225,13 +225,13 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestIncognitoProfile) {
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       ASSERT_EQ(1u, [notifications count]);
-      remaining = [notifications objectAtIndex:0];
+      remaining = notifications[0];
     }];
 
     // Expect that the remaining notification is for the regular profile.
     EXPECT_EQ(false,
-              [[[[[remaining request] content] userInfo]
-                  objectForKey:notification_constants::kNotificationIncognito]
+              [[[[remaining request] content]
+                  userInfo][notification_constants::kNotificationIncognito]
                   boolValue]);
 
     // Close the one for the regular profile.
@@ -261,12 +261,11 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationHasIcon) {
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       ASSERT_EQ(1u, [notifications count]);
-      UNNotification* delivered_notification = [notifications objectAtIndex:0];
+      UNNotification* delivered_notification = notifications[0];
       UNNotificationContent* delivered_content =
           [[delivered_notification request] content];
       ASSERT_EQ(1u, [[delivered_content attachments] count]);
-      EXPECT_NSEQ(@"id1", [[[delivered_content attachments] objectAtIndex:0]
-                              identifier]);
+      EXPECT_NSEQ(@"id1", [[delivered_content attachments][0] identifier]);
     }];
   }
 }
@@ -281,7 +280,7 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationNoIcon) {
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       ASSERT_EQ(1u, [notifications count]);
-      UNNotification* delivered_notification = [notifications objectAtIndex:0];
+      UNNotification* delivered_notification = notifications[0];
       UNNotificationContent* delivered_content =
           [[delivered_notification request] content];
       EXPECT_EQ(0u, [[delivered_content attachments] count]);
@@ -443,12 +442,11 @@ TEST_F(UNNotificationPlatformBridgeMacTest,
 
     NSArray* displayed_alerts = [alert_dispatcher_ alerts];
     ASSERT_EQ(1u, [displayed_alerts count]);
-    NSDictionary* remaining = [displayed_alerts objectAtIndex:0];
+    NSDictionary* remaining = displayed_alerts[0];
 
     // Expect that the remaining notification is for the regular profile.
     EXPECT_FALSE(
-        [[remaining objectForKey:notification_constants::kNotificationIncognito]
-            boolValue]);
+        [remaining[notification_constants::kNotificationIncognito] boolValue]);
   }
 }
 

@@ -150,11 +150,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];
   [builder setProfileId:base::SysUTF8ToNSString(GetProfileId(profile))];
   [builder setIncognito:profile->IsOffTheRecord()];
-  [builder setCreatorPid:[NSNumber numberWithInteger:static_cast<NSInteger>(
-                                                         getpid())]];
-  [builder
-      setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
-                                                          notification_type)]];
+  [builder setCreatorPid:@(static_cast<NSInteger>(getpid()))];
+  [builder setNotificationType:@(static_cast<NSInteger>(notification_type))];
 
   std::string system_notification_id = DeriveMacNotificationId(
       profile->IsOffTheRecord(), GetProfileId(profile), notification.id());
@@ -410,17 +407,16 @@ void NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts(
     std::set<std::string> displayedNotifications;
 
     for (UNNotification* notification in notifications) {
-      NSString* toastProfileId = [[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationProfileId];
-      bool incognitoNotification = [[[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
+      NSString* toastProfileId = [[[notification request] content]
+          userInfo][notification_constants::kNotificationProfileId];
+      bool incognitoNotification = [[[[notification request] content]
+          userInfo][notification_constants::kNotificationIncognito] boolValue];
 
       if ([toastProfileId isEqualToString:profileId] &&
           incognito == incognitoNotification) {
         displayedNotifications.insert(
-            base::SysNSStringToUTF8([[[[notification request] content] userInfo]
-                objectForKey:notification_constants::kNotificationId]));
+            base::SysNSStringToUTF8([[[notification request] content]
+                userInfo][notification_constants::kNotificationId]));
       }
     }
 
@@ -481,11 +477,10 @@ void NotificationPlatformBridgeMacUNNotification::
         [[NSMutableArray alloc] init]);
 
     for (UNNotification* notification in notifications) {
-      NSString* toast_profile_id = [[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationProfileId];
-      bool toast_incognito = [[[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
+      NSString* toast_profile_id = [[[notification request] content]
+          userInfo][notification_constants::kNotificationProfileId];
+      bool toast_incognito = [[[[notification request] content]
+          userInfo][notification_constants::kNotificationIncognito] boolValue];
 
       if ([profile_id isEqualToString:toast_profile_id] &&
           incognito == toast_incognito) {
@@ -544,8 +539,9 @@ void NotificationPlatformBridgeMacUNNotification::
       [UNNotificationResponseBuilder buildDictionary:response fromAlert:NO];
 
   // Notify platform bridge about closed notifications for cleanup tasks.
-  int operation = [[notificationResponse
-      objectForKey:notification_constants::kNotificationOperation] intValue];
+  int operation =
+      [notificationResponse[notification_constants::kNotificationOperation]
+          intValue];
   if (operation ==
       static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)) {
     std::string notificationId =

@@ -95,7 +95,7 @@ BOOL forceMagicMouse = NO;
 @implementation HistorySwiper
 @synthesize delegate = _delegate;
 
-- (id)initWithDelegate:(id<HistorySwiperDelegate>)delegate {
+- (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate {
   self = [super init];
   if (self) {
     _delegate = delegate;

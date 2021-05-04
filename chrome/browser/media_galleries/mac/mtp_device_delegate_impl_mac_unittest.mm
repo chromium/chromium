@@ -84,10 +84,10 @@ const char kTestFileContents[] = "test";
            downloadDelegate:(id<ICCameraDeviceDownloadDelegate>)downloadDelegate
         didDownloadSelector:(SEL)selector
                 contextInfo:(void*)contextInfo {
-  base::FilePath saveDir(base::SysNSStringToUTF8(
-      [[options objectForKey:ICDownloadsDirectoryURL] path]));
+  base::FilePath saveDir(
+      base::SysNSStringToUTF8([options[ICDownloadsDirectoryURL] path]));
   std::string saveAsFilename =
-      base::SysNSStringToUTF8([options objectForKey:ICSaveAsFilename]);
+      base::SysNSStringToUTF8(options[ICSaveAsFilename]);
   // It appears that the ImageCapture library adds an extension to the requested
   // filename. Do that here to require a rename.
   saveAsFilename += ".jpg";
@@ -96,8 +96,7 @@ const char kTestFileContents[] = "test";
 
   NSMutableDictionary* returnOptions =
       [NSMutableDictionary dictionaryWithDictionary:options];
-  [returnOptions setObject:base::SysUTF8ToNSString(saveAsFilename)
-                    forKey:ICSavedFilename];
+  returnOptions[ICSavedFilename] = base::SysUTF8ToNSString(saveAsFilename);
 
   [static_cast<NSObject<ICCameraDeviceDownloadDelegate>*>(downloadDelegate)
    didDownloadFile:file
@@ -114,13 +113,13 @@ const char kTestFileContents[] = "test";
   base::scoped_nsobject<NSDate> _date;
 }
 
-- (id)init:(NSString*)name;
+- (instancetype)init:(NSString*)name;
 
 @end
 
 @implementation MockMTPICCameraFile
 
-- (id)init:(NSString*)name {
+- (instancetype)init:(NSString*)name {
   if ((self = [super init])) {
     base::scoped_nsobject<NSDateFormatter> iso8601day(
         [[NSDateFormatter alloc] init]);

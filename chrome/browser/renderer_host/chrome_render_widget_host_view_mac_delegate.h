@@ -24,7 +24,8 @@ class RenderWidgetHost;
   base::scoped_nsobject<HistorySwiper> _historySwiper;
 }
 
-- (id)initWithRenderWidgetHost:(content::RenderWidgetHost*)renderWidgetHost;
+- (instancetype)initWithRenderWidgetHost:
+    (content::RenderWidgetHost*)renderWidgetHost;
 
 - (BOOL)handleEvent:(NSEvent*)event;
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item

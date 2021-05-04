@@ -36,12 +36,11 @@
   DCHECK(profileId);
   DCHECK(notificationId);
   for (NSDictionary* toast in _alerts.get()) {
-    NSString* toastId =
-        [toast objectForKey:notification_constants::kNotificationId];
+    NSString* toastId = toast[notification_constants::kNotificationId];
     NSString* toastProfileId =
-        [toast objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+        toast[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [toast[notification_constants::kNotificationIncognito] boolValue];
 
     if ([notificationId isEqualToString:toastId] &&
         [profileId isEqualToString:toastProfileId] &&
@@ -60,11 +59,11 @@
           [NSPredicate predicateWithBlock:^BOOL(
                            NSDictionary* toast,
                            NSDictionary<NSString*, id>* _Nullable bindings) {
-            NSString* toastProfileId = [toast
-                objectForKey:notification_constants::kNotificationProfileId];
-            BOOL toastIncognito = [[toast
-                objectForKey:notification_constants::kNotificationIncognito]
-                boolValue];
+            NSString* toastProfileId =
+                toast[notification_constants::kNotificationProfileId];
+            BOOL toastIncognito =
+                [toast[notification_constants::kNotificationIncognito]
+                    boolValue];
 
             return ![profileId isEqualToString:toastProfileId] ||
                    incognito != toastIncognito;
@@ -83,14 +82,14 @@ getDisplayedAlertsForProfileId:(NSString*)profileId
 
   for (NSDictionary* toast in _alerts.get()) {
     NSString* toastProfileId =
-        [toast objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+        toast[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [toast[notification_constants::kNotificationIncognito] boolValue];
 
     if ([profileId isEqualToString:toastProfileId] &&
         incognito == toastIncognito) {
       alerts.insert(base::SysNSStringToUTF8(
-          [toast objectForKey:notification_constants::kNotificationId]));
+          toast[notification_constants::kNotificationId]));
     }
   }
 
@@ -104,12 +103,12 @@ getDisplayedAlertsForProfileId:(NSString*)profileId
   alertIds.reserve([_alerts count]);
 
   for (NSDictionary* toast in _alerts.get()) {
-    std::string notificationId = base::SysNSStringToUTF8(
-        [toast objectForKey:notification_constants::kNotificationId]);
+    std::string notificationId =
+        base::SysNSStringToUTF8(toast[notification_constants::kNotificationId]);
     std::string profileId = base::SysNSStringToUTF8(
-        [toast objectForKey:notification_constants::kNotificationProfileId]);
-    bool incognito = [[toast
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+        toast[notification_constants::kNotificationProfileId]);
+    bool incognito =
+        [toast[notification_constants::kNotificationIncognito] boolValue];
 
     alertIds.push_back(
         {std::move(notificationId), std::move(profileId), incognito});

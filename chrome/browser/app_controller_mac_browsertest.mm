@@ -90,7 +90,7 @@ NSAppleEventDescriptor* AppleEventToOpenUrl(const GURL& url) {
         targetDescriptor:nil
                 returnID:kAutoGenerateReturnID
            transactionID:kAnyTransactionID] autorelease];
-  NSString* url_string = [NSString stringWithUTF8String:url.spec().c_str()];
+  NSString* url_string = base::SysUTF8ToNSString(url.spec());
   [shortcut_event setParamDescriptor:[NSAppleEventDescriptor
                                          descriptorWithString:url_string]
                           forKeyword:keyDirectObject];

@@ -126,32 +126,29 @@ std::u16string CreateMacNotificationContext(
 }
 
 bool VerifyMacNotificationData(NSDictionary* response) {
-  if (![response
-          objectForKey:notification_constants::kNotificationButtonIndex] ||
-      ![response objectForKey:notification_constants::kNotificationOperation] ||
-      ![response objectForKey:notification_constants::kNotificationId] ||
-      ![response objectForKey:notification_constants::kNotificationProfileId] ||
-      ![response objectForKey:notification_constants::kNotificationIncognito] ||
-      ![response
-          objectForKey:notification_constants::kNotificationCreatorPid] ||
-      ![response objectForKey:notification_constants::kNotificationType] ||
-      ![response objectForKey:notification_constants::kNotificationIsAlert]) {
+  if (!response[notification_constants::kNotificationButtonIndex] ||
+      !response[notification_constants::kNotificationOperation] ||
+      !response[notification_constants::kNotificationId] ||
+      !response[notification_constants::kNotificationProfileId] ||
+      !response[notification_constants::kNotificationIncognito] ||
+      !response[notification_constants::kNotificationCreatorPid] ||
+      !response[notification_constants::kNotificationType] ||
+      !response[notification_constants::kNotificationIsAlert]) {
     LOG(ERROR) << "Missing required key";
     return false;
   }
 
   NSNumber* buttonIndex =
-      [response objectForKey:notification_constants::kNotificationButtonIndex];
+      response[notification_constants::kNotificationButtonIndex];
   NSNumber* operation =
-      [response objectForKey:notification_constants::kNotificationOperation];
-  NSString* notificationId =
-      [response objectForKey:notification_constants::kNotificationId];
+      response[notification_constants::kNotificationOperation];
+  NSString* notificationId = response[notification_constants::kNotificationId];
   NSString* profileId =
-      [response objectForKey:notification_constants::kNotificationProfileId];
+      response[notification_constants::kNotificationProfileId];
   NSNumber* notificationType =
-      [response objectForKey:notification_constants::kNotificationType];
+      response[notification_constants::kNotificationType];
   NSNumber* creatorPid =
-      [response objectForKey:notification_constants::kNotificationCreatorPid];
+      response[notification_constants::kNotificationCreatorPid];
 
   if (creatorPid.unsignedIntValue != static_cast<NSInteger>(getpid())) {
     return false;
@@ -189,8 +186,7 @@ bool VerifyMacNotificationData(NSDictionary* response) {
   }
 
   // Origin is not actually required but if it's there it should be a valid one.
-  NSString* origin =
-      [response objectForKey:notification_constants::kNotificationOrigin];
+  NSString* origin = response[notification_constants::kNotificationOrigin];
   if (origin && origin.length) {
     std::string notificationOrigin = base::SysNSStringToUTF8(origin);
     GURL url(notificationOrigin);
@@ -202,8 +198,8 @@ bool VerifyMacNotificationData(NSDictionary* response) {
 }
 
 void ProcessMacNotificationResponse(NSDictionary* response) {
-  bool isAlert = [[response
-      objectForKey:notification_constants::kNotificationIsAlert] boolValue];
+  bool isAlert =
+      [response[notification_constants::kNotificationIsAlert] boolValue];
   bool isValid = VerifyMacNotificationData(response);
   LogMacNotificationActionReceived(isAlert, isValid);
 
@@ -211,20 +207,20 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
     return;
 
   NSNumber* buttonIndex =
-      [response objectForKey:notification_constants::kNotificationButtonIndex];
+      response[notification_constants::kNotificationButtonIndex];
   NSNumber* operation =
-      [response objectForKey:notification_constants::kNotificationOperation];
+      response[notification_constants::kNotificationOperation];
 
   std::string notificationOrigin = base::SysNSStringToUTF8(
-      [response objectForKey:notification_constants::kNotificationOrigin]);
+      response[notification_constants::kNotificationOrigin]);
   std::string notificationId = base::SysNSStringToUTF8(
-      [response objectForKey:notification_constants::kNotificationId]);
+      response[notification_constants::kNotificationId]);
   std::string profileId = base::SysNSStringToUTF8(
-      [response objectForKey:notification_constants::kNotificationProfileId]);
+      response[notification_constants::kNotificationProfileId]);
   NSNumber* isIncognito =
-      [response objectForKey:notification_constants::kNotificationIncognito];
+      response[notification_constants::kNotificationIncognito];
   NSNumber* notificationType =
-      [response objectForKey:notification_constants::kNotificationType];
+      response[notification_constants::kNotificationType];
 
   base::Optional<int> actionIndex;
   if (buttonIndex.intValue !=

@@ -146,7 +146,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
 
   EXPECT_EQ(1u, [notifications count]);
 
-  NSUserNotification* delivered_notification = [notifications objectAtIndex:0];
+  NSUserNotification* delivered_notification = notifications[0];
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
@@ -184,11 +184,10 @@ TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
   ASSERT_EQ(1u, [notifications count]);
 
   // Expect that the remaining notification is for the regular profile.
-  NSUserNotification* remaining_notification = [notifications objectAtIndex:0];
-  EXPECT_EQ(false,
-            [[[remaining_notification userInfo]
-                objectForKey:notification_constants::kNotificationIncognito]
-                boolValue]);
+  NSUserNotification* remaining_notification = notifications[0];
+  EXPECT_EQ(false, [[remaining_notification userInfo]
+                           [notification_constants::kNotificationIncognito]
+                       boolValue]);
 
   // Close the one for the regular profile.
   bridge->Close(profile(), "id1");
@@ -209,7 +208,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
 
   EXPECT_EQ(1u, [notifications count]);
 
-  NSUserNotification* delivered_notification = [notifications objectAtIndex:0];
+  NSUserNotification* delivered_notification = notifications[0];
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
@@ -231,7 +230,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
 
   NSArray* notifications = [notification_center() deliveredNotifications];
   EXPECT_EQ(1u, [notifications count]);
-  NSUserNotification* delivered_notification = [notifications objectAtIndex:0];
+  NSUserNotification* delivered_notification = notifications[0];
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
@@ -264,10 +263,10 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   NSArray* displayedAlerts = [alert_dispatcher() alerts];
   ASSERT_EQ(1u, [displayedAlerts count]);
 
-  NSDictionary* deliveredNotification = [displayedAlerts objectAtIndex:0];
+  NSDictionary* deliveredNotification = displayedAlerts[0];
   std::u16string expected = base::FormatPercent(kSamplePercent) + u" - Title";
   EXPECT_NSEQ(base::SysUTF16ToNSString(expected),
-              [deliveredNotification objectForKey:@"title"]);
+              deliveredNotification[@"title"]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestCloseNotification) {
@@ -347,11 +346,10 @@ TEST_F(NotificationPlatformBridgeMacTest,
   // Expect all notifications for that profile to be closed.
   NSArray* notifications = [notification_center() deliveredNotifications];
   ASSERT_EQ(1u, [notifications count]);
-  NSUserNotification* remaining_notification = [notifications objectAtIndex:0];
-  EXPECT_EQ(false,
-            [[[remaining_notification userInfo]
-                objectForKey:notification_constants::kNotificationIncognito]
-                boolValue]);
+  NSUserNotification* remaining_notification = notifications[0];
+  EXPECT_EQ(false, [[remaining_notification userInfo]
+                           [notification_constants::kNotificationIncognito]
+                       boolValue]);
 }
 
 // Regression test for crbug.com/1182795
@@ -484,17 +482,17 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
 
   NSArray* notifications = [notification_center() deliveredNotifications];
   EXPECT_EQ(6u, [notifications count]);
-  NSUserNotification* delivered_notification = [notifications objectAtIndex:0];
+  NSUserNotification* delivered_notification = notifications[0];
   EXPECT_NSEQ(@"test.co.uk", [delivered_notification subtitle]);
-  delivered_notification = [notifications objectAtIndex:1];
+  delivered_notification = notifications[1];
   EXPECT_NSEQ(@"mail.appspot.com", [delivered_notification subtitle]);
-  delivered_notification = [notifications objectAtIndex:2];
+  delivered_notification = notifications[2];
   EXPECT_NSEQ(@"tests.peter.sh", [delivered_notification subtitle]);
-  delivered_notification = [notifications objectAtIndex:3];
+  delivered_notification = notifications[3];
   EXPECT_NSEQ(@"peter.sh", [delivered_notification subtitle]);
-  delivered_notification = [notifications objectAtIndex:4];
+  delivered_notification = notifications[4];
   EXPECT_NSEQ(@"localhost:8080", [delivered_notification subtitle]);
-  delivered_notification = [notifications objectAtIndex:5];
+  delivered_notification = notifications[5];
   EXPECT_NSEQ(@"93.186.186.172", [delivered_notification subtitle]);
 }
 

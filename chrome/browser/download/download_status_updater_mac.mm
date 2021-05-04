@@ -48,14 +48,14 @@ NSString* ProgressString(NSString* string) {
     foundation = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Foundation"));
   }
 
-  NSString* result = [cache objectForKey:string];
+  NSString* result = cache[string];
   if (!result) {
     NSString** ref = static_cast<NSString**>(
         CFBundleGetDataPointerForName(foundation,
                                       base::mac::NSToCFCast(string)));
     if (ref) {
       result = *ref;
-      [cache setObject:result forKey:string];
+      cache[string] = result;
     }
   }
 
@@ -66,7 +66,7 @@ NSString* ProgressString(NSString* string) {
                                       CFSTR("NSProgressEstimatedTimeKey")));
     if (ref) {
       result = *ref;
-      [cache setObject:result forKey:string];
+      cache[string] = result;
     }
   }
 

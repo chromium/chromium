@@ -24,13 +24,13 @@
   base::scoped_nsobject<NSData> _data;
   base::scoped_nsobject<NSArray> _addresses;
 }
-- (id)initWithData:(NSData*)data;
+- (instancetype)initWithData:(NSData*)data;
 - (void)setAddresses:(NSArray*)addresses;
 @end
 
 @implementation TestNSNetService
 
-- (id)initWithData:(NSData*)data {
+- (instancetype)initWithData:(NSData*)data {
   if ((self = [super initWithDomain:@"" type:@"_tcp." name:@"Test.123"])) {
     _data.reset([data retain]);
   }

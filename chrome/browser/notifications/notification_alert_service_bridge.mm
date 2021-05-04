@@ -37,15 +37,15 @@ class MacNotificationActionHandlerImpl
       kNotificationId : base::SysUTF8ToNSString(info->meta->id->id),
       notification_constants::kNotificationProfileId :
           base::SysUTF8ToNSString(info->meta->id->profile->id),
-      notification_constants::kNotificationIncognito :
-          [NSNumber numberWithBool:info->meta->id->profile->incognito],
+      notification_constants::
+      kNotificationIncognito : @(info->meta->id->profile->incognito),
       notification_constants::kNotificationOrigin :
           base::SysUTF8ToNSString(info->meta->origin_url.spec()),
       notification_constants::kNotificationType : @(info->meta->type),
       notification_constants::
       kNotificationCreatorPid : @(info->meta->creator_pid),
-      notification_constants::kNotificationOperation :
-          [NSNumber numberWithInt:static_cast<int>(info->operation)],
+      notification_constants::
+      kNotificationOperation : @(static_cast<int>(info->operation)),
       notification_constants::kNotificationButtonIndex : @(info->button_index),
       notification_constants::kNotificationIsAlert : @YES,
     };
@@ -80,8 +80,7 @@ void DispatchGetAllNotificationsReply(
   for (const auto& notification : notifications) {
     NSString* notification_id = base::SysUTF8ToNSString(notification->id);
     NSString* profile_id = base::SysUTF8ToNSString(notification->profile->id);
-    NSNumber* incognito =
-        [NSNumber numberWithBool:notification->profile->incognito];
+    NSNumber* incognito = @(notification->profile->incognito);
 
     [alert_ids addObject:@{
       notification_constants::kNotificationId : notification_id,
@@ -129,11 +128,12 @@ void DispatchGetAllNotificationsReply(
 
 - (void)deliverNotification:(NSDictionary*)notificationData {
   NSString* notificationId =
-      [notificationData objectForKey:notification_constants::kNotificationId];
-  NSString* profileId = [notificationData
-      objectForKey:notification_constants::kNotificationProfileId];
-  bool incognito = [[notificationData
-      objectForKey:notification_constants::kNotificationIncognito] boolValue];
+      notificationData[notification_constants::kNotificationId];
+  NSString* profileId =
+      notificationData[notification_constants::kNotificationProfileId];
+  bool incognito =
+      [notificationData[notification_constants::kNotificationIncognito]
+          boolValue];
 
   auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profileId), incognito);
@@ -142,56 +142,54 @@ void DispatchGetAllNotificationsReply(
           base::SysNSStringToUTF8(notificationId),
           std::move(profileIdentifier));
 
-  int type = [[notificationData
-      objectForKey:notification_constants::kNotificationType] intValue];
+  int type =
+      [notificationData[notification_constants::kNotificationType] intValue];
   GURL originUrl;
-  if ([notificationData
-          objectForKey:notification_constants::kNotificationOrigin]) {
-    originUrl = GURL(base::SysNSStringToUTF8([notificationData
-        objectForKey:notification_constants::kNotificationOrigin]));
+  if (notificationData[notification_constants::kNotificationOrigin]) {
+    originUrl = GURL(base::SysNSStringToUTF8(
+        notificationData[notification_constants::kNotificationOrigin]));
   }
-  int creatorPid = [[notificationData
-      objectForKey:notification_constants::kNotificationCreatorPid] intValue];
+  int creatorPid =
+      [notificationData[notification_constants::kNotificationCreatorPid]
+          intValue];
 
   auto meta = mac_notifications::mojom::NotificationMetadata::New(
       std::move(notificationIdentifier), type, std::move(originUrl),
       creatorPid);
 
-  std::u16string title = base::SysNSStringToUTF16([notificationData
-      objectForKey:notification_constants::kNotificationTitle]);
-  std::u16string subtitle = base::SysNSStringToUTF16([notificationData
-      objectForKey:notification_constants::kNotificationSubTitle]);
-  std::u16string body = base::SysNSStringToUTF16([notificationData
-      objectForKey:notification_constants::kNotificationInformativeText]);
-  bool renotify = [[notificationData
-      objectForKey:notification_constants::kNotificationRenotify] boolValue];
-  bool showSettingsButton = [[notificationData
-      objectForKey:notification_constants::kNotificationHasSettingsButton]
-      boolValue];
+  std::u16string title = base::SysNSStringToUTF16(
+      notificationData[notification_constants::kNotificationTitle]);
+  std::u16string subtitle = base::SysNSStringToUTF16(
+      notificationData[notification_constants::kNotificationSubTitle]);
+  std::u16string body = base::SysNSStringToUTF16(
+      notificationData[notification_constants::kNotificationInformativeText]);
+  bool renotify =
+      [notificationData[notification_constants::kNotificationRenotify]
+          boolValue];
+  bool showSettingsButton =
+      [notificationData[notification_constants::kNotificationHasSettingsButton]
+          boolValue];
 
   std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
-  if ([notificationData
-          objectForKey:notification_constants::kNotificationButtonOne]) {
-    std::u16string title = base::SysNSStringToUTF16([notificationData
-        objectForKey:notification_constants::kNotificationButtonOne]);
+  if (notificationData[notification_constants::kNotificationButtonOne]) {
+    std::u16string title = base::SysNSStringToUTF16(
+        notificationData[notification_constants::kNotificationButtonOne]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
         std::move(title), /*placeholder=*/base::nullopt);
     buttons.push_back(std::move(button));
   }
-  if ([notificationData
-          objectForKey:notification_constants::kNotificationButtonTwo]) {
-    std::u16string title = base::SysNSStringToUTF16([notificationData
-        objectForKey:notification_constants::kNotificationButtonTwo]);
+  if (notificationData[notification_constants::kNotificationButtonTwo]) {
+    std::u16string title = base::SysNSStringToUTF16(
+        notificationData[notification_constants::kNotificationButtonTwo]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
         std::move(title), /*placeholder=*/base::nullopt);
     buttons.push_back(std::move(button));
   }
 
   gfx::ImageSkia icon;
-  if ([notificationData
-          objectForKey:notification_constants::kNotificationIcon]) {
-    NSImage* image = [notificationData
-        objectForKey:notification_constants::kNotificationIcon];
+  if (notificationData[notification_constants::kNotificationIcon]) {
+    NSImage* image =
+        notificationData[notification_constants::kNotificationIcon];
     icon = gfx::Image(image).AsImageSkia();
   }
 

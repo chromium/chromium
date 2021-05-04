@@ -238,7 +238,7 @@ bool MacSignatureEvaluator::PerformEvaluation(
         kSecCFErrorResourceAltered, kSecCFErrorResourceMissing,
     };
     for (CFStringRef key : keys) {
-      if (id detail = [info objectForKey:base::mac::CFToNSCast(key)])
+      if (id detail = info[base::mac::CFToNSCast(key)])
         ReportAlteredFiles(detail, path_, incident);
     }
   }

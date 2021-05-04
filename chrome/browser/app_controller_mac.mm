@@ -175,9 +175,8 @@ Browser* ActivateOrCreateBrowser(Profile* profile) {
 }
 
 CFStringRef BaseBundleID_CFString() {
-  NSString* base_bundle_id =
-      [NSString stringWithUTF8String:base::mac::BaseBundleID()];
-  return base::mac::NSToCFCast(base_bundle_id);
+  return base::mac::NSToCFCast(
+      base::SysUTF8ToNSString(base::mac::BaseBundleID()));
 }
 
 // Record the location of the application bundle (containing the main framework)
@@ -1826,7 +1825,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   }
 
   NSString* originString = base::mac::ObjCCast<NSString>(
-      [userActivity.userInfo objectForKey:handoff::kOriginKey]);
+      (userActivity.userInfo)[handoff::kOriginKey]);
   handoff::Origin origin = handoff::OriginFromString(originString);
   UMA_HISTOGRAM_ENUMERATION(
       "OSX.Handoff.Origin", origin, handoff::ORIGIN_COUNT);

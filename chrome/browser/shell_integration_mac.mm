@@ -86,7 +86,7 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
   if (!identifier)
     return false;
 
-  NSString* protocol_ns = [NSString stringWithUTF8String:protocol.c_str()];
+  NSString* protocol_ns = base::SysUTF8ToNSString(protocol);
   OSStatus return_code =
       LSSetDefaultHandlerForURLScheme(base::mac::NSToCFCast(protocol_ns),
                                       base::mac::NSToCFCast(identifier));
@@ -187,9 +187,10 @@ DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
   if (!my_identifier)
     return UNKNOWN_DEFAULT;
 
-  NSString* protocol_ns = [NSString stringWithUTF8String:protocol.c_str()];
-  return IsIdentifierDefaultProtocolClient(my_identifier, protocol_ns) ?
-      IS_DEFAULT : NOT_DEFAULT;
+  return IsIdentifierDefaultProtocolClient(my_identifier,
+                                           base::SysUTF8ToNSString(protocol))
+             ? IS_DEFAULT
+             : NOT_DEFAULT;
 }
 
 }  // namespace shell_integration
