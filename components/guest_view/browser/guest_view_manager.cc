@@ -520,8 +520,7 @@ bool GuestViewManager::CanEmbedderAccessInstanceID(
 
 GuestViewManager::ElementInstanceKey::ElementInstanceKey()
     : embedder_process_id(content::ChildProcessHost::kInvalidUniqueID),
-      element_instance_id(content::ChildProcessHost::kInvalidUniqueID) {
-}
+      element_instance_id(kInstanceIDNone) {}
 
 GuestViewManager::ElementInstanceKey::ElementInstanceKey(
     int embedder_process_id,
