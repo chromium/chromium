@@ -7308,7 +7308,7 @@
             ]
         }
     ],
-    "TextFragmentColorChange": [
+    "TextFragmentColorChangeBlink": [
         {
             "platforms": [
                 "android",
@@ -7321,7 +7321,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TextFragmentColorChange"
+                        "TextFragmentColorChangeBlink"
                     ]
                 }
             ]
