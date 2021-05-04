@@ -60,7 +60,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
       RepeatMode = kRepeatModeXY);
   virtual ~Pattern();
 
-  void ApplyToFlags(cc::PaintFlags&, const SkMatrix&);
+  void ApplyToFlags(cc::PaintFlags&, const SkMatrix&) const;
 
   bool IsRepeatX() const { return repeat_mode_ & kRepeatModeX; }
   bool IsRepeatY() const { return repeat_mode_ & kRepeatModeY; }
@@ -69,11 +69,12 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
   virtual bool IsTextureBacked() const { return false; }
 
  protected:
-  virtual sk_sp<PaintShader> CreateShader(const SkMatrix&) = 0;
+  explicit Pattern(RepeatMode);
+
+  virtual sk_sp<PaintShader> CreateShader(const SkMatrix&) const = 0;
 
   RepeatMode repeat_mode_;
 
-  Pattern(RepeatMode);
   mutable sk_sp<PaintShader> cached_shader_;
 
  private:

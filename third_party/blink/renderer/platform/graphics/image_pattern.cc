@@ -18,7 +18,8 @@ scoped_refptr<ImagePattern> ImagePattern::Create(scoped_refptr<Image> image,
 ImagePattern::ImagePattern(scoped_refptr<Image> image, RepeatMode repeat_mode)
     : Pattern(repeat_mode), tile_image_(image->PaintImageForCurrentFrame()) {}
 
-sk_sp<PaintShader> ImagePattern::CreateShader(const SkMatrix& local_matrix) {
+sk_sp<PaintShader> ImagePattern::CreateShader(
+    const SkMatrix& local_matrix) const {
   if (!tile_image_) {
     return PaintShader::MakeColor(SK_ColorTRANSPARENT);
   }

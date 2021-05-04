@@ -34,7 +34,7 @@ PaintRecordPattern::PaintRecordPattern(sk_sp<PaintRecord> record,
 PaintRecordPattern::~PaintRecordPattern() = default;
 
 sk_sp<PaintShader> PaintRecordPattern::CreateShader(
-    const SkMatrix& local_matrix) {
+    const SkMatrix& local_matrix) const {
   return PaintShader::MakePaintRecord(tile_record_, tile_record_bounds_,
                                       SkTileMode::kRepeat, SkTileMode::kRepeat,
                                       &local_matrix);

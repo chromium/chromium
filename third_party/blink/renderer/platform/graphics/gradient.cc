@@ -73,7 +73,7 @@ void Gradient::AddColorStops(const Vector<Gradient::ColorStop>& stops) {
     AddColorStop(stop);
 }
 
-void Gradient::SortStopsIfNecessary() {
+void Gradient::SortStopsIfNecessary() const {
   if (stops_sorted_)
     return;
 
@@ -127,7 +127,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 }
 
 sk_sp<PaintShader> Gradient::CreateShaderInternal(
-    const SkMatrix& local_matrix) {
+    const SkMatrix& local_matrix) const {
   SortStopsIfNecessary();
   DCHECK(stops_sorted_);
 
@@ -163,7 +163,8 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   return shader;
 }
 
-void Gradient::ApplyToFlags(PaintFlags& flags, const SkMatrix& local_matrix) {
+void Gradient::ApplyToFlags(PaintFlags& flags,
+                            const SkMatrix& local_matrix) const {
   if (!cached_shader_ || local_matrix != cached_shader_->GetLocalMatrix() ||
       flags.getColorFilter().get() != color_filter_.get()) {
     color_filter_ = flags.getColorFilter();
