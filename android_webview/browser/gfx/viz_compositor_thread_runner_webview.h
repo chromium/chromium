@@ -66,7 +66,6 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   void CreateVizDevTools(viz::mojom::VizDevToolsParamsPtr params) override;
 #endif
-  void CleanupForShutdown(base::OnceClosure cleanup_finished_callback) override;
 
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;

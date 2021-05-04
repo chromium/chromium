@@ -271,16 +271,6 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   EXPECT_TRUE(IsChannelEstablished());
 }
 
-using GpuProcessHostBrowserTest = BrowserGpuChannelHostFactoryTest;
-
-IN_PROC_BROWSER_TEST_F(GpuProcessHostBrowserTest, Shutdown) {
-  DCHECK(!IsChannelEstablished());
-  EstablishAndWait();
-  base::RunLoop run_loop;
-  StopGpuProcess(run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 // Disabled outside linux like other tests here sadface.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -342,27 +332,6 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest, CreateTransferBuffer) {
   buffer = impl->CreateTransferBuffer(100, &id);
   EXPECT_TRUE(buffer);
   EXPECT_GE(id, 0);
-}
-#endif
-
-class GpuProcessHostDisableGLBrowserTest : public GpuProcessHostBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    UseSoftwareCompositing();
-    GpuProcessHostBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    gl::kGLImplementationDisabledName);
-  }
-};
-
-// Android and CrOS don't support disabling GL.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(GpuProcessHostDisableGLBrowserTest, CreateAndDestroy) {
-  DCHECK(!IsChannelEstablished());
-  EstablishAndWait();
-  base::RunLoop run_loop;
-  StopGpuProcess(run_loop.QuitClosure());
-  run_loop.Run();
 }
 #endif
 

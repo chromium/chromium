@@ -170,16 +170,6 @@ void VizCompositorThreadRunnerImpl::CreateVizDevTools(
 }
 #endif
 
-void VizCompositorThreadRunnerImpl::CleanupForShutdown(
-    base::OnceClosure cleanup_finished_callback) {
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          &VizCompositorThreadRunnerImpl::CleanupForShutdownOnCompositorThread,
-          base::Unretained(this)),
-      std::move(cleanup_finished_callback));
-}
-
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
@@ -275,13 +265,6 @@ void VizCompositorThreadRunnerImpl::InitVizDevToolsOnCompositorThread(
   devtools_server_->AttachClient(std::move(devtools_client));
 }
 #endif
-
-void VizCompositorThreadRunnerImpl::CleanupForShutdownOnCompositorThread() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-
-  if (frame_sink_manager_)
-    frame_sink_manager_->ForceShutdown();
-}
 
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());

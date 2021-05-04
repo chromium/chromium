@@ -54,7 +54,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   void CreateVizDevTools(mojom::VizDevToolsParamsPtr params) override;
 #endif
-  void CleanupForShutdown(base::OnceClosure cleanup_finished_callback) override;
 
  private:
   void CreateFrameSinkManagerOnCompositorThread(
@@ -66,7 +65,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void CreateVizDevToolsOnCompositorThread(mojom::VizDevToolsParamsPtr params);
   void InitVizDevToolsOnCompositorThread(mojom::VizDevToolsParamsPtr params);
 #endif
-  void CleanupForShutdownOnCompositorThread();
   void TearDownOnCompositorThread();
 
   // Start variables to be accessed only on |task_runner_|.

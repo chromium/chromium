@@ -66,7 +66,6 @@ class CastWebService : public mojom::CastWebService {
   // |callback| is called when data deletion is done or at least the deletion
   // is scheduled.
   void ClearLocalStorage(base::OnceClosure callback);
-  void StopGpuProcess(base::OnceClosure callback) const;
 
   // mojom::CastWebService implementation:
   void RegisterWebUiClient(mojo::PendingRemote<mojom::WebUiClient> client,

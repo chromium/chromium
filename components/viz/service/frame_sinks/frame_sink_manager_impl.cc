@@ -113,18 +113,6 @@ void FrameSinkManagerImpl::SetLocalClient(
   ui_task_runner_ = ui_task_runner;
 }
 
-void FrameSinkManagerImpl::ForceShutdown() {
-  if (receiver_.is_bound())
-    receiver_.reset();
-
-  for (auto& it : cached_back_buffers_)
-    it.second.RunAndReset();
-  cached_back_buffers_.clear();
-
-  sink_map_.clear();
-  root_sink_map_.clear();
-}
-
 void FrameSinkManagerImpl::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
                                                bool report_activation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

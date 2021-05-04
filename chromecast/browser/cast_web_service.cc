@@ -21,7 +21,6 @@
 #include "chromecast/browser/webui/cast_webui_controller_factory.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -95,10 +94,6 @@ void CastWebService::ClearLocalStorage(base::OnceClosure callback) {
                 base::Time::Min(), base::Time::Max(), std::move(cb));
           },
           base::Passed(std::move(callback))));
-}
-
-void CastWebService::StopGpuProcess(base::OnceClosure callback) const {
-  content::StopGpuProcess(std::move(callback));
 }
 
 void CastWebService::RegisterWebUiClient(

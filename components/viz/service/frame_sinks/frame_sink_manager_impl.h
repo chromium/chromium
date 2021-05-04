@@ -85,10 +85,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       OutputSurfaceProvider* output_surface_provider = nullptr);
   ~FrameSinkManagerImpl() override;
 
-  // Performs cleanup needed to force shutdown from the GPU process. Stops all
-  // incoming IPCs and destroys all [Root]CompositorFrameSinkImpls.
-  void ForceShutdown();
-
   // Binds |this| as a FrameSinkManagerImpl for |receiver| on |task_runner|. On
   // Mac |task_runner| will be the resize helper task runner. May only be called
   // once.

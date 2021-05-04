@@ -287,15 +287,8 @@ void VizMainImpl::ExitProcess(base::Optional<ExitCode> immediate_exit_code) {
   // Close mojom::VizMain bindings first so the browser can't try to reconnect.
   receiver_.reset();
 
-  if (viz_compositor_thread_runner_) {
-    // Destroy RootCompositorFrameSinkImpls on the compositor while the GPU
-    // thread is still running to avoid deadlock. Quit GPU thread TaskRunner
-    // after cleanup on compositor thread is finished.
-    viz_compositor_thread_runner_->CleanupForShutdown(base::BindOnce(
-        &Delegate::QuitMainMessageLoop, base::Unretained(delegate_)));
-  } else {
-    delegate_->QuitMainMessageLoop();
-  }
+  DCHECK(!viz_compositor_thread_runner_);
+  delegate_->QuitMainMessageLoop();
 }
 
 }  // namespace viz

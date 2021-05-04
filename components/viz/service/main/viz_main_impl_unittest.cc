@@ -62,7 +62,6 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   MOCK_METHOD1(CreateVizDevTools, void(mojom::VizDevToolsParamsPtr));
 #endif
-  MOCK_METHOD1(CleanupForShutdown, void(base::OnceClosure));
 
  private:
   base::SingleThreadTaskRunner* const task_runner_;

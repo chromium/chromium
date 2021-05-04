@@ -145,13 +145,6 @@ void VizCompositorThreadRunnerWebView::CreateVizDevTools(
 }
 #endif
 
-void VizCompositorThreadRunnerWebView::CleanupForShutdown(
-    base::OnceClosure cleanup_finished_callback) {
-  // In-process gpu is not supposed to shutdown.
-  // Plus viz thread in webview architecture is not owned by the gpu thread.
-  NOTREACHED();
-}
-
 viz::GpuServiceImpl* VizCompositorThreadRunnerWebView::GetGpuService() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   return gpu_service_impl_;
