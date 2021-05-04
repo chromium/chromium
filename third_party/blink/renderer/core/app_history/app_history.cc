@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -16,6 +18,77 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 
 namespace blink {
+
+namespace {
+
+class NavigateReaction final : public ScriptFunction {
+ public:
+  enum class ResolveType {
+    kFulfill,
+    kReject,
+  };
+  static ScriptPromise React(ScriptState* script_state, ScriptPromise promise) {
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    promise.Then(CreateFunction(script_state, resolver, ResolveType::kFulfill),
+                 CreateFunction(script_state, resolver, ResolveType::kReject));
+    return resolver->Promise();
+  }
+
+  NavigateReaction(ScriptState* script_state,
+                   ScriptPromiseResolver* resolver,
+                   ResolveType type)
+      : ScriptFunction(script_state),
+        window_(LocalDOMWindow::From(script_state)),
+        resolver_(resolver),
+        type_(type) {}
+
+  void Trace(Visitor* visitor) const final {
+    ScriptFunction::Trace(visitor);
+    visitor->Trace(window_);
+    visitor->Trace(resolver_);
+  }
+
+ private:
+  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
+                                                ScriptPromiseResolver* resolver,
+                                                ResolveType type) {
+    return MakeGarbageCollected<NavigateReaction>(script_state, resolver, type)
+        ->BindToV8Function();
+  }
+
+  Event* InitEvent(ScriptValue value) const {
+    if (type_ == ResolveType::kFulfill)
+      return Event::Create(event_type_names::kNavigatesuccess);
+
+    auto* isolate = window_->GetIsolate();
+    v8::Local<v8::Message> message =
+        v8::Exception::CreateMessage(isolate, value.V8Value());
+    std::unique_ptr<SourceLocation> location =
+        SourceLocation::FromMessage(isolate, message, window_);
+    ErrorEvent* event = ErrorEvent::Create(
+        ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
+        &DOMWrapperWorld::MainWorld());
+    event->SetType(event_type_names::kNavigateerror);
+    return event;
+  }
+
+  ScriptValue Call(ScriptValue value) final {
+    DCHECK(window_);
+    AppHistory::appHistory(*window_)->DispatchEvent(*InitEvent(value));
+    if (type_ == ResolveType::kFulfill)
+      resolver_->Resolve(value);
+    else
+      resolver_->Reject(value);
+    window_ = nullptr;
+    return ScriptValue();
+  }
+
+  Member<LocalDOMWindow> window_;
+  Member<ScriptPromiseResolver> resolver_;
+  ResolveType type_;
+};
+
+}  // namespace
 
 const char AppHistory::kSupplementName[] = "AppHistory";
 
@@ -146,6 +219,12 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   FrameLoadRequest request(GetSupplementable(), ResourceRequest(completed_url));
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
+  if (navigate_method_call_promise_.IsEmpty()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Navigation was aborted"));
+  }
   return navigate_method_call_promise_;
 }
 
@@ -190,20 +269,39 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
-  navigate_event->SetFrameLoadType(type);
-  navigate_event->SetStateObject(state_object);
 
-  auto result = navigate_event->Fire(this, event_type);
-  navigate_method_call_promise_ = result.promise;
-  return result.should_proceed;
-}
+  DispatchEvent(*navigate_event);
+  ScriptPromise promise = navigate_event->GetNavigationActionPromise();
+  if (!GetSupplementable()->GetFrame())
+    return false;
+  if (navigate_event->defaultPrevented() && promise.IsEmpty())
+    return false;
 
-ScriptPromise AppHistory::GetUnresolvingPromise(ScriptState* script_state) {
-  if (!hung_promise_resolver_) {
-    hung_promise_resolver_ =
-        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  if (promise.IsEmpty()) {
+    // Default promises for when respondWith() isn't invoked. Use a promise
+    // that never resolves for a cross-document navigation (because the context
+    // will be discarded before the promise resolves), and a resolved promise
+    // for a same-document navigation since it will complete synchronously.
+    if (event_type == NavigateEventType::kCrossDocument) {
+      if (!hung_promise_resolver_) {
+        hung_promise_resolver_ =
+            MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+      }
+      promise = hung_promise_resolver_->Promise();
+    } else {
+      promise = ScriptPromise::CastUndefined(script_state);
+    }
+  } else {
+    DocumentLoader* loader = GetSupplementable()->document()->Loader();
+    loader->RunURLAndHistoryUpdateSteps(url, state_object, type);
   }
-  return hung_promise_resolver_->Promise();
+
+  navigate_method_call_promise_ =
+      NavigateReaction::React(script_state, promise);
+  return !navigate_event->defaultPrevented();
 }
 
 const AtomicString& AppHistory::InterfaceName() const {

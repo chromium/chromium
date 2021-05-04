@@ -70,8 +70,6 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              UserNavigationInvolvement,
                              SerializedScriptValue* = nullptr);
 
-  ScriptPromise GetUnresolvingPromise(ScriptState*);
-
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {

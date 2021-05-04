@@ -38,20 +38,7 @@ class AppHistoryNavigateEvent final : public Event,
                           const AtomicString& type,
                           AppHistoryNavigateEventInit* init);
 
-  struct FireResult {
-    STACK_ALLOCATED();
-
-   public:
-    FireResult(bool proceed, ScriptPromise p)
-        : should_proceed(proceed), promise(p) {}
-    bool should_proceed;
-    ScriptPromise promise;
-  };
-  FireResult Fire(AppHistory*, NavigateEventType);
-
   void SetUrl(const KURL& url) { url_ = url; }
-  void SetFrameLoadType(WebFrameLoadType type) { frame_load_type_ = type; }
-  void SetStateObject(SerializedScriptValue* state) { state_object_ = state; }
 
   bool canRespond() const { return can_respond_; }
   bool userInitiated() const { return user_initiated_; }
@@ -63,7 +50,9 @@ class AppHistoryNavigateEvent final : public Event,
                    ScriptPromise newNavigationAction,
                    ExceptionState&);
 
-  ScriptPromise GetCompletionPromise() { return completion_promise_; }
+  ScriptPromise GetNavigationActionPromise() {
+    return navigation_action_promise_;
+  }
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -76,9 +65,7 @@ class AppHistoryNavigateEvent final : public Event,
   ScriptValue info_;
 
   KURL url_;
-  WebFrameLoadType frame_load_type_ = WebFrameLoadType::kStandard;
-  scoped_refptr<SerializedScriptValue> state_object_;
-  ScriptPromise completion_promise_;
+  ScriptPromise navigation_action_promise_;
 };
 
 }  // namespace blink
