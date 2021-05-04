@@ -195,7 +195,7 @@ base::stack<LogAssertHandlerFunction>& GetLogAssertHandlerStack() {
 }
 
 // A log message handler that gets notified of every log message we process.
-LogMessageHandlerFunction log_message_handler = nullptr;
+LogMessageHandlerFunction g_log_message_handler = nullptr;
 
 uint64_t TickCount() {
 #if defined(OS_WIN)
@@ -478,7 +478,7 @@ bool ShouldCreateLogMessage(int severity) {
     return false;
 
   // Return true here unless we know ~LogMessage won't do anything.
-  return g_logging_destination != LOG_NONE || log_message_handler ||
+  return g_logging_destination != LOG_NONE || g_log_message_handler ||
          severity >= kAlwaysPrintErrorLevel;
 }
 
@@ -536,11 +536,11 @@ ScopedLogAssertHandler::~ScopedLogAssertHandler() {
 }
 
 void SetLogMessageHandler(LogMessageHandlerFunction handler) {
-  log_message_handler = handler;
+  g_log_message_handler = handler;
 }
 
 LogMessageHandlerFunction GetLogMessageHandler() {
-  return log_message_handler;
+  return g_log_message_handler;
 }
 
 #if !defined(NDEBUG)
@@ -608,9 +608,9 @@ LogMessage::~LogMessage() {
       file_, base::StringPiece(str_newline).substr(message_start_), line_);
 
   // Give any log message handler first dibs on the message.
-  if (log_message_handler &&
-      log_message_handler(severity_, file_, line_,
-                          message_start_, str_newline)) {
+  if (g_log_message_handler &&
+      g_log_message_handler(severity_, file_, line_, message_start_,
+                            str_newline)) {
     // The handler took care of it, no further processing.
     return;
   }
@@ -1058,28 +1058,45 @@ FILE* DuplicateLogFILE() {
 
 // Used for testing. Declared in test/scoped_logging_settings.h.
 ScopedLoggingSettings::ScopedLoggingSettings()
-    : enable_process_id_(g_log_process_id),
+    : min_log_level_(g_min_log_level),
+      logging_destination_(g_logging_destination),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      log_format_(g_log_format),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      enable_process_id_(g_log_process_id),
       enable_thread_id_(g_log_thread_id),
       enable_timestamp_(g_log_timestamp),
       enable_tickcount_(g_log_tickcount),
-      min_log_level_(GetMinLogLevel()),
-      message_handler_(GetLogMessageHandler()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  log_format_ = g_log_format;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      log_prefix_(g_log_prefix),
+      message_handler_(g_log_message_handler) {
+  if (g_log_file_name)
+    log_file_name_ = std::make_unique<PathString>(*g_log_file_name);
+  // Duplicating |g_log_file| is complex & unnecessary for this test helpers'
+  // use-cases, and so long as |g_log_file_name| is set, it will be re-opened
+  // automatically anyway, when required, so just close the existing one.
+  if (g_log_file) {
+    CHECK(g_log_file_name) << "Un-named |log_file| is not supported.";
+    CloseLogFileUnlocked();
+  }
 }
 
 ScopedLoggingSettings::~ScopedLoggingSettings() {
-  g_log_process_id = enable_process_id_;
-  g_log_thread_id = enable_thread_id_;
-  g_log_timestamp = enable_timestamp_;
-  g_log_tickcount = enable_tickcount_;
-  SetMinLogLevel(min_log_level_);
-  SetLogMessageHandler(message_handler_);
-
+  // Re-initialize logging via the normal path. This will clean up old file
+  // name and handle state, including re-initializing the VLOG internal state.
+  CHECK(InitLogging({
+    .logging_dest = logging_destination_,
+    .log_file_path = log_file_name_ ? log_file_name_->data() : nullptr,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  g_log_format = log_format_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    .log_format = log_format_
+#endif
+  })) << "~ScopedLoggingSettings() failed to restore settings.";
+
+  // Restore plain data settings.
+  SetMinLogLevel(min_log_level_);
+  SetLogItems(enable_process_id_, enable_thread_id_, enable_timestamp_,
+              enable_tickcount_);
+  SetLogPrefix(log_prefix_);
+  SetLogMessageHandler(message_handler_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
