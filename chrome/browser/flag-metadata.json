@@ -46,7 +46,7 @@
   {
     "name": "account-management-flows-v2",
     "owners": [ "anastasiian", "sinhak" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 92
   },
   {
     "name": "actionable-content-settings",
