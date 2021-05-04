@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,14 +40,15 @@ class WebFeedDialogCoordinator {
      * Initializes the {@link WebFeedDialogCoordinator}.
      *
      * @param context The {@link Context}.
+     * @param feedLauncher {@link FeedLauncher} for launching the NTP.
      * @param title The title of the site that was just followed.
      * @param isActive Whether the followed site is active (has content available).
      */
-    void initialize(Context context, String title, boolean isActive) {
+    void initialize(Context context, FeedLauncher feedLauncher, String title, boolean isActive) {
         mContext = context;
         View webFeedDialogView =
                 LayoutInflater.from(context).inflate(R.layout.web_feed_dialog, null);
-        WebFeedDialogContents dialogContents = buildDialogContents(isActive, title);
+        WebFeedDialogContents dialogContents = buildDialogContents(feedLauncher, isActive, title);
         PropertyModel model = buildModel(dialogContents);
         mMediator.initialize(webFeedDialogView, dialogContents);
         PropertyModelChangeProcessor.create(
@@ -57,7 +59,8 @@ class WebFeedDialogCoordinator {
         mMediator.showDialog();
     }
 
-    private WebFeedDialogContents buildDialogContents(boolean isActive, String title) {
+    private WebFeedDialogContents buildDialogContents(
+            FeedLauncher feedLauncher, boolean isActive, String title) {
         String description;
         String primaryButtonText;
         String secondaryButtonText;
@@ -70,7 +73,7 @@ class WebFeedDialogCoordinator {
             secondaryButtonText = mContext.getString(R.string.close);
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
-                    // TODO(crbug.com/1152592): Implement go to feed.
+                    feedLauncher.openFeed();
                 }
             };
         } else {

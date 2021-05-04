@@ -1755,8 +1755,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return new TabbedAppMenuPropertiesDelegate(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
                 getWindow().getDecorView(), this, mOverviewModeBehaviorSupplier,
-                mBookmarkBridgeSupplier, getModalDialogManager(), getSnackbarManager(),
-                new WebFeedBridge());
+                mBookmarkBridgeSupplier,
+                ()
+                        -> getTabCreator(/*incognito=*/false).launchNTP(),
+                getModalDialogManager(), getSnackbarManager(), new WebFeedBridge());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

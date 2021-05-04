@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -59,6 +60,8 @@ public final class WebFeedFollowIntroControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Mock
+    FeedLauncher mFeedLauncher;
     @Mock
     private ObservableSupplier<Tab> mTabSupplier;
     @Mock
@@ -99,7 +102,7 @@ public final class WebFeedFollowIntroControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mTabSupplier, mActivity.getToolbarManager().getMenuButtonView(),
+                    mTabSupplier, mActivity.getToolbarManager().getMenuButtonView(), mFeedLauncher,
                     mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
                     mWebFeedBridge);
         });

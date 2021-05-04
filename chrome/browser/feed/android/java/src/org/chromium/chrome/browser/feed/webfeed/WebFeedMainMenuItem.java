@@ -19,6 +19,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -66,20 +67,21 @@ public class WebFeedMainMenuItem extends FrameLayout {
      *
      * @param url {@link GURL} of the page.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
+     * @param feedLauncher {@link FeedLauncher}
      * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param webFeedBridge {@link WebFeedBridge} to display the menu item and follow/unfollow.
      */
     public void initialize(GURL url, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
-            ModalDialogManager dialogManager, SnackbarManager snackbarManager,
-            WebFeedBridge webFeedBridge) {
+            FeedLauncher feedLauncher, ModalDialogManager dialogManager,
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mUrl = url;
         mAppMenuHandler = appMenuHandler;
         mLargeIconBridge = largeIconBridge;
         mWebFeedBridge = webFeedBridge;
         mWebFeedSnackbarController = new WebFeedSnackbarController(
-                mContext, dialogManager, snackbarManager, webFeedBridge);
+                mContext, feedLauncher, dialogManager, snackbarManager, webFeedBridge);
 
         initializeFavicon();
         mWebFeedBridge.getWebFeedMetadataForPage(mUrl, result -> {

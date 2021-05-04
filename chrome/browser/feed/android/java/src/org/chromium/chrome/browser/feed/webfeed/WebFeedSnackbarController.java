@@ -15,11 +15,24 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Controller for showing Web Feed snackbars.
  */
-class WebFeedSnackbarController {
+public class WebFeedSnackbarController {
+    /**
+     * A helper interface for exposing a method to launch the feed.
+     */
+    @FunctionalInterface
+    public interface FeedLauncher {
+        void openFeed();
+    }
+
+    static final int SNACKBAR_DURATION_MS = (int) TimeUnit.SECONDS.toMillis(8);
+
     private final Context mContext;
+    private final FeedLauncher mFeedLauncher;
     private final SnackbarManager mSnackbarManager;
     private final WebFeedDialogCoordinator mWebFeedDialogCoordinator;
     private final WebFeedBridge mWebFeedBridge;
@@ -28,13 +41,16 @@ class WebFeedSnackbarController {
      * Constructs an instance of {@link WebFeedSnackbarController}.
      *
      * @param context The {@link Context} to retrieve strings for the snackbars.
+     * @param feedLauncher The {@link FeedLauncher} to launch the feed.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to manage the snackbars.
      * @param webFeedBridge {@link WebFeedBridge} to connect with the backend to follow/unfollow.
      */
-    WebFeedSnackbarController(Context context, ModalDialogManager dialogManager,
-            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
+    WebFeedSnackbarController(Context context, FeedLauncher feedLauncher,
+            ModalDialogManager dialogManager, SnackbarManager snackbarManager,
+            WebFeedBridge webFeedBridge) {
         mContext = context;
+        mFeedLauncher = feedLauncher;
         mSnackbarManager = snackbarManager;
         mWebFeedDialogCoordinator = new WebFeedDialogCoordinator(dialogManager);
         mWebFeedBridge = webFeedBridge;
@@ -78,13 +94,13 @@ class WebFeedSnackbarController {
         if (TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                         .shouldTriggerHelpUI(
                                 FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE)) {
-            mWebFeedDialogCoordinator.initialize(mContext, title, isActive);
+            mWebFeedDialogCoordinator.initialize(mContext, mFeedLauncher, title, isActive);
             mWebFeedDialogCoordinator.showDialog();
         } else {
             SnackbarController snackbarController = new SnackbarController() {
                 @Override
                 public void onAction(Object actionData) {
-                    // TODO(crbug/1152592): Implement go to feed.
+                    mFeedLauncher.openFeed();
                 }
             };
             showSnackbar(
@@ -125,7 +141,8 @@ class WebFeedSnackbarController {
         Snackbar snackbar =
                 Snackbar.make(message, snackbarController, Snackbar.TYPE_ACTION, umaId)
                         .setAction(mContext.getString(snackbarActionId), /*actionData=*/null)
-                        .setSingleLine(false);
+                        .setSingleLine(false)
+                        .setDuration(SNACKBAR_DURATION_MS);
         mSnackbarManager.showSnackbar(snackbar);
     }
 

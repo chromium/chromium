@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -52,6 +53,8 @@ public final class WebFeedSnackbarControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Mock
+    private FeedLauncher mFeedLauncher;
     @Mock
     private Tracker mTracker;
     @Mock
@@ -77,8 +80,8 @@ public final class WebFeedSnackbarControllerTest {
                 .thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
 
-        mWebFeedSnackbarController = new WebFeedSnackbarController(
-                mActivityTestRule.getActivity(), mDialogManager, mSnackbarManager, mWebFeedBridge);
+        mWebFeedSnackbarController = new WebFeedSnackbarController(mActivityTestRule.getActivity(),
+                mFeedLauncher, mDialogManager, mSnackbarManager, mWebFeedBridge);
     }
 
     @After
@@ -125,6 +128,22 @@ public final class WebFeedSnackbarControllerTest {
         assertEquals("Snackbar message should be for successful follow with title from input.",
                 mContext.getString(R.string.web_feed_follow_success_snackbar_message, sTitle),
                 snackbar.getTextForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void showSnackbarForFollow_correctDuration() {
+        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
+                WebFeedSubscriptionRequestStatus.SUCCESS, /*metadata=*/null);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController.showPostFollowHelp(
+                                followResults, sFollowId, sTestUrl, sTitle));
+
+        Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
+        assertEquals("Snackbar duration for follow should be correct.",
+                WebFeedSnackbarController.SNACKBAR_DURATION_MS, snackbar.getDuration());
     }
 
     @Test
@@ -303,5 +322,19 @@ public final class WebFeedSnackbarControllerTest {
         snackbar.getController().onAction(null);
         verify(mWebFeedBridge, description("Unfollow should be called on unfollow try again."))
                 .unfollow(eq(sFollowId), any());
+    }
+
+    @Test
+    @SmallTest
+    public void showSnackbarForUnfollow_correctDuration() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController
+                                   .showSnackbarForUnfollow(/*successfulUnfollow=*/
+                                           true, sFollowId, sTestUrl, sTitle));
+
+        Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
+        assertEquals("Snackbar duration for unfollow should be correct.",
+                WebFeedSnackbarController.SNACKBAR_DURATION_MS, snackbar.getDuration());
     }
 }

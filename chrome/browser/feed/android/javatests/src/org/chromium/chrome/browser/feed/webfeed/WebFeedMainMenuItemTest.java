@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -56,6 +57,8 @@ public final class WebFeedMainMenuItemTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Mock
+    private FeedLauncher mFeedLauncher;
     @Mock
     private WebFeedBridge mWebFeedBridge;
 
@@ -118,7 +121,8 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         mWebFeedMainMenuItem.initialize(GURL.emptyGURL(), mAppMenuHandler,
-                new MockLargeIconBridge(null), mDialogManager, mSnackBarManager, mWebFeedBridge);
+                new MockLargeIconBridge(null), mFeedLauncher, mDialogManager, mSnackBarManager,
+                mWebFeedBridge);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -295,7 +299,7 @@ public final class WebFeedMainMenuItemTest {
      */
     private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
         mWebFeedMainMenuItem.initialize(TEST_URL, mAppMenuHandler, new MockLargeIconBridge(bitmap),
-                mDialogManager, mSnackBarManager, mWebFeedBridge);
+                mFeedLauncher, mDialogManager, mSnackBarManager, mWebFeedBridge);
     }
 
     /**

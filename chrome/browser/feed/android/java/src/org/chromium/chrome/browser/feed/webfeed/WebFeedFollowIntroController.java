@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -84,18 +85,19 @@ public class WebFeedFollowIntroController {
      * @param activity The current {@link Activity}.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
+     * @param feedLauncher The {@link FeedLauncher} to launch the feed.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager The {@link SnackbarManager} to show snackbars.
      * @param webFeedBridge The {@link WebFeedBridge} to connect to the Web Feed backend.
      */
     public WebFeedFollowIntroController(Activity activity, ObservableSupplier<Tab> tabSupplier,
-            View menuButtonAnchorView, ModalDialogManager dialogManager,
+            View menuButtonAnchorView, FeedLauncher feedLauncher, ModalDialogManager dialogManager,
             SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mActivity = activity;
         mFeatureEngagementTracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mWebFeedSnackbarController = new WebFeedSnackbarController(
-                activity, dialogManager, snackbarManager, webFeedBridge);
+                activity, feedLauncher, dialogManager, snackbarManager, webFeedBridge);
         mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
 
         mAppearanceThresholdMs = TimeUnit.MINUTES.toMillis(
