@@ -14,7 +14,6 @@
 namespace content {
 
 class BrowserContext;
-class BrowserDevToolsAgentHost;
 class FrameTreeNode;
 
 namespace protocol {
@@ -30,8 +29,7 @@ class BrowserHandler : public DevToolsDomainHandler,
       const Maybe<std::string>& browser_context_id,
       BrowserContext** browser_context);
 
-  static std::vector<BrowserHandler*> ForAgentHost(
-      BrowserDevToolsAgentHost* host);
+  static std::vector<BrowserHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   void Wire(UberDispatcher* dispatcher) override;
 

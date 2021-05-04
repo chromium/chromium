@@ -344,7 +344,7 @@ Response BrowserHandler::FindBrowserContext(
 
 // static
 std::vector<BrowserHandler*> BrowserHandler::ForAgentHost(
-    BrowserDevToolsAgentHost* host) {
+    DevToolsAgentHostImpl* host) {
   return host->HandlersByName<BrowserHandler>(Browser::Metainfo::domainName);
 }
 

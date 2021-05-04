@@ -293,6 +293,8 @@ void WillBeginDownload(download::DownloadCreateInfo* info,
           : nullptr;
   if (!ftn)
     return;
+  DispatchToAgents(ftn, &protocol::BrowserHandler::DownloadWillBegin, ftn,
+                   item);
   DispatchToAgents(ftn, &protocol::PageHandler::DownloadWillBegin, ftn, item);
 
   for (auto* agent_host : BrowserDevToolsAgentHost::Instances()) {
