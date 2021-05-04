@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"

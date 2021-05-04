@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/chrome_switches.h"

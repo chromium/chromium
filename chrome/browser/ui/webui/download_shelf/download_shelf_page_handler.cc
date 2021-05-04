@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"

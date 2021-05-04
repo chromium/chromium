@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
