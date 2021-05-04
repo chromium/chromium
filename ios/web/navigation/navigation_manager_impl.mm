@@ -16,6 +16,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -412,7 +413,13 @@ int NavigationManagerImpl::GetIndexForOffset(int offset) const {
         empty_window_open_item_ ? 0 : web_view_cache_.GetCurrentItemIndex();
   }
 
-  return current_item_index + offset;
+  // Handled signed integer overflow or underflow.
+  int index;
+  if (!base::CheckAdd(current_item_index, offset).AssignIfValid(&index)) {
+    return -1;
+  }
+
+  return index;
 }
 
 void NavigationManagerImpl::SetPendingItemIndex(int index) {
