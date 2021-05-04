@@ -34,10 +34,8 @@ static void JNI_DownloadManagerBridge_OnAddCompletedDownloadDone(
 void DownloadManagerBridge::AddCompletedDownload(
     download::DownloadItem* download,
     AddCompletedDownloadCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kUseDownloadOfflineContentProvider)) {
-    return;
-  }
+  DCHECK(base::FeatureList::IsEnabled(
+      download::features::kUseDownloadOfflineContentProvider));
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfile_name =
