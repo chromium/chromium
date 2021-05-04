@@ -95,6 +95,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   void TearDown() override {
     app_platform_metrics_service_.reset();
     chromeos::PowerManagerClient::Shutdown();
+    browser_window1_.reset();
+    browser_window2_.reset();
   }
 
   void InstallApps() {
