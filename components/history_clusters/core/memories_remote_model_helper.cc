@@ -135,9 +135,7 @@ std::vector<history::Cluster> ParseResponseProto(
 MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Optional<DebugLoggerCallback> debug_logger)
-    : url_loader_(nullptr),
-      url_loader_factory_(url_loader_factory),
-      debug_logger_(debug_logger) {}
+    : url_loader_factory_(url_loader_factory), debug_logger_(debug_logger) {}
 
 MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 
@@ -149,7 +147,6 @@ void MemoriesRemoteModelHelper::GetMemories(
     std::move(callback).Run({});
     return;
   }
-  StopPendingRequests();
 
   // It's weird but the endpoint only accepts JSON, so wrap our serialized proto
   // like this: {"data":"<base64-encoded-proto-serialization>"}
@@ -166,13 +163,13 @@ void MemoriesRemoteModelHelper::GetMemories(
   std::string request_body;
   base::JSONWriter::Write(container_value, &request_body);
 
-  auto request = CreateRequest(endpoint);
-  url_loader_ = CreateLoader(CreateRequest(endpoint), request_body);
-
-  url_loader_->DownloadToString(
+  auto url_loader = CreateLoader(CreateRequest(endpoint), request_body);
+  network::SimpleURLLoader* unowned_url_loader = url_loader.get();
+  unowned_url_loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
-          [](base::Optional<DebugLoggerCallback> debug_logger,
+          [](std::unique_ptr<network::SimpleURLLoader> url_loader,
+             base::Optional<DebugLoggerCallback> debug_logger,
              const std::vector<history::ClusterVisit>& visits,
              std::unique_ptr<std::string> response) {
             if (!response) {
@@ -185,14 +182,9 @@ void MemoriesRemoteModelHelper::GetMemories(
             response_proto.ParseFromString(*response);
             return ParseResponseProto(visits, response_proto, debug_logger);
           },
-          debug_logger_, visits)
+          std::move(url_loader), debug_logger_, visits)
           .Then(std::move(callback)),
       kMaxExpectedResponseSize);
-}
-
-void MemoriesRemoteModelHelper::StopPendingRequests() {
-  // TODO(manukh): Ensure the callback for the pending request is invoked.
-  url_loader_.reset();
 }
 
 // static

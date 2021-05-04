@@ -41,10 +41,6 @@ class MemoriesRemoteModelHelper {
                    const std::vector<history::ClusterVisit>& visits);
 
  private:
-  // Stops pending requests. Invoking |GetMemories| multiple times will stop
-  // incomplete previous requests.
-  void StopPendingRequests();
-
   // Helpers for making requests used by |GetMemories()|.
   static std::unique_ptr<network::ResourceRequest> CreateRequest(
       const GURL& endpoint);
@@ -52,8 +48,6 @@ class MemoriesRemoteModelHelper {
       std::unique_ptr<network::ResourceRequest> request,
       const std::string& request_body);
 
-  // The most recent request.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
   // Used to make requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

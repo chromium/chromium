@@ -465,9 +465,16 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
           [&](MemoriesService::QueryMemoriesResponse response) {
-            ADD_FAILURE() << "This should not be reached.";
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!response.query_params);
+            // Verify the parsed response.
+            EXPECT_EQ(response.clusters.size(), 2u);
           }),
       &task_tracker_);
+
+  // Verify there's a single request to the endpoint.
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -482,9 +489,9 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
           }),
       &task_tracker_);
 
-  // Verify there's a single request to the endpoint.
+  // Verify there are two requests to the endpoint.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
 
   // Fake a response from the endpoint with two clusters.
   proto::GetClustersResponse response;
@@ -494,7 +501,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
                                        response.SerializeAsString());
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-  // Verify the callback is invoked.
+  // Verify both callbacks are invoked.
   run_loop_.Run();
 }
 
@@ -507,7 +514,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDb) {
               {{"MemoriesStoreVisitsInHistoryDb", "true"}},
           },
           {
-              history_clusters::kRemoteModelForDebugging,
+              kRemoteModelForDebugging,
               {{"MemoriesRemoteModelEndpoint", kFakeEndpoint}},
           },
       },
