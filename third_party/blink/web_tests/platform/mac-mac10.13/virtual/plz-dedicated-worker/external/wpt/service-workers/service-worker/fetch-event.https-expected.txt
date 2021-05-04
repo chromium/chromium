@@ -1,0 +1,49 @@
+This is a testharness.js-based test.
+PASS global setup
+PASS Service Worker headers in the request of a fetch event
+PASS Service Worker responds to fetch event with string
+PASS Service Worker responds to fetch event using request fragment with string
+PASS Service Worker responds to fetch event with blob body
+PASS Service Worker responds to fetch event with the referrer URL
+PASS Service Worker responds to fetch event with an existing client id
+PASS Service Worker responds to fetch event with the correct resulting client id
+PASS Service Worker does not respond to fetch event
+PASS Service Worker responds to fetch event with null response body
+PASS Service Worker fetches other file in fetch event
+PASS Service Worker responds to fetch event with POST form
+PASS Service Worker falls back to network in fetch event with POST form
+PASS Multiple calls of respondWith must throw InvalidStateErrors
+PASS Service Worker event.respondWith must set the used flag
+PASS Service Worker should expose FetchEvent URL fragments.
+PASS Service Worker responds to fetch event with the correct cache types
+PASS Service Worker should intercept EventSource
+FAIL Service Worker responds to fetch event with the correct integrity_metadata assert_equals: integrity expected "gs0nqru8KbsrIt5YToQqS9fYao4GQJXtcId610g7cCU=" but got ""
+PASS FetchEvent#body is a string
+FAIL FetchEvent#body is a ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS FetchEvent#body is a string and is passed to network fallback
+FAIL FetchEvent#body is a ReadableStream and is passed to network fallback promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS FetchEvent#body is a none Uint8Array ReadableStream and is passed to a service worker
+PASS FetchEvent#body is a string, used and passed to network fallback
+PASS FetchEvent#body is a ReadableStream, used and passed to network fallback
+PASS FetchEvent#body is a string, cloned and passed to network fallback
+PASS FetchEvent#body is a ReadableStream, cloned and passed to network fallback
+PASS FetchEvent#body is a blob
+PASS FetchEvent#body is a blob and is passed to network fallback
+PASS Service Worker responds to fetch event with the correct keepalive value
+FAIL FetchEvent#request.isReloadNavigation is true (location.reload()) assert_equals: expected "method = GET, isReloadNavigation = false" but got "method = GET, isReloadNavigation = undefined"
+FAIL FetchEvent#request.isReloadNavigation is true (history.go(0)) assert_equals: expected "method = GET, isReloadNavigation = false" but got "method = GET, isReloadNavigation = undefined"
+FAIL FetchEvent#request.isReloadNavigation is true (POST + location.reload()) assert_equals: expected "method = GET, isReloadNavigation = false" but got "method = GET, isReloadNavigation = undefined"
+FAIL FetchEvent#request.isReloadNavigation is true (with history traversal) assert_equals: expected "method = GET, isReloadNavigation = false" but got "method = GET, isReloadNavigation = undefined"
+PASS FetchEvent#request.isHistoryNavigation is true (with history.go(-1))
+PASS FetchEvent#request.isHistoryNavigation is true (with history.go(1))
+PASS FetchEvent#request.isHistoryNavigation is false (with history.go(0))
+PASS FetchEvent#request.isHistoryNavigation is false (with location.reload)
+PASS FetchEvent#request.isHistoryNavigation is true (with history.go(-2))
+PASS FetchEvent#request.isHistoryNavigation is true (with history.go(2))
+PASS FetchEvent#request.isHistoryNavigation is true (POST + history.go(-1))
+PASS XHR upload progress events for response coming from SW
+PASS XHR upload progress events for network fallback
+PASS Fetch with POST with text on sw 421 response should not be retried.
+PASS restore global state
+Harness: the test ran to completion.
+

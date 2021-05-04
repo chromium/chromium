@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'end' on 'XRSession': XRSession has already ended.
+FAIL Test that getReflectionCubeMap returns or throws appropriately without a reflection map. - webgl Failed to execute 'getReflectionCubeMap' on 'XRWebGLBinding': WebGL contexts must have the OES_texture_half_float extension enabled prior to calling getReflectionCubeMap with a format of "rgba16f". This restriction does not apply to WebGL 2.0 contexts.
+PASS Test that getReflectionCubeMap returns or throws appropriately without a reflection map. - webgl2
+Harness: the test ran to completion.
+

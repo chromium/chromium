@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorStorage: member names are unique
+PASS WorkerNavigator includes NavigatorStorage: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+FAIL StorageManager interface: existence and properties of interface object assert_equals: prototype of self's property "StorageManager" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+PASS StorageManager interface object length
+PASS StorageManager interface object name
+FAIL StorageManager interface: existence and properties of interface prototype object assert_equals: prototype of StorageManager.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+PASS StorageManager interface: existence and properties of interface prototype object's "constructor" property
+PASS StorageManager interface: existence and properties of interface prototype object's @@unscopables property
+PASS StorageManager interface: operation persisted()
+PASS StorageManager interface: member persist
+PASS StorageManager interface: operation estimate()
+PASS StorageManager must be primary interface of navigator.storage
+PASS Stringification of navigator.storage
+PASS StorageManager interface: navigator.storage must inherit property "persisted()" with the proper type
+PASS StorageManager interface: navigator.storage must not have property "persist"
+PASS StorageManager interface: navigator.storage must inherit property "estimate()" with the proper type
+PASS WorkerNavigator interface: attribute storage
+PASS WorkerNavigator interface: navigator must inherit property "storage" with the proper type
+Harness: the test ran to completion.
+
