@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner.h"
+#include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -86,6 +87,13 @@ size_t GetDiscardedTokenCountForTesting() {
 // the final page. This is the default value to use, if no Finch-provided
 // value exists.
 constexpr int kDefaultMaxTokenizationBudget = 250;
+
+// The parser can temporarily defer execution of async scripts for successive
+// <script> tags (this is to reduce site breakage). This constant controls the
+// number of elements that have to be in between two <script> tags for them to
+// be considered "adjacent" for this heuristic. TODO(Richard.Townsend@arm.com,
+// https://crbug.com/1204178): remove this heuristic.
+constexpr int kTokensBetweenAdjacentScripts = 6;
 
 class EndIfDelayedForbiddenScope;
 class ShouldCompleteScope;
@@ -550,6 +558,10 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   // underneath. In that case, just bail out.
   if (IsDetached())
     return;
+
+  // If we suspended script async execution for https://crbug.com/1204178,
+  // signal that it's OK to start processing them again.
+  GetDocument()->GetScriptRunner()->ResumeAsyncScriptExecution();
 
   AttemptToRunDeferredScriptsAndEnd();
 }
@@ -1029,6 +1041,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   probe::ParseHTML probe(GetDocument(), this);
 
   bool should_yield = false;
+  bool should_pause_async_script_execution = false;
   int budget = max_tokenization_budget_;
 
   base::ElapsedTimer chunk_parsing_timer_;
@@ -1037,6 +1050,11 @@ bool HTMLDocumentParser::PumpTokenizer() {
     const auto next_token_status = CanTakeNextToken();
     if (next_token_status == NoTokens) {
       // No tokens left to process in this pump, so break
+      if ((tokens_parsed <= kTokensBetweenAdjacentScripts) && !IsDetached() &&
+          GetDocument()->GetScriptRunner()) {
+        should_pause_async_script_execution =
+            GetDocument()->GetScriptRunner()->AsyncScriptExecutionPaused();
+      }
       break;
     } else if (next_token_status == HaveTokensAfterScript &&
                task_runner_state_->HaveExitedHeader()) {
@@ -1045,7 +1063,13 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // needed.
       budget = 0;
       if (!should_run_until_completion) {
+        // If we're yielding here, temporarily block async script execution.
+        // There are some sites which assume
+        // <script>...</script><script>...</script> run in a single parser pump
+        // and can't handle an async script running in between. See
+        // crbug.com/1197376 for details.
         should_yield = true;
+        should_pause_async_script_execution = true;
         break;
       }
     }
@@ -1068,6 +1092,16 @@ bool HTMLDocumentParser::PumpTokenizer() {
       should_yield = false;
     }
     DCHECK(IsStopped() || Token().IsUninitialized());
+  }
+
+  if (LIKELY(!IsDetached())) {
+    auto* script_runner = GetDocument()->GetScriptRunner();
+    if (LIKELY(script_runner)) {
+      if (should_pause_async_script_execution)
+        script_runner->PauseAsyncScriptExecution();
+      else
+        script_runner->ResumeAsyncScriptExecution();
+    }
   }
 
   if (IsStopped()) {

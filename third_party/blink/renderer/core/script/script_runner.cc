@@ -110,9 +110,9 @@ void ScriptRunner::ScheduleReadyInOrderScripts() {
   }
 }
 
-void ScriptRunner::DelayAsyncScriptUntilMilestoneReached(
-    PendingScript* pending_script) {
-  DCHECK(!delay_async_script_milestone_reached_);
+void ScriptRunner::DelayAsyncScript(PendingScript* pending_script) {
+  DCHECK(!delay_async_script_milestone_reached_ ||
+         async_script_execution_paused_);
   SECURITY_CHECK(pending_async_scripts_.Contains(pending_script));
   pending_async_scripts_.erase(pending_script);
 
@@ -122,8 +122,9 @@ void ScriptRunner::DelayAsyncScriptUntilMilestoneReached(
   pending_delayed_async_scripts_.push_back(pending_script);
 }
 
-void ScriptRunner::NotifyDelayedAsyncScriptsMilestoneReached() {
-  delay_async_script_milestone_reached_ = true;
+void ScriptRunner::ScheduleDelayedAsyncScripts() {
+  DCHECK(delay_async_script_milestone_reached_ ||
+         !async_script_execution_paused_);
   while (!pending_delayed_async_scripts_.IsEmpty()) {
     PendingScript* pending_script = pending_delayed_async_scripts_.TakeFirst();
     DCHECK_EQ(pending_script->GetSchedulingType(),
@@ -132,6 +133,11 @@ void ScriptRunner::NotifyDelayedAsyncScriptsMilestoneReached() {
     async_scripts_to_execute_soon_.push_back(pending_script);
     PostTask(FROM_HERE);
   }
+}
+
+void ScriptRunner::NotifyDelayedAsyncScriptsMilestoneReached() {
+  delay_async_script_milestone_reached_ = true;
+  ScheduleDelayedAsyncScripts();
 }
 
 bool ScriptRunner::CanDelayAsyncScripts() {
@@ -194,8 +200,9 @@ void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
       // to detach).
       SECURITY_CHECK(pending_async_scripts_.Contains(pending_script));
 
-      if (pending_script->IsEligibleForDelay() && CanDelayAsyncScripts()) {
-        DelayAsyncScriptUntilMilestoneReached(pending_script);
+      if ((pending_script->IsEligibleForDelay() && CanDelayAsyncScripts()) ||
+          async_script_execution_paused_) {
+        DelayAsyncScript(pending_script);
         return;
       }
 
@@ -291,7 +298,8 @@ bool ScriptRunner::ExecuteInOrderTask() {
 
 bool ScriptRunner::ExecuteAsyncTask() {
   TRACE_EVENT0("blink", "ScriptRunner::ExecuteAsyncTask");
-  if (async_scripts_to_execute_soon_.IsEmpty())
+  if (async_script_execution_paused_ ||
+      async_scripts_to_execute_soon_.IsEmpty())
     return false;
 
   // Remove the async script loader from the ready-to-exec set and execute.
@@ -320,6 +328,24 @@ void ScriptRunner::ExecuteTask() {
 
   if (ExecuteInOrderTask())
     return;
+}
+
+void ScriptRunner::PauseAsyncScriptExecution() {
+  if (async_script_execution_paused_)
+    return;
+  TRACE_EVENT0("blink", "ScriptRunner::PauseAsyncScriptExecution");
+  async_script_execution_paused_ = true;
+}
+
+void ScriptRunner::ResumeAsyncScriptExecution() {
+  if (!async_script_execution_paused_)
+    return;
+  TRACE_EVENT0("blink", "ScriptRunner::ResumeAsyncScriptExecution");
+  async_script_execution_paused_ = false;
+  for (wtf_size_t i = 0; i < async_scripts_to_execute_soon_.size(); i++) {
+    PostTask(FROM_HERE);
+  }
+  ScheduleDelayedAsyncScripts();
 }
 
 void ScriptRunner::Trace(Visitor* visitor) const {

@@ -69,17 +69,26 @@ class CORE_EXPORT ScriptRunner final
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "ScriptRunner"; }
 
+  // HTML parser can defer async scripts until after it's processed sequential
+  // sync <script> tags.
+  void PauseAsyncScriptExecution();
+  void ResumeAsyncScriptExecution();
+  bool AsyncScriptExecutionPaused() const {
+    return async_script_execution_paused_;
+  }
+
  private:
   class Task;
 
   void MovePendingScript(ScriptRunner*, PendingScript*);
   bool RemovePendingInOrderScript(PendingScript*);
   void ScheduleReadyInOrderScripts();
+  void ScheduleDelayedAsyncScripts();
 
   // Used to delay async scripts. These scripts are delayed until
   // |NotifyDelayedAsyncScriptsMilestoneReached()| is called.
   bool CanDelayAsyncScripts();
-  void DelayAsyncScriptUntilMilestoneReached(PendingScript*);
+  void DelayAsyncScript(PendingScript*);
 
   void PostTask(const base::Location&);
   void PostTasksForReadyScripts(const base::Location&);
@@ -117,6 +126,7 @@ class CORE_EXPORT ScriptRunner final
   // design doc:
   // https://docs.google.com/document/u/1/d/1G-IUrT4enARZlsIrFQ4d4cRVe9MRTJASfWwolV09JZE/edit.
   bool delay_async_script_milestone_reached_ = false;
+  bool async_script_execution_paused_ = false;
 };
 
 }  // namespace blink

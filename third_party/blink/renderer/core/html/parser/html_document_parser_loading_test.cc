@@ -200,6 +200,134 @@ TEST_P(HTMLDocumentParserLoadingTest,
 }
 
 TEST_P(HTMLDocumentParserLoadingTest,
+       AsyncScriptsShouldNotRunBetweenSyncScripts) {
+  // This is a Chromium-specific quirk for async <script>s. The spec says that
+  // async scripts can execute whenever they're ready, in practice some sites
+  // assume that async scripts won't run during a block of <script> tags.
+  // These sites can break under the synchronous, budgeted HTML parser because
+  // it yields after <script> tags, creating a gap where async scripts can run
+  // out of the previous sequence.
+  SimRequest::Params params;
+  // Only relevant for the foreground parser
+  if (GetParam() != kAllowDeferredParsing) {
+    return;
+  }
+  params.response_http_status = 200;
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest async_js("https://example.com/async-script.js",
+                      "application/javascript", params);
+  SimRequest sync_js("https://example.com/sync-script.js",
+                     "application/javascript", params);
+
+  LoadURL("https://example.com/test.html");
+  // The first write/run-until-idle cycle backs all the simulated requests via
+  // preloads and fetches the async script.
+  main_resource.Write(R"HTML(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="preload" href="async-script.js" as="script">
+        <link rel="preload" href="sync-script.js" as="script">
+        <script src="async-script.js" async></script>
+      </head>
+      <body>
+        <script>var x = 'something';</script>
+        <script src="sync-script.js"></script>
+      </body>
+    </html>
+  )HTML");
+  platform_->RunUntilIdle();
+  // Complete the async script so that it's ready to execute.
+  async_js.Complete(R"JS(
+    if (typeof x === 'undefined') {
+      document.body.innerHTML='<div id="test-failed-x">x undefined</div>';
+    }
+    if (typeof y === 'undefined') {
+      document.body.innerHTML='<div id="test-failed-y">y undefined</div>';
+    }
+  )JS");
+  // The async script should not execute inside this event pump.
+  platform_->RunUntilIdle();
+  main_resource.Complete();  // Finish the main page
+  // Finish the second sync script.
+  sync_js.Complete(R"JS(
+    var y = 'something';
+  )JS");
+  // Expecting the sync script to execute before the async one.
+  platform_->RunUntilIdle();
+  EXPECT_FALSE(GetDocument().getElementById("test-failed-x"));
+  EXPECT_FALSE(GetDocument().getElementById("test-failed-y"));
+}
+
+TEST_P(HTMLDocumentParserLoadingTest,
+       AsyncScriptsShouldRunBetweenSyncScriptsAndOtherElements) {
+  // To preserve reasonable async performance (despite the above quirk), Chrome
+  // deactivates this async script suspension when there's a few elements
+  // between adjacent <script> tags.
+  SimRequest::Params params;
+
+  // Only relevant for parsers which load pages.
+  if (GetParam() == kForceSynchronousParsing) {
+    return;
+  }
+
+  params.response_http_status = 200;
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest async_js("https://example.com/async-script.js",
+                      "application/javascript", params);
+  SimRequest sync_js("https://example.com/sync-script.js",
+                     "application/javascript", params);
+
+  LoadURL("https://example.com/test.html");
+  WTF::StringBuilder sb;
+  sb.Append(R"HTML(
+    <html>
+    <head>
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="preload" href="async-script.js" as="script">
+        <link rel="preload" href="sync-script.js" as="script">
+        <script src="async-script.js" async></script>
+      </head>
+      <body>
+        <script>var x = 'something';</script>
+  )HTML");
+  for (int i = 0; i < 16; i++) {
+    sb.Append(
+        "<p>Within this region, the async script block should be lifted.</p>");
+  }
+  sb.Append(R"HTML(
+        <p>A lot of distinct paragraphs and stuff</p>
+        <script src="sync-script.js"></script>
+      </body>
+    </html>
+  )HTML");
+  main_resource.Complete(sb.ToString());
+  platform_->RunUntilIdle();
+  // The parser should now have processed up to the second sync script,
+  // dispatched the async one. Next, complete the async script.
+  async_js.Complete(R"JS(
+    if (typeof x === 'undefined') {
+      document.body.innerHTML='<div id="test-failed">';
+    }
+    if (typeof y === 'undefined') {
+      document.body.innerHTML='<div id="test-passed">';
+    }
+  )JS");
+  // Async script should run inside this event pump.
+  platform_->RunUntilIdle();
+  // Finally, complete the sync script.
+  sync_js.Complete(R"JS(
+    var y = 'something';
+  )JS");
+  platform_->RunUntilIdle();
+
+  EXPECT_FALSE(GetDocument().getElementById("test-failed"));
+  EXPECT_TRUE(GetDocument().getElementById("test-passed"));
+}
+
+TEST_P(HTMLDocumentParserLoadingTest,
        ShouldPauseParsingForExternalStylesheetsInBodyIncremental) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
