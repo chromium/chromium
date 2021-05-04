@@ -248,6 +248,9 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
       if (current->process_id != process_id)
         continue;
       RemovePendingResponse(process_id, current->type);
+      DLOG(ERROR)
+          << "Memory dump request failed due to disconnected child process "
+          << process_id;
       request->failed_memory_dump_count++;
     }
     FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -334,6 +337,10 @@ void CoordinatorImpl::OnQueuedRequestTimedOut(uint64_t dump_guid) {
     return;
 
   // Fail all remaining dumps being waited upon and clear the vector.
+  if (request->pending_responses.size() > 0) {
+    DLOG(ERROR) << "Global dump request timed out waiting for "
+                << request->pending_responses.size() << " requests";
+  }
   request->failed_memory_dump_count += request->pending_responses.size();
   request->pending_responses.clear();
 
@@ -446,8 +453,8 @@ void CoordinatorImpl::OnChromeMemoryDumpResponse(
   response->chrome_dump = std::move(chrome_memory_dump);
 
   if (!success) {
+    DLOG(ERROR) << "Memory dump request failed: NACK from client process";
     request->failed_memory_dump_count++;
-    VLOG(1) << "RequestGlobalMemoryDump() FAIL: NACK from client process";
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -474,8 +481,8 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
   request->responses[process_id].os_dumps = std::move(os_dumps);
 
   if (!success) {
+    DLOG(ERROR) << "Memory dump request failed: NACK from client process";
     request->failed_memory_dump_count++;
-    VLOG(1) << "RequestGlobalMemoryDump() FAIL: NACK from client process";
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();

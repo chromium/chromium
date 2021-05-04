@@ -297,6 +297,8 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
   // the failed dump count and exit.
   if (request->args.pid != base::kNullProcessId &&
       request->pending_responses.empty()) {
+    DLOG(ERROR) << "Memory dump request failed due to missing pid "
+                << request->args.pid;
     request->failed_memory_dump_count++;
     return;
   }
@@ -525,16 +527,24 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
         bool trace_os_success = tracing_observer->AddOsDumpToTraceIfEnabled(
             request->GetRequestArgs(), pid, *os_dump, raw_os_dump->memory_maps,
             timestamp);
-        if (!trace_os_success)
+        if (!trace_os_success) {
+          DLOG(ERROR) << "Tracing is disabled or not setup yet while receiving "
+                         "OS dump for pid "
+                      << pid;
           request->failed_memory_dump_count++;
+        }
       }
 
       if (raw_chrome_dump) {
         bool trace_chrome_success = AddChromeMemoryDumpToTrace(
             request->GetRequestArgs(), pid, *raw_chrome_dump, *global_graph,
             pid_to_process_type, tracing_observer, use_proto_writer, timestamp);
-        if (!trace_chrome_success)
+        if (!trace_chrome_success) {
+          DLOG(ERROR) << "Tracing is disabled or not setup yet while receiving "
+                         "Chrome dump for pid "
+                      << pid;
           request->failed_memory_dump_count++;
+        }
       }
     }
 

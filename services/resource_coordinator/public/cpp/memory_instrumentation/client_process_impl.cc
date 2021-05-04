@@ -100,6 +100,7 @@ void ClientProcessImpl::OnChromeMemoryDumpDone(
   }
 
   if (!process_memory_dump) {
+    DLOG(ERROR) << "Chrome dump request failed";
     std::move(callback).Run(false, dump_guid, nullptr);
     return;
   }
@@ -166,8 +167,11 @@ void ClientProcessImpl::PerformOSMemoryDump(OSMemoryDumpArgs args) {
       success = success && OSMetrics::FillProcessMemoryMaps(
                                pid, args.mmap_option, result.get());
     }
-    if (success)
+    if (success) {
       results[pid] = std::move(result);
+    } else {
+      DLOG(ERROR) << "OS memory dump failed for pid " << pid;
+    }
     global_success = global_success && success;
   }
   std::move(args.callback).Run(global_success, std::move(results));
