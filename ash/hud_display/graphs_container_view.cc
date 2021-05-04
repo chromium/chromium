@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 

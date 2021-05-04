@@ -27,7 +27,6 @@
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/scoped_window_capture_request.h"
@@ -36,7 +35,6 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_targeter.h"
@@ -67,7 +65,6 @@ class Layer;
 
 namespace viz {
 class ParentLocalSurfaceIdAllocator;
-class SurfaceId;
 }
 
 namespace aura {
@@ -285,7 +282,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   gfx::Rect GetActualBoundsInScreen() const;
 
   void SetTransform(const gfx::Transform& transform);
-  const gfx::Transform& transform() const;
+  const gfx::Transform& transform() const { return layer()->transform(); }
 
   // Assigns a LayoutManager to size and place child windows.
   // The Window takes ownership of the LayoutManager.

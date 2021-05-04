@@ -76,7 +76,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/native_theme/native_theme.h"

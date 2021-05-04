@@ -11,10 +11,9 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/compositor/layer.h"
 
 namespace ui {
-
-class Layer;
 
 class COMPOSITOR_EXPORT LayerOwner {
  public:

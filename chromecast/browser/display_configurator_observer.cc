@@ -4,8 +4,6 @@
 
 #include "display_configurator_observer.h"
 
-#include "ui/compositor/compositor.h"
-
 namespace chromecast {
 
 DisplayConfiguratorObserver::DisplayConfiguratorObserver(

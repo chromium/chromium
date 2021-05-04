@@ -24,7 +24,6 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"

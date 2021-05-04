@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/app_restore_data.h"

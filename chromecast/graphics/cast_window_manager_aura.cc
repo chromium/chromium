@@ -23,7 +23,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/screen.h"

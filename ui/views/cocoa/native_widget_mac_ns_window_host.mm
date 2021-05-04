@@ -21,7 +21,6 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"

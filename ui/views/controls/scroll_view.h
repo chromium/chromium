@@ -18,10 +18,6 @@
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/separator.h"
 
-namespace cc {
-struct ElementId;
-}
-
 namespace gfx {
 class ScrollOffset;
 }

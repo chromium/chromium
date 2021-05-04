@@ -31,7 +31,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"

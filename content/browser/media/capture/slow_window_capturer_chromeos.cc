@@ -17,7 +17,6 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
 using media::VideoFrame;

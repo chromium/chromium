@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"

@@ -9,7 +9,6 @@
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
-#include "components/viz/common/surfaces/surface_id.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_platform.h"

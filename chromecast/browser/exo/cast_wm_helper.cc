@@ -11,7 +11,6 @@
 #include "chromecast/graphics/cast_window_manager_aura.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
