@@ -6,15 +6,18 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -31,6 +34,8 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "typed_navigation_upgrade_throttle.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace {
 
@@ -57,6 +62,10 @@ const char* const kSiteWithNetError = "site-with-net-error.com";
 // that therefore is unlikely to support HTTPS.
 const char* const kNonUniqueHostname1 = "testpage";
 const char* const kNonUniqueHostname2 = "site.test";
+
+// Hostname of the URL of the search results page when the user types a search
+// query in the omnibox.
+const char* const kGoogleSearchHost = "www.google.com";
 
 const char kNetErrorHistogram[] = "Net.ErrorPageCounts";
 
@@ -119,6 +128,12 @@ GURL MakeHttpURLWithPort(const std::string& url_without_scheme, int port) {
   return MakeURLWithPort(url_without_scheme, "http", port);
 }
 
+// Stores the given text to clipboard.
+void SetClipboardText(const std::u16string& text) {
+  ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+  writer.WriteText(text);
+}
+
 }  // namespace
 
 class TypedNavigationUpgradeThrottleBrowserTest
@@ -151,6 +166,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
+
   void SetUpOnMainThread() override {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
@@ -202,7 +218,8 @@ class TypedNavigationUpgradeThrottleBrowserTest
         params->url_request.url == MakeHttpURL(kSiteWithNetError) ||
         params->url_request.url == MakeHttpURL(kNonUniqueHostname1) ||
         params->url_request.url == MakeHttpURL(kNonUniqueHostname2) ||
-        params->url_request.url == GURL("http://127.0.0.1")) {
+        params->url_request.url == GURL("http://127.0.0.1") ||
+        params->url_request.url.host() == kGoogleSearchHost) {
       std::string headers =
           "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
       std::string body = "<html><title>Success</title>Hello world</html>";
@@ -240,6 +257,29 @@ class TypedNavigationUpgradeThrottleBrowserTest
     omnibox()->OnBeforePossibleChange();
     omnibox()->SetUserText(base::UTF8ToUTF16(text), true);
     omnibox()->OnAfterPossibleChange(true);
+  }
+
+  // Copies |hostname| to clipboard, pastes it into the omnibox and hits enter.
+  // Expects |number_of_navigations| to happen.
+  void PasteHostnameAndWaitForNavigations(content::WebContents* contents,
+                                          const std::string& hostname,
+                                          int number_of_navigations) {
+    // Make sure Chrome is in the foreground, otherwise sending input
+    // won't do anything and the test will hang.
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+    EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+    // Copy and paste the text.
+    ui::Clipboard::GetForCurrentThread()->Clear(
+        ui::ClipboardBuffer::kCopyPaste);
+    SetClipboardText(base::UTF8ToUTF16(hostname));
+    EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_PASTE));
+    WaitForAutocompleteControllerDone();
+    // Hit enter and wait for the navigation(s).
+    content::TestNavigationObserver navigation_observer(contents,
+                                                        number_of_navigations);
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                                false, false, false, false));
+    navigation_observer.Wait();
   }
 
   void TypeUrlAndExpectSuccessfulUpgrade(
@@ -299,9 +339,10 @@ class TypedNavigationUpgradeThrottleBrowserTest
                               num_expected_navigations);
   }
 
-  void PressEnterAndWaitForNavigations(size_t num_navigations) {
+  void PressEnterAndWaitForNavigations(size_t num_expected_navigations) {
     content::TestNavigationObserver navigation_observer(
-        browser()->tab_strip_model()->GetActiveWebContents(), num_navigations);
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        num_expected_navigations);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -320,7 +361,6 @@ class TypedNavigationUpgradeThrottleBrowserTest
     ui_test_utils::WaitForHistoryToLoad(history_service);
   }
 
- private:
   void WaitForAutocompleteControllerDone() {
     AutocompleteController* controller =
         omnibox()->model()->autocomplete_controller();
@@ -333,6 +373,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     ASSERT_TRUE(controller->done());
   }
 
+ private:
   void TypeUrlAndCheckNavigation(const std::string& url_without_scheme,
                                  const base::HistogramTester& histograms,
                                  NavigationExpectation expectation,
@@ -374,6 +415,10 @@ class TypedNavigationUpgradeThrottleBrowserTest
       EXPECT_EQ("www.google.com", contents->GetLastCommittedURL().host());
       EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
     }
+
+    // This is needed to sync histograms recorded in renderers and the browser,
+    // as kNetErrorHistogram is recorded by the renderer.
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     // Should never hit an error page.
     histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
@@ -525,18 +570,98 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   }
   TypeUrlAndExpectSuccessfulUpgrade(kSiteWithGoodHttps);
 
-  // Try again. Should directly load the https version this time and not record
-  // any histograms in the throttle.
+  // Try again. Omnibox defaults the navigation to https again and marks the
+  // navigation as upgraded, so the throttle will handle it again as well.
+  TypeUrlAndExpectSuccessfulUpgrade(kSiteWithGoodHttps);
+}
+
+// Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
+// press enter. This should default to HTTPS and the upgrade should succeed.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       PasteUrlWithoutASchemeAndHitEnter_GoodHttps) {
+  if (!IsFeatureEnabled()) {
+    return;
+  }
   base::HistogramTester histograms;
-  TypeUrlAndExpectHttps(kSiteWithGoodHttps, histograms, 1);
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Type hostname and navigate. Should successfully load the page over HTTPS
+  // with a single navigation attempt.
+  PasteHostnameAndWaitForNavigations(contents, kSiteWithGoodHttps, 1);
+
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  const GURL http_url = MakeHttpURL(kSiteWithGoodHttps);
+  const GURL https_url = MakeHttpsURL(kSiteWithGoodHttps);
+
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
+  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+
+  // This is needed to sync histograms recorded in renderers and the browser, as
+  // kNetErrorHistogram is recorded by the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Should never hit an error page.
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+}
+
+// Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
+// press enter. This should hit a bad HTTPS URL and fallback to HTTP, never
+// showing an interstitial.
+IN_PROC_BROWSER_TEST_P(
+    TypedNavigationUpgradeThrottleBrowserTest,
+    PasteUrlWithoutASchemeAndHitEnter_BadHttps_ShouldFallback) {
+  if (!IsFeatureEnabled()) {
+    return;
+  }
+  base::HistogramTester histograms;
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Type hostname and navigate. Should attempt to load over HTTPS, encounter an
+  // SSL error and fall back to HTTP. Expect two navigations, one for the HTTPS
+  // attempt and one for the fallback.
+  PasteHostnameAndWaitForNavigations(contents, kSiteWithBadHttps, 2);
+
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  const GURL http_url = MakeHttpURL(kSiteWithBadHttps);
+  const GURL https_url = MakeHttpsURL(kSiteWithBadHttps);
+
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+  EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
+
+  // This is needed to sync histograms recorded in renderers and the browser, as
+  // kNetErrorHistogram is recorded by the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Should never hit an error page.
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
 }
 
 // If the feature is enabled, right clicking and selecting paste & go in the
 // omnibox without a scheme should load the HTTPS version.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       UrlPastedWithoutScheme_GoodHttps) {
+                       PasteAndGoUrlWithoutAScheme_GoodHttps) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -545,8 +670,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver navigation_observer(contents,
-                                                      /*num_navigations=*/1);
+  content::TestNavigationObserver navigation_observer(
+      contents,
+      /*number_of_navigations=*/1);
 
   OmniboxEditModel* model = omnibox()->model();
   model->PasteAndGo(base::UTF8ToUTF16(kSiteWithGoodHttps));
@@ -559,6 +685,10 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
   EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+
+  // This is needed to sync histograms recorded in renderers and the browser, as
+  // kNetErrorHistogram is recorded by the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
@@ -770,6 +900,10 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
 
     EXPECT_EQ(expected_final_url, contents->GetLastCommittedURL());
 
+    // This is needed to sync histograms recorded in renderers and the browser,
+    // as kNetErrorHistogram is recorded by the renderer.
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
     // Should never hit an error page.
     histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                 0);
@@ -785,7 +919,6 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
   // version which also redirects to the same error page.
   void TypeUrlAndCheckRedirectToBadHttps(
       const std::string& url_without_scheme,
-      const base::HistogramTester& histograms,
       const GURL& expected_final_url) {
     SetOmniboxText(url_without_scheme);
     PressEnterAndWaitForNavigations(2);
@@ -877,9 +1010,16 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 }
 
-// Same as UrlTypedWithoutScheme_GoodHttps_Redirected, but this time the
-// redirect target is a broken HTTPS page. Should fall back to the HTTP URL
-// which will redirect to the broken HTTPS page and show an interstitial
+// Similar to UrlTypedWithoutScheme_GoodHttps_Redirected, but this time the
+// redirect target is a broken HTTPS page:
+// 1. User types a hostname (site-with-good-https-redirect.com).
+// 2. Chrome loads the https URL as part of the upgrade.
+// 3. The HTTPS URL redirects to a broken HTTPS URL (site-with-bad-https.com).
+// 4. Chrome falls back to the http:// URL of the original hostname
+//    (site-with-good-https-redirect.com).
+// 5. The http:// URL of the original hostname also redirects to the broken
+//    HTTPS URL in step 3.
+// 6. The navigation ends up showing an interstitial.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleRedirectBrowserTest,
     UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback) {
@@ -895,10 +1035,14 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  // Type a hostname and expect a fallback to http. HTTP URL also redirects to
+  // the broken https site.
   base::HistogramTester histograms;
-  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), histograms,
-                                    target_url);
+  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  // This is needed to sync histograms recorded in renderers and the browser, as
+  // kNetErrorHistogram is recorded by the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               3);
@@ -916,12 +1060,13 @@ IN_PROC_BROWSER_TEST_P(
   // once. The error is encountered first at the end of the upgraded HTTPS
   // navigation, and then at the end of the fallback.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  // SSL errors also record a net error histogram.
+  histograms.ExpectTotalCount(kNetErrorHistogram, 1);
 
   // Try again, histogram numbers should double.
-  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), histograms,
-                                    target_url);
+  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               6);
@@ -936,33 +1081,40 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
 
-  // Regression test for crbug.com/1182760: Try again, this time using the
-  // target URL. This should show an interstitial instead of a net error.
+  // Regression test for crbug.com/1182760: This time type the hostname of the
+  // redirect target (site-with-bad-https.com). This should attempt an HTTPS
+  // load, encounter an SSL error and fall back to HTTP.
   const std::string url_without_scheme = GetURLWithoutScheme(target_url);
   SetOmniboxText(url_without_scheme);
-  PressEnterAndWaitForNavigations(/*num_expected_navigations=*/1);
-  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  // Expect two navigations: One for the initial HTTPS load, one for the
+  // fallback URL.
+  PressEnterAndWaitForNavigations(/*num_expected_navigations=*/2);
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-  const GURL http_url = MakeHttpURL(url_without_scheme);
+  const GURL http_url =
+      embedded_test_server()->GetURL(kSiteWithBadHttps, "/title1.html");
   const GURL https_url = MakeHttpsURL(url_without_scheme);
-  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-  // Since the navigation results in an interstitial, https_url isn't added to
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  // Since the navigation results in a fallback, https_url isn't added to
   // history.
+  EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
   EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
-  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 6);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
-  // Throttle histogram numbers shouldn't change:
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
+
+  // Throttle histogram numbers should update for the HTTP fallback:
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              6);
+                              8);
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 3);
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 2);
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 3);
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
@@ -985,9 +1137,11 @@ IN_PROC_BROWSER_TEST_P(
       browser()->tab_strip_model()->GetActiveWebContents();
 
   base::HistogramTester histograms;
-  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), histograms,
-                                    target_url);
+  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  // This is needed to sync histograms recorded in renderers and the browser, as
+  // kNetErrorHistogram is recorded by the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               3);
@@ -1001,14 +1155,14 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
 
-  // // The first navigation never shows the interstitial or the net error page.
+  // The navigation ends up on a net error.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 1);
 
   // Try again, histogram numbers should double.
-  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), histograms,
-                                    target_url);
+  TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               6);
@@ -1023,10 +1177,7 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  // TODO(meacer): This should record 1 instead of zero. However, simulating the
-  // net error page with a URLLoaderInterceptor doesn't work, probably because
-  // of the reasons outlined in https://crbug.com/1168371.
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
 }
 
 // TODO(crbug.com/1141691): Test the following cases:
