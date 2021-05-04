@@ -8199,6 +8199,22 @@
             ]
         }
     ],
+    "WebRTC-Aec3TransparentModeHmm": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-NetEqDelayManagerConfig": [
         {
             "platforms": [
