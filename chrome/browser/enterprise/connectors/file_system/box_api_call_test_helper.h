@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_TEST_HELPER_H_
 
 #include <cstddef>
+#include <string>
 
 namespace enterprise_connectors {
 
@@ -45,6 +46,12 @@ extern const char kFileSystemBoxChunkedUploadSha[];
 extern const char kFileSystemBoxChunkedUploadCreateSessionResponseBody[];
 // Expected part_size extracted from above.
 extern const size_t kFileSystemBoxChunkedUploadCreateSessionResponsePartSize;
+
+void GenerateFileContent(size_t fill_part_size,
+                         size_t total_file_size,
+                         std::string& content);
+
+size_t CalculateExpectedChunkReadCount(size_t file_size, size_t chunk_size);
 
 }  // namespace enterprise_connectors
 

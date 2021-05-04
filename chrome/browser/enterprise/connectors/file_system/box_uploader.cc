@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_upload_file_chunks_handler.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_status_code.h"
 
@@ -39,8 +40,7 @@ std::unique_ptr<BoxUploader> BoxUploader::Create(
       BoxApiCallFlow::kChunkFileUploadMinSize) {
     return std::make_unique<BoxDirectUploader>(download_item);
   } else {
-    // TODO(https://crbug.com/1192671) BoxChunkedUploader.
-    return nullptr;
+    return std::make_unique<BoxChunkedUploader>(download_item);
   }
 }
 
@@ -286,6 +286,163 @@ void BoxDirectUploader::OnWholeFileUploadResponse(bool success,
 
   // Report upload success back to the download thread.
   OnApiCallFlowDone(success);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxChunkedUploader
+////////////////////////////////////////////////////////////////////////////////
+
+BoxChunkedUploader::BoxChunkedUploader(download::DownloadItem* download_item)
+    : BoxUploader(download_item),
+      file_size_(download_item->GetTotalBytes()),
+      uploaded_parts_(base::Value::Type::LIST) {}
+
+BoxChunkedUploader::~BoxChunkedUploader() = default;
+
+std::unique_ptr<OAuth2ApiCallFlow> BoxChunkedUploader::MakeFileUploadApiCall() {
+  return MakeCreateUploadSessionApiCall();
+}
+
+std::unique_ptr<OAuth2ApiCallFlow>
+BoxChunkedUploader::MakeCreateUploadSessionApiCall() {
+  return std::make_unique<BoxCreateUploadSessionApiCallFlow>(
+      base::BindOnce(&BoxChunkedUploader::OnCreateUploadSessionResponse,
+                     weak_factory_.GetWeakPtr()),
+      GetFolderId(), file_size_, GetTargetFileName());
+}
+
+std::unique_ptr<OAuth2ApiCallFlow>
+BoxChunkedUploader::MakePartFileUploadApiCall() {
+  return std::make_unique<BoxPartFileUploadApiCallFlow>(
+      base::BindOnce(&BoxChunkedUploader::OnPartFileUploadResponse,
+                     weak_factory_.GetWeakPtr()),
+      session_endpoints_.FindPath("upload_part")->GetString(),
+      curr_part_.content, curr_part_.byte_from, curr_part_.byte_to, file_size_);
+}
+
+std::unique_ptr<OAuth2ApiCallFlow>
+BoxChunkedUploader::MakeCommitUploadSessionApiCall() {
+  return std::make_unique<BoxCommitUploadSessionApiCallFlow>(
+      base::BindOnce(&BoxChunkedUploader::OnCommitUploadSsessionResponse,
+                     weak_factory_.GetWeakPtr()),
+      session_endpoints_.FindPath("commit")->GetString(), uploaded_parts_,
+      sha1_digest_);
+}
+
+std::unique_ptr<OAuth2ApiCallFlow>
+BoxChunkedUploader::MakeAbortUploadSessionApiCall() {
+  return std::make_unique<BoxAbortUploadSessionApiCallFlow>(
+      base::BindOnce(&BoxChunkedUploader::OnAbortUploadSsessionResponse,
+                     weak_factory_.GetWeakPtr()),
+      session_endpoints_.FindPath("abort")->GetString());
+}
+
+void BoxChunkedUploader::OnCreateUploadSessionResponse(
+    bool success,
+    int response_code,
+    base::Value session_endpoints,
+    size_t part_size) {
+  if (!EnsureSuccessResponse(success, response_code)) {
+    if (response_code == net::HTTP_NOT_FOUND) {
+      // Folder not found: clear locally stored folder id.
+      LOG(ERROR) << "Folder id = " << GetFolderId() << " not found; clearing";
+      // TODO(https://crbug.com/1190396): May be removed with Preflight Check?
+      SetFolderId(std::string());
+    }
+    SetCurrentApiCall(MakeCreateUploadSessionApiCall());
+    return;
+  }
+
+  session_endpoints_ = std::move(session_endpoints);
+  chunks_handler_ = std::make_unique<FileChunksHandler>(GetLocalFilePath(),
+                                                        file_size_, part_size);
+  chunks_handler_->StartReading(
+      base::BindRepeating(&BoxChunkedUploader::OnFileChunkRead,
+                          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&BoxChunkedUploader::OnFileCompletelyUploaded,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BoxChunkedUploader::OnFileChunkRead(PartInfo part_info) {
+  if (part_info.content.empty()) {
+    LOG(ERROR) << "Failed to read file chunk";
+    OnApiCallFlowFailure();
+    return;
+  }
+  // Advance to upload the file part.
+  curr_part_ = std::move(part_info);
+  SetCurrentApiCall(MakePartFileUploadApiCall());
+  TryCurrentApiCall();
+}
+
+void BoxChunkedUploader::OnPartFileUploadResponse(bool success,
+                                                  int response_code,
+                                                  base::Value part_info) {
+  if (!EnsureSuccessResponse(success, response_code)) {
+    if (response_code == net::HTTP_UNAUTHORIZED) {
+      // Setup current_api_call_ to retry upload the file part.
+      SetCurrentApiCall(MakePartFileUploadApiCall());
+    }  // else don't overwrite, since OnApiCallFlowFailure() was triggered in
+       // EnsureSuccessResponse() and abortion is in-progress.
+    return;
+  }
+  uploaded_parts_.Append(std::move(part_info));
+  chunks_handler_->ContinueToReadChunk(uploaded_parts_.GetList().size() + 1);
+}
+
+void BoxChunkedUploader::OnFileCompletelyUploaded(
+    const std::string& sha1_digest) {
+  if (sha1_digest.empty()) {
+    OnApiCallFlowFailure();
+  } else {
+    sha1_digest_ = sha1_digest;
+    SetCurrentApiCall(MakeCommitUploadSessionApiCall());
+    TryCurrentApiCall();
+  }
+}
+
+void BoxChunkedUploader::OnCommitUploadSsessionResponse(
+    bool success,
+    int response_code,
+    base::TimeDelta retry_after) {
+  if (!EnsureSuccessResponse(success, response_code)) {
+    if (response_code == net::HTTP_UNAUTHORIZED) {
+      SetCurrentApiCall(MakeCommitUploadSessionApiCall());
+    }
+    return;
+  }
+
+  if (response_code == net::HTTP_ACCEPTED) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&BoxChunkedUploader::OnFileCompletelyUploaded,
+                       weak_factory_.GetWeakPtr(), sha1_digest_),
+        retry_after);
+  } else {
+    OnApiCallFlowDone(success);
+  }
+}
+
+void BoxChunkedUploader::OnAbortUploadSsessionResponse(bool success,
+                                                       int response_code) {
+  session_endpoints_.DictClear();  // Clear dict here to avoid infinite retry.
+  if (EnsureSuccessResponse(success, response_code)) {
+    OnApiCallFlowFailure();
+  } else {
+    // OnApiCallFlowFailure() already triggered in EnsureSuccessResponse().
+    LOG(ERROR) << "Unexpected response after aborting upload session for "
+               << GetTargetFileName();
+  }
+}
+
+void BoxChunkedUploader::OnApiCallFlowFailure() {
+  if (session_endpoints_.is_dict() && !session_endpoints_.DictEmpty()) {
+    chunks_handler_.reset();
+    SetCurrentApiCall(MakeAbortUploadSessionApiCall());
+    TryCurrentApiCall();
+  } else {
+    BoxUploader::OnApiCallFlowFailure();
+  }
 }
 
 }  // namespace enterprise_connectors

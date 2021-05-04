@@ -51,24 +51,27 @@ BoxUploaderTestBase::BoxUploaderTestBase(
       profile_manager_(TestingBrowserProcess::GetGlobal()) {
   EXPECT_TRUE(profile_manager_.SetUp());
   prefs_ = profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
+  SetInterceptorForURLLoader(
+      base::BindRepeating(&BoxUploaderTestBase::SetNextResponseForURLLoader,
+                          base::Unretained(this)));
 }
 
 BoxUploaderTestBase::~BoxUploaderTestBase() = default;
-
-void BoxUploaderTestBase::AddFetchResult(const std::string& url,
-                                         net::HttpStatusCode code,
-                                         std::string body) {
-  test_url_loader_factory_.AddResponse(url, std::move(body), code);
-}
 
 base::FilePath BoxUploaderTestBase::GetFilePath() const {
   return test_item_.GetFullPath();
 }
 
 void BoxUploaderTestBase::CreateTemporaryFile() {
+  CreateTemporaryFileWithContent(GetTestName());
+}
+
+void BoxUploaderTestBase::CreateTemporaryFileWithContent(std::string content) {
   auto path = test_item_.GetFullPath();
   ASSERT_FALSE(path.empty());
-  ASSERT_TRUE(base::WriteFile(path, GetTestName())) << path;
+  ASSERT_TRUE(base::WriteFile(path, content)) << "Failed to create " << path;
+  test_item_.SetTotalBytes(content.size());
+  ASSERT_EQ(test_item_.GetTotalBytes(), static_cast<int64_t>(content.size()));
 }
 
 void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
@@ -82,6 +85,31 @@ void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
 
 void BoxUploaderTestBase::InitFolderIdInPrefs(std::string folder_id) {
   prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+}
+
+void BoxUploaderTestBase::SetInterceptorForURLLoader(
+    network::TestURLLoaderFactory::Interceptor interceptor) {
+  test_url_loader_factory_.SetInterceptor(interceptor);
+}
+
+void BoxUploaderTestBase::AddFetchResult(const std::string& url,
+                                         net::HttpStatusCode code,
+                                         std::string body) {
+  test_url_loader_factory_.AddResponse(url, std::move(body), code);
+}
+
+void BoxUploaderTestBase::AddSequentialFetchResult(const std::string& url,
+                                                   net::HttpStatusCode code,
+                                                   std::string body) {
+  auto head = network::CreateURLResponseHead(code);
+  AddSequentialFetchResult(url, std::move(head), std::move(body));
+}
+
+void BoxUploaderTestBase::AddSequentialFetchResult(
+    const std::string& url,
+    network::mojom::URLResponseHeadPtr head,
+    std::string body) {
+  responses_.emplace(GURL(url), HttpResponse(std::move(head), std::move(body)));
 }
 
 void BoxUploaderTestBase::RunWithQuitClosure() {
@@ -105,6 +133,33 @@ void BoxUploaderTestBase::UploaderFinished(bool success) {
   upload_success_ = success;
   Quit();
 }
+
+void BoxUploaderTestBase::SetNextResponseForURLLoader(
+    const network::ResourceRequest& request) {
+  if (!responses_.count(request.url)) {
+    return;
+  }
+  auto iter = responses_.find(request.url);
+  auto& response = iter->second;
+  test_url_loader_factory_.AddResponse(request.url, std::move(response.head_),
+                                       response.body_,
+                                       network::URLLoaderCompletionStatus());
+  responses_.erase(iter);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploaderTestBase::HttpResponse
+////////////////////////////////////////////////////////////////////////////////
+
+BoxUploaderTestBase::HttpResponse::HttpResponse(
+    network::mojom::URLResponseHeadPtr head,
+    std::string body)
+    : head_(std::move(head)), body_(std::move(body)) {}
+
+BoxUploaderTestBase::HttpResponse::~HttpResponse() = default;
+
+BoxUploaderTestBase::HttpResponse::HttpResponse(HttpResponse&& response)
+    : head_(std::move(response.head_)), body_(std::move(response.body_)) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // MockApiCallFlow

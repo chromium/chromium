@@ -19,7 +19,7 @@
 
 namespace enterprise_connectors {
 const size_t kChunkSize = BoxApiCallFlow::kChunkFileUploadMinSize;
-using FileChunksHandler = BoxUploader::FileChunksHandler;
+using FileChunksHandler = BoxChunkedUploader::FileChunksHandler;
 
 class BoxUploadFileChunksHandlerTest : public testing::Test {
  public:
@@ -63,14 +63,14 @@ class BoxUploadFileChunksHandlerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  void OnFileCompletelyRead(std::string sha1_digest) {
+  void OnFileCompletelyRead(const std::string& sha1_digest) {
     file_finished_reading_ = true;
     file_successfully_read_ = !sha1_digest.empty();
     file_sha1_digest_ = sha1_digest;
     return Quit();
   }
 
-  void OnFileChunkRead(FileChunksHandler::PartInfo part_info) {
+  void OnFileChunkRead(BoxChunkedUploader::PartInfo part_info) {
     file_chunk_successfully_read_ = part_info.content.size();
     if (!file_chunk_successfully_read_) {
       return Quit();

@@ -33,7 +33,7 @@ bool CheckChunkSize(const size_t chunks,
 
 namespace enterprise_connectors {
 
-using FileChunksHandler = BoxUploader::FileChunksHandler;
+using FileChunksHandler = BoxChunkedUploader::FileChunksHandler;
 
 FileChunksHandler::FileChunksHandler(const base::FilePath& path,
                                      const size_t file_size,

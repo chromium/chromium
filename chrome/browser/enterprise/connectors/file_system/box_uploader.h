@@ -135,7 +135,62 @@ class BoxDirectUploader : public BoxUploader {
   base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
 };
 
-// TODO(https://crbug.com/1192671) class BoxChunkedUploader.
+// Task Manager extended from BoxUploader specifically to upload the file
+// in chunks using API specified at
+// https://developer.box.com/guides/uploads/chunked/.
+class BoxChunkedUploader : public BoxUploader {
+ public:
+  explicit BoxChunkedUploader(download::DownloadItem* download_item);
+  ~BoxChunkedUploader() override;
+
+  class FileChunksHandler;
+
+  struct PartInfo {
+    std::string content;
+    size_t byte_from;  // Inclusive of 1st byte of the file part.
+    size_t byte_to;    // Inclusive of last byte in the file part.
+    // Therefore byte_to == byte_from + content.size() - 1.
+  };
+
+ private:
+  // BoxUploader interface.
+  void OnApiCallFlowFailure() override;
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override;
+
+  // Helper methods to transition between chunked upload steps.
+  std::unique_ptr<OAuth2ApiCallFlow> MakeCreateUploadSessionApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakePartFileUploadApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakeCommitUploadSessionApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakeAbortUploadSessionApiCall();
+
+  // Callbacks for chunked file upload.
+  void OnCreateUploadSessionResponse(bool success,
+                                     int response_code,
+                                     base::Value session_endpoints,
+                                     size_t part_size);
+  void OnPartFileUploadResponse(bool success,
+                                int response_code,
+                                base::Value part_info);
+  void OnCommitUploadSsessionResponse(bool success,
+                                      int response_code,
+                                      base::TimeDelta retry_after);
+  void OnAbortUploadSsessionResponse(bool success, int response_code);
+
+  // Callbacks for chunks_handler_.
+
+  void OnFileChunkRead(PartInfo part_info);
+  void OnFileCompletelyUploaded(const std::string& sha1_digest);
+
+  std::unique_ptr<FileChunksHandler> chunks_handler_;
+
+  const size_t file_size_;
+  base::Value session_endpoints_;
+  PartInfo curr_part_;
+  base::Value uploaded_parts_;
+  std::string sha1_digest_;
+  base::WeakPtrFactory<BoxChunkedUploader> weak_factory_{this};
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_

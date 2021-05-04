@@ -46,7 +46,8 @@ class BoxUploaderTestBase : public testing::Test {
   base::FilePath GetFilePath() const;
 
  protected:
-  void CreateTemporaryFile();
+  virtual void CreateTemporaryFile();
+  void CreateTemporaryFileWithContent(std::string content);
   void InitFolderIdInPrefs(std::string folder_id);
   void InitUploader(BoxUploader* uploader);
 
@@ -58,6 +59,14 @@ class BoxUploaderTestBase : public testing::Test {
   void AddFetchResult(const std::string& url,
                       net::HttpStatusCode code,
                       std::string body = std::string());
+  // Add multiple responses for the same url to be consumed in a sequence
+  // (FIFO). Any response previously added via AddFetchResult() is overwritten.
+  void AddSequentialFetchResult(const std::string& url,
+                                net::HttpStatusCode code,
+                                std::string body = std::string());
+  void AddSequentialFetchResult(const std::string& url,
+                                network::mojom::URLResponseHeadPtr head,
+                                std::string body = std::string());
 
   // Use these wherever possible, instead of base::RunLoop().RunUntilIdle(),
   // which is flaky in multi-threaded environment.
@@ -85,6 +94,19 @@ class BoxUploaderTestBase : public testing::Test {
   // For RunWithQuitClosure() and Quit().
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
+
+  // Helper methods, struct, and member for AddSequentialFetchResult().
+  void SetInterceptorForURLLoader(network::TestURLLoaderFactory::Interceptor);
+  void SetNextResponseForURLLoader(const network::ResourceRequest& request);
+  struct HttpResponse {
+    HttpResponse(network::mojom::URLResponseHeadPtr head, std::string body);
+    ~HttpResponse();
+    HttpResponse(HttpResponse&&);
+
+    network::mojom::URLResponseHeadPtr head_;
+    std::string body_;
+  };
+  std::multimap<GURL, HttpResponse> responses_;
 };
 
 class MockApiCallFlow : public BoxApiCallFlow {

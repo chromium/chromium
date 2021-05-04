@@ -24,18 +24,13 @@ namespace enterprise_connectors {
 // meant for cryptographic security, so the corresponding API requests must be
 // made via https for security/privacy. It uses SHA-1 only because Box requires
 // SHA-1 for file integrity check, not to detect MitM attacks.
-class BoxUploader::FileChunksHandler {
+class BoxChunkedUploader::FileChunksHandler {
  public:
-  struct PartInfo {
-    const std::string content;
-    size_t byte_from;  // Inclusive of 1st byte of the file part.
-    size_t byte_to;    // Inclusive of last byte in the file part.
-    // Therefore byte_to == byte_from + content.size() - 1.
-  };
   // Arg: PartInfo for the last chunk read.
   using FilePartiallyReadCallback = base::RepeatingCallback<void(PartInfo)>;
   // Arg: SHA-1 digest of the entire file.
-  using FileCompletelyReadCallback = base::OnceCallback<void(std::string)>;
+  using FileCompletelyReadCallback =
+      base::OnceCallback<void(const std::string&)>;
   FileChunksHandler(const base::FilePath& path,
                     const size_t file_size,
                     const size_t chunk_size);

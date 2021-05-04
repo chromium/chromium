@@ -115,4 +115,26 @@ const char kFileSystemBoxChunkedUploadCreateSessionResponseBody[] = R"({
 // extracted part_size from body above.
 const size_t kFileSystemBoxChunkedUploadCreateSessionResponsePartSize = 7340032;
 
+void GenerateFileContent(size_t part_size,
+                         size_t total_size,
+                         std::string& txt) {
+  txt.clear();
+  txt.reserve(total_size);
+  CHECK_LT(total_size, part_size * 26);
+  for (char c = 'a'; c <= 'z' && (txt.size() + part_size) < total_size; ++c) {
+    txt += std::string(part_size, c);
+  }
+  txt += std::string(total_size - txt.size(), 'z');
+  CHECK_EQ(total_size, txt.size());
+}
+
+size_t CalculateExpectedChunkReadCount(size_t file_size, size_t chunk_size) {
+  DCHECK_GE(file_size, chunk_size);
+  size_t expected_read_count = file_size / chunk_size;
+  if (file_size % chunk_size != 0) {
+    ++expected_read_count;
+  }
+  return expected_read_count;
+}
+
 }  // namespace enterprise_connectors
