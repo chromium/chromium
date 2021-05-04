@@ -244,6 +244,18 @@ TEST_F('NewTabPageModulesModuleHeaderTest', 'All', function() {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var NewTabPageModulesInfoDialogTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/info_dialog_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesInfoDialogTest', 'All', function() {
+  mocha.run();
+});
+
 // The dummy module is not available in official builds.
 GEN('#if !defined(OFFICIAL_BUILD)');
 

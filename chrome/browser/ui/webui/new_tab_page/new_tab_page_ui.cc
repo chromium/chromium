@@ -218,6 +218,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       {"modulesRecipeTasksLower", IDS_NTP_MODULES_RECIPE_TASKS_LOWER},
       {"modulesRecipeTasksLowerThese",
        IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE},
+      {"modulesTasksInfo", IDS_NTP_MODULES_TASKS_INFO},
       {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
       {"modulesCartLower", IDS_NTP_MODULES_CART_LOWER},
       {"modulesCartLowerThese", IDS_NTP_MODULES_CART_LOWER_THESE},
@@ -225,6 +226,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       {"modulesDriveSentence", IDS_NTP_MODULES_DRIVE_SENTENCE},
       {"modulesDummyLower", IDS_NTP_MODULES_DUMMY_LOWER},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_TITLE},
+      {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
@@ -260,15 +262,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONFIRMATION_DISMISS},
   };
   source->AddLocalizedStrings(kStrings);
-
-  source->AddString(
-      "modulesTasksInfo1",
-      l10n_util::GetStringFUTF16(IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1,
-                                 u"https://myactivity.google.com/"));
-  source->AddString(
-      "modulesTasksInfo2",
-      l10n_util::GetStringFUTF16(IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2,
-                                 u"https://policies.google.com/"));
 
   // Register images that are purposefully not inlined in the HTML and instead
   // are set in Javascript.

@@ -5726,17 +5726,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_TITLE" desc="Title shown in the header of the drive module and various other UIs.">
         From your Google Drive
       </message>
+      <message name="IDS_NTP_MODULES_DRIVE_INFO" desc="Text shown in the body of the info dialog of the drive module.">
+        You’re seeing your recent and suggested documents based on your previous activity using Google Drive.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        Learn about the data Google Drive collects and why <ph name="BEGIN_LINK">&lt;a href="https://support.google.com/drive/answer/2450387" target="_blank"&gt;</ph>here<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
         Top picks for you
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE" desc="Title shown on the info dialog of a task module.">
         Why am I seeing this?
       </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1" desc="First paragraph shown in the body of the info dialog of a task module.">
-        You're seeing this item based on your previous activity using Google services. You can see your data, delete it, and change your settings at <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2" desc="Second paragraph shown in the body of the info dialog of a task module.">
-        Learn about the data Google collects and why at <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>policies.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
+      <message name="IDS_NTP_MODULES_TASKS_INFO" desc="Text shown in the body of the info dialog of a task module.">
+        You're seeing this item based on your previous activity using Google services. You can see your data, delete it, and change your settings at <ph name="BEGIN_LINK">&lt;a href="https://myactivity.google.com/" target="_blank"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        Learn about the data Google collects and why at <ph name="BEGIN_LINK">&lt;a href="https://policies.google.com/" target="_blank"&gt;</ph>policies.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE" desc="Text shown on close button of a task module.">
         Close

@@ -4,12 +4,14 @@
 
 import '../../img.js';
 import '../module_header.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
@@ -41,9 +43,6 @@ class TaskModuleElement extends mixinBehaviors
 
       /** @type {!taskModule.mojom.Task} */
       task: Object,
-
-      /** @type {boolean} */
-      showInfoDialog: Boolean,
 
       /** @private {string} */
       dismissName_: {
@@ -147,12 +146,8 @@ class TaskModuleElement extends mixinBehaviors
 
   /** @private */
   onInfoButtonClick_() {
-    this.showInfoDialog = true;
-  }
-
-  /** @private */
-  onCloseClick_() {
-    this.showInfoDialog = false;
+    /** @type {InfoDialogElement} */ (this.$.infoDialogRender.get())
+        .showModal();
   }
 
   /** @private */

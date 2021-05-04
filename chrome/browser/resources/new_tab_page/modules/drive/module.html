@@ -70,6 +70,7 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesDriveSentence')]]"
+    show-info-button on-info-button-click="onInfoButtonClick_"
     on-disable-button-click="onDisableButtonClick_">
   $i18n{modulesDriveTitle}
 </ntp-module-header>
@@ -90,3 +91,8 @@
     </a>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog>$i18nRaw{modulesDriveInfo}</ntp-info-dialog>
+  </template>
+</cr-lazy-render>

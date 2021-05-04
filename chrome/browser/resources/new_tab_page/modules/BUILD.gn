@@ -72,11 +72,20 @@ js_library("module_registry") {
   ]
 }
 
+js_library("info_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+}
+
 html_to_js("web_components_local") {
   js_files = [
     "module_header.js",
     "module_wrapper.js",
     "modules.js",
+    "info_dialog.js",
   ]
 }
 
@@ -139,6 +148,7 @@ preprocess_if_expr("preprocess_gen") {
     "module_header.js",
     "module_wrapper.js",
     "modules.js",
+    "info_dialog.js",
     "task_module/module.js",
     "cart/module.js",
     "drive/module.js",

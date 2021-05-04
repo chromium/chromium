@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import '../module_header.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {DriveProxy} from './drive_module_proxy.js';
@@ -33,6 +35,12 @@ class DriveModuleElement extends mixinBehaviors
       /** @type {Array<!drive.mojom.File>} */
       files: Array,
     };
+  }
+
+  /** @private */
+  onInfoButtonClick_() {
+    /** @type {InfoDialogElement} */ (this.$.infoDialogRender.get())
+        .showModal();
   }
 
   /** @private */

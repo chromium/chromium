@@ -24,6 +24,7 @@ export {driveDescriptor} from './modules/drive/module.js';
 export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
 // </if>
+export {InfoDialogElement} from './modules/info_dialog.js';
 export {Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';

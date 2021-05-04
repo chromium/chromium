@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":img_test",
     ":metrics_utils_test",
     ":test_support",
+    "modules:info_dialog_test",
     "modules:module_header_test",
     "modules:module_registry_test",
     "modules:modules_test",
