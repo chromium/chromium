@@ -402,8 +402,10 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     const std::string& notification_id,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) const {
-  DCHECK_EQ(notification_data.actions.size(),
-            notification_resources.action_icons.size());
+  // Blink always populates action icons to match the actions, even if no icon
+  // was fetched, so this indicates a compromised renderer.
+  CHECK_EQ(notification_data.actions.size(),
+           notification_resources.action_icons.size());
 
   message_center::RichNotificationData optional_fields;
 
