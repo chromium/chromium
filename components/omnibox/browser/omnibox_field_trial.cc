@@ -868,6 +868,18 @@ bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
 
+OmniboxFieldTrial::KeywordSpaceTrigger
+OmniboxFieldTrial::GetKeywordSpaceTrigger() {
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kKeywordSpaceTriggering,
+          kKeywordSpaceTriggeringDoubleSpaceParam, false))
+    return DOUBLE_SPACE_TRIGGERS_KEYWORD;
+  else if (base::FeatureList::IsEnabled(omnibox::kKeywordSpaceTriggering))
+    return SINGLE_SPACE_TRIGGERS_KEYWORD;
+  else
+    return SPACE_TRIGGERING_DISABLED;
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
@@ -1021,6 +1033,9 @@ extern const char OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle[] =
     "OmniboxBookmarkPathsUiAppendAfterTitle";
 extern const char OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl[] =
     "OmniboxBookmarkPathsUiDynamicReplaceUrl";
+
+extern const char OmniboxFieldTrial::kKeywordSpaceTriggeringDoubleSpaceParam[] =
+    "KeywordSpaceTriggeringDoubleSpace";
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(
     const std::string& rule,

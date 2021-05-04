@@ -1702,9 +1702,11 @@ bool OmniboxEditModel::ShouldPreventElision() const {
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
   PrefService* pref_service =
       autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
-  return !base::FeatureList::IsEnabled(
-             omnibox::kKeywordSpaceTriggeringSetting) ||
-         pref_service->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+  return (OmniboxFieldTrial::GetKeywordSpaceTrigger() !=
+          OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED) &&
+         (!base::FeatureList::IsEnabled(
+              omnibox::kKeywordSpaceTriggeringSetting) ||
+          pref_service->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled));
 }
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
@@ -1713,6 +1715,14 @@ bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
     return false;
 
   size_t keyword_length = new_text.length() - 1;
+  if (OmniboxFieldTrial::GetKeywordSpaceTrigger() ==
+      OmniboxFieldTrial::DOUBLE_SPACE_TRIGGERS_KEYWORD) {
+    // Check if the second character after a keyword is a space.  The first
+    // character is checked as usual below.
+    if (!IsSpaceCharForAcceptingKeyword(new_text[keyword_length]))
+      return false;
+    keyword_length--;
+  }
   return is_keyword_hint_ && (keyword_.length() == keyword_length) &&
          IsSpaceCharForAcceptingKeyword(new_text[keyword_length]) &&
          !new_text.compare(0, keyword_length, keyword_, 0, keyword_length) &&
