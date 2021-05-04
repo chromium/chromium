@@ -182,11 +182,7 @@ GLImplementationParts GetSoftwareGLImplementation() {
 }
 
 GLImplementationParts GetSoftwareGLForTestsImplementation() {
-#if defined(OS_WIN)
-  return GetSoftwareGLImplementation();
-#else
   return GetLegacySoftwareGLImplementation();
-#endif
 }
 
 bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
