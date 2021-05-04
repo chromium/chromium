@@ -4332,6 +4332,21 @@
             ]
         }
     ],
+    "LauncherScoreNormalizer": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableLauncherScoreNormalizer"
+                    ]
+                }
+            ]
+        }
+    ],
     "LauncherSettingsSearch": [
         {
             "platforms": [
