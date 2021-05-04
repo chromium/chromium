@@ -261,12 +261,15 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
       if (window_state->HasRestoreBounds() &&
           (window->bounds().height() == work_area.height() &&
            window->bounds().y() == work_area.y())) {
-        window_state->SetAndClearRestoreBounds();
+        window_state->SetBoundsDirectCrossFade(
+            window_state->GetRestoreBoundsInParent());
+        window_state->ClearRestoreBounds();
       } else {
         window_state->SaveCurrentBoundsForRestore();
-        window->SetBounds(gfx::Rect(window->bounds().x(), work_area.y(),
-                                    window->bounds().width(),
-                                    work_area.height()));
+        const gfx::Rect new_bounds =
+            gfx::Rect(window->bounds().x(), work_area.y(),
+                      window->bounds().width(), work_area.height());
+        window_state->SetBoundsDirectCrossFade(new_bounds);
       }
       return;
     }
@@ -284,7 +287,9 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
           window_state->HasRestoreBounds() &&
           (window->bounds().width() == work_area.width() &&
            window->bounds().x() == work_area.x())) {
-        window_state->SetAndClearRestoreBounds();
+        window_state->SetBoundsDirectCrossFade(
+            window_state->GetRestoreBoundsInParent());
+        window_state->ClearRestoreBounds();
       } else {
         gfx::Rect new_bounds(work_area.x(), window->bounds().y(),
                              work_area.width(), window->bounds().height());
@@ -300,7 +305,7 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         }
 
         window_state->SetRestoreBoundsInParent(restore_bounds);
-        window->SetBounds(new_bounds);
+        window_state->SetBoundsDirectCrossFade(new_bounds);
       }
       return;
     }
