@@ -273,14 +273,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
 
-    <!--TODO(crbug.com/1198233): Remove this suppression when download later V2 is fully implemented.-->
-    <ignore regexp="The resource `R.string.download_later_slow_network_subtitle` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_later_2g_connection` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_later_bluetooth_connection` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_later_wifi_connection` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_later_large_file_subtitle` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_later_dialog_positive_button_text` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

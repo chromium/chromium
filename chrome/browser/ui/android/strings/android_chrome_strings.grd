@@ -1437,9 +1437,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_DOWNLOAD_LATER_BLUETOOTH_CONNECTION" desc="Bluetooth connection type.">
         Bluetooth
       </message>
-      <message name="IDS_DOWNLOAD_LATER_WIFI_CONNECTION" desc="WIFI connection type.">
-        Wi-Fi
-      </message>
       <message name="IDS_DOWNLOAD_LATER_LARGE_FILE_SUBTITLE" desc="A subtitle in the download later dialog to inform the user about large download file size.">
         This file is large (<ph name="FILE_SIZE">%1$s<ex>300MB</ex></ph>)
       </message>
