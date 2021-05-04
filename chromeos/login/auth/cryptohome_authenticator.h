@@ -24,8 +24,11 @@
 
 class AuthFailure;
 
-namespace chromeos {
+namespace ash {
+class CryptohomeAuthenticatorTest;
+}
 
+namespace chromeos {
 class AuthStatusConsumer;
 
 // Authenticates a Chromium OS user against cryptohome.
@@ -173,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   ~CryptohomeAuthenticator() override;
 
  private:
-  friend class CryptohomeAuthenticatorTest;
+  friend class ash::CryptohomeAuthenticatorTest;
   FRIEND_TEST_ALL_PREFIXES(CryptohomeAuthenticatorTest,
                            ResolveOwnerNeededDirectFailedMount);
   FRIEND_TEST_ALL_PREFIXES(CryptohomeAuthenticatorTest,
@@ -263,5 +266,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::CryptohomeAuthenticator;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_CRYPTOHOME_AUTHENTICATOR_H_

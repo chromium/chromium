@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_SAFE_MODE_DELEGATE_H_
 
 #include "chromeos/login/auth/safe_mode_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/login/auth/user_context.h"
 
-namespace chromeos {
-
-class UserContext;
+namespace ash {
 
 class ChromeSafeModeDelegate : public SafeModeDelegate {
  public:
@@ -25,6 +25,6 @@ class ChromeSafeModeDelegate : public SafeModeDelegate {
                               IsOwnerCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_SAFE_MODE_DELEGATE_H_

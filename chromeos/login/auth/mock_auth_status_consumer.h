@@ -53,4 +53,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) MockAuthStatusConsumer
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::MockAuthStatusConsumer;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_MOCK_AUTH_STATUS_CONSUMER_H_

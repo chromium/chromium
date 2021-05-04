@@ -40,4 +40,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) TestAttemptState
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::TestAttemptState;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_TEST_ATTEMPT_STATE_H_

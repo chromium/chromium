@@ -10,7 +10,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "chromeos/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 
 bool ChromeSafeModeDelegate::IsSafeMode() {
   bool is_safe_mode = false;
@@ -33,4 +33,4 @@ void ChromeSafeModeDelegate::CheckSafeModeOwnership(const UserContext& context,
       std::move(callback));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -77,4 +77,10 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::SystemSaltGetter;
+}
+
 #endif  // CHROMEOS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_

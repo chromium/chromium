@@ -17,4 +17,10 @@ extern const char kCryptohomePinLabel[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::kCryptohomeGaiaKeyLabel;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_

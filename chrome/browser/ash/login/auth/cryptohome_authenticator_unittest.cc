@@ -55,14 +55,13 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace {
+
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 using ::testing::_;
-
-namespace chromeos {
-
-namespace {
 
 // A fake sanitized username used for testing.
 constexpr char kFakeSanitizedUsername[] = "01234567890ABC";
@@ -868,4 +867,4 @@ TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
   run_loop_.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

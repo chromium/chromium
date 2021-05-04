@@ -28,7 +28,7 @@ namespace policy {
 class WildcardLoginChecker;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class implements chrome-specific elements of Login Performer.
 
@@ -76,11 +76,12 @@ class ChromeLoginPerformer : public LoginPerformer {
   DISALLOW_COPY_AND_ASSIGN(ChromeLoginPerformer);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::ChromeLoginPerformer;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ChromeLoginPerformer;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_LOGIN_PERFORMER_H_

@@ -46,4 +46,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SafeModeDelegate {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::SafeModeDelegate;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_SAFE_MODE_DELEGATE_H_

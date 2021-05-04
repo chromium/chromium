@@ -13,9 +13,9 @@
 #include "components/ownership/owner_key_util.h"
 #include "content/public/browser/browser_thread.h"
 
-using content::BrowserThread;
+namespace ash {
 
-namespace chromeos {
+using ::content::BrowserThread;
 
 ChromeCryptohomeAuthenticator::ChromeCryptohomeAuthenticator(
     AuthStatusConsumer* consumer)
@@ -25,4 +25,4 @@ ChromeCryptohomeAuthenticator::ChromeCryptohomeAuthenticator(
 
 ChromeCryptohomeAuthenticator::~ChromeCryptohomeAuthenticator() {}
 
-}  // namespace chromeos
+}  // namespace ash

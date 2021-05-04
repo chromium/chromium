@@ -195,4 +195,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UserDataAuthClient;
+}
+
 #endif  // CHROMEOS_DBUS_USERDATAAUTH_USERDATAAUTH_CLIENT_H_

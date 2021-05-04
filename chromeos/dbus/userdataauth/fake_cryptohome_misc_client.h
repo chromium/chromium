@@ -131,4 +131,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeCryptohomeMiscClient;
+}
+
 #endif  // CHROMEOS_DBUS_USERDATAAUTH_FAKE_CRYPTOHOME_MISC_CLIENT_H_

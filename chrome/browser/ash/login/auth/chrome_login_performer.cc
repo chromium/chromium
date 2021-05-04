@@ -21,7 +21,7 @@
 #include "components/account_id/account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 ChromeLoginPerformer::ChromeLoginPerformer(Delegate* delegate)
     : LoginPerformer(base::ThreadTaskRunnerHandle::Get(), delegate) {}
@@ -156,4 +156,4 @@ void ChromeLoginPerformer::OnlineWildcardLoginCheckCompleted(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
