@@ -577,15 +577,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
         base::WaitableEvent::InitialState::NOT_SIGNALED);
 
     scoped_refptr<base::SingleThreadTaskRunner> message_loop_task_runner;
-    // Note that we deliberately don't keep a reference to the
-    // TestMockTimeTaskRunner. That way, it's destroyed through
-    // |capture_device_|->StopAndDeAllocate() before the capture device's
-    // internal thread is stopped. This is important because either the
-    // TestMockTimeTaskRunner is destroyed on the thread it was created on or a
-    // task is posted to that thread to destroy it. If that thread is stopped
-    // before the last reference to the TestMockTimeTaskRunner goes away, we'd
-    // get a leak.
-    base::TestMockTimeTaskRunner* task_runner = nullptr;
+    scoped_refptr<base::TestMockTimeTaskRunner> task_runner;
     int nb_frames = 0;
 
     std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
@@ -596,13 +588,11 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
         .WillOnce(InvokeWithoutArgs([this, &task_runner,
                                      &message_loop_task_runner] {
           message_loop_task_runner = base::ThreadTaskRunnerHandle::Get();
-          auto test_task_runner =
-              base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-                  base::Time::Now(), base::TimeTicks::Now(),
-                  base::TestMockTimeTaskRunner::Type::kStandalone);
-          task_runner = test_task_runner.get();
+          task_runner = new base::TestMockTimeTaskRunner(
+              base::Time::Now(), base::TimeTicks::Now(),
+              base::TestMockTimeTaskRunner::Type::kStandalone);
           capture_device_->SetMockTimeForTesting(
-              std::move(test_task_runner), task_runner->GetMockTickClock());
+              task_runner, task_runner->GetMockTickClock());
         }));
 
     EXPECT_CALL(*client, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
@@ -639,7 +629,7 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
                           task_runner->FastForwardBy(
                               task_runner->NextPendingTaskDelay());
                         },
-                        base::WrapRefCounted(task_runner)));
+                        task_runner));
               }
             }))));
     media::VideoCaptureParams capture_params;

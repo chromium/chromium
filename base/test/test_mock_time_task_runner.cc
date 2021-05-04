@@ -147,9 +147,7 @@ TestMockTimeTaskRunner::TestOrderedPendingTask::operator=(
 // Ref. TestMockTimeTaskRunner::RunsTasksInCurrentSequence().
 TestMockTimeTaskRunner::ScopedContext::ScopedContext(
     scoped_refptr<TestMockTimeTaskRunner> scope)
-    : thread_task_runner_handle_override_(scope),
-      sequence_local_storage_map_override_(
-          scope->sequence_local_storage_map_.get()) {
+    : thread_task_runner_handle_override_(scope) {
   scope->RunUntilIdle();
 }
 
@@ -169,15 +167,10 @@ TestMockTimeTaskRunner::TestMockTimeTaskRunner(Type type)
 TestMockTimeTaskRunner::TestMockTimeTaskRunner(Time start_time,
                                                TimeTicks start_ticks,
                                                Type type)
-    : owning_thread_(ThreadTaskRunnerHandle::IsSet()
-                         ? ThreadTaskRunnerHandle::Get()
-                         : nullptr),
-      now_(start_time),
+    : now_(start_time),
       now_ticks_(start_ticks),
       tasks_lock_cv_(&tasks_lock_),
       proxy_task_runner_(MakeRefCounted<NonOwningProxyTaskRunner>(this)),
-      sequence_local_storage_map_(
-          std::make_unique<internal::SequenceLocalStorageMap>()),
       mock_clock_(this) {
   if (type == Type::kBoundToThread) {
     RunLoop::RegisterDelegateForCurrentThread(this);
@@ -186,38 +179,7 @@ TestMockTimeTaskRunner::TestMockTimeTaskRunner(Time start_time,
   }
 }
 
-void TestMockTimeTaskRunner::OnDestruct() const {
-  // We need to ensure that destruction happens on the thread of creation (which
-  // is also the thread where tasks in this task runner should be running). This
-  // is to handle values registered in the |sequence_local_storage_map_| that
-  // are thread-affine.
-  if (owning_thread_ && !owning_thread_->BelongsToCurrentThread()) {
-    const bool owning_thread_accepted_task =
-        owning_thread_->DeleteSoon(FROM_HERE, this);
-    DCHECK(owning_thread_accepted_task)
-        << "TestMockTimeTaskRunner must be destroyed before its owning thread "
-           "is shutdown.";
-  } else {
-    DCHECK(thread_checker_.CalledOnValidThread());
-    delete this;
-  }
-}
-
 TestMockTimeTaskRunner::~TestMockTimeTaskRunner() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  {
-    base::Optional<ThreadTaskRunnerHandleOverrideForTesting> ttrh_override;
-    if (!ThreadTaskRunnerHandle::IsSet() ||
-        ThreadTaskRunnerHandle::Get() != proxy_task_runner_.get()) {
-      ttrh_override.emplace(proxy_task_runner_.get());
-    }
-    {
-      base::internal::SequenceLocalStorageMapOverrideForTesting slsm_override(
-          sequence_local_storage_map_.get());
-      ClearPendingTasks();
-    }
-    sequence_local_storage_map_.reset();
-  }
   proxy_task_runner_->Detach();
 }
 
@@ -393,8 +355,6 @@ void TestMockTimeTaskRunner::ProcessTasksNoLaterThan(TimeDelta max_delta,
       ThreadTaskRunnerHandle::Get() != proxy_task_runner_.get()) {
     ttrh_override.emplace(proxy_task_runner_.get());
   }
-  base::internal::SequenceLocalStorageMapOverrideForTesting slsm_override(
-      sequence_local_storage_map_.get());
 
   const TimeTicks original_now_ticks = NowTicks();
   for (int i = 0; !quit_run_loop_ && (limit < 0 || i < limit); i++) {

@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -357,57 +356,5 @@ TEST(TestMockTimeTaskRunnerTest, ProcessNextNTasks) {
   expected_value += 1024;
   expected_value += 4096;
   EXPECT_EQ(expected_value, counter);
-}
-
-TEST(TestMockTimeTaskRunnerTest, CanStoreSequenceLocalValues) {
-  SequenceLocalStorageSlot<int> slot;
-  auto outer_task_runner = MakeRefCounted<TestMockTimeTaskRunner>(
-      TestMockTimeTaskRunner::Type::kStandalone);
-  int counter = 0;
-
-  // We create an 'inner' task runner from the 'outer' task runner so that the
-  // inner ThreadCheckerImpl is bound to the outer thread.
-  scoped_refptr<TestMockTimeTaskRunner> inner_task_runner;
-  {
-    TestMockTimeTaskRunner::ScopedContext outer_context(outer_task_runner);
-    inner_task_runner = MakeRefCounted<TestMockTimeTaskRunner>(
-        TestMockTimeTaskRunner::Type::kStandalone);
-  }
-
-  // This outer task simply stores the value '6' in the outer sequence; we'll
-  // retrieve it later to make sure it remains stored after running other tasks.
-  outer_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                EXPECT_EQ(slot.GetValuePointer(), nullptr);
-                                slot.GetOrCreateValue() = 6;
-                                counter += 1;
-                              }));
-
-  // These inner tasks store and retrieve the value '5' in the inner sequence.
-  // We run the tasks in the outer task runner but in the context of the inner
-  // sequence. This basically tests that the storage map of the inner sequence
-  // is independent from the storage map of the outer sequence.
-  inner_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                // In the inner sequence, no value has been
-                                // stored in the slot yet.
-                                EXPECT_EQ(slot.GetValuePointer(), nullptr);
-                                slot.GetOrCreateValue() = 5;
-                                counter += 2;
-                              }));
-  inner_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                // In the inner sequence, the slot refers to '5'
-                                // and not '6'.
-                                EXPECT_EQ(slot.GetOrCreateValue(), 5);
-                                counter += 4;
-                              }));
-  outer_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                inner_task_runner->RunUntilIdle();
-                                // After leaving the inner sequence context, we
-                                // should be able to retrieve the value from the
-                                // outer sequence.
-                                EXPECT_EQ(slot.GetOrCreateValue(), 6);
-                                counter += 8;
-                              }));
-  outer_task_runner->RunUntilIdle();
-  EXPECT_EQ(counter, 1 + 2 + 4 + 8);
 }
 }  // namespace base
