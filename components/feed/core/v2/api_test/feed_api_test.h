@@ -32,8 +32,6 @@
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/wire_response_translator.h"
-#include "components/offline_pages/core/prefetch/stub_prefetch_service.h"
-#include "components/offline_pages/core/stub_offline_page_model.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -342,48 +340,6 @@ class TestMetricsReporter : public MetricsReporter {
   base::Optional<UploadActionsStatus> upload_action_status;
 };
 
-class TestPrefetchService : public offline_pages::StubPrefetchService {
- public:
-  TestPrefetchService();
-  ~TestPrefetchService() override;
-  // offline_pages::StubPrefetchService.
-  void SetSuggestionProvider(
-      offline_pages::SuggestionsProvider* suggestions_provider) override;
-  void NewSuggestionsAvailable() override;
-
-  // Test functionality.
-  offline_pages::SuggestionsProvider* suggestions_provider();
-  int NewSuggestionsAvailableCallCount() const;
-
- private:
-  offline_pages::SuggestionsProvider* suggestions_provider_ = nullptr;
-  int new_suggestions_available_call_count_ = 0;
-};
-
-class TestOfflinePageModel : public offline_pages::StubOfflinePageModel {
- public:
-  TestOfflinePageModel();
-  ~TestOfflinePageModel() override;
-  // offline_pages::OfflinePageModel
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-  void GetPagesWithCriteria(
-      const offline_pages::PageCriteria& criteria,
-      offline_pages::MultipleOfflinePageItemCallback callback) override;
-
-  // Test functions.
-
-  void AddTestPage(const GURL& url);
-  std::vector<offline_pages::OfflinePageItem>& items() { return items_; }
-  void CallObserverOfflinePageAdded(const offline_pages::OfflinePageItem& item);
-  void CallObserverOfflinePageDeleted(
-      const offline_pages::OfflinePageItem& item);
-
- private:
-  std::vector<offline_pages::OfflinePageItem> items_;
-  std::set<Observer*> observers_;
-};
-
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  public:
   FeedApiTest();
@@ -443,8 +399,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
               task_environment_.GetMainThreadTaskRunner()));
 
   FakeRefreshTaskScheduler refresh_scheduler_;
-  TestPrefetchService prefetch_service_;
-  TestOfflinePageModel offline_page_model_;
   std::unique_ptr<FeedStream> stream_;
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;

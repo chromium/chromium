@@ -36,7 +36,6 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/offline_pages/core/client_namespace_constants.h"
 
 namespace feed {
 namespace test {
@@ -582,66 +581,6 @@ void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   MetricsReporter::OnUploadActions(status);
 }
 
-TestPrefetchService::TestPrefetchService() = default;
-TestPrefetchService::~TestPrefetchService() = default;
-void TestPrefetchService::SetSuggestionProvider(
-    offline_pages::SuggestionsProvider* suggestions_provider) {
-  suggestions_provider_ = suggestions_provider;
-}
-void TestPrefetchService::NewSuggestionsAvailable() {
-  ++new_suggestions_available_call_count_;
-}
-
-offline_pages::SuggestionsProvider*
-TestPrefetchService::suggestions_provider() {
-  return suggestions_provider_;
-}
-int TestPrefetchService::NewSuggestionsAvailableCallCount() const {
-  return new_suggestions_available_call_count_;
-}
-TestOfflinePageModel::TestOfflinePageModel() = default;
-TestOfflinePageModel::~TestOfflinePageModel() = default;
-void TestOfflinePageModel::AddObserver(Observer* observer) {
-  CHECK(observers_.insert(observer).second);
-}
-void TestOfflinePageModel::RemoveObserver(Observer* observer) {
-  CHECK_EQ(1UL, observers_.erase(observer));
-}
-void TestOfflinePageModel::GetPagesWithCriteria(
-    const offline_pages::PageCriteria& criteria,
-    offline_pages::MultipleOfflinePageItemCallback callback) {
-  std::vector<offline_pages::OfflinePageItem> result;
-  for (const offline_pages::OfflinePageItem& item : items_) {
-    if (MeetsCriteria(criteria, item)) {
-      result.push_back(item);
-    }
-  }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
-void TestOfflinePageModel::AddTestPage(const GURL& url) {
-  offline_pages::OfflinePageItem item;
-  item.url = url;
-  item.client_id =
-      offline_pages::ClientId(offline_pages::kSuggestedArticlesNamespace, "");
-  items_.push_back(item);
-}
-
-void TestOfflinePageModel::CallObserverOfflinePageAdded(
-    const offline_pages::OfflinePageItem& item) {
-  for (Observer* observer : observers_) {
-    observer->OfflinePageAdded(this, item);
-  }
-}
-
-void TestOfflinePageModel::CallObserverOfflinePageDeleted(
-    const offline_pages::OfflinePageItem& item) {
-  for (Observer* observer : observers_) {
-    observer->OfflinePageDeleted(item);
-  }
-}
-
 FeedApiTest::FeedApiTest() = default;
 FeedApiTest::~FeedApiTest() = default;
 void FeedApiTest::SetUp() {
@@ -724,8 +663,7 @@ void FeedApiTest::CreateStream(bool wait_for_initialization) {
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),
-      persistent_key_value_store_.get(), &prefetch_service_,
-      &offline_page_model_, chrome_info);
+      persistent_key_value_store_.get(), chrome_info);
   stream_->SetWireResponseTranslatorForTesting(&response_translator_);
 
   if (wait_for_initialization)

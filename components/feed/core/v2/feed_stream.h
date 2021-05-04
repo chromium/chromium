@@ -31,15 +31,9 @@
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/core/v2/wire_response_translator.h"
-#include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/task/task_queue.h"
 
 class PrefService;
-
-namespace offline_pages {
-class OfflinePageModel;
-class PrefetchService;
-}  // namespace offline_pages
 
 namespace feed {
 namespace feed_stream {
@@ -50,7 +44,6 @@ class FeedStore;
 class WebFeedSubscriptionCoordinator;
 class ImageFetcher;
 class MetricsReporter;
-class OfflinePageSpy;
 class RefreshTaskScheduler;
 class PersistentKeyValueStoreImpl;
 class StreamModel;
@@ -86,8 +79,6 @@ class FeedStream : public FeedApi,
              ImageFetcher* image_fetcher,
              FeedStore* feed_store,
              PersistentKeyValueStoreImpl* persistent_key_value_store,
-             offline_pages::PrefetchService* prefetch_service,
-             offline_pages::OfflinePageModel* offline_page_model,
              const ChromeInfo& chrome_info);
   ~FeedStream() override;
 
@@ -281,7 +272,6 @@ class FeedStream : public FeedApi,
   }
 
  private:
-  class OfflineSuggestionsProvider;
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
   struct Stream {
@@ -317,10 +307,6 @@ class FeedStream : public FeedApi,
   // Re-evaluate whether or not activity logging should currently be enabled.
   void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
 
-  void GetPrefetchSuggestions(
-      base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>
-          suggestions_callback);
-
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.
   void ForceRefreshForDebuggingTask();
@@ -335,8 +321,6 @@ class FeedStream : public FeedApi,
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
-  void MaybeReportNewSuggestionsAvailable(const LoadStreamTask::Result& result);
-  void MaybeReportNewSuggestionsAvailable(const LoadMoreTask::Result& result);
 
   void ClearAll();
 
@@ -355,7 +339,6 @@ class FeedStream : public FeedApi,
 
   // Unowned.
 
-  offline_pages::PrefetchService* prefetch_service_;
   RefreshTaskScheduler* refresh_task_scheduler_;
   MetricsReporter* metrics_reporter_;
   Delegate* delegate_;
@@ -372,8 +355,6 @@ class FeedStream : public FeedApi,
 
   std::map<StreamType, Stream> streams_;
 
-  std::unique_ptr<OfflineSuggestionsProvider> offline_suggestions_provider_;
-  std::unique_ptr<OfflinePageSpy> offline_page_spy_;
   std::unique_ptr<WebFeedSubscriptionCoordinator>
       web_feed_subscription_coordinator_;
 

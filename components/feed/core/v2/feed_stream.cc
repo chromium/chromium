@@ -28,7 +28,6 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/metrics_reporter.h"
-#include "components/feed/core/v2/offline_page_spy.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -42,7 +41,6 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
 #include "components/feed/core/v2/tasks/clear_all_task.h"
-#include "components/feed/core/v2/tasks/get_prefetch_suggestions_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
@@ -50,7 +48,6 @@
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
 
@@ -90,28 +87,6 @@ void PopulateDebugStreamData(
 
 }  // namespace
 
-// offline_pages::SuggestionsProvider.
-class FeedStream::OfflineSuggestionsProvider
-    : public offline_pages::SuggestionsProvider {
- public:
-  explicit OfflineSuggestionsProvider(FeedStream* stream) : stream_(stream) {}
-  virtual ~OfflineSuggestionsProvider() = default;
-  OfflineSuggestionsProvider(const OfflineSuggestionsProvider&) = delete;
-  OfflineSuggestionsProvider& operator=(const OfflineSuggestionsProvider&) =
-      delete;
-  void GetCurrentArticleSuggestions(
-      SuggestionCallback suggestions_callback) override {
-    stream_->GetPrefetchSuggestions(std::move(suggestions_callback));
-  }
-
-  // These signals aren't used for v2.
-  void ReportArticleListViewed() override {}
-  void ReportArticleViewed(GURL article_url) override {}
-
- private:
-  FeedStream* stream_;
-};
-
 FeedStream::Stream::Stream() = default;
 FeedStream::Stream::~Stream() = default;
 
@@ -123,11 +98,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        ImageFetcher* image_fetcher,
                        FeedStore* feed_store,
                        PersistentKeyValueStoreImpl* persistent_key_value_store,
-                       offline_pages::PrefetchService* prefetch_service,
-                       offline_pages::OfflinePageModel* offline_page_model,
                        const ChromeInfo& chrome_info)
-    : prefetch_service_(prefetch_service),
-      refresh_task_scheduler_(refresh_task_scheduler),
+    : refresh_task_scheduler_(refresh_task_scheduler),
       metrics_reporter_(metrics_reporter),
       delegate_(delegate),
       profile_prefs_(profile_prefs),
@@ -145,16 +117,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   web_feed_subscription_coordinator_ =
       std::make_unique<WebFeedSubscriptionCoordinator>(profile_prefs, this);
-  Stream& stream = GetStream(kForYouStream);
-  offline_page_spy_ = std::make_unique<OfflinePageSpy>(
-      stream.surface_updater.get(), offline_page_model);
-
-  if (prefetch_service_) {
-    offline_suggestions_provider_ =
-        std::make_unique<OfflineSuggestionsProvider>(this);
-    prefetch_service_->SetSuggestionProvider(
-        offline_suggestions_provider_.get());
-  }
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
@@ -487,8 +449,6 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   for (auto& callback : moved_callbacks) {
     std::move(callback).Run(success);
   }
-
-  MaybeReportNewSuggestionsAvailable(result);
 }
 
 void FeedStream::ExecuteOperations(
@@ -570,13 +530,6 @@ void FeedStream::ProcessViewAction(base::StringPiece data) {
 
 void FeedStream::UploadActionsComplete(UploadActionsTask::Result result) {
   PopulateDebugStreamData(result, *profile_prefs_);
-}
-
-void FeedStream::GetPrefetchSuggestions(
-    base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>
-        suggestions_callback) {
-  task_queue_.AddTask(std::make_unique<GetPrefetchSuggestionsTask>(
-      this, std::move(suggestions_callback)));
 }
 
 DebugStreamData FeedStream::GetDebugStreamData() {
@@ -917,7 +870,6 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
   }
 
   MaybeNotifyHasUnreadContent(result.stream_type);
-  MaybeReportNewSuggestionsAvailable(result);
 }
 
 bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
@@ -925,22 +877,6 @@ bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
   return !stream.last_updated_time.is_null() &&
          feedstore::GetStreamViewTime(metadata_, stream_type) !=
              stream.last_updated_time;
-}
-
-void FeedStream::MaybeReportNewSuggestionsAvailable(
-    const LoadStreamTask::Result& result) {
-  if (result.loaded_new_content_from_network && prefetch_service_ &&
-      result.stream_type.IsForYou()) {
-    prefetch_service_->NewSuggestionsAvailable();
-  }
-}
-
-void FeedStream::MaybeReportNewSuggestionsAvailable(
-    const LoadMoreTask::Result& result) {
-  if (result.loaded_new_content_from_network && prefetch_service_ &&
-      result.stream_type.IsForYou()) {
-    prefetch_service_->NewSuggestionsAvailable();
-  }
 }
 
 void FeedStream::ClearAll() {
@@ -1004,9 +940,6 @@ void FeedStream::LoadModel(const StreamType& stream_type,
   stream.model->SetStoreObserver(this);
   stream.last_updated_time = stream.model->GetLastAddedTime();
   stream.surface_updater->SetModel(stream.model.get());
-  if (stream.type.IsForYou()) {
-    offline_page_spy_->SetModel(stream.model.get());
-  }
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
   MaybeNotifyHasUnreadContent(stream_type);
 }
@@ -1039,9 +972,6 @@ void FeedStream::UnloadModel(const StreamType& stream_type) {
   Stream* stream = FindStream(stream_type);
   if (!stream || !stream->model)
     return;
-  if (stream_type.IsForYou()) {
-    offline_page_spy_->SetModel(nullptr);
-  }
   stream->surface_updater->SetModel(nullptr);
   stream->model.reset();
 }

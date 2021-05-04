@@ -61,8 +61,6 @@ TEST_F(FeedApiTest, BackgroundRefreshForYouSuccess) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  // Verify that prefetch service was informed.
-  EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 
 TEST_F(FeedApiTest, WebFeedDoesNotBackgroundRefresh) {
@@ -567,7 +565,6 @@ TEST_F(FeedApiTest, LoadFromNetworkFailsDueToProtoTranslation) {
 
   EXPECT_EQ(LoadStreamStatus::kProtoTranslationFailed,
             metrics_reporter_->load_stream_status);
-  EXPECT_EQ(0, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 TEST_F(FeedApiTest, DoNotLoadFromNetworkWhenOffline) {
   is_offline_ = true;
@@ -972,11 +969,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
-  if (GetStreamType().IsForYou()) {
-    EXPECT_EQ(3, prefetch_service_.NewSuggestionsAvailableCallCount());
-  } else {
-    EXPECT_EQ(0, prefetch_service_.NewSuggestionsAvailableCallCount());
-  }
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
@@ -1189,7 +1181,6 @@ TEST_F(FeedApiTest, ReadNetworkResponse) {
 
   // The stream's user attributes are set, so activity logging is enabled.
   EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
-  EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 
 TEST_F(FeedApiTest, ClearAllAfterLoadResultsInRefresh) {
