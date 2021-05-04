@@ -458,7 +458,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
 }
 
 // Test that the Help App opens from keyboard shortcut.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
+IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
+                       HelpAppOpenKeyboardShortcut) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
@@ -489,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
 
 // Test that the Help App opens in a new window if try to navigate there in a
 // browser.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
                        HelpAppCapturesBrowserNavigation) {
   WaitForTestSystemAppInstall();
   content::TestNavigationObserver navigation_observer(
