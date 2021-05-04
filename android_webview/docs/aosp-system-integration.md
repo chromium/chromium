@@ -127,7 +127,7 @@ called `TrichromeWebView.apk`, `TrichromeChrome.aab`, and
 ### Choosing a WebView version
 
 WebView follows the same branching and release model as the rest of the Chromium
-project: a beta version is branched from the master branch approximately every
+project: a beta version is branched from the main branch approximately every
 six weeks, and after approximately six weeks of beta testing it is released to
 stable. If critical security or functionality issues are discovered after the
 stable release, a new version may be released from the same stable branch at any
@@ -144,7 +144,7 @@ to check out the desired release tag.
 
 If you're intending to build WebView just in order to develop, modify, or
 customise it, it's usually best to work directly on the latest version of the
-master branch. Chromium's master branch is covered by a large number of
+main branch. Chromium's main branch is covered by a large number of
 automated build and test systems that ensure it is sufficiently stable for
 development purposes at almost all times.
 

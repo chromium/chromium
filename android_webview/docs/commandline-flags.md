@@ -145,12 +145,12 @@ WebView also defines its own flags and Features:
    [`aw_switches.cc`](/android_webview/common/aw_switches.cc). We use
    [`java_cpp_strings`](/docs/android_accessing_cpp_switches_in_java.md) to
    automatically generate Java switch constants from the C++ switches (see
-   [`AwSwitches.java`](https://source.chromium.org/chromium/chromium/src/+/master:out/android-Debug/gen/android_webview/common_java/generated_java/input_srcjars/org/chromium/android_webview/common/AwSwitches.java)).
+   [`AwSwitches.java`](https://source.chromium.org/chromium/chromium/src/+/main:out/android-Debug/gen/android_webview/common_java/generated_java/input_srcjars/org/chromium/android_webview/common/AwSwitches.java)).
  * C++ `base::Features` are defined in
    [`aw_features.cc`](/android_webview/common/aw_features.cc). We use
    [`java_cpp_features`](/docs/android_accessing_cpp_features_in_java.md) to
    automatically generate Java constants from the C++ Features (see
-   [`AwFeatures.java`](https://source.chromium.org/chromium/chromium/src/+/master:out/android-Debug/gen/android_webview/common_java/generated_java/input_srcjars/org/chromium/android_webview/common/AwFeatures.java)).
+   [`AwFeatures.java`](https://source.chromium.org/chromium/chromium/src/+/main:out/android-Debug/gen/android_webview/common_java/generated_java/input_srcjars/org/chromium/android_webview/common/AwFeatures.java)).
 
 ## Implementation
 

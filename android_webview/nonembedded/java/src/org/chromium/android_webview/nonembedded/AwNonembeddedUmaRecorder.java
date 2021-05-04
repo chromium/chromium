@@ -134,7 +134,7 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
 
     /**
      * Records a user action. Action names must be documented in {@code actions.xml}. See {@link
-     * https://source.chromium.org/chromium/chromium/src/+/master:tools/metrics/actions/README.md}
+     * https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/actions/README.md}
      *
      * @param name Name of the user action.
      * @param elapsedRealtimeMillis Value of {@link android.os.SystemClock.elapsedRealtime()} when

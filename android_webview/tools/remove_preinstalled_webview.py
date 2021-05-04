@@ -93,7 +93,7 @@ def RemovePreinstalledWebViews(device):
       # get lost.
       logging.error('Did you start the emulator with "-writable-system?"\n'
                     'See https://chromium.googlesource.com/chromium/src/+/'
-                    'master/docs/android_emulator.md#writable-system-partition'
+                    'main/docs/android_emulator.md#writable-system-partition'
                     '\n')
     raise
   device.SetWebViewFallbackLogic(False)  # Allow standalone WebView on N+

@@ -46,13 +46,13 @@ window.open("www.example.com");
 ## What happened under the hood
 
 1. When the parent WebView loads the web page and runs the JavaScript snippet,
-   [`AwWebContentsDelegate::AddNewContents`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/browser/aw_web_contents_delegate.h;drc=a418951d0e0939a779baf00842b77806ba2c2fda;l=44)
+   [`AwWebContentsDelegate::AddNewContents`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/aw_web_contents_delegate.h;l=43;drc=3abb32da2944ffe178dd66f404e7e1bb88a58ed0)
    will be called. The corresponding Java side
-   [`AwWebContentsDelegate#addNewContents`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegate.java;drc=c3df19e6cd403bebb24b7418b441c861332fbfda;l=29)
+   [`AwWebContentsDelegate#addNewContents`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegate.java;l=30;drc=a19051603849d7810b3569daf158aceb23aad1da)
    is called from the native.
 
 1. At the same time,
-   [`AwContents::SetPendingWebContentsForPopup`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/browser/aw_contents.cc;drc=f32bfd577cabaabfb08dfa06ce2317ac65cb8aab;l=1072)
+   [`AwContents::SetPendingWebContentsForPopup`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/aw_contents.cc;l=1099;drc=7776bbb38c4e394b5be085bc8c5bc02df5fa22dc)
    creates native popup AwContents with the given `WebContents` and stores it as
    `pending_contents_` in the parent `AwContents` object without Java
    counterpart created. Note that since `pending_contents_` can only store one
@@ -64,13 +64,13 @@ window.open("www.example.com");
 
 1. `WebViewContentsClientAdapter` has a handler that receives the message sent
    from `resultMsg.sendToTarget()`. It will trigger
-   [`WebViewChromium#completeWindowCreation`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java;drc=8988f749860f6299bab8d76a89e56134ccdf4bdb;l=268),
+   [`WebViewChromium#completeWindowCreation`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java;l=265;drc=da3bb54157d4603b9c820d6cfdf61859f804dfb2),
    then
-   [`AwContents#supplyContentsForPopup`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/java/src/org/chromium/android_webview/AwContents.java;drc=83df35b1f2713897ff958dab849d103438f4457a;l=1300)
+   [`AwContents#supplyContentsForPopup`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/java/src/org/chromium/android_webview/AwContents.java;l=1455;drc=4afe92995db1279895f8a40b69c374bc298d750f)
    is called on the parent WebView/AwContents.
 
 1. `AwContents#supplyContentsForPopup` calls
-   [`AwContents#receivePopupContents`](https://source.chromium.org/chromium/chromium/src/+/master:android_webview/java/src/org/chromium/android_webview/AwContents.java;drc=83df35b1f2713897ff958dab849d103438f4457a;l=1319)
+   [`AwContents#receivePopupContents`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/java/src/org/chromium/android_webview/AwContents.java;l=1475;drc=4afe92995db1279895f8a40b69c374bc298d750f)
    on the child WebView/AwContents. Child AwContents deletes the existing native
    AwContents from the child WebView/AwContents, and pairs it with the
    `pending_contents_` from the parent WebView/AwContents. In order to preserve

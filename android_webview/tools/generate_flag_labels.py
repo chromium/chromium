@@ -245,7 +245,7 @@ double-check this picked the correct labels for your new features (labels are
 case-sensitive!), add these to enums.xml, run `git-cl format`, and then follow
 these steps as a final check:
 
-https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/histograms/README.md#flag-histograms
+https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/histograms/README.md#flag-histograms
 
 If any labels were generated incorrectly, please edit this script and change
 KNOWN_MISTAKES.
