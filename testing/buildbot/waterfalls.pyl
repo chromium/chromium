@@ -5300,18 +5300,6 @@
           'gtest_tests': 'chromium_android_gtests',
         },
       },
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_and_gl_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-        ],
-      },
       'Linux ASan LSan Tests (1)': {
         'mixins': [
           'linux-bionic',

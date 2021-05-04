@@ -5417,21 +5417,6 @@ ci.memory_builder(
     tree_closing = False,
 )
 
-# TODO(crbug.com/1200574): Remove this builder after migration.
-ci.memory_builder(
-    name = "Linux ASan LSan (bionic)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|asan bionic",
-        short_name = "bio",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = "main",
-    os = os.LINUX_BIONIC,
-    ssd = True,
-    tree_closing = False,
-)
-
 ci.memory_builder(
     name = "Linux ASan LSan Builder",
     branch_selector = branches.STANDARD_MILESTONE,

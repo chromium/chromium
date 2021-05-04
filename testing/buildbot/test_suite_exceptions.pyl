@@ -575,14 +575,6 @@
           'shards': 10,
         },
       },
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
@@ -1119,14 +1111,6 @@
       'ToTFuchsiaOfficial',  # https://crbug.com/961457
     ],
     'modifications': {
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 5,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
@@ -1193,12 +1177,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
         ],
-      },
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        'swarming': {
-          'shards': 12,
-        },
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -1391,14 +1369,6 @@
   },
   'content_unittests': {
     'modifications': {
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/794372
@@ -1539,8 +1509,6 @@
   'gin_unittests': {
     'remove_from': [
       'ToTLinuxASan',  # https://crbug.com/831667
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)',
       'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
@@ -1555,22 +1523,6 @@
     'modifications': {
       # TODO(kbr): figure out a better way to specify blocks of
       # arguments like this for tests on multiple machines.
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:1cb3',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         'args': [
           '--use-gpu-in-tests',
@@ -1765,13 +1717,6 @@
       'Linux - Future (dbg)': {  # client.v8.chromium
         'swarming': {
           'shards': 3,
-        },
-      },
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are slow on the ASan trybot for some reason, crbug.com/794372
-        'swarming': {
-          'shards': 6,
         },
       },
       'Linux ASan LSan Tests (1)': {
@@ -2170,14 +2115,6 @@
       },
       'CrWinAsan(dll)': {
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
         'swarming': {
           'shards': 16,
         },
@@ -2650,12 +2587,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
     ],
     'modifications': {
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 4,
@@ -2889,14 +2820,6 @@
       'android-pie-arm64-rel',  # https://crbug.com/1010211
     ],
     'modifications': {
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/794372
@@ -3144,14 +3067,6 @@
       'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
-      # TODO(crbug.com/1200574): Remove after migration.
-      'Linux ASan LSan (bionic)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 5,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372

@@ -1355,16 +1355,6 @@ try_.chromium_linux_builder(
     os = os.LINUX_BIONIC,
 )
 
-# TODO(crbug.com/1200574): Remove after migration.
-try_.chromium_linux_builder(
-    name = "linux_chromium_asan_rel_ng_bionic",
-    branch_selector = branches.STANDARD_MILESTONE,
-    goma_jobs = goma.jobs.J150,
-    ssd = True,
-    os = os.LINUX_BIONIC,
-    main_list_view = "try",
-)
-
 try_.chromium_linux_builder(
     name = "linux_chromium_cfi_rel_ng",
     cores = 32,
