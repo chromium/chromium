@@ -9,6 +9,14 @@ Polymer({
 
   properties: {
     /**
+     * Supports dialog which is shown without buttons.
+     */
+    noButtons: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * If set, prevents lazy instantiation of the dialog.
      */
     noLazy: {

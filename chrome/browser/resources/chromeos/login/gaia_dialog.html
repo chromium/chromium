@@ -120,8 +120,7 @@
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
     <oobe-content-dialog role="dialog" id="gaiaDialog"
-        has-buttons$="[[!isSamlSsoVisible]]"
-        no-footer-padding no-lazy>
+        no-buttons$="[[isSamlSsoVisible]]" no-footer-padding no-lazy>
       <div slot="content" id="signin-frame-container"
           hideshadows$="[[isPopUpOverlayVisible_]]"
           class="flex layout vertical">
