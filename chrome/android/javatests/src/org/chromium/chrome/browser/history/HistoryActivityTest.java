@@ -186,7 +186,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedIn() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addTestAccountThenSignin();
 
         setHasOtherFormsOfBrowsingData(false);
 
