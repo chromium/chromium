@@ -72,6 +72,7 @@ generate_grd("build_grdp") {
 }
 
 ts_library("library") {
+  composite = true
   definitions = [
     "components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts",
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",

@@ -136,6 +136,7 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
+  composite = true
   in_files = [
     "js/cr/world.ts",
     "js/hello_world.ts",

@@ -37,6 +37,7 @@ def main(argv):
   parser.add_argument('--tsconfig_base')
   parser.add_argument('--in_files', nargs='*')
   parser.add_argument('--definitions', nargs='*')
+  parser.add_argument('--composite', action='store_true')
   args = parser.parse_args(argv)
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
@@ -53,6 +54,10 @@ def main(argv):
   tsconfig['compilerOptions']['tsBuildInfoFile'] = 'tsconfig.tsbuildinfo'
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
+
+  if args.composite:
+    tsconfig['compilerOptions']['composite'] = True
+    tsconfig['compilerOptions']['declaration'] = True
 
   tsconfig['files'] = []
   if args.in_files is not None:

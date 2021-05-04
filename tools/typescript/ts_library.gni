@@ -34,6 +34,11 @@ template("ts_library") {
       out_dir = invoker.out_dir
     }
 
+    composite = false
+    if (defined(invoker.composite)) {
+      composite = invoker.composite
+    }
+
     if (defined(in_files)) {
       outputs += [ "$target_gen_dir/tsconfig.manifest" ]
       foreach(_source, in_files) {
@@ -41,10 +46,11 @@ template("ts_library") {
         _dirname =
             rebase_path(get_path_info(_source, "gen_dir"), target_gen_dir)
         _filename = get_path_info(_source, "name")
-        outputs += [
-          "$out_dir/$_dirname/$_filename.js",
-          "$out_dir/$_dirname/$_filename.d.ts",
-        ]
+        outputs += [ "$out_dir/$_dirname/$_filename.js" ]
+
+        if (composite) {
+          outputs += [ "$out_dir/$_dirname/$_filename.d.ts" ]
+        }
       }
     }
 
@@ -84,6 +90,10 @@ template("ts_library") {
         "--tsconfig_base",
         rebase_path(tsconfig_base, target_gen_dir),
       ]
+    }
+
+    if (composite) {
+      args += [ "--composite" ]
     }
 
     if (defined(extra_deps)) {

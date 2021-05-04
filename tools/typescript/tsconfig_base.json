@@ -6,8 +6,7 @@
     "noEmitOnError": true,
     "pretty": true,
 
-    "composite": true,
-    "declaration": true,
+    "incremental": true,
 
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,

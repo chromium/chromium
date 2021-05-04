@@ -49,6 +49,7 @@ class TsLibraryTest(unittest.TestCase):
         'foo.ts',
         '--definitions',
         'legacy_file.d.ts',
+        '--composite',
     ])
     return gen_dir
 
@@ -94,7 +95,6 @@ class TsLibraryTest(unittest.TestCase):
 
   def _assert_project2_output(self, gen_dir):
     files = [
-        'bar.d.ts',
         'bar.js',
         'tsconfig.json',
         'tsconfig.manifest',
@@ -102,6 +102,9 @@ class TsLibraryTest(unittest.TestCase):
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
+
+    dts_file = 'bar.d.ts'
+    self.assertFalse(os.path.exists(os.path.join(gen_dir, dts_file)), dts_file)
 
   # Builds project3, which includes only definition files.
   def _build_project3(self):
@@ -116,6 +119,7 @@ class TsLibraryTest(unittest.TestCase):
         gen_dir,
         '--definitions',
         '../../tests/project3/baz.d.ts',
+        '--composite',
     ])
     return gen_dir
 
