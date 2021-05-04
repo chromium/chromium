@@ -4,8 +4,19 @@
 
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+
+namespace {
+
+void RecordNumParsingAttemptsMetrics(int num_attempts) {
+  base::UmaHistogramCounts1000(
+      "Nearby.Connections.InstantMessaging.ReceiveExpress.NumParsingAttempts",
+      num_attempts);
+}
+
+}  // namespace
 
 StreamParser::StreamParser(
     base::RepeatingCallback<void(const std::string& message)> listener,
@@ -43,19 +54,25 @@ StreamParser::GetNextMessage() {
   // individual messages sent by WebRTC are small, so check that first to
   // speed up parsing.
   chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body;
+  ++parsing_counter_for_metrics_;
   if (stream_body.ParseFromString(data_)) {
     data_.clear();
+    RecordNumParsingAttemptsMetrics(parsing_counter_for_metrics_);
+    parsing_counter_for_metrics_ = 0;
     return stream_body;
   }
 
   int end_pos = 1;
   int size = data_.size();
   while (end_pos < size) {
+    ++parsing_counter_for_metrics_;
     // TODO(crbug.com/1123169) - Optimize this function to use header
     // information to figure out the start and end of proto instead of checking
     // for every length.
     if (stream_body.ParseFromArray(data_.data(), end_pos)) {
       data_.erase(data_.begin(), data_.begin() + end_pos);
+      RecordNumParsingAttemptsMetrics(parsing_counter_for_metrics_);
+      parsing_counter_for_metrics_ = 0;
       return stream_body;
     }
     end_pos++;
