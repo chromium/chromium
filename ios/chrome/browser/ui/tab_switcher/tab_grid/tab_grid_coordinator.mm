@@ -858,6 +858,14 @@
   [readingListAdder addToReadingList:command];
 }
 
+- (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {
+  if (incognito) {
+    [self.incognitoTabsMediator closeItemWithID:identifier];
+  } else {
+    [self.regularTabsMediator closeItemWithID:identifier];
+  }
+}
+
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
   [self.baseViewController.remoteTabsViewController
       removeSessionAtTableSectionWithIdentifier:sectionIdentifier];

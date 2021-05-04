@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
@@ -79,6 +81,17 @@
               addObject:[actionFactory actionToAddToReadingListWithBlock:^{
                 [weakSelf.contextMenuDelegate addToReadingListURL:item.URL
                                                             title:item.title];
+              }]];
+        }
+        if ([weakSelf.contextMenuDelegate
+                respondsToSelector:@selector(closeTabWithIdentifier:
+                                                          incognito:)]) {
+          [menuElements
+              addObject:[actionFactory actionToCloseTabWithBlock:^{
+                [weakSelf.contextMenuDelegate
+                    closeTabWithIdentifier:gridCell.itemIdentifier
+                                 incognito:weakSelf.browser->GetBrowserState()
+                                               ->IsOffTheRecord()];
               }]];
         }
         return [UIMenu menuWithTitle:@"" children:menuElements];

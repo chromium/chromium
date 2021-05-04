@@ -269,6 +269,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
++ (id<GREYMatcher>)closeTabMenuButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)],
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)forwardButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_ACCNAME_FORWARD)];

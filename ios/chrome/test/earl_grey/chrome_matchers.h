@@ -87,6 +87,9 @@ id<GREYMatcher> NavigationBarCancelButton();
 // Returns matcher for a close button.
 id<GREYMatcher> CloseButton();
 
+// Returns matcher for close tab menu button.
+id<GREYMatcher> CloseTabMenuButton();
+
 // Matcher for the navigate forward button.
 id<GREYMatcher> ForwardButton();
 

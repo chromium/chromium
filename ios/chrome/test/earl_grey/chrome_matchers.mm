@@ -178,6 +178,10 @@ id<GREYMatcher> AddToReadingListButton() {
   return [ChromeMatchersAppInterface addToReadingListButton];
 }
 
+id<GREYMatcher> CloseTabMenuButton() {
+  return [ChromeMatchersAppInterface closeTabMenuButton];
+}
+
 id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
                                    BOOL is_toggled_on) {
   return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier

@@ -34,6 +34,9 @@ class DistantSession;
 // Tells the delegate to add |URL| and |title| to the reading list.
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
 
+// Tells the delegate to close the tab with the item identifier |identifier|.
+- (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_TAB_CONTEXT_MENU_DELEGATE_H_

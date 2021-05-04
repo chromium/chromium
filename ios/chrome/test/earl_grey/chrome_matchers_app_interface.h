@@ -80,6 +80,9 @@
 // Returns matcher for a close button.
 + (id<GREYMatcher>)closeButton;
 
+// Returns matcher for close tab context menu button.
++ (id<GREYMatcher>)closeTabMenuButton;
+
 // Matcher for the navigate forward button.
 + (id<GREYMatcher>)forwardButton;
 

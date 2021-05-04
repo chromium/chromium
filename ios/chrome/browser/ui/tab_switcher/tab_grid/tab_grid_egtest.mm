@@ -32,6 +32,7 @@ using chrome_test_util::LongPressCellAndDragToOffsetOf;
 using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
 using chrome_test_util::AddToReadingListButton;
+using chrome_test_util::CloseTabMenuButton;
 
 namespace {
 char kURL1[] = "http://firstURL";
@@ -59,6 +60,11 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
+id<GREYMatcher> TabWithTitle(NSString* title) {
+  return grey_allOf(grey_accessibilityLabel(title), grey_sufficientlyVisible(),
+                    nil);
+}
+
 // Identifer for cell at given |index| in the tab grid.
 NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
@@ -84,7 +90,8 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   // ensureAppLaunchedWithConfiguration for each test.
   if ([self isRunningTest:@selector(testTabGridItemContextMenuShare)] ||
       [self isRunningTest:@selector
-            (testTabGridItemContextMenuAddToReadingList)]) {
+            (testTabGridItemContextMenuAddToReadingList)] ||
+      [self isRunningTest:@selector(testTabGridItemContextCloseTab)]) {
     config.features_enabled.push_back(kTabGridContextMenu);
   }
   return config;
@@ -357,6 +364,35 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kSnackbarDisappearanceTimeout, wait_for_disappearance),
              @"Snackbar did not disappear.");
+}
+
+// Tests the Share action on a tab grid item's context menu.
+- (void)testTabGridItemContextCloseTab {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Tab Grid context menu only supported on iOS 13 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Close Tab.
+  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle([NSString
+                                          stringWithUTF8String:kTitle1])]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridRegularTabsEmptyStateView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark -
