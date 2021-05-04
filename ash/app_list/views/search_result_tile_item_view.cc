@@ -18,6 +18,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -151,6 +152,7 @@ void SearchResultTileItemView::OnResultChanged() {
     return;
 
   SetTitle(result()->title());
+  SetTitleTags(result()->title_tags());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
 
@@ -312,6 +314,7 @@ gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
 void SearchResultTileItemView::OnMetadataChanged() {
   SetIcon(result()->icon());
   SetTitle(result()->title());
+  SetTitleTags(result()->title_tags());
   SetBadgeIcon(result()->badge_icon(), result()->use_badge_icon_background());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
@@ -452,6 +455,17 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
 
 void SearchResultTileItemView::SetTitle(const std::u16string& title) {
   title_->SetText(title);
+}
+
+void SearchResultTileItemView::SetTitleTags(const SearchResultTags& tags) {
+  if (!app_list_features::IsLauncherQueryHighlightingEnabled())
+    return;
+
+  for (const auto& tag : tags) {
+    if (tag.styles & SearchResult::Tag::MATCH) {
+      title_->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
+    }
+  }
 }
 
 void SearchResultTileItemView::SetRating(float rating) {

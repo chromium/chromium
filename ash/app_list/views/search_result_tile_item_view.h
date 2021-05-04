@@ -11,6 +11,7 @@
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -89,6 +90,7 @@ class ASH_EXPORT SearchResultTileItemView
   void SetBadgeIcon(const ui::ImageModel& badge_icon,
                     bool use_badge_icon_background);
   void SetTitle(const std::u16string& title);
+  void SetTitleTags(const SearchResultTags& tags);
   void SetRating(float rating);
   void SetPrice(const std::u16string& price);
 
@@ -111,7 +113,7 @@ class ASH_EXPORT SearchResultTileItemView
   gfx::Size CalculatePreferredSize() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
-  AppListViewDelegate* const view_delegate_;           // Owned by AppListView.
+  AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 
   views::ImageView* icon_ = nullptr;         // Owned by views hierarchy.
   views::ImageView* badge_ = nullptr;        // Owned by views hierarchy.
