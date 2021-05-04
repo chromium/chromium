@@ -64,6 +64,10 @@ import org.chromium.url.Origin;
     private static final boolean IS_GOOGLE_REFERRER = true;
 
     class ExternalNavigationDelegateImplForTesting extends ExternalNavigationDelegateImpl {
+        private boolean mWasAutofillAssistantStarted;
+        private @IntentToAutofillAllowingAppResult int mAutofillAssistantAppOverrideResult;
+        private Function<Intent, Boolean> mCanExternalAppHandleIntent;
+
         public ExternalNavigationDelegateImplForTesting(Tab activityTab) {
             super(activityTab);
         }
@@ -104,10 +108,6 @@ import org.chromium.url.Origin;
                     params, intent, mCanExternalAppHandleIntent);
             return handleWithAutofillAssistant(params, intent, fallbackUrl, isGoogleReferrer);
         }
-
-        private boolean mWasAutofillAssistantStarted;
-        private @IntentToAutofillAllowingAppResult int mAutofillAssistantAppOverrideResult;
-        private Function<Intent, Boolean> mCanExternalAppHandleIntent;
     }
 
     private static class MockOrigin extends Origin {};
