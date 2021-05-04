@@ -1142,7 +1142,7 @@ bool TranslateManager::MaterializeDecision(
                   GetLanguageState()->InTranslateNavigation()
                       ? TranslationType::kAutomaticTranslationByLink
                       : TranslationType::kAutomaticTranslationByPref);
-    return false;
+    return true;
   }
 
   if (decision.can_auto_href_translate()) {
@@ -1152,7 +1152,7 @@ bool TranslateManager::MaterializeDecision(
                       : TranslationType::kAutomaticTranslationByPref);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kAutomaticTranslationByHref);
-    return false;
+    return true;
   }
 
   // Auto-translate didn't happen, so check if the UI should be shown. It must
