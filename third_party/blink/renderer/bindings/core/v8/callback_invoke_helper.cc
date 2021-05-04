@@ -73,6 +73,12 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
       function_ = callback_->CallbackObject().template As<v8::Function>();
     } else {
       // step 10. If ! IsCallable(O) is false, then:
+      v8::MicrotaskQueue* microtask_queue =
+          ToMicrotaskQueue(callback_->CallbackRelevantScriptState());
+      v8::MicrotasksScope microtasks_scope(callback_->GetIsolate(),
+                                           microtask_queue,
+                                           v8::MicrotasksScope::kRunMicrotasks);
+
       v8::Local<v8::Value> value;
       if (!callback_->CallbackObject()
                ->Get(callback_->CallbackRelevantScriptState()->GetContext(),
