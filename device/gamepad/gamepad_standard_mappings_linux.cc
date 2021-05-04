@@ -606,7 +606,7 @@ void MapperSteelSeriesStratusXLUsb(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperSteelSeriesStratusXLBt(const Gamepad& input, Gamepad* mapped) {
+void MapperSteelSeriesStratusBt(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
@@ -616,7 +616,7 @@ void MapperSteelSeriesStratusXLBt(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] = input.buttons[7];
   mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = AxisToButton(input.axes[5]);
   mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = AxisToButton(input.axes[4]);
-  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = NullButton();
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[10];
   mapped->buttons[BUTTON_INDEX_START] = input.buttons[11];
   mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[13];
   mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[14];
@@ -626,9 +626,9 @@ void MapperSteelSeriesStratusXLBt(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
       AxisPositiveAsButton(input.axes[6]);
   mapped->buttons[BUTTON_INDEX_META] = NullButton();
-  // The BACK_SELECT and META button currently aren't mappable since they are
-  // handled separately as key events, causing browser HOME and BACK actions. If
-  // this is fixed, they should be added here.
+  // The META button currently isn't mappable since it's handled separately as
+  // key events, causing a browser HOME action. If this is fixed, it should be
+  // added here.
 
   mapped->axes[AXIS_INDEX_LEFT_STICK_X] = input.axes[0];
   mapped->axes[AXIS_INDEX_LEFT_STICK_Y] = input.axes[1];
@@ -908,7 +908,9 @@ constexpr struct MappingData {
     // SteelSeries Stratus XL USB
     {GamepadId::kSteelSeriesProduct1418, MapperSteelSeriesStratusXLUsb},
     // SteelSeries Stratus XL Bluetooth
-    {GamepadId::kSteelSeriesBtProduct1419, MapperSteelSeriesStratusXLBt},
+    {GamepadId::kSteelSeriesBtProduct1419, MapperSteelSeriesStratusBt},
+    // SteelSeries Stratus Duo Bluetooth
+    {GamepadId::kSteelSeriesBtProduct1431, MapperSteelSeriesStratusBt},
     // Razer Serval Controller
     {GamepadId::kRazer1532Product0900, MapperRazerServal},
     // ADT-1 Controller

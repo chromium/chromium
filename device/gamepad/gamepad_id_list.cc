@@ -38,6 +38,7 @@ constexpr struct GamepadInfo {
     {0x0111, 0x1417, kXInputTypeNone},
     {0x0111, 0x1419, kXInputTypeNone},
     {0x0111, 0x1420, kXInputTypeNone},
+    {0x0111, 0x1431, kXInputTypeNone},
     {0x0113, 0xf900, kXInputTypeNone},
     // Creative Technology, Ltd
     {0x041e, 0x1003, kXInputTypeNone},
@@ -397,6 +398,8 @@ constexpr struct GamepadInfo {
     {0x1038, 0x1412, kXInputTypeNone},
     {0x1038, 0x1418, kXInputTypeNone},
     {0x1038, 0x1420, kXInputTypeNone},
+    {0x1038, 0x1430, kXInputTypeXbox360},
+    {0x1038, 0x1431, kXInputTypeXbox360},
     {0x1080, 0x0009, kXInputTypeNone},
     // Betop
     {0x11c0, 0x5213, kXInputTypeNone},
