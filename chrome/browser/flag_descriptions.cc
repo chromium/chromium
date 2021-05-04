@@ -4278,6 +4278,12 @@ const char kEnableHeuristicStylusPalmRejectionDescription[] =
     "Enable additional heuristic palm rejection logic when interacting with "
     "stylus usage. Not intended for all devices.";
 
+const char kEnableInputNoiseCancellationUiName[] =
+    "Enable Input Noise Cancellation UI.";
+const char kEnableInputNoiseCancellationUiDescription[] =
+    "Enable toggling input noise cancellation through the Quick Settings. By "
+    "default, this flag is disabled.";
+
 const char kEnableLauncherSearchNormalizationName[] =
     "Enable normalization of launcher search results";
 const char kEnableLauncherSearchNormalizationDescription[] =

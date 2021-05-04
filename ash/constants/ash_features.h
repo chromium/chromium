@@ -138,6 +138,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableNetworkingInDiagnosticsApp;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableInputNoiseCancellationUi;
 extern const base::Feature kEnableOobeChromeVoxHint;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnablePciguardUi;
@@ -371,6 +373,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKerberosSettingsSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNetworkingInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewOobeLayoutEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeScreensPriorityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();

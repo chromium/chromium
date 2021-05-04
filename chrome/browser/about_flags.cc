@@ -7246,6 +7246,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherQueryHighlightingName,
      flag_descriptions::kLauncherQueryHighlightingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kLauncherQueryHighlighting)},
+
+    {"enable-input-noise-cancellation-ui",
+     flag_descriptions::kEnableInputNoiseCancellationUiName,
+     flag_descriptions::kEnableInputNoiseCancellationUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnableInputNoiseCancellationUi)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"update-history-entry-points-in-incognito",

@@ -1959,6 +1959,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "enable-input-noise-cancellation-ui",
+    "owners": [ "swifton@google.com", "cros-peripherals@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-instant-start",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 100

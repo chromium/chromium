@@ -453,6 +453,10 @@ const base::Feature kVirtualKeyboardFloatingDefault{
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables noise cancellation UI toggle.
+const base::Feature kEnableInputNoiseCancellationUi{
+    "EnableInputNoiseCancellationUi", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Kerberos Section in ChromeOS settings. When disabled, Kerberos
 // settings will stay under People Section. https://crbug.com/983041
 const base::Feature kKerberosSettingsSection{"KerberosSettingsSection",
@@ -828,6 +832,10 @@ bool IsFamilyLinkOnSchoolDeviceEnabled() {
 
 bool IsGaiaReauthEndpointEnabled() {
   return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
+}
+
+bool IsInputNoiseCancellationUiEnabled() {
+  return base::FeatureList::IsEnabled(kEnableInputNoiseCancellationUi);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
