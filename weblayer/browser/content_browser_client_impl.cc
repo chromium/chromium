@@ -130,6 +130,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/resource/resource_bundle_android.h"
+#include "weblayer/browser/android/metrics/weblayer_metrics_navigation_throttle.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/android_descriptors.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -770,6 +771,11 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
       if (auto_reload_throttle)
         throttles.push_back(std::move(auto_reload_throttle));
     }
+
+#if defined(OS_ANDROID)
+    throttles.push_back(
+        std::make_unique<WebLayerMetricsNavigationThrottle>(handle));
+#endif
 
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
