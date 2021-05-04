@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 

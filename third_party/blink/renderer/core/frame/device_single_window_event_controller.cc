@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/device_single_window_event_controller.h"
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 

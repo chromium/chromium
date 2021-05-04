@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"

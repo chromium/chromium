@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {

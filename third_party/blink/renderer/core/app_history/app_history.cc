@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_options.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 using ui::mojom::ImeTextSpanThickness;
 using ui::mojom::ImeTextSpanUnderlineStyle;

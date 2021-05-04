@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 

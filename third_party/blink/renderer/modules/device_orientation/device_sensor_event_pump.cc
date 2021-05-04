@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"
+
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 

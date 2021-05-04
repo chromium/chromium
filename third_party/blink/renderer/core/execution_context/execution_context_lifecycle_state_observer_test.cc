@@ -31,9 +31,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 
 #include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
 using testing::AnyNumber;

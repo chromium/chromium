@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
-#include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
-#include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
-#include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
-
 #include <memory>
 #include <tuple>
 
@@ -25,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -37,6 +33,10 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
+#include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
+#include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"

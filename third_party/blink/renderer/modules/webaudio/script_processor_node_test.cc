@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
+
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 

@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_client.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"

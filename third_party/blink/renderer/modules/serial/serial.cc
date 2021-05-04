@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"

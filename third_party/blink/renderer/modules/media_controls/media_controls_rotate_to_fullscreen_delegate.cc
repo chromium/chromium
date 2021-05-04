@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"

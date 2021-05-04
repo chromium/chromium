@@ -27,6 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_DOM_WINDOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_DOM_WINDOW_H_
 
+#include <memory>
+
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -34,18 +36,19 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
-#include <memory>
 
 namespace blink {
 
@@ -63,6 +66,7 @@ class External;
 class FrameConsole;
 class History;
 class IdleRequestOptions;
+class LocalFrame;
 class MediaQueryList;
 class MessageEvent;
 class Modulator;
@@ -118,7 +122,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return token_;
   }
 
-  LocalFrame* GetFrame() const { return To<LocalFrame>(DOMWindow::GetFrame()); }
+  LocalFrame* GetFrame() const;
 
   ScriptController& GetScriptController() const { return *script_controller_; }
 

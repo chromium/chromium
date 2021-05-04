@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
