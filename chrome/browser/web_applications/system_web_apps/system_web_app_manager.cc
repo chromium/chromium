@@ -66,7 +66,7 @@
 #include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
-#include "chrome/browser/ash/web_applications/media_web_app_info.h"
+#include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/ash/web_applications/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"

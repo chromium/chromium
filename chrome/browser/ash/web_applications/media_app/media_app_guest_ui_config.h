@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_GUEST_UI_CONFIG_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_GUEST_UI_CONFIG_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 
 #include "chromeos/components/media_app_ui/media_app_guest_ui.h"
 #include "ui/webui/webui_config.h"
@@ -37,4 +37,4 @@ class MediaAppGuestUIConfig : public ui::WebUIConfig {
       content::WebUI* web_ui) override;
 };
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_GUEST_UI_CONFIG_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_

@@ -21,7 +21,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/web_applications/media_app_guest_ui_config.h"
+#include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
 #if !defined(OFFICIAL_BUILD)

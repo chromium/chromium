@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/media_app_guest_ui_config.h"
+#include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 
 #include <memory>
 

@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   constexpr char clickAnnotate[] = R"(
     (async () => {
       const appBar = await waitForNode('backlight-app-bar', ['backlight-app']);
-      const annotateButton = appBar.shadowRoot.querySelector('#icon-button-3709949292');
+      const annotateButton =
+          appBar.shadowRoot.querySelector('#icon-button-3709949292');
       annotateButton.click();
       return true;
     })();
@@ -275,7 +276,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   // Note: The loading of ink engine elements can be async.
   constexpr char checkInkLoaded[] = R"(
     (async () => {
-      const inkEngineCanvas = await waitForNode('canvas#ink-engine[width]', ['backlight-image-handler']);
+      const inkEngineCanvas = await waitForNode(
+          'canvas#ink-engine[width]', ['backlight-image-handler']);
       return !!inkEngineCanvas &&
         !!inkEngineCanvas.getAttribute('height') &&
         inkEngineCanvas.getAttribute('height') !== '0' &&
