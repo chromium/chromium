@@ -1305,12 +1305,6 @@ void ApplyIconEffects(IconEffects icon_effects,
   extensions::ChromeAppIcon::ApplyEffects(size_hint_in_dip, resize_function,
                                           app_launchable, from_bookmark,
                                           badge_type, image_skia);
-
-  if (icon_effects & IconEffects::kPendingLocalLaunch) {
-    color_utils::HSL shift = {-1, 0, 0.6};
-    *image_skia =
-        gfx::ImageSkiaOperations::CreateHSLShiftedImage(*image_skia, shift);
-  }
 }
 
 void LoadIconFromExtension(apps::mojom::IconType icon_type,

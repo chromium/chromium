@@ -50,9 +50,6 @@ enum IconEffects : uint32_t {
   kRoundCorners = 0x08,  // Bookmark apps get round corners.
   kPaused = 0x10,  // Paused apps are grayed out and badged to indicate they
                    // cannot be launched.
-  kPendingLocalLaunch = 0x20,  // Apps that are installed through sync, but
-                               // have not been launched locally yet. They
-                               // should appear gray until they are launched.
   kCrOsStandardBackground =
       0x40,                   // Add the white background to the standard icon.
   kCrOsStandardMask = 0x80,   // Apply the mask to the standard icon.
