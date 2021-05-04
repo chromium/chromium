@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -1063,7 +1064,11 @@ void BrowserCommandController::InitCommandState() {
 #endif
       web_app::AppBrowserController::IsWebApp(browser_);
   // Hosted app browser commands.
-  command_updater_.UpdateCommandEnabled(IDC_COPY_URL, is_web_app_or_custom_tab);
+  const bool enable_copy_url =
+      is_web_app_or_custom_tab ||
+      base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox) ||
+      base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu);
+  command_updater_.UpdateCommandEnabled(IDC_COPY_URL, enable_copy_url);
   command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_CHROME,
                                         is_web_app_or_custom_tab);
   command_updater_.UpdateCommandEnabled(IDC_SITE_SETTINGS,
