@@ -896,7 +896,10 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 
 void HWNDMessageHandler::SetFullscreen(bool fullscreen) {
   background_fullscreen_hack_ = false;
+  auto ref = msg_handler_weak_factory_.GetWeakPtr();
   fullscreen_handler()->SetFullscreen(fullscreen);
+  if (!ref)
+    return;
 
   // Add the fullscreen window to the fullscreen window map which is used to
   // handle window activations.
@@ -1400,8 +1403,10 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
   // Ignore size changes due to fullscreen windows losing activation.
   if (background_fullscreen_hack_ && !sent_window_size_changing_)
     return;
-  gfx::Size s = GetClientAreaBounds().size();
-  delegate_->HandleClientSizeChanged(s);
+  auto ref = msg_handler_weak_factory_.GetWeakPtr();
+  delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+  if (!ref)
+    return;
 
   current_window_size_message_++;
   sent_window_size_changing_ = false;
@@ -2930,8 +2935,11 @@ void HWNDMessageHandler::OnWindowPosChanging(WINDOWPOS* window_pos) {
 void HWNDMessageHandler::OnWindowPosChanged(WINDOWPOS* window_pos) {
   TRACE_EVENT0("ui", "HWNDMessageHandler::OnWindowPosChanged");
 
+  base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   if (DidClientAreaSizeChange(window_pos))
     ClientAreaSizeChanged();
+  if (!ref)
+    return;
   if (window_pos->flags & SWP_FRAMECHANGED)
     SetDwmFrameExtension(DwmFrameState::kOn);
   if (window_pos->flags & SWP_SHOWWINDOW) {
