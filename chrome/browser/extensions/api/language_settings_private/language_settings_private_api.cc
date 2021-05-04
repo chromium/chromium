@@ -68,7 +68,7 @@ using chromeos::input_method::InputMethodManager;
 using chromeos::input_method::InputMethodUtil;
 
 // Number of IMEs that are needed to automatically enable the IME menu option.
-const size_t NUM_IMES_TO_AUTO_ENABLE_IME_MENU = 2;
+const size_t kNumImesToAutoEnableImeMenu = 2;
 
 // Returns the set of IDs of all enabled IMEs.
 std::unordered_set<std::string> GetEnabledIMEs(
@@ -870,7 +870,7 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
     std::unordered_set<std::string> other_input_method_set(
         GetIMEsFromPref(prefs, other_ime_list_pref_name));
     if (input_method_set.size() + other_input_method_set.size() ==
-        NUM_IMES_TO_AUTO_ENABLE_IME_MENU) {
+        kNumImesToAutoEnableImeMenu) {
       prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
     }
   }
