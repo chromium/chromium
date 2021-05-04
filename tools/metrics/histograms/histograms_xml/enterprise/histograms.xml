@@ -216,8 +216,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2021-06-16">
-  <owner>anthonyvd@google.com</owner>
+    enum="EnterprisePolicyInvalidations" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events for counting CBCM policy invalidations received with and without
@@ -228,8 +228,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
-    expires_after="2021-06-16">
-  <owner>anthonyvd@google.com</owner>
+    expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing CBCM policy when invalidations
@@ -833,8 +833,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2021-06-16">
-  <owner>anthonyvd@google.com</owner>
+    enum="EnterprisePolicyInvalidations" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
     Events for counting CBCM policy invalidations received with and without
@@ -847,8 +847,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.CBCMPolicyRefresh"
-    enum="EnterprisePolicyRefresh" expires_after="2021-06-16">
-  <owner>anthonyvd@google.com</owner>
+    enum="EnterprisePolicyRefresh" expires_after="2021-11-01">
+  <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing CBCM policy when invalidations
