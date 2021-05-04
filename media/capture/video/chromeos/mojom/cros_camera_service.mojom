@@ -9,6 +9,7 @@ module cros.mojom;
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/capture/video/chromeos/mojom/camera_common.mojom";
+import "media/capture/video/chromeos/mojom/cros_camera_client.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // CameraClientType indicates the type of a CameraHalClient.
@@ -124,18 +125,4 @@ interface CameraHalServerCallbacks {
   // current status when the callbacks are registered.
   [MinVersion=5]
   CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
-};
-
-// The CrOS camera HAL v3 Mojo client.
-//
-// Next method ID: 1
-interface CameraHalClient {
-  // A caller calls SetUpChannel to dispatch the established Mojo channel
-  // |camera_module| to the client.  The CameraHalClient can create a Mojo
-  // channel to the camera HAL v3 adapter process with |camera_module|.
-  // SetUpChannel may be called multiple times.  In cases such as the
-  // CameraHalServer which holds the original Mojo channel crashes,
-  // CameraHalDispatcher will call SetUpChannel again once a new CameraHalServer
-  // reconnects.
-  SetUpChannel@0(pending_remote<CameraModule> camera_module);
 };

@@ -6,7 +6,7 @@
 
 module arc.mojom;
 
-import "media/capture/video/chromeos/mojom/cros_camera_service.mojom";
+import "media/capture/video/chromeos/mojom/cros_camera_client.mojom";
 
 struct CameraDeviceInfo {
   string device_path@0;

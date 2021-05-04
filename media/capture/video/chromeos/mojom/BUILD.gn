@@ -11,6 +11,7 @@ mojom("cros_camera") {
     "camera_common.mojom",
     "camera_metadata.mojom",
     "camera_metadata_tags.mojom",
+    "cros_camera_client.mojom",
     "cros_camera_service.mojom",
   ]
 
