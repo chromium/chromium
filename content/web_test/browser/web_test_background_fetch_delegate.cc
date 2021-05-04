@@ -48,8 +48,7 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
   // download::BlobContextGetterFactory implementation.
   void RetrieveBlobContextGetter(
       download::BlobContextGetterCallback callback) override {
-    auto blob_context_getter =
-        content::BrowserContext::GetBlobStorageContext(browser_context_);
+    auto blob_context_getter = browser_context_->GetBlobStorageContext();
     std::move(callback).Run(blob_context_getter);
   }
 

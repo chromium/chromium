@@ -117,8 +117,7 @@ bool WebBundleInterceptorForHistoryNavigationFromNetwork::
   DCHECK(browser_context);
   reader_ = base::MakeRefCounted<WebBundleReader>(
       std::move(source_), length_hint, std::move(*response_body),
-      url_loader->Unbind(),
-      BrowserContext::GetBlobStorageContext(browser_context));
+      url_loader->Unbind(), browser_context->GetBlobStorageContext());
   reader_->ReadMetadata(base::BindOnce(
       &WebBundleInterceptorForHistoryNavigationFromNetwork::OnMetadataReady,
       weak_factory_.GetWeakPtr(), request));

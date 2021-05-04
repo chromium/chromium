@@ -99,8 +99,7 @@ class DownloadBlobContextGetterFactory
   // download::BlobContextGetterFactory:
   void RetrieveBlobContextGetter(
       download::BlobContextGetterCallback callback) override {
-    std::move(callback).Run(
-        content::BrowserContext::GetBlobStorageContext(browser_context_));
+    std::move(callback).Run(browser_context_->GetBlobStorageContext());
   }
 
   content::BrowserContext* browser_context_;

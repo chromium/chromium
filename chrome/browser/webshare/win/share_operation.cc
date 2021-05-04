@@ -535,8 +535,7 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
       // target app has finished fully processing the shared content this could
       // be updated to be owned/maintained by this ShareOperation instance.
       auto operation = base::MakeRefCounted<OutputStreamWriteOperation>(
-          content::BrowserContext::GetBlobStorageContext(
-              web_contents()->GetBrowserContext()),
+          web_contents()->GetBrowserContext()->GetBlobStorageContext(),
           file_bytes_shared, file->blob->uuid);
       auto name_h = base::win::ScopedHString::Create(file->name);
       auto raw_data_requested_callback =

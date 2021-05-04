@@ -198,15 +198,13 @@ StoragePartition* BrowserContext::GetDefaultStoragePartition() {
   return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
 }
 
-// static
-void BrowserContext::CreateMemoryBackedBlob(BrowserContext* self,
-                                            base::span<const uint8_t> data,
+void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
                                             const std::string& content_type,
                                             BlobCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChromeBlobStorageContext* blob_context =
-      ChromeBlobStorageContext::GetFor(self);
+      ChromeBlobStorageContext::GetFor(this);
   GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ChromeBlobStorageContext::CreateMemoryBackedBlob,
@@ -214,22 +212,18 @@ void BrowserContext::CreateMemoryBackedBlob(BrowserContext* self,
       std::move(callback));
 }
 
-// static
-BrowserContext::BlobContextGetter BrowserContext::GetBlobStorageContext(
-    BrowserContext* self) {
+BrowserContext::BlobContextGetter BrowserContext::GetBlobStorageContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context =
-      ChromeBlobStorageContext::GetFor(self);
+      ChromeBlobStorageContext::GetFor(this);
   return base::BindRepeating(&BlobStorageContextGetterForBrowser,
                              chrome_blob_context);
 }
 
-// static
 mojo::PendingRemote<blink::mojom::Blob> BrowserContext::GetBlobRemote(
-    BrowserContext* self,
     const std::string& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ChromeBlobStorageContext::GetBlobRemote(self, uuid);
+  return ChromeBlobStorageContext::GetBlobRemote(this, uuid);
 }
 
 // static

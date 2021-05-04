@@ -215,8 +215,8 @@ std::unique_ptr<content::BlobHandle> CreateMemoryBackedBlob(
     const std::string& content_type) {
   std::unique_ptr<content::BlobHandle> result;
   base::RunLoop run_loop;
-  content::BrowserContext::CreateMemoryBackedBlob(
-      browser_context, base::as_bytes(base::make_span(content)), content_type,
+  browser_context->CreateMemoryBackedBlob(
+      base::as_bytes(base::make_span(content)), content_type,
       base::BindOnce(
           [](std::unique_ptr<content::BlobHandle>* out_blob,
              base::OnceClosure closure,

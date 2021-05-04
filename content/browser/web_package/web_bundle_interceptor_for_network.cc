@@ -92,8 +92,7 @@ bool WebBundleInterceptorForNetwork::MaybeCreateLoaderForResponse(
 
   reader_ = base::MakeRefCounted<WebBundleReader>(
       std::move(source), length_hint, std::move(*response_body),
-      url_loader->Unbind(),
-      BrowserContext::GetBlobStorageContext(browser_context_));
+      url_loader->Unbind(), browser_context_->GetBlobStorageContext());
   reader_->ReadMetadata(
       base::BindOnce(&WebBundleInterceptorForNetwork::OnMetadataReady,
                      weak_factory_.GetWeakPtr(), request));

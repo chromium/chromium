@@ -171,13 +171,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // This method should be called on UI thread and calls back on UI thread
   // as well. Note that retrieving a blob ptr out of BlobHandle can only be
   // done on IO. |callback| returns a nullptr on failure.
-  static void CreateMemoryBackedBlob(BrowserContext* self,
-                                     base::span<const uint8_t> data,
-                                     const std::string& content_type,
-                                     BlobCallback callback);
+  void CreateMemoryBackedBlob(base::span<const uint8_t> data,
+                              const std::string& content_type,
+                              BlobCallback callback);
 
   // Get a BlobStorageContext getter that needs to run on IO thread.
-  static BlobContextGetter GetBlobStorageContext(BrowserContext* self);
+  BlobContextGetter GetBlobStorageContext();
 
   // Returns a mojom::mojo::PendingRemote<blink::mojom::Blob> for a specific
   // blob. If no blob exists with the given UUID, the
@@ -186,8 +185,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // TODO(mek): Blob UUIDs should be entirely internal to the blob system, so
   // eliminate this method in favor of just passing around the
   // mojo::PendingRemote<blink::mojom::Blob> directly.
-  static mojo::PendingRemote<blink::mojom::Blob> GetBlobRemote(
-      BrowserContext* self,
+  mojo::PendingRemote<blink::mojom::Blob> GetBlobRemote(
       const std::string& uuid);
 
   // Delivers a push message with |data| to the Service Worker identified by

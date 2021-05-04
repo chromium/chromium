@@ -111,8 +111,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     blob->content_type = content_type;
 
     base::RunLoop run_loop;
-    auto blob_context_getter =
-        content::BrowserContext::GetBlobStorageContext(browser_context());
+    auto blob_context_getter = browser_context()->GetBlobStorageContext();
     content::GetIOThreadTaskRunner({})->PostTaskAndReply(
         FROM_HERE,
         base::BindLambdaForTesting(

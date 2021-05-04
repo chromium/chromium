@@ -42,8 +42,7 @@ void BlobReader::Read(content::BrowserContext* browser_context,
                       BlobReader::BlobReadCallback callback,
                       base::Optional<BlobReader::Range> range) {
   std::unique_ptr<BlobReader> reader(new BlobReader(
-      content::BrowserContext::GetBlobRemote(browser_context, blob_uuid),
-      std::move(range)));
+      browser_context->GetBlobRemote(blob_uuid), std::move(range)));
 
   // Move the reader to be owned by the callback, so hold onto a temporary
   // pointer to it so we can still call Start on it.

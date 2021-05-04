@@ -733,8 +733,8 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
   result_dictionary->Set(kAttachedImagesBlobInfoKey,
                          std::make_unique<base::ListValue>());
   metadata::AttachedImage* first_image = &attached_images->front();
-  content::BrowserContext::CreateMemoryBackedBlob(
-      browser_context(), base::as_bytes(base::make_span(first_image->data)), "",
+  browser_context()->CreateMemoryBackedBlob(
+      base::as_bytes(base::make_span(first_image->data)), "",
       base::BindOnce(&MediaGalleriesGetMetadataFunction::ConstructNextBlob,
                      this, std::move(result_dictionary),
                      std::move(attached_images),
@@ -788,9 +788,8 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   if (blob_uuids->size() < attached_images->size()) {
     metadata::AttachedImage* next_image =
         &(*attached_images)[blob_uuids->size()];
-    content::BrowserContext::CreateMemoryBackedBlob(
-        browser_context(), base::as_bytes(base::make_span(next_image->data)),
-        "",
+    browser_context()->CreateMemoryBackedBlob(
+        base::as_bytes(base::make_span(next_image->data)), "",
         base::BindOnce(&MediaGalleriesGetMetadataFunction::ConstructNextBlob,
                        this, std::move(result_dictionary),
                        std::move(attached_images), std::move(blob_uuids)));

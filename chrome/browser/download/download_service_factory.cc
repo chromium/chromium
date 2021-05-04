@@ -77,8 +77,7 @@ CreateOptimizationGuidePredictionModelDownloadClient(Profile* profile) {
 // Called on profile created to retrieve the BlobStorageContextGetter.
 void DownloadOnProfileCreated(download::BlobContextGetterCallback callback,
                               Profile* profile) {
-  auto blob_context_getter =
-      content::BrowserContext::GetBlobStorageContext(profile);
+  auto blob_context_getter = profile->GetBlobStorageContext();
   DCHECK(callback);
   std::move(callback).Run(blob_context_getter);
 }

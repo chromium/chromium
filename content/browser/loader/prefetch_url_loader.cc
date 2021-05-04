@@ -77,8 +77,8 @@ PrefetchURLLoader::PrefetchURLLoader(
       prefetched_signed_exchange_cache_adapter_ =
           std::make_unique<PrefetchedSignedExchangeCacheAdapter>(
               std::move(prefetched_signed_exchange_cache),
-              BrowserContext::GetBlobStorageContext(browser_context),
-              resource_request.url, this);
+              browser_context->GetBlobStorageContext(), resource_request.url,
+              this);
     }
   }
 
