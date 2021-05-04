@@ -262,8 +262,9 @@ class RegisterProtocolHandlerAndServiceWorkerInterceptor
   }
 };
 
+// TODO(crbug.com/1204127): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerAndServiceWorkerInterceptor,
-                       RegisterFetchListenerForHTMLHandler) {
+                       DISABLED_RegisterFetchListenerForHTMLHandler) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
