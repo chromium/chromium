@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -1264,6 +1265,15 @@ void GenerateQRCodeFromPageAction(Browser* browser) {
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
   controller->ShowBubble(entry->GetURL());
+}
+
+void SharingHubFromPageAction(Browser* browser) {
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  sharing_hub::SharingHubBubbleController* controller =
+      sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
+          web_contents);
+  controller->ShowBubble();
 }
 
 void SavePage(Browser* browser) {

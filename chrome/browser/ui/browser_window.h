@@ -74,6 +74,11 @@ class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
+namespace sharing_hub {
+class SharingHubBubbleController;
+class SharingHubBubbleView;
+}  // namespace sharing_hub
+
 namespace ui {
 class NativeTheme;
 }
@@ -386,6 +391,12 @@ class BrowserWindow : public ui::BaseWindow {
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
       content::WebContents* contents,
       send_tab_to_self::SendTabToSelfBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  // Shows the Sharing Hub bubble.
+  virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
+      content::WebContents* contents,
+      sharing_hub::SharingHubBubbleController* controller,
       bool is_user_gesture) = 0;
 
   // Shows the translate bubble.

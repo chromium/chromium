@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
+#include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/browser/ui/views/webauthn/webauthn_icon_view.h"
@@ -180,6 +181,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                           contents));
                 }),
                 base::BindRepeating(SharingDialogView::GetAsBubble)));
+        break;
+      case PageActionIconType::kSharingHub:
+        add_page_action_icon(
+            type, std::make_unique<sharing_hub::SharingHubIconView>(
+                      params.command_updater, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kSmsRemoteFetcher:
         add_page_action_icon(

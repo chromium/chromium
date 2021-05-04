@@ -234,6 +234,13 @@ TestBrowserWindow::ShowSendTabToSelfBubble(
   return nullptr;
 }
 
+sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
+    content::WebContents* contents,
+    sharing_hub::SharingHubBubbleController* controller,
+    bool is_user_gesture) {
+  return nullptr;
+}
+
 bool TestBrowserWindow::IsDownloadShelfVisible() const {
   return false;
 }

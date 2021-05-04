@@ -53,8 +53,12 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // views::BubbleDialogDelegateView:
   void Init() override;
 
-  // Creates the scroll view.
-  void CreateScrollView();
+  // Populates the scroll view containing sharing actions.
+  void PopulateScrollView();
+
+  // Resizes and potentially moves the bubble to fit the content's preferred
+  // size.
+  void MaybeSizeToContents();
 
   // A raw pointer is safe since our controller will outlive us (the bubble is
   // lazily created with the controller).

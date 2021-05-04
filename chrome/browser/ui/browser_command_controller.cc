@@ -574,6 +574,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_QRCODE_GENERATOR:
       GenerateQRCodeFromPageAction(browser_);
       break;
+    case IDC_SHARING_HUB:
+      SharingHubFromPageAction(browser_);
+      break;
 
     // Clipboard commands
     case IDC_CUT:

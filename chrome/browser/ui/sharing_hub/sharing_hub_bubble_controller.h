@@ -38,6 +38,8 @@ class SharingHubBubbleController
   std::u16string GetWindowTitle() const;
   // Returns the current profile.
   Profile* GetProfile() const;
+  // Returns true if the omnibox icon should be shown.
+  bool ShouldOfferOmniboxIcon();
 
   // Handler for when the bubble is closed.
   void OnBubbleClosed();

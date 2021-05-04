@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace sharing_hub {
@@ -63,13 +64,35 @@ const views::View* SharingHubBubbleViewImpl::GetButtonContainerForTesting()
 }
 
 void SharingHubBubbleViewImpl::Init() {
+  auto* provider = ChromeLayoutProvider::Get();
+  set_margins(
+      gfx::Insets(provider->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
+                  0,
+                  provider->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+                  0));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  CreateScrollView();
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+
+  PopulateScrollView();
 }
 
-void SharingHubBubbleViewImpl::CreateScrollView() {
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+void SharingHubBubbleViewImpl::PopulateScrollView() {
+  auto* action_list_view =
+      scroll_view_->SetContents(std::make_unique<views::View>());
+  action_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  MaybeSizeToContents();
+  Layout();
+}
+
+void SharingHubBubbleViewImpl::MaybeSizeToContents() {
+  // The widget may be null if this is called while the dialog is opening.
+  if (GetWidget())
+    SizeToContents();
 }
 
 }  // namespace sharing_hub

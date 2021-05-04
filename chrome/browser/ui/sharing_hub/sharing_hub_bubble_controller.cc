@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +39,9 @@ void SharingHubBubbleController::HideBubble() {
 }
 
 void SharingHubBubbleController::ShowBubble() {
-  // TODO(1186843): Add omnibox integration.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  sharing_hub_bubble_view_ =
+      browser->window()->ShowSharingHubBubble(web_contents_, this, true);
 }
 
 SharingHubBubbleView* SharingHubBubbleController::sharing_hub_bubble_view()
@@ -50,6 +55,15 @@ std::u16string SharingHubBubbleController::GetWindowTitle() const {
 
 Profile* SharingHubBubbleController::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
+bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
+  if (!web_contents_)
+    return false;
+
+  // TODO(1186845): Check enterprise policy
+
+  return true;
 }
 
 void SharingHubBubbleController::OnBubbleClosed() {

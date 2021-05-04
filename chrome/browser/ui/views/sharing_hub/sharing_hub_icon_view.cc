@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace sharing_hub {
@@ -43,12 +45,12 @@ void SharingHubIconView::UpdateImpl() {
     return;
   }
 
-  const OmniboxView* omnibox_view = delegate()->GetOmniboxView();
-  if (!omnibox_view) {
-    return;
-  }
+  // |controller| may be nullptr due to lazy initialization.
+  SharingHubBubbleController* controller = GetController();
+  bool enabled = controller && controller->ShouldOfferOmniboxIcon();
 
-  SetVisible(true);
+  SetCommandEnabled(enabled);
+  SetVisible(enabled);
 }
 
 void SharingHubIconView::OnExecuting(
@@ -61,6 +63,10 @@ const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
 
 bool SharingHubIconView::ShouldShowLabel() const {
   return false;
+}
+
+std::u16string SharingHubIconView::GetTextForTooltipAndAccessibleName() const {
+  return l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP);
 }
 
 SharingHubBubbleController* SharingHubIconView::GetController() const {
