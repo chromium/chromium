@@ -359,6 +359,10 @@ class ASH_EXPORT AppsGridView : public views::View,
     return bounds_animator_.get();
   }
 
+  bool cardified_state_for_testing() const { return cardified_state_; }
+
+  int BackgroundCardCountForTesting() const { return background_cards_.size(); }
+
  private:
   class FadeoutLayerDelegate;
   friend class test::AppsGridViewTestApi;

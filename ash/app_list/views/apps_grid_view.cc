@@ -2308,7 +2308,9 @@ void AppsGridView::StartAppsGridCardifiedView() {
   RemoveAllBackgroundCards();
   // Calculate background bounds for a normal grid so it animates from the
   // normal to the cardified bounds with the icons.
-  for (int i = 0; i < pagination_model_.total_pages(); i++)
+  // Add an extra card for the peeking page in the last page. This hints users
+  // that apps can be dragged past the last existing page.
+  for (int i = 0; i < pagination_model_.total_pages() + 1; i++)
     AppendBackgroundCard();
   cardified_state_ = true;
   UpdateTilePadding();
@@ -3096,19 +3098,6 @@ void AppsGridView::TotalPagesChanged(int previous_page_count,
     else if (dragging())
       type = AppListPageCreationType::kDraggingApp;
     UMA_HISTOGRAM_ENUMERATION("Apps.AppList.AppsGridAddPage", type);
-  }
-
-  if (!cardified_state_)
-    return;
-
-  const int page_difference = new_page_count - previous_page_count;
-  if (page_difference > 0) {
-    for (int i = background_cards_.size(); i <= new_page_count; ++i) {
-      AppendBackgroundCard();
-    }
-  } else {
-    for (int i = 0; i < page_difference; ++i)
-      RemoveBackgroundCard();
   }
 }
 

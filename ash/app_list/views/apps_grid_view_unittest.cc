@@ -463,21 +463,20 @@ class AppsGridViewRTLTest : public AppsGridViewTest,
 
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewRTLTest, testing::Bool());
 
-// Tests suite for app list items drag and drop tests. These tests are
-// paramerized to cover both RTL locale and pagination previews behaviour.
-class AppsGridViewDragAndDropTest
-    : public AppsGridViewTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// Test base for app list items drag and drop tests. The suite contains helper
+// methods to deal with drag and drop logic.
+class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
  public:
-  AppsGridViewDragAndDropTest()
-      : AppsGridViewTest(
-            /*is_rtl=*/std::get<0>(GetParam()),
-            /*is_pagination_preview_active_=*/std::get<1>(GetParam()),
-            /*create_as_tablet_mode=*/false) {}
-  AppsGridViewDragAndDropTest(const AppsGridViewDragAndDropTest&) = delete;
-  AppsGridViewDragAndDropTest& operator=(const AppsGridViewDragAndDropTest&) =
+  AppsGridViewDragAndDropTestBase(bool is_rtl,
+                                  bool is_pagination_preview_active)
+      : AppsGridViewTest(is_rtl,
+                         is_pagination_preview_active,
+                         /*create_as_tablet_mode=*/false) {}
+  AppsGridViewDragAndDropTestBase(const AppsGridViewDragAndDropTestBase&) =
       delete;
-  ~AppsGridViewDragAndDropTest() override = default;
+  AppsGridViewDragAndDropTestBase& operator=(
+      const AppsGridViewDragAndDropTestBase&) = delete;
+  ~AppsGridViewDragAndDropTestBase() override = default;
 
   AppListItemView* InitiateDrag(AppsGridView::Pointer pointer,
                                 const gfx::Point& from,
@@ -593,6 +592,22 @@ class AppsGridViewDragAndDropTest
   base::Optional<gfx::Point> current_drag_location_;
 };
 
+// Tests suite for app list items drag and drop tests. These tests are
+// paramerized to cover both RTL locale and pagination previews behaviour.
+class AppsGridViewDragAndDropTest
+    : public AppsGridViewDragAndDropTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AppsGridViewDragAndDropTest()
+      : AppsGridViewDragAndDropTestBase(
+            /*is_rtl=*/std::get<0>(GetParam()),
+            /*is_pagination_preview_active_=*/std::get<1>(GetParam())) {}
+  AppsGridViewDragAndDropTest(const AppsGridViewDragAndDropTest&) = delete;
+  AppsGridViewDragAndDropTest& operator=(const AppsGridViewDragAndDropTest&) =
+      delete;
+  ~AppsGridViewDragAndDropTest() override = default;
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewDragAndDropTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
@@ -601,16 +616,41 @@ INSTANTIATE_TEST_SUITE_P(All,
 // proved to work with a cardified state.
 // TODO(anasalazar): Fix tests under this suite to work with a cardified state
 class AppsGridViewDragAndDropTestNoCardifiedState
-    : public AppsGridViewDragAndDropTest {
+    : public AppsGridViewDragAndDropTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  AppsGridViewDragAndDropTestNoCardifiedState() = default;
+  AppsGridViewDragAndDropTestNoCardifiedState()
+      : AppsGridViewDragAndDropTestBase(
+            /*is_rtl=*/GetParam(),
+            /*is_pagination_preview_active_=*/false) {}
+  AppsGridViewDragAndDropTestNoCardifiedState(
+      const AppsGridViewDragAndDropTestNoCardifiedState&) = delete;
+  AppsGridViewDragAndDropTestNoCardifiedState& operator=(
+      const AppsGridViewDragAndDropTestNoCardifiedState&) = delete;
   ~AppsGridViewDragAndDropTestNoCardifiedState() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewDragAndDropTestNoCardifiedState,
-                         testing::Combine(testing::Bool(),
-                                          testing::Values(false)));
+                         testing::Bool());
+
+// Tests suite to verify behaviour exclusively to cardified state.
+class AppsGridViewCardifiedStateTest
+    : public AppsGridViewDragAndDropTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  AppsGridViewCardifiedStateTest()
+      : AppsGridViewDragAndDropTestBase(
+            /*is_rtl=*/GetParam(),
+            /*is_pagination_preview_active_=*/true) {}
+  AppsGridViewCardifiedStateTest(const AppsGridViewCardifiedStateTest&) =
+      delete;
+  AppsGridViewCardifiedStateTest& operator=(
+      const AppsGridViewCardifiedStateTest&) = delete;
+  ~AppsGridViewCardifiedStateTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, AppsGridViewCardifiedStateTest, testing::Bool());
 
 // Test suite for verifying tablet mode apps grid behaviour.
 class AppsGridViewTabletTest : public AppsGridViewRTLTest {
@@ -2863,6 +2903,40 @@ TEST_F(AppsGridViewTest, CreateANewPageByAddingAppLogsMetrics) {
   histogram_tester.ExpectBucketCount("Apps.AppList.AppsGridAddPage",
                                      AppListPageCreationType::kSyncOrInstall,
                                      1);
+}
+
+TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
+  // Create only one page with two apps.
+  model_->PopulateApps(2);
+
+  // Start cardified apps grid.
+  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+
+  EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  EXPECT_EQ(2, apps_grid_view_->BackgroundCardCountForTesting());
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
+}
+
+TEST_P(AppsGridViewCardifiedStateTest,
+       PeekingCardOnLastPageAfterCreatingNewPage) {
+  // Create only one page with two apps.
+  model_->PopulateApps(2);
+  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+  gfx::Point to_in_next_page =
+      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
+
+  // Drag the first item to the next page to create another page.
+  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page);
+  // Trigger cardified state again.
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+
+  EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  EXPECT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
 }
 
 }  // namespace test
