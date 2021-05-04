@@ -1300,6 +1300,12 @@
       },
       'linux-chromeos-rel': {
         'swarming': {
+          # TODO(crbug.com/1202743): Remove this exception.
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            },
+          ],
           'shards': 3,
         },
       },
@@ -1805,6 +1811,16 @@
         'args': [
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
+      },
+      'linux-chromeos-rel': {
+        'swarming': {
+          # TODO(crbug.com/1202743): Remove this exception.
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        }
       },
       'linux-chromeos-stable': {
         'args': [
@@ -2633,6 +2649,16 @@
           'shards': 4,
         },
       },
+      'linux-chromeos-rel': {
+        'swarming': {
+          # TODO(crbug.com/1202743): Remove this exception.
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        }
+      },
       'linux-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -2879,6 +2905,12 @@
       },
       'linux-chromeos-rel': {
         'swarming': {
+          # TODO(crbug.com/1202743): Remove this exception.
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            },
+          ],
           'shards': 2,
         },
       },
