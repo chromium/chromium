@@ -266,30 +266,15 @@ const std::string& GetProfileName() {
 }
 
 void InitializeLogging() {
-#if defined(OS_ANDROID)
-  InitAndroidTestLogging();
-#else
-
-  FilePath log_filename;
-  FilePath exe;
-  PathService::Get(FILE_EXE, &exe);
-
-#if defined(OS_FUCHSIA)
-  // Write logfiles to /data, because the default log location alongside the
-  // executable (/pkg) is read-only.
-  FilePath data_dir;
-  PathService::Get(DIR_APP_DATA, &data_dir);
-  log_filename = data_dir.Append(exe.BaseName())
-                     .ReplaceExtension(FILE_PATH_LITERAL("log"));
-#else
-  log_filename = exe.ReplaceExtension(FILE_PATH_LITERAL("log"));
-#endif  // defined(OS_FUCHSIA)
-
   logging::LoggingSettings settings;
-  settings.log_file_path = log_filename.value().c_str();
-  settings.logging_dest = logging::LOG_TO_ALL;
-  settings.delete_old = logging::DELETE_OLD_LOG_FILE;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
+
+#if defined(OS_ANDROID)
+  // To view log output with IDs and timestamps use "adb logcat -v threadtime".
+  logging::SetLogItems(false, false, false, false);
+#else
   // We want process and thread IDs because we may have multiple processes.
   // Note: temporarily enabled timestamps in an effort to catch bug 6361.
   logging::SetLogItems(true, true, true, true);
