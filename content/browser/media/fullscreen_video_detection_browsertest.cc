@@ -63,10 +63,14 @@ class FullscreenEventsRecorder : public WebContentsObserver {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   size_t expected_event_count_ = 0;
+  FullscreenTestEvent last_event_ = FullscreenTestEvent::kInvalidEvent;
   std::vector<FullscreenTestEvent> events_;
 
   void AddEvent(FullscreenTestEvent e) {
+    if (last_event_ == e)
+      return;
     events_.push_back(e);
+    last_event_ = e;
     if (events_.size() == expected_event_count_ && run_loop_)
       run_loop_->Quit();
   }
