@@ -50,8 +50,6 @@ using testing::Key;
 using net::test::IsError;
 using net::test::IsOk;
 
-using base::ASCIIToUTF16;
-
 // TODO(eroman): Write a test which exercises
 //              ConfiguredProxyResolutionService::SuspendAllPendingRequests().
 namespace net {
@@ -150,7 +148,9 @@ class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
 };
 
 const char kValidPacScript1[] = "pac-script-v1-FindProxyForURL";
+const char16_t kValidPacScript116[] = u"pac-script-v1-FindProxyForURL";
 const char kValidPacScript2[] = "pac-script-v2-FindProxyForURL";
+const char16_t kValidPacScript216[] = u"pac-script-v2-FindProxyForURL";
 
 class MockProxyConfigService : public ProxyConfigService {
  public:
@@ -2355,7 +2355,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, InitialPACScriptDownload) {
 
   // Now that the PAC script is downloaded, it will have been sent to the proxy
   // resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -2459,7 +2459,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
 
   // Now that the PAC script is downloaded, it will have been sent to the proxy
   // resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -2527,7 +2527,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, CancelWhilePACFetching) {
 
   // Now that the PAC script is downloaded, it will have been sent to the
   // proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -2617,7 +2617,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_EQ(GURL("http://foopy/proxy.pac"), fetcher->pending_request_url());
   fetcher->NotifyFetchCompletion(OK, kValidPacScript1);
 
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -2706,7 +2706,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_EQ(GURL("http://foopy/proxy.pac"), fetcher->pending_request_url());
   fetcher->NotifyFetchCompletion(OK, kValidPacScript1);
 
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -2834,7 +2834,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, BypassDoesntApplyToPac) {
   EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher->pending_request_url());
   fetcher->NotifyFetchCompletion(OK, kValidPacScript1);
 
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3040,7 +3040,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, NetworkChangeTriggersPacRefetch) {
 
   // Now that the PAC script is downloaded, the request will have been sent to
   // the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3084,7 +3084,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, NetworkChangeTriggersPacRefetch) {
 
   // Now that the PAC script is downloaded, the second request will have been
   // sent to the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+  EXPECT_EQ(kValidPacScript216,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3190,7 +3190,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PACScriptRefetchAfterFailure) {
 
   // Now that the PAC script is downloaded, it should be used to initialize the
   // ProxyResolver. Simulate a successful parse.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3271,7 +3271,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
 
   // Now that the PAC script is downloaded, the request will have been sent to
   // the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3309,7 +3309,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
 
   // Now that the PAC script is downloaded, it should be used to initialize the
   // ProxyResolver. Simulate a successful parse.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+  EXPECT_EQ(kValidPacScript216,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3388,7 +3388,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
 
   // Now that the PAC script is downloaded, the request will have been sent to
   // the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3501,7 +3501,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PACScriptRefetchAfterSuccess) {
 
   // Now that the PAC script is downloaded, the request will have been sent to
   // the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3676,7 +3676,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PACScriptRefetchAfterActivity) {
 
   // Now that the PAC script is downloaded, the request will have been sent to
   // the proxy resolver.
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 
@@ -3773,7 +3773,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, IpAddressChangeResetsProxy) {
   ASSERT_TRUE(fetcher_ptr->has_pending_request());
   fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
   ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory_ptr->pending_requests()[0]->script_data()->utf16());
   factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
   ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
@@ -3803,7 +3803,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, IpAddressChangeResetsProxy) {
   // Finish pending fetch and expect proxy request to be able to complete.
   fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript2);
   ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+  EXPECT_EQ(kValidPacScript216,
             factory_ptr->pending_requests()[0]->script_data()->utf16());
   factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
   ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
@@ -3840,7 +3840,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, DnsChangeTriggersPoll) {
   ASSERT_TRUE(fetcher_ptr->has_pending_request());
   fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
   ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory_ptr->pending_requests()[0]->script_data()->utf16());
   factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
   ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
@@ -3880,7 +3880,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, DnsChangeTriggersPoll) {
                             &request3, NetLogWithSource());
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+  EXPECT_EQ(kValidPacScript216,
             factory_ptr->pending_requests()[0]->script_data()->utf16());
   factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
   ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
@@ -4228,7 +4228,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ImplicitlyBypassWithPac) {
   EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher->pending_request_url());
   fetcher->NotifyFetchCompletion(OK, kValidPacScript1);
 
-  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+  EXPECT_EQ(kValidPacScript116,
             factory->pending_requests()[0]->script_data()->utf16());
   factory->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
 

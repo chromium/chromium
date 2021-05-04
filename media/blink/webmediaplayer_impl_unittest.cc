@@ -789,7 +789,7 @@ class WebMediaPlayerImplTest
 
   void CreateCdm() {
     // Must use a supported key system on a secure context.
-    auto key_system = base::ASCIIToUTF16("org.w3.clearkey");
+    std::u16string key_system = u"org.w3.clearkey";
     auto test_origin = blink::WebSecurityOrigin::CreateFromString(
         blink::WebString::FromUTF8("https://test.origin"));
 

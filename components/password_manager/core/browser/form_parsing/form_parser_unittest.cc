@@ -32,7 +32,6 @@ using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::mojom::SubmissionIndicatorEvent;
-using base::ASCIIToUTF16;
 
 namespace password_manager {
 
@@ -42,7 +41,7 @@ using UsernameDetectionMethod = FormDataParser::UsernameDetectionMethod;
 
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
 // generated in GetFormDataAndExpectation().
-constexpr char kNonimportantValue[] = "non-important unique";
+constexpr char16_t kNonimportantValue[] = u"non-important unique";
 
 // Use this in FieldDataDescription below to mark the expected username and
 // password fields.
@@ -70,9 +69,9 @@ struct FieldDataDescription {
   autofill::FieldPropertiesMask properties_mask =
       FieldPropertiesFlags::kNoFlags;
   const char* autocomplete_attribute = nullptr;
-  const std::u16string value = ASCIIToUTF16(kNonimportantValue);
+  const std::u16string value = kNonimportantValue;
   const std::u16string user_input = u"";
-  const char* name = kNonimportantValue;
+  const base::StringPiece16 name = kNonimportantValue;
   const char* form_control_type = "text";
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
   // If not -1, indicates on which rank among predicted usernames this should
@@ -112,8 +111,8 @@ autofill::FieldRendererId GetUniqueId() {
 }
 
 // Use to add a number suffix which is unique in the scope of the test.
-std::u16string StampUniqueSuffix(const char* base_str) {
-  return ASCIIToUTF16(base_str) + u"_" +
+std::u16string StampUniqueSuffix(const char16_t* base_str) {
+  return base_str + std::u16string(u"_") +
          base::NumberToString16(GetUniqueId().value());
 }
 
@@ -175,23 +174,23 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     FormFieldData field;
     const autofill::FieldRendererId renderer_id = GetUniqueId();
     field.unique_renderer_id = renderer_id;
-    field.id_attribute = StampUniqueSuffix("html_id");
+    field.id_attribute = StampUniqueSuffix(u"html_id");
     if (field_description.name == kNonimportantValue) {
-      field.name = StampUniqueSuffix("html_name");
+      field.name = StampUniqueSuffix(u"html_name");
     } else {
-      field.name = ASCIIToUTF16(field_description.name);
+      field.name = std::u16string(field_description.name);
     }
     field.name_attribute = field.name;
 #if defined(OS_IOS)
-    field.unique_id = StampUniqueSuffix("unique_id");
+    field.unique_id = StampUniqueSuffix(u"unique_id");
 #endif
     field.form_control_type = field_description.form_control_type;
     field.is_focusable = field_description.is_focusable;
     field.is_enabled = field_description.is_enabled;
     field.is_readonly = field_description.is_readonly;
     field.properties_mask = field_description.properties_mask;
-    if (field_description.value == ASCIIToUTF16(kNonimportantValue)) {
-      field.value = StampUniqueSuffix("value");
+    if (field_description.value == kNonimportantValue) {
+      field.value = StampUniqueSuffix(u"value");
     } else {
       field.value = field_description.value;
     }
@@ -1531,21 +1530,23 @@ TEST(FormParserTest, AllPossiblePasswords) {
           .fields =
               {
                   {.value = u"a",
-                   .name = "p1",
+                   .name = u"p1",
                    .form_control_type = "password"},
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .value = u"b",
-                   .name = "chosen",
+                   .name = u"chosen",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
                    .value = u"a",
                    .form_control_type = "password"},
-                  {.value = u"a", .name = "first", .form_control_type = "text"},
+                  {.value = u"a",
+                   .name = u"first",
+                   .form_control_type = "text"},
                   {.value = u"a", .form_control_type = "text"},
                   {.value = u"b",
-                   .name = "p3",
+                   .name = u"p3",
                    .form_control_type = "password"},
                   {.value = u"b", .form_control_type = "password"},
               },
@@ -1799,7 +1800,7 @@ TEST(FormParserTest, CVC) {
           .fields =
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
-                  {.name = "verification_type",
+                  {.name = u"verification_type",
                    .form_control_type = "password"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
@@ -1815,7 +1816,7 @@ TEST(FormParserTest, CVC) {
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .name = "verification_type",
+                   .name = u"verification_type",
                    .form_control_type = "password"},
               },
           .fallback_only = true,
@@ -1826,8 +1827,8 @@ TEST(FormParserTest, CVC) {
 // The parser should avoid identifying Social Security number and
 // one time password fields as passwords.
 TEST(FormParserTest, SSN_and_OTP) {
-  for (const char* field_name :
-       {"SocialSecurityNumber", "OneTimePassword", "SMS-token"}) {
+  for (const char16_t* field_name :
+       {u"SocialSecurityNumber", u"OneTimePassword", u"SMS-token"}) {
     CheckTestData({
         {
             .description_for_logging = "Field name matches the SSN/OTP pattern,"
@@ -2639,11 +2640,11 @@ TEST(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // Create a form containing username, email, id, password, submit.
   const FormParsingTestCase form_desc = {
       .fields = {
-          {.name = "username", .form_control_type = "text"},
-          {.name = "email", .form_control_type = "text"},
-          {.name = "id", .form_control_type = "text"},
-          {.name = "password", .form_control_type = "password"},
-          {.name = "submit", .form_control_type = "submit"},
+          {.name = u"username", .form_control_type = "text"},
+          {.name = u"email", .form_control_type = "text"},
+          {.name = u"id", .form_control_type = "text"},
+          {.name = u"password", .form_control_type = "password"},
+          {.name = u"submit", .form_control_type = "submit"},
       }};
 
   FormPredictions no_predictions;
@@ -2685,10 +2686,10 @@ TEST(FormParserTest, SkipHiddenValueField) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u"***********",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       },
@@ -2696,10 +2697,10 @@ TEST(FormParserTest, SkipHiddenValueField) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u"**",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       },
@@ -2707,10 +2708,10 @@ TEST(FormParserTest, SkipHiddenValueField) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u"••••••••",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       }};
@@ -2733,10 +2734,10 @@ TEST(FormParserTest, DontSkipNotHiddenValues) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u"a*******a",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       },
@@ -2744,10 +2745,10 @@ TEST(FormParserTest, DontSkipNotHiddenValues) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u".....*****",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       },
@@ -2755,10 +2756,10 @@ TEST(FormParserTest, DontSkipNotHiddenValues) {
           .fields =
               {
                   {.value = u"foo",
-                   .name = "username",
+                   .name = u"username",
                    .form_control_type = "text"},
                   {.value = u"0 0 0 0 0",
-                   .name = "password",
+                   .name = u"password",
                    .form_control_type = "password"},
               },
       }};

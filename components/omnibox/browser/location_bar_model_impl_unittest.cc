@@ -273,14 +273,12 @@ TEST_F(LocationBarModelImplTest, MAYBE_PreventElisionWorks) {
   delegate()->SetShouldPreventElision(true);
   delegate()->SetURL(GURL("https://www.google.com/search?q=foo+query+unelide"));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "https://www.google.com/search?q=foo+query+unelide/TestSuffix"),
+  EXPECT_EQ(u"https://www.google.com/search?q=foo+query+unelide/TestSuffix",
             model()->GetURLForDisplay());
 
   // Test that HTTP elisions are prevented.
   delegate()->SetURL(GURL("http://www.google.com/search?q=foo+query+unelide"));
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "http://www.google.com/search?q=foo+query+unelide/TestSuffix"),
+  EXPECT_EQ(u"http://www.google.com/search?q=foo+query+unelide/TestSuffix",
             model()->GetURLForDisplay());
 }
 

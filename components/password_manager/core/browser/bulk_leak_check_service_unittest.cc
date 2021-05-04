@@ -29,8 +29,8 @@ using ::testing::WithArg;
 
 const int64_t kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
-constexpr char kUsername[] = "user";
-constexpr char kPassword[] = "password123";
+constexpr char16_t kUsername[] = u"user";
+constexpr char16_t kPassword[] = u"password123";
 
 MATCHER_P(CredentialsAre, credentials, "") {
   return std::equal(arg.begin(), arg.end(), credentials.get().begin(),
@@ -48,8 +48,7 @@ MATCHER_P(CredentialIs, credential, "") {
 }
 
 LeakCheckCredential TestCredential() {
-  return LeakCheckCredential(base::ASCIIToUTF16(kUsername),
-                             base::ASCIIToUTF16(kPassword));
+  return LeakCheckCredential(kUsername, kPassword);
 }
 
 std::vector<LeakCheckCredential> TestCredentials() {

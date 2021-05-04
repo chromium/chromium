@@ -48,8 +48,6 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-using base::ASCIIToUTF16;
-
 namespace views {
 namespace corewm {
 namespace test {
@@ -241,9 +239,9 @@ TEST_F(TooltipControllerTest, DontShowTooltipOnTouch) {
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
 // crbug.com/664370.
 TEST_F(TooltipControllerTest, MaxWidth) {
-  std::u16string text = base::ASCIIToUTF16(
-      "Really really realy long long long long  long tooltips that exceeds max "
-      "width");
+  std::u16string text =
+      u"Really, really, really, really, really, really long tooltip that "
+      u"exceeds max width";
   view_->set_tooltip_text(text);
   gfx::Point center = GetWindow()->bounds().CenterPoint();
 

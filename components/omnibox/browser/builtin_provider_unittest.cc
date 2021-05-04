@@ -12,6 +12,7 @@
 
 #include "base/format_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -31,21 +32,22 @@ using base::ASCIIToUTF16;
 namespace {
 
 const char kEmbedderAboutScheme[] = "chrome";
-const char kDefaultURL1[] = "chrome://default1/";
-const char kDefaultURL2[] = "chrome://default2/";
-const char kDefaultURL3[] = "chrome://foo/";
-const char kSubpageURL[] = "chrome://subpage/";
+const char16_t kEmbedderAboutScheme16[] = u"chrome";
+const char16_t kDefaultURL1[] = u"chrome://default1/";
+const char16_t kDefaultURL2[] = u"chrome://default2/";
+const char16_t kDefaultURL3[] = u"chrome://foo/";
+const char16_t kSubpageURL[] = u"chrome://subpage/";
 
 // Arbitrary host constants, chosen to start with the letters "b" and "me".
-const char kHostBar[] = "bar";
-const char kHostMedia[] = "media";
-const char kHostMemory[] = "memory";
-const char kHostMemoryInternals[] = "memory-internals";
-const char kHostSubpage[] = "subpage";
+const char16_t kHostBar[] = u"bar";
+const char16_t kHostMedia[] = u"media";
+const char16_t kHostMemory[] = u"memory";
+const char16_t kHostMemoryInternals[] = u"memory-internals";
+const char16_t kHostSubpage[] = u"subpage";
 
-const char kSubpageOne[] = "one";
-const char kSubpageTwo[] = "two";
-const char kSubpageThree[] = "three";
+const char16_t kSubpageOne[] = u"one";
+const char16_t kSubpageTwo[] = u"two";
+const char16_t kSubpageThree[] = u"three";
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
@@ -61,27 +63,27 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   std::vector<std::u16string> GetBuiltinURLs() override {
     std::vector<std::u16string> urls;
-    urls.push_back(ASCIIToUTF16(kHostBar));
-    urls.push_back(ASCIIToUTF16(kHostMedia));
+    urls.push_back(kHostBar);
+    urls.push_back(kHostMedia);
     // The URL that is a superstring of the other is intentionally placed first
     // here. The provider makes no guarantees that shorter URLs will appear
     // first.
-    urls.push_back(ASCIIToUTF16(kHostMemoryInternals));
-    urls.push_back(ASCIIToUTF16(kHostMemory));
-    urls.push_back(ASCIIToUTF16(kHostSubpage));
+    urls.push_back(kHostMemoryInternals);
+    urls.push_back(kHostMemory);
+    urls.push_back(kHostSubpage);
 
-    std::u16string prefix = ASCIIToUTF16(kHostSubpage) + u"/";
-    urls.push_back(prefix + ASCIIToUTF16(kSubpageOne));
-    urls.push_back(prefix + ASCIIToUTF16(kSubpageTwo));
-    urls.push_back(prefix + ASCIIToUTF16(kSubpageThree));
+    std::u16string prefix = base::StrCat({kHostSubpage, u"/"});
+    urls.push_back(prefix + kSubpageOne);
+    urls.push_back(prefix + kSubpageTwo);
+    urls.push_back(prefix + kSubpageThree);
     return urls;
   }
 
   std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() override {
     std::vector<std::u16string> urls;
-    urls.push_back(ASCIIToUTF16(kDefaultURL1));
-    urls.push_back(ASCIIToUTF16(kDefaultURL2));
-    urls.push_back(ASCIIToUTF16(kDefaultURL3));
+    urls.push_back(kDefaultURL1);
+    urls.push_back(kDefaultURL2);
+    urls.push_back(kDefaultURL3);
     return urls;
   }
 };
@@ -131,7 +133,7 @@ class BuiltinProviderTest : public testing::Test {
 
 TEST_F(BuiltinProviderTest, TypingScheme) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
-  const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
+  const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kSeparator1 = u":";
   const std::u16string kSeparator2 = u":/";
   const std::u16string kSeparator3 =
@@ -196,16 +198,16 @@ TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
 
 TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
-  const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
+  const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kSep1 = u":";
   const std::u16string kSep2 = u":/";
   const std::u16string kSep3 = ASCIIToUTF16(url::kStandardSchemeSeparator);
 
   // The following hosts are arbitrary, chosen so that they all start with the
   // letters "me".
-  const std::u16string kHostM1 = ASCIIToUTF16(kHostMedia);
-  const std::u16string kHostM2 = ASCIIToUTF16(kHostMemoryInternals);
-  const std::u16string kHostM3 = ASCIIToUTF16(kHostMemory);
+  const std::u16string kHostM1 = kHostMedia;
+  const std::u16string kHostM2 = kHostMemoryInternals;
+  const std::u16string kHostM3 = kHostMemory;
   const GURL kURLM1(kEmbedder + kSep3 + kHostM1);
   const GURL kURLM2(kEmbedder + kSep3 + kHostM2);
   const GURL kURLM3(kEmbedder + kSep3 + kHostM3);
@@ -245,7 +247,7 @@ TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
 
 TEST_F(BuiltinProviderTest, AboutBlank) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
-  const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
+  const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kAboutBlank = ASCIIToUTF16(url::kAboutBlankURL);
   const std::u16string kBlank = u"blank";
   const std::u16string kSeparator1 =
@@ -253,8 +255,7 @@ TEST_F(BuiltinProviderTest, AboutBlank) {
   const std::u16string kSeparator2 = u":///";
   const std::u16string kSeparator3 = u";///";
 
-  const GURL kURLBar =
-      GURL(kEmbedder + kSeparator1 + ASCIIToUTF16(kHostBar));
+  const GURL kURLBar = GURL(kEmbedder + kSeparator1 + kHostBar);
   const GURL kURLBlank(kAboutBlank);
 
   TestData about_blank_cases[] = {
@@ -312,10 +313,10 @@ TEST_F(BuiltinProviderTest, DoesNotSupportMatchesOnFocus) {
 }
 
 TEST_F(BuiltinProviderTest, Subpages) {
-  const std::u16string kSubpage = ASCIIToUTF16(kSubpageURL);
-  const std::u16string kPageOne = ASCIIToUTF16(kSubpageOne);
-  const std::u16string kPageTwo = ASCIIToUTF16(kSubpageTwo);
-  const std::u16string kPageThree = ASCIIToUTF16(kSubpageThree);
+  const std::u16string kSubpage = kSubpageURL;
+  const std::u16string kPageOne = kSubpageOne;
+  const std::u16string kPageTwo = kSubpageTwo;
+  const std::u16string kPageThree = kSubpageThree;
   const GURL kURLOne(kSubpage + kPageOne);
   const GURL kURLTwo(kSubpage + kPageTwo);
   const GURL kURLThree(kSubpage + kPageThree);
@@ -338,15 +339,15 @@ TEST_F(BuiltinProviderTest, Subpages) {
 
 TEST_F(BuiltinProviderTest, Inlining) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
-  const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
+  const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kSep = ASCIIToUTF16(url::kStandardSchemeSeparator);
-  const std::u16string kHostM = ASCIIToUTF16(kHostMedia);
-  const std::u16string kHostB = ASCIIToUTF16(kHostBar);
-  const std::u16string kHostMem = ASCIIToUTF16(kHostMemory);
-  const std::u16string kHostMemInt = ASCIIToUTF16(kHostMemoryInternals);
-  const std::u16string kHostSub = ASCIIToUTF16(kHostSubpage);
+  const std::u16string kHostM = kHostMedia;
+  const std::u16string kHostB = kHostBar;
+  const std::u16string kHostMem = kHostMemory;
+  const std::u16string kHostMemInt = kHostMemoryInternals;
+  const std::u16string kHostSub = kHostSubpage;
   const std::u16string kHostSubTwo =
-      ASCIIToUTF16(kHostSubpage) + u"/" + ASCIIToUTF16(kSubpageTwo);
+      base::StrCat({kHostSubpage, u"/", kSubpageTwo});
 
   struct InliningTestData {
     const std::u16string input;

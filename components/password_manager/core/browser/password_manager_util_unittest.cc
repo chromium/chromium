@@ -36,9 +36,9 @@ constexpr char kTestFederationURL[] = "https://google.com/";
 constexpr char kTestProxyOrigin[] = "http://proxy.com/";
 constexpr char kTestProxySignonRealm[] = "proxy.com/realm";
 constexpr char kTestURL[] = "https://example.com/login/";
-constexpr char kTestUsername[] = "Username";
-constexpr char kTestUsername2[] = "Username2";
-constexpr char kTestPassword[] = "12345";
+constexpr char16_t kTestUsername[] = u"Username";
+constexpr char16_t kTestUsername2[] = u"Username2";
+constexpr char16_t kTestPassword[] = u"12345";
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -60,8 +60,8 @@ PasswordForm GetTestAndroidCredential() {
   form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestAndroidRealm);
   form.signon_realm = kTestAndroidRealm;
-  form.username_value = base::ASCIIToUTF16(kTestUsername);
-  form.password_value = base::ASCIIToUTF16(kTestPassword);
+  form.username_value = kTestUsername;
+  form.password_value = kTestPassword;
   return form;
 }
 
@@ -70,8 +70,8 @@ PasswordForm GetTestCredential() {
   form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestURL);
   form.signon_realm = form.url.GetOrigin().spec();
-  form.username_value = base::ASCIIToUTF16(kTestUsername);
-  form.password_value = base::ASCIIToUTF16(kTestPassword);
+  form.username_value = kTestUsername;
+  form.password_value = kTestPassword;
   return form;
 }
 
@@ -80,8 +80,8 @@ PasswordForm GetTestProxyCredential() {
   form.scheme = PasswordForm::Scheme::kBasic;
   form.url = GURL(kTestProxyOrigin);
   form.signon_realm = kTestProxySignonRealm;
-  form.username_value = base::ASCIIToUTF16(kTestUsername);
-  form.password_value = base::ASCIIToUTF16(kTestPassword);
+  form.username_value = kTestUsername;
+  form.password_value = kTestPassword;
   return form;
 }
 
@@ -102,7 +102,7 @@ TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
   PasswordForm username_only;
   username_only.scheme = PasswordForm::Scheme::kUsernameOnly;
   username_only.signon_realm = kTestAndroidRealm;
-  username_only.username_value = base::ASCIIToUTF16(kTestUsername2);
+  username_only.username_value = kTestUsername2;
   forms.push_back(std::make_unique<PasswordForm>(username_only));
 
   username_only.federation_origin =
@@ -144,7 +144,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   struct TestMatch {
     bool is_psl_match;
     base::Time date_last_used;
-    std::string username;
+    std::u16string username;
   };
   struct TestCase {
     const char* description;
@@ -154,39 +154,47 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   } test_cases[] = {
       {"Empty matches", {}, kNotFound, {}},
       {"1 non-psl match",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = "u"}},
+       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"}},
        0,
        {{"u", 0}}},
       {"1 psl match",
-       {{.is_psl_match = true, .date_last_used = kNow, .username = "u"}},
+       {{.is_psl_match = true, .date_last_used = kNow, .username = u"u"}},
        0,
        {{"u", 0}}},
       {"2 matches with the same username",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = "u"},
-        {.is_psl_match = false, .date_last_used = kYesterday, .username = "u"}},
+       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"},
+        {.is_psl_match = false,
+         .date_last_used = kYesterday,
+         .username = u"u"}},
        0,
        {{"u", 0}}},
       {"2 matches with different usernames, most recently used taken",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = "u1"},
+       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u1"},
         {.is_psl_match = false,
          .date_last_used = kYesterday,
-         .username = "u2"}},
+         .username = u"u2"}},
        0,
        {{"u1", 0}, {"u2", 1}}},
       {"2 matches with different usernames, non-psl much taken",
-       {{.is_psl_match = false, .date_last_used = kYesterday, .username = "u1"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = "u2"}},
+       {{.is_psl_match = false,
+         .date_last_used = kYesterday,
+         .username = u"u1"},
+        {.is_psl_match = true, .date_last_used = kNow, .username = u"u2"}},
        0,
        {{"u1", 0}, {"u2", 1}}},
       {"8 matches, 3 usernames",
-       {{.is_psl_match = false, .date_last_used = kYesterday, .username = "u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = "u3"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = "u1"},
-        {.is_psl_match = false, .date_last_used = k2DaysAgo, .username = "u3"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = "u1"},
-        {.is_psl_match = false, .date_last_used = kNow, .username = "u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = "u3"},
-        {.is_psl_match = false, .date_last_used = k2DaysAgo, .username = "u1"}},
+       {{.is_psl_match = false,
+         .date_last_used = kYesterday,
+         .username = u"u2"},
+        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
+        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u1"},
+        {.is_psl_match = false, .date_last_used = k2DaysAgo, .username = u"u3"},
+        {.is_psl_match = true, .date_last_used = kNow, .username = u"u1"},
+        {.is_psl_match = false, .date_last_used = kNow, .username = u"u2"},
+        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
+        {.is_psl_match = false,
+         .date_last_used = k2DaysAgo,
+         .username = u"u1"}},
        5,
        {{"u1", 7}, {"u2", 5}, {"u3", 3}}},
 
@@ -201,7 +209,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       PasswordForm form;
       form.is_public_suffix_match = match.is_psl_match;
       form.date_last_used = match.date_last_used;
-      form.username_value = base::ASCIIToUTF16(match.username);
+      form.username_value = match.username;
       owning_matches.push_back(form);
     }
     std::vector<const PasswordForm*> matches;

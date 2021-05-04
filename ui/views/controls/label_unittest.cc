@@ -42,10 +42,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-using base::ASCIIToUTF16;
 using base::WideToUTF16;
-
-#define EXPECT_STR_EQ(ascii, utf16) EXPECT_EQ(ASCIIToUTF16(ascii), utf16)
 
 namespace views {
 
@@ -1216,7 +1213,7 @@ TEST_F(LabelSelectionTest, DoubleTripleClick) {
 
   // Double clicking should select the word under cursor.
   PerformClick(GetCursorPoint(0));
-  EXPECT_STR_EQ("Label", GetSelectedText());
+  EXPECT_EQ(u"Label", GetSelectedText());
 
   // Triple clicking should select all the text.
   PerformClick(GetCursorPoint(0));
@@ -1224,13 +1221,13 @@ TEST_F(LabelSelectionTest, DoubleTripleClick) {
 
   // Clicking again should alternate to double click.
   PerformClick(GetCursorPoint(0));
-  EXPECT_STR_EQ("Label", GetSelectedText());
+  EXPECT_EQ(u"Label", GetSelectedText());
 
   // Clicking at another location should clear the selection.
   PerformClick(GetCursorPoint(8));
   EXPECT_TRUE(GetSelectedText().empty());
   PerformClick(GetCursorPoint(8));
-  EXPECT_STR_EQ("double", GetSelectedText());
+  EXPECT_EQ(u"double", GetSelectedText());
 }
 
 // Verify label text selection behavior on mouse drag.
@@ -1241,18 +1238,17 @@ TEST_F(LabelSelectionTest, MouseDrag) {
 
   PerformMousePress(GetCursorPoint(5));
   PerformMouseDragTo(GetCursorPoint(0));
-  EXPECT_STR_EQ("Label", GetSelectedText());
+  EXPECT_EQ(u"Label", GetSelectedText());
 
   PerformMouseDragTo(GetCursorPoint(8));
-  EXPECT_STR_EQ(" mo", GetSelectedText());
+  EXPECT_EQ(u" mo", GetSelectedText());
 
   PerformMouseDragTo(gfx::Point(200, GetCursorPoint(0).y()));
   PerformMouseRelease(gfx::Point(200, GetCursorPoint(0).y()));
-  EXPECT_STR_EQ(" mouse drag", GetSelectedText());
+  EXPECT_EQ(u" mouse drag", GetSelectedText());
 
   event_generator()->PressKey(ui::VKEY_C, kControlCommandModifier);
-  EXPECT_STR_EQ(" mouse drag",
-                GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_EQ(u" mouse drag", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
 }
 
 TEST_F(LabelSelectionTest, MouseDragMultilineLTR) {
@@ -1264,16 +1260,16 @@ TEST_F(LabelSelectionTest, MouseDragMultilineLTR) {
 
   PerformMousePress(GetCursorPoint(2));
   PerformMouseDragTo(GetCursorPoint(0));
-  EXPECT_STR_EQ("ab", GetSelectedText());
+  EXPECT_EQ(u"ab", GetSelectedText());
 
   PerformMouseDragTo(GetCursorPoint(7));
-  EXPECT_STR_EQ("cd\nef", GetSelectedText());
+  EXPECT_EQ(u"cd\nef", GetSelectedText());
 
   PerformMouseDragTo(gfx::Point(-5, GetCursorPoint(6).y()));
-  EXPECT_STR_EQ("cd\n", GetSelectedText());
+  EXPECT_EQ(u"cd\n", GetSelectedText());
 
   PerformMouseDragTo(gfx::Point(100, GetCursorPoint(6).y()));
-  EXPECT_STR_EQ("cd\nefgh", GetSelectedText());
+  EXPECT_EQ(u"cd\nefgh", GetSelectedText());
 
   const gfx::Point points[] = {
       {GetCursorPoint(1).x(), -5},   // NW.
@@ -1283,22 +1279,22 @@ TEST_F(LabelSelectionTest, MouseDragMultilineLTR) {
       {GetCursorPoint(7).x(), 100},  // SOUTH.
       {GetCursorPoint(6).x(), 100},  // SW.
   };
-  constexpr const char* kExtendLeft = "ab";
-  constexpr const char* kExtendRight = "cd\nefgh";
+  constexpr const char16_t* kExtendLeft = u"ab";
+  constexpr const char16_t* kExtendRight = u"cd\nefgh";
 
   // For multiline, N* extends left, S* extends right.
   PerformMouseDragTo(points[NW]);
-  EXPECT_STR_EQ(kExtends ? kExtendLeft : "b", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendLeft : u"b", GetSelectedText());
   PerformMouseDragTo(points[NORTH]);
-  EXPECT_STR_EQ(kExtends ? kExtendLeft : "", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendLeft : u"", GetSelectedText());
   PerformMouseDragTo(points[NE]);
-  EXPECT_STR_EQ(kExtends ? kExtendLeft : "c", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendLeft : u"c", GetSelectedText());
   PerformMouseDragTo(points[SE]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "cd\nefg", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"cd\nefg", GetSelectedText());
   PerformMouseDragTo(points[SOUTH]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "cd\nef", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"cd\nef", GetSelectedText());
   PerformMouseDragTo(points[SW]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "cd\ne", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"cd\ne", GetSelectedText());
 }
 
 // Single line fields consider the x offset as well. Ties go to the right.
@@ -1315,22 +1311,22 @@ TEST_F(LabelSelectionTest, MouseDragSingleLineLTR) {
       {GetCursorPoint(2).x(), 100},  // SOUTH.
       {GetCursorPoint(1).x(), 100},  // SW.
   };
-  constexpr const char* kExtendLeft = "ab";
-  constexpr const char* kExtendRight = "cdef";
+  constexpr const char16_t* kExtendLeft = u"ab";
+  constexpr const char16_t* kExtendRight = u"cdef";
 
   // For single line, western directions extend left, all others extend right.
   PerformMouseDragTo(points[NW]);
-  EXPECT_STR_EQ(kExtends ? kExtendLeft : "b", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendLeft : u"b", GetSelectedText());
   PerformMouseDragTo(points[NORTH]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"", GetSelectedText());
   PerformMouseDragTo(points[NE]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "c", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"c", GetSelectedText());
   PerformMouseDragTo(points[SE]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "c", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"c", GetSelectedText());
   PerformMouseDragTo(points[SOUTH]);
-  EXPECT_STR_EQ(kExtends ? kExtendRight : "", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendRight : u"", GetSelectedText());
   PerformMouseDragTo(points[SW]);
-  EXPECT_STR_EQ(kExtends ? kExtendLeft : "b", GetSelectedText());
+  EXPECT_EQ(kExtends ? kExtendLeft : u"b", GetSelectedText());
 }
 
 TEST_F(LabelSelectionTest, MouseDragMultilineRTL) {
@@ -1427,14 +1423,14 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
 
   PerformClick(GetCursorPoint(8));
   PerformMousePress(GetCursorPoint(8));
-  EXPECT_STR_EQ("drag", GetSelectedText());
+  EXPECT_EQ(u"drag", GetSelectedText());
 
   PerformMouseDragTo(GetCursorPoint(0));
-  EXPECT_STR_EQ("Label drag", GetSelectedText());
+  EXPECT_EQ(u"Label drag", GetSelectedText());
 
   PerformMouseDragTo(gfx::Point(200, GetCursorPoint(0).y()));
   PerformMouseRelease(gfx::Point(200, GetCursorPoint(0).y()));
-  EXPECT_STR_EQ("drag word", GetSelectedText());
+  EXPECT_EQ(u"drag word", GetSelectedText());
 }
 
 // TODO(crbug.com/1201128): LabelSelectionTest.SelectionClipboard is failing on
@@ -1456,15 +1452,15 @@ TEST_F(LabelSelectionTest, MAYBE_SelectionClipboard) {
   // Verify programmatic modification of selection, does not modify the
   // selection clipboard.
   label()->SelectRange(gfx::Range(2, 5));
-  EXPECT_STR_EQ("bel", GetSelectedText());
+  EXPECT_EQ(u"bel", GetSelectedText());
   EXPECT_TRUE(GetClipboardText(ui::ClipboardBuffer::kSelection).empty());
 
   // Verify text selection using the mouse updates the selection clipboard.
   PerformMousePress(GetCursorPoint(5));
   PerformMouseDragTo(GetCursorPoint(0));
   PerformMouseRelease(GetCursorPoint(0));
-  EXPECT_STR_EQ("Label", GetSelectedText());
-  EXPECT_STR_EQ("Label", GetClipboardText(ui::ClipboardBuffer::kSelection));
+  EXPECT_EQ(u"Label", GetSelectedText());
+  EXPECT_EQ(u"Label", GetClipboardText(ui::ClipboardBuffer::kSelection));
 }
 #endif
 

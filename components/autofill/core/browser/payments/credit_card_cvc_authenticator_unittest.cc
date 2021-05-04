@@ -64,13 +64,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
-
 namespace autofill {
 namespace {
 
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
+const char16_t kTestNumber16[] = u"4234567890123456";
 
 }  // namespace
 
@@ -164,7 +163,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardSuccess) {
 
   OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
-  EXPECT_EQ(ASCIIToUTF16(kTestNumber), requester_->number());
+  EXPECT_EQ(kTestNumber16, requester_->number());
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardNetworkError) {
@@ -201,7 +200,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardTryAgainFailure) {
 
   OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
-  EXPECT_EQ(ASCIIToUTF16(kTestNumber), requester_->number());
+  EXPECT_EQ(kTestNumber16, requester_->number());
 }
 
 }  // namespace autofill

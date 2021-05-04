@@ -156,9 +156,9 @@ IN_PROC_BROWSER_TEST_F(AdRedirectTriggerBrowserTest,
 
   // Create an ad subframe.
   GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("f = document.createElement('google_ads_iframe');"
-                         "f.srcdoc = '<script>var x = 1</script>';"
-                         "document.body.appendChild(f);"),
+      u"f = document.createElement('google_ads_iframe');"
+      u"f.srcdoc = '<script>var x = 1</script>';"
+      u"document.body.appendChild(f);",
       base::NullCallback());
 
   // Cause blocked redirect

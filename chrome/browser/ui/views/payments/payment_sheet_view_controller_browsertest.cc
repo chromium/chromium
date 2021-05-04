@@ -408,8 +408,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerContactDetailsTest,
   PayWithCreditCard(u"123");
   RetryPaymentRequest("{}", dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "There was an error processing your order. Please try again."),
+  EXPECT_EQ(u"There was an error processing your order. Please try again.",
             GetLabelText(DialogViewID::WARNING_LABEL));
 }
 

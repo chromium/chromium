@@ -120,8 +120,8 @@ const char kTestAndroidFacetURIGamma[] =
 const char kTestAndroidRealmGamma[] =
     "android://hash@com.example.gamma.android";
 
-const char kTestUsername[] = "JohnDoe";
-const char kTestPassword[] = "secret";
+const char16_t kTestUsername[] = u"JohnDoe";
+const char16_t kTestPassword[] = u"secret";
 
 AffiliatedFacets GetTestEquivalenceClassAlpha() {
   return {
@@ -149,8 +149,8 @@ PasswordForm GetTestAndroidCredentials(const char* signon_realm) {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.signon_realm = signon_realm;
-  form.username_value = base::ASCIIToUTF16(kTestUsername);
-  form.password_value = base::ASCIIToUTF16(kTestPassword);
+  form.username_value = kTestUsername;
+  form.password_value = kTestPassword;
   return form;
 }
 

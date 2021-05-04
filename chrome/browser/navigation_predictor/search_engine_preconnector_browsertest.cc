@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
   // Verifies that the default search is preconnected.
-  constexpr char kShortName[] = "test";
+  constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").GetOrigin()]);
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
                        PreconnectOnlyInForeground) {
-  constexpr char kShortName[] = "test";
+  constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   WaitForDelay(base::TimeDelta::FromMilliseconds(200));
 
   TemplateURLData data_fake_search;
-  data_fake_search.SetShortName(base::ASCIIToUTF16(kShortName));
+  data_fake_search.SetShortName(kShortName);
   data_fake_search.SetKeyword(data.short_name());
   data_fake_search.SetURL(kFakeSearch);
 
@@ -283,7 +283,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
                        PreconnectOnlyInForeground) {
   base::HistogramTester histogram_tester;
-  static const char kShortName[] = "test";
+  static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
   static const char kSearchURLWithQuery[] =
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   WaitForDelay(base::TimeDelta::FromMilliseconds(200));
 
   TemplateURLData data_fake_search;
-  data_fake_search.SetShortName(base::ASCIIToUTF16(kShortName));
+  data_fake_search.SetShortName(kShortName);
   data_fake_search.SetKeyword(data.short_name());
   const GURL fake_search_url(kFakeSearch);
   data_fake_search.SetURL(kFakeSearch);
@@ -373,7 +373,7 @@ class SearchEnginePreconnectorKeepSocketBrowserTest
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
                        SocketWarmForSearch) {
   // Verifies that a navigation to search will use a warm socket.
-  constexpr char kShortName[] = "test";
+  constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   constexpr char kSearchURLWithQuery[] = "/anchors_different_area.html?q=porgs";
 
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -464,7 +464,7 @@ class SearchEnginePreconnectorGoogleOnlyBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
                        GoogleOnly) {
-  constexpr char kShortName[] = "test";
+  constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
   TemplateURLData data_google_search;
-  data_google_search.SetShortName(base::ASCIIToUTF16(kShortName));
+  data_google_search.SetShortName(kShortName);
   data_google_search.SetKeyword(data.short_name());
   data_google_search.SetURL(kGoogleSearch);
 

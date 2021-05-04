@@ -27,7 +27,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
@@ -276,11 +275,9 @@ TEST_P(AutofillProfileTest, AdjustInferredLabels) {
   ASSERT_EQ(5U, labels.size());
   EXPECT_EQ(u"John Doe, 666 Erebus St., CA", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
-  EXPECT_EQ(ASCIIToUTF16("John Doe, 666 Erebus St., CO, johndoe@hades.com,"
-                         " 16502111111"),
+  EXPECT_EQ(u"John Doe, 666 Erebus St., CO, johndoe@hades.com, 16502111111",
             labels[2]);
-  EXPECT_EQ(ASCIIToUTF16("John Doe, 666 Erebus St., CO, johndoe@hades.com,"
-                         " 16504444444"),
+  EXPECT_EQ(u"John Doe, 666 Erebus St., CO, johndoe@hades.com, 16504444444",
             labels[3]);
   // This one differs from other ones by unique e-mail, so no need for extra
   // information.

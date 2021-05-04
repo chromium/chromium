@@ -20,7 +20,7 @@ const base::FilePath::CharType kDataRoot[] =
 
 // The title of the Origin Policy error interstitial. This is used to determine
 // whether the page load was blocked by the origin policy throttle.
-const char kErrorInterstitialTitle[] = "Origin Policy Error";
+const char16_t kErrorInterstitialTitle[] = u"Origin Policy Error";
 }  // namespace
 
 namespace content {
@@ -123,21 +123,21 @@ IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ApplyPolicy) {
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy301Redirect) {
   SetStatus(net::HTTP_MOVED_PERMANENTLY);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
+  EXPECT_EQ(kErrorInterstitialTitle,
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy302Redirect) {
   SetStatus(net::HTTP_FOUND);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
+  EXPECT_EQ(kErrorInterstitialTitle,
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy307Redirect) {
   SetStatus(net::HTTP_TEMPORARY_REDIRECT);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
+  EXPECT_EQ(kErrorInterstitialTitle,
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 

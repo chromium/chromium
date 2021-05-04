@@ -44,8 +44,8 @@
 namespace content {
 namespace {
 
-const char kSuccessTitle[] = "Title Of Awesomeness";
-const char kErrorTitle[] = "Error";
+const char16_t kSuccessTitle[] = u"Title Of Awesomeness";
+const char16_t kErrorTitle[] = u"Error";
 
 base::FilePath TestFilePath() {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -133,8 +133,7 @@ class FileURLLoaderFactoryBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, Basic) {
   TestFileAccessContentBrowserClient test_browser_client;
   EXPECT_TRUE(NavigateToURL(shell(), net::FilePathToFileURL(TestFilePath())));
-  EXPECT_EQ(base::ASCIIToUTF16(kSuccessTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kSuccessTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(1u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(TestFilePath(), test_browser_client.access_allowed_args()[0].path);
@@ -155,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, FileAccessNotAllowed) {
               net::test::IsError(net::ERR_ACCESS_DENIED));
   EXPECT_EQ(net::FilePathToFileURL(TestFilePath()),
             shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(1u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(TestFilePath(), test_browser_client.access_allowed_args()[0].path);
@@ -187,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, SymlinksToFiles) {
       base::CreateSymbolicLink(AbsoluteFilePath(TestFilePath()), sym_link));
 
   EXPECT_TRUE(NavigateToURL(shell(), net::FilePathToFileURL(sym_link)));
-  EXPECT_EQ(base::ASCIIToUTF16(kSuccessTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kSuccessTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(1u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(sym_link, test_browser_client.access_allowed_args()[0].path);
@@ -212,8 +209,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, SymlinksToFiles) {
               net::test::IsError(net::ERR_ACCESS_DENIED));
   EXPECT_EQ(net::FilePathToFileURL(sym_link),
             shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(1u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(sym_link, test_browser_client.access_allowed_args()[0].path);
@@ -255,8 +251,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
   EXPECT_TRUE(NavigateToURL(
       shell(), net::FilePathToFileURL(lnk_path),
       net::FilePathToFileURL(TestFilePath()) /* expect_commit_url */));
-  EXPECT_EQ(base::ASCIIToUTF16(kSuccessTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kSuccessTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(2u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(lnk_path, test_browser_client.access_allowed_args()[0].path);
@@ -284,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
               net::test::IsError(net::ERR_ACCESS_DENIED));
   EXPECT_EQ(net::FilePathToFileURL(lnk_path),
             shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(1u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(lnk_path, test_browser_client.access_allowed_args()[0].path);
@@ -308,8 +302,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
               net::test::IsError(net::ERR_ACCESS_DENIED));
   EXPECT_EQ(net::FilePathToFileURL(TestFilePath()),
             shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
 
   ASSERT_EQ(2u, test_browser_client.access_allowed_args().size());
   EXPECT_EQ(lnk_path, test_browser_client.access_allowed_args()[0].path);
@@ -339,8 +332,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
   // The redirect should not have been followed. This is important so that a
   // reload will show the same error.
   EXPECT_EQ(RedirectToFileURL(), shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
   // There should never have been a request for the file URL.
   EXPECT_TRUE(test_browser_client.access_allowed_args().empty());
 
@@ -352,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
   EXPECT_THAT(navigation_observer2.last_net_error_code(),
               net::test::IsError(net::ERR_UNSAFE_REDIRECT));
   EXPECT_EQ(RedirectToFileURL(), shell()->web_contents()->GetURL());
-  EXPECT_EQ(base::ASCIIToUTF16(kErrorTitle),
-            shell()->web_contents()->GetTitle());
+  EXPECT_EQ(kErrorTitle, shell()->web_contents()->GetTitle());
   // There should never have been a request for the file URL.
   EXPECT_TRUE(test_browser_client.access_allowed_args().empty());
 }

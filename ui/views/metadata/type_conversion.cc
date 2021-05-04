@@ -59,7 +59,7 @@ CONVERT_NUMBER_TO_STRING(float)
 CONVERT_NUMBER_TO_STRING(double)
 
 std::u16string TypeConverter<bool>::ToString(bool source_value) {
-  return base::ASCIIToUTF16(source_value ? "true" : "false");
+  return source_value ? u"true" : u"false";
 }
 
 ValidStrings TypeConverter<bool>::GetValidStrings() {
@@ -119,7 +119,7 @@ std::u16string TypeConverter<gfx::ShadowValues>::ToString(
     const gfx::ShadowValues& source_value) {
   std::u16string ret = u"[";
   for (auto shadow_value : source_value) {
-    ret += base::ASCIIToUTF16(" " + shadow_value.ToString() + ";");
+    ret += u" " + base::ASCIIToUTF16(shadow_value.ToString()) + u";";
   }
 
   ret[ret.length() - 1] = ' ';

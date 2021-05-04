@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
                        AnchorElementClickedOnSearchEnginePage) {
-  static const char kShortName[] = "test";
+  static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] = "/anchors_same_href.html?q={searchTerms}";
 
   TemplateURLService* model =
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
                        AnchorElementClickedOnNonSearchEnginePage) {
-  static const char kShortName[] = "test";
+  static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] = "/somne_other_url.html?q={searchTerms}";
 
   TemplateURLService* model =
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
           browser()->profile());
   service->AddObserver(&observer);
 
-  static const char kShortName[] = "test";
+  static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
 
@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
 

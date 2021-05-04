@@ -234,10 +234,10 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
 
   const std::u16string short_url = u"http://foo/";
   const std::u16string long_url =
-      base::ASCIIToUTF16("http://super-duper-long-url--."
-                         "that.cannot.possibly.fit.even-in-80-columns"
-                         "or.be.reasonably-displayed-in-a-menu"
-                         "without.looking-ridiculous.com/");  // 140 chars total
+      u"http://super-duper-long-url--."
+      u"that.cannot.possibly.fit.even-in-80-columns"
+      u"or.be.reasonably-displayed-in-a-menu"
+      u"without.looking-ridiculous.com/";  // 140 chars total
 
   AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
   AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);

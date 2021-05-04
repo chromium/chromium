@@ -47,7 +47,7 @@ using bookmarks::UrlAndTitle;
 
 namespace {
 const char kPersistBookmarkURL[] = "http://www.cnn.com/";
-const char kPersistBookmarkTitle[] = "CNN";
+const char16_t kPersistBookmarkTitle[] = u"CNN";
 
 bool IsShowingInterstitial(content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
   bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kPersistBookmarkURL),
-                                base::ASCIIToUTF16(kPersistBookmarkTitle));
+                                kPersistBookmarkTitle);
 }
 
 #if defined(OS_WIN)
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
 
   ASSERT_EQ(1u, urls.size());
   ASSERT_EQ(GURL(kPersistBookmarkURL), urls[0].url);
-  ASSERT_EQ(base::ASCIIToUTF16(kPersistBookmarkTitle), urls[0].title);
+  ASSERT_EQ(kPersistBookmarkTitle, urls[0].title);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
 
   bookmarks::AddIfNotBookmarked(bookmark_model1, GURL(kPersistBookmarkURL),
-                                base::ASCIIToUTF16(kPersistBookmarkTitle));
+                                kPersistBookmarkTitle);
   std::vector<UrlAndTitle> urls1, urls2;
   bookmark_model1->GetBookmarks(&urls1);
   bookmark_model2->GetBookmarks(&urls2);

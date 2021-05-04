@@ -35,6 +35,7 @@
 namespace {
 
 constexpr char kGaiaUsername[] = "username";
+constexpr char16_t kGaiaUsername16[] = u"username";
 constexpr char kGaiaEmail[] = "username@gmail.com";
 constexpr char kGaiaId[] = "test_gaia_id";
 
@@ -69,7 +70,7 @@ void PasswordManagerSigninInterceptTestHelper::StoreGaiaCredentials(
     scoped_refptr<password_manager::TestPasswordStore> password_store) {
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = GaiaUrls::GetInstance()->gaia_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16(kGaiaUsername);
+  signin_form.username_value = kGaiaUsername16;
   signin_form.password_value = u"pw";
   password_store->AddLogin(signin_form);
 }

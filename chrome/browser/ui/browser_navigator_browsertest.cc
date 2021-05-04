@@ -61,6 +61,7 @@ using content::WebContents;
 namespace {
 
 const char kExpectedTitle[] = "PASSED!";
+const char16_t kExpectedTitle16[] = u"PASSED!";
 const char kEchoTitleCommand[] = "/echotitle";
 
 GURL GetGoogleURL() {
@@ -1719,7 +1720,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a browser initiated POST request in new foreground tab.
-  std::u16string expected_title(base::ASCIIToUTF16(kExpectedTitle));
+  std::u16string expected_title(kExpectedTitle16);
   std::string post_data = kExpectedTitle;
   std::u16string title;
   ASSERT_TRUE(OpenPOSTURLInNewForegroundTabAndGetTitle(
@@ -1736,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a renderer initiated POST request in new foreground tab.
-  std::u16string expected_title(base::ASCIIToUTF16(kExpectedTitle));
+  std::u16string expected_title(kExpectedTitle16);
   std::string post_data = kExpectedTitle;
   std::u16string title;
   ASSERT_TRUE(OpenPOSTURLInNewForegroundTabAndGetTitle(

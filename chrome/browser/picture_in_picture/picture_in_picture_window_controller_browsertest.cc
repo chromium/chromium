@@ -2471,7 +2471,7 @@ IN_PROC_BROWSER_TEST_F(
   // automatically as it doesn't have the Auto Picture-in-Picture attribute
   // set.
   web_contents()->WasShown();
-  const auto expected_title = base::ASCIIToUTF16("visible");
+  const std::u16string expected_title = u"visible";
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());

@@ -52,9 +52,9 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   std::u16string GetStepTitle() const override { return u"Test Title"; }
 
   std::u16string GetStepDescription() const override {
-    return base::ASCIIToUTF16(
-        "Test Description That Is Super Long So That It No Longer Fits On One "
-        "Line Because Life Would Be Just Too Simple That Way");
+    return u"Test Description That Is Super Long So That It No Longer Fits On "
+           u"One "
+           u"Line Because Life Would Be Just Too Simple That Way";
   }
 
   std::u16string GetAdditionalDescription() const override {

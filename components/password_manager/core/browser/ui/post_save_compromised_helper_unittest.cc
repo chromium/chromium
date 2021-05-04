@@ -24,13 +24,13 @@ using testing::_;
 using testing::Return;
 
 constexpr char kSignonRealm[] = "https://example.com/";
-constexpr char kUsername[] = "user";
-constexpr char kUsername2[] = "user2";
+constexpr char16_t kUsername[] = u"user";
+constexpr char16_t kUsername2[] = u"user2";
 
 InsecureCredential CreateInsecureCredential(
-    base::StringPiece username,
+    base::StringPiece16 username,
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
-  InsecureCredential compromised(kSignonRealm, base::ASCIIToUTF16(username),
+  InsecureCredential compromised(kSignonRealm, std::u16string(username),
                                  base::Time(), InsecureType::kLeaked,
                                  IsMuted(false));
   compromised.in_store = store;
@@ -67,7 +67,7 @@ class PostSaveCompromisedHelperTest : public testing::Test {
 };
 
 TEST_F(PostSaveCompromisedHelperTest, DefaultState) {
-  PostSaveCompromisedHelper helper({}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({}, kUsername);
   EXPECT_EQ(BubbleType::kNoBubble, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
 }
@@ -76,7 +76,7 @@ TEST_F(PostSaveCompromisedHelperTest, EmptyStore) {
   prefs()->SetDouble(
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
-  PostSaveCompromisedHelper helper({}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl);
@@ -91,7 +91,7 @@ TEST_F(PostSaveCompromisedHelperTest, RandomSite_FullStore) {
   prefs()->SetDouble(
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
-  PostSaveCompromisedHelper helper({}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
   std::vector<InsecureCredential> saved = {
@@ -111,7 +111,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
   std::vector<InsecureCredential> saved = {
       CreateInsecureCredential(kUsername),
       CreateInsecureCredential(kUsername2)};
-  PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
   EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
@@ -129,7 +129,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
   std::vector<InsecureCredential> saved = {
       CreateInsecureCredential(kUsername),
       CreateInsecureCredential(kUsername2)};
-  PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
   saved = {CreateInsecureCredential(kUsername2)};
@@ -144,7 +144,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
 
 TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckNeverDone) {
   std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};
-  PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl).Times(0);
@@ -160,7 +160,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromDays(5)).ToDoubleT());
   std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};
-  PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl).Times(0);
@@ -176,7 +176,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
   std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};
-  PostSaveCompromisedHelper helper({saved}, base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
   saved = {};
@@ -226,8 +226,7 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
       profile_store_compromised_credential,
       account_store_compromised_credential};
 
-  PostSaveCompromisedHelper helper({compromised_credentials},
-                                   base::ASCIIToUTF16(kUsername));
+  PostSaveCompromisedHelper helper({compromised_credentials}, kUsername);
   EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
       .WillOnce(Return(std::vector<InsecureCredential>{
           profile_store_compromised_credential}));

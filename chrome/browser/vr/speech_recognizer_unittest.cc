@@ -32,9 +32,9 @@
 namespace vr {
 
 static const int kTestSessionId = 1;
-const char kTestInterimResult[] = "kitten";
-const char kTestResult[] = "cat";
-const char kTestResultMultiple[] = "cat video";
+const char16_t kTestInterimResult[] = u"kitten";
+const char16_t kTestResult[] = u"cat";
+const char16_t kTestResultMultiple[] = u"cat video";
 
 enum FakeRecognitionEvent {
   RECOGNITION_START = 0,
@@ -213,7 +213,7 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
   }
 
  private:
-  void SendRecognitionResult(const char* string, bool is_provisional) {
+  void SendRecognitionResult(const char16_t* string, bool is_provisional) {
     content::SpeechRecognitionEventListener* listener = GetActiveListener();
     if (!listener)
       return;
@@ -222,8 +222,8 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
 
     blink::mojom::SpeechRecognitionResultPtr result =
         blink::mojom::SpeechRecognitionResult::New();
-    result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-        base::ASCIIToUTF16(string), 1.0));
+    result->hypotheses.push_back(
+        blink::mojom::SpeechRecognitionHypothesis::New(string, 1.0));
     result->is_provisional = is_provisional;
     std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
     results.push_back(std::move(result));
@@ -287,9 +287,9 @@ class SpeechRecognizerTest : public testing::Test {
 TEST_F(SpeechRecognizerTest, ReceivedCorrectSpeechResult) {
   testing::Sequence s;
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(true)).InSequence(s);
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult)))
       .InSequence(s);
-  EXPECT_CALL(*delegate_, OnVoiceResults(base::ASCIIToUTF16(kTestResult)))
+  EXPECT_CALL(*delegate_, OnVoiceResults(std::u16string(kTestResult)))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(false)).InSequence(s);
@@ -313,11 +313,9 @@ TEST_F(SpeechRecognizerTest, ReceivedCorrectSpeechResult) {
 TEST_F(SpeechRecognizerTest, MultipleResultsTriggerNavigation) {
   testing::Sequence s;
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(true)).InSequence(s);
-  EXPECT_CALL(*ui_,
-              SetRecognitionResult(base::ASCIIToUTF16(kTestResultMultiple)))
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResultMultiple)))
       .InSequence(s);
-  EXPECT_CALL(*delegate_,
-              OnVoiceResults(base::ASCIIToUTF16(kTestResultMultiple)))
+  EXPECT_CALL(*delegate_, OnVoiceResults(std::u16string(kTestResultMultiple)))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(false)).InSequence(s);
@@ -385,8 +383,7 @@ TEST_F(SpeechRecognizerTest, NoSoundTimeout) {
 TEST_F(SpeechRecognizerTest, SafeToResetAfterStart) {
   EXPECT_CALL(*ui_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNITION_RECOGNIZING));
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
-      .Times(0);
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult))).Times(0);
 
   speech_recognizer_->Start();
   base::RunLoop().RunUntilIdle();
@@ -403,8 +400,7 @@ TEST_F(SpeechRecognizerTest, SafeToResetAfterStart) {
 
 // This test that calling start after stop should still work as expected.
 TEST_F(SpeechRecognizerTest, RestartAfterStop) {
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
-      .Times(1);
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult))).Times(1);
 
   speech_recognizer_->Start();
   base::RunLoop().RunUntilIdle();

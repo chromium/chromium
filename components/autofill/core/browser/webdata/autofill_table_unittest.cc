@@ -46,7 +46,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using base::Time;
 using base::TimeDelta;
 using sync_pb::EntityMetadata;
@@ -103,14 +102,13 @@ bool CompareAutofillEntries(const AutofillEntry& a, const AutofillEntry& b) {
                   b.date_last_used());
 }
 
-AutofillEntry MakeAutofillEntry(const std::string& name,
-                                const std::string& value,
+AutofillEntry MakeAutofillEntry(const std::u16string& name,
+                                const std::u16string& value,
                                 time_t date_created,
                                 time_t date_last_used) {
   if (date_last_used < 0)
     date_last_used = date_created;
-  return AutofillEntry(AutofillKey(ASCIIToUTF16(name), ASCIIToUTF16(value)),
-                       Time::FromTimeT(date_created),
+  return AutofillEntry(AutofillKey(name, value), Time::FromTimeT(date_created),
                        Time::FromTimeT(date_last_used));
 }
 
@@ -331,16 +329,16 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
   TimeDelta second = TimeDelta::FromSeconds(1);
 
   struct Entry {
-    const char* name;
-    const char* value;
-  } entries[] = {{"Alter ego", "Superman"}, {"Name", "Superman"},
-                 {"Name", "Clark Kent"},    {"Name", "Superman"},
-                 {"Name", "Clark Sutter"},  {"Nomen", "Clark Kent"}};
+    const char16_t* name;
+    const char16_t* value;
+  } entries[] = {{u"Alter ego", u"Superman"}, {u"Name", u"Superman"},
+                 {u"Name", u"Clark Kent"},    {u"Name", u"Superman"},
+                 {u"Name", u"Clark Sutter"},  {u"Nomen", u"Clark Kent"}};
 
   for (Entry entry : entries) {
     FormFieldData field;
-    field.name = ASCIIToUTF16(entry.name);
-    field.value = ASCIIToUTF16(entry.value);
+    field.name = entry.name;
+    field.value = entry.value;
     ASSERT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
     now += second;
   }
@@ -438,7 +436,7 @@ TEST_F(AutofillTableTest, Autofill_AddChanges) {
 }
 
 TEST_F(AutofillTableTest, Autofill_UpdateOneWithOneTimestamp) {
-  AutofillEntry entry(MakeAutofillEntry("foo", "bar", 1, -1));
+  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, -1));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
@@ -452,7 +450,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateOneWithOneTimestamp) {
 }
 
 TEST_F(AutofillTableTest, Autofill_UpdateOneWithTwoTimestamps) {
-  AutofillEntry entry(MakeAutofillEntry("foo", "bar", 1, 2));
+  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, 2));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
@@ -466,7 +464,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateOneWithTwoTimestamps) {
 }
 
 TEST_F(AutofillTableTest, Autofill_GetAutofillTimestamps) {
-  AutofillEntry entry(MakeAutofillEntry("foo", "bar", 1, 2));
+  AutofillEntry entry(MakeAutofillEntry(u"foo", u"bar", 1, 2));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
@@ -479,8 +477,8 @@ TEST_F(AutofillTableTest, Autofill_GetAutofillTimestamps) {
 }
 
 TEST_F(AutofillTableTest, Autofill_UpdateTwo) {
-  AutofillEntry entry0(MakeAutofillEntry("foo", "bar0", 1, -1));
-  AutofillEntry entry1(MakeAutofillEntry("foo", "bar1", 2, 3));
+  AutofillEntry entry0(MakeAutofillEntry(u"foo", u"bar0", 1, -1));
+  AutofillEntry entry1(MakeAutofillEntry(u"foo", u"bar1", 2, 3));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry0);
   entries.push_back(entry1);
@@ -491,10 +489,10 @@ TEST_F(AutofillTableTest, Autofill_UpdateTwo) {
 }
 
 TEST_F(AutofillTableTest, Autofill_UpdateNullTerminated) {
-  const char kName[] = "foo";
-  const char kValue[] = "bar";
+  const char16_t kName[] = u"foo";
+  const char16_t kValue[] = u"bar";
   // A value which contains terminating character.
-  std::string value(kValue, base::size(kValue));
+  std::u16string value(kValue, base::size(kValue));
 
   AutofillEntry entry0(MakeAutofillEntry(kName, kValue, 1, -1));
   AutofillEntry entry1(MakeAutofillEntry(kName, value, 2, 3));
@@ -503,10 +501,8 @@ TEST_F(AutofillTableTest, Autofill_UpdateNullTerminated) {
   entries.push_back(entry1);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
 
-  EXPECT_EQ(1, GetAutofillEntryCount(ASCIIToUTF16(kName), ASCIIToUTF16(kValue),
-                                     db_.get()));
-  EXPECT_EQ(2, GetAutofillEntryCount(ASCIIToUTF16(kName), ASCIIToUTF16(value),
-                                     db_.get()));
+  EXPECT_EQ(1, GetAutofillEntryCount(kName, kValue, db_.get()));
+  EXPECT_EQ(2, GetAutofillEntryCount(kName, value, db_.get()));
 
   std::vector<AutofillEntry> all_entries;
   ASSERT_TRUE(table_->GetAllAutofillEntries(&all_entries));
@@ -523,7 +519,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateReplace) {
   field.value = u"Superman";
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
 
-  AutofillEntry entry(MakeAutofillEntry("Name", "Superman", 1, 2));
+  AutofillEntry entry(MakeAutofillEntry(u"Name", u"Superman", 1, 2));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
@@ -537,7 +533,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateReplace) {
 TEST_F(AutofillTableTest, Autofill_UpdateDontReplace) {
   Time t = AutofillClock::Now();
   AutofillEntry existing(
-      MakeAutofillEntry("Name", "Superman", t.ToTimeT(), -1));
+      MakeAutofillEntry(u"Name", u"Superman", t.ToTimeT(), -1));
 
   AutofillChangeList changes;
   // Add a form field.  This will NOT be replaced.
@@ -545,7 +541,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateDontReplace) {
   field.name = existing.key().name();
   field.value = existing.key().value();
   EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t));
-  AutofillEntry entry(MakeAutofillEntry("Name", "Clark Kent", 1, 2));
+  AutofillEntry entry(MakeAutofillEntry(u"Name", u"Clark Kent", 1, 2));
   std::vector<AutofillEntry> entries;
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutofillEntries(entries));
@@ -3261,10 +3257,10 @@ TEST_F(AutofillTableTest, GetCreditCardCloudData_NoData) {
 
 const size_t kMaxCount = 2;
 struct GetFormValuesTestCase {
-  const char* const field_suggestion[kMaxCount];
-  const char* const field_contents;
+  const char16_t* const field_suggestion[kMaxCount];
+  const char16_t* const field_contents;
   size_t expected_suggestion_count;
-  const char* const expected_suggestion[kMaxCount];
+  const char16_t* const expected_suggestion[kMaxCount];
 };
 
 class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
@@ -3310,18 +3306,16 @@ TEST_P(GetFormValuesTest, GetFormValuesForElementName_SubstringMatchEnabled) {
   FormFieldData field;
   for (size_t k = 0; k < kMaxCount; ++k) {
     field.name = u"Name";
-    field.value = ASCIIToUTF16(test_case.field_suggestion[k]);
+    field.value = test_case.field_suggestion[k];
     table_->AddFormFieldValue(field, &changes);
   }
 
   std::vector<AutofillEntry> v;
-  table_->GetFormValuesForElementName(
-      u"Name", ASCIIToUTF16(test_case.field_contents), &v, 6);
+  table_->GetFormValuesForElementName(u"Name", test_case.field_contents, &v, 6);
 
   EXPECT_EQ(test_case.expected_suggestion_count, v.size());
   for (size_t j = 0; j < test_case.expected_suggestion_count; ++j) {
-    EXPECT_EQ(ASCIIToUTF16(test_case.expected_suggestion[j]),
-              v[j].key().value());
+    EXPECT_EQ(test_case.expected_suggestion[j], v[j].key().value());
   }
 
   changes.clear();
@@ -3331,36 +3325,36 @@ TEST_P(GetFormValuesTest, GetFormValuesForElementName_SubstringMatchEnabled) {
 INSTANTIATE_TEST_SUITE_P(
     AutofillTableTest,
     GetFormValuesTest,
-    testing::Values(GetFormValuesTestCase{{"user.test", "test_user"},
-                                          "TEST",
+    testing::Values(GetFormValuesTestCase{{u"user.test", u"test_user"},
+                                          u"TEST",
                                           2,
-                                          {"test_user", "user.test"}},
-                    GetFormValuesTestCase{{"user test", "test-user"},
-                                          "user",
+                                          {u"test_user", u"user.test"}},
+                    GetFormValuesTestCase{{u"user test", u"test-user"},
+                                          u"user",
                                           2,
-                                          {"user test", "test-user"}},
-                    GetFormValuesTestCase{{"user test", "test-rest"},
-                                          "user",
+                                          {u"user test", u"test-user"}},
+                    GetFormValuesTestCase{{u"user test", u"test-rest"},
+                                          u"user",
                                           1,
-                                          {"user test", nullptr}},
-                    GetFormValuesTestCase{{"user@test", "test_user"},
-                                          "user@t",
+                                          {u"user test", nullptr}},
+                    GetFormValuesTestCase{{u"user@test", u"test_user"},
+                                          u"user@t",
                                           1,
-                                          {"user@test", nullptr}},
-                    GetFormValuesTestCase{{"user.test", "test_user"},
-                                          "er.tes",
+                                          {u"user@test", nullptr}},
+                    GetFormValuesTestCase{{u"user.test", u"test_user"},
+                                          u"er.tes",
                                           0,
                                           {nullptr, nullptr}},
-                    GetFormValuesTestCase{{"user test", "test_user"},
-                                          "_ser",
+                    GetFormValuesTestCase{{u"user test", u"test_user"},
+                                          u"_ser",
                                           0,
                                           {nullptr, nullptr}},
-                    GetFormValuesTestCase{{"user.test", "test_user"},
-                                          "%ser",
+                    GetFormValuesTestCase{{u"user.test", u"test_user"},
+                                          u"%ser",
                                           0,
                                           {nullptr, nullptr}},
-                    GetFormValuesTestCase{{"user.test", "test_user"},
-                                          "; DROP TABLE autofill;",
+                    GetFormValuesTestCase{{u"user.test", u"test_user"},
+                                          u"; DROP TABLE autofill;",
                                           0,
                                           {nullptr, nullptr}}));
 

@@ -27,7 +27,7 @@ namespace extensions {
 
 namespace {
 
-const char kDummyPolicyError[] = "Cannot install extension";
+const char16_t kDummyPolicyError[] = u"Cannot install extension";
 
 class ManagementPolicyMock : public ManagementPolicy::Provider {
  public:
@@ -42,7 +42,7 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
                    std::u16string* error) const override {
     EXPECT_EQ(extension_, extension);
     if (!may_load_)
-      *error = base::ASCIIToUTF16(kDummyPolicyError);
+      *error = kDummyPolicyError;
     return may_load_;
   }
 
@@ -109,8 +109,7 @@ TEST_F(PolicyCheckTest, PolicyFailure) {
   EXPECT_TRUE(runner_.called());
   EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
                                     PreloadCheck::DISALLOWED_BY_POLICY));
-  EXPECT_EQ(base::ASCIIToUTF16(kDummyPolicyError),
-            policy_check.GetErrorMessage());
+  EXPECT_EQ(kDummyPolicyError, policy_check.GetErrorMessage());
 }
 
 }  // namespace extensions

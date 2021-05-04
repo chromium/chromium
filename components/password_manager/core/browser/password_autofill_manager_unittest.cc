@@ -51,13 +51,13 @@
 #endif
 
 // The name of the username/password element in the form.
-const char kUsernameName[] = "username";
-const char kInvalidUsername[] = "no-username";
-const char kPasswordName[] = "password";
+const char16_t kUsernameName[] = u"username";
+const char16_t kInvalidUsername[] = u"no-username";
+const char16_t kPasswordName[] = u"password";
 
-const char kAliceUsername[] = "alice";
-const char kAlicePassword[] = "password";
-const char kAliceAccountStoredPassword[] = "account-stored-password";
+const char16_t kAliceUsername[] = u"alice";
+const char16_t kAlicePassword[] = u"password";
+const char16_t kAliceAccountStoredPassword[] = u"account-stored-password";
 
 using autofill::PopupType;
 using autofill::Suggestion;
@@ -257,18 +257,17 @@ autofill::AutofillClient::PopupOpenArgs CreateReopenArgsWithTestSuggestions(
 class PasswordAutofillManagerTest : public testing::Test {
  protected:
   PasswordAutofillManagerTest()
-      : test_username_(base::ASCIIToUTF16(kAliceUsername)),
-        test_password_(base::ASCIIToUTF16(kAlicePassword)) {}
+      : test_username_(kAliceUsername), test_password_(kAlicePassword) {}
 
   void SetUp() override {
     // Add a preferred login and an additional login to the FillData.
     autofill::FormFieldData username_field;
-    username_field.name = base::ASCIIToUTF16(kUsernameName);
+    username_field.name = kUsernameName;
     username_field.value = test_username_;
     fill_data_.username_field = username_field;
 
     autofill::FormFieldData password_field;
-    password_field.name = base::ASCIIToUTF16(kPasswordName);
+    password_field.name = kPasswordName;
     password_field.value = test_password_;
     fill_data_.password_field = password_field;
   }
@@ -338,8 +337,8 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestion) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   EXPECT_CALL(*client.mock_driver(), FillSuggestion(_, _)).Times(0);
-  EXPECT_FALSE(password_autofill_manager_->FillSuggestionForTest(
-      base::ASCIIToUTF16(kInvalidUsername)));
+  EXPECT_FALSE(
+      password_autofill_manager_->FillSuggestionForTest(kInvalidUsername));
 
   password_autofill_manager_->DidNavigateMainFrame();
   EXPECT_FALSE(
@@ -357,8 +356,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewSuggestion) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   EXPECT_CALL(*client.mock_driver(), PreviewSuggestion(_, _)).Times(0);
-  EXPECT_FALSE(password_autofill_manager_->PreviewSuggestionForTest(
-      base::ASCIIToUTF16(kInvalidUsername)));
+  EXPECT_FALSE(
+      password_autofill_manager_->PreviewSuggestionForTest(kInvalidUsername));
 
   password_autofill_manager_->DidNavigateMainFrame();
   EXPECT_FALSE(
@@ -437,7 +436,7 @@ TEST_F(PasswordAutofillManagerTest,
     // Load filling data and account-stored duplicate with a different password.
     autofill::PasswordFormFillData data = CreateTestFormFillData();
     autofill::PasswordAndMetadata duplicate;
-    duplicate.password = base::ASCIIToUTF16(kAliceAccountStoredPassword);
+    duplicate.password = kAliceAccountStoredPassword;
     duplicate.realm = data.preferred_realm;
     duplicate.uses_account_store = true;
     duplicate.username = data.username_field.value;

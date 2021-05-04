@@ -6007,8 +6007,8 @@ TEST_F(NetworkContextTest, BlockAllCookies) {
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
 TEST_F(NetworkContextTest, AddFtpAuthCacheEntry) {
   GURL url("ftp://example.test/");
-  const char kUsername[] = "test_user";
-  const char kPassword[] = "test_pass";
+  const char16_t kUsername[] = u"test_user";
+  const char16_t kPassword[] = u"test_pass";
   mojom::NetworkContextParamsPtr params = CreateContextParams();
   params->enable_ftp_url_support = true;
   std::unique_ptr<NetworkContext> network_context =
@@ -6021,18 +6021,16 @@ TEST_F(NetworkContextTest, AddFtpAuthCacheEntry) {
   ASSERT_FALSE(
       network_context->url_request_context()->ftp_auth_cache()->Lookup(url));
   base::RunLoop run_loop;
-  network_context->AddAuthCacheEntry(
-      challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kUsername),
-                           base::ASCIIToUTF16(kPassword)),
-      run_loop.QuitClosure());
+  network_context->AddAuthCacheEntry(challenge, net::NetworkIsolationKey(),
+                                     net::AuthCredentials(kUsername, kPassword),
+                                     run_loop.QuitClosure());
   run_loop.Run();
   net::FtpAuthCache::Entry* entry =
       network_context->url_request_context()->ftp_auth_cache()->Lookup(url);
   ASSERT_TRUE(entry);
   EXPECT_EQ(url, entry->origin);
-  EXPECT_EQ(base::ASCIIToUTF16(kUsername), entry->credentials.username());
-  EXPECT_EQ(base::ASCIIToUTF16(kPassword), entry->credentials.password());
+  EXPECT_EQ(kUsername, entry->credentials.username());
+  EXPECT_EQ(kPassword, entry->credentials.password());
 }
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
@@ -6122,17 +6120,15 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   challenge.challenger = url::Origin::Create(url);
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
-  const char kUsername[] = "test_user";
-  const char kPassword[] = "test_pass";
+  const char16_t kUsername[] = u"test_user";
+  const char16_t kPassword[] = u"test_pass";
   ASSERT_FALSE(cache->Lookup(url, net::HttpAuth::AUTH_SERVER, challenge.realm,
                              net::HttpAuth::AUTH_SCHEME_BASIC,
                              net::NetworkIsolationKey()));
   base::RunLoop run_loop;
-  network_context->AddAuthCacheEntry(
-      challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kUsername),
-                           base::ASCIIToUTF16(kPassword)),
-      run_loop.QuitClosure());
+  network_context->AddAuthCacheEntry(challenge, net::NetworkIsolationKey(),
+                                     net::AuthCredentials(kUsername, kPassword),
+                                     run_loop.QuitClosure());
   run_loop.Run();
   net::HttpAuthCache::Entry* entry = cache->Lookup(
       url, net::HttpAuth::AUTH_SERVER, challenge.realm,
@@ -6141,8 +6137,8 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   EXPECT_EQ(url, entry->origin());
   EXPECT_EQ(challenge.realm, entry->realm());
   EXPECT_EQ(net::HttpAuth::StringToScheme(challenge.scheme), entry->scheme());
-  EXPECT_EQ(base::ASCIIToUTF16(kUsername), entry->credentials().username());
-  EXPECT_EQ(base::ASCIIToUTF16(kPassword), entry->credentials().password());
+  EXPECT_EQ(kUsername, entry->credentials().username());
+  EXPECT_EQ(kPassword, entry->credentials().password());
   // Entry should only have been added for server auth.
   EXPECT_FALSE(cache->Lookup(url, net::HttpAuth::AUTH_PROXY, challenge.realm,
                              net::HttpAuth::AUTH_SCHEME_BASIC,
@@ -6152,16 +6148,15 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   GURL proxy_url("http://proxy.test/");
   challenge.is_proxy = true;
   challenge.challenger = url::Origin::Create(proxy_url);
-  const char kProxyUsername[] = "test_proxy_user";
-  const char kProxyPassword[] = "test_proxy_pass";
+  const char16_t kProxyUsername[] = u"test_proxy_user";
+  const char16_t kProxyPassword[] = u"test_proxy_pass";
   ASSERT_FALSE(cache->Lookup(proxy_url, net::HttpAuth::AUTH_PROXY,
                              challenge.realm, net::HttpAuth::AUTH_SCHEME_BASIC,
                              net::NetworkIsolationKey()));
   base::RunLoop run_loop2;
   network_context->AddAuthCacheEntry(
       challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kProxyUsername),
-                           base::ASCIIToUTF16(kProxyPassword)),
+      net::AuthCredentials(kProxyUsername, kProxyPassword),
       run_loop2.QuitClosure());
   run_loop2.Run();
   entry = cache->Lookup(proxy_url, net::HttpAuth::AUTH_PROXY, challenge.realm,
@@ -6171,10 +6166,8 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   EXPECT_EQ(proxy_url, entry->origin());
   EXPECT_EQ(challenge.realm, entry->realm());
   EXPECT_EQ(net::HttpAuth::StringToScheme(challenge.scheme), entry->scheme());
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyUsername),
-            entry->credentials().username());
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyPassword),
-            entry->credentials().password());
+  EXPECT_EQ(kProxyUsername, entry->credentials().username());
+  EXPECT_EQ(kProxyPassword, entry->credentials().password());
   // Entry should only have been added for proxy auth.
   EXPECT_FALSE(cache->Lookup(proxy_url, net::HttpAuth::AUTH_SERVER,
                              challenge.realm, net::HttpAuth::AUTH_SCHEME_BASIC,
@@ -6203,17 +6196,15 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
   challenge.challenger = origin;
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
-  const char kUsername[] = "test_user";
-  const char kPassword[] = "test_pass";
+  const char16_t kUsername[] = u"test_user";
+  const char16_t kPassword[] = u"test_pass";
   ASSERT_FALSE(cache->Lookup(url, net::HttpAuth::AUTH_SERVER, challenge.realm,
                              net::HttpAuth::AUTH_SCHEME_BASIC,
                              network_isolation_key));
   base::RunLoop run_loop;
-  network_context->AddAuthCacheEntry(
-      challenge, network_isolation_key,
-      net::AuthCredentials(base::ASCIIToUTF16(kUsername),
-                           base::ASCIIToUTF16(kPassword)),
-      run_loop.QuitClosure());
+  network_context->AddAuthCacheEntry(challenge, network_isolation_key,
+                                     net::AuthCredentials(kUsername, kPassword),
+                                     run_loop.QuitClosure());
   run_loop.Run();
   net::HttpAuthCache::Entry* entry =
       cache->Lookup(url, net::HttpAuth::AUTH_SERVER, challenge.realm,
@@ -6222,8 +6213,8 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
   EXPECT_EQ(url, entry->origin());
   EXPECT_EQ(challenge.realm, entry->realm());
   EXPECT_EQ(net::HttpAuth::StringToScheme(challenge.scheme), entry->scheme());
-  EXPECT_EQ(base::ASCIIToUTF16(kUsername), entry->credentials().username());
-  EXPECT_EQ(base::ASCIIToUTF16(kPassword), entry->credentials().password());
+  EXPECT_EQ(kUsername, entry->credentials().username());
+  EXPECT_EQ(kPassword, entry->credentials().password());
   // Entry should only be accessibly when using the correct NetworkIsolationKey.
   EXPECT_FALSE(cache->Lookup(url, net::HttpAuth::AUTH_SERVER, challenge.realm,
                              net::HttpAuth::AUTH_SCHEME_BASIC,
@@ -6241,26 +6232,24 @@ TEST_F(NetworkContextTest, CopyHttpAuthCacheProxyEntries) {
   challenge.challenger = url::Origin::Create(kURL);
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
-  const char kProxyUsername[] = "proxy_user";
-  const char kProxyPassword[] = "proxy_pass";
+  const char16_t kProxyUsername[] = u"proxy_user";
+  const char16_t kProxyPassword[] = u"proxy_pass";
 
   base::RunLoop run_loop1;
   network_context1->AddAuthCacheEntry(
       challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kProxyUsername),
-                           base::ASCIIToUTF16(kProxyPassword)),
+      net::AuthCredentials(kProxyUsername, kProxyPassword),
       run_loop1.QuitClosure());
   run_loop1.Run();
 
   challenge.is_proxy = false;
-  const char kServerUsername[] = "server_user";
-  const char kServerPassword[] = "server_pass";
+  const char16_t kServerUsername[] = u"server_user";
+  const char16_t kServerPassword[] = u"server_pass";
 
   base::RunLoop run_loop2;
   network_context1->AddAuthCacheEntry(
       challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kServerUsername),
-                           base::ASCIIToUTF16(kServerPassword)),
+      net::AuthCredentials(kServerUsername, kServerPassword),
       run_loop2.QuitClosure());
   run_loop2.Run();
 
@@ -6299,10 +6288,8 @@ TEST_F(NetworkContextTest, CopyHttpAuthCacheProxyEntries) {
       kURL, net::HttpAuth::AUTH_PROXY, challenge.realm,
       net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey());
   ASSERT_TRUE(entry);
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyUsername),
-            entry->credentials().username());
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyPassword),
-            entry->credentials().password());
+  EXPECT_EQ(kProxyUsername, entry->credentials().username());
+  EXPECT_EQ(kProxyPassword, entry->credentials().password());
 }
 
 TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
@@ -6323,13 +6310,12 @@ TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
   challenge.challenger = url::Origin::Create(kURL);
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
-  const char kProxyUsername[] = "proxy_user";
-  const char kProxyPassword[] = "proxy_pass";
+  const char16_t kProxyUsername[] = u"proxy_user";
+  const char16_t kProxyPassword[] = u"proxy_pass";
   base::RunLoop run_loop1;
   network_context->AddAuthCacheEntry(
       challenge, net::NetworkIsolationKey(),
-      net::AuthCredentials(base::ASCIIToUTF16(kProxyUsername),
-                           base::ASCIIToUTF16(kProxyPassword)),
+      net::AuthCredentials(kProxyUsername, kProxyPassword),
       run_loop1.QuitClosure());
   run_loop1.Run();
 
@@ -6343,13 +6329,12 @@ TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
               cache->key_server_entries_by_network_isolation_key());
 
     // Add server credentials.
-    const char kServerUsername[] = "server_user";
-    const char kServerPassword[] = "server_pass";
+    const char16_t kServerUsername[] = u"server_user";
+    const char16_t kServerPassword[] = u"server_pass";
     base::RunLoop run_loop2;
     network_context->AddAuthCacheEntry(
         challenge, net::NetworkIsolationKey(),
-        net::AuthCredentials(base::ASCIIToUTF16(kServerUsername),
-                             base::ASCIIToUTF16(kServerPassword)),
+        net::AuthCredentials(kServerUsername, kServerPassword),
         run_loop2.QuitClosure());
     run_loop2.Run();
 
@@ -6369,10 +6354,8 @@ TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
         kURL, net::HttpAuth::AUTH_PROXY, challenge.realm,
         net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey());
     ASSERT_TRUE(entry);
-    EXPECT_EQ(base::ASCIIToUTF16(kProxyUsername),
-              entry->credentials().username());
-    EXPECT_EQ(base::ASCIIToUTF16(kProxyPassword),
-              entry->credentials().password());
+    EXPECT_EQ(kProxyUsername, entry->credentials().username());
+    EXPECT_EQ(kProxyPassword, entry->credentials().password());
   }
 }
 

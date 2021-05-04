@@ -51,8 +51,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
 
   // Go to the shipping address screen and select the first address (MI state).
   OpenShippingAddressSectionScreen();
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "To see shipping methods and requirements, select an address"),
+  EXPECT_EQ(u"To see shipping methods and requirements, select an address",
             GetLabelText(DialogViewID::WARNING_LABEL));
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,

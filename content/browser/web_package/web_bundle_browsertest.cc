@@ -1993,7 +1993,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileScheme) {
       test_data_url, web_bundle_utils::GetSynthesizedUrlForWebBundle(
                          test_data_url, GURL(kTestPageUrl)));
 
-  auto expected_title = base::ASCIIToUTF16("load failed");
+  auto* expected_title = u"load failed";
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   title_watcher.AlsoWaitForTitle(u"Local Script");
 

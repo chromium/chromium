@@ -71,13 +71,12 @@
 
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 
-using base::ASCIIToUTF16;
-
 namespace autofill {
 namespace {
 
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
+const char16_t kTestNumber16[] = u"4234567890123456";
 const char kTestRelyingPartyId[] = "google.com";
 // Base64 encoding of "This is a test challenge".
 constexpr char kTestChallenge[] = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
@@ -456,7 +455,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_Success) {
   GetRealPan(AutofillClient::PaymentsRpcResult::SUCCESS, kTestNumber);
 
   EXPECT_TRUE(requester_->did_succeed());
-  EXPECT_EQ(ASCIIToUTF16(kTestNumber), requester_->number());
+  EXPECT_EQ(kTestNumber16, requester_->number());
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_PaymentsResponseError) {

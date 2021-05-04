@@ -119,8 +119,8 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill) {
   touch_to_fill_controller().Show(credentials, driver().AsWeakPtr());
 
   // Test that we correctly log the absence of an Android credential.
-  EXPECT_CALL(driver(), FillSuggestion(base::ASCIIToUTF16("alice"),
-                                       base::ASCIIToUTF16("p4ssw0rd")));
+  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
+                                       std::u16string(u"p4ssw0rd")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -178,8 +178,8 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Android_Credential) {
   touch_to_fill_controller().Show(credentials, driver().AsWeakPtr());
 
   // Test that we correctly log the presence of an Android credential.
-  EXPECT_CALL(driver(), FillSuggestion(base::ASCIIToUTF16("bob"),
-                                       base::ASCIIToUTF16("s3cr3t")));
+  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"bob"),
+                                       std::u16string(u"s3cr3t")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(

@@ -112,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
   shipping_address_labels = GetProfileLabelValues(
       DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION);
   EXPECT_EQ(u"John H. Doe", shipping_address_labels[0]);
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Underworld, 666 Erebus St., Apt 8, Elysium, CA 91111"),
+  EXPECT_EQ(u"Underworld, 666 Erebus St., Apt 8, Elysium, CA 91111",
             shipping_address_labels[1]);
   EXPECT_EQ(u"+1 650-211-1111", shipping_address_labels[2]);
   shipping_option_labels = GetShippingOptionLabelValues(

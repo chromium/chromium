@@ -1212,8 +1212,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   version_->embedded_worker()->AddObserver(&console_listener);
 
   FetchOnRegisteredWorker("/service_worker/empty.html", &result, &response);
-  const std::u16string expected1 = base::ASCIIToUTF16(
-      "resulted in a network error response: the promise was rejected.");
+  const std::u16string expected1 =
+      u"resulted in a network error response: the promise was rejected.";
   const std::u16string expected2 =
       u"Uncaught (in promise) Rejecting respondWith promise";
   console_listener.WaitForConsoleMessages(2);

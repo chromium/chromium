@@ -24,10 +24,11 @@
 namespace content_capture {
 namespace {
 
-static constexpr char kMainFrameUrl[] = "http://foo.com/main.html";
-static constexpr char kMainFrameUrl2[] = "http://foo.com/2.html";
-static constexpr char kChildFrameUrl[] = "http://foo.org/child.html";
-static constexpr char kMainFrameSameDocument[] = "http://foo.com/main.html#1";
+static constexpr char16_t kMainFrameUrl[] = u"http://foo.com/main.html";
+static constexpr char16_t kMainFrameUrl2[] = u"http://foo.com/2.html";
+static constexpr char16_t kChildFrameUrl[] = u"http://foo.org/child.html";
+static constexpr char16_t kMainFrameSameDocument[] =
+    u"http://foo.com/main.html#1";
 
 // Fake ContentCaptureSender to call ContentCaptureReceiver mojom interface.
 class FakeContentCaptureSender {
@@ -185,10 +186,10 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     child.value = u"Hello";
     child.bounds = gfx::Rect(5, 5, 5, 5);
     // No need to set id in sender.
-    test_data_.value = base::ASCIIToUTF16(kMainFrameUrl);
+    test_data_.value = kMainFrameUrl;
     test_data_.bounds = gfx::Rect(10, 10);
     test_data_.children.push_back(child);
-    test_data2_.value = base::ASCIIToUTF16(kChildFrameUrl);
+    test_data2_.value = kChildFrameUrl;
     test_data2_.bounds = gfx::Rect(10, 10);
     test_data2_.children.push_back(child);
 
@@ -197,7 +198,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     child_change.id = 2;
     child_change.value = u"Hello World";
     child_change.bounds = gfx::Rect(5, 5, 5, 5);
-    test_data_change_.value = base::ASCIIToUTF16(kMainFrameUrl);
+    test_data_change_.value = kMainFrameUrl;
     test_data_change_.bounds = gfx::Rect(10, 10);
     test_data_change_.children.push_back(child_change);
 
@@ -207,7 +208,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     child2.id = 3;
     child2.value = u"World";
     child2.bounds = gfx::Rect(5, 10, 5, 5);
-    test_data_update_.value = base::ASCIIToUTF16(kMainFrameUrl);
+    test_data_update_.value = kMainFrameUrl;
     test_data_update_.bounds = gfx::Rect(10, 10);
     test_data_update_.children.push_back(child2);
   }
@@ -655,7 +656,7 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts())
     data = GetExpectedTestData(/* main_frame =*/true);
 
-  data.url = base::ASCIIToUTF16(kMainFrameUrl2);
+  data.url = kMainFrameUrl2;
   // Currently, there is no way to fake frame size, set it to 0.
   data.bounds = gfx::Rect();
   expected.clear();

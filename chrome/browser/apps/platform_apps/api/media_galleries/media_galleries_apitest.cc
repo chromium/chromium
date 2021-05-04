@@ -63,7 +63,7 @@ namespace {
 
 // Dummy device properties.
 const char kDeviceId[] = "testDeviceId";
-const char kDeviceName[] = "foobar";
+const char16_t kDeviceName[] = u"foobar";
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
 base::FilePath::CharType kDevicePath[] = FILE_PATH_LITERAL("C:\\qux");
 #else
@@ -148,8 +148,8 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
         StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, kDeviceId);
 
     StorageMonitor::GetInstance()->receiver()->ProcessAttach(
-        StorageInfo(device_id_, kDevicePath, base::ASCIIToUTF16(kDeviceName),
-                    std::u16string(), std::u16string(), 0));
+        StorageInfo(device_id_, kDevicePath, kDeviceName, std::u16string(),
+                    std::u16string(), 0));
     content::RunAllPendingInMessageLoop();
   }
 

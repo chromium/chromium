@@ -340,9 +340,9 @@ TEST_F(DialogTest, BoundsAccommodateTitle) {
 }
 
 TEST_F(DialogTest, ActualBoundsMatchPreferredBounds) {
-  dialog()->set_title(base::ASCIIToUTF16(
-      "La la la look at me I'm a really really long title that needs to be "
-      "really really long so that the title will multiline wrap."));
+  dialog()->set_title(
+      u"La la la look at me I'm a really really long title that needs to be "
+      u"really really long so that the title will multiline wrap.");
   dialog()->GetWidget()->UpdateWindowTitle();
 
   views::View* root_view = dialog()->GetWidget()->GetRootView();

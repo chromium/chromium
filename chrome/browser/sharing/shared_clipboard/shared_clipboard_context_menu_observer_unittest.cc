@@ -40,7 +40,7 @@ using SharingMessage = chrome_browser_sharing::SharingMessage;
 
 namespace {
 
-const char kText[] = "Some random text to be copied.";
+const char16_t kText[] = u"Some random text to be copied.";
 
 class SharedClipboardContextMenuObserverTest : public testing::Test {
  public:
@@ -111,7 +111,7 @@ TEST_F(SharedClipboardContextMenuObserverTest, NoDevices_DoNotShowMenu) {
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
-  InitMenu(base::ASCIIToUTF16(kText));
+  InitMenu(kText);
 
   EXPECT_EQ(0U, menu_.GetMenuSize());
 }
@@ -123,7 +123,7 @@ TEST_F(SharedClipboardContextMenuObserverTest, SingleDevice_ShowMenu) {
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
-  InitMenu(base::ASCIIToUTF16(kText));
+  InitMenu(kText);
   ASSERT_EQ(1U, menu_.GetMenuSize());
 
   MockRenderViewContextMenu::MockMenuItem item;
@@ -153,7 +153,7 @@ TEST_F(SharedClipboardContextMenuObserverTest, MultipleDevices_ShowMenu) {
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
-  InitMenu(base::ASCIIToUTF16(kText));
+  InitMenu(kText);
   ASSERT_EQ(device_count + 1U, menu_.GetMenuSize());
 
   // Assert item ordering.
@@ -197,7 +197,7 @@ TEST_F(SharedClipboardContextMenuObserverTest,
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
-  InitMenu(base::ASCIIToUTF16(kText));
+  InitMenu(kText);
   ASSERT_EQ(kMaxDevicesShown + 1U, menu_.GetMenuSize());
 
   // Assert item ordering.

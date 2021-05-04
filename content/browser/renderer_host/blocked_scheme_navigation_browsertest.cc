@@ -126,12 +126,12 @@ class ScopedPluginRegister {
  public:
   ScopedPluginRegister(content::PluginService* plugin_service)
       : plugin_service_(plugin_service) {
-    const char kPluginName[] = "PDF";
+    const char16_t kPluginName[] = u"PDF";
     const char kPdfMimeType[] = "application/pdf";
     const char kPdfFileType[] = "pdf";
     WebPluginInfo plugin_info;
     plugin_info.type = WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
-    plugin_info.name = base::ASCIIToUTF16(kPluginName);
+    plugin_info.name = kPluginName;
     plugin_info.mime_types.push_back(
         WebPluginMimeType(kPdfMimeType, kPdfFileType, std::string()));
     plugin_service_->RegisterInternalPlugin(plugin_info, false);

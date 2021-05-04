@@ -1834,7 +1834,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, HomePageReported) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, DefaultSearchReported) {
-  static const char kShortName[] = "test";
+  static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "https://www.searchurl.com/search?q={searchTerms}";
   static const char kSearchURLWithQuery[] =
@@ -1847,7 +1847,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, DefaultSearchReported) {
   ASSERT_TRUE(model->loaded());
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(kSearchURL);
 

@@ -1720,8 +1720,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
 
   ui_test_utils::NavigateToURL(browser(), url);
 
-  const auto kPassed = base::ASCIIToUTF16("PASSED");
-  const auto kFailed = base::ASCIIToUTF16("FAILED");
+  const std::u16string kPassed = u"PASSED";
+  const std::u16string kFailed = u"FAILED";
   content::TitleWatcher watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), kPassed);
   watcher.AlsoWaitForTitle(kFailed);

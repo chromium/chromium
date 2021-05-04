@@ -48,9 +48,9 @@ const int kTimeUntilCloseMillis = 33333;
 const blink::mojom::NotificationActionType kNotificationActionType =
     blink::mojom::NotificationActionType::TEXT;
 const char kOrigin[] = "https://example.com/";
-const char kNotificationTitle[] = "My Notification";
+const char16_t kNotificationTitle[] = u"My Notification";
 const char kNotificationLang[] = "nl";
-const char kNotificationBody[] = "Hello, world!";
+const char16_t kNotificationBody[] = u"Hello, world!";
 const char kNotificationTag[] = "my_tag";
 const char kNotificationImageUrl[] = "https://example.com/image.jpg";
 const char kNotificationIconUrl[] = "https://example.com/icon.png";
@@ -72,11 +72,11 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
       kNotificationData, kNotificationData + base::size(kNotificationData));
 
   blink::PlatformNotificationData notification_data;
-  notification_data.title = base::ASCIIToUTF16(kNotificationTitle);
+  notification_data.title = kNotificationTitle;
   notification_data.direction =
       blink::mojom::NotificationDirection::RIGHT_TO_LEFT;
   notification_data.lang = kNotificationLang;
-  notification_data.body = base::ASCIIToUTF16(kNotificationBody);
+  notification_data.body = kNotificationBody;
   notification_data.tag = kNotificationTag;
   notification_data.image = GURL(kNotificationImageUrl);
   notification_data.icon = GURL(kNotificationIconUrl);

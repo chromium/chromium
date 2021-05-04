@@ -68,11 +68,11 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   void SetEatKey(bool eat_key) { eat_key_ = eat_key; }
 
   void AddCommitAction(const std::string& text) {
-    actions_.push_back(base::ASCIIToUTF16("C:" + text));
+    actions_.push_back(u"C:" + base::ASCIIToUTF16(text));
   }
 
   void AddCompositionUpdateAction(const std::string& text) {
-    actions_.push_back(base::ASCIIToUTF16("U:" + text));
+    actions_.push_back(u"U:" + base::ASCIIToUTF16(text));
   }
 
   void AddCompositionStartAction() { actions_.push_back(u"S"); }

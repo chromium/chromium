@@ -17,7 +17,6 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
 using testing::_;
 using testing::AnyNumber;
 
@@ -73,8 +72,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.otherexample.com")};
   const std::u16string input[] = {
-      base::ASCIIToUTF16(
-          "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
+      u"1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ",
       u"?<>:'{}ABCDEF"};
 
   EXPECT_CALL(client_, GetProfilePasswordStore())
@@ -110,14 +108,14 @@ TEST_F(PasswordReuseDetectionManagerTest,
   clock.SetNow(now);
   manager.SetClockForTesting(&clock);
 
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"1"), _, _));
+  manager.OnKeyPressedCommitted(u"1");
 
   // Simulate 10 seconds of inactivity.
   clock.SetNow(now + base::TimeDelta::FromSeconds(10));
   // Expect that a keystroke typed before inactivity is cleared.
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("2"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"2"), _, _));
+  manager.OnKeyPressedCommitted(u"2");
 }
 
 // Verify that the keystroke buffer is cleared after user presses enter.
@@ -126,16 +124,16 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckThatBufferClearedAfterEnter) {
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"1"), _, _));
+  manager.OnKeyPressedCommitted(u"1");
 
   std::u16string enter_text(1, ui::VKEY_RETURN);
   EXPECT_CALL(*store_, CheckReuse(_, _, _)).Times(0);
   manager.OnKeyPressedCommitted(enter_text);
 
   // Expect only a keystroke typed after enter.
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("2"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"2"), _, _));
+  manager.OnKeyPressedCommitted(u"2");
 }
 
 // Verify that after reuse found, no reuse checking happens till next main frame
@@ -155,8 +153,8 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
 
   // Expect that after main frame navigation checking is restored.
   manager.DidNavigateMainFrame(GURL("https://www.example.com"));
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"1"), _, _));
+  manager.OnKeyPressedCommitted(u"1");
 }
 
 // Verify that keystroke buffer is cleared only on cross host navigation.
@@ -166,18 +164,18 @@ TEST_F(PasswordReuseDetectionManagerTest, DidNavigateMainFrame) {
   PasswordReuseDetectionManager manager(&client_);
 
   manager.DidNavigateMainFrame(GURL("https://www.example1.com/123"));
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"1"), _, _));
+  manager.OnKeyPressedCommitted(u"1");
 
   // Check that the buffer is not cleared on the same host navigation.
   manager.DidNavigateMainFrame(GURL("https://www.example1.com/456"));
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("12"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"12"), _, _));
+  manager.OnKeyPressedCommitted(u"2");
 
   // Check that the buffer is cleared on the cross host navigation.
   manager.DidNavigateMainFrame(GURL("https://www.example2.com/123"));
-  EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("3"), _, _));
-  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("3"));
+  EXPECT_CALL(*store_, CheckReuse(std::u16string(u"3"), _, _));
+  manager.OnKeyPressedCommitted(u"3");
 }
 
 // Verify that CheckReuse is called on a paste event.
@@ -185,8 +183,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.example.test")};
   const std::u16string input[] = {
-      base::ASCIIToUTF16(
-          "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
+      u"1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ",
       u"?<>:'{}ABCDEF"};
 
   EXPECT_CALL(client_, GetProfilePasswordStore())

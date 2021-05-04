@@ -423,11 +423,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        MAYBE_InvokeUi_DetailedPermission) {
-  AddPermissionWithDetails(
-      "Example header permission",
-      {u"Detailed permission 1", u"Detailed permission 2",
-       base::ASCIIToUTF16("Very very very very very very long detailed "
-                          "permission that wraps to a new line")});
+  AddPermissionWithDetails("Example header permission",
+                           {u"Detailed permission 1", u"Detailed permission 2",
+                            u"Very very very very very very long detailed "
+                            u"permission that wraps to a new line"});
   ShowAndVerifyUi();
 }
 

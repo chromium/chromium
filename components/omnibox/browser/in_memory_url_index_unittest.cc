@@ -59,14 +59,11 @@ const size_t kProviderMaxMatches = 3;
 const char kClientAllowlistedScheme[] = "xyz";
 
 // TemplateURLs used to test filtering of search engine URLs.
-const char kDefaultTemplateURLKeyword[] = "default-engine.com";
-const char kNonDefaultTemplateURLKeyword[] = "non-default-engine.com";
+const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 const TemplateURLService::Initializer kTemplateURLData[] = {
-    {kDefaultTemplateURLKeyword,
-     "http://default-engine.com?q={searchTerms}",
+    {"default-engine.com", "http://default-engine.com?q={searchTerms}",
      "Default"},
-    {kNonDefaultTemplateURLKeyword,
-     "http://non-default-engine.com?q={searchTerms}",
+    {"non-default-engine.com", "http://non-default-engine.com?q={searchTerms}",
      "Not Default"},
 };
 
@@ -286,7 +283,7 @@ void InMemoryURLIndexTest::SetUp() {
   template_url_service_ = std::make_unique<TemplateURLService>(
       kTemplateURLData, base::size(kTemplateURLData));
   TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
-      base::ASCIIToUTF16(kDefaultTemplateURLKeyword));
+      kDefaultTemplateURLKeyword);
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
 
   if (InitializeInMemoryURLIndexInSetUp())
@@ -542,9 +539,10 @@ TEST_F(InMemoryURLIndexTest, DISABLED_Retrieval) {
   ASSERT_EQ(1U, matches.size());
   EXPECT_EQ(18, matches[0].url_info.id());
   EXPECT_EQ("http://www.theinquirer.net/", matches[0].url_info.url().spec());
-  EXPECT_EQ(ASCIIToUTF16("THE INQUIRER - Microprocessor, Server, Memory, PCS, "
-                         "Graphics, Networking, Storage"),
-            matches[0].url_info.title());
+  EXPECT_EQ(
+      u"THE INQUIRER - Microprocessor, Server, Memory, PCS, "
+      u"Graphics, Networking, Storage",
+      matches[0].url_info.title());
 
   // A URL that comes from the default search engine should not be returned.
   matches = url_index_->HistoryItemsForTerms(u"query", std::u16string::npos,
@@ -553,7 +551,7 @@ TEST_F(InMemoryURLIndexTest, DISABLED_Retrieval) {
 
   // But if it's not from the default search engine, it should be returned.
   TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
-      base::ASCIIToUTF16(kNonDefaultTemplateURLKeyword));
+      kDefaultTemplateURLKeyword);
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
   matches = url_index_->HistoryItemsForTerms(u"query", std::u16string::npos,
                                              kProviderMaxMatches);
@@ -619,9 +617,9 @@ TEST_F(InMemoryURLIndexTest, CursorPositionRetrieval) {
   ASSERT_EQ(1U, matches.size());
   EXPECT_EQ("http://www.reuters.com/article/idUSN0839880620100708",
             matches[0].url_info.url().spec());
-  EXPECT_EQ(ASCIIToUTF16(
-      "UPDATE 1-US 30-yr mortgage rate drops to new record low | Reuters"),
-            matches[0].url_info.title());
+  EXPECT_EQ(
+      u"UPDATE 1-US 30-yr mortgage rate drops to new record low | Reuters",
+      matches[0].url_info.title());
 }
 
 TEST_F(InMemoryURLIndexTest, URLPrefixMatching) {
@@ -908,8 +906,8 @@ TEST_F(InMemoryURLIndexTest, TitleSearch) {
   EXPECT_EQ(1, matches[0].url_info.id());
   EXPECT_EQ("http://www.reuters.com/article/idUSN0839880620100708",
             matches[0].url_info.url().spec());
-  EXPECT_EQ(ASCIIToUTF16(
-      "UPDATE 1-US 30-yr mortgage rate drops to new record low | Reuters"),
+  EXPECT_EQ(
+      u"UPDATE 1-US 30-yr mortgage rate drops to new record low | Reuters",
       matches[0].url_info.title());
 }
 
@@ -925,9 +923,8 @@ TEST_F(InMemoryURLIndexTest, TitleChange) {
   EXPECT_EQ(expected_id, matches[0].url_info.id());
   EXPECT_EQ("http://www.businessandmedia.org/articles/2010/20100708120415.aspx",
             matches[0].url_info.url().spec());
-  EXPECT_EQ(ASCIIToUTF16(
-      "LeBronomics: Could High Taxes Influence James' Team Decision?"),
-      matches[0].url_info.title());
+  EXPECT_EQ(u"LeBronomics: Could High Taxes Influence James' Team Decision?",
+            matches[0].url_info.title());
   history::URLRow old_row(matches[0].url_info);
 
   // Verify new title terms retrieves nothing.

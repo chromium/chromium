@@ -19,8 +19,8 @@ namespace password_manager {
 namespace {
 const char kTestOriginURL[] = "http://accounts.google.com/a/LoginAuth";
 const char kTestSignonRealm[] = "http://accounts.google.com/";
-const char kTestUsername[] = "test@gmail.com";
-const char kTestPassword[] = "test1";
+const char16_t kTestUsername[] = u"test@gmail.com";
+const char16_t kTestPassword[] = u"test1";
 const char kTestFileName[] = "test_only.csv";
 }  // namespace
 
@@ -84,10 +84,8 @@ TEST_F(PasswordImporterTest, CSVImport) {
   ASSERT_EQ(1u, imported_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
   EXPECT_EQ(kTestSignonRealm, imported_passwords()[0].signon_realm);
-  EXPECT_EQ(base::ASCIIToUTF16(kTestUsername),
-            imported_passwords()[0].username_value);
-  EXPECT_EQ(base::ASCIIToUTF16(kTestPassword),
-            imported_passwords()[0].password_value);
+  EXPECT_EQ(kTestUsername, imported_passwords()[0].username_value);
+  EXPECT_EQ(kTestPassword, imported_passwords()[0].password_value);
 }
 
 TEST_F(PasswordImporterTest, ImportIOErrorDueToUnreadableFile) {

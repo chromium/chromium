@@ -1495,7 +1495,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
 
  private:
   void SetupImageSearchEngine() {
-    static const char kShortName[] = "test";
+    static const char16_t kShortName[] = u"test";
     static const char kSearchURL[] = "/search?q={searchTerms}";
     static const char kImageSearchPostParams[] =
         "thumb={google:imageThumbnail}";
@@ -1507,7 +1507,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(model->loaded());
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16(kShortName));
+    data.SetShortName(kShortName);
     data.SetKeyword(data.short_name());
     data.SetURL(embedded_test_server()->GetURL(kSearchURL).spec());
     data.image_url = GetImageSearchURL().spec();

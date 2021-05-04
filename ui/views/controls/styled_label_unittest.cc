@@ -565,8 +565,8 @@ TEST_F(StyledLabelTest, CacheSize) {
   const int preferred_height = 50;
   const int preferred_width = 100;
   const std::string text("This is a test block of text.");
-  const std::u16string another_text(base::ASCIIToUTF16(
-      "This is a test block of text. This text is much longer than previous"));
+  const std::u16string another_text(
+      u"This is a test block of text. This text is much longer than previous");
 
   InitStyledLabel(text);
 

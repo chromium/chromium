@@ -226,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
   // Expect |extension_instead_of_app_error|.
   EXPECT_EQ(1u, errors->size());
   EXPECT_NE(std::u16string::npos,
-            errors->at(0).find(base::ASCIIToUTF16(
-                "App loading flags cannot be used to load extensions")));
+            errors->at(0).find(
+                u"App loading flags cannot be used to load extensions"));
 #endif
 
   extensions::ExtensionRegistry* registry =

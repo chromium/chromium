@@ -48,7 +48,7 @@
 namespace {
 
 const size_t kResultsPerProvider = 3;
-const char kTestTemplateURLKeyword[] = "t";
+const char16_t kTestTemplateURLKeyword[] = u"t";
 
 class TestingSchemeClassifier : public AutocompleteSchemeClassifier {
  public:
@@ -396,20 +396,18 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   //   (2) Inject test arguments rather than rely on the hardcoded values, e.g.
   //       don't rely on kResultsPerProvided and default relevance ordering
   //       (B > A).
-  RegisterTemplateURL(base::ASCIIToUTF16(kTestTemplateURLKeyword),
+  RegisterTemplateURL(kTestTemplateURLKeyword,
                       "http://aqs/{searchTerms}/{google:assistedQueryStats}");
 
   AutocompleteController::Providers providers;
 
   // Construct two new providers, with either the same or different prefixes.
-  TestProvider* provider1 =
-      new TestProvider(kResultsPerProvider, u"http://a",
-                       base::ASCIIToUTF16(kTestTemplateURLKeyword), client_);
+  TestProvider* provider1 = new TestProvider(kResultsPerProvider, u"http://a",
+                                             kTestTemplateURLKeyword, client_);
   providers.push_back(provider1);
 
   TestProvider* provider2 = new TestProvider(
-      kResultsPerProvider * 2,
-      base::ASCIIToUTF16(same_destinations ? "http://a" : "http://b"),
+      kResultsPerProvider * 2, same_destinations ? u"http://a" : u"http://b",
       std::u16string(), client_);
   providers.push_back(provider2);
 
@@ -564,7 +562,7 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
     AutocompleteMatch match(nullptr, kMaxRelevance - i, false,
                             aqs_test_data[i].match_type);
     match.allowed_to_be_default_match = true;
-    match.keyword = base::ASCIIToUTF16(kTestTemplateURLKeyword);
+    match.keyword = kTestTemplateURLKeyword;
     match.search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
     match.subtypes = aqs_test_data[i].subtypes;
@@ -768,17 +766,17 @@ TEST_F(AutocompleteProviderTest, Headers) {
   ResetControllerWithKeywordAndSearchProviders();
 
   const int kRecommendedForYouGroupId = 1;
-  const char kRecommendedForYouHeader[] = "Recommended for you";
+  const char16_t kRecommendedForYouHeader[] = u"Recommended for you";
   const int kRecentSearchesGroupId = 2;
-  const char kRecentSearchesHeader[] = "Recent Searches";
+  const char16_t kRecentSearchesHeader[] = u"Recent Searches";
 
   // This exists to verify that we ignore group IDs without associated header
   // text when sorting results.
   const int kGroupIdWithoutHeaderText = 99;
 
   SearchSuggestionParser::HeadersMap headers_map = {
-      {kRecommendedForYouGroupId, base::ASCIIToUTF16(kRecommendedForYouHeader)},
-      {kRecentSearchesGroupId, base::ASCIIToUTF16(kRecentSearchesHeader)}};
+      {kRecommendedForYouGroupId, kRecommendedForYouHeader},
+      {kRecentSearchesGroupId, kRecentSearchesHeader}};
 
   {
     HeaderTestData test_data = {headers_map,
@@ -797,9 +795,9 @@ TEST_F(AutocompleteProviderTest, Headers) {
               result_.match_at(4)->suggestion_group_id.value());
 
     // Verify that AutocompleteResult is updated with the header information.
-    EXPECT_EQ(base::ASCIIToUTF16(kRecommendedForYouHeader),
+    EXPECT_EQ(kRecommendedForYouHeader,
               result_.GetHeaderForGroupId(kRecommendedForYouGroupId));
-    EXPECT_EQ(base::ASCIIToUTF16(kRecentSearchesHeader),
+    EXPECT_EQ(kRecentSearchesHeader,
               result_.GetHeaderForGroupId(kRecentSearchesGroupId));
     EXPECT_EQ(std::u16string(), result_.GetHeaderForGroupId(-1));
   }
@@ -978,13 +976,13 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   EXPECT_TRUE(url.path().empty());
 
   // The protocol needs to be https.
-  RegisterTemplateURL(base::ASCIIToUTF16(kTestTemplateURLKeyword),
+  RegisterTemplateURL(kTestTemplateURLKeyword,
                       "https://aqs/{searchTerms}/{google:assistedQueryStats}");
   url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
   // There needs to be a keyword provider.
-  match.keyword = base::ASCIIToUTF16(kTestTemplateURLKeyword);
+  match.keyword = kTestTemplateURLKeyword;
   url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
@@ -1037,7 +1035,6 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
 TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   ResetControllerWithKeywordAndSearchProviders();
 
-  using base::ASCIIToUTF16;
   ACMatchClassifications matches =
       AutocompleteMatch::ClassificationsFromString("0,0");
   ClassifyTest classify_test(u"A man, a plan, a canal Panama",
@@ -1079,8 +1076,8 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
             AutocompleteMatch::ClassificationsToString(spans));
 
   ClassifyTest classify_test2(
-      ASCIIToUTF16("Yahoo! Sports - Sports News, "
-                   "Scores, Rumors, Fantasy Games, and more"),
+      u"Yahoo! Sports - Sports News, "
+      u"Scores, Rumors, Fantasy Games, and more",
       /*text_is_query=*/false, matches);
 
   spans = classify_test2.RunTest(u"ne");

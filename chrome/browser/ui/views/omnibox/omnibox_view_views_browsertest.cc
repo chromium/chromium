@@ -65,8 +65,8 @@
 
 namespace {
 
-void SetClipboardText(ui::ClipboardBuffer buffer, const std::string& text) {
-  ui::ScopedClipboardWriter(buffer).WriteText(base::ASCIIToUTF16(text));
+void SetClipboardText(ui::ClipboardBuffer buffer, const std::u16string& text) {
+  ui::ScopedClipboardWriter(buffer).WriteText(text);
 }
 
 }  // namespace
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, PasteAndGoDoesNotLeavePopupOpen) {
   OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
 
   // Put an URL on the clipboard.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "http://www.example.com/");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"http://www.example.com/");
 
   // Paste and go.
   omnibox_view_views->ExecuteCommand(IDC_PASTE_AND_GO, ui::EF_NONE);
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectionClipboard) {
 
   // Middle click focuses the omnibox, pastes, and sets a trailing cursor.
   // Select-all on focus shouldn't alter the selection clipboard or cursor.
-  SetClipboardText(ui::ClipboardBuffer::kSelection, "123");
+  SetClipboardText(ui::ClipboardBuffer::kSelection, u"123");
   ASSERT_NO_FATAL_FAILURE(Click(ui_controls::MIDDLE,
                                 click_location, click_location));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectionClipboard) {
                        cursor_x + render_text->display_rect().x());
 
   // Middle clicking again, with focus, pastes and updates the cursor.
-  SetClipboardText(ui::ClipboardBuffer::kSelection, "4567");
+  SetClipboardText(ui::ClipboardBuffer::kSelection, u"4567");
   ASSERT_NO_FATAL_FAILURE(Click(ui_controls::MIDDLE,
                                 click_location, click_location));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest,
   views::TextfieldTestApi textfield_test_api(omnibox_view_views);
 
   // Put a URL on the clipboard.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "http://www.example.com/");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"http://www.example.com/");
 
   // Tap to activate touch editing.
   gfx::Point omnibox_center =
@@ -590,8 +590,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   const int kFriendlyPrefixLength = match.description.size() + 1;
   ui::AXNodeData node_data;
   omnibox_view_views->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Google https://google.com location from history, 1 of 1"),
+  EXPECT_EQ(u"Google https://google.com location from history, 1 of 1",
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
   // Selection offsets are moved over by length the inserted descriptive text
   // prefix ("Google") + 1 for the space.
@@ -909,12 +908,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
   auto set_text_and_perform_navigation = [this, omnibox_view, popup_model,
                                           controller]() {
     const char fake_protocol[] = "fake";
-    const char fake_url[] = "fake://path";
+    const char16_t fake_url[] = u"fake://path";
 
     EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
     // Set omnibox text and wait for autocomplete.
-    omnibox_view->SetUserText(base::ASCIIToUTF16(fake_url));
+    omnibox_view->SetUserText(fake_url);
     if (!controller->done())
       ui_test_utils::WaitForAutocompleteDone(browser());
     ASSERT_TRUE(controller->done());

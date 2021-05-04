@@ -23,18 +23,17 @@ class MockContentClient : public TestContentClient {
       case IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION:
         return u"Unlabeled image";
       case IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR:
-        return base::ASCIIToUTF16(
-            "This image isn't labeled. Open the More Options menu at the top "
-            "right to get image descriptions.");
+        return u"This image isn't labeled. Open the More Options menu at the "
+               u"top "
+               u"right to get image descriptions.";
       case IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL:
-        return base::ASCIIToUTF16(
-            "This image isn't labeled. Open the More Options menu at the top "
-            "left to get image descriptions.");
+        return u"This image isn't labeled. Open the More Options menu at the "
+               u"top "
+               u"left to get image descriptions.";
       case IDS_AX_IMAGE_ANNOTATION_PENDING:
         return u"Getting description...";
       case IDS_AX_IMAGE_ANNOTATION_ADULT:
-        return base::ASCIIToUTF16(
-            "Appears to contain adult content. No description available.");
+        return u"Appears to contain adult content. No description available.";
       case IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION:
         return u"No description available.";
       default:
@@ -436,18 +435,18 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
           manager->GetRoot()->PlatformGetChild(0));
 
   EXPECT_EQ(
-      base::ASCIIToUTF16("This image isn't labeled. Open the More Options menu "
-                         "at the top right to get image descriptions."),
+      u"This image isn't labeled. Open the More Options menu "
+      u"at the top right to get image descriptions.",
       image_ltr->GetInnerText());
 
   BrowserAccessibilityAndroid* image_rtl =
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(1));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "image_name, This image isn't labeled. Open the More Options "
-                "menu at the top left to get image descriptions."),
-            image_rtl->GetInnerText());
+  EXPECT_EQ(
+      u"image_name, This image isn't labeled. Open the More Options "
+      u"menu at the top left to get image descriptions.",
+      image_rtl->GetInnerText());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,
@@ -500,8 +499,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   EXPECT_EQ(u"Getting description...", image_pending->GetInnerText());
   EXPECT_EQ(u"No description available.", image_empty->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Appears to contain adult content. No description available."),
+  EXPECT_EQ(u"Appears to contain adult content. No description available.",
             image_adult->GetInnerText());
   EXPECT_EQ(u"No description available.", image_failed->GetInnerText());
 }

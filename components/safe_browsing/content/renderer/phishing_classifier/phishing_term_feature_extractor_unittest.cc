@@ -29,7 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -202,9 +201,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
   // Test various separators.
-  page_text = ASCIIToUTF16(
-      "Capitalization plus non-space\n"
-      "separator... punctuation!");
+  page_text = u"Capitalization plus non-space\nseparator... punctuation!";
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("capitalization"));
@@ -297,7 +294,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
   // correctly, the extractor has to process the entire string of text.
   std::u16string page_text(u"one ");
   for (int i = 0; i < 28; ++i) {
-    page_text.append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text.append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
   page_text.append(u"two");
 
@@ -423,7 +420,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
 TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
   std::unique_ptr<std::u16string> page_text(new std::u16string(u"one "));
   for (int i = 0; i < 28; ++i) {
-    page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text->append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -447,7 +444,7 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
 
   page_text = std::make_unique<std::u16string>();
   for (int i = 30; i < 58; ++i) {
-    page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text->append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
   page_text->append(u"multi word test ");
   features.Clear();

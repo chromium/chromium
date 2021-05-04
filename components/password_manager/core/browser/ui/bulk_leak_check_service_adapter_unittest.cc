@@ -36,11 +36,11 @@ namespace {
 constexpr char kExampleCom[] = "https://example.com";
 constexpr char kExampleOrg[] = "https://example.org";
 
-constexpr char kUsername1[] = "alice";
-constexpr char kUsername2[] = "bob";
+constexpr char16_t kUsername1[] = u"alice";
+constexpr char16_t kUsername2[] = u"bob";
 
-constexpr char kPassword1[] = "f00b4r";
-constexpr char kPassword2[] = "s3cr3t";
+constexpr char16_t kPassword1[] = u"f00b4r";
+constexpr char16_t kPassword2[] = u"s3cr3t";
 
 using ::testing::ByMove;
 using ::testing::NiceMock;
@@ -65,19 +65,19 @@ MATCHER_P(SavedPasswordsAre, passwords, "") {
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece username,
-                               base::StringPiece password) {
+                               base::StringPiece16 username,
+                               base::StringPiece16 password) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
-  form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(password);
+  form.username_value = std::u16string(username);
+  form.password_value = std::u16string(password);
   return form;
 }
 
-LeakCheckCredential MakeLeakCheckCredential(base::StringPiece username,
-                                            base::StringPiece password) {
-  return LeakCheckCredential(base::ASCIIToUTF16(username),
-                             base::ASCIIToUTF16(password));
+LeakCheckCredential MakeLeakCheckCredential(base::StringPiece16 username,
+                                            base::StringPiece16 password) {
+  return LeakCheckCredential(std::u16string(username),
+                             std::u16string(password));
 }
 
 struct MockBulkLeakCheck : BulkLeakCheck {
@@ -189,9 +189,9 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
 // correctly deduped before starting the leak check.
 TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
   std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kExampleCom, "alice", kPassword1),
-      MakeSavedPassword(kExampleCom, "ALICE", kPassword1),
-      MakeSavedPassword(kExampleCom, "Alice@example.com", kPassword1)};
+      MakeSavedPassword(kExampleCom, u"alice", kPassword1),
+      MakeSavedPassword(kExampleCom, u"ALICE", kPassword1),
+      MakeSavedPassword(kExampleCom, u"Alice@example.com", kPassword1)};
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
@@ -206,14 +206,14 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
   adapter().StartBulkLeakCheck();
 
   std::vector<LeakCheckCredential> expected;
-  expected.push_back(MakeLeakCheckCredential("alice", kPassword1));
+  expected.push_back(MakeLeakCheckCredential(u"alice", kPassword1));
   EXPECT_THAT(credentials, CredentialsAre(std::cref(expected)));
 }
 
 // Checks that trying to start a leak check when another check is already
 // running does nothing and returns false to the caller.
 TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
-  store().AddLogin(MakeSavedPassword(kExampleCom, "alice", kPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, u"alice", kPassword1));
   RunUntilIdle();
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
@@ -230,7 +230,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
 // Checks that stopping the leak check correctly resets the state of the bulk
 // leak check.
 TEST_F(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
-  store().AddLogin(MakeSavedPassword(kExampleCom, "alice", kPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, u"alice", kPassword1));
   RunUntilIdle();
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
@@ -263,7 +263,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
   RunUntilIdle();
 
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck).Times(0);
-  presenter().EditPassword(password, base::ASCIIToUTF16(kPassword2));
+  presenter().EditPassword(password, kPassword2);
 }
 
 // Tests that editing a password through the presenter will result in another
@@ -287,7 +287,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
               CheckCredentials(CredentialsAre(std::cref(expected))));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  presenter().EditPassword(password, base::ASCIIToUTF16(kPassword2));
+  presenter().EditPassword(password, kPassword2);
 }
 
 }  // namespace password_manager

@@ -251,9 +251,10 @@ TEST_F(TouchableMenuItemViewTest, MinAndMaxWidth) {
   EXPECT_LT(item2_size.width(), max_menu_width);
 
   // Test a title which is longer than the max touchable menu width.
-  gfx::Size item3_size = AppendItemAndGetSize(
-      3, base::ASCIIToUTF16("Item3 Title that is longer than the maximum "
-                            "allowed context menu width"));
+  gfx::Size item3_size =
+      AppendItemAndGetSize(3,
+                           u"Item3 Title that is longer than the maximum "
+                           u"allowed context menu width");
   EXPECT_EQ(item3_size.width(), max_menu_width);
 }
 
@@ -400,28 +401,28 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
   auto AddItem = [this](auto label, auto secondary_label, auto minor_label,
                         auto minor_icon) {
-    menu_item_view()->AddMenuItemAt(
-        0, 1000, base::ASCIIToUTF16(label), secondary_label, minor_label,
-        minor_icon, ui::ImageModel(), views::MenuItemView::Type::kNormal,
-        ui::NORMAL_SEPARATOR);
+    menu_item_view()->AddMenuItemAt(0, 1000, label, secondary_label,
+                                    minor_label, minor_icon, ui::ImageModel(),
+                                    views::MenuItemView::Type::kNormal,
+                                    ui::NORMAL_SEPARATOR);
   };
-  AddItem("No secondary label, no minor content", std::u16string(),
+  AddItem(u"No secondary label, no minor content", std::u16string(),
           std::u16string(), ui::ImageModel());
-  AddItem("No secondary label, minor text only", std::u16string(),
+  AddItem(u"No secondary label, minor text only", std::u16string(),
           u"minor text", ui::ImageModel());
-  AddItem("No secondary label, minor icon only", std::u16string(),
+  AddItem(u"No secondary label, minor icon only", std::u16string(),
           std::u16string(),
           ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
-  AddItem("No secondary label, minor text and icon", std::u16string(),
+  AddItem(u"No secondary label, minor text and icon", std::u16string(),
           u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
-  AddItem("Secondary label, no minor content", u"secondary label",
+  AddItem(u"Secondary label, no minor content", u"secondary label",
           std::u16string(), ui::ImageModel());
-  AddItem("Secondary label, minor text only", u"secondary label", u"minor text",
-          ui::ImageModel());
-  AddItem("Secondary label, minor icon only", u"secondary label",
+  AddItem(u"Secondary label, minor text only", u"secondary label",
+          u"minor text", ui::ImageModel());
+  AddItem(u"Secondary label, minor icon only", u"secondary label",
           std::u16string(),
           ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
-  AddItem("Secondary label, minor text and icon", u"secondary label",
+  AddItem(u"Secondary label, minor text and icon", u"secondary label",
           u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),

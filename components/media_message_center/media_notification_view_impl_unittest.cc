@@ -54,8 +54,8 @@ const int kMediaButtonIconSize = 24;
 // The title artist row should always have the same height.
 const int kMediaTitleArtistRowExpectedHeight = 48;
 
-const char kTestDefaultAppName[] = "default app name";
-const char kTestAppName[] = "app name";
+const char16_t kTestDefaultAppName[] = u"default app name";
+const char16_t kTestAppName[] = u"app name";
 
 const gfx::Size kWidgetSize(500, 500);
 
@@ -319,8 +319,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     // Create a MediaNotificationViewImpl.
     auto view = std::make_unique<MediaNotificationViewImpl>(
         &container_, item_->GetWeakPtr(),
-        nullptr /* header_row_controls_view */,
-        base::ASCIIToUTF16(kTestDefaultAppName), kViewWidth,
+        nullptr /* header_row_controls_view */, kTestDefaultAppName, kViewWidth,
         /*should_show_icon=*/true);
     view->SetSize(kViewSize);
 
@@ -657,19 +656,17 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
-  EXPECT_EQ(base::ASCIIToUTF16(kTestDefaultAppName),
-            header_row()->app_name_for_testing());
+  EXPECT_EQ(kTestDefaultAppName, header_row()->app_name_for_testing());
 
   {
     media_session::MediaMetadata metadata;
     metadata.title = u"title";
     metadata.artist = u"artist";
-    metadata.source_title = base::ASCIIToUTF16(kTestAppName);
+    metadata.source_title = kTestAppName;
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
 
-  EXPECT_EQ(base::ASCIIToUTF16(kTestAppName),
-            header_row()->app_name_for_testing());
+  EXPECT_EQ(kTestAppName, header_row()->app_name_for_testing());
 
   {
     media_session::MediaMetadata metadata;
@@ -678,8 +675,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
 
-  EXPECT_EQ(base::ASCIIToUTF16(kTestDefaultAppName),
-            header_row()->app_name_for_testing());
+  EXPECT_EQ(kTestDefaultAppName, header_row()->app_name_for_testing());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, Buttons_WhenCollapsed) {

@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       }));
   const GURL target_url = embedded_test_server()->GetURL("/foo.html");
   shell()->tab()->ExecuteScript(
-      base::ASCIIToUTF16("location.href='" + target_url.spec() + "';"), false,
+      u"location.href='" + base::ASCIIToUTF16(target_url.spec()) + u"';", false,
       base::DoNothing());
   response_2.WaitForRequest();
   // |custom_ua| should be present in the renderer initiated navigation.

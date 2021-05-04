@@ -362,10 +362,9 @@ TEST_F(SandboxedUnpackerTest, NoLocaleData) {
 }
 
 TEST_F(SandboxedUnpackerTest, ImageDecodingError) {
-  const char kExpected[] = "Could not decode image: ";
+  const char16_t kExpected[] = u"Could not decode image: ";
   SetupUnpacker("bad_image.crx", "");
-  EXPECT_TRUE(base::StartsWith(GetInstallErrorMessage(),
-                               base::ASCIIToUTF16(kExpected),
+  EXPECT_TRUE(base::StartsWith(GetInstallErrorMessage(), kExpected,
                                base::CompareCase::INSENSITIVE_ASCII))
       << "Expected prefix: \"" << kExpected << "\", actual error: \""
       << GetInstallErrorMessage() << "\"";

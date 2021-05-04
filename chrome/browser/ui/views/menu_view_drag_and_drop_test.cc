@@ -22,8 +22,8 @@ namespace {
 
 using ::ui::mojom::DragOperation;
 
-const char kTestNestedDragData[] = "test_nested_drag_data";
-const char kTestTopLevelDragData[] = "test_top_level_drag_data";
+const char16_t kTestNestedDragData[] = u"test_nested_drag_data";
+const char16_t kTestTopLevelDragData[] = u"test_top_level_drag_data";
 
 // A simple view which can be dragged.
 class TestDragView : public views::View {
@@ -52,7 +52,7 @@ int TestDragView::GetDragOperations(const gfx::Point& point) {
 
 void TestDragView::WriteDragData(const gfx::Point& point,
                                  ui::OSExchangeData* data) {
-  data->SetString(base::ASCIIToUTF16(kTestNestedDragData));
+  data->SetString(kTestNestedDragData);
 }
 
 // A simple view to serve as a drop target.
@@ -115,8 +115,7 @@ bool TestTargetView::AreDropTypesRequired() {
 
 bool TestTargetView::CanDrop(const OSExchangeData& data) {
   std::u16string contents;
-  return data.GetString(&contents) &&
-         contents == base::ASCIIToUTF16(kTestNestedDragData);
+  return data.GetString(&contents) && contents == kTestNestedDragData;
 }
 
 void TestTargetView::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -259,8 +258,7 @@ bool MenuViewDragAndDropTest::AreDropTypesRequired(views::MenuItemView* menu) {
 bool MenuViewDragAndDropTest::CanDrop(views::MenuItemView* menu,
                                       const ui::OSExchangeData& data) {
   std::u16string contents;
-  return data.GetString(&contents) &&
-         contents == base::ASCIIToUTF16(kTestTopLevelDragData);
+  return data.GetString(&contents) && contents == kTestTopLevelDragData;
 }
 
 DragOperation MenuViewDragAndDropTest::GetDropOperation(
@@ -284,7 +282,7 @@ bool MenuViewDragAndDropTest::CanDrag(views::MenuItemView* menu) {
 
 void MenuViewDragAndDropTest::WriteDragData(
     views::MenuItemView* sender, ui::OSExchangeData* data) {
-  data->SetString(base::ASCIIToUTF16(kTestTopLevelDragData));
+  data->SetString(kTestTopLevelDragData);
 }
 
 int MenuViewDragAndDropTest::GetDragOperations(views::MenuItemView* sender) {

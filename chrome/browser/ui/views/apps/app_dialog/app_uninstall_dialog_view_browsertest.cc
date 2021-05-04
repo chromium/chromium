@@ -55,7 +55,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
               ActiveView()->GetDialogButtons());
     std::u16string title =
-        base::ASCIIToUTF16("Uninstall \"" + app_name_ + "\"?");
+        u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
     EXPECT_EQ(title, ActiveView()->GetWindowTitle());
 
     if (name == "accept") {

@@ -419,26 +419,23 @@ TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
   EXPECT_EQ(matches.size(), 3u);
 
   // match.destination_url is used as the match's temporary text in the Omnibox.
-  EXPECT_EQ(
-      AutocompleteMatchType::ToAccessibilityLabel(
-          matches[0], base::ASCIIToUTF16(matches[0].destination_url.spec()), 1,
-          4),
-      base::ASCIIToUTF16("My Google Doc, 10/15/07 - Google Docs, "
-                         "https://documentprovider.tld/doc?id=1, 2 of 4"));
+  EXPECT_EQ(AutocompleteMatchType::ToAccessibilityLabel(
+                matches[0],
+                base::ASCIIToUTF16(matches[0].destination_url.spec()), 1, 4),
+            u"My Google Doc, 10/15/07 - Google Docs, "
+            u"https://documentprovider.tld/doc?id=1, 2 of 4");
   // Unhandled MIME Type falls back to "Google Drive" where the file was stored.
-  EXPECT_EQ(
-      AutocompleteMatchType::ToAccessibilityLabel(
-          matches[1], base::ASCIIToUTF16(matches[1].destination_url.spec()), 2,
-          4),
-      base::ASCIIToUTF16("My File in Drive, 10/10/10 - Google Drive, "
-                         "https://documentprovider.tld/doc?id=2, 3 of 4"));
+  EXPECT_EQ(AutocompleteMatchType::ToAccessibilityLabel(
+                matches[1],
+                base::ASCIIToUTF16(matches[1].destination_url.spec()), 2, 4),
+            u"My File in Drive, 10/10/10 - Google Drive, "
+            "https://documentprovider.tld/doc?id=2, 3 of 4");
   // No modified time was specified for the last file.
-  EXPECT_EQ(
-      AutocompleteMatchType::ToAccessibilityLabel(
-          matches[2], base::ASCIIToUTF16(matches[2].destination_url.spec()), 3,
-          4),
-      base::ASCIIToUTF16("Shared Spreadsheet, Google Sheets, "
-                         "https://documentprovider.tld/doc?id=3, 4 of 4"));
+  EXPECT_EQ(AutocompleteMatchType::ToAccessibilityLabel(
+                matches[2],
+                base::ASCIIToUTF16(matches[2].destination_url.spec()), 3, 4),
+            u"Shared Spreadsheet, Google Sheets, "
+            "https://documentprovider.tld/doc?id=3, 4 of 4");
 }
 
 TEST_F(DocumentProviderTest, MatchDescriptionString) {

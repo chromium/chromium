@@ -2809,10 +2809,10 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
           AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(testing::Field(&Suggestion::label,
-                                       ConstructLabelLine({base::ASCIIToUTF16(
-                                           "401 Merrimack St")})),
-                        testing::Field(&Suggestion::icon, ""))));
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::label,
+                               ConstructLabelLine({u"401 Merrimack St"})),
+                testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
 

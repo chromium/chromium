@@ -65,7 +65,6 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
-using base::ASCIIToUTF16;
 using testing::ElementsAre;
 
 namespace {
@@ -1964,8 +1963,8 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 }
 
 TEST_F(ViewTest, Textfield) {
-  const std::u16string kText = ASCIIToUTF16(
-      "Reality is that which, when you stop believing it, doesn't go away.");
+  const std::u16string kText =
+      u"Reality is that which, when you stop believing it, doesn't go away.";
   const std::u16string kExtraText = u"Pretty deep, Philip!";
 
   Widget* widget = new Widget;

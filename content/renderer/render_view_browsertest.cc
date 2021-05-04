@@ -1487,12 +1487,11 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
 
     for (size_t i = 0; i < base::size(kInputModeTestCases); i++) {
       const InputModeTestCase* test_case = &kInputModeTestCases[i];
-      std::string javascript = base::StringPrintf(
-          "document.getElementById('%s').focus();", test_case->input_id);
+      std::u16string javascript = base::ASCIIToUTF16(base::StringPrintf(
+          "document.getElementById('%s').focus();", test_case->input_id));
       // Move the input focus to the target <input> element, where we should
       // activate IMEs.
-      ExecuteJavaScriptAndReturnIntValue(base::ASCIIToUTF16(javascript),
-                                         nullptr);
+      ExecuteJavaScriptAndReturnIntValue(javascript, nullptr);
       base::RunLoop().RunUntilIdle();
       ClearState();
 
@@ -2282,8 +2281,8 @@ TEST_F(RenderViewImplContextMenuTest, AndroidContextMenuSelectionOrdering) {
   message_loop_runner->Run();
 
   int did_select = -1;
-  std::u16string check_did_select = base::ASCIIToUTF16(
-      "Number(document.getElementById('result').innerHTML == 'Selected')");
+  std::u16string check_did_select =
+      u"Number(document.getElementById('result').innerHTML == 'Selected')";
   EXPECT_TRUE(
       ExecuteJavaScriptAndReturnIntValue(check_did_select, &did_select));
   EXPECT_EQ(1, did_select);
@@ -2294,15 +2293,15 @@ TEST_F(RenderViewImplTest, TestBackForward) {
   LoadHTML("<div id=pagename>Page A</div>");
   blink::PageState page_a_state = GetCurrentPageState();
   int was_page_a = -1;
-  std::u16string check_page_a = base::ASCIIToUTF16(
-      "Number(document.getElementById('pagename').innerHTML == 'Page A')");
+  std::u16string check_page_a =
+      u"Number(document.getElementById('pagename').innerHTML == 'Page A')";
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_a, &was_page_a));
   EXPECT_EQ(1, was_page_a);
 
   LoadHTML("<div id=pagename>Page B</div>");
   int was_page_b = -1;
-  std::u16string check_page_b = base::ASCIIToUTF16(
-      "Number(document.getElementById('pagename').innerHTML == 'Page B')");
+  std::u16string check_page_b =
+      u"Number(document.getElementById('pagename').innerHTML == 'Page B')";
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_b, &was_page_b));
   EXPECT_EQ(1, was_page_b);
 
@@ -2310,8 +2309,8 @@ TEST_F(RenderViewImplTest, TestBackForward) {
 
   LoadHTML("<div id=pagename>Page C</div>");
   int was_page_c = -1;
-  std::u16string check_page_c = base::ASCIIToUTF16(
-      "Number(document.getElementById('pagename').innerHTML == 'Page C')");
+  std::u16string check_page_c =
+      u"Number(document.getElementById('pagename').innerHTML == 'Page C')";
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_c, &was_page_c));
   EXPECT_EQ(1, was_page_c);
 

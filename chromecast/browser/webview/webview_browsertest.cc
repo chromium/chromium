@@ -246,7 +246,7 @@ class WebviewTest : public content::BrowserTestBase {
   }
 
   bool URLLoaded(content::WebContents* contents) {
-    std::u16string ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     content::TitleWatcher watcher(contents, ready_title);
     const std::u16string title = watcher.WaitAndGetTitle();
     return title == ready_title;

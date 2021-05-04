@@ -105,9 +105,9 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_IN_SPEECH))
       .Times(1);
-  EXPECT_CALL(*mock_speech_delegate_,
-              OnSpeechResult(base::ASCIIToUTF16("Pictures of the moon"), true,
-                             testing::_))
+  EXPECT_CALL(
+      *mock_speech_delegate_,
+      OnSpeechResult(std::u16string(u"Pictures of the moon"), true, testing::_))
       .WillOnce(InvokeWithoutArgs(&first_response_loop, &base::RunLoop::Quit))
       .RetiresOnSaturation();
   fake_speech_recognition_manager_->SendFakeResponse(
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   base::RunLoop second_response_loop;
   EXPECT_CALL(
       *mock_speech_delegate_,
-      OnSpeechResult(base::ASCIIToUTF16("Pictures of mars!"), true, testing::_))
+      OnSpeechResult(std::u16string(u"Pictures of mars!"), true, testing::_))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*mock_speech_delegate_,

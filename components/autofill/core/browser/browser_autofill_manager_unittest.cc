@@ -83,7 +83,6 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 using testing::_;
 using testing::AnyOf;
@@ -107,6 +106,7 @@ namespace {
 
 const int kDefaultPageID = 137;
 const std::string kArbitraryNickname = "Grocery Card";
+const std::u16string kArbitraryNickname16 = u"Grocery Card";
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -5957,7 +5957,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Set up the test cases:
   typedef struct {
-    std::string input_value;
+    std::u16string input_value;
     ServerFieldType field_type;
     std::vector<AutofillDataModel::ValidityState> expected_validity_states;
   } TestFieldData;
@@ -5969,15 +5969,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // the corresponding validity of that type would include both VALID and
   // INVALID.
   test_cases[0].push_back(
-      {"Tennessee",
+      {u"Tennessee",
        ADDRESS_HOME_STATE,
        {AutofillDataModel::VALID, AutofillDataModel::INVALID}});
   // Alice appears only in the second profile as a NAME_FIRST, and it's
   // UNVALIDATED.
   test_cases[1].push_back(
-      {"Alice", NAME_FIRST, {AutofillDataModel::UNVALIDATED}});
+      {u"Alice", NAME_FIRST, {AutofillDataModel::UNVALIDATED}});
   // An UNKNOWN type is always UNVALIDATED.
-  test_cases[2].push_back({"What a beautiful day!",
+  test_cases[2].push_back({u"What a beautiful day!",
                            UNKNOWN_TYPE,
                            {AutofillDataModel::UNVALIDATED}});
 
@@ -5993,7 +5993,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
     ServerFieldTypeValidityStatesMap possible_types_validities;
     for (const TestFieldData& test_field : test_fields) {
       test::CreateTestFormField("", "1", "", "text", &field);
-      field.value = ASCIIToUTF16(test_field.input_value);
+      field.value = test_field.input_value;
       form.fields.push_back(field);
     }
 
@@ -6054,7 +6054,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   credit_cards.push_back(credit_card);
 
   typedef struct {
-    std::string input_value;
+    std::u16string input_value;
     ServerFieldType predicted_type;
     bool expect_disambiguation;
     ServerFieldType expected_upload_type;
@@ -6065,30 +6065,30 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   // Address disambiguation.
   // An ambiguous address line followed by a field predicted as a line 2 and
   // that is empty should be disambiguated as an ADDRESS_HOME_LINE1.
-  test_cases[0].push_back({"3734 Elvis Presley Blvd.", ADDRESS_HOME_LINE1, true,
-                           ADDRESS_HOME_LINE1});
-  test_cases[0].push_back({"", ADDRESS_HOME_LINE2, true, EMPTY_TYPE});
+  test_cases[0].push_back({u"3734 Elvis Presley Blvd.", ADDRESS_HOME_LINE1,
+                           true, ADDRESS_HOME_LINE1});
+  test_cases[0].push_back({u"", ADDRESS_HOME_LINE2, true, EMPTY_TYPE});
 
   // An ambiguous address line followed by a field predicted as a line 2 but
   // filled with another know profile value should be disambiguated as an
   // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[1].push_back({"3734 Elvis Presley Blvd.",
+  test_cases[1].push_back({u"3734 Elvis Presley Blvd.",
                            ADDRESS_HOME_STREET_ADDRESS, true,
                            ADDRESS_HOME_STREET_ADDRESS});
   test_cases[1].push_back(
-      {"38116", ADDRESS_HOME_LINE2, true, ADDRESS_HOME_ZIP});
+      {u"38116", ADDRESS_HOME_LINE2, true, ADDRESS_HOME_ZIP});
 
   // An ambiguous address line followed by an empty field predicted as
   // something other than a line 2 should be disambiguated as an
   // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[2].push_back({"3734 Elvis Presley Blvd.",
+  test_cases[2].push_back({u"3734 Elvis Presley Blvd.",
                            ADDRESS_HOME_STREET_ADDRESS, true,
                            ADDRESS_HOME_STREET_ADDRESS});
-  test_cases[2].push_back({"", ADDRESS_HOME_ZIP, true, EMPTY_TYPE});
+  test_cases[2].push_back({u"", ADDRESS_HOME_ZIP, true, EMPTY_TYPE});
 
   // An ambiguous address line followed by no other field should be
   // disambiguated as an ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[3].push_back({"3734 Elvis Presley Blvd.",
+  test_cases[3].push_back({u"3734 Elvis Presley Blvd.",
                            ADDRESS_HOME_STREET_ADDRESS, true,
                            ADDRESS_HOME_STREET_ADDRESS});
 
@@ -6096,7 +6096,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   // A field with possible types PHONE_HOME_CITY_AND_NUMBER and
   // PHONE_HOME_WHOLE_NUMBER should be disambiguated as
   // PHONE_HOME_CITY_AND_NUMBER
-  test_cases[4].push_back({"2345678901", PHONE_HOME_WHOLE_NUMBER, true,
+  test_cases[4].push_back({u"2345678901", PHONE_HOME_WHOLE_NUMBER, true,
                            PHONE_HOME_CITY_AND_NUMBER});
 
   // Name disambiguation.
@@ -6104,71 +6104,73 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   // a non credit card field should be disambiguated as a non credit card
   // name.
   test_cases[5].push_back(
-      {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
-  test_cases[5].push_back({"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[5].push_back({"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
+      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+  test_cases[5].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
+  test_cases[5].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
 
   // An ambiguous name field that has no next field and that is preceded by
   // a credit card field should be disambiguated as a credit card name.
   test_cases[6].push_back(
-      {"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
-  test_cases[6].push_back({"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[6].push_back({"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
+      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
+  test_cases[6].push_back({u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
+  test_cases[6].push_back({u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
 
   // An ambiguous name field that has no previous field and that is
   // followed by a non credit card field should be disambiguated as a non
   // credit card name.
-  test_cases[7].push_back({"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[7].push_back({"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
+  test_cases[7].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
+  test_cases[7].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
   test_cases[7].push_back(
-      {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
 
   // An ambiguous name field that has no previous field and that is followed
   // by a credit card field should be disambiguated as a credit card name.
-  test_cases[8].push_back({"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[8].push_back({"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
+  test_cases[8].push_back({u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
+  test_cases[8].push_back({u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
   test_cases[8].push_back(
-      {"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
+      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
 
   // An ambiguous name field that is preceded and followed by non credit
   // card fields should be disambiguated as a non credit card name.
   test_cases[9].push_back(
-      {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
-  test_cases[9].push_back({"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[9].push_back({"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
+      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+  test_cases[9].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
+  test_cases[9].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
   test_cases[9].push_back(
-      {"Tennessee", ADDRESS_HOME_STATE, true, ADDRESS_HOME_STATE});
+      {u"Tennessee", ADDRESS_HOME_STATE, true, ADDRESS_HOME_STATE});
 
   // An ambiguous name field that is preceded and followed by credit card
   // fields should be disambiguated as a credit card name.
   test_cases[10].push_back(
-      {"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
-  test_cases[10].push_back({"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[10].push_back({"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
-  test_cases[10].push_back({"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
+  test_cases[10].push_back(
+      {u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
+  test_cases[10].push_back(
+      {u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
+  test_cases[10].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
                             CREDIT_CARD_EXP_4_DIGIT_YEAR});
 
   // An ambiguous name field that is preceded by a non credit card field and
   // followed by a credit card field should not be disambiguated.
   test_cases[11].push_back(
-      {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
   test_cases[11].push_back(
-      {"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
+      {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
   test_cases[11].push_back(
-      {"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
-  test_cases[11].push_back({"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+      {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
+  test_cases[11].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
                             CREDIT_CARD_EXP_4_DIGIT_YEAR});
 
   // An ambiguous name field that is preceded by a credit card field and
   // followed by a non credit card field should not be disambiguated.
-  test_cases[12].push_back({"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+  test_cases[12].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
                             CREDIT_CARD_EXP_4_DIGIT_YEAR});
   test_cases[12].push_back(
-      {"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
+      {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
   test_cases[12].push_back(
-      {"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
+      {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
   test_cases[12].push_back(
-      {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
 
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
@@ -6180,7 +6182,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
     FormFieldData field;
     for (const TestFieldData& test_field : test_fields) {
       test::CreateTestFormField("", "1", "", "text", &field);
-      field.value = ASCIIToUTF16(test_field.input_value);
+      field.value = test_field.input_value;
       form.fields.push_back(field);
     }
 
@@ -6257,35 +6259,35 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
   std::vector<CreditCard> credit_cards;
 
-  const char cvc[] = "1234";
-  const char four_digit_but_not_cvc[] = "6676";
-  const char credit_card_number[] = "4234-5678-9012-3456";
+  const char kCvc[] = "1234";
+  const char16_t kCvc16[] = u"1234";
+  const char kFourDigitButNotCvc[] = "6676";
+  const char kCreditCardNumber[] = "4234-5678-9012-3456";
 
   FormData form;
   FormFieldData field1;
-  test::CreateTestFormField("number", "number", credit_card_number, "text",
+  test::CreateTestFormField("number", "number", kCreditCardNumber, "text",
                             &field1);
   form.fields.push_back(field1);
 
   // This field would not be detected as CVC heuristically if the CVC value
   // wouldn't be known.
   FormFieldData field2;
-  test::CreateTestFormField("not_cvc", "not_cvc", four_digit_but_not_cvc,
-                            "text", &field2);
+  test::CreateTestFormField("not_cvc", "not_cvc", kFourDigitButNotCvc, "text",
+                            &field2);
   form.fields.push_back(field2);
 
   // This field has the CVC value used to unlock the card and should be detected
   // as the CVC field.
   FormFieldData field3;
-  test::CreateTestFormField("c_v_c", "c_v_c", cvc, "text", &field3);
+  test::CreateTestFormField("c_v_c", "c_v_c", kCvc, "text", &field3);
   form.fields.push_back(field3);
 
   FormStructure form_structure(form);
   form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::ASCIIToUTF16(cvc), "en-us",
-      &form_structure);
+      profiles, credit_cards, kCvc16, "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
       form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
@@ -7153,7 +7155,7 @@ TEST_P(CreditCardSuggestionTest,
                           "4444555566667777",  // Visa
                           "01", "2030", "1");
   credit_card.set_guid(guid);
-  credit_card.SetNickname(ASCIIToUTF16(kArbitraryNickname));
+  credit_card.SetNickname(kArbitraryNickname16);
   personal_data_.AddCreditCard(credit_card);
 
 #if defined(OS_ANDROID)

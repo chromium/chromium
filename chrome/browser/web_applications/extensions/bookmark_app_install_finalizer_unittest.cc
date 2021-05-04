@@ -40,7 +40,7 @@ namespace extensions {
 
 namespace {
 
-const char kWebAppTitle[] = "Foo Title";
+const char16_t kWebAppTitle[] = u"Foo Title";
 
 }  // namespace
 
@@ -126,7 +126,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
   web_app::AppId InstallExternalApp(const GURL& start_url) {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = start_url;
-    info->title = base::ASCIIToUTF16(kWebAppTitle);
+    info->title = kWebAppTitle;
 
     web_app::InstallFinalizer::FinalizeOptions options;
     options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
@@ -186,7 +186,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
 
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
-  info->title = base::ASCIIToUTF16(kWebAppTitle);
+  info->title = kWebAppTitle;
 
   base::RunLoop run_loop;
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -214,7 +214,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
 TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
-  info->title = base::ASCIIToUTF16(kWebAppTitle);
+  info->title = kWebAppTitle;
 
   web_app::InstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
@@ -242,7 +242,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
 TEST_F(BookmarkAppInstallFinalizerTest, PolicyInstalledSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
-  info->title = base::ASCIIToUTF16(kWebAppTitle);
+  info->title = kWebAppTitle;
 
   web_app::InstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;

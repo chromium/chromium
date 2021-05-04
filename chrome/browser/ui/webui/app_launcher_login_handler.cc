@@ -66,12 +66,12 @@ SkBitmap GetGAIAPictureForNTP(const gfx::Image& image) {
 
 // Puts the |content| into an element with the given CSS class.
 std::u16string CreateElementWithClass(const std::u16string& content,
-                                      const std::string& tag_name,
-                                      const std::string& css_class,
-                                      const std::string& extends_tag) {
-  std::u16string start_tag = base::ASCIIToUTF16(
-      "<" + tag_name + " class='" + css_class + "' is='" + extends_tag + "'>");
-  std::u16string end_tag = base::ASCIIToUTF16("</" + tag_name + ">");
+                                      const std::u16string& tag_name,
+                                      const std::u16string& css_class,
+                                      const std::u16string& extends_tag) {
+  std::u16string start_tag = u"<" + tag_name + u" class='" + css_class +
+                             u"' is='" + extends_tag + u"'>";
+  std::u16string end_tag = u"</" + tag_name + u">";
   return start_tag + net::EscapeForHTML(content) + end_tag;
 }
 
@@ -157,14 +157,14 @@ void AppLauncherLoginHandler::UpdateLogin() {
       if (storage.GetNumberOfProfiles() == 1) {
         std::u16string name = entry->GetGAIAName();
         if (!name.empty())
-          header = CreateElementWithClass(name, "span", "profile-name", "");
+          header = CreateElementWithClass(name, u"span", u"profile-name", u"");
         const gfx::Image* image = entry->GetGAIAPicture();
         if (image)
           icon_url = webui::GetBitmapDataUrl(GetGAIAPictureForNTP(*image));
       }
       if (header.empty()) {
-        header = CreateElementWithClass(base::UTF8ToUTF16(username), "span",
-                                        "profile-name", "");
+        header = CreateElementWithClass(base::UTF8ToUTF16(username), u"span",
+                                        u"profile-name", u"");
       }
     }
   } else {
@@ -177,7 +177,7 @@ void AppLauncherLoginHandler::UpdateLogin() {
       std::u16string signed_in_link =
           l10n_util::GetStringUTF16(IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK);
       signed_in_link =
-          CreateElementWithClass(signed_in_link, "a", "", "action-link");
+          CreateElementWithClass(signed_in_link, u"a", u"", u"action-link");
       header = l10n_util::GetStringFUTF16(
           IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_HEADER,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));

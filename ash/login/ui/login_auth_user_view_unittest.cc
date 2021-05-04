@@ -299,7 +299,7 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPasswordView::TestApi password_test(auth_test.password_view());
 
-  const auto password = base::ASCIIToUTF16("abc1");
+  const std::u16string password = u"abc1";
   password_test.textfield()->SetText(password);
   view_->UpdateForUser(user_);
   EXPECT_EQ(password_test.textfield()->GetText(), password);

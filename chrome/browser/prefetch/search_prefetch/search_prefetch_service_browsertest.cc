@@ -62,10 +62,14 @@
 
 namespace {
 constexpr char kSuggestDomain[] = "suggest.com";
+constexpr char16_t kSuggestDomain16[] = u"suggest.com";
 constexpr char kSearchDomain[] = "search.com";
+constexpr char16_t kSearchDomain16[] = u"search.com";
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
 constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
+constexpr char16_t kOmniboxSuggestPrefetchSecondItemQuery16[] = u"porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
+constexpr char16_t kOmniboxSuggestNonPrefetchQuery16[] = u"puffins";
 constexpr char kLoadInSubframe[] = "/load_in_subframe";
 constexpr char kClientHintsURL[] = "/accept_ch_with_lifetime.html";
 constexpr char kThrottleHeader[] = "porgs-header";
@@ -389,7 +393,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16(kSearchDomain));
+    data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
     data.SetURL(url.spec());
     data.suggestions_url =
@@ -407,7 +411,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16(kSuggestDomain));
+    data.SetShortName(kSuggestDomain16);
     data.SetKeyword(data.short_name());
     data.SetURL(
         search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
@@ -1672,12 +1676,11 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
-  WaitUntilStatusChangesTo(
-      base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery),
-      SearchPrefetchStatus::kComplete);
+  WaitUntilStatusChangesTo(kOmniboxSuggestPrefetchSecondItemQuery16,
+                           SearchPrefetchStatus::kComplete);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery));
+          kOmniboxSuggestPrefetchSecondItemQuery16);
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
@@ -1725,8 +1728,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // Change the autocomplete to remove "porgs" entirely.
   AutocompleteInput other_input(
-      base::ASCIIToUTF16(kOmniboxSuggestNonPrefetchQuery),
-      metrics::OmniboxEventProto::BLANK,
+      kOmniboxSuggestNonPrefetchQuery16, metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   autocomplete_controller->Start(other_input);
   ui_test_utils::WaitForAutocompleteDone(browser());
@@ -2683,7 +2685,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery));
+          kOmniboxSuggestPrefetchSecondItemQuery16);
   EXPECT_FALSE(prefetch_status.has_value());
   ui_test_utils::NavigateToURL(
       browser(),

@@ -111,7 +111,7 @@ TEST_F(HelpAppSearchHandlerTest, UpdateAndSearch) {
 
   // Search for a query which should return no results.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("QueryWithNoResults"),
+      .Search(u"QueryWithNoResults",
               /*max_num_results=*/3u, &search_results);
   EXPECT_TRUE(search_results.empty());
 }

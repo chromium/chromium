@@ -105,9 +105,8 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
                                                  Browser* browser) {
     SettingsOverriddenDialogController::ShowParams params{
         u"Settings overridden dialog title",
-        base::ASCIIToUTF16(
-            "Settings overriden dialog body, which is quite a bit "
-            "longer than the title alone")};
+        u"Settings overriden dialog body, which is quite a bit "
+        u"longer than the title alone"};
     if (show_icon)
       params.icon = &kProductIcon;
     auto* dialog =

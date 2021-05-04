@@ -35,16 +35,18 @@ namespace payments {
 namespace {
 
 const char kLocale[] = "en_US";
-const char kNameFull[] = "Bob Jones";
-const char kHomeAddress[] = "42 Answers-All Avenue";
-const char kHomeCity[] = "Question-City";
-const char kHomeZip[] = "ziiiiiip";
-const char kHomePhone[] = "+1 575-555-5555";  // +1 555-555-5555 is invalid :-(.
+const char16_t kNameFull[] = u"Bob Jones";
+const char16_t kHomeAddress[] = u"42 Answers-All Avenue";
+const char16_t kHomeCity[] = u"Question-City";
+const char16_t kHomeZip[] = u"ziiiiiip";
+const char16_t kHomePhone[] =
+    u"+1 575-555-5555";  // +1 555-555-5555 is invalid :-(.
 const char kAnyState[] = "any state";
+const char16_t kAnyState16[] = u"any state";
 const char kAnyStateCode[] = "AS";
-const char kCountryWithoutStates[] = "Albania";
-const char kCountryWithoutStatesCode[] = "AL";
-const char kCountryWithoutStatesPhoneNumber[] = "+35542223446";
+const char16_t kCountryWithoutStates[] = u"Albania";
+const char16_t kCountryWithoutStatesCode[] = u"AL";
+const char16_t kCountryWithoutStatesPhoneNumber[] = u"+35542223446";
 
 const base::Time kJanuary2017 = base::Time::FromDoubleT(1484505871);
 
@@ -68,27 +70,27 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
     std::u16string textfield_text;
     switch (type) {
       case (autofill::NAME_FULL): {
-        textfield_text = base::ASCIIToUTF16(kNameFull);
+        textfield_text = kNameFull;
         break;
       }
       case (autofill::ADDRESS_HOME_STREET_ADDRESS): {
-        textfield_text = base::ASCIIToUTF16(kHomeAddress);
+        textfield_text = kHomeAddress;
         break;
       }
       case (autofill::ADDRESS_HOME_CITY): {
-        textfield_text = base::ASCIIToUTF16(kHomeCity);
+        textfield_text = kHomeCity;
         break;
       }
       case (autofill::ADDRESS_HOME_STATE): {
-        textfield_text = base::ASCIIToUTF16(kAnyState);
+        textfield_text = kAnyState16;
         break;
       }
       case (autofill::ADDRESS_HOME_ZIP): {
-        textfield_text = base::ASCIIToUTF16(kHomeZip);
+        textfield_text = kHomeZip;
         break;
       }
       case (autofill::PHONE_HOME_WHOLE_NUMBER): {
-        textfield_text = base::ASCIIToUTF16(kHomePhone);
+        textfield_text = kHomePhone;
         break;
       }
       default:
@@ -128,28 +130,28 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
       bool accept_empty_phone_number) {
     std::u16string textfield_text;
     if (GetEditorTextfieldValueIfExists(autofill::NAME_FULL, &textfield_text)) {
-      EXPECT_EQ(base::ASCIIToUTF16(kNameFull), textfield_text);
+      EXPECT_EQ(kNameFull, textfield_text);
     } else if (unset_types) {
       unset_types->insert(autofill::NAME_FULL);
     }
 
     if (GetEditorTextfieldValueIfExists(autofill::ADDRESS_HOME_STREET_ADDRESS,
                                         &textfield_text)) {
-      EXPECT_EQ(base::ASCIIToUTF16(kHomeAddress), textfield_text);
+      EXPECT_EQ(kHomeAddress, textfield_text);
     } else if (unset_types) {
       unset_types->insert(autofill::ADDRESS_HOME_STREET_ADDRESS);
     }
 
     if (GetEditorTextfieldValueIfExists(autofill::ADDRESS_HOME_CITY,
                                         &textfield_text)) {
-      EXPECT_EQ(base::ASCIIToUTF16(kHomeCity), textfield_text);
+      EXPECT_EQ(kHomeCity, textfield_text);
     } else if (unset_types) {
       unset_types->insert(autofill::ADDRESS_HOME_CITY);
     }
 
     if (GetEditorTextfieldValueIfExists(autofill::ADDRESS_HOME_ZIP,
                                         &textfield_text)) {
-      EXPECT_EQ(base::ASCIIToUTF16(kHomeZip), textfield_text);
+      EXPECT_EQ(kHomeZip, textfield_text);
     } else if (unset_types) {
       unset_types->insert(autofill::ADDRESS_HOME_ZIP);
     }
@@ -169,7 +171,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
     }
   }
 
-  std::string GetSelectedCountryCode() {
+  std::u16string GetSelectedCountryCode() {
     views::Combobox* country_combobox = static_cast<views::Combobox*>(
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_COUNTRY)));
@@ -179,7 +181,8 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
         static_cast<autofill::CountryComboboxModel*>(
             country_combobox->GetModel());
 
-    return country_model->countries()[selected_country_row]->country_code();
+    return base::ASCIIToUTF16(
+        country_model->countries()[selected_country_row]->country_code());
   }
 
   void SelectCountryInCombobox(const std::u16string& country_name) {
@@ -222,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(true);
   OpenShippingAddressEditorScreen();
 
-  std::string country_code(GetSelectedCountryCode());
+  std::u16string country_code(GetSelectedCountryCode());
 
   SetCommonFields();
   // We also need to set the state when no region data is provided.
@@ -247,10 +250,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
-  EXPECT_EQ(base::ASCIIToUTF16(country_code),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 }
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(true);
   OpenShippingAddressEditorScreen();
 
-  std::string country_code(GetSelectedCountryCode());
+  std::u16string country_code(GetSelectedCountryCode());
 
   SetCommonFields();
   // We also need to set the state when no region data is provided.
@@ -298,10 +299,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
-  EXPECT_EQ(base::ASCIIToUTF16(country_code),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 }
@@ -322,9 +321,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
 
   SetCommonFields();
   SetComboboxValue(u"United States", autofill::ADDRESS_HOME_COUNTRY);
-  SetComboboxValue(base::UTF8ToUTF16(kAnyState), autofill::ADDRESS_HOME_STATE);
+  SetComboboxValue(kAnyState16, autofill::ADDRESS_HOME_STATE);
 
-  std::string country_code(GetSelectedCountryCode());
+  std::u16string country_code(GetSelectedCountryCode());
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
@@ -345,10 +344,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
-  EXPECT_EQ(base::ASCIIToUTF16(country_code),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 
@@ -505,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 }
@@ -549,8 +545,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 }
@@ -560,10 +555,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add incomplete address.
   autofill::AutofillProfile profile;
-  profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull), kLocale);
+  profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
   // Also set non-default country, to make sure proper fields will be used.
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY,
-                  base::ASCIIToUTF16(kCountryWithoutStates), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, kCountryWithoutStates,
+                  kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -581,8 +576,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
-            GetEditorTextfieldValue(autofill::NAME_FULL));
+  EXPECT_EQ(kNameFull, GetEditorTextfieldValue(autofill::NAME_FULL));
   // There are no state field in |kCountryWithoutStates|.
   EXPECT_FALSE(
       GetEditorTextfieldValueIfExists(autofill::ADDRESS_HOME_STATE, nullptr));
@@ -591,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   SetCommonFields();
   // The phone number must be replaced by one that is valid for
   // |kCountryWithoutStates|.
-  SetEditorTextfieldValue(base::ASCIIToUTF16(kCountryWithoutStatesPhoneNumber),
+  SetEditorTextfieldValue(kCountryWithoutStatesPhoneNumber,
                           autofill::PHONE_HOME_WHOLE_NUMBER);
 
   // Verifying the data is in the DB.
@@ -614,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   autofill::AutofillProfile* saved_profile =
       personal_data_manager->GetProfiles()[0];
   DCHECK(saved_profile);
-  EXPECT_EQ(base::ASCIIToUTF16(kCountryWithoutStates),
+  EXPECT_EQ(kCountryWithoutStates,
             saved_profile->GetInfo(autofill::ADDRESS_HOME_COUNTRY, kLocale));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
@@ -655,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with only the name set, so that another view takes focus.
   autofill::AutofillProfile profile;
-  profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull), "fr_CA");
+  profile.SetInfo(autofill::NAME_FULL, kNameFull, "fr_CA");
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -767,11 +761,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
   ClickOnDialogViewAndWait(edit_button);
 
-  SelectCountryInCombobox(base::ASCIIToUTF16(kCountryWithoutStates));
+  SelectCountryInCombobox(kCountryWithoutStates);
 
   // The phone number must be replaced by one that is valid for
   // |kCountryWithoutStates|.
-  SetEditorTextfieldValue(base::ASCIIToUTF16(kCountryWithoutStatesPhoneNumber),
+  SetEditorTextfieldValue(kCountryWithoutStatesPhoneNumber,
                           autofill::PHONE_HOME_WHOLE_NUMBER);
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
@@ -794,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
   DCHECK(profile);
   // Use GetRawInfo to get the country code.
-  EXPECT_EQ(base::ASCIIToUTF16(kCountryWithoutStatesCode),
+  EXPECT_EQ(kCountryWithoutStatesCode,
             profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   // State/Region is no longer set.
   EXPECT_EQ(u"", profile->GetInfo(autofill::ADDRESS_HOME_STATE, kLocale));
@@ -1193,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull), kLocale);
+  profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
   profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
   AddAutofillProfile(profile);
 
@@ -1225,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(true);
   OpenShippingAddressEditorScreen();
 
-  std::string country_code(GetSelectedCountryCode());
+  std::u16string country_code(GetSelectedCountryCode());
 
   SetCommonFields();
   // We also need to set the state when no region data is provided.
@@ -1251,10 +1245,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   autofill::AutofillProfile* profile =
       request->state()->shipping_profiles().back();
   DCHECK(profile);
-  EXPECT_EQ(base::ASCIIToUTF16(country_code),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::ASCIIToUTF16(kAnyState),
-            profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
   ExpectExistingRequiredFields(/*unset_types=*/nullptr,
                                /*accept_empty_phone_number=*/false);
 }

@@ -2283,7 +2283,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
 
   console_observer.Wait();
   ASSERT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ(base::ASCIIToUTF16("onAuthRequired " + test_page.spec()),
+  EXPECT_EQ(u"onAuthRequired " + base::ASCIIToUTF16(test_page.spec()),
             console_observer.messages()[0].message);
 
   // End the response that prompted for basic auth.
@@ -2318,7 +2318,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
   ui_test_utils::NavigateToURL(browser(), second_test_page);
   second_auth_needed_waiter.Wait();
   ASSERT_EQ(2u, console_observer.messages().size());
-  EXPECT_EQ(base::ASCIIToUTF16("onAuthRequired " + second_test_page.spec()),
+  EXPECT_EQ(u"onAuthRequired " + base::ASCIIToUTF16(second_test_page.spec()),
             console_observer.messages()[1].message);
 }
 

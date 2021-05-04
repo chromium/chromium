@@ -20,8 +20,10 @@ namespace autofill {
 // Strings used in more than one place and must be the same everywhere.
 const char kQuebecCode[] = "QC";
 const char kQuebecName[] = "Quebec";
+const char16_t kQuebecName16[] = u"Quebec";
 const char kOntarioCode[] = "ON";
 const char kOntarioName[] = "Ontario";
+const char16_t kOntarioName16[] = u"Ontario";
 
 // Make sure the two regions returned by the source are properly set in the
 // model.
@@ -38,8 +40,8 @@ TEST(RegionComboboxModelTest, QuebecOntarioRegions) {
 
   EXPECT_EQ(3, model.GetItemCount());
   EXPECT_EQ(u"---", model.GetItemAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16(kQuebecName), model.GetItemAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16(kOntarioName), model.GetItemAt(2));
+  EXPECT_EQ(kQuebecName16, model.GetItemAt(1));
+  EXPECT_EQ(kOntarioName16, model.GetItemAt(2));
   EXPECT_FALSE(model.failed_to_load_data());
 }
 

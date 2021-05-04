@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*mock_speech_delegate_,
-              OnSpeechResult(base::ASCIIToUTF16("All mammals have hair"), false,
+              OnSpeechResult(std::u16string(u"All mammals have hair"), false,
                              testing::_))
       .Times(1)
       .RetiresOnSaturation();
@@ -211,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*mock_speech_delegate_,
-              OnSpeechResult(base::ASCIIToUTF16(
-                                 "All mammals drink milk from their mothers"),
-                             true, testing::_))
+              OnSpeechResult(
+                  std::u16string(u"All mammals drink milk from their mothers"),
+                  true, testing::_))
       .Times(1)
       .RetiresOnSaturation();
   fake_service_->SendSpeechRecognitionResult(

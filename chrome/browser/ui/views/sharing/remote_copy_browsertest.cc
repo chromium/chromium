@@ -38,6 +38,7 @@
 
 namespace {
 const char kDeviceName[] = "test device name";
+const char16_t kDeviceName16[] = u"test device name";
 const char kText[] = "test text";
 const char kResultHistogram[] = "Sharing.RemoteCopyHandleMessageResult";
 const char kTextSizeHistogram[] = "Sharing.RemoteCopyReceivedTextSize";
@@ -220,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   message_center::Notification notification = GetNotification();
   ASSERT_EQ(l10n_util::GetStringFUTF16(
                 IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT,
-                base::ASCIIToUTF16(kDeviceName)),
+                kDeviceName16),
             notification.title());
   ASSERT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   histograms_.ExpectUniqueSample(
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, ImageUrl) {
   message_center::Notification notification = GetNotification();
   ASSERT_EQ(l10n_util::GetStringFUTF16(
                 IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_IMAGE_CONTENT,
-                base::ASCIIToUTF16(kDeviceName)),
+                kDeviceName16),
             notification.title());
   ASSERT_EQ(message_center::NOTIFICATION_TYPE_IMAGE, notification.type());
 #if defined(OS_MAC)

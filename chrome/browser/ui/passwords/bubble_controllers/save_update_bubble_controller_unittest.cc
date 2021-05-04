@@ -51,11 +51,11 @@ namespace {
 constexpr ukm::SourceId kTestSourceId = 0x1234;
 
 constexpr char kSiteOrigin[] = "http://example.com/login";
-constexpr char kUsername[] = "Admin";
-constexpr char kUsernameExisting[] = "User";
-constexpr char kUsernameNew[] = "User585";
-constexpr char kPassword[] = "AdminPass";
-constexpr char kPasswordEdited[] = "asDfjkl;";
+constexpr char16_t kUsername[] = u"Admin";
+constexpr char16_t kUsernameExisting[] = u"User";
+constexpr char16_t kUsernameNew[] = u"User585";
+constexpr char16_t kPassword[] = u"AdminPass";
+constexpr char16_t kPasswordEdited[] = u"asDfjkl;";
 constexpr char kUIDismissalReasonGeneralMetric[] =
     "PasswordManager.UIDismissalReason";
 constexpr char kUIDismissalReasonSaveMetric[] =
@@ -90,8 +90,8 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
                 testing::StrictMock<password_manager::MockPasswordStore>>));
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
-    pending_password_.username_value = base::ASCIIToUTF16(kUsername);
-    pending_password_.password_value = base::ASCIIToUTF16(kPassword);
+    pending_password_.username_value = kUsername;
+    pending_password_.password_value = kPassword;
   }
 
   void TearDown() override {
@@ -216,7 +216,7 @@ password_manager::InteractionsStats
 SaveUpdateBubbleControllerTest::GetTestStats() {
   password_manager::InteractionsStats result;
   result.origin_domain = GURL(kSiteOrigin).GetOrigin();
-  result.username_value = base::ASCIIToUTF16(kUsername);
+  result.username_value = kUsername;
   result.dismissal_count = 5;
   result.update_time = base::Time::FromTimeT(1);
   return result;
@@ -225,7 +225,7 @@ SaveUpdateBubbleControllerTest::GetTestStats() {
 std::vector<std::unique_ptr<password_manager::PasswordForm>>
 SaveUpdateBubbleControllerTest::GetCurrentForms() const {
   password_manager::PasswordForm form(pending_password());
-  form.username_value = base::ASCIIToUTF16(kUsernameExisting);
+  form.username_value = kUsernameExisting;
   form.password_value = u"123456";
 
   password_manager::PasswordForm preferred_form(pending_password());
@@ -292,13 +292,12 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInUpdateState) {
   PretendUpdatePasswordWaiting();
 
   // Edit username, now it's a new credential.
-  controller()->OnCredentialEdited(base::ASCIIToUTF16(kUsernameNew),
-                                   base::ASCIIToUTF16(kPasswordEdited));
+  controller()->OnCredentialEdited(kUsernameNew, kPasswordEdited);
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*GetStore(), RemoveSiteStatsImpl(GURL(kSiteOrigin).GetOrigin()));
-  EXPECT_CALL(*delegate(), SavePassword(base::ASCIIToUTF16(kUsernameNew),
-                                        base::ASCIIToUTF16(kPasswordEdited)));
+  EXPECT_CALL(*delegate(), SavePassword(std::u16string(kUsernameNew),
+                                        std::u16string(kPasswordEdited)));
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
   controller()->OnSaveClicked();
@@ -337,13 +336,12 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateInSaveState) {
   PretendPasswordWaiting();
 
   // Edit username, now it's an existing credential.
-  controller()->OnCredentialEdited(base::ASCIIToUTF16(kUsernameExisting),
-                                   base::ASCIIToUTF16(kPasswordEdited));
+  controller()->OnCredentialEdited(kUsernameExisting, kPasswordEdited);
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*GetStore(), RemoveSiteStatsImpl(GURL(kSiteOrigin).GetOrigin()));
-  EXPECT_CALL(*delegate(), SavePassword(base::ASCIIToUTF16(kUsernameExisting),
-                                        base::ASCIIToUTF16(kPasswordEdited)));
+  EXPECT_CALL(*delegate(), SavePassword(std::u16string(kUsernameExisting),
+                                        std::u16string(kPasswordEdited)));
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
   controller()->OnSaveClicked();
@@ -352,8 +350,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateInSaveState) {
 
 TEST_F(SaveUpdateBubbleControllerTest, GetInitialUsername_MatchedUsername) {
   PretendUpdatePasswordWaiting();
-  EXPECT_EQ(base::UTF8ToUTF16(kUsername),
-            controller()->pending_password().username_value);
+  EXPECT_EQ(kUsername, controller()->pending_password().username_value);
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, EditCredential) {

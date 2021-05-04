@@ -31,6 +31,7 @@ namespace proxy_resolver {
 namespace {
 
 const char kScriptData[] = "FooBarBaz";
+const char16_t kScriptData16[] = u"FooBarBaz";
 
 class FakeProxyResolver : public ProxyResolverV8Tracing {
  public:
@@ -78,7 +79,7 @@ class TestProxyResolverFactory : public ProxyResolverV8TracingFactory {
       std::unique_ptr<net::ProxyResolverFactory::Request>* request) override {
     requests_handled_++;
     waiter_->NotifyEvent(RESOLVER_CREATED);
-    EXPECT_EQ(base::ASCIIToUTF16(kScriptData), pac_script->utf16());
+    EXPECT_EQ(kScriptData16, pac_script->utf16());
     EXPECT_TRUE(resolver);
     pending_request_ = std::make_unique<PendingRequest>();
     pending_request_->resolver = resolver;

@@ -516,7 +516,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
 
   if (!extension_.get()) {
     ReportFailure(SandboxedUnpackerFailureReason::INVALID_MANIFEST,
-                  ASCIIToUTF16("Manifest is invalid: " + utf8_error));
+                  u"Manifest is invalid: " + ASCIIToUTF16(utf8_error));
     return;
   }
 

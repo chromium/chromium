@@ -37,7 +37,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-using base::ASCIIToUTF16;
 using testing::_;
 
 namespace autofill {
@@ -618,8 +617,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   // get cleared.
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
-                                     field_id_, ASCIIToUTF16("baz foo")));
-  external_delegate_->DidSelectSuggestion(ASCIIToUTF16("baz foo"),
+                                     field_id_, std::u16string(u"baz foo")));
+  external_delegate_->DidSelectSuggestion(u"baz foo",
                                           POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
 

@@ -85,17 +85,23 @@ const char kUnknownSession[] = "UnknownSession";
 
 // EME-specific test results and errors.
 const char kUnitTestSuccess[] = "UNIT_TEST_SUCCESS";
-const char kEmeUnitTestFailure[] = "UNIT_TEST_FAILURE";
+const char16_t kEmeUnitTestFailure16[] = u"UNIT_TEST_FAILURE";
 const char kEmeNotSupportedError[] = "NOTSUPPORTEDERROR";
-const char kEmeGenerateRequestFailed[] = "EME_GENERATEREQUEST_FAILED";
-const char kEmeSessionNotFound[] = "EME_SESSION_NOT_FOUND";
-const char kEmeLoadFailed[] = "EME_LOAD_FAILED";
+const char16_t kEmeNotSupportedError16[] = u"NOTSUPPORTEDERROR";
+const char16_t kEmeGenerateRequestFailed[] = u"EME_GENERATEREQUEST_FAILED";
+const char16_t kEmeSessionNotFound16[] = u"EME_SESSION_NOT_FOUND";
+const char16_t kEmeLoadFailed[] = u"EME_LOAD_FAILED";
 const char kEmeUpdateFailed[] = "EME_UPDATE_FAILED";
-const char kEmeErrorEvent[] = "EME_ERROR_EVENT";
-const char kEmeMessageUnexpectedType[] = "EME_MESSAGE_UNEXPECTED_TYPE";
-const char kEmeRenewalMissingHeader[] = "EME_RENEWAL_MISSING_HEADER";
+const char16_t kEmeUpdateFailed16[] = u"EME_UPDATE_FAILED";
+const char16_t kEmeErrorEvent[] = u"EME_ERROR_EVENT";
+const char16_t kEmeMessageUnexpectedType[] = u"EME_MESSAGE_UNEXPECTED_TYPE";
+const char16_t kEmeRenewalMissingHeader[] = u"EME_RENEWAL_MISSING_HEADER";
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 const char kEmeSessionClosedAndError[] = "EME_SESSION_CLOSED_AND_ERROR";
+const char kEmeSessionNotFound[] = "EME_SESSION_NOT_FOUND";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEmeUnitTestFailure[] = "UNIT_TEST_FAILURE";
+#endif
 #endif
 
 const char kDefaultEmePlayer[] = "eme_player.html";
@@ -265,18 +271,15 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
   // We want to fail quickly when a test fails because an error is encountered.
   void AddWaitForTitles(content::TitleWatcher* title_watcher) override {
     MediaBrowserTest::AddWaitForTitles(title_watcher);
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeUnitTestFailure));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeNotSupportedError));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeGenerateRequestFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeSessionNotFound));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeLoadFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeUpdateFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeErrorEvent));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeMessageUnexpectedType));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeRenewalMissingHeader));
+    title_watcher->AlsoWaitForTitle(kEmeUnitTestFailure16);
+    title_watcher->AlsoWaitForTitle(kEmeNotSupportedError16);
+    title_watcher->AlsoWaitForTitle(kEmeGenerateRequestFailed);
+    title_watcher->AlsoWaitForTitle(kEmeSessionNotFound16);
+    title_watcher->AlsoWaitForTitle(kEmeLoadFailed);
+    title_watcher->AlsoWaitForTitle(kEmeUpdateFailed16);
+    title_watcher->AlsoWaitForTitle(kEmeErrorEvent);
+    title_watcher->AlsoWaitForTitle(kEmeMessageUnexpectedType);
+    title_watcher->AlsoWaitForTitle(kEmeRenewalMissingHeader);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
