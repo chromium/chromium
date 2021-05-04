@@ -56,11 +56,7 @@
     <template is="dom-if" if="[[showPages_.about]]">
       <settings-about-page role="main"
           class="cr-centered-card-container"
-          in-search-mode="[[inSearchMode_]]"
-          on-subpage-expand="onShowingSubpage_"
-          on-showing-main-page="onShowingMainPage_"
-          prefs="{{prefs}}"
-          show-crostini="[[showCrostini]]">
+          prefs="{{prefs}}">
       </settings-about-page>
     </template>
     <div id="overscroll" style="padding-bottom: [[overscroll_]]px"></div>
