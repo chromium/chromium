@@ -90,12 +90,17 @@ import {Route, Router, MinimumRoutes} from '../router.js';
         [
           RouteState.DIALOG, new Set([
             RouteState.SECTION,
-            RouteState.SUBPAGE,
             RouteState.TOP_LEVEL,
           ])
         ],
         [RouteState.SECTION, allStates],
-        [RouteState.SUBPAGE, allStates],
+        [
+          RouteState.SUBPAGE, new Set([
+            RouteState.SECTION,
+            RouteState.SUBPAGE,
+            RouteState.TOP_LEVEL,
+          ])
+        ],
         [RouteState.TOP_LEVEL, allStates],
       ]);
     })(),
@@ -346,10 +351,6 @@ import {Route, Router, MinimumRoutes} from '../router.js';
           // sub-subpage entry point.
         } else if (newState === RouteState.TOP_LEVEL) {
           this.enterMainPage_(oldRoute);
-        } else if (newState === RouteState.DIALOG) {
-          // The only known case currently for such a transition is from
-          // /storage to /clearBrowserData.
-          this.enterMainPage_(oldRoute);
         }
         return;
       }
@@ -364,14 +365,7 @@ import {Route, Router, MinimumRoutes} from '../router.js';
         return;
       }
 
-      if (oldState === RouteState.DIALOG) {
-        if (newState === RouteState.SUBPAGE) {
-          // The only known case currently for such a transition is from
-          // /clearBrowserData back to /storage.
-          this.enterSubpage_(newRoute);
-        }
-        // Nothing to do for all other cases.
-      }
+      // Nothing to do for when oldState === RouteState.DIALOG.
     },
 
     /**
