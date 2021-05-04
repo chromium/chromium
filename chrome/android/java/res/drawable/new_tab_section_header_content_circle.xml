@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/new_tab_section_header_content_circle"
     android:shape="oval">
-    <solid android:color="@color/modern_blue_600"/>
+    <solid android:color="@color/default_icon_color_blue"/>
     <size
         android:width="5dp"
         android:height="5dp"/>

@@ -11,10 +11,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:focusable="true"
-    android:paddingTop="0dp"
-    android:paddingBottom="0dp"
-    android:paddingLeft="13dp"
-    android:paddingRight="13dp">
+    android:padding="0dp">
 
     <TextView
         android:id="@android:id/text1"
