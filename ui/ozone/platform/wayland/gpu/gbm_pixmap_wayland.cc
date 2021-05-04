@@ -46,20 +46,33 @@ bool GbmPixmapWayland::InitializeBuffer(gfx::Size size,
     return false;
 
   const uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
-  auto gbm_usage = ui::BufferUsageToGbmFlags(usage);
-  std::vector<uint64_t> modifiers;
-  if (!(gbm_usage & GBM_BO_USE_LINEAR))
-    modifiers = buffer_manager_->GetModifiersForBufferFormat(format);
+  const uint32_t gbm_flags = ui::BufferUsageToGbmFlags(usage);
+  auto modifiers = buffer_manager_->GetModifiersForBufferFormat(format);
 
-  gbm_bo_ = buffer_manager_->gbm_device()->CreateBufferWithModifiers(
-      fourcc_format, size, gbm_usage, modifiers);
+  // Create buffer object without format modifiers unless they are explicitly
+  // advertised by the Wayland compositor, via linux-dmabuf protocol.
+  if (modifiers.empty()) {
+    gbm_bo_ = buffer_manager_->gbm_device()->CreateBuffer(fourcc_format, size,
+                                                          gbm_flags);
+  } else {
+    // When buffer |usage| implies on GBM_BO_USE_LINEAR, pass in
+    // DRM_FORMAT_MOD_LINEAR, i.e: no tiling, when creating gbm buffers,
+    // otherwise it fails to create BOs.
+    if (gbm_flags & GBM_BO_USE_LINEAR)
+      modifiers = {DRM_FORMAT_MOD_LINEAR};
+    gbm_bo_ = buffer_manager_->gbm_device()->CreateBufferWithModifiers(
+        fourcc_format, size, gbm_flags, modifiers);
+  }
+
   if (!gbm_bo_) {
     LOG(ERROR) << "Cannot create bo with format= "
-               << gfx::BufferFormatToString(format) << " and usage "
-               << gfx::BufferUsageToString(usage);
+               << gfx::BufferFormatToString(format)
+               << " and usage=" << gfx::BufferUsageToString(usage);
     return false;
   }
 
+  DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format)
+           << " usage=" << gfx::BufferUsageToString(usage);
   CreateDmabufBasedBuffer();
   return true;
 }
