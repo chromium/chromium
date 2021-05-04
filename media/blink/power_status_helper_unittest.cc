@@ -2,34 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/power_status_helper_impl.h"
+#include "media/blink/power_status_helper.h"
 
+#include <memory>
 #include <tuple>
+#include <utility>
+#include <vector>
 
-//#include "base/metrics/histogram.h"
-//#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "media/base/pipeline_metadata.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace media {
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Bool;
-using testing::Combine;
-using testing::Eq;
-using testing::Gt;
-using testing::Lt;
-using testing::ResultOf;
-using testing::Return;
-using testing::Values;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::Eq;
+using ::testing::Gt;
+using ::testing::Lt;
+using ::testing::ResultOf;
+using ::testing::Return;
+using ::testing::Values;
 
-class PowerStatusHelperImplTest : public testing::Test {
+class PowerStatusHelperTest : public testing::Test {
  public:
   class MockBatteryMonitor : public device::mojom::BatteryMonitor {
    public:
@@ -71,7 +74,7 @@ class PowerStatusHelperImplTest : public testing::Test {
 
     // Would be nice if this were base::MockCallback, but move-only types don't
     // seem to work.
-    PowerStatusHelperImpl::CreateBatteryMonitorCB cb() {
+    PowerStatusHelper::CreateBatteryMonitorCB cb() {
       return base::BindRepeating(&MockBatteryMonitor::GetBatteryMonitor,
                                  base::Unretained(this));
     }
@@ -105,7 +108,7 @@ class PowerStatusHelperImplTest : public testing::Test {
   };
 
   void SetUp() override {
-    helper_ = std::make_unique<PowerStatusHelperImpl>(monitor_.cb());
+    helper_ = std::make_unique<PowerStatusHelper>(monitor_.cb());
   }
 
   // Set up |helper_| to be in a state that should record. Returns the bucket.
@@ -132,15 +135,16 @@ class PowerStatusHelperImplTest : public testing::Test {
     helper_->UpdatePowerExperimentState(true);
     base::RunLoop().RunUntilIdle();
 
-    return PowerStatusHelperImpl::kCodecBitsH264 |
-           PowerStatusHelperImpl::kResolution360p |
-           PowerStatusHelperImpl::kFrameRate60 |
-           (alternate ? PowerStatusHelperImpl::kFullScreenYes
-                      : PowerStatusHelperImpl::kFullScreenNo);
+    return PowerStatusHelper::kCodecBitsH264 |
+           PowerStatusHelper::kResolution360p |
+           PowerStatusHelper::kFrameRate60 |
+           (alternate ? PowerStatusHelper::kFullScreenYes
+                      : PowerStatusHelper::kFullScreenNo);
   }
 
   void FastForward(base::TimeDelta delta) {
-    task_environment_.FastForwardBy(delta);
+    BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()->FastForwardBy(
+        delta);
   }
 
   // Verify that we've added |battery_delta| and |time_delta| to |bucket| in
@@ -162,18 +166,15 @@ class PowerStatusHelperImplTest : public testing::Test {
   int total_battery_delta = 0;
   int total_time_delta = 0;  // msec
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
   MockBatteryMonitor monitor_;
 
   // Helper under test
-  std::unique_ptr<PowerStatusHelperImpl> helper_;
+  std::unique_ptr<PowerStatusHelper> helper_;
 
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(PowerStatusHelperImplTest, EmptyPendingRemoteIsOkay) {
+TEST_F(PowerStatusHelperTest, EmptyPendingRemoteIsOkay) {
   // Enable power monitoring, but have the callback fail to provide a remote.
   // This should be handled gracefully.
 
@@ -183,7 +184,7 @@ TEST_F(PowerStatusHelperImplTest, EmptyPendingRemoteIsOkay) {
   MakeRecordable();
 }
 
-TEST_F(PowerStatusHelperImplTest, UnboundPendingRemoteIsOkay) {
+TEST_F(PowerStatusHelperTest, UnboundPendingRemoteIsOkay) {
   // TODO: this doesn't run the "is bound" part.  maybe we should just delete
   // the "is bound" part, or switch to a disconnection handler, etc.
   monitor_.remote_type_ = MockBatteryMonitor::RemoteType::kDisconnected;
@@ -191,7 +192,7 @@ TEST_F(PowerStatusHelperImplTest, UnboundPendingRemoteIsOkay) {
   MakeRecordable();
 }
 
-TEST_F(PowerStatusHelperImplTest, BasicReportingWithFractionalAmounts) {
+TEST_F(PowerStatusHelperTest, BasicReportingWithFractionalAmounts) {
   // Send three power updates, and verify that an update is called for the
   // last two.  The update should be fractional, so that some of it is rolled
   // over to the next call.
@@ -225,7 +226,7 @@ TEST_F(PowerStatusHelperImplTest, BasicReportingWithFractionalAmounts) {
   VerifyHistogramDelta(bucket, 11, time_delta);
 }
 
-TEST_F(PowerStatusHelperImplTest, ChargingResetsBaseline) {
+TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
   // Send some power updates, then send an update that's marked as 'charging'.
   // Make sure that the baseline resets.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
@@ -256,7 +257,7 @@ TEST_F(PowerStatusHelperImplTest, ChargingResetsBaseline) {
   VerifyHistogramDelta(bucket, 10, time_delta);
 }
 
-TEST_F(PowerStatusHelperImplTest, ExperimentStateStopsRecording) {
+TEST_F(PowerStatusHelperTest, ExperimentStateStopsRecording) {
   // Verify that stopping the power experiment stops recording.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
@@ -272,7 +273,7 @@ TEST_F(PowerStatusHelperImplTest, ExperimentStateStopsRecording) {
   monitor_.ProvidePowerUpdate(false, 1.0);
 }
 
-TEST_F(PowerStatusHelperImplTest, ChangingBucketsWorks) {
+TEST_F(PowerStatusHelperTest, ChangingBucketsWorks) {
   // Switch buckets mid-recording, and make sure that we get a new bucket and
   // use a new baseline.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
@@ -303,7 +304,7 @@ TEST_F(PowerStatusHelperImplTest, ChangingBucketsWorks) {
   VerifyHistogramDelta(second_bucket, 10, time_delta);
 }
 
-TEST_F(PowerStatusHelperImplTest, UnbucketedVideoStopsRecording) {
+TEST_F(PowerStatusHelperTest, UnbucketedVideoStopsRecording) {
   // If we switch to video that doesn't have a bucket, then recording should
   // stop too.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
@@ -317,7 +318,7 @@ TEST_F(PowerStatusHelperImplTest, UnbucketedVideoStopsRecording) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PowerStatusHelperImplTest, UnbucketedFrameRateStopsRecording) {
+TEST_F(PowerStatusHelperTest, UnbucketedFrameRateStopsRecording) {
   // If we switch to an unbucketed frame rate, then it should stop recording.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
@@ -330,16 +331,15 @@ TEST_F(PowerStatusHelperImplTest, UnbucketedFrameRateStopsRecording) {
   base::RunLoop().RunUntilIdle();
 }
 
-using PlaybackParamsTuple =
-    std::tuple<bool,                        /* is_playing */
-               bool,                        /* has_video */
-               PowerStatusHelperImpl::Bits, /* codec */
-               PowerStatusHelperImpl::Bits, /* resolution */
-               PowerStatusHelperImpl::Bits, /* frame rate */
-               PowerStatusHelperImpl::Bits  /* full screen */
-               >;
+using PlaybackParamsTuple = std::tuple<bool,                    /* is_playing */
+                                       bool,                    /* has_video */
+                                       PowerStatusHelper::Bits, /* codec */
+                                       PowerStatusHelper::Bits, /* resolution */
+                                       PowerStatusHelper::Bits, /* frame rate */
+                                       PowerStatusHelper::Bits /* full screen */
+                                       >;
 
-class PowerStatusHelperImplBucketTest
+class PowerStatusHelperBucketTest
     : public testing::TestWithParam<PlaybackParamsTuple> {
  public:
   base::Optional<int> BucketFor(bool is_playing,
@@ -349,13 +349,12 @@ class PowerStatusHelperImplBucketTest
                                 gfx::Size coded_size,
                                 bool is_fullscreen,
                                 base::Optional<int> average_fps) {
-    return PowerStatusHelperImpl::BucketFor(is_playing, has_video, codec,
-                                            profile, coded_size, is_fullscreen,
-                                            average_fps);
+    return PowerStatusHelper::BucketFor(is_playing, has_video, codec, profile,
+                                        coded_size, is_fullscreen, average_fps);
   }
 };
 
-TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
+TEST_P(PowerStatusHelperBucketTest, TestBucket) {
   // Construct a params that should end up in the bucket specified by the test
   // parameter, if one exists.
   bool expect_bucket = true;
@@ -370,13 +369,13 @@ TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
   auto codec_bits = std::get<2>(GetParam());
   media::VideoCodec codec;
   media::VideoCodecProfile profile;
-  if (codec_bits == PowerStatusHelperImpl::Bits::kCodecBitsH264) {
+  if (codec_bits == PowerStatusHelper::Bits::kCodecBitsH264) {
     codec = media::kCodecH264;
     profile = media::H264PROFILE_MAIN;
-  } else if (codec_bits == PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile0) {
+  } else if (codec_bits == PowerStatusHelper::Bits::kCodecBitsVP9Profile0) {
     codec = media::kCodecVP9;
     profile = media::VP9PROFILE_PROFILE0;
-  } else if (codec_bits == PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile2) {
+  } else if (codec_bits == PowerStatusHelper::Bits::kCodecBitsVP9Profile2) {
     codec = media::kCodecVP9;
     profile = media::VP9PROFILE_PROFILE2;
   } else {
@@ -388,11 +387,11 @@ TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
 
   auto res = std::get<3>(GetParam());
   gfx::Size coded_size;
-  if (res == PowerStatusHelperImpl::Bits::kResolution360p) {
+  if (res == PowerStatusHelper::Bits::kResolution360p) {
     coded_size = gfx::Size(640, 360);
-  } else if (res == PowerStatusHelperImpl::Bits::kResolution720p) {
+  } else if (res == PowerStatusHelper::Bits::kResolution720p) {
     coded_size = gfx::Size(1280, 720);
-  } else if (res == PowerStatusHelperImpl::Bits::kResolution1080p) {
+  } else if (res == PowerStatusHelper::Bits::kResolution1080p) {
     coded_size = gfx::Size(1920, 1080);
   } else {
     coded_size = gfx::Size(1234, 5678);
@@ -401,9 +400,9 @@ TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
 
   auto fps = std::get<4>(GetParam());
   base::Optional<int> average_fps;
-  if (fps == PowerStatusHelperImpl::Bits::kFrameRate30) {
+  if (fps == PowerStatusHelper::Bits::kFrameRate30) {
     average_fps = 30;
-  } else if (fps == PowerStatusHelperImpl::Bits::kFrameRate60) {
+  } else if (fps == PowerStatusHelper::Bits::kFrameRate60) {
     average_fps = 60;
   } else {
     average_fps = 90;
@@ -411,7 +410,7 @@ TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
   }
 
   bool is_fullscreen =
-      (std::get<5>(GetParam()) == PowerStatusHelperImpl::Bits::kFullScreenYes);
+      (std::get<5>(GetParam()) == PowerStatusHelper::Bits::kFullScreenYes);
 
   auto bucket = BucketFor(is_playing, has_video, codec, profile, coded_size,
                           is_fullscreen, average_fps);
@@ -426,21 +425,21 @@ TEST_P(PowerStatusHelperImplBucketTest, TestBucket) {
 // Instantiate all valid combinations, plus some that aren't.
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PowerStatusHelperImplBucketTest,
+    PowerStatusHelperBucketTest,
     Combine(Bool(),
             Bool(),
-            Values(PowerStatusHelperImpl::Bits::kCodecBitsH264,
-                   PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile0,
-                   PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile2,
-                   PowerStatusHelperImpl::Bits::kNotAValidBitForTesting),
-            Values(PowerStatusHelperImpl::Bits::kResolution360p,
-                   PowerStatusHelperImpl::Bits::kResolution720p,
-                   PowerStatusHelperImpl::Bits::kResolution1080p,
-                   PowerStatusHelperImpl::Bits::kNotAValidBitForTesting),
-            Values(PowerStatusHelperImpl::Bits::kFrameRate30,
-                   PowerStatusHelperImpl::Bits::kFrameRate60,
-                   PowerStatusHelperImpl::Bits::kNotAValidBitForTesting),
-            Values(PowerStatusHelperImpl::Bits::kFullScreenNo,
-                   PowerStatusHelperImpl::Bits::kFullScreenYes)));
+            Values(PowerStatusHelper::Bits::kCodecBitsH264,
+                   PowerStatusHelper::Bits::kCodecBitsVP9Profile0,
+                   PowerStatusHelper::Bits::kCodecBitsVP9Profile2,
+                   PowerStatusHelper::Bits::kNotAValidBitForTesting),
+            Values(PowerStatusHelper::Bits::kResolution360p,
+                   PowerStatusHelper::Bits::kResolution720p,
+                   PowerStatusHelper::Bits::kResolution1080p,
+                   PowerStatusHelper::Bits::kNotAValidBitForTesting),
+            Values(PowerStatusHelper::Bits::kFrameRate30,
+                   PowerStatusHelper::Bits::kFrameRate60,
+                   PowerStatusHelper::Bits::kNotAValidBitForTesting),
+            Values(PowerStatusHelper::Bits::kFullScreenNo,
+                   PowerStatusHelper::Bits::kFullScreenYes)));
 
-}  // namespace content
+}  // namespace media

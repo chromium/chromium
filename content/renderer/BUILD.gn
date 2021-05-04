@@ -93,8 +93,6 @@ target(link_target_type, "renderer") {
     "media/media_interface_factory.h",
     "media/media_permission_dispatcher.cc",
     "media/media_permission_dispatcher.h",
-    "media/power_status_helper_impl.cc",
-    "media/power_status_helper_impl.h",
     "media/render_media_client.cc",
     "media/render_media_client.h",
     "media/render_media_event_handler.cc",

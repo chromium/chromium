@@ -25,7 +25,6 @@
 #include "content/renderer/media/batching_media_log.h"
 #include "content/renderer/media/inspector_media_event_handler.h"
 #include "content/renderer/media/media_interface_factory.h"
-#include "content/renderer/media/power_status_helper_impl.h"
 #include "content/renderer/media/render_media_event_handler.h"
 #include "content/renderer/media/renderer_webmediaplayer_delegate.h"
 #include "content/renderer/render_frame_impl.h"
@@ -37,6 +36,7 @@
 #include "media/base/demuxer.h"
 #include "media/base/media_switches.h"
 #include "media/base/renderer_factory_selector.h"
+#include "media/blink/power_status_helper.h"
 #include "media/blink/remote_playback_client_wrapper_impl.h"
 #include "media/blink/resource_fetch_context.h"
 #include "media/blink/url_index.h"
@@ -503,8 +503,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           return battery_monitor;
         },
         remote_interfaces);
-    power_status_helper =
-        std::make_unique<PowerStatusHelperImpl>(std::move(battery_monitor_cb));
+    power_status_helper = std::make_unique<media::PowerStatusHelper>(
+        std::move(battery_monitor_cb));
   }
 
   scoped_refptr<base::SingleThreadTaskRunner>

@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/power_status_helper_impl.h"
+#include "media/blink/power_status_helper.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
+#include "media/base/pipeline_metadata.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 
-using ::device::mojom::BatteryStatusPtr;
-
-namespace content {
-
+namespace media {
 namespace {
+
+using ::device::mojom::BatteryStatusPtr;
 
 static constexpr const char* kBatteryDeltaHistogram =
     "Media.PlaybackPower.BatteryDelta";
@@ -23,19 +27,19 @@ static constexpr int kMinEnumValue = 0;
 
 // Maximum enum value that we'll generate, inclusive.
 static constexpr int kMaxEnumValue =
-    PowerStatusHelperImpl::Bits::kCodecBitsH264 |
-    PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile0 |
-    PowerStatusHelperImpl::Bits::kCodecBitsVP9Profile2 |
+    PowerStatusHelper::Bits::kCodecBitsH264 |
+    PowerStatusHelper::Bits::kCodecBitsVP9Profile0 |
+    PowerStatusHelper::Bits::kCodecBitsVP9Profile2 |
 
-    PowerStatusHelperImpl::Bits::kResolution360p |
-    PowerStatusHelperImpl::Bits::kResolution720p |
-    PowerStatusHelperImpl::Bits::kResolution1080p |
+    PowerStatusHelper::Bits::kResolution360p |
+    PowerStatusHelper::Bits::kResolution720p |
+    PowerStatusHelper::Bits::kResolution1080p |
 
-    PowerStatusHelperImpl::Bits::kFrameRate30 |
-    PowerStatusHelperImpl::Bits::kFrameRate60 |
+    PowerStatusHelper::Bits::kFrameRate30 |
+    PowerStatusHelper::Bits::kFrameRate60 |
 
-    PowerStatusHelperImpl::Bits::kFullScreenNo |
-    PowerStatusHelperImpl::Bits::kFullScreenYes;
+    PowerStatusHelper::Bits::kFullScreenNo |
+    PowerStatusHelper::Bits::kFullScreenYes;
 
 // UMA buckets are always [uma_min, uma_max).  The first bucket is an implicit
 // underflow bucket [0, uma_min), and the last is the overflow bucket
@@ -82,14 +86,14 @@ static_assert(kNumUmaBuckets < 100, "Too many buckets");
 
 }  // namespace
 
-PowerStatusHelperImpl::PowerStatusHelperImpl(
+PowerStatusHelper::PowerStatusHelper(
     CreateBatteryMonitorCB create_battery_monitor_cb)
     : create_battery_monitor_cb_(std::move(create_battery_monitor_cb)) {}
 
-PowerStatusHelperImpl::~PowerStatusHelperImpl() = default;
+PowerStatusHelper::~PowerStatusHelper() = default;
 
 // static
-base::Optional<int> PowerStatusHelperImpl::BucketFor(
+base::Optional<int> PowerStatusHelper::BucketFor(
     bool is_playing,
     bool has_video,
     media::VideoCodec codec,
@@ -141,22 +145,21 @@ base::Optional<int> PowerStatusHelperImpl::BucketFor(
 }
 
 // static
-const char* PowerStatusHelperImpl::BatteryDeltaHistogram() {
+const char* PowerStatusHelper::BatteryDeltaHistogram() {
   return kBatteryDeltaHistogram;
 }
 
 // static
-const char* PowerStatusHelperImpl::ElapsedTimeHistogram() {
+const char* PowerStatusHelper::ElapsedTimeHistogram() {
   return kElapsedTimeHistogram;
 }
 
-void PowerStatusHelperImpl::SetIsPlaying(bool is_playing) {
+void PowerStatusHelper::SetIsPlaying(bool is_playing) {
   is_playing_ = is_playing;
   OnAnyStateChange();
 }
 
-void PowerStatusHelperImpl::SetMetadata(
-    const media::PipelineMetadata& metadata) {
+void PowerStatusHelper::SetMetadata(const media::PipelineMetadata& metadata) {
   has_video_ = metadata.has_video;
   codec_ = metadata.video_decoder_config.codec();
   profile_ = metadata.video_decoder_config.profile();
@@ -164,24 +167,23 @@ void PowerStatusHelperImpl::SetMetadata(
   OnAnyStateChange();
 }
 
-void PowerStatusHelperImpl::SetIsFullscreen(bool is_fullscreen) {
+void PowerStatusHelper::SetIsFullscreen(bool is_fullscreen) {
   is_fullscreen_ = is_fullscreen;
   OnAnyStateChange();
 }
 
-void PowerStatusHelperImpl::SetAverageFrameRate(
-    base::Optional<int> average_fps) {
+void PowerStatusHelper::SetAverageFrameRate(base::Optional<int> average_fps) {
   average_fps_ = average_fps;
   OnAnyStateChange();
 }
 
-void PowerStatusHelperImpl::UpdatePowerExperimentState(bool state) {
+void PowerStatusHelper::UpdatePowerExperimentState(bool state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   experiment_state_ = state;
   OnAnyStateChange();
 }
 
-void PowerStatusHelperImpl::OnAnyStateChange() {
+void PowerStatusHelper::OnAnyStateChange() {
   base::Optional<int> old_bucket = current_bucket_;
   current_bucket_.reset();
 
@@ -204,7 +206,7 @@ void PowerStatusHelperImpl::OnAnyStateChange() {
   }
 }
 
-void PowerStatusHelperImpl::OnBatteryStatus(
+void PowerStatusHelper::OnBatteryStatus(
     device::mojom::BatteryStatusPtr battery_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -268,7 +270,7 @@ void PowerStatusHelperImpl::OnBatteryStatus(
   }
 }
 
-void PowerStatusHelperImpl::StartMonitoring() {
+void PowerStatusHelper::StartMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!battery_monitor_.is_bound()) {
@@ -290,19 +292,19 @@ void PowerStatusHelperImpl::StartMonitoring() {
   battery_level_baseline_.reset();
 }
 
-void PowerStatusHelperImpl::StopMonitoring() {
+void PowerStatusHelper::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   battery_monitor_.reset();
 }
 
-void PowerStatusHelperImpl::QueryNextStatus() {
+void PowerStatusHelper::QueryNextStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_monitor_.is_bound());
 
   // Remember that overlapping calls are not allowed by BatteryMonitor, and are
   // treated as a connection error.  Unretained since we own |battery_monitor_|.
   battery_monitor_->QueryNextStatus(base::BindOnce(
-      &PowerStatusHelperImpl::OnBatteryStatus, base::Unretained(this)));
+      &PowerStatusHelper::OnBatteryStatus, base::Unretained(this)));
 }
 
-}  // namespace content
+}  // namespace media
