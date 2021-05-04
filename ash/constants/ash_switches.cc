@@ -513,6 +513,12 @@ const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
 // is not in tablet mode.
 const char kOobeForceTabletFirstRun[] = "oobe-force-tablet-first-run";
 
+// Indicates that OOBE should be scaled for big displays similar to how Meets
+// app scales UI.
+// TODO(crbug.com/1205364): Remove after adding new scheme.
+const char kOobeLargeScreenSpecialScaling[] =
+    "oobe-large-screen-special-scaling";
+
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
@@ -704,6 +710,11 @@ bool IsUnfilteredBluetoothDevicesEnabled() {
 bool ShouldOobeUseTabletModeFirstRun() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kOobeForceTabletFirstRun);
+}
+
+bool ShouldScaleOobe() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeLargeScreenSpecialScaling);
 }
 
 bool IsAueReachedForUpdateRequiredForTest() {

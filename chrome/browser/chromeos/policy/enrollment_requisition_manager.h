@@ -21,6 +21,12 @@ class EnrollmentRequisitionManager {
   EnrollmentRequisitionManager* operator=(const EnrollmentRequisitionManager&) =
       delete;
 
+  // Well-known requisition types.
+  static const char kNoRequisition[];
+  static const char kRemoraRequisition[];
+  static const char kSharkRequisition[];
+  static const char kRialtoRequisition[];
+
   // Initializes requisition settings at OOBE with values from VPD.
   static void Initialize();
 

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -41,6 +45,9 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -175,6 +182,62 @@ class InvalidPendingScreenTest : public OobeBaseTest,
 
 IN_PROC_BROWSER_TEST_F(InvalidPendingScreenTest, WelcomeScreenShown) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+}
+
+class DisplayOobeTest : public OobeBaseTest {
+ public:
+  DisplayOobeTest() = default;
+  ~DisplayOobeTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kOobeLargeScreenSpecialScaling);
+    OobeBaseTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets4kDisplay) {
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      policy::EnrollmentRequisitionManager::kRemoraRequisition);
+
+  std::string display_spec("0+0-3840x2160");
+  ash::ShellTestApi shell_test_api;
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay(display_spec);
+
+  display::Screen* screen = display::Screen::GetScreen();
+  gfx::Size display = screen->GetPrimaryDisplay().size();
+  EXPECT_EQ(display.width(), 2560);
+  EXPECT_EQ(display.height(), 1440);
+
+  display::DisplayManager* display_manager =
+      ash::Shell::Get()->display_manager();
+  display_manager->ResetDisplayZoom(screen->GetPrimaryDisplay().id());
+  display = screen->GetPrimaryDisplay().size();
+  EXPECT_EQ(display.width(), 3840);
+  EXPECT_EQ(display.height(), 2160);
+}
+
+IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      policy::EnrollmentRequisitionManager::kRemoraRequisition);
+
+  std::string display_spec("0+0-2560x1440");
+  ash::ShellTestApi shell_test_api;
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay(display_spec);
+
+  display::Screen* screen = display::Screen::GetScreen();
+  gfx::Size display = screen->GetPrimaryDisplay().size();
+  EXPECT_EQ(display.width(), 1920);
+  EXPECT_EQ(display.height(), 1080);
+
+  display::DisplayManager* display_manager =
+      ash::Shell::Get()->display_manager();
+  display_manager->ResetDisplayZoom(screen->GetPrimaryDisplay().id());
+  display = screen->GetPrimaryDisplay().size();
+  EXPECT_EQ(display.width(), 2560);
+  EXPECT_EQ(display.height(), 1440);
 }
 
 }  // namespace chromeos

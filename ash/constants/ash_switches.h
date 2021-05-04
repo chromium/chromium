@@ -187,6 +187,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNoteTakingAppIds[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeEulaUrlForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeForceTabletFirstRun[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOobeLargeScreenSpecialScaling[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipPostLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];
@@ -280,6 +282,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUnfilteredBluetoothDevicesEnabled();
 // the user on their first login) should show tablet mode screens when the
 // device is not in tablet mode.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOobeUseTabletModeFirstRun();
+
+// Returns whether OOBE should be scaled for CfM devices.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldScaleOobe();
 
 // Returns true if device policy DeviceMinimumVersion should assume that
 // Auto Update Expiration is reached. This should only be used for testing.
