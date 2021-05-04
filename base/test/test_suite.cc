@@ -276,8 +276,7 @@ void InitializeLogging() {
   logging::SetLogItems(false, false, false, false);
 #else
   // We want process and thread IDs because we may have multiple processes.
-  // Note: temporarily enabled timestamps in an effort to catch bug 6361.
-  logging::SetLogItems(true, true, true, true);
+  logging::SetLogItems(true, true, false, false);
 #endif  // !defined(OS_ANDROID)
 }
 
