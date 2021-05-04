@@ -17,6 +17,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -175,6 +177,26 @@ bool HasUnknownInvalidAccountInCookie(
 
 }  // namespace
 
+// static
+const char AccountReconcilor::kOperationHistogramName[] =
+    "Signin.Reconciler.Operation";
+
+// static
+const char AccountReconcilor::kTriggerLogoutHistogramName[] =
+    "Signin.Reconciler.Trigger.Logout";
+
+// static
+const char AccountReconcilor::kTriggerMultiloginHistogramName[] =
+    "Signin.Reconciler.Trigger.Multilogin";
+
+// static
+const char AccountReconcilor::kTriggerNoopHistogramName[] =
+    "Signin.Reconciler.Trigger.Noop";
+
+// static
+const char AccountReconcilor::kTriggerThrottledHistogramName[] =
+    "Signin.Reconciler.Trigger.Throttled";
+
 AccountReconcilor::Lock::Lock(AccountReconcilor* reconcilor)
     : reconcilor_(reconcilor->weak_factory_.GetWeakPtr()) {
   DCHECK(reconcilor_);
@@ -208,20 +230,7 @@ AccountReconcilor::AccountReconcilor(
     std::unique_ptr<signin::AccountReconcilorDelegate> delegate)
     : delegate_(std::move(delegate)),
       identity_manager_(identity_manager),
-      client_(client),
-      registered_with_identity_manager_(false),
-      registered_with_content_settings_(false),
-      is_reconcile_started_(false),
-      first_execution_(true),
-      error_during_last_reconcile_(GoogleServiceAuthError::AuthErrorNone()),
-      reconcile_is_noop_(true),
-      set_accounts_in_progress_(false),
-      log_out_in_progress_(false),
-      chrome_accounts_changed_(false),
-      account_reconcilor_lock_count_(0),
-      reconcile_on_unblock_(false),
-      timer_(new base::OneShotTimer),
-      state_(signin_metrics::ACCOUNT_RECONCILOR_OK) {
+      client_(client) {
   VLOG(1) << "AccountReconcilor::AccountReconcilor";
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
@@ -253,14 +262,14 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
 
     // Start a reconcile if the tokens are already loaded.
     if (start_reconcile_if_tokens_available && IsIdentityManagerReady())
-      StartReconcile();
+      StartReconcile(Trigger::kInitialized);
   }
 }
 
 void AccountReconcilor::EnableReconcile() {
   RegisterWithAllDependencies();
   if (IsIdentityManagerReady())
-    StartReconcile();
+    StartReconcile(Trigger::kEnableReconcile);
   else
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
 }
@@ -360,7 +369,7 @@ void AccountReconcilor::OnContentSettingChanged(
   }
 
   VLOG(1) << "AccountReconcilor::OnContentSettingChanged";
-  StartReconcile();
+  StartReconcile(Trigger::kCookieSettingChange);
 }
 
 void AccountReconcilor::OnEndBatchOfRefreshTokenStateChanges() {
@@ -368,11 +377,11 @@ void AccountReconcilor::OnEndBatchOfRefreshTokenStateChanges() {
           << "Reconcilor state: " << is_reconcile_started_;
   // Remember that accounts have changed if a reconcile is already started.
   chrome_accounts_changed_ = is_reconcile_started_;
-  StartReconcile();
+  StartReconcile(Trigger::kTokenChange);
 }
 
 void AccountReconcilor::OnRefreshTokensLoaded() {
-  StartReconcile();
+  StartReconcile(Trigger::kTokensLoaded);
 }
 
 void AccountReconcilor::OnErrorStateOfRefreshTokenUpdatedForAccount(
@@ -424,7 +433,7 @@ void AccountReconcilor::PerformLogoutAllAccountsAction() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void AccountReconcilor::StartReconcile() {
+void AccountReconcilor::StartReconcile(Trigger trigger) {
   if (WasShutDown())
     return;
 
@@ -464,6 +473,7 @@ void AccountReconcilor::StartReconcile() {
   is_reconcile_started_ = true;
   error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
   reconcile_is_noop_ = true;
+  trigger_ = trigger;
 
   if (!timeout_.is_max()) {
     timer_->Start(FROM_HERE, timeout_,
@@ -537,6 +547,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     // same request with the same params.
     if (throttler_.TryMultiloginOperation(parameters_for_multilogin)) {
       if (parameters_for_multilogin == kLogoutParameters) {
+        RecordReconcileOperation(trigger_, Operation::kLogout);
         // UPDATE mode does not support empty list of accounts, call logout
         // instead.
         log_out_in_progress_ = true;
@@ -546,6 +557,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
         // true and any StartReconcile() calls that are made in the meantime
         // will be aborted until OnSetAccountsInCookieCompleted is called and
         // is_reconcile_started_ is set to false.
+        RecordReconcileOperation(trigger_, Operation::kMultilogin);
         set_accounts_in_progress_ = true;
         PerformSetCookiesAction(parameters_for_multilogin);
       }
@@ -556,9 +568,11 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
           GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
       CalculateIfMultiloginReconcileIsDone();
       ScheduleStartReconcileIfChromeAccountsChanged();
+      RecordReconcileOperation(trigger_, Operation::kThrottled);
     }
   } else {
     // Nothing to do, accounts already match.
+    RecordReconcileOperation(trigger_, Operation::kNoop);
     throttler_.Reset();
     error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
     CalculateIfMultiloginReconcileIsDone();
@@ -606,7 +620,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
   }
 
   if (!is_reconcile_started_) {
-    StartReconcile();
+    StartReconcile(Trigger::kCookieChange);
     return;
   }
 
@@ -895,7 +909,8 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AccountReconcilor::StartReconcile,
-                                  base::Unretained(this)));
+                                  base::Unretained(this),
+                                  Trigger::kTokenChangeDuringReconcile));
   } else if (error_during_last_reconcile_.state() ==
              GoogleServiceAuthError::NONE) {
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
@@ -1055,7 +1070,7 @@ void AccountReconcilor::UnblockReconcile() {
     observer.OnUnblockReconcile();
   if (reconcile_on_unblock_) {
     reconcile_on_unblock_ = false;
-    StartReconcile();
+    StartReconcile(Trigger::kUnblockReconcile);
   }
 }
 
@@ -1129,4 +1144,25 @@ void AccountReconcilor::SetState(AccountReconcilorState state) {
 
 bool AccountReconcilor::WasShutDown() const {
   return was_shut_down_;
+}
+
+// static
+void AccountReconcilor::RecordReconcileOperation(Trigger trigger,
+                                                 Operation operation) {
+  // Using the histogram macro for histogram that may be recorded in a loop.
+  UMA_HISTOGRAM_ENUMERATION(kOperationHistogramName, operation);
+  switch (operation) {
+    case Operation::kNoop:
+      base::UmaHistogramEnumeration(kTriggerNoopHistogramName, trigger);
+      break;
+    case Operation::kLogout:
+      base::UmaHistogramEnumeration(kTriggerLogoutHistogramName, trigger);
+      break;
+    case Operation::kMultilogin:
+      base::UmaHistogramEnumeration(kTriggerMultiloginHistogramName, trigger);
+      break;
+    case Operation::kThrottled:
+      UMA_HISTOGRAM_ENUMERATION(kTriggerThrottledHistogramName, trigger);
+      break;
+  }
 }

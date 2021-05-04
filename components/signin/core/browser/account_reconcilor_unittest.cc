@@ -689,7 +689,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     ASSERT_TRUE(reconcilor->first_execution_);
     reconcilor->first_execution_ =
         is_first_reconcile_ == IsFirstReconcile::kFirst;
-    reconcilor->StartReconcile();
+    reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
     for (int i = 0; gaia_api_calls_[i] != '\0'; ++i) {
       if (gaia_api_calls_[i] == 'X') {
         SimulateLogOutFromCookieCompleted(
@@ -1162,7 +1162,7 @@ TEST_P(AccountReconcilorTestForceDiceMigration, TableRowTestCheckNoOp) {
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   EXPECT_FALSE(reconcilor->delegate_->ShouldRevokeTokensNotInCookies());
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
@@ -1207,7 +1207,7 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
 
   // Setup expectations.
   testing::InSequence mock_sequence;
-  bool should_logout;
+  bool should_logout = false;
   if (GetParam().gaia_api_calls_multilogin[0] != '\0') {
     gaia::MultiloginMode mode =
         GetParam().gaia_api_calls_multilogin[0] == 'U'
@@ -1239,7 +1239,7 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
   ASSERT_TRUE(reconcilor->first_execution_);
   reconcilor->first_execution_ =
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   if (GetParam().gaia_api_calls_multilogin[0] != '\0') {
     if (should_logout) {
       SimulateLogOutFromCookieCompleted(
@@ -1340,7 +1340,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, DiceReconcileWithoutSignin) {
   }
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -1366,7 +1366,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, DiceReconcileNoop) {
       .Times(0);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -1413,7 +1413,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest,
   }
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   if (!IsMultiloginEnabled()) {
@@ -1467,7 +1467,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, DiceLastKnownFirstAccount) {
         .Times(0);
 
     AccountReconcilor* reconcilor = GetMockReconcilor();
-    reconcilor->StartReconcile();
+    reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
     ASSERT_TRUE(reconcilor->is_reconcile_started_);
     base::RunLoop().RunUntilIdle();
     ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -1499,7 +1499,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, DiceLastKnownFirstAccount) {
   }
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   if (!IsMultiloginEnabled()) {
@@ -1530,7 +1530,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, UnverifiedAccountNoop) {
       .Times(0);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -1568,7 +1568,7 @@ TEST_P(AccountReconcilorDiceEndpointParamTest, UnverifiedAccountMerge) {
   }
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   if (!IsMultiloginEnabled()) {
@@ -1762,7 +1762,7 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
   ASSERT_TRUE(reconcilor->first_execution_);
   reconcilor->first_execution_ =
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   SimulateSetAccountsInCookieCompleted(
       reconcilor, signin::SetAccountsInCookieResult::kSuccess);
@@ -1882,7 +1882,7 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
   ASSERT_TRUE(reconcilor->first_execution_);
   reconcilor->first_execution_ =
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   if (GetParam().gaia_api_calls[0] != '\0') {
     if (should_logout) {
       SimulateLogOutFromCookieCompleted(
@@ -1924,7 +1924,7 @@ TEST_F(AccountReconcilorMirrorTest, TokensNotLoaded) {
   identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   // No reconcile when tokens are not loaded.
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -1938,6 +1938,7 @@ TEST_F(AccountReconcilorMirrorTest, TokensNotLoaded) {
   EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
 
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  EXPECT_EQ(AccountReconcilor::Trigger::kTokensLoaded, reconcilor->trigger_);
   base::RunLoop().RunUntilIdle();
 
   SimulateSetAccountsInCookieCompleted(
@@ -1966,7 +1967,7 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieSuccess) {
 
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_SCHEDULED,
             reconcilor->GetState());
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
@@ -2000,7 +2001,7 @@ TEST_F(AccountReconcilorMirrorTest, EnableReconcileWhileAlreadyRunning) {
 
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_SCHEDULED,
             reconcilor->GetState());
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
   reconcilor->EnableReconcile();
   EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
@@ -2025,7 +2026,7 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
 
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_SCHEDULED,
             reconcilor->GetState());
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
   base::RunLoop().RunUntilIdle();
 
@@ -2062,7 +2063,7 @@ TEST_F(AccountReconcilorMirrorTest, ExtraCookieChangeNotification) {
 
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_SCHEDULED,
             reconcilor->GetState());
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
 
   // Add extra cookie change notification. Reconcilor should ignore it.
@@ -2091,11 +2092,18 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileNoop) {
   signin::SetListAccountsResponseOneAccount(
       account_info.email, account_info.gaia, &test_url_loader_factory_);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kNoop, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerNoopHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 1);
 }
 
 TEST_F(AccountReconcilorMirrorTest, StartReconcileCookiesDisabled) {
@@ -2107,7 +2115,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileCookiesDisabled) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
@@ -2136,6 +2144,8 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileContentSettings) {
   SimulateCookieContentSettingsChanged(reconcilor,
                                        ContentSettingsPattern::Wildcard());
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  EXPECT_EQ(AccountReconcilor::Trigger::kCookieSettingChange,
+            reconcilor->trigger_);
 }
 
 TEST_F(AccountReconcilorMirrorTest, StartReconcileContentSettingsGaiaUrl) {
@@ -2203,7 +2213,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopWithDots) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 }
@@ -2219,7 +2229,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopMultiple) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 }
@@ -2241,7 +2251,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookie) {
     EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2256,6 +2266,19 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookie) {
   EXPECT_THAT(histogram_tester()->GetTotalCountsForPrefix(
                   "Signin.Reconciler.Duration.UpTo3mins.Success"),
               testing::ContainerEq(expected_counts));
+
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kMultilogin, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerMultiloginHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 1);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerLogoutHistogramName, 0);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerNoopHistogramName, 0);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerThrottledHistogramName, 0);
 }
 
 TEST_F(AccountReconcilorTest, AuthErrorTriggersListAccount) {
@@ -2333,7 +2356,7 @@ TEST_F(AccountReconcilorMirrorTest, SignoutAfterErrorDoesNotRecordUma) {
     EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2367,7 +2390,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileRemoveFromCookie) {
     EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
@@ -2390,7 +2413,7 @@ TEST_F(AccountReconcilorMirrorTest, TokenErrorOnPrimary) {
       &test_url_loader_factory_);
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -2417,7 +2440,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(ml_params_1));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2444,6 +2467,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  EXPECT_EQ(AccountReconcilor::Trigger::kTokenChange, reconcilor->trigger_);
 
   SimulateSetAccountsInCookieCompleted(
       reconcilor, signin::SetAccountsInCookieResult::kSuccess);
@@ -2469,7 +2493,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileBadPrimary) {
     EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2489,7 +2513,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileOnlyOnce) {
   ASSERT_TRUE(reconcilor);
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
@@ -2530,7 +2554,7 @@ TEST_F(AccountReconcilorMirrorTest, Lock) {
   std::unique_ptr<AccountReconcilor::Lock> lock_1 =
       std::make_unique<AccountReconcilor::Lock>(reconcilor);
   EXPECT_EQ(1, reconcilor->account_reconcilor_lock_count_);
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   // lock_1 is blocking the reconcile.
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
   {
@@ -2552,6 +2576,8 @@ TEST_F(AccountReconcilorMirrorTest, Lock) {
   EXPECT_EQ(1, observer.started_count_);
   EXPECT_EQ(1, observer.unblocked_count_);
   EXPECT_EQ(1, observer.blocked_count_);
+  EXPECT_EQ(AccountReconcilor::Trigger::kUnblockReconcile,
+            reconcilor->trigger_);
 
   // Lock aborts current reconcile, and restarts it later.
   {
@@ -2616,7 +2642,7 @@ TEST_P(AccountReconcilorMethodParamTest,
   }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
@@ -2649,7 +2675,7 @@ TEST_F(AccountReconcilorMirrorTest,
   ASSERT_TRUE(reconcilor);
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
@@ -2686,7 +2712,7 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
@@ -2708,7 +2734,7 @@ TEST_F(AccountReconcilorMirrorTest, NoLoopWithBadPrimary) {
       identity_test_env()->identity_manager(), account_id1, error);
 
   // A second attempt to reconcile should be a noop.
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
   testing::Mock::VerifyAndClearExpectations(GetMockReconcilor());
@@ -2741,7 +2767,7 @@ TEST_F(AccountReconcilorMirrorTest, WontMergeAccountsWithError) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   ASSERT_TRUE(reconcilor);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 
@@ -2766,7 +2792,7 @@ TEST_F(AccountReconcilorTest, DelegateTimeoutIsCalled) {
   base::MockOneShotTimer* timer = timer0.get();
   reconcilor->set_timer_for_testing(std::move(timer0));
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   ASSERT_TRUE(timer->IsRunning());
 
@@ -2789,7 +2815,7 @@ TEST_F(AccountReconcilorMirrorTest, DelegateTimeoutIsNotCalled) {
   base::MockOneShotTimer* timer = timer0.get();
   reconcilor->set_timer_for_testing(std::move(timer0));
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   EXPECT_TRUE(reconcilor->is_reconcile_started_);
   EXPECT_FALSE(timer->IsRunning());
 }
@@ -2807,7 +2833,7 @@ TEST_F(AccountReconcilorTest, DelegateTimeoutIsNotCalledIfTimeoutIsNotReached) {
   base::MockOneShotTimer* timer = timer0.get();
   reconcilor->set_timer_for_testing(std::move(timer0));
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   ASSERT_TRUE(timer->IsRunning());
 
@@ -2871,13 +2897,23 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   // No multilogin call.
   EXPECT_CALL(*reconcilor, PerformSetCookiesAction(testing::_)).Times(0);
 
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
   SimulateLogOutFromCookieCompleted(reconcilor,
                                     GoogleServiceAuthError::AuthErrorNone());
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kLogout, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerLogoutHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 1);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerThrottledHistogramName, 0);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerMultiloginHistogramName, 0);
 }
 
 // Reconcilor does not start after being shutdown. Regression test for
@@ -2888,7 +2924,8 @@ TEST_F(AccountReconcilorTest, ReconcileAfterShutdown) {
   EXPECT_FALSE(reconcilor->WasShutDown());
   reconcilor->Shutdown();
   EXPECT_TRUE(reconcilor->WasShutDown());
-  reconcilor->StartReconcile();  // This should not crash.
+  // This should not crash.
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
 }
 
@@ -2902,7 +2939,7 @@ TEST_F(AccountReconcilorTest, UnlockAfterShutdown) {
 
   // Reconcile does not start now because of the Lock, but is scheduled to start
   // when the lock is released.
-  reconcilor->StartReconcile();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
 
   reconcilor->Shutdown();
@@ -2933,7 +2970,7 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
       EXPECT_CALL(*GetMockReconcilor(),
                   PerformSetCookiesAction(expected_params));
       ASSERT_FALSE(reconcilor->is_reconcile_started_);
-      reconcilor->StartReconcile();
+      reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
       base::RunLoop().RunUntilIdle();
       // Reconciliation not blocked.
       ASSERT_TRUE(reconcilor->is_reconcile_started_);
@@ -2949,7 +2986,7 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
 
   void VerifyRequestsBlockedByThrottler() {
     AccountReconcilor* reconcilor = GetMockReconcilor();
-    reconcilor->StartReconcile();
+    reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
     base::RunLoop().RunUntilIdle();
     // Reconciliation should fail.
     ASSERT_FALSE(reconcilor->is_reconcile_started_);
@@ -2981,6 +3018,11 @@ TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {
   // Consume all available requests.
   ConsumeRequests(AccountReconcilorThrottler::kMaxAllowedRequestsPerBucket,
                   params);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerMultiloginHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 30);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerThrottledHistogramName, 0);
 
   // At this point all the requests in the available request buckets should
   // have been consumed.
@@ -2993,6 +3035,22 @@ TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {
   // The blocked request recorded upon allowing a new request.
   histogram_tester()->ExpectBucketCount(
       "Signin.Reconciler.RejectedRequestsDueToThrottler.Update", 1, 1);
+  histogram_tester()->ExpectBucketCount(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kThrottled, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerThrottledHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 1);
+  histogram_tester()->ExpectBucketCount(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kMultilogin, 31);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerMultiloginHistogramName,
+      AccountReconcilor::Trigger::kCookieChange, 31);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerLogoutHistogramName, 0);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerNoopHistogramName, 0);
 
   // No Available requests.
   VerifyRequestsBlockedByThrottler();

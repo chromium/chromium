@@ -236,6 +236,34 @@ class AccountReconcilor : public KeyedService,
                            NewRequestParamsPasses);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, BlockFiveRequests);
 
+  // Operation executed by the reconcilor.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Operation {
+    kNoop = 0,
+    kLogout = 1,
+    kMultilogin = 2,
+    kThrottled = 3,
+
+    kMaxValue = kThrottled
+  };
+
+  // Event triggering a call to StartReconcile().
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Trigger {
+    kInitialized = 0,
+    kTokensLoaded = 1,
+    kEnableReconcile = 2,
+    kUnblockReconcile = 3,
+    kTokenChange = 4,
+    kTokenChangeDuringReconcile = 5,
+    kCookieChange = 6,
+    kCookieSettingChange = 7,
+
+    kMaxValue = kCookieSettingChange
+  };
+
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer);
 
   bool IsRegisteredWithIdentityManager() const {
@@ -258,7 +286,7 @@ class AccountReconcilor : public KeyedService,
       const signin::MultiloginParameters& parameters);
 
   // Used during periodic reconciliation.
-  void StartReconcile();
+  void StartReconcile(Trigger trigger);
   // |gaia_accounts| are the accounts in the Gaia cookie.
   void FinishReconcile(const CoreAccountId& primary_account,
                        const std::vector<CoreAccountId>& chrome_accounts,
@@ -322,6 +350,15 @@ class AccountReconcilor : public KeyedService,
   // Returns whether Shutdown() was called.
   bool WasShutDown() const;
 
+  static void RecordReconcileOperation(Trigger trigger, Operation operation);
+
+  // Histogram names.
+  static const char kOperationHistogramName[];
+  static const char kTriggerLogoutHistogramName[];
+  static const char kTriggerMultiloginHistogramName[];
+  static const char kTriggerNoopHistogramName[];
+  static const char kTriggerThrottledHistogramName[];
+
   std::unique_ptr<signin::AccountReconcilorDelegate> delegate_;
   AccountReconcilorThrottler throttler_;
 
@@ -331,16 +368,17 @@ class AccountReconcilor : public KeyedService,
   // The SigninClient associated with this reconcilor.
   SigninClient* client_;
 
-  bool registered_with_identity_manager_;
-  bool registered_with_content_settings_;
+  bool registered_with_identity_manager_ = false;
+  bool registered_with_content_settings_ = false;
 
   // True while the reconcilor is busy checking or managing the accounts in
   // this profile.
-  bool is_reconcile_started_;
+  bool is_reconcile_started_ = false;
   base::Time reconcile_start_time_;
+  Trigger trigger_ = Trigger::kInitialized;
 
   // True iff this is the first time the reconcilor is executing.
-  bool first_execution_;
+  bool first_execution_ = true;
 
   // 'Most severe' error encountered during the last attempt to reconcile. If
   // the last reconciliation attempt was successful, this will be
@@ -350,23 +388,24 @@ class AccountReconcilor : public KeyedService,
   // error is considered more severe than all non-persistent errors, but
   // persistent (or non-persistent) errors do not have an internal severity
   // ordering among themselves.
-  GoogleServiceAuthError error_during_last_reconcile_;
+  GoogleServiceAuthError error_during_last_reconcile_ =
+      GoogleServiceAuthError::AuthErrorNone();
 
   // Used for Dice migration: migration can happen if the accounts are
   // consistent, which is indicated by reconcile being a no-op.
-  bool reconcile_is_noop_;
+  bool reconcile_is_noop_ = true;
 
   // Used during reconcile action.
   std::vector<CoreAccountId> add_to_cookie_;  // Progress of AddAccount calls.
-  bool set_accounts_in_progress_;             // Progress of SetAccounts calls.
-  bool log_out_in_progress_;                  // Progress of LogOut calls.
-  bool chrome_accounts_changed_;
+  bool set_accounts_in_progress_ = false;     // Progress of SetAccounts calls.
+  bool log_out_in_progress_ = false;          // Progress of LogOut calls.
+  bool chrome_accounts_changed_ = false;
 
   // Used for the Lock.
   // StartReconcile() is blocked while this is > 0.
-  int account_reconcilor_lock_count_;
+  int account_reconcilor_lock_count_ = 0;
   // StartReconcile() should be started when the reconcilor is unblocked.
-  bool reconcile_on_unblock_;
+  bool reconcile_on_unblock_ = false;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 
@@ -378,14 +417,16 @@ class AccountReconcilor : public KeyedService,
   // of reconciliation completing within a finite time. It is technically
   // possible for account reconciliation to be running/waiting forever in cases
   // such as a network connection not being present.
-  std::unique_ptr<base::OneShotTimer> timer_;
+  std::unique_ptr<base::OneShotTimer> timer_ =
+      std::make_unique<base::OneShotTimer>();
   base::TimeDelta timeout_;
 
   // Greater than 0 when synced data is being deleted, and it is important to
   // not invalidate the primary token while this is happening.
   int synced_data_deletion_in_progress_count_ = 0;
 
-  signin_metrics::AccountReconcilorState state_;
+  signin_metrics::AccountReconcilorState state_ =
+      signin_metrics::ACCOUNT_RECONCILOR_OK;
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;

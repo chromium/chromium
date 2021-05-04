@@ -890,6 +890,16 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
+<histogram name="Signin.Reconciler.Operation" enum="SigninReconcilerOperation"
+    expires_after="2022-05-02">
+  <owner>msarda@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the operation executed by the reconcilor to reconcile the accounts
+    (or no-op if the accounts are already consistent).
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.Reconciler.RejectedRequestsDueToThrottler.{RequestType}"
     units="requests" expires_after="M95">
@@ -920,6 +930,24 @@ should be kept to monitor/debug signin Multilogin issues-->
     How many accounts were removed from the cookie jar because they were not in
     the browser's token service.
   </summary>
+</histogram>
+
+<histogram name="Signin.Reconciler.Trigger.{Operation}"
+    enum="SigninReconcilerTrigger" expires_after="2022-05-02">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <summary>
+    Recorded when the account reconcilor tries to change the cookie to match the
+    tokens and performs a {Operation} operation. Records the event which
+    triggered the reconcile.
+  </summary>
+  <token key="Operation">
+    <variant name="Logout" summary="logout"/>
+    <variant name="Multilogin" summary="multilogin"/>
+    <variant name="Noop" summary="no-op"/>
+    <variant name="Throttled" summary="throttled (cancelled)"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.RefreshTokenRevocationCompleted"
