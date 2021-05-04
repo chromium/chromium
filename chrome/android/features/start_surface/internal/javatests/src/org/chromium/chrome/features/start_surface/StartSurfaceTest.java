@@ -230,8 +230,14 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
     public void testShow_SingleAsHomepage() {
-        // TODO(https://crbug.com/1196473): Re-enable the test once it is fixed.
-        Assume.assumeFalse(mUseInstantStart && mImmediateReturn);
+        Assume.assumeFalse("https://crbug.com/1196473",
+                mUseInstantStart && mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+        Assume.assumeFalse("https://crbug.com/1205514",
+                mUseInstantStart && !mImmediateReturn
+                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
+                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1));
 
         if (!mImmediateReturn) {
             pressHomePageButton();
