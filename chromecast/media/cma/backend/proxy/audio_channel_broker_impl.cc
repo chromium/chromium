@@ -21,8 +21,6 @@ GetRemoteStub() {
   auto* endpoint_manager = CastRuntimeAudioChannelEndpointManager::Get();
   DCHECK(endpoint_manager);
 
-  // TODO(rwkeane): Validate that this is valid at initialization time. If not
-  // the stub may need to be lazy loaded at the first gRPC call.
   std::string endpoint = endpoint_manager->GetAudioChannelEndpoint();
   DCHECK(!endpoint.empty());
 
@@ -40,19 +38,22 @@ CastRuntimeAudioChannelBroker::Create(TaskRunner* task_runner,
   return std::make_unique<AudioChannelBrokerImpl>(task_runner, handler);
 }
 
+AudioChannelBrokerImpl::LazyStubFactory::LazyStubFactory() = default;
+
+AudioChannelBrokerImpl::LazyStubFactory::~LazyStubFactory() = default;
+
+AudioChannelBrokerImpl::LazyStubFactory::Stub*
+AudioChannelBrokerImpl::LazyStubFactory::GetStub() {
+  if (!stub_) {
+    stub_ = GetRemoteStub();
+  }
+
+  return stub_.get();
+}
+
 AudioChannelBrokerImpl::AudioChannelBrokerImpl(TaskRunner* task_runner,
                                                Handler* handler)
-    : AudioChannelBrokerImpl(GetRemoteStub(), task_runner, handler) {}
-
-AudioChannelBrokerImpl::AudioChannelBrokerImpl(
-    std::unique_ptr<cast::media::CastAudioChannelService::StubInterface> stub,
-    TaskRunner* task_runner,
-    Handler* handler)
-    : stub_(std::move(stub)),
-      handler_(handler),
-      task_runner_(task_runner),
-      weak_factory_(this) {
-  DCHECK(stub_.get());
+    : handler_(handler), task_runner_(task_runner), weak_factory_(this) {
   DCHECK(task_runner_);
   DCHECK(handler_);
 }
