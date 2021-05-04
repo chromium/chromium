@@ -21,12 +21,12 @@
 
 <script>
 promise_test(async () => {
+    await waitForCompositorCommit();
     var scroller_element = document.getElementById("scroller");
     var scroller_center = pointInElement(scroller_element, 50, 50);
+    await mouseClickOn(50, 50);
     await wheelTick(0, 1, scroller_center);
-    await waitFor( () => {
-        return scrollY == pixelsPerTick();
-});
-
+    await waitForScrollEnd(window, () => { return scrollY; },
+                           pixelsPerTick());
 }, "Verify that wheel scrolls chain correctly from a fractional-height scroller to its parent.");
 </script>
