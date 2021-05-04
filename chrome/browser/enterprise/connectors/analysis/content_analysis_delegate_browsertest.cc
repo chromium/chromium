@@ -556,8 +556,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
           "2E6D1C4A1F39A02562BF1505AD775C0323D7A04C0C37C9B29D25F532B9972080",
       },
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-      // TODO(crbug.com/1191060): Update this string when the event is supported
-      /*reason*/ "SERVICE_UNAVAILABLE",
+      /*reason*/ "TOO_MANY_REQUESTS",
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ 9,
       /*result*/

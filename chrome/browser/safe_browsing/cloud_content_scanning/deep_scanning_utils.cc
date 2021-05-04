@@ -32,12 +32,13 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
     case BinaryUploadService::Result::FILE_TOO_LARGE:
       unscanned_reason = "FILE_TOO_LARGE";
       break;
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+      unscanned_reason = "TOO_MANY_REQUESTS";
+      break;
     case BinaryUploadService::Result::TIMEOUT:
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    // TODO(crbug.com/1191060): Update this string when the event is supported.
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
       unscanned_reason = "SERVICE_UNAVAILABLE";
       break;
     case BinaryUploadService::Result::FILE_ENCRYPTED:
