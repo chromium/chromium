@@ -2764,12 +2764,16 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   base::Optional<MinMaxSizes> sizes;
 
-  // Both column-count and column-width set.
+  // Both column-count and column-width set. See
+  // https://www.w3.org/TR/2016/WD-css-sizing-3-20160510/#multicol-intrinsic
+  // (which is the only thing resembling spec that we currently have); in
+  // particular, if column-width is non-auto, we ignore column-count for min
+  // inline-size, and also clamp it down to the specified column-width.
   style->SetColumnCount(3);
   style->SetColumnWidth(80);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
-  EXPECT_EQ(LayoutUnit(260), sizes->min_size);
+  EXPECT_EQ(LayoutUnit(50), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-count set.
@@ -2784,7 +2788,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   style->SetHasAutoColumnCount();
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
-  EXPECT_EQ(LayoutUnit(80), sizes->min_size);
+  EXPECT_EQ(LayoutUnit(50), sizes->min_size);
   EXPECT_EQ(LayoutUnit(100), sizes->max_size);
 }
 
