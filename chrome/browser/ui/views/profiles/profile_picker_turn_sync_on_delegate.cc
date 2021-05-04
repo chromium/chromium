@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 
 #include "base/logging.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -81,14 +81,15 @@ bool IsEnterpriseFlowEnabled() {
 
 }  // namespace
 
-ProfilePickerViewSyncDelegate::ProfilePickerViewSyncDelegate(
+ProfilePickerTurnSyncOnDelegate::ProfilePickerTurnSyncOnDelegate(
     base::WeakPtr<ProfilePickerSignInFlowController> controller,
     Profile* profile)
     : controller_(controller), profile_(profile) {}
 
-ProfilePickerViewSyncDelegate::~ProfilePickerViewSyncDelegate() = default;
+ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 
-void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
+void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
+    const SigninUIError& error) {
   ProfileMetrics::LogProfileAddSignInFlowOutcome(
       ProfileMetrics::ProfileAddSignInFlowOutcome::kLoginError);
 
@@ -113,7 +114,7 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
   }
 }
 
-void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
+void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
@@ -121,7 +122,7 @@ void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
   NOTREACHED();
 }
 
-void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
+void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
     const std::string& email,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_account_ = true;
@@ -153,7 +154,7 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
   return;
 }
 
-void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
+void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
@@ -179,7 +180,7 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
   ShowSyncConfirmationScreen();
 }
 
-void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
+void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
@@ -216,7 +217,7 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
                                   kConsumerAccountSyncDisabled);
 }
 
-void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
+void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
   if (enterprise_account_ && !IsEnterpriseFlowEnabled()) {
     Browser* browser = chrome::FindLastActiveWithProfile(profile_);
     if (!browser)
@@ -232,13 +233,13 @@ void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
   }
 }
 
-void ProfilePickerViewSyncDelegate::SwitchToProfile(Profile* new_profile) {
+void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
   // A brand new profile cannot have preexisting syncable data and thus
   // switching to another profile does never get offered.
   NOTREACHED();
 }
 
-void ProfilePickerViewSyncDelegate::OnSyncConfirmationUIClosed(
+void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   // No need to listen to further confirmations any more.
   DCHECK(scoped_login_ui_service_observation_.IsObservingSource(
@@ -249,7 +250,7 @@ void ProfilePickerViewSyncDelegate::OnSyncConfirmationUIClosed(
       result, GetSyncOutcome(enterprise_account_, sync_disabled_, result));
 }
 
-void ProfilePickerViewSyncDelegate::ShowSyncConfirmationScreen() {
+void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
   DCHECK(sync_confirmation_callback_);
   DCHECK(!scoped_login_ui_service_observation_.IsObserving());
   scoped_login_ui_service_observation_.Observe(
@@ -259,7 +260,7 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmationScreen() {
     controller_->SwitchToSyncConfirmation();
 }
 
-void ProfilePickerViewSyncDelegate::FinishSyncConfirmation(
+void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
     LoginUIService::SyncConfirmationUIClosedResult result,
     base::Optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome) {
   DCHECK(sync_confirmation_callback_);
@@ -268,7 +269,7 @@ void ProfilePickerViewSyncDelegate::FinishSyncConfirmation(
   std::move(sync_confirmation_callback_).Run(result);
 }
 
-void ProfilePickerViewSyncDelegate::ShowEnterpriseWelcome(
+void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseWelcome(
     EnterpriseProfileWelcomeUI::ScreenType type) {
   DCHECK(sync_confirmation_callback_);
   // Unretained as the delegate lives until `sync_confirmation_callback_` gets
@@ -276,12 +277,12 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseWelcome(
   if (controller_) {
     controller_->SwitchToEnterpriseProfileWelcome(
         type, base::BindOnce(
-                  &ProfilePickerViewSyncDelegate::OnEnterpriseWelcomeClosed,
+                  &ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed,
                   base::Unretained(this), type));
   }
 }
 
-void ProfilePickerViewSyncDelegate::OnEnterpriseWelcomeClosed(
+void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
     bool proceed) {
   if (!proceed) {

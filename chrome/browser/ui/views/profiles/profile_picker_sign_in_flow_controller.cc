@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/pref_names.h"
@@ -357,7 +357,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-      std::make_unique<ProfilePickerViewSyncDelegate>(
+      std::make_unique<ProfilePickerTurnSyncOnDelegate>(
           weak_ptr_factory_.GetWeakPtr(), profile()),
       std::move(sync_consent_completed_closure));
 }

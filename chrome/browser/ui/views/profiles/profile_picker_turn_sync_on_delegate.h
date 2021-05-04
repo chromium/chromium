@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TURN_SYNC_ON_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TURN_SYNC_ON_DELEGATE_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,17 +17,19 @@
 class Profile;
 class SigninUIError;
 
-// Handles the sync consent screen for creating a signed-in profile from the
+// Handles turning on sync for signed-in profile creation flow, embedded in the
 // profile picker.
-// TODO(crbug.com/1180654): Rename to SignInFlowSyncDelegate or something like
-// that.
-class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
-                                      public LoginUIService::Observer {
+class ProfilePickerTurnSyncOnDelegate : public DiceTurnSyncOnHelper::Delegate,
+                                        public LoginUIService::Observer {
  public:
-  ProfilePickerViewSyncDelegate(
+  ProfilePickerTurnSyncOnDelegate(
       base::WeakPtr<ProfilePickerSignInFlowController> controller,
       Profile* profile);
-  ~ProfilePickerViewSyncDelegate() override;
+  ~ProfilePickerTurnSyncOnDelegate() override;
+  ProfilePickerTurnSyncOnDelegate(const ProfilePickerTurnSyncOnDelegate&) =
+      delete;
+  ProfilePickerTurnSyncOnDelegate& operator=(
+      const ProfilePickerTurnSyncOnDelegate&) = delete;
 
  private:
   // DiceTurnSyncOnHelper::Delegate:
@@ -79,8 +81,6 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilePickerViewSyncDelegate);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TURN_SYNC_ON_DELEGATE_H_
