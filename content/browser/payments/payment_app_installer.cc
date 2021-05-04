@@ -137,20 +137,6 @@ class SelfDeleteInstaller
     FinishInstallation(false);
   }
 
-  void OnReportConsoleMessage(int64_t version_id,
-                              const GURL& scope,
-                              const ConsoleMessage& message) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (AbortInstallIfWebContentsOrBrowserContextIsGone())
-      return;
-
-    if (scope.EqualsIgnoringRef(scope_) &&
-        message.message_level == blink::mojom::ConsoleMessageLevel::kError)
-      LOG(ERROR) << "The newly registered service worker has an error "
-                 << message.message;
-    FinishInstallation(false);
-  }
-
   void OnRegisterServiceWorkerResult(blink::ServiceWorkerStatusCode status) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
