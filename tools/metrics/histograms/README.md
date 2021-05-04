@@ -122,7 +122,7 @@ times the history page was opened.
 In rarer cases, it's okay if you only log to one bucket (say, `true`). However,
 think about whether this will provide enough [context](#Provide-Context). For
 example, suppose we want to understand how often users interact with a button.
-Just knowning that users clicked this particular button 1 million times in a day
+Just knowing that users clicked this particular button 1 million times in a day
 is not very informative on its own: The size of Chrome's user base is constantly
 changing, only a subset of users have consented to metrics reporting, different
 platforms have different sampling rates for metrics reporting, and so on. The
@@ -631,8 +631,8 @@ If the histogram is being replaced by a new version:
 A changelist that marks a histogram as obsolete should be reviewed by all
 current owners.
 
-Deleting histogram entries would be bad if someone to accidentally reused your
-old histogram name and thereby corrupts new data with whatever old data is still
+Deleting histogram entries would be bad if someone accidentally reused your old
+histogram name and thereby corrupted new data with whatever old data is still
 coming in. It's also useful to keep obsolete histogram descriptions in
 [histograms.xml](./histograms.xml)—that way, if someone is searching for a
 histogram to answer a particular question, they can learn if there was a
@@ -649,7 +649,7 @@ the same type of data, with some minor variations. You can declare the metadata
 for these concisely using patterned histograms. For example:
 
 ```xml
-<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}" 
+<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}"
     units="multiplier" expires_after="M95">
   <owner>individual@chromium.org</owner>
   <owner>team@chromium.org</owner>
@@ -757,10 +757,10 @@ For more information, see [sparse_histograms.h](https://cs.chromium.org/chromium
 
 # Becoming a Metrics Reviewer
 
-Any Chromium committer who is also a Google employee is eligible to become a 
-metrics reviewer. Please follow the instructions at [go/reviewing-metrics](https://goto.google.com/reviewing-metrics). 
-This consists of reviewing our training materials and passing an informational 
-quiz. Since metrics have a direct impact on internal systems and have privacy 
+Any Chromium committer who is also a Google employee is eligible to become a
+metrics reviewer. Please follow the instructions at [go/reviewing-metrics](https://goto.google.com/reviewing-metrics).
+This consists of reviewing our training materials and passing an informational
+quiz. Since metrics have a direct impact on internal systems and have privacy
 considerations, we're currently only adding Googlers into this program.
 
 
