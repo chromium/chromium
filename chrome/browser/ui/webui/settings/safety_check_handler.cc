@@ -280,8 +280,15 @@ void SafetyCheckHandler::SendSafetyCheckStartedWebUiUpdates() {
 void SafetyCheckHandler::PerformSafetyCheck() {
   // Checks common to desktop, Android, and iOS are handled by
   // safety_check::SafetyCheck.
-  safety_check_ = std::make_unique<safety_check::SafetyCheck>(this);
-  safety_check_->CheckSafeBrowsing(Profile::FromWebUI(web_ui())->GetPrefs());
+  safe_browsing_status_ =
+      safety_check::CheckSafeBrowsing(Profile::FromWebUI(web_ui())->GetPrefs());
+  if (safe_browsing_status_ != SafeBrowsingStatus::kChecking) {
+    base::UmaHistogramEnumeration("Settings.SafetyCheck.SafeBrowsingResult",
+                                  safe_browsing_status_);
+  }
+  FireBasicSafetyCheckWebUiListener(
+      kSafeBrowsingEvent, static_cast<int>(safe_browsing_status_),
+      GetStringForSafeBrowsing(safe_browsing_status_));
 
   if (!version_updater_) {
     version_updater_.reset(VersionUpdater::Create(web_ui()->GetWebContents()));
@@ -925,19 +932,6 @@ void SafetyCheckHandler::OnVersionUpdaterResult(VersionUpdater::Status status,
   OnUpdateCheckResult(ConvertToUpdateStatus(status));
 }
 
-void SafetyCheckHandler::OnSafeBrowsingCheckResult(
-    SafetyCheckHandler::SafeBrowsingStatus status) {
-  safe_browsing_status_ = status;
-  if (safe_browsing_status_ != SafeBrowsingStatus::kChecking) {
-    base::UmaHistogramEnumeration("Settings.SafetyCheck.SafeBrowsingResult",
-                                  safe_browsing_status_);
-  }
-  FireBasicSafetyCheckWebUiListener(
-      kSafeBrowsingEvent, static_cast<int>(safe_browsing_status_),
-      GetStringForSafeBrowsing(safe_browsing_status_));
-  CompleteParentIfChildrenCompleted();
-}
-
 void SafetyCheckHandler::OnStateChanged(
     password_manager::BulkLeakCheckService::State state) {
   using password_manager::BulkLeakCheckService;
@@ -1067,8 +1061,6 @@ void SafetyCheckHandler::OnJavascriptDisallowed() {
   // Destroy the version updater to prevent getting a callback and firing a
   // WebUI event, which would cause a crash.
   version_updater_.reset();
-  // Stop observing safety check events.
-  safety_check_.reset(nullptr);
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Remove |this| as an observer for the Chrome cleaner.
   safe_browsing::ChromeCleanerController::GetInstance()->RemoveObserver(this);

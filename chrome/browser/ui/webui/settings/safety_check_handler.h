@@ -49,12 +49,11 @@ class TimestampDelegate {
 // software.
 class SafetyCheckHandler
     : public settings::SettingsPageUIHandler,
-      public password_manager::BulkLeakCheckServiceInterface::Observer,
-      public password_manager::InsecureCredentialsManager::Observer,
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       public safe_browsing::ChromeCleanerController::Observer,
 #endif
-      public safety_check::SafetyCheck::SafetyCheckHandlerInterface {
+      public password_manager::BulkLeakCheckServiceInterface::Observer,
+      public password_manager::InsecureCredentialsManager::Observer {
  public:
   // The following enum represent the state of the safety check parent
   // component and  should be kept in sync with the JS frontend
@@ -69,9 +68,9 @@ class SafetyCheckHandler
   // check and should be kept in sync with the JS frontend
   // (safety_check_browser_proxy.js) and |SafetyCheck*| metrics enums in
   // enums.xml.
-  using PasswordsStatus = safety_check::SafetyCheck::PasswordsStatus;
-  using SafeBrowsingStatus = safety_check::SafetyCheck::SafeBrowsingStatus;
-  using UpdateStatus = safety_check::SafetyCheck::UpdateStatus;
+  using PasswordsStatus = safety_check::PasswordsStatus;
+  using SafeBrowsingStatus = safety_check::SafeBrowsingStatus;
+  using UpdateStatus = safety_check::UpdateStatus;
   enum class ExtensionsStatus {
     kChecking = 0,
     kError = 1,
@@ -273,9 +272,6 @@ class SafetyCheckHandler
                               int64_t update_size,
                               const std::u16string& message);
 
-  // SafetyCheck::SafetyCheckHandlerInterface implementation.
-  void OnSafeBrowsingCheckResult(SafeBrowsingStatus status) override;
-
   // BulkLeakCheckService::Observer implementation.
   void OnStateChanged(
       password_manager::BulkLeakCheckService::State state) override;
@@ -316,7 +312,6 @@ class SafetyCheckHandler
   // is_leaked = true.
   bool compromised_passwords_exist_ = false;
 
-  std::unique_ptr<safety_check::SafetyCheck> safety_check_;
   std::unique_ptr<safety_check::UpdateCheckHelper> update_helper_;
 
   std::unique_ptr<VersionUpdater> version_updater_;

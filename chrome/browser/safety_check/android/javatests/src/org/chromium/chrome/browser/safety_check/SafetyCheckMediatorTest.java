@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.safety_check.SafetyCheckProperties.COMPROMISED_PASSWORDS;
@@ -30,11 +31,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesSta
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
@@ -62,15 +66,21 @@ public class SafetyCheckMediatorTest {
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     private PropertyModel mModel;
+
+    @Mock
+    private SafetyCheckBridge.Natives mSafetyCheckBridge;
+    @Mock
+    private Profile mProfile;
     @Mock
     private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock
     private SyncConsentActivityLauncher mSigninLauncher;
     @Mock
     private SettingsLauncher mSettingsLauncher;
-    @Mock
-    private SafetyCheckBridge mBridge;
     @Mock
     private Handler mHandler;
     @Mock
@@ -93,10 +103,12 @@ public class SafetyCheckMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(SafetyCheckBridgeJni.TEST_HOOKS, mSafetyCheckBridge);
+        Profile.setLastUsedProfileForTesting(mProfile);
         mModel = SafetyCheckProperties.createSafetyCheckModel();
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator = new SafetyCheckMediator(
-                mModel, mUpdatesDelegate, mSettingsLauncher, mSigninLauncher, mBridge, mHandler);
+                mModel, mUpdatesDelegate, mSettingsLauncher, mSigninLauncher, mHandler);
         // Execute any delayed tasks immediately.
         doAnswer(invocation -> {
             Runnable runnable = (Runnable) (invocation.getArguments()[0]);
@@ -106,7 +118,7 @@ public class SafetyCheckMediatorTest {
                 .when(mHandler)
                 .postDelayed(any(Runnable.class), anyLong());
         // User is always signed in unless the test specifies otherwise.
-        when(mBridge.userSignedIn()).thenReturn(true);
+        doReturn(true).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         // Reset the histogram count.
         ShadowRecordHistogram.reset();
     }
@@ -157,12 +169,9 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testSafeBrowsingCheckEnabledStandard() {
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.ENABLED_STANDARD);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.ENABLED_STANDARD)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
 
         mMediator.performSafetyCheck();
         assertEquals(SafeBrowsingState.ENABLED_STANDARD, mModel.get(SAFE_BROWSING_STATE));
@@ -174,12 +183,9 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testSafeBrowsingCheckDisabled() {
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.DISABLED);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.DISABLED)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
 
         mMediator.performSafetyCheck();
         assertEquals(SafeBrowsingState.DISABLED, mModel.get(SAFE_BROWSING_STATE));
@@ -276,12 +282,9 @@ public class SafetyCheckMediatorTest {
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: on.
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.ENABLED_STANDARD);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.ENABLED_STANDARD)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
         // Passwords: safe state.
         passwordDiskDataAvailable();
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(12);
@@ -309,12 +312,10 @@ public class SafetyCheckMediatorTest {
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: disabled by admin.
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.DISABLED_BY_ADMIN);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.DISABLED_BY_ADMIN)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
+
         // Passwords: no passwords.
         passwordDiskDataAvailable();
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(0);
@@ -342,12 +343,10 @@ public class SafetyCheckMediatorTest {
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis());
         // Safe Browsing: off.
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.DISABLED);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.DISABLED)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
+
         // Passwords: compromised state.
         passwordDiskDataAvailable();
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(20);
@@ -375,12 +374,10 @@ public class SafetyCheckMediatorTest {
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis() - (20 * 60 * 1000));
         // Safe Browsing: on.
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.ENABLED_STANDARD);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.ENABLED_STANDARD)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
+
         // Passwords: safe state.
         passwordDiskDataAvailable();
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(13);
@@ -408,12 +405,10 @@ public class SafetyCheckMediatorTest {
         preferenceManager.writeLong(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 System.currentTimeMillis() - (20 * 60 * 1000));
         // Safe Browsing: off.
-        doAnswer(invocation -> {
-            mMediator.onSafeBrowsingCheckResult(SafeBrowsingStatus.DISABLED);
-            return null;
-        })
-                .when(mBridge)
-                .checkSafeBrowsing();
+        doReturn(SafeBrowsingStatus.DISABLED)
+                .when(mSafetyCheckBridge)
+                .checkSafeBrowsing(any(BrowserContextHandle.class));
+
         // Passwords: compromised state.
         passwordDiskDataAvailable();
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(20);
@@ -530,7 +525,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testPasswordsInitialLoadUserSignedOut() {
         // Order: initial state is user signed out -> load ignored.
-        when(mBridge.userSignedIn()).thenReturn(false);
+        doReturn(false).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         mMediator.setInitialState();
         assertEquals(PasswordsState.SIGNED_OUT, mModel.get(PASSWORDS_STATE));
 

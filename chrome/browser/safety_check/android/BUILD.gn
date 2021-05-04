@@ -11,10 +11,7 @@ generate_jni("jni_headers") {
 }
 
 source_set("android") {
-  sources = [
-    "safety_check_bridge.cc",
-    "safety_check_bridge.h",
-  ]
+  sources = [ "safety_check_bridge.cc" ]
   deps = [
     ":jni_headers",
     "//chrome/browser/signin:identity_manager_provider",
