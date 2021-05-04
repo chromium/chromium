@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import collections
 import contextlib
 import copy
@@ -16,6 +17,8 @@ import sys
 import tempfile
 import time
 
+from six.moves import range  # pylint: disable=redefined-builtin
+from six.moves import zip  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import apk_helper
 from devil.android import crash_handler
@@ -133,7 +136,7 @@ def DidPackageCrashOnDevice(package_name, device):
   # Dismiss any error dialogs. Limit the number in case we have an error
   # loop or we are failing to dismiss.
   try:
-    for _ in xrange(10):
+    for _ in range(10):
       package = device.DismissCrashDialogIfNeeded(timeout=10, retries=1)
       if not package:
         return False
@@ -593,7 +596,7 @@ class LocalDeviceInstrumentationTestRun(
         i = self._GetTimeoutFromAnnotations(t['annotations'], n)
         return (n, i)
 
-      test_names, timeouts = zip(*(name_and_timeout(t) for t in test))
+      test_names, timeouts = list(zip(*(name_and_timeout(t) for t in test)))
 
       test_name = instrumentation_test_instance.GetTestName(
           test[0]) + _BATCH_SUFFIX

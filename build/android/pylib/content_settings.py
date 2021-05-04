@@ -23,7 +23,7 @@ class ContentSettings(dict):
       return 'f'
     if isinstance(value, int):
       return 'i'
-    if isinstance(value, long):
+    if isinstance(value, int):
       return 'l'
     if isinstance(value, str):
       return 's'

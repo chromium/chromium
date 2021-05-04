@@ -6,6 +6,7 @@
 
 """Unit tests for instrumentation.InstrumentationParser."""
 
+from __future__ import absolute_import
 import unittest
 
 from pylib.instrumentation import instrumentation_parser

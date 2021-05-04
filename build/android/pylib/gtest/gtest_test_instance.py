@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import HTMLParser
+from __future__ import absolute_import
+
 import json
 import logging
 import os
@@ -11,6 +12,7 @@ import tempfile
 import threading
 import xml.etree.ElementTree
 
+import six
 from devil.android import apk_helper
 from pylib import constants
 from pylib.constants import host_paths
@@ -18,6 +20,7 @@ from pylib.base import base_test_result
 from pylib.base import test_instance
 from pylib.symbols import stack_symbolizer
 from pylib.utils import test_filter
+
 
 with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
   import unittest_util # pylint: disable=import-error
@@ -246,7 +249,7 @@ def ParseGTestXML(xml_content):
   if not xml_content:
     return results
 
-  html = HTMLParser.HTMLParser()
+  html = six.moves.html_parser.HTMLParser()
 
   testsuites = xml.etree.ElementTree.fromstring(xml_content)
   for testsuite in testsuites:
@@ -276,7 +279,7 @@ def ParseGTestJSON(json_content):
 
   json_data = json.loads(json_content)
 
-  openstack = json_data['tests'].items()
+  openstack = list(json_data['tests'].items())
 
   while openstack:
     name, value = openstack.pop()
@@ -286,7 +289,7 @@ def ParseGTestJSON(json_content):
           'actual'] == 'PASS' else base_test_result.ResultType.FAIL
       results.append(base_test_result.BaseTestResult(name, result_type))
     else:
-      openstack += [("%s.%s" % (name, k), v) for k, v in value.iteritems()]
+      openstack += [("%s.%s" % (name, k), v) for k, v in six.iteritems(value)]
 
   return results
 

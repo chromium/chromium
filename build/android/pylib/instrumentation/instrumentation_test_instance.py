@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import copy
 import logging
 import os
 import pickle
 import re
 
+import six
 from devil.android import apk_helper
 from pylib import constants
 from pylib.base import base_test_result
@@ -186,9 +188,8 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
 
   if current_result:
     if current_result.GetType() == base_test_result.ResultType.UNKNOWN:
-      crashed = (result_code == _ACTIVITY_RESULT_CANCELED
-                 and any(_NATIVE_CRASH_RE.search(l)
-                         for l in result_bundle.itervalues()))
+      crashed = (result_code == _ACTIVITY_RESULT_CANCELED and any(
+          _NATIVE_CRASH_RE.search(l) for l in six.itervalues(result_bundle)))
       if crashed:
         current_result.SetType(base_test_result.ResultType.CRASH)
 
@@ -391,8 +392,8 @@ def _GetTestsFromDexdump(test_apk):
         } for m in methods if m.startswith('test')]
 
   for dump in dex_dumps:
-    for package_name, package_info in dump.iteritems():
-      for class_name, class_info in package_info['classes'].iteritems():
+    for package_name, package_info in six.iteritems(dump):
+      for class_name, class_info in six.iteritems(package_info['classes']):
         if class_name.endswith('Test'):
           tests.append({
               'class': '%s.%s' % (package_name, class_name),
@@ -649,7 +650,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._package_info = None
     if self._apk_under_test:
       package_under_test = self._apk_under_test.GetPackageName()
-      for package_info in constants.PACKAGE_INFO.itervalues():
+      for package_info in six.itervalues(constants.PACKAGE_INFO):
         if package_under_test == package_info.package:
           self._package_info = package_info
           break
@@ -993,7 +994,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       elif clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS:
         list_of_switches = []
         for annotation in methods['value']:
-          for clazz, methods in annotation.iteritems():
+          for clazz, methods in six.iteritems(annotation):
             list_of_switches += _annotationToSwitches(clazz, methods)
         return list_of_switches
       else:
@@ -1011,7 +1012,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       list_of_switches = []
       _checkParameterization(annotations)
       if _SKIP_PARAMETERIZATION not in annotations:
-        for clazz, methods in annotations.iteritems():
+        for clazz, methods in six.iteritems(annotations):
           list_of_switches += _annotationToSwitches(clazz, methods)
       if list_of_switches:
         _setTestFlags(t, _switchesToFlags(list_of_switches[0]))

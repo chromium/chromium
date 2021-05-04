@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import collections
 import itertools
 import json
@@ -220,7 +221,7 @@ def ParseResultsFromJson(json_results):
   results_list = []
   testsuite_runs = json_results['per_iteration_data']
   for testsuite_run in testsuite_runs:
-    for test, test_runs in testsuite_run.iteritems():
+    for test, test_runs in six.iteritems(testsuite_run):
       results_list.extend(
           [base_test_result.BaseTestResult(test,
                                            string_as_status(tr['status']),
