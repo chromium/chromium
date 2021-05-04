@@ -198,6 +198,9 @@ suite('route', function() {
 
   test('isNavigableDialog', function() {
     assertTrue(routes.CLEAR_BROWSER_DATA.isNavigableDialog);
+    assertTrue(routes.CLEAR_BROWSER_DATA.parent === routes.PRIVACY);
+    assertFalse(routes.CLEAR_BROWSER_DATA.isSubpage());
+
     assertTrue(routes.RESET_DIALOG.isNavigableDialog);
     assertTrue(routes.SIGN_OUT.isNavigableDialog);
     assertTrue(routes.TRIGGERED_RESET_DIALOG.isNavigableDialog);

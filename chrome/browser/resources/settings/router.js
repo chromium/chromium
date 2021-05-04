@@ -30,7 +30,7 @@ import './i18n_setup.js';
 
       /**
        * @type {boolean} Whether this route corresponds to a navigable
-       *     dialog. Those routes don't belong to a "section".
+       *     dialog. Those routes don't always belong to a "section".
        */
       this.isNavigableDialog = false;
 
@@ -103,7 +103,7 @@ import './i18n_setup.js';
      * @return {boolean}
      */
     isSubpage() {
-      return !!this.parent && !!this.section &&
+      return !this.isNavigableDialog && !!this.parent && !!this.section &&
           this.parent.section === this.section;
     }
   }

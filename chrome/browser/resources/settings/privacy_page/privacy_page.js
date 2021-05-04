@@ -298,7 +298,7 @@ Polymer({
 
   /** @private */
   onDialogClosed_() {
-    Router.getInstance().navigateTo(assert(routes.CLEAR_BROWSER_DATA.parent));
+    Router.getInstance().navigateToPreviousRoute();
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
       // screen readers read out the newly focused element.

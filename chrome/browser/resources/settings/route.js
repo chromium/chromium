@@ -14,6 +14,9 @@ import {SettingsRoutes} from './settings_routes.js';
  * @param {!SettingsRoutes} r
  */
 function addPrivacyChildRoutes(r) {
+  r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
+  r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
+
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
@@ -138,9 +141,6 @@ function createBrowserSettingsRoutes() {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
   }
-
-  r.CLEAR_BROWSER_DATA = r.BASIC.createChild('/clearBrowserData');
-  r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
   if (visibility.privacy !== false) {
     r.PRIVACY = r.BASIC.createSection('/privacy', 'privacy');
