@@ -536,17 +536,6 @@ mojom("mojom") {
         "//ui/gfx/geometry/mojom",
       ]
     },
-    {
-      types = [
-        {
-          mojom = "media.mojom.CdmCapability"
-          cpp = "::media::CdmCapability"
-        },
-      ]
-      traits_headers = [ "cdm_capability_mojom_traits.h" ]
-      traits_sources = [ "cdm_capability_mojom_traits.cc" ]
-      traits_public_deps = [ "//media" ]
-    },
   ]
 
   cpp_typemaps += shared_typemaps

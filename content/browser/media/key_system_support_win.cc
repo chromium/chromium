@@ -24,19 +24,20 @@ void OnKeySystemCapability(
     CdmCapabilityCB cdm_capability_cb,
     bool is_supported,
     media::mojom::KeySystemCapabilityPtr key_system_capability) {
-  // Key system must support at least 1 video codec, 1 encryption scheme,
-  // and 1 encryption scheme to be considered. Support for audio codecs is
-  // optional.
   if (!is_supported || !key_system_capability ||
-      !key_system_capability->hw_secure_capability ||
-      key_system_capability->hw_secure_capability->video_codecs.empty() ||
-      key_system_capability->hw_secure_capability->encryption_schemes.empty() ||
-      key_system_capability->hw_secure_capability->session_types.empty()) {
+      key_system_capability->hw_secure_video_codecs.empty() ||
+      key_system_capability->hw_secure_encryption_schemes.empty()) {
     std::move(cdm_capability_cb).Run(base::nullopt);
     return;
   }
 
-  std::move(cdm_capability_cb).Run(key_system_capability->hw_secure_capability);
+  // TODO(xhwang/jrummell): Support hardware session types. Now only assume
+  // temporary session support.
+  std::move(cdm_capability_cb)
+      .Run(media::CdmCapability(
+          key_system_capability->hw_secure_video_codecs,
+          VectorToSet(key_system_capability->hw_secure_encryption_schemes),
+          {media::CdmSessionType::kTemporary}));
 }
 
 }  // namespace

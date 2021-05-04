@@ -10,18 +10,20 @@ import "media/mojo/mojom/media_types.mojom";
 // TODO(xhwang): Use "set" instead of "array" if supported by mojom.
 // TODO(crbug.com/796725) Find a way to include profiles and levels for
 // supported codecs.
-struct CdmCapability {
+struct KeySystemCapability {
+  // Software secure codecs and encryption schemes supported by the CDM.
   array<VideoCodec> video_codecs;
   array<EncryptionScheme> encryption_schemes;
+
+  // Hardware secure codecs and encryption schemes supported by the CDM.
+  array<VideoCodec> hw_secure_video_codecs;
+  array<EncryptionScheme> hw_secure_encryption_schemes;
+
+  // Session types supported in software secure mode if no
+  // |hw_secure_video_codecs| is supported, or in both modes otherwise.
   array<CdmSessionType> session_types;
 };
 
-struct KeySystemCapability {
-  CdmCapability? sw_secure_capability;
-  CdmCapability? hw_secure_capability;
-};
-
-// Used to query the browser to see if a specific key system is supported.
 interface KeySystemSupport {
   // Query to determine if the browser supports the |key_system|. If supported,
   // |key_system_capability| is non-null indicating supported capability.
