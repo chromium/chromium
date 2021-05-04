@@ -365,7 +365,11 @@ bool GetAsDouble(const base::DictionaryValue& object,
     *out = value->GetInt();
     return true;
   }
-  return value->GetAsDouble(out);
+  if (value->is_double()) {
+    *out = value->GetDouble();
+    return true;
+  }
+  return false;
 }
 
 bool ParseServerResponse(const std::string& response_body,
