@@ -37,8 +37,10 @@ Status ParseBoolean(
     bool* to_set,
     const base::Value& option,
     Capabilities* capabilities) {
-  if (!option.GetAsBoolean(to_set))
+  if (!option.is_bool())
     return Status(kInvalidArgument, "must be a boolean");
+  if (to_set)
+    *to_set = option.GetBool();
   return Status(kOk);
 }
 
@@ -477,10 +479,9 @@ Status ParseInspectorDomainStatus(
     PerfLoggingPrefs::InspectorDomainStatus* to_set,
     const base::Value& option,
     Capabilities* capabilities) {
-  bool desired_value;
-  if (!option.GetAsBoolean(&desired_value))
+  if (!option.is_bool())
     return Status(kInvalidArgument, "must be a boolean");
-  if (desired_value)
+  if (option.GetBool())
     *to_set = PerfLoggingPrefs::InspectorDomainStatus::kExplicitlyEnabled;
   else
     *to_set = PerfLoggingPrefs::InspectorDomainStatus::kExplicitlyDisabled;

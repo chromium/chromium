@@ -678,8 +678,9 @@ Status IsElementDisplayed(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsBoolean(is_displayed))
+  if (!result->is_bool())
     return Status(kUnknownError, "IS_DISPLAYED should return a boolean value");
+  *is_displayed = result->GetBool();
   return Status(kOk);
 }
 
@@ -699,8 +700,9 @@ Status IsElementEnabled(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsBoolean(is_enabled))
+  if (!result->is_bool())
     return Status(kUnknownError, "IS_ENABLED should return a boolean value");
+  *is_enabled = result->GetBool();
   return Status(kOk);
 }
 
@@ -720,8 +722,9 @@ Status IsOptionElementSelected(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsBoolean(is_selected))
+  if (!result->is_bool())
     return Status(kUnknownError, "IS_SELECTED should return a boolean value");
+  *is_selected = result->GetBool();
   return Status(kOk);
 }
 
@@ -741,8 +744,9 @@ Status IsOptionElementTogglable(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsBoolean(is_togglable))
+  if (!result->is_bool())
     return Status(kUnknownError, "failed check if option togglable or not");
+  *is_togglable = result->GetBool();
   return Status(kOk);
 }
 

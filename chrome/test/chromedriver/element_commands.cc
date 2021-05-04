@@ -408,7 +408,7 @@ Status ExecuteClearElement(Session* session,
                                     args, &get_content_editable);
     if (status.IsError())
       return status;
-    get_content_editable->GetAsBoolean(&is_content_editable);
+    is_content_editable = get_content_editable->GetIfBool().value_or(false);
   }
 
   std::unique_ptr<base::Value> get_readonly;
@@ -418,9 +418,9 @@ Status ExecuteClearElement(Session* session,
     params_readOnly.SetString("name", "readOnly");
     status = ExecuteGetElementProperty(session, web_view, element_id,
                                        params_readOnly, &get_readonly);
-    get_readonly->GetAsBoolean(&is_readonly);
     if (status.IsError())
       return status;
+    is_readonly = get_readonly->GetIfBool().value_or(false);
   }
   bool is_editable =
       (is_input_control || is_text || is_content_editable) && !is_readonly;
@@ -586,9 +586,7 @@ Status ExecuteSendKeysToElement(Session* session,
       return status;
     bool is_text = is_textControlType || is_textarea;
 
-    bool is_content_editable;
-    if (get_content_editable->GetAsBoolean(&is_content_editable) &&
-        is_content_editable) {
+    if (get_content_editable->is_bool() && get_content_editable->GetBool()) {
       // If element is contentEditable
       // check if element is focused
       bool is_focused = false;
