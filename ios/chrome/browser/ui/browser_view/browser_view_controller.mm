@@ -1796,7 +1796,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         base::mac::ObjCCastStrict<UINavigationController>(
             viewControllerToPresent);
     if ([navController.topViewController
-            isMemberOfClass:[WelcomeToChromeViewController class]]) {
+            isMemberOfClass:[WelcomeToChromeViewController class]] ||
+        base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
       self.hideStatusBar = YES;
 
       // Load view from Launch Screen and add it to window.

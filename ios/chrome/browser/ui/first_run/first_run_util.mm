@@ -110,6 +110,10 @@ void FinishFirstRun(ChromeBrowserState* browserState,
                     web::WebState* web_state,
                     FirstRunConfiguration* config,
                     id<SyncPresenter> presenter) {
+  // This method souldn't be called with the new FRE, and should be removed
+  // after the new FRE module is shipped.
+  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
+
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kChromeFirstRunUIWillFinishNotification
                     object:nil];
@@ -118,6 +122,13 @@ void FinishFirstRun(ChromeBrowserState* browserState,
 
   // Display the sync errors infobar.
   DisplaySyncErrors(browserState, web_state, presenter);
+}
+
+void WriteFirstRunSentinel() {
+  kFirstRunSentinelCreated = true;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CreateSentinel));
 }
 
 void FirstRunDismissed() {

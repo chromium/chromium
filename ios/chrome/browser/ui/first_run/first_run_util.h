@@ -34,6 +34,9 @@ void RecordFirstRunSignInMetrics(
     first_run::SignInAttemptStatus sign_in_attempt_status,
     BOOL has_sso_accounts);
 
+// Records the completion of the first run.
+void WriteFirstRunSentinel();
+
 // Methods for writing sentinel and recording metrics and posting notifications
 void FinishFirstRun(ChromeBrowserState* browserState,
                     web::WebState* web_state,
