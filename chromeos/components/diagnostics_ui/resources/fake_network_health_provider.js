@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
+import {Network, NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js';
+
 // Method names.
-const ON_NETWORK_LIST_CHANGED_METHOD_NAME =
+export const ON_NETWORK_LIST_CHANGED_METHOD_NAME =
     'NetworkListObserver_onNetworkListChanged';
+
+const ON_NETWORK_STATE_CHANGED_METHOD_NAME =
+    'NetworkStateObserver_onNetworkStateChanged';
 
 /**
  * @fileoverview
@@ -34,6 +38,22 @@ export class FakeNetworkHealthProvider {
     });
   }
 
+  /*
+   * Implements NetworkHealthProviderInterface.ObserveNetwork.
+   * The guid argument is used to observe a specific network identified
+   * by |guid| within a group of observers.
+   * @param {!NetworkStateObserver} remote
+   * @param {string} guid
+   * @return {!Promise}
+   */
+  observeNetwork(remote, guid) {
+    return this.observeWithArg_(
+        ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, (network) => {
+          remote.onNetworkStateChanged(
+              /** @type {!Network} */ (network));
+        });
+  }
+
   /**
    * Sets the values that will be observed from observeNetworkList.
    * @param {!Array<!NetworkGuidInfo>} networkGuidInfoList
@@ -41,6 +61,15 @@ export class FakeNetworkHealthProvider {
   setFakeNetworkGuidInfo(networkGuidInfoList) {
     this.observables_.setObservableData(
         ON_NETWORK_LIST_CHANGED_METHOD_NAME, networkGuidInfoList);
+  }
+
+  /**
+   * @param {string} guid
+   * @param {!Array<!Network>} networkStateList
+   */
+  setFakeNetworkState(guid, networkStateList) {
+    this.observables_.setObservableDataForArg(
+        ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, networkStateList);
   }
 
   /**
@@ -68,6 +97,8 @@ export class FakeNetworkHealthProvider {
 
   registerObservables() {
     this.observables_.register(ON_NETWORK_LIST_CHANGED_METHOD_NAME);
+    this.observables_.registerObservableWithArg(
+        ON_NETWORK_STATE_CHANGED_METHOD_NAME);
   }
 
   /**
@@ -91,6 +122,23 @@ export class FakeNetworkHealthProvider {
     return new Promise((resolve) => {
       this.observables_.observe(methodName, callback);
       this.observables_.trigger(methodName);
+      resolve();
+    });
+  }
+
+  /*
+   * Sets up an observer for a methodName that takes an additional arg.
+   * @template T
+   * @param {string} methodName
+   * @param {string} arg
+   * @param {!function(!T)} callback
+   * @return {!Promise}
+   * @private
+   */
+  observeWithArg_(methodName, arg, callback) {
+    return new Promise((resolve) => {
+      this.observables_.observeWithArg(methodName, arg, callback);
+      this.observables_.triggerWithArg(methodName, arg);
       resolve();
     });
   }

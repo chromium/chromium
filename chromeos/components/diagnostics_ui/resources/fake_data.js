@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, NetworkGuidInfo, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -270,3 +270,47 @@ export const fakeNetworkGuidInfoList = [
   fakeAllNetworksAvailable,
   fakeWifiAndCellularNetworksAvailable,
 ];
+
+/** @type {!Network} */
+export let fakeWifiNetwork = {
+  state: NetworkState.kConnected,
+  type: NetworkType.kWiFi,
+  networkProperties: {
+    signalStrength: 65,
+    frequency: 5745,
+    bssid: '44:07:0b:06:2d:85',
+    ssid: 'Dial Up',
+  },
+  guid: 'wifiGuid',
+  name: 'Dial Up',
+  macAddress: '84:C5:A6:30:3F:31',
+  ipConfigProperties: {
+    ipAddress: '192.168.86.197',
+    gateway: '192.168.86.1',
+    nameServers: ['192.168.86.1'],
+    subnetMask: '255.255.255.0',
+  },
+};
+
+
+/** @type {!Network} */
+export let fakeEthernetNetwork = {
+  state: NetworkState.kOnline,
+  type: NetworkType.kEthernet,
+  networkProperties: {},
+  guid: 'ethernetGuid',
+  name: 'ethernetName',
+  macAddress: '81:C5:A6:30:3F:31',
+  ipConfigProperties: null,
+};
+
+/** @type {!Network} */
+export let fakeCellularNetwork = {
+  state: NetworkState.kConnected,
+  type: NetworkType.kCellular,
+  networkProperties: {},
+  guid: 'cellularGuid',
+  name: 'cellularName',
+  macAddress: '85:C5:A6:30:3F:31',
+  ipConfigProperties: null,
+};

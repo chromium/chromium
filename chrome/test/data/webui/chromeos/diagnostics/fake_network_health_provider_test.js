@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkListObserver} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeNetworkGuidInfoList} from 'chrome://diagnostics/fake_data.js';
+import {NetworkListObserver, NetworkStateObserver} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
@@ -56,5 +56,56 @@ export function fakeNetworkHealthProviderTestSuite() {
           provider.triggerNetworkListObserver();
           return completeResolver.promise;
         });
+  });
+
+  test('ObserveNetwork', () => {
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
+    let resolver = new PromiseResolver();
+
+    /** @type {!NetworkStateObserver} */
+    const networkStateObserverRemote =
+        /** @type {!NetworkStateObserver} */ ({
+          onNetworkStateChanged: (network) => {
+            assertDeepEquals(fakeCellularNetwork, network);
+            resolver.resolve();
+          }
+        });
+
+    return provider.observeNetwork(networkStateObserverRemote, 'cellularGuid')
+        .then(() => resolver.promise);
+  });
+
+  test('ObserveNetworkSupportsMultipleObservers', () => {
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
+    let wifiResolver = new PromiseResolver();
+    let ethernetResolver = new PromiseResolver();
+
+    /** @type {!NetworkStateObserver} */
+    const wifiNetworkStateObserverRemote =
+        /** @type {!NetworkStateObserver} */ ({
+          onNetworkStateChanged: (network) => {
+            assertDeepEquals(fakeWifiNetwork, network);
+            wifiResolver.resolve();
+          }
+        });
+
+    /** @type {!NetworkStateObserver} */
+    const ethernetNetworkStateObserverRemote =
+        /** @type {!NetworkStateObserver} */ ({
+          onNetworkStateChanged: (network) => {
+            assertDeepEquals(fakeEthernetNetwork, network);
+            ethernetResolver.resolve();
+          }
+        });
+
+    return provider.observeNetwork(wifiNetworkStateObserverRemote, 'wifiGuid')
+        .then(() => wifiResolver.promise)
+        .then(
+            () => provider.observeNetwork(
+                ethernetNetworkStateObserverRemote, 'ethernetGuid'))
+        .then(() => ethernetResolver.promise);
   });
 }
