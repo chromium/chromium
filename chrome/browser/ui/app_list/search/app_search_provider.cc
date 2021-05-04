@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/app_list/search/app_service_app_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
@@ -569,7 +570,12 @@ void AppSearchProvider::UpdateQueriedResults() {
       }
       std::unique_ptr<AppResult> result =
           app->data_source()->CreateResult(app->id(), list_controller_, false);
-      result->UpdateFromMatch(*indexed_name, match);
+
+      // Update result from match.
+      result->SetTitle(indexed_name->text());
+      result->SetTitleTags(CalculateTags(query_, indexed_name->text()));
+      result->set_relevance(match.relevance());
+
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {
       FuzzyTokenizedStringMatch match;
@@ -582,13 +588,8 @@ void AppSearchProvider::UpdateQueriedResults() {
 
         // Update result from match.
         result->SetTitle(indexed_name->text());
+        result->SetTitleTags(CalculateTags(query_, indexed_name->text()));
         result->set_relevance(match.relevance());
-        ash::SearchResultTags tags;
-        for (const auto& hit : match.hits()) {
-          tags.push_back(ash::SearchResultTag(ash::SearchResultTag::MATCH,
-                                              hit.start(), hit.end()));
-        }
-        result->SetTitleTags(tags);
 
         MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
       }

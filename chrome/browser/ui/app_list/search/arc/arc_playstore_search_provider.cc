@@ -172,7 +172,7 @@ void ArcPlayStoreSearchProvider::OnResults(
       continue;
 
     new_results.emplace_back(std::make_unique<ArcPlayStoreSearchResult>(
-        std::move(result), profile_, list_controller_));
+        std::move(result), profile_, list_controller_, last_query_));
   }
   SwapResults(&new_results);
 

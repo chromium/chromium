@@ -35,6 +35,7 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
   void UpdateRecommendedResults(
       std::vector<arc::mojom::AppShortcutItemPtr> shortcut_items);
 
+  std::u16string last_query_;
   const int max_results_;
   Profile* const profile_;                            // Owned by ProfileInfo.
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
