@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/heap.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/visitor.h"
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/write_barrier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/heap-consistency.h"
@@ -115,19 +116,7 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T>
   static void BackingWriteBarrier(T** slot) {
-    HeapConsistency::WriteBarrierParams params;
-    switch (HeapConsistency::GetWriteBarrierType(slot, *slot, params)) {
-      case HeapConsistency::WriteBarrierType::kMarking:
-        HeapConsistency::DijkstraWriteBarrier(params, *slot);
-        break;
-      case HeapConsistency::WriteBarrierType::kGenerational:
-        HeapConsistency::GenerationalBarrier(params, slot);
-        break;
-      case HeapConsistency::WriteBarrierType::kNone:
-        break;
-      default:
-        break;  // TODO(1056170): Remove default case when API is stable.
-    }
+    WriteBarrier::DispatchForObject(slot);
   }
 
   template <typename T>
