@@ -36,7 +36,7 @@
       <div slot="page-body" class="layout vertical center-center">
         <paper-spinner-lite active hidden$="[[shouldShowSimDetectError_(state)]]">
         </paper-spinner-lite>
-        <div id="networkConnectionMessage" hidden$="[[shouldShowSimDetectError_(state)]]">
+        <div id="networkConnectionMessage" hidden$="[[shouldShowSimDetectError_(state)]]" aria-live="polite">
           [[loadingMessage]]
         </div>
         <div id="simDetectError" hidden$="[[!shouldShowSimDetectError_(state)]]"></div>

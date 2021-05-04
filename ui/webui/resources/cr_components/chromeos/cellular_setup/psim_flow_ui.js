@@ -304,6 +304,7 @@ cr.define('cellularSetup', function() {
       this.state_ = PSimUIState.STARTING_ACTIVATION;
       this.startActivationAttempts_ = 0;
       this.updateButtonBarState_();
+      this.fire('focus-default-button');
     },
 
     navigateForward() {

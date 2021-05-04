@@ -31,7 +31,7 @@
     <template is="dom-if" if="[[isTitleShown_(title)]]" restamp>
       <h3 id="title">[[getTitle_(title)]]</h3>
     </template>
-    <div id="message">
+    <div id="message" aria-live="polite" aria-atomic="true">
       <iron-icon
           icon$="cellular-setup:[[messageIcon]]"
           hidden$="[[!isMessageIconShown_(messageIcon)]]">

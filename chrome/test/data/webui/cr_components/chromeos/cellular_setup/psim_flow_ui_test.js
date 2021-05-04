@@ -14,6 +14,7 @@
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // #import {FakeCarrierPortalHandlerRemote, FakeCellularSetupRemote} from './fake_cellular_setup_remote.m.js';
 // #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('CrComponentsPsimFlowUiTest', function() {
@@ -67,7 +68,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
         0);
   }
 
-  setup(function() {
+  setup(async function() {
     cellularCarrierHandler =
         new cellular_setup.FakeCarrierPortalHandlerRemote();
     cellularSetupRemote =
@@ -81,7 +82,11 @@ suite('CrComponentsPsimFlowUiTest', function() {
       timeoutFunction = fn;
       return 1;
     });
+
+    const focusNextButtonPromise =
+        test_util.eventToPromise('focus-default-button', pSimPage);
     pSimPage.initSubflow();
+    await focusNextButtonPromise;
     document.body.appendChild(pSimPage);
     Polymer.dom.flush();
   });
