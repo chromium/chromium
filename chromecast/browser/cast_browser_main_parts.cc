@@ -165,7 +165,7 @@ void RunClosureOnSignal(int signum) {
   }
 
   char message[48] = "Received close signal: ";
-  strncat(message, sys_siglist[signum], sizeof(message) - strlen(message) - 1);
+  strncat(message, strsignal(signum), sizeof(message) - strlen(message) - 1);
   RAW_LOG(INFO, message);
 
   DCHECK(g_signal_closure);
