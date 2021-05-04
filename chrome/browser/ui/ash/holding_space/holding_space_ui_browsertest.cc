@@ -673,6 +673,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   Show();
   ASSERT_TRUE(IsShowing());
 
+  // Let the message loop run so that resize of status tray takes effect.
+  base::RunLoop().RunUntilIdle();
+
   std::vector<views::View*> download_chips = GetDownloadChips();
   ASSERT_EQ(1u, download_chips.size());
 
@@ -729,6 +732,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
   // Add an item to holding space to cause the holding space tray to appear.
   AddDownloadFile();
   ASSERT_TRUE(IsShowingInShelf());
+
+  // Let the message loop run so that resize of status tray takes effect.
+  base::RunLoop().RunUntilIdle();
 
   // Bind an observer to watch for updates to the holding space model.
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
