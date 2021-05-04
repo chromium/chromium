@@ -28,23 +28,10 @@ namespace blink {
 
 namespace {
 
-bool IsFormatSupported(
-    const std::vector<webrtc::SdpVideoFormat>& supported_formats,
-    const webrtc::SdpVideoFormat& format) {
-  for (const webrtc::SdpVideoFormat& supported_format : supported_formats) {
-    if (cricket::IsSameCodec(format.name, format.parameters,
-                             supported_format.name,
-                             supported_format.parameters)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 template <typename Factory>
 bool IsFormatSupported(const Factory* factory,
                        const webrtc::SdpVideoFormat& format) {
-  return factory && IsFormatSupported(factory->GetSupportedFormats(), format);
+  return factory && format.IsCodecInList(factory->GetSupportedFormats());
 }
 
 // Merge |formats1| and |formats2|, but avoid adding duplicate formats.
@@ -53,7 +40,7 @@ std::vector<webrtc::SdpVideoFormat> MergeFormats(
     const std::vector<webrtc::SdpVideoFormat>& formats2) {
   for (const webrtc::SdpVideoFormat& format : formats2) {
     // Don't add same format twice.
-    if (!IsFormatSupported(formats1, format))
+    if (!format.IsCodecInList(formats1))
       formats1.push_back(format);
   }
   return formats1;

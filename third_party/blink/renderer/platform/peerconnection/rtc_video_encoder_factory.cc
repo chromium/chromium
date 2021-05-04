@@ -139,12 +139,6 @@ base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
   return base::nullopt;
 }  // namespace
 
-bool IsSameFormat(const webrtc::SdpVideoFormat& format1,
-                  const webrtc::SdpVideoFormat& format2) {
-  return cricket::IsSameCodec(format1.name, format2.parameters, format2.name,
-                              format2.parameters);
-}
-
 struct SupportedFormats {
   bool unknown = true;
   std::vector<media::VideoCodecProfile> profiles;
@@ -215,7 +209,7 @@ RTCVideoEncoderFactory::CreateVideoEncoder(
   auto supported_formats = GetSupportedFormatsInternal(gpu_factories_);
   if (!supported_formats.unknown) {
     for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
-      if (IsSameFormat(format, supported_formats.sdp_formats[i])) {
+      if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
         encoder = std::make_unique<RTCVideoEncoder>(
             supported_formats.profiles[i], is_constrained_h264, gpu_factories_);
         break;
