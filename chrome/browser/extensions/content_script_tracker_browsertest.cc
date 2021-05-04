@@ -626,11 +626,11 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ("content script has run: 2",
               content::EvalJs(child_frame, "document.body.innerText"));
 
-    // Demonstrate that `document.open` changed the URL of the `child_frame`.
+    // Demonstrate that `document.open` didn't change the URL of the
+    // `child_frame`.
     EXPECT_EQ(another_frame->GetLastCommittedURL(),
               content::EvalJs(child_frame, "location.href"));
-    EXPECT_EQ(another_frame->GetLastCommittedURL(),
-              child_frame->GetLastCommittedURL());
+    EXPECT_EQ(GURL(), child_frame->GetLastCommittedURL());
   }
 
   // Verify that ContentScriptTracker still properly covers both frames.  The

@@ -319,6 +319,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return last_navigation_had_trusted_initiator_;
   }
 
+  void UpdateUrlForDocumentOpen(const KURL& url) { url_ = url; }
+
   enum class HistoryNavigationType {
     kDifferentDocument,
     kFragment,

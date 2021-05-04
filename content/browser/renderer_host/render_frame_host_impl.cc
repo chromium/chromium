@@ -10299,7 +10299,6 @@ void RenderFrameHostImpl::
   // - http_status_code
   // - should_update_history
   // - gesture
-  // - should_replace_current_entry
   // TODO(crbug.com/1131832): Verify more params.
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
@@ -10347,12 +10346,6 @@ void RenderFrameHostImpl::
   const bool renderer_gesture =
       (params.gesture == NavigationGesture::NavigationGestureUser);
 
-  const bool browser_should_replace_current_entry =
-      CalculateShouldReplaceCurrentEntry(
-          request, same_document_params.Clone(), frame_tree_node_,
-          last_committed_url_, is_loaded_from_load_data_with_base_url_,
-          last_base_url_);
-
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -10366,10 +10359,7 @@ void RenderFrameHostImpl::
        browser_http_status_code == params.http_status_code) &&
       (!ShouldVerify("should_update_history") ||
        browser_should_update_history == params.should_update_history) &&
-      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture) &&
-      (!ShouldVerify("should_replace_current_entry") ||
-       browser_should_replace_current_entry ==
-           params.should_replace_current_entry)) {
+      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture)) {
     return;
   }
 
@@ -10443,11 +10433,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_browser", browser_gesture);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_renderer",
                         renderer_gesture);
-
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_browser",
-                        browser_should_replace_current_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_renderer",
-                        params.should_replace_current_entry);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
@@ -10550,8 +10535,6 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
   DCHECK_EQ(browser_gesture, renderer_gesture);
-  DCHECK_EQ(browser_should_replace_current_entry,
-            params.should_replace_current_entry);
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
@@ -10587,11 +10570,6 @@ void RenderFrameHostImpl::
   if (browser_gesture != renderer_gesture) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kGesture);
-  }
-  if (browser_should_replace_current_entry !=
-      params.should_replace_current_entry) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kShouldReplaceCurrentEntry);
   }
 
   base::debug::DumpWithoutCrashing();
