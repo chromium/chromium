@@ -73,7 +73,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public List<Account> getGoogleAccounts() {
+    public List<Account> tryGetGoogleAccounts() {
         List<Account> accounts = new ArrayList<>();
         synchronized (mLock) {
             for (AccountHolder accountHolder : mAccountHolders) {
@@ -85,7 +85,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
-        callback.onResult(getGoogleAccounts());
+        callback.onResult(tryGetGoogleAccounts());
     }
 
     @Override

@@ -74,13 +74,13 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
-    public void testIsCachePopulated() throws AccountManagerDelegateException {
+    public void testIsCachePopulated() {
         // Cache shouldn't be populated until getAccountsSync is unblocked.
         assertFalse(AccountManagerFacadeProvider.getInstance().isCachePopulated());
 
         mDelegate.unblockGetAccounts();
         // Wait for cache population to finish.
-        AccountManagerFacadeProvider.getInstance().getGoogleAccounts();
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
         assertTrue(AccountManagerFacadeProvider.getInstance().isCachePopulated());
     }
 

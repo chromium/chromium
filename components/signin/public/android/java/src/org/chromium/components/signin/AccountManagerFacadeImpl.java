@@ -104,7 +104,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Returns whether the account cache has already been populated. {@link #getGoogleAccounts()}
+     * Returns whether the account cache has already been populated. {@link #tryGetGoogleAccounts()}
      * and similar methods will return instantly if the cache has been populated, otherwise these
      * methods may block waiting for the cache to be populated.
      */
@@ -113,14 +113,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mFilteredAccounts.get() != null;
     }
 
-    /**
-     * Retrieves all Google accounts on the device.
-     *
-     * @throws AccountManagerDelegateException if Google Play Services are out of date,
-     *         Chrome lacks necessary permissions, etc.
-     */
-    @Override
-    public List<Account> getGoogleAccounts() throws AccountManagerDelegateException {
+    private List<Account> getGoogleAccounts() throws AccountManagerDelegateException {
         AccountManagerResult<List<Account>> maybeAccounts = mFilteredAccounts.get();
         if (maybeAccounts == null) {
             try {
@@ -138,6 +131,15 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
         }
         return maybeAccounts.get();
+    }
+
+    @Override
+    public List<Account> tryGetGoogleAccounts() {
+        try {
+            return getGoogleAccounts();
+        } catch (AccountManagerDelegateException e) {
+            return Collections.emptyList();
+        }
     }
 
     /**

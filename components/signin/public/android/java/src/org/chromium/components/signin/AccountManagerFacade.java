@@ -16,7 +16,6 @@ import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +47,7 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Returns whether the account cache has already been populated. {@link #getGoogleAccounts()}
+     * Returns whether the account cache has already been populated. {@link #tryGetGoogleAccounts()}
      * and similar methods will return instantly if the cache has been populated, otherwise these
      * methods may block waiting for the cache to be populated.
      */
@@ -56,27 +55,11 @@ public interface AccountManagerFacade {
     boolean isCachePopulated();
 
     /**
-     * Gets Google account names asynchronously.
-     * Retrieves all Google accounts on the device.
-     *
-     * @throws AccountManagerDelegateException if Google Play Services are out of date,
-     *         Chrome lacks necessary permissions, etc.
-     */
-    @AnyThread
-    List<Account> getGoogleAccounts() throws AccountManagerDelegateException;
-
-    /**
      * Retrieves all Google accounts on the device.
      * Returns an empty array if an error occurs while getting account list.
      */
     @AnyThread
-    default List<Account> tryGetGoogleAccounts() {
-        try {
-            return getGoogleAccounts();
-        } catch (AccountManagerDelegateException e) {
-            return Collections.emptyList();
-        }
-    }
+    List<Account> tryGetGoogleAccounts();
 
     /**
      * Asynchronous version of {@link #tryGetGoogleAccounts()}.
