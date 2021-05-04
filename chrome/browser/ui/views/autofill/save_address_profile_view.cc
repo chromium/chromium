@@ -260,7 +260,8 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   std::u16string email = profile.GetInfo(EMAIL_ADDRESS, locale);
   if (!email.empty())
-    AddAddressSection(/*parent_view=*/address_components_view, kWebIcon, email);
+    AddAddressSection(/*parent_view=*/address_components_view,
+                      vector_icons::kEmailIcon, email);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePromptNicknameSupport)) {

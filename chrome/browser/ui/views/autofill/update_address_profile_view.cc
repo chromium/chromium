@@ -35,7 +35,7 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
     case NAME_HONORIFIC_PREFIX:
       return kUserAccountAvatarIcon;
     case EMAIL_ADDRESS:
-      return kWebIcon;
+      return vector_icons::kEmailIcon;
     case PHONE_HOME_WHOLE_NUMBER:
       return vector_icons::kCallIcon;
     default:
