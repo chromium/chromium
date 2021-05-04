@@ -250,6 +250,21 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         time_delta, count);
   }
 
+  void VerifyAppUsageTimeCountHistogram(base::HistogramBase::Count count,
+                                        AppTypeName app_type_name) {
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        count);
+  }
+
+  void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
+                                   base::HistogramBase::Count count,
+                                   AppTypeName app_type_name) {
+    histogram_tester().ExpectTimeBucketCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        time_delta, count);
+  }
+
  protected:
   sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
     return testing_profile_.GetTestingPrefService();
@@ -522,6 +537,50 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
                                     /*expected_count=*/2, AppTypeName::kArc);
   VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
+}
+
+TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
+  // Create an ARC app window.
+  std::string app_id = "aa";
+  InstallOneApp(app_id, apps::mojom::AppType::kArc);
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
+                              /*expected_count=*/1, AppTypeName::kArc);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
+
+  // Create a browser window
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension);
+  std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
+  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Set the browser window active.
+  ModifyInstance(extension_misc::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(2),
+                              /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(3),
+                              /*expected_count=*/1,
+                              AppTypeName::kChromeBrowser);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
+                              /*expected_count=*/3,
+                              AppTypeName::kChromeBrowser);
 }
 
 }  // namespace apps

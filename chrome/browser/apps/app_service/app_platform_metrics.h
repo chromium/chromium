@@ -85,8 +85,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   static std::string GetAppsRunningDurationHistogramNameForTest(
       AppTypeName app_type_name);
 
+  // UMA metrics name for apps usage time in Chrome OS.
+  static std::string GetAppsUsageTimeHistogramNameForTest(
+      AppTypeName app_type_name);
+
   void OnNewDay();
   void OnTenMinutes();
+  void OnFiveMinutes();
 
  private:
   struct RunningStartTime {
@@ -115,6 +120,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the app running duration.
   void RecordAppsRunningDuration();
 
+  // Records the app usage time in five minutes.
+  void RecordAppsUsageTime();
+
   Profile* const profile_ = nullptr;
 
   AppRegistryCache& app_registry_cache_;
@@ -123,8 +131,15 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   bool first_report_on_current_device_ = false;
   bool should_refresh_duration_pref = false;
 
+  // |running_start_time_| and |running_duration_| are used for accumulating app
+  // running duration per each day interval.
   std::map<aura::Window*, RunningStartTime> running_start_time_;
   std::map<AppTypeName, base::TimeDelta> running_duration_;
+
+  // |start_time_per_five_minutes_| and |running_time_per_five_minutes_| are
+  // used for accumulating app running duration per 5 minutes interval.
+  std::map<aura::Window*, RunningStartTime> start_time_per_five_minutes_;
+  std::map<AppTypeName, base::TimeDelta> running_time_per_five_minutes_;
 };
 
 }  // namespace apps

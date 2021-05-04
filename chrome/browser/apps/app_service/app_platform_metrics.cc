@@ -31,10 +31,13 @@ namespace {
 // UMA metrics for a snapshot count of installed apps.
 constexpr char kAppsCountHistogramPrefix[] = "Apps.AppsCount.";
 constexpr char kAppsRunningDurationHistogramPrefix[] = "Apps.RunningDuration.";
+constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 
 constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kMaxDuration = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMaxUsageDuration = base::TimeDelta::FromMinutes(5);
 constexpr int kDurationBuckets = 100;
+constexpr int kUsageTimeBuckets = 50;
 
 std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   static base::NoDestructor<std::set<apps::AppTypeName>> app_type_name_map;
@@ -340,6 +343,7 @@ AppPlatformMetrics::~AppPlatformMetrics() {
   }
 
   OnTenMinutes();
+  RecordAppsUsageTime();
 }
 
 // static
@@ -353,6 +357,12 @@ std::string AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsRunningDurationHistogramPrefix +
          GetAppTypeHistogramName(app_type_name);
+}
+
+// static
+std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
+    AppTypeName app_type_name) {
+  return kAppsUsageTimeHistogramPrefix + GetAppTypeHistogramName(app_type_name);
 }
 
 void AppPlatformMetrics::OnNewDay() {
@@ -378,6 +388,10 @@ void AppPlatformMetrics::OnTenMinutes() {
       update->SetPath(app_type_name, util::TimeDeltaToValue(it.second));
     }
   }
+}
+
+void AppPlatformMetrics::OnFiveMinutes() {
+  RecordAppsUsageTime();
 }
 
 void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
@@ -424,6 +438,11 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
       running_start_time_[update.Window()].start_time = base::TimeTicks::Now();
       running_start_time_[update.Window()].app_type_name = app_type_name;
+
+      start_time_per_five_minutes_[update.Window()].start_time =
+          base::TimeTicks::Now();
+      start_time_per_five_minutes_[update.Window()].app_type_name =
+          app_type_name;
     }
     return;
   }
@@ -437,6 +456,12 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   running_duration_[app_type_name] +=
       base::TimeTicks::Now() - it->second.start_time;
   running_start_time_.erase(it);
+
+  running_time_per_five_minutes_[app_type_name] +=
+      base::TimeTicks::Now() -
+      start_time_per_five_minutes_[update.Window()].start_time;
+  start_time_per_five_minutes_.erase(update.Window());
+
   should_refresh_duration_pref = true;
 }
 
@@ -517,6 +542,21 @@ void AppPlatformMetrics::RecordAppsRunningDuration() {
         it.second, kMinDuration, kMaxDuration, kDurationBuckets);
   }
   ClearRunningDuration();
+}
+
+void AppPlatformMetrics::RecordAppsUsageTime() {
+  for (auto& it : start_time_per_five_minutes_) {
+    running_time_per_five_minutes_[it.second.app_type_name] +=
+        base::TimeTicks::Now() - it.second.start_time;
+    it.second.start_time = base::TimeTicks::Now();
+  }
+
+  for (auto it : running_time_per_five_minutes_) {
+    base::UmaHistogramCustomTimes(
+        kAppsUsageTimeHistogramPrefix + GetAppTypeHistogramName(it.first),
+        it.second, kMinDuration, kMaxUsageDuration, kUsageTimeBuckets);
+  }
+  running_time_per_five_minutes_.clear();
 }
 
 }  // namespace apps

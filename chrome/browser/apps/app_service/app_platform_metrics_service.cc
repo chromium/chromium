@@ -15,6 +15,7 @@ namespace apps {
 namespace {
 
 constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kFiveMinutes = base::TimeDelta::FromMinutes(5);
 
 // Returns the number of days since the origin.
 int GetDayId(base::Time time) {
@@ -58,6 +59,10 @@ void AppPlatformMetricsService::Start(
   // Check for a new day every |kTimerInterval| as well.
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &AppPlatformMetricsService::CheckForNewDay);
+
+  // Check every |kFiveMinutes|.
+  five_minutes_timer_.Start(FROM_HERE, kFiveMinutes, this,
+                            &AppPlatformMetricsService::CheckForFiveMinutes);
 }
 
 void AppPlatformMetricsService::CheckForNewDay() {
@@ -71,6 +76,10 @@ void AppPlatformMetricsService::CheckForNewDay() {
     app_platform_app_metrics_->OnNewDay();
     profile_->GetPrefs()->SetInteger(kAppPlatformMetricsDayId, day_id_);
   }
+}
+
+void AppPlatformMetricsService::CheckForFiveMinutes() {
+  app_platform_app_metrics_->OnFiveMinutes();
 }
 
 }  // namespace apps

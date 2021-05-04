@@ -21,6 +21,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="AppType">
+  <variant name="Arc" summary="Android apps"/>
+  <variant name="Borealis" summary="Borealis apps"/>
+  <variant name="BuiltIn" summary="BuiltIn apps"/>
+  <variant name="ChromeApp" summary="Chrome apps"/>
+  <variant name="ChromeBrowser" summary="Chrome browsers"/>
+  <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="MacOs" summary="MacOs apps"/>
+  <variant name="PluginVm" summary="Plugin VM app"/>
+  <variant name="RemoteApp" summary="Remote apps"/>
+  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
+  <variant name="SystemWebApp" summary="System web apps"/>
+  <variant name="WebApp" summary="Web apps"/>
+</variants>
+
 <histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
     enum="Boolean" expires_after="M95">
   <owner>dmurph@chromium.org</owner>
@@ -1365,19 +1380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     startup phase if more than 24 hours passed after last log. This histogram is
     capped at 1000; values above this go into the overflow bucket.
   </summary>
-  <token key="AppType">
-    <variant name="Arc" summary="Android apps"/>
-    <variant name="Borealis" summary="Borealis apps"/>
-    <variant name="BuiltIn" summary="BuiltIn apps"/>
-    <variant name="ChromeApp" summary="Chrome apps"/>
-    <variant name="Crostini" summary="Crostini apps"/>
-    <variant name="MacOs" summary="MacOs apps"/>
-    <variant name="PluginVm" summary="Plugin VM app"/>
-    <variant name="RemoteApp" summary="Remote apps"/>
-    <variant name="StandaloneBrowser" summary="Standalone browser"/>
-    <variant name="SystemWebApp" summary="System web apps"/>
-    <variant name="WebApp" summary="Web apps"/>
-  </token>
+  <token key="AppType" variants="AppType"/>
 </histogram>
 
 <histogram name="Apps.AppShimErrorVersion" units="units" expires_after="M78">
@@ -1979,20 +1982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     when more than 24 hours pass after last log, or during the system startup
     phase if more than 24 hours passed after last log.
   </summary>
-  <token key="AppType">
-    <variant name="Arc" summary="Android apps"/>
-    <variant name="Borealis" summary="Borealis apps"/>
-    <variant name="BuiltIn" summary="BuiltIn apps"/>
-    <variant name="ChromeApp" summary="Chrome apps"/>
-    <variant name="ChromeBrowser" summary="Chrome browser"/>
-    <variant name="Crostini" summary="Crostini apps"/>
-    <variant name="MacOs" summary="MacOs apps"/>
-    <variant name="PluginVm" summary="Plugin VM app"/>
-    <variant name="RemoteApp" summary="Remote apps"/>
-    <variant name="StandaloneBrowser" summary="Standalone browser"/>
-    <variant name="SystemWebApp" summary="System web apps"/>
-    <variant name="WebApp" summary="Web apps"/>
-  </token>
+  <token key="AppType" variants="AppType"/>
 </histogram>
 
 <histogram name="Apps.ScrollableShelf.AnimationSmoothness" units="%"
@@ -2104,6 +2094,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Maximum latency of the presentation time of the app laucnher drag operation.
   </summary>
+</histogram>
+
+<histogram name="Apps.UsageTime.{AppType}" units="ms"
+    expires_after="2021-10-28">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    Records the amount of time that {AppType} were used in the last five minutes
+    on Chrome OS. This is logged every five minutes.
+  </summary>
+  <token key="AppType" variants="AppType"/>
 </histogram>
 
 </histograms>
