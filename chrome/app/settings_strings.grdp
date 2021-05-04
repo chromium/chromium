@@ -576,18 +576,18 @@
     Password deleted from this device and your Google Account
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
-    To use them on all your devices, move them to your Google Account
+    To easily use them on all your devices, you can move them to your Google Account
   </message>
    <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT" desc="Label shown in the link that open moving multiple password dialog.">
     {COUNT, plural,
-      =1 {{COUNT} password is accessible on this device}
-      other {{COUNT} passwords are accessible on this device}}
+      =1 {{COUNT} password is stored on this device}
+      other {{COUNT} passwords are stored on this device}}
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_FOOTER" desc="Footer for the dialog that asks the user to select which passwords to move to their Google Account.">
-    Passwords will be moved from your device to your Google Account
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_BODY_TEXT" desc="Text displayed in the dialog that asks the user to select which passwords to move to their Google Account.">
+    Choose which passwords to move. You can access them whenever you're signed in.
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that asks the user to select which passwords to move to their Google Account.">
-    Choose which passwords to move
+    Move passwords from this device to your Google Account?
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_SNACKBAR" desc="Text in the snackbar that appears after the user successfuly moved local passwords to their Google Account.">
     Passwords moved to your Google Account
@@ -598,6 +598,12 @@
   <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_BODY" desc="Description message for the dialog that confirms whether the user wishes to move a password to their Google Account.">
     Move your password to your Google Account to access it securely wherever you're signed in
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_MOVE_BUTTON_TEXT" desc="Text for the button that confirms moving multiple passwords to the user Google Account.">
+    Move passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action of moving multiple passwords to the user Google Account.">
+    Don't move
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_MOVE_BUTTON_TEXT" desc="Text for the button that confirms moving a password to the user Google Account.">
     Move
   </message>
@@ -605,7 +611,7 @@
     Cancel
   </message>
   <message name="IDS_SETTINGS_PASSWORD_OPEN_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_BUTTON_TEXT" desc="Text for the button that opens the dialog that moves multiple passwords to the user Google Account.">
-    Move passwords
+    Get started
   </message>
   <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_TITLE" desc="Title for the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
     Delete password?
