@@ -1471,9 +1471,7 @@
                   '|ios/chrome/browser/ui/page_info/'
     },
     'page_load_metrics' : {
-      'filepath': 'chrome/browser/page_load_metrics/'\
-                  '|chrome/common/page_load_metrics/'\
-                  '|chrome/renderer/page_load_metrics/'
+      'filepath': '/page_load_metrics/'
     },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
