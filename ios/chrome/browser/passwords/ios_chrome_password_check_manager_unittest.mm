@@ -122,6 +122,7 @@ PasswordForm MakeSavedPassword(
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);
   form.username_element = base::ASCIIToUTF16(username_element);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
