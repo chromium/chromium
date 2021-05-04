@@ -4165,6 +4165,7 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/task/test/CustomShadowAsyncTask.java",
       "test/android/junit/src/org/chromium/base/task/test/ShadowPostTask.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
+      "test/android/junit/src/org/chromium/base/test/ShadowBuildInfo.java",
       "test/android/junit/src/org/chromium/base/test/util/TestRunnerTestRule.java",
     ]
 

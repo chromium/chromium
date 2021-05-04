@@ -19,7 +19,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.TransportInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -47,6 +50,7 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.ShadowBuildInfo;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell.RadioType;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
@@ -61,7 +65,7 @@ import java.util.concurrent.TimeUnit;
  * Robolectric tests for {@link PlatformNetworksManager}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(sdk = 29, manifest = Config.NONE, shadows = {ShadowBuildInfo.class})
 public class PlatformNetworksManagerTest {
     private static final VisibleWifi CONNECTED_WIFI =
             VisibleWifi.create("ssid1", "11:11:11:11:11:11", -1, 10L);
@@ -120,12 +124,18 @@ public class PlatformNetworksManagerTest {
     @Mock
     private WifiManager mWifiManager;
     @Mock
+    private ConnectivityManager mConnectivityManager;
+    @Mock
+    private Network mNetwork;
+    @Mock
+    private NetworkCapabilities mNetworkCapabilitites;
+    @Mock
     private NetworkInfo mCellNetworkInfo;
     @Mock
     private NetworkInfo mWifiNetworkInfo;
     @Mock
     private NetworkInfo mEthernetNetworkInfo;
-    @Mock
+    @Mock(extraInterfaces = {TransportInfo.class})
     private WifiInfo mWifiInfo;
     @Mock
     private ScanResult mWifiScanResult;
@@ -183,6 +193,17 @@ public class PlatformNetworksManagerTest {
         when(mWifiInfo.getSSID()).thenReturn("\"" + CONNECTED_WIFI.ssid() + "\"");
         when(mWifiInfo.getBSSID()).thenReturn(CONNECTED_WIFI.bssid());
         when(mWifiManager.getConnectionInfo()).thenReturn(mWifiInfo);
+
+        // Sets up an alternative path for retrieving WiFi information on Android S.
+        when(mContext.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .thenReturn(mConnectivityManager);
+        when(mConnectivityManager.getNetworkCapabilities(eq(mNetwork)))
+                .thenReturn(mNetworkCapabilitites);
+        when(mNetworkCapabilitites.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+                .thenReturn(true);
+        // This line forces SDK to be at least 29 in manifest.
+        when(mNetworkCapabilitites.getTransportInfo()).thenReturn((TransportInfo) mWifiInfo);
+        when(mConnectivityManager.getAllNetworks()).thenReturn(new Network[] {mNetwork});
 
         mWifiScanResult.SSID = CONNECTED_WIFI.ssid();
         mWifiScanResult.BSSID = CONNECTED_WIFI.bssid();
@@ -244,6 +265,8 @@ public class PlatformNetworksManagerTest {
                 .thenReturn(mNetworkStateChangedIntent);
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(mWifiInfo);
+
+        ShadowBuildInfo.reset();
     }
 
     @Test
@@ -262,43 +285,6 @@ public class PlatformNetworksManagerTest {
     }
 
     @Test
-    public void testGetAllVisibleCells_JBMR2() {
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.JELLY_BEAN_MR2);
-        PlatformNetworksManager.getAllVisibleCells(
-                mContext, mTelephonyManager, mVisibleCellCallback);
-        verify(mVisibleCellCallback).onResult(mVisibleCellsArgument.capture());
-
-        assertEquals(4, mVisibleCellsArgument.getValue().size());
-        for (VisibleCell visibleCell : mVisibleCellsArgument.getValue()) {
-            switch (visibleCell.radioType()) {
-                case RadioType.LTE:
-                    assertEquals(LTE_CELL, visibleCell);
-                    assertEquals(Long.valueOf(CURRENT_TIME_MS - LTE_CELL_AGE),
-                            visibleCell.timestampMs());
-                    break;
-                case RadioType.WCDMA:
-                    assertEquals(visibleCell, WCDMA_CELL);
-                    assertEquals(Long.valueOf(CURRENT_TIME_MS - WCDMA_CELL_AGE),
-                            visibleCell.timestampMs());
-                    break;
-                case RadioType.GSM:
-                    assertEquals(visibleCell, GSM_CELL);
-                    assertEquals(Long.valueOf(CURRENT_TIME_MS - GSM_CELL_AGE),
-                            visibleCell.timestampMs());
-                    break;
-                case RadioType.CDMA:
-                    assertEquals(visibleCell, CDMA_CELL);
-                    assertEquals(Long.valueOf(CURRENT_TIME_MS - CDMA_CELL_AGE),
-                            visibleCell.timestampMs());
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    @Test
     public void testGetAllVisibleCells_allPermissionsDenied() {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
         allPermissionsDenied();
@@ -311,8 +297,17 @@ public class PlatformNetworksManagerTest {
     }
 
     @Test
-    public void testGetConnectedWifi() {
-        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext, mWifiManager);
+    public void testGetConnectedWifi_BeforeS() {
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
+        assertEquals(CONNECTED_WIFI, visibleWifi);
+        // When we get it through get connected wifi, we should see the current time.
+        assertEquals(Long.valueOf(CURRENT_TIME_MS), visibleWifi.timestampMs());
+    }
+
+    @Test
+    public void testGetConnectedWifi_S() {
+        ShadowBuildInfo.setIsAtLeastS(true);
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(CONNECTED_WIFI, visibleWifi);
         // When we get it through get connected wifi, we should see the current time.
         assertEquals(Long.valueOf(CURRENT_TIME_MS), visibleWifi.timestampMs());
@@ -322,7 +317,7 @@ public class PlatformNetworksManagerTest {
     public void testGetConnectedWifi_allPermissionsDenied() {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
         allPermissionsDenied();
-        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext, mWifiManager);
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(UNKNOWN_VISIBLE_WIFI, visibleWifi);
         assertNull(visibleWifi.timestampMs());
     }
@@ -332,7 +327,7 @@ public class PlatformNetworksManagerTest {
         ReflectionHelpers.setStaticField(
                 Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.LOLLIPOP);
         locationGrantedWifiDenied();
-        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext, mWifiManager);
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(CONNECTED_WIFI, visibleWifi);
         assertEquals(Long.valueOf(CURRENT_TIME_MS), visibleWifi.timestampMs());
         verifyNetworkStateAction();
@@ -345,7 +340,7 @@ public class PlatformNetworksManagerTest {
         locationGrantedWifiDenied();
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(null);
-        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext, mWifiManager);
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(UNKNOWN_VISIBLE_WIFI, visibleWifi);
         assertNull(visibleWifi.timestampMs());
         verifyNetworkStateAction();
@@ -355,7 +350,7 @@ public class PlatformNetworksManagerTest {
     public void testGetConnectedWifi_locationDeniedWifiGranted() {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
         locationDeniedWifiGranted();
-        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext, mWifiManager);
+        VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(UNKNOWN_VISIBLE_WIFI, visibleWifi);
         assertNull(visibleWifi.timestampMs());
     }
@@ -420,6 +415,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testComputeVisibleNetworks_withNonConnectedNetworks() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         Set<VisibleCell> expectedVisibleCells =
                 new HashSet<VisibleCell>(Arrays.asList(LTE_CELL, WCDMA_CELL, GSM_CELL, CDMA_CELL));
         Set<VisibleWifi> expectedVisibleWifis =
@@ -443,6 +439,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testComputeVisibleNetworks_locationGrantedWifiDenied() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         Set<VisibleCell> expectedVisibleCells =
                 new HashSet<VisibleCell>(Arrays.asList(LTE_CELL, WCDMA_CELL, GSM_CELL, CDMA_CELL));
         Set<VisibleWifi> expectedVisibleWifis = Collections.emptySet();

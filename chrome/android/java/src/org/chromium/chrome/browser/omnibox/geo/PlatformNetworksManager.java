@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.TransportInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -30,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.task.PostTask;
@@ -60,21 +65,48 @@ class PlatformNetworksManager {
      * Get the connected wifi, but do not use it (nullify it) if its BSSID is unknown.
      *
      * @param context The application context
-     * @param wifiManager Provides access to wifi information on the device
      * @return The possibly null connected wifi
      */
-    private static VisibleWifi getConnectedWifiIfKnown(Context context, WifiManager wifiManager) {
-        VisibleWifi connectedWifi = getConnectedWifi(context, wifiManager);
+    private static VisibleWifi getConnectedWifiIfKnown(Context context) {
+        VisibleWifi connectedWifi = getConnectedWifi(context);
         if (connectedWifi != null && connectedWifi.bssid() == null) {
             return null;
         }
         return connectedWifi;
     }
 
-    static VisibleWifi getConnectedWifi(Context context, WifiManager wifiManager) {
+    private static WifiInfo getWifiInfo(Context context) {
+        if (BuildInfo.isAtLeastS()) {
+            // TODO(https://crbug.com/1181393): Look into taking a dependency on net/android and
+            // extracting this logic there to a method that can be called from here.
+            // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) context.getApplicationContext().getSystemService(
+                            Context.CONNECTIVITY_SERVICE);
+
+            Network[] allNetworks = connectivityManager.getAllNetworks();
+            for (Network network : allNetworks) {
+                NetworkCapabilities networkCapabilities =
+                        connectivityManager.getNetworkCapabilities(network);
+                if (networkCapabilities != null
+                        && networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    TransportInfo transportInfo =
+                            ApiHelperForQ.getTransportInfo(networkCapabilities);
+                    if (transportInfo != null && transportInfo instanceof WifiInfo) {
+                        return (WifiInfo) transportInfo;
+                    }
+                }
+            }
+            return null;
+        }
+
+        WifiManager wifiManager = getWifiManager(context);
+        return wifiManager.getConnectionInfo();
+    }
+
+    static VisibleWifi getConnectedWifi(Context context) {
         if (hasLocationAndWifiPermission(context)) {
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            return connectedWifiInfoToVisibleWifi(wifiInfo);
+            return connectedWifiInfoToVisibleWifi(getWifiInfo(context));
         }
         if (hasLocationPermission(context)) {
             // Only location permission, so fallback to pre-marshmallow.
@@ -283,10 +315,9 @@ class PlatformNetworksManager {
      * @param context The application context
      */
     static VisibleNetworks computeConnectedNetworks(Context context) {
-        WifiManager wifiManager = getWifiManager(context);
         TelephonyManager telephonyManager = getTelephonyManager(context);
 
-        VisibleWifi connectedWifi = getConnectedWifiIfKnown(context, wifiManager);
+        VisibleWifi connectedWifi = getConnectedWifiIfKnown(context);
         VisibleCell connectedCell = getConnectedCellIfKnown(context, telephonyManager);
 
         return VisibleNetworks.create(connectedWifi, connectedCell, null, null);
@@ -305,13 +336,12 @@ class PlatformNetworksManager {
      * @param callback The callback to invoke with the results of this computation
      */
     static void computeVisibleNetworks(Context context, Callback<VisibleNetworks> callback) {
-        WifiManager wifiManager = getWifiManager(context);
         TelephonyManager telephonyManager = getTelephonyManager(context);
 
-        VisibleWifi connectedWifi = getConnectedWifiIfKnown(context, wifiManager);
+        VisibleWifi connectedWifi = getConnectedWifiIfKnown(context);
         VisibleCell connectedCell = getConnectedCellIfKnown(context, telephonyManager);
 
-        Set<VisibleWifi> allVisibleWifis = getAllVisibleWifis(context, wifiManager);
+        Set<VisibleWifi> allVisibleWifis = getAllVisibleWifis(context, getWifiManager(context));
 
         getAllVisibleCells(context, telephonyManager, (allVisibleCells) -> {
             callback.onResult(VisibleNetworks.create(
@@ -326,8 +356,7 @@ class PlatformNetworksManager {
 
     private static WifiManager getWifiManager(Context context) {
         Context applicationContext = context.getApplicationContext();
-        Object wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE);
-        return (WifiManager) wifiManager;
+        return (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
     }
 
     private static boolean hasPermission(Context context, String permission) {
