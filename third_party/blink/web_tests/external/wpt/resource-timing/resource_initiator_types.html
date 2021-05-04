@@ -95,8 +95,8 @@ function perform_test() {
     addEntryIfExists(entries, expected_entries, pathname + 'resource_timing_test0.png', 'img');
     addEntryIfExists(entries, expected_entries, pathname + 'resource_timing_test0.png?id=srcset-srcset', 'img');
     addEntryIfExists(entries, expected_entries, pathname + 'resource_timing_test0.png?id=srcset-src', 'img');
-    addEntryIfExists(entries, expected_entries, pathname + 'blank_page_green.htm', 'iframe');
-    addEntryIfExists(entries, expected_entries, pathname + 'blank_page_green.htm?id=frame', 'frame');
+    addEntryIfExists(entries, expected_entries, pathname + 'green.html', 'iframe');
+    addEntryIfExists(entries, expected_entries, pathname + 'green.html?id=frame', 'frame');
     addEntryIfExists(entries, expected_entries, pathname + 'empty_script.js', 'script');
     addEntryIfExists(entries, expected_entries, pathname + 'resource_timing_test0.css?id=embed', 'embed');
     addEntryIfExists(entries, expected_entries, pathname + 'resource_timing_test0.css?id=n1', 'css');
@@ -128,7 +128,7 @@ function perform_test() {
     addEntryIfExists(entries, expected_entries, pathname + 'nested.css', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'nested.css?id=prefetch', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'nested.css?id=preload', 'link');
-    addEntryIfExists(entries, expected_entries, pathname + 'blank_page_green.htm?id=prerender', 'link');
+    addEntryIfExists(entries, expected_entries, pathname + 'green.html?id=prerender', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'manifest.json', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?id=beacon', 'beacon');
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?id=fetch', 'fetch');
@@ -159,6 +159,6 @@ window.on_async_xhr_done = function() {
 <p>This test validates that all of the initiator types are represented.</p>
 <div id="log"></div>
 <iframe id="frameContext" onload="onload_test();" src="resources/all_resource_types.htm" style="width: 250px; height: 250px;"></iframe>
-<iframe id="frameContext2" onload="frameset_onload();" src="resources/green_frame.htm" style="width: 250px; height: 250px;"></iframe>
+<iframe id="frameContext2" onload="frameset_onload();" src="resources/green-frame.html" style="width: 250px; height: 250px;"></iframe>
 </body>
 </html>

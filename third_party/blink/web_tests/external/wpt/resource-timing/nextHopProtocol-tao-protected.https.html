@@ -25,7 +25,7 @@ promise_test(t => {
     const observer = new PerformanceObserver(list => {
       const entries = list.getEntries();
       for (entry of entries) {
-        if (entry.name.includes("blank_page_green.htm")) {
+        if (entry.name.includes("green.html")) {
           observer.disconnect();
           // Observe its performance entry to make sure nextHopProtocol is empty
           if (entry.nextHopProtocol != "") {
@@ -36,7 +36,7 @@ promise_test(t => {
       }
     });
     observer.observe({entryTypes: ["resource"]});
-    addFrame(host_info.HTTPS_REMOTE_ORIGIN + "/resource-timing/resources/blank_page_green.htm");
+    addFrame(host_info.HTTPS_REMOTE_ORIGIN + "/resource-timing/resources/green.html");
   });
 }, "Add TAO-less iframe to remote origin. Make sure nextHopProtocol is the empty string");
 

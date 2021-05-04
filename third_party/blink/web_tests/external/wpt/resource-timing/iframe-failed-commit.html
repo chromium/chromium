@@ -51,7 +51,7 @@ promise_test(t => {
 }, "Same-origin iframe that complies with CSP attribute gets reported");
 
 promise_test(t => {
-  const url = new URL("/resource-timing/resources/green_frame.htm", location.href);
+  const url = new URL("/resource-timing/resources/green-frame.html", location.href);
   return run_test(t, url.toString(), csp_directive);
 }, "Same-origin iframe that doesn't comply with CSP attribute gets reported");
 
@@ -61,7 +61,7 @@ promise_test(t => {
 }, "Cross-origin iframe that complies with CSP attribute gets reported");
 
 promise_test(t => {
-  const url = new URL("/resource-timing/resources/green_frame.htm", REMOTE_ORIGIN);
+  const url = new URL("/resource-timing/resources/green-frame.html", REMOTE_ORIGIN);
   return run_test(t, url.toString(), csp_directive);
 }, "Cross-origin iframe that doesn't comply with CSP attribute gets reported");
 

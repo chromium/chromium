@@ -27,7 +27,7 @@ attribute_test(
   "Verify attributes of a redirected image's PerformanceResourceTiming");
 
 attribute_test(
-  load.iframe, url_prefix + "blank_page_green.html",
+  load.iframe, url_prefix + "green.html",
   invariants.assert_same_origin_redirected_resource,
   "Verify attributes of a redirected iframe's PerformanceResourceTiming");
 
@@ -37,13 +37,13 @@ attribute_test(
   "Verify attributes of a redirected script's PerformanceResourceTiming");
 
 attribute_test(
-  load.xhr_sync, url_prefix + "blank_page_green.htm?id=xhr",
+  load.xhr_sync, url_prefix + "green.html?id=xhr",
   invariants.assert_same_origin_redirected_resource,
   "Verify attributes of a redirected synchronous XMLHttpRequest's " +
   "PerformanceResourceTiming");
 
 attribute_test(
-  load.xhr_sync, https_url_prefix + "blank_page_green.htm?id=xhr",
+  load.xhr_sync, https_url_prefix + "green.html?id=xhr",
   invariants.assert_cross_origin_redirected_resource,
   "Verify attributes of a synchronous XMLHttpRequest's " +
   "PerformanceResourceTiming where the initial HTTP request is redirected " +

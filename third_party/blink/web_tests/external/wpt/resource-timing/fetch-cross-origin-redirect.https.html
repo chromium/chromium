@@ -53,7 +53,7 @@ const run_test = async (t, url, cross_origin) => {
 }
 
 const {REMOTE_ORIGIN, ORIGIN} = get_host_info();
-const redirect = "/common/redirect.py?location=" + "/resource-timing/resources/blank_page_green.htm";
+const redirect = "/common/redirect.py?location=" + "/resource-timing/resources/green.html";
 const cross_origin_redirect = REMOTE_ORIGIN + redirect;
 const same_origin_redirect = ORIGIN + redirect;
 promise_test(t => {
