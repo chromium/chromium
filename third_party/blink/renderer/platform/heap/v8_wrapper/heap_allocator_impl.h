@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/write_barrier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/heap-consistency.h"
 
 namespace blink {
@@ -45,29 +46,34 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T>
   static T* AllocateVectorBacking(size_t size) {
-    return reinterpret_cast<T*>(
+    return HeapVectorBacking<T>::ToArray(
         MakeGarbageCollected<HeapVectorBacking<T>>(size / sizeof(T)));
   }
 
-  static void FreeVectorBacking(void*) {
-    // TODO(1056170): Implement.
+  template <typename T>
+  static void FreeVectorBacking(T* array) {
+    // `array` may be null and freeing a null is valid which allows to avoid
+    // a branch here.
+    HeapVectorBacking<T>::Free(array);
   }
 
-  static bool ExpandVectorBacking(void*, size_t) {
-    // TODO(1056170): Implement.
-    return false;
+  template <typename T>
+  static bool ExpandVectorBacking(T* array, size_t new_size) {
+    DCHECK(array);
+    return HeapVectorBacking<T>::FromArray(array)->Resize(new_size);
   }
 
-  static bool ShrinkVectorBacking(void*, size_t, size_t) {
-    // TODO(1056170): Implement.
-    return false;
+  template <typename T>
+  static bool ShrinkVectorBacking(T* array, size_t, size_t new_size) {
+    DCHECK(array);
+    return HeapVectorBacking<T>::FromArray(array)->Resize(new_size);
   }
 
   template <typename T, typename HashTable>
   static T* AllocateHashTableBacking(size_t size) {
     static_assert(sizeof(T) == sizeof(typename HashTable::ValueType),
                   "T must match ValueType.");
-    return reinterpret_cast<T*>(
+    return HeapHashTableBacking<HashTable>::ToArray(
         MakeGarbageCollected<HeapHashTableBacking<HashTable>>(size /
                                                               sizeof(T)));
   }
@@ -77,13 +83,17 @@ class PLATFORM_EXPORT HeapAllocator {
     return AllocateHashTableBacking<T, HashTable>(size);
   }
 
-  static void FreeHashTableBacking(void*) {
-    // TODO(1056170): Implement.
+  template <typename T, typename HashTable>
+  static void FreeHashTableBacking(T* backing) {
+    // `array` may be null and freeing a null is valid which allows to avoid
+    // a branch here.
+    HeapHashTableBacking<HashTable>::Free(backing);
   }
 
-  static bool ExpandHashTableBacking(void*, size_t) {
-    // TODO(1056170): Implement.
-    return false;
+  template <typename T, typename HashTable>
+  static bool ExpandHashTableBacking(T* array, size_t new_size) {
+    DCHECK(array);
+    return HeapHashTableBacking<HashTable>::FromArray(array)->Resize(new_size);
   }
 
   static bool IsAllocationAllowed() {

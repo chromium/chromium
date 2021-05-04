@@ -1760,7 +1760,7 @@ void HashTable<Key,
       }
     }
   }
-  Allocator::FreeHashTableBacking(table);
+  Allocator::template FreeHashTableBacking<ValueType, HashTable>(table);
 }
 
 template <typename Key,
@@ -1799,8 +1799,9 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   success = false;
   DCHECK_LT(table_size_, new_table_size);
   CHECK(Allocator::IsAllocationAllowed());
-  if (!Allocator::ExpandHashTableBacking(table_,
-                                         new_table_size * sizeof(ValueType)))
+  if (!table_ ||
+      !Allocator::template ExpandHashTableBacking<ValueType, HashTable>(
+          table_, new_table_size * sizeof(ValueType)))
     return nullptr;
 
   success = true;

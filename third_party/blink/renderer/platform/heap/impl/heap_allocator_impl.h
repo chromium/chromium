@@ -65,8 +65,14 @@ class PLATFORM_EXPORT HeapAllocator {
   static T* AllocateZeroedHashTableBacking(size_t size) {
     return AllocateHashTableBacking<T, HashTable>(size);
   }
-  static void FreeHashTableBacking(void* address);
-  static bool ExpandHashTableBacking(void*, size_t);
+  template <typename T, typename HashTable>
+  static void FreeHashTableBacking(void* address) {
+    BackingFree(address);
+  }
+  template <typename T, typename HashTable>
+  static bool ExpandHashTableBacking(T* address, size_t new_size) {
+    return BackingExpand(address, new_size);
+  }
 
   template <typename Traits>
   static bool CanReuseHashTableDeletedBucket() {

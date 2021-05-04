@@ -14,7 +14,9 @@
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/custom-space.h"
+#include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/object-size-trait.h"
 #include "v8/include/cppgc/trace-trait.h"
 #include "v8/include/cppgc/visitor.h"
@@ -33,9 +35,37 @@ class HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>>,
       public WTF::ConditionalDestructor<HeapVectorBacking<T, Traits>,
                                         !Traits::kNeedsDestruction> {
+  using ClassType = HeapVectorBacking<T, Traits>;
+
  public:
+  static T* ToArray(ClassType* backing) {
+    return reinterpret_cast<T*>(backing);
+  }
+
+  static ClassType* FromArray(T* payload) {
+    return reinterpret_cast<ClassType*>(payload);
+  }
+
+  static void Free(T* array) {
+    // `array` is allowed to be null.
+    cppgc::subtle::FreeUnreferencedObject(FromArray(array));
+  }
+
+  bool Resize(size_t new_size) {
+    return cppgc::subtle::Resize(*this, GetAdditionalBytes(new_size));
+  }
+
   // Conditionally invoked via destructor.
   void Finalize();
+
+ private:
+  static cppgc::AdditionalBytes GetAdditionalBytes(size_t wanted_array_size) {
+    // HVB is an empty class that's purely used with inline storage. Since its
+    // sizeof(HVB) == 1, we need to subtract its size to avoid wasting storage.
+    static_assert(sizeof(ClassType) == 1, "Class declaration changed");
+    DCHECK_GE(wanted_array_size, sizeof(ClassType));
+    return cppgc::AdditionalBytes{wanted_array_size - sizeof(ClassType)};
+  }
 };
 
 template <typename T, typename Traits>

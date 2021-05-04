@@ -31,13 +31,17 @@ class WTF_EXPORT PartitionAllocator {
     CHECK_LE(count, MaxElementCountInBackingStore<T>());
     return WTF::Partitions::BufferPotentialCapacity(count * sizeof(T));
   }
+
   template <typename T>
   static T* AllocateVectorBacking(size_t size) {
     return reinterpret_cast<T*>(
         AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T)));
   }
-  static void FreeVectorBacking(void* address);
+
+  static void FreeVectorBacking(void* address) { FreeBacking(address); }
+
   static inline bool ExpandVectorBacking(void*, size_t) { return false; }
+
   static inline bool ShrinkVectorBacking(void* address,
                                          size_t quantized_current_size,
                                          size_t quantized_shrunk_size) {
@@ -51,13 +55,18 @@ class WTF_EXPORT PartitionAllocator {
     return reinterpret_cast<T*>(
         AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T)));
   }
+
   template <typename T, typename HashTable>
   static T* AllocateZeroedHashTableBacking(size_t size) {
     void* result = AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T));
     memset(result, 0, size);
     return reinterpret_cast<T*>(result);
   }
-  static void FreeHashTableBacking(void* address);
+
+  template <typename T, typename HashTable>
+  static void FreeHashTableBacking(void* address) {
+    FreeBacking(address);
+  }
 
   template <typename Return, typename Metadata>
   static Return Malloc(size_t size, const char* type_name) {
@@ -65,7 +74,10 @@ class WTF_EXPORT PartitionAllocator {
         WTF::Partitions::FastMalloc(size, type_name));
   }
 
-  static inline bool ExpandHashTableBacking(void*, size_t) { return false; }
+  template <typename T, typename HashTable>
+  static inline bool ExpandHashTableBacking(void*, size_t) {
+    return false;
+  }
   template <typename Traits>
   static inline bool CanReuseHashTableDeletedBucket() {
     return true;
@@ -99,6 +111,7 @@ class WTF_EXPORT PartitionAllocator {
 
  private:
   static void* AllocateBacking(size_t, const char* type_name);
+  static void FreeBacking(void*);
 };
 
 // Specializations for heap profiling, so type profiling of |char| is possible

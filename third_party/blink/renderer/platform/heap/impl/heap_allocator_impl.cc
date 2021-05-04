@@ -63,10 +63,6 @@ void HeapAllocator::FreeVectorBacking(void* address) {
   BackingFree(address);
 }
 
-void HeapAllocator::FreeHashTableBacking(void* address) {
-  BackingFree(address);
-}
-
 bool HeapAllocator::BackingExpand(void* address, size_t new_size) {
   if (!address)
     return false;
@@ -92,10 +88,6 @@ bool HeapAllocator::BackingExpand(void* address, size_t new_size) {
 }
 
 bool HeapAllocator::ExpandVectorBacking(void* address, size_t new_size) {
-  return BackingExpand(address, new_size);
-}
-
-bool HeapAllocator::ExpandHashTableBacking(void* address, size_t new_size) {
   return BackingExpand(address, new_size);
 }
 
