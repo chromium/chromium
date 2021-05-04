@@ -158,6 +158,15 @@ void AdAuctionServiceImpl::CreateMojoService(
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                                         RunAdAuctionCallback callback) {
+  const url::Origin frame_origin = origin();
+  // If the interest group API is not allowed for this seller do nothing.
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          render_frame_host()->GetBrowserContext(), frame_origin,
+          config->seller.GetURL())) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
   // The seller origin has to match the `decision_logic_url` origin.
   if (config->seller.scheme() != url::kHttpsScheme ||
       !config->decision_logic_url.SchemeIs(url::kHttpsScheme) ||
@@ -173,7 +182,21 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   }
   DCHECK(config->interest_group_buyers->is_buyers());
   auto buyers = config->interest_group_buyers->get_buyers();
-  GetInterestGroupsFromStorage(std::move(config), buyers, std::move(callback));
+
+  std::vector<url::Origin> trimmed_buyers;
+  std::copy_if(
+      buyers.begin(), buyers.end(), std::back_inserter(trimmed_buyers),
+      [this, &frame_origin](const url::Origin& buyer) {
+        return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+            render_frame_host()->GetBrowserContext(), frame_origin,
+            buyer.GetURL());
+      });
+  if (trimmed_buyers.size() == 0) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  GetInterestGroupsFromStorage(std::move(config), trimmed_buyers,
+                               std::move(callback));
 }
 
 InterestGroupManager* AdAuctionServiceImpl::GetInterestGroupManager() {

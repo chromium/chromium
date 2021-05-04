@@ -8,19 +8,21 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/interest_group/interest_group_service_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,6 +31,7 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -48,10 +51,37 @@ namespace content {
 
 namespace {
 
+class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
+ public:
+  explicit AllowlistedOriginContentBrowserClient() = default;
+
+  void SetAllowList(base::flat_set<url::Origin>&& allow_list) {
+    allow_list_ = allow_list;
+  }
+
+  // ContentBrowserClient overrides:
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 const url::Origin& top_frame_origin,
+                                 const GURL& api_url) override {
+    return allow_list_.contains(top_frame_origin) &&
+           allow_list_.contains(url::Origin::Create(api_url));
+  }
+
+ private:
+  base::flat_set<url::Origin> allow_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(AllowlistedOriginContentBrowserClient);
+};
+
 class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kFledgeInterestGroups);
+  }
+
+  ~InterestGroupBrowserTest() override {
+    if (old_content_browser_client_)
+      SetBrowserClientForTesting(old_content_browser_client_);
   }
 
   void SetUpOnMainThread() override {
@@ -71,6 +101,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                    BrowserContext::GetDefaultStoragePartition(
                        shell()->web_contents()->GetBrowserContext()))
                    ->GetInterestGroupStorage();
+    content_browser_client_.SetAllowList(
+        {url::Origin::Create(https_server_->GetURL("a.test", "/echo")),
+         url::Origin::Create(https_server_->GetURL("b.test", "/echo"))});
+    old_content_browser_client_ =
+        SetBrowserClientForTesting(&content_browser_client_);
   }
 
   bool JoinInterestGroupInJS(url::Origin owner,
@@ -264,6 +299,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
+  AllowlistedOriginContentBrowserClient content_browser_client_;
+  ContentBrowserClient* old_content_browser_client_;
   InterestGroupManager* storage_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
@@ -325,10 +362,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* user_bidding_signals = */ base::nullopt,
       /* ads = */ base::nullopt)));
 
+  // This join should silently fail since d.test is not allowlisted for the API
+  GURL test_url_d = https_server_->GetURL("d.test", "/echo");
+  url::Origin test_origin_d = url::Origin::Create(test_url_d);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
+  EXPECT_TRUE(JoinInterestGroupInJS(test_origin_d, "toys"));
+
   // Another successful join.
   GURL test_url_b = https_server_->GetURL("b.test", "/echo");
   url::Origin test_origin_b = url::Origin::Create(test_url_b);
-
   ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
   EXPECT_TRUE(JoinInterestGroupAndWait(test_origin_b, "trucks"));
 
@@ -337,28 +379,46 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   std::vector<std::pair<url::Origin, std::string>> expected_groups = {
       {test_origin_a, "cars"}, {test_origin_b, "trucks"}};
   std::vector<std::pair<url::Origin, std::string>> received_groups;
-
   received_groups = GetAllInterestGroups();
   EXPECT_THAT(received_groups,
               testing::UnorderedElementsAreArray(expected_groups));
 
   // Now test leaving
-  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+  // Test that we can't leave an interest group from a site not allowedlisted
+  // for the API.
+  // Inject an interest group into the DB for that for that site so we can try
+  // to remove it.
+  storage_->JoinInterestGroup(blink::mojom::InterestGroup::New(
+      /* expiry */ base::Time::Now() + base::TimeDelta::FromSeconds(300),
+      /* owner= */ test_origin_d,
+      /* name = */ "candy",
+      /* bidding_url = */ base::nullopt,
+      /* update_url  = */ base::nullopt,
+      /* trusted_bidding_signals_url = */ base::nullopt,
+      /* trusted_bidding_signals_keys = */ base::nullopt,
+      /* user_bidding_signals = */ base::nullopt,
+      /* ads = */ base::nullopt));
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
+  // This leave should do nothing because origin_d is not allowed by privacy
+  // sandbox.
+  EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_d, "candy"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
+  // This leave should do nothing because there is not interest group of that
+  // name.
+  EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_b, "cars"));
 
   // This leave should silently fail because it is cross-origin
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
   EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_b, "trucks"));
 
   // This leave should succeed.
   EXPECT_TRUE(LeaveInterestGroupAndWait(test_origin_a, "cars"));
 
-  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
-  // This leave should do nothing because there is not interest group of that
-  // name.
-  EXPECT_TRUE(LeaveInterestGroupAndWait(test_origin_b, "cars"));
-
-  // We expect that only test_origin_b's interest group remains.
-  expected_groups = {{test_origin_b, "trucks"}};
-
+  // We expect that test_origin_b and the (injected) test_origin_d's interest
+  // groups remain.
+  expected_groups = {{test_origin_b, "trucks"}, {test_origin_d, "candy"}};
   received_groups = GetAllInterestGroups();
   EXPECT_THAT(received_groups,
               testing::UnorderedElementsAreArray(expected_groups));
@@ -426,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionFull) {
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionStarInterestGroupBuyers) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
     seller: 'https://test.com',
@@ -746,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionNoInterestGroupBuyersField) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
@@ -756,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionNoInterestGroupBuyers) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
@@ -877,6 +937,127 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           test_url.GetOrigin().spec(),
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
               .spec())));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionPrivacySandboxDisabled) {
+  // Successful join at a.test
+  GURL test_url_a = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+  std::string ads =
+      "[{renderUrl : 'https://example.com/render',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
+  EXPECT_TRUE(JoinInterestGroupAndWait(
+      blink::mojom::InterestGroup::New(
+          /* expiry */ base::Time(),
+          /* owner= */ url::Origin::Create(test_url_a),
+          /* name = */ "cars",
+          /* bidding_url = */
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /* update_url  = */ base::nullopt,
+          /* trusted_bidding_signals_url = */
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
+          /* ads = */ base::nullopt),
+      ads, "['key1']"));
+
+  GURL test_url_d = https_server_->GetURL("d.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
+
+  // Auction should not be run since d.test has the API disabled.
+  EXPECT_EQ(
+      nullptr,
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$3: {even: 'more', x: 4.5}}
+  })",
+          test_url_d.GetOrigin(),
+          https_server_->GetURL("d.test", "/interest_group/decision_logic.js"),
+          test_url_a.GetOrigin())));
+
+  // No requests should have been made for the interest group or auction URLs.
+  base::AutoLock auto_lock(requests_lock_);
+  EXPECT_FALSE(base::Contains(
+      received_https_test_server_requests_,
+      https_server_->GetURL("/interest_group/bidding_logic.js")));
+  EXPECT_FALSE(base::Contains(
+      received_https_test_server_requests_,
+      https_server_->GetURL("/interest_group/trusted_bidding_signals.json")));
+  EXPECT_FALSE(base::Contains(
+      received_https_test_server_requests_,
+      https_server_->GetURL("/interest_group/decision_logic.js")));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionDisabledInterestGroup) {
+  // Inject an interest group into the DB for that for a disabled site so we can
+  // try to remove it.
+  GURL disabled_domain = https_server_->GetURL("d.test", "/");
+  blink::mojom::InterestGroupPtr disabled_group =
+      blink::mojom::InterestGroup::New();
+  disabled_group->expiry =
+      base::Time::Now() + base::TimeDelta::FromSeconds(300);
+  disabled_group->owner = url::Origin::Create(disabled_domain);
+  disabled_group->name = "candy";
+  disabled_group->bidding_url = https_server_->GetURL(
+      disabled_domain.host(),
+      "/interest_group/bidding_logic_stop_bidding_after_win.js");
+  disabled_group->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
+  disabled_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
+      GURL("https://stop_bidding_after_win.com/render"), base::nullopt));
+  storage_->JoinInterestGroup(std::move(disabled_group));
+  ASSERT_EQ(1, GetJoinCount(url::Origin::Create(disabled_domain), "candy"));
+
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  std::string ads =
+      "[{renderUrl : 'https://example.com/render',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
+  EXPECT_TRUE(JoinInterestGroupAndWait(
+      blink::mojom::InterestGroup::New(
+          /* expiry */ base::Time(),
+          /* owner= */ url::Origin::Create(test_url.GetOrigin()),
+          /* name = */ "cars",
+          /* bidding_url = */
+          https_server_->GetURL(test_url.host(),
+                                "/interest_group/bidding_logic.js"),
+          /* update_url  = */ base::nullopt,
+          /* trusted_bidding_signals_url = */
+          https_server_->GetURL(test_url.host(),
+                                "/interest_group/trusted_bidding_signals.json"),
+          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
+          /* ads = */ base::nullopt),
+      ads, "['key1']"));
+
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1, $3],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+  })",
+                test_url.GetOrigin(),
+                https_server_->GetURL(test_url.host(),
+                                      "/interest_group/decision_logic.js"),
+                disabled_domain.GetOrigin())));
+  // No requests should have been made for the disabled interest group's URLs.
+  base::AutoLock auto_lock(requests_lock_);
+  EXPECT_FALSE(base::Contains(
+      received_https_test_server_requests_,
+      https_server_->GetURL(
+          "/interest_group/bidding_logic_stop_bidding_after_win.js")));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {

@@ -2777,6 +2777,18 @@ std::string ChromeContentBrowserClient::GetWebBluetoothBlocklist() {
                                             "blocklist_additions");
 }
 
+bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const GURL& api_url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PrivacySandboxSettings* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+
+  return privacy_sandbox_settings &&
+         privacy_sandbox_settings->IsFledgeAllowed(top_frame_origin, api_url);
+}
+
 bool ChromeContentBrowserClient::IsConversionMeasurementAllowed(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);

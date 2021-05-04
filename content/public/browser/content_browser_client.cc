@@ -439,6 +439,13 @@ std::string ContentBrowserClient::GetWebBluetoothBlocklist() {
   return std::string();
 }
 
+bool ContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const GURL& api_url) {
+  return false;
+}
+
 bool ContentBrowserClient::IsConversionMeasurementAllowed(
     content::BrowserContext* browser_context) {
   return true;

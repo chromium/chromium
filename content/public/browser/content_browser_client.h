@@ -761,6 +761,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "1812:e, 00001800-0000-1000-8000-00805f9b34fb:w, ignored:1, alsoignored."
   virtual std::string GetWebBluetoothBlocklist();
 
+  // Returns whether the interest group API is allowed anywhere in
+  // |browser_context|. Returns false if the interest group API is not allowed
+  // by default on any origin.
+  virtual bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const GURL& api_url);
+
   // Returns whether conversion measurement is allowed anywhere in
   // |browser_context|. Returns false if Conversion Measurement is not allowed
   // by default on any origin.

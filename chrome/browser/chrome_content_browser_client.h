@@ -273,6 +273,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   std::string GetWebBluetoothBlocklist() override;
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 const url::Origin& top_frame_origin,
+                                 const GURL& api_url) override;
   bool IsConversionMeasurementAllowed(
       content::BrowserContext* browser_context) override;
   bool IsConversionMeasurementOperationAllowed(
