@@ -1,5 +1,6 @@
 #include <zxcvbn/frequency_lists.hpp>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
