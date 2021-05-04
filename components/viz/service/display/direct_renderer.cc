@@ -798,6 +798,9 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   const AggregatedRenderPass* root_render_pass =
       current_frame()->root_render_pass;
   gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
+  // If |frame_buffer_damage|, which is carried over from the previous frame
+  // when we want to preserve buffer content, is not empty, we should add it
+  // to both root and non-root render passes.
   gfx::Rect frame_buffer_damage =
       output_surface_->GetCurrentFramebufferDamage();
 
@@ -879,13 +882,18 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
 
+  // For the non-root render pass.
   gfx::Rect damage_rect = render_pass->damage_rect;
-  gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
-  if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
-    gfx::Rect frame_buffer_damage_in_render_space =
-        cc::MathUtil::MapEnclosingClippedRect(inverse_transform,
-                                              frame_buffer_damage);
-    damage_rect.Union(frame_buffer_damage_in_render_space);
+  if (!frame_buffer_damage.IsEmpty()) {
+    gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+    if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
+      // |frame_buffer_damage| is in the root target space. Transform the damage
+      // from the root to the non-root space before it's added.
+      gfx::Rect frame_buffer_damage_in_render_pass_space =
+          cc::MathUtil::MapEnclosingClippedRect(inverse_transform,
+                                                frame_buffer_damage);
+      damage_rect.Union(frame_buffer_damage_in_render_pass_space);
+    }
   }
 
   return damage_rect;
