@@ -1454,7 +1454,7 @@ ci.chromium_builder(
         short_name = "off",
     ),
     cores = 32,
-    os = os.LINUX_BIONIC_REMOVE,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     tree_closing = False,
 
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
@@ -1516,7 +1516,7 @@ ci.chromium_builder(
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_BIONIC_REMOVE,
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     tree_closing = False,
 )
 
