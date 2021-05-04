@@ -1108,6 +1108,8 @@ suite('input page', () => {
     //     spell check language" behaviour when the user has no spell check
     //     languages.
 
+    // TODO(crbug.com/1201540): Add a test for the shortcut reminder.
+
     test('error handling', () => {
       // Enable Swahili so we have two languages for testing.
       languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);

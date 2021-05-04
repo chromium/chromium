@@ -310,6 +310,10 @@ void Preferences::RegisterProfilePrefs(
       chromeos::prefs::kEmojiSuggestionEnterpriseAllowed, true);
   registry->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
+  registry->RegisterBooleanPref(prefs::kLastUsedImeShortcutReminderDismissed,
+                                false);
+  registry->RegisterBooleanPref(prefs::kNextImeShortcutReminderDismissed,
+                                false);
 
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapSearchKeyTo,

@@ -342,6 +342,12 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_DELETE_DICTIONARY_WORD_TOOLTIP},
       {"noDictionaryWordsLabel",
        IDS_OS_SETTINGS_LANGUAGES_NO_DICTIONARY_WORDS_LABEL},
+      {"imeShortcutReminderTitle",
+       IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_TITLE},
+      {"imeShortcutReminderLastUsed",
+       IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION},
+      {"imeShortcutReminderNext",
+       IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

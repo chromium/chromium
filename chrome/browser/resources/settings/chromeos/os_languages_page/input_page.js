@@ -80,6 +80,38 @@ Polymer({
         return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
       },
     },
+
+    /**
+     * Whether the shortcut reminder for the last used IME is currently showing.
+     * @private
+     */
+    showLastUsedIMEShortcutReminder_: {
+      type: Boolean,
+      computed: `shouldShowLastUsedIMEShortcutReminder_(
+          languages.inputMethods.enabled.length,
+          prefs.ash.shortcut_reminders.last_used_ime_dismissed.value)`,
+    },
+
+    /**
+     * Whether the shortcut reminder for the next IME is currently showing.
+     * @private
+     */
+    showNextIMEShortcutReminder_: {
+      type: Boolean,
+      computed: `shouldShowNextIMEShortcutReminder_(
+          languages.inputMethods.enabled.length,
+          prefs.ash.shortcut_reminders.next_ime_dismissed.value)`,
+    },
+
+    /**
+     * The body of the currently showing shortcut reminders.
+     * @private {!Array<string>}
+     */
+    shortcutReminderBody_: {
+      type: Array,
+      computed: `getShortcutReminderBody_(showLastUsedIMEShortcutReminder_,
+          showNextIMEShortcutReminder_)`,
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -509,5 +541,65 @@ Polymer({
    */
   isCollapseOpened_(update2Enabled, spellCheckOn) {
     return !update2Enabled || spellCheckOn;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowLastUsedIMEShortcutReminder_() {
+    // User has already dismissed the shortcut reminder.
+    if (this.getPref('ash.shortcut_reminders.last_used_ime_dismissed').value) {
+      return false;
+    }
+    // Need at least 2 input methods to be shown the reminder.
+    return !!this.languages && this.languages.inputMethods.enabled.length >= 2;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNextIMEShortcutReminder_() {
+    // User has already dismissed the shortcut reminder.
+    if (this.getPref('ash.shortcut_reminders.next_ime_dismissed').value) {
+      return false;
+    }
+    // Need at least 3 input methods to be shown the reminder.
+    return !!this.languages && this.languages.inputMethods.enabled.length >= 3;
+  },
+
+  /**
+   * @return {!Array<string>}
+   * @private
+   */
+  getShortcutReminderBody_() {
+    const /** !Array<string> */ reminderBody = [];
+    if (this.showLastUsedIMEShortcutReminder_) {
+      reminderBody.push(this.i18nAdvanced('imeShortcutReminderLastUsed'));
+    }
+    if (this.showNextIMEShortcutReminder_) {
+      reminderBody.push(this.i18nAdvanced('imeShortcutReminderNext'));
+    }
+    return reminderBody;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowShortcutReminder_() {
+    return this.languageSettingsV2Update2Enabled_ &&
+        this.shortcutReminderBody_ && this.shortcutReminderBody_.length > 0;
+  },
+
+  /** @private */
+  onShortcutReminderDismiss_() {
+    if (this.showLastUsedIMEShortcutReminder_) {
+      this.setPrefValue('ash.shortcut_reminders.last_used_ime_dismissed', true);
+    }
+    if (this.showNextIMEShortcutReminder_) {
+      this.setPrefValue('ash.shortcut_reminders.next_ime_dismissed', true);
+    }
   },
 });

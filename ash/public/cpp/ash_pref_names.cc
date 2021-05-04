@@ -625,6 +625,13 @@ const char kGlobalMediaControlsPinned[] =
 const char kPciePeripheralDisplayNotificationRemaining[] =
     "ash.pcie_peripheral_display_notification_remaining";
 
+// Boolean prefs storing whether various IME-related keyboard shortcut reminders
+// have previously been dismissed or not.
+const char kLastUsedImeShortcutReminderDismissed[] =
+    "ash.shortcut_reminders.last_used_ime_dismissed";
+const char kNextImeShortcutReminderDismissed[] =
+    "ash.shortcut_reminders.next_ime_dismissed";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

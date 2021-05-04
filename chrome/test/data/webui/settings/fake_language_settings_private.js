@@ -586,6 +586,16 @@ export function getFakeLanguagePrefs() {
       type: chrome.settingsPrivate.PrefType.LIST,
       value: [],
     });
+    fakePrefs.push({
+      key: 'ash.shortcut_reminders.last_used_ime_dismissed',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
+    fakePrefs.push({
+      key: 'ash.shortcut_reminders.next_ime_dismissed',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
   }
   return fakePrefs;
 }

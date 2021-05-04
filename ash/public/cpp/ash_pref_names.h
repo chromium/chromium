@@ -231,6 +231,9 @@ ASH_PUBLIC_EXPORT extern const char kGlobalMediaControlsPinned[];
 ASH_PUBLIC_EXPORT extern const char
     kPciePeripheralDisplayNotificationRemaining[];
 
+ASH_PUBLIC_EXPORT extern const char kLastUsedImeShortcutReminderDismissed[];
+ASH_PUBLIC_EXPORT extern const char kNextImeShortcutReminderDismissed[];
+
 }  // namespace prefs
 
 }  // namespace ash
