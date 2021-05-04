@@ -1070,6 +1070,61 @@ TEST_F(ShelfLayoutManagerTest, OpenAppListWithShelfHiddenState) {
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 }
 
+// Test that in tablet mode with auto hide enabled, opening a tray bubble while
+// closing another keeps the hotseat hidden.
+TEST_F(ShelfLayoutManagerTest, HotseatExtendingWhileClosingTrayBubble) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  Shelf* shelf = GetPrimaryShelf();
+  StatusAreaWidget* status_area = shelf->status_area_widget();
+  status_area->ime_menu_tray()->SetVisiblePreferred(true);
+
+  // Set the shelf to be auto hidden.
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Create a widget. The shelf and hotseat should become hidden.
+  CreateTestWidget()->GetNativeWindow();
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+
+  // Swipe up to show the auto-hide shelf, and extend the hotseat.
+  SwipeUpOnShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+
+  // Tap on the ime menu tray button, to show a tray bubble. The shelf
+  // should be showing, but the hotseat should be hidden.
+  EXPECT_FALSE(status_area->ime_menu_tray()->GetBubbleView());
+  generator->GestureTapAt(
+      status_area->ime_menu_tray()->GetBoundsInScreen().CenterPoint());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(status_area->ime_menu_tray()->GetBubbleView());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+
+  // Tap on the unified system tray to open its bubble and close the ime menu
+  // bubble. The hotseat should remain in the hidden state.
+  EXPECT_FALSE(status_area->IsMessageBubbleShown());
+  generator->GestureTapAt(
+      status_area->unified_system_tray()->GetBoundsInScreen().CenterPoint());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(status_area->IsMessageBubbleShown());
+  EXPECT_FALSE(status_area->ime_menu_tray()->GetBubbleView());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+
+  // Check that the status bubble and shelf are hidden after tapping on the
+  // in-app shelf.
+  generator->GestureTapAt(
+      GetShelfWidget()->GetVisibleShelfBounds().CenterPoint());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(status_area->IsMessageBubbleShown());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+}
+
 // With a fullscreen window, ensure the hidden shelf is shown temporarily when
 // the app list is shown and when tray bubbles are shown. Ensure that the shelf
 // is hidden again once tray bubbles are closed.

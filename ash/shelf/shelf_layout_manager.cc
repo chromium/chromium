@@ -665,6 +665,14 @@ void ShelfLayoutManager::ProcessGestureEventOfAutoHideShelf(
       UpdateAutoHideState();
     }
 
+    // When hotseat is hidden and in app shelf is shown, then a tap on the
+    // shelf should hide it.
+    if (is_shelf_window && !IsStatusAreaWindow(target) &&
+        hotseat_state() == HotseatState::kHidden &&
+        ShelfConfig::Get()->is_in_app()) {
+      UpdateAutoHideState();
+    }
+
     // Complete gesture drag when Shelf is visible in auto-hide mode. It is
     // called when swiping Shelf up to show.
     if (is_shelf_window && !IsStatusAreaWindow(target) &&
@@ -1344,12 +1352,9 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       if (state_forced_by_back_gesture_)
         return HotseatState::kExtended;
 
-      if (visibility_state == SHELF_AUTO_HIDE) {
-        if (auto_hide_state == SHELF_AUTO_HIDE_HIDDEN || should_hide_hotseat_)
-          return HotseatState::kHidden;
+      if (visibility_state == SHELF_AUTO_HIDE)
+        return HotseatState::kHidden;
 
-        return HotseatState::kExtended;
-      }
       if (shelf_->hotseat_widget()->is_manually_extended() &&
           !should_hide_hotseat_) {
         return HotseatState::kExtended;
