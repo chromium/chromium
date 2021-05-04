@@ -33,6 +33,7 @@
 #include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -234,13 +235,18 @@ void WebEngineBrowserMainParts::HandleContextRequest(
     browser_context = WebEngineBrowserContext::CreatePersistent(
         base::FilePath(base::kPersistedDataDirectoryPath));
   }
+  auto context_impl = std::make_unique<ContextImpl>(std::move(browser_context),
+                                                    devtools_controller_.get());
+
+  // If this web instance should allow CastStreaming then enable it in this
+  // ContextImpl. CastStreaming will not be available in FrameHost contexts.
+  if (IsCastStreamingEnabled())
+    context_impl->SetCastStreamingEnabled();
 
   // Create the fuchsia.web.Context implementation using the BrowserContext and
   // configure it to terminate the process when the client goes away.
   context_bindings_.AddBinding(
-      std::make_unique<ContextImpl>(std::move(browser_context),
-                                    devtools_controller_.get()),
-      std::move(request), /* dispatcher */ nullptr,
+      std::move(context_impl), std::move(request), /* dispatcher */ nullptr,
       // Quit the browser main loop when the Context connection is
       // dropped.
       [this](zx_status_t status) {

@@ -32,9 +32,6 @@ ContextImpl::ContextImpl(
   DCHECK(browser_context_);
   DCHECK(devtools_controller_);
   devtools_controller_->OnContextCreated();
-
-  cast_streaming::SetNetworkContextGetter(base::BindRepeating(
-      &ContextImpl::GetNetworkContext, base::Unretained(this)));
 }
 
 ContextImpl::~ContextImpl() {
@@ -49,6 +46,12 @@ void ContextImpl::DestroyFrame(FrameImpl* frame) {
 
 bool ContextImpl::IsJavaScriptInjectionAllowed() {
   return allow_javascript_injection_;
+}
+
+void ContextImpl::SetCastStreamingEnabled() {
+  cast_streaming_enabled_ = true;
+  cast_streaming::SetNetworkContextGetter(base::BindRepeating(
+      &ContextImpl::GetNetworkContext, base::Unretained(this)));
 }
 
 void ContextImpl::CreateFrame(

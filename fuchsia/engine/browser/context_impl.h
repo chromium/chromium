@@ -63,6 +63,11 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
     return devtools_controller_;
   }
 
+  // Controls whether the CastStreaming receiver is available in this instance.
+  // At most one ContextImpl per-process may have CastStreaming enabled.
+  void SetCastStreamingEnabled();
+  bool has_cast_streaming_enabled() const { return cast_streaming_enabled_; }
+
   // fuchsia::web::Context implementation.
   void CreateFrame(fidl::InterfaceRequest<fuchsia::web::Frame> frame) final;
   void CreateFrameWithParams(
@@ -97,6 +102,9 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   // TODO(crbug.com/893236): Make this false by default, and allow it to be
   // initialized at Context creation time.
   bool allow_javascript_injection_ = true;
+
+  // True if this instance should allows Frames to use CastStreaming.
+  bool cast_streaming_enabled_ = false;
 
   // Tracks all active FrameImpl instances, so that we can request their
   // destruction when this ContextImpl is destroyed.

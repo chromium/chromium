@@ -533,7 +533,7 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
     std::string* origin,
     fuchsia::web::WebMessage* message,
     PostMessageCallback* callback) {
-  if (!IsCastStreamingEnabled())
+  if (!context_->has_cast_streaming_enabled())
     return false;
 
   if (!IsCastStreamingAppOrigin(*origin))
@@ -558,7 +558,8 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
 
 void FrameImpl::MaybeStartCastStreaming(
     content::NavigationHandle* navigation_handle) {
-  if (!IsCastStreamingEnabled() || !cast_streaming_session_client_)
+  if (!context_->has_cast_streaming_enabled() ||
+      !cast_streaming_session_client_)
     return;
 
   mojo::AssociatedRemote<mojom::CastStreamingReceiver> cast_streaming_receiver;
