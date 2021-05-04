@@ -328,14 +328,6 @@ const int kMainIntentCheckDelay = 1;
   }
 }
 
-#pragma mark Downloading Data in the Background
-
-- (void)application:(UIApplication*)application
-    handleEventsForBackgroundURLSession:(NSString*)identifier
-                      completionHandler:(void (^)(void))completionHandler {
-  completionHandler();
-}
-
 #pragma mark Continuing User Activity and Handling Quick Actions
 
 - (BOOL)application:(UIApplication*)application
