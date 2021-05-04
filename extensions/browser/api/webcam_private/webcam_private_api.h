@@ -34,7 +34,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   bool OpenSerialWebcam(
       const std::string& extension_id,
       const std::string& device_path,
-      const base::Callback<void(const std::string&, bool)>& callback);
+      const base::RepeatingCallback<void(const std::string&, bool)>& callback);
   bool CloseWebcam(const std::string& extension_id,
                    const std::string& device_id);
 
@@ -45,7 +45,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
       const std::string& extension_id,
       const std::string& device_path,
       scoped_refptr<Webcam> webcam,
-      const base::Callback<void(const std::string&, bool)>& callback,
+      const base::RepeatingCallback<void(const std::string&, bool)>& callback,
       bool success);
 
   // Note: This function does not work for serial devices. Do not use this
