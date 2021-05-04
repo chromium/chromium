@@ -3616,12 +3616,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          offline_pages::kOfflinePagesInDownloadHomeOpenInCctFeature)},
-    {"offline-pages-alternate-dino-page",
-     flag_descriptions::kOfflinePagesShowAlternateDinoPageName,
-     flag_descriptions::kOfflinePagesShowAlternateDinoPageDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesShowAlternateDinoPageFeature)},
     {"offline-indicator-choice", flag_descriptions::kOfflineIndicatorChoiceName,
      flag_descriptions::kOfflineIndicatorChoiceDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(offline_pages::kOfflineIndicatorFeature,

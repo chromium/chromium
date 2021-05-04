@@ -20,7 +20,6 @@ extern const base::Feature kOfflinePagesDescriptivePendingStatusFeature;
 extern const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature;
 extern const base::Feature kOfflinePagesDescriptiveFailStatusFeature;
 extern const base::Feature kOfflinePagesCTSuppressNotificationsFeature;
-extern const base::Feature kOfflinePagesShowAlternateDinoPageFeature;
 extern const base::Feature kOfflineIndicatorFeature;
 extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
 extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
