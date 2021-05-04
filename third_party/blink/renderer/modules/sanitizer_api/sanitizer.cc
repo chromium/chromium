@@ -235,6 +235,11 @@ DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
       node = DropElement(node, fragment);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
+    } else if (!node->IsHTMLElement()) {
+      // Presently unspec-ed: If |node| is in a non-HTML namespace: Drop.
+      node = DropElement(node, fragment);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else if (drop_elements_.Contains(name)) {
       // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
       node = DropElement(node, fragment);
