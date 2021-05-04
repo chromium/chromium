@@ -41,9 +41,11 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
   auto* strategy = CountQueuingStrategy::Create(script_state, init);
   ScriptValue strategy_value = ScriptValue::From(script_state, strategy);
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "FileSystemWritableFileStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   stream->InitInternal(script_state, underlying_sink_value, strategy_value,
                        exception_state);
 
