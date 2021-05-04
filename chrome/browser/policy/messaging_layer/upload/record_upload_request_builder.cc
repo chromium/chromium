@@ -43,8 +43,6 @@ constexpr char kPublicKeyId[] = "publicKeyId";
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
     bool attach_encryption_settings) {
   result_ = base::Value{base::Value::Type::DICTIONARY};
-  result_.value().SetKey(GetEncryptedRecordListPath(),
-                         base::Value{base::Value::Type::LIST});
   if (attach_encryption_settings) {
     result_.value().SetBoolKey(GetAttachEncryptionSettingsPath(), true);
   }
@@ -60,9 +58,13 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
     // Some errors were already detected.
     return *this;
   }
-  base::Value* const records_list =
+  base::Value* records_list =
       result_.value().FindListKey(GetEncryptedRecordListPath());
-  if (!records_list || !records_list->is_list()) {
+  if (!records_list) {
+    records_list = result_.value().SetKey(GetEncryptedRecordListPath(),
+                                          base::Value{base::Value::Type::LIST});
+  }
+  if (!records_list->is_list()) {
     NOTREACHED();  // Should not happen.
     return *this;
   }
@@ -235,8 +237,9 @@ EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
     return;
   }
 
-  encryption_info_dictionary.SetStringKey(GetEncryptionKeyPath(),
-                                          encryption_info.encryption_key());
+  std::string base64_key;
+  base::Base64Encode(encryption_info.encryption_key(), &base64_key);
+  encryption_info_dictionary.SetStringKey(GetEncryptionKeyPath(), base64_key);
   encryption_info_dictionary.SetStringKey(
       GetPublicKeyIdPath(),
       base::NumberToString(encryption_info.public_key_id()));

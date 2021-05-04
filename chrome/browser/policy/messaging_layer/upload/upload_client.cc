@@ -48,7 +48,7 @@ Status UploadClient::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   DCHECK(records);
 
-  if (records->empty()) {
+  if (records->empty() && !need_encryption_keys) {
     return Status::StatusOK();
   }
 
