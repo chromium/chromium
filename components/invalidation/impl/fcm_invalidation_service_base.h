@@ -50,7 +50,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
           per_user_topic_subscription_manager_callback,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* pref_service,
-      const std::string& sender_id = {});
+      const std::string& sender_id);
   FCMInvalidationServiceBase(const FCMInvalidationServiceBase& other) = delete;
   FCMInvalidationServiceBase& operator=(
       const FCMInvalidationServiceBase& other) = delete;

@@ -235,13 +235,27 @@ void FCMInvalidationServiceBase::StopInvalidatorPermanently() {
 
 void FCMInvalidationServiceBase::PopulateClientID() {
   diagnostic_info_.instance_id_requested = base::Time::Now();
+
   if (sender_id_ == kInvalidationGCMSenderId) {
     MigratePrefs(pref_service_, sender_id_);
   }
+
+  // Retrieve any client ID (aka Instance ID) from a previous run, which was
+  // cached in prefs.
   const std::string* client_id_pref =
       pref_service_->GetDictionary(prefs::kInvalidationClientIDCache)
           ->FindStringKey(sender_id_);
   client_id_ = client_id_pref ? *client_id_pref : "";
+
+  // There might already be clients (handlers) registered, so tell them about
+  // the client ID.
+  invalidator_registrar_.UpdateInvalidatorInstanceId(client_id_);
+
+  // Also retrieve a fresh (or validated) client ID. If the |client_id_| just
+  // retrieved from prefs is non-empty, then the fresh/validated one will
+  // typically be equal to it, but it's not completely guaranteed. OTOH, if
+  // |client_id_| is empty, i.e. we didn't have one previously, then this will
+  // generate/retrieve a new one.
   instance_id::InstanceID* instance_id =
       instance_id_driver_->GetInstanceID(GetApplicationName());
   instance_id->GetID(

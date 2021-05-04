@@ -13,12 +13,14 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
@@ -27,6 +29,7 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -75,6 +78,7 @@ class FakeFCMInvalidationListener : public FCMInvalidationListener {
 }  // namespace
 
 const char kApplicationName[] = "com.google.chrome.fcm.invalidations";
+const char kSenderId[] = "invalidations-sender-id";
 
 class MockInstanceID : public InstanceID {
  public:
@@ -140,7 +144,8 @@ class FCMInvalidationServiceTestDelegate {
     mock_instance_id_driver_ =
         std::make_unique<testing::NiceMock<MockInstanceIDDriver>>();
     mock_instance_id_ = std::make_unique<testing::NiceMock<MockInstanceID>>();
-    ON_CALL(*mock_instance_id_driver_, GetInstanceID(kApplicationName))
+    ON_CALL(*mock_instance_id_driver_,
+            GetInstanceID(base::StrCat({kApplicationName, "-", kSenderId})))
         .WillByDefault(testing::Return(mock_instance_id_.get()));
     ON_CALL(*mock_instance_id_, GetID(_))
         .WillByDefault(testing::WithArg<0>(
@@ -155,7 +160,7 @@ class FCMInvalidationServiceTestDelegate {
         base::BindRepeating(&PerUserTopicSubscriptionManager::Create,
                             identity_provider_.get(), &pref_service_,
                             &url_loader_factory_),
-        mock_instance_id_driver_.get(), &pref_service_);
+        mock_instance_id_driver_.get(), &pref_service_, kSenderId);
   }
 
   void InitializeInvalidationService() {
@@ -198,6 +203,62 @@ class FCMInvalidationServiceTestDelegate {
 INSTANTIATE_TYPED_TEST_SUITE_P(FCMInvalidationServiceTest,
                                InvalidationServiceTest,
                                FCMInvalidationServiceTestDelegate);
+
+TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
+  auto delegate = std::make_unique<FCMInvalidationServiceTestDelegate>();
+
+  // Set up a cached InstanceID aka client ID stored in prefs.
+  {
+    DictionaryPrefUpdate update(&delegate->pref_service_,
+                                prefs::kInvalidationClientIDCache);
+    update->SetStringKey(kSenderId, "InstanceIDFromPrefs");
+  }
+
+  // Create the invalidation service, but do not initialize it yet.
+  delegate->CreateUninitializedInvalidationService();
+  FCMInvalidationService* invalidation_service =
+      delegate->GetInvalidationService();
+  ASSERT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
+
+  // Register a handler *before* initializing the invalidation service.
+  FakeInvalidationHandler handler;
+  invalidation_service->RegisterInvalidationHandler(&handler);
+
+  // Because the invalidation service hasn't been initialized, the client ID is
+  // still empty.
+  EXPECT_TRUE(handler.GetInvalidatorClientId().empty());
+
+  // Make sure the MockInstanceID doesn't immediately provide a fresh client ID.
+  InstanceID::GetIDCallback get_id_callback;
+  EXPECT_CALL(*delegate->mock_instance_id_, GetID(_))
+      .WillOnce([&](InstanceID::GetIDCallback callback) {
+        get_id_callback = std::move(callback);
+      });
+
+  // Initialize the service. It should read the client ID from prefs.
+  delegate->InitializeInvalidationService();
+  // The invalidation service has requested a fresh client ID.
+  ASSERT_FALSE(get_id_callback.is_null());
+
+  // The invalidation service should have restored the client ID from prefs, and
+  // passed it on to the handler.
+  EXPECT_EQ(handler.GetInvalidatorClientId(), "InstanceIDFromPrefs");
+
+  // Once the invalidation service receives a fresh client ID, it should notify
+  // the handler again. (Note that in practice, the fresh ID will almost always
+  // be identical to the cached one.)
+  std::move(get_id_callback).Run("FreshInstanceID");
+  EXPECT_EQ(handler.GetInvalidatorClientId(), "FreshInstanceID");
+
+  // Another handler that gets registered should immediately be informed of the
+  // client ID.
+  FakeInvalidationHandler handler2;
+  invalidation_service->RegisterInvalidationHandler(&handler2);
+  EXPECT_EQ(handler2.GetInvalidatorClientId(), "FreshInstanceID");
+
+  invalidation_service->UnregisterInvalidationHandler(&handler2);
+  invalidation_service->UnregisterInvalidationHandler(&handler);
+}
 
 TEST(FCMInvalidationServiceTest, ClearsInstanceIDOnSignout) {
   // Set up an invalidation service and make sure it generated a client ID (aka
