@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ using content::NavigationThrottle;
 
 namespace {
 
-const base::Value kOrigins[]{base::Value("https://www.example.com"),
-                             base::Value("example2.example.com")};
+const base::Value origins[]{base::Value("https://www.example.com"),
+                            base::Value("example2.example.com")};
 
 }  // namespace
 
@@ -47,7 +47,7 @@ class DeviceTrustNavigationThrottleTest
     Profile::FromBrowserContext(browser_context())
         ->GetPrefs()
         ->Set(kContextAwareAccessSignalsAllowlistPref,
-              base::ListValue(kOrigins));
+              std::move(base::ListValue(origins)));
   }
 
  private:
