@@ -96,14 +96,22 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       auction_worklet::mojom::WinningBidderReportPtr bidder_report,
       auction_worklet::mojom::SellerReportPtr seller_report);
 
-  // Populates `url_loader_factory_` if it's either null or the pipe has been
-  // closed. Returns the resulting factory.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory();
+  // Returns an untrusted URLLoaderFactory created by the RenderFrameHost,
+  // suitable for loading URLs like subresources. Caches the factory in
+  // `frame_url_loader_factory_` for reuse.
+  network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory();
+
+  // Returns a trusted URLLoaderFactory. Consumers should set
+  // ResourceRequest::TrustedParams to specify a NetworkIsolationKey when using
+  // the returned factory. Caches the factory in `trusted_url_loader_factory_`
+  // for reuse.
+  network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory();
 
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService>
       auction_worklet_service_;
 
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };

@@ -54,6 +54,13 @@ const char kAcceptJson[] = "application/json";
 
 class ActionUrlLoaderFactoryProxyTest : public testing::Test {
  public:
+  // Ways the proxy can behave in response to a request.
+  enum class ExpectedResponse {
+    kReject,
+    kUseFrameFactory,
+    kUseTrustedFactory,
+  };
+
   ActionUrlLoaderFactoryProxyTest() { CreateUrlLoaderFactoryProxy(); }
 
   ~ActionUrlLoaderFactoryProxyTest() override {
@@ -91,15 +98,24 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
         remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
         base::BindRepeating(
             [](network::mojom::URLLoaderFactory* factory) { return factory; },
-            &proxied_url_loader_factory_),
+            &proxied_frame_url_loader_factory_),
+        base::BindRepeating(
+            [](network::mojom::URLLoaderFactory* factory) { return factory; },
+            &proxied_trusted_url_loader_factory_),
         frame_origin_, *auction_config, bidders);
   }
 
-  // Attempts to make a request for `request`. Return true of the request is
-  // passed through AuctionURLLoaderFactoryProxy to the nested
-  // TestURLLoaderFactory.
-  bool TryMakeRequest(const network::ResourceRequest& request) {
-    int initial_num_requests = proxied_url_loader_factory_.NumPending();
+  // Attempts to make a request for `request`.
+  void TryMakeRequest(const network::ResourceRequest& request,
+                      ExpectedResponse expected_response) {
+    // Create a new factory if the last test case closed the pipe.
+    if (!remote_url_loader_factory_.is_connected())
+      CreateUrlLoaderFactoryProxy();
+
+    int initial_num_frame_requests =
+        proxied_frame_url_loader_factory_.NumPending();
+    int initial_num_trusted_requests =
+        proxied_trusted_url_loader_factory_.NumPending();
 
     // Try to send a request. Requests are never run to completion, instead,
     // requests that make it to the nested `url_loader_factory_` are tracked in
@@ -118,44 +134,60 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // actually spinds the message loop already, but seems best to be safe.
     remote_url_loader_factory_.FlushForTesting();
 
-    // If there are just as many requests now as there were before a request was
-    // made, then the proxy blocked the request.
-    int final_num_requests = proxied_url_loader_factory_.NumPending();
-    bool request_rejected = initial_num_requests == final_num_requests;
-
-    // A request being rejected closes the receiver. Need to create a new
-    // AuctionURLLoaderFactoryProxy for next test.
-    EXPECT_EQ(request_rejected, !remote_url_loader_factory_.is_connected());
-    if (!remote_url_loader_factory_.is_connected())
-      CreateUrlLoaderFactoryProxy();
-
-    if (request_rejected)
-      return false;
-
-    // If there are more pending requests than before, there should only be one
-    // more pending request.
-    EXPECT_EQ(initial_num_requests + 1, final_num_requests);
-
-    const auto& pending_request =
-        proxied_url_loader_factory_.pending_requests()->back();
+    network::TestURLLoaderFactory::PendingRequest const* pending_request;
+    switch (expected_response) {
+      case ExpectedResponse::kReject:
+        // A request being rejected closes the receiver.
+        EXPECT_EQ(initial_num_frame_requests,
+                  proxied_frame_url_loader_factory_.NumPending());
+        EXPECT_EQ(initial_num_trusted_requests,
+                  proxied_trusted_url_loader_factory_.NumPending());
+        // Rejecting a request should result in closing the factory mojo pipe.
+        EXPECT_FALSE(remote_url_loader_factory_.is_connected());
+        return;
+      case ExpectedResponse::kUseFrameFactory:
+        ASSERT_EQ(initial_num_frame_requests + 1,
+                  proxied_frame_url_loader_factory_.NumPending());
+        ASSERT_EQ(initial_num_trusted_requests,
+                  proxied_trusted_url_loader_factory_.NumPending());
+        EXPECT_TRUE(remote_url_loader_factory_.is_connected());
+        pending_request =
+            &proxied_frame_url_loader_factory_.pending_requests()->back();
+        break;
+      case ExpectedResponse::kUseTrustedFactory:
+        ASSERT_EQ(initial_num_frame_requests,
+                  proxied_frame_url_loader_factory_.NumPending());
+        ASSERT_EQ(initial_num_trusted_requests + 1,
+                  proxied_trusted_url_loader_factory_.NumPending());
+        EXPECT_TRUE(remote_url_loader_factory_.is_connected());
+        pending_request =
+            &proxied_trusted_url_loader_factory_.pending_requests()->back();
+        break;
+    }
 
     // These should always be the same for all requests.
-    EXPECT_EQ(0u, pending_request.options);
+    EXPECT_EQ(0u, pending_request->options);
     EXPECT_EQ(
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        pending_request.traffic_annotation);
+        pending_request->traffic_annotation);
 
     // Each request should be assigned a unique ID. These should actually be
     // unique within the browser process, not just among requests using the
     // AuctionURLLoaderFactoryProxy.
     for (const auto& other_pending_request :
-         *proxied_url_loader_factory_.pending_requests()) {
-      if (&other_pending_request == &pending_request)
+         *proxied_frame_url_loader_factory_.pending_requests()) {
+      if (&other_pending_request == pending_request)
         continue;
-      EXPECT_NE(other_pending_request.request_id, pending_request.request_id);
+      EXPECT_NE(other_pending_request.request_id, pending_request->request_id);
+    }
+    for (const auto& other_pending_request :
+         *proxied_trusted_url_loader_factory_.pending_requests()) {
+      if (&other_pending_request == pending_request)
+        continue;
+      EXPECT_NE(other_pending_request.request_id, pending_request->request_id);
     }
 
-    const auto& observed_request = pending_request.request;
+    const auto& observed_request = pending_request->request;
 
     // The URL should be unaltered.
     EXPECT_EQ(request.url, observed_request.url);
@@ -181,11 +213,13 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // The initiator should be set.
     EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
-    // Validate `observed_request.trusted_params`.
-    EXPECT_TRUE(observed_request.trusted_params);
-    if (observed_request.trusted_params) {
+    if (expected_response == ExpectedResponse::kUseFrameFactory) {
+      EXPECT_EQ(network::mojom::RequestMode::kCors, observed_request.mode);
+      EXPECT_FALSE(observed_request.trusted_params);
+    } else {
+      EXPECT_EQ(network::mojom::RequestMode::kNoCors, observed_request.mode);
+      ASSERT_TRUE(observed_request.trusted_params);
       EXPECT_FALSE(observed_request.trusted_params->disable_secure_dns);
-
       const auto& observed_isolation_info =
           observed_request.trusted_params->isolation_info;
       EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
@@ -195,26 +229,26 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
       EXPECT_EQ(expected_origin, observed_isolation_info.frame_origin());
       EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
     }
-
-    return true;
   }
 
-  bool TryMakeRequest(const std::string& url,
-                      base::Optional<std::string> accept_value) {
+  void TryMakeRequest(const std::string& url,
+                      base::Optional<std::string> accept_value,
+                      ExpectedResponse expected_response) {
     network::ResourceRequest request;
     request.url = GURL(url);
     if (accept_value) {
       request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 *accept_value);
     }
-    return TryMakeRequest(request);
+    TryMakeRequest(request, expected_response);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
 
   url::Origin frame_origin_ = url::Origin::Create(GURL("https://foo.test/"));
-  network::TestURLLoaderFactory proxied_url_loader_factory_;
+  network::TestURLLoaderFactory proxied_frame_url_loader_factory_;
+  network::TestURLLoaderFactory proxied_trusted_url_loader_factory_;
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
 };
@@ -222,27 +256,39 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
 // Test exact URL matches. Trusted bidding signals URLs should be rejected
 // unless that have a valid query string appended.
 TEST_F(ActionUrlLoaderFactoryProxyTest, ExactURLMatch) {
-  EXPECT_TRUE(TryMakeRequest(kScoringWorkletUrl, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kScoringWorkletUrl, kAcceptJson));
-  EXPECT_FALSE(TryMakeRequest(kScoringWorkletUrl, "Unknown/Unknown"));
-  EXPECT_FALSE(TryMakeRequest(kScoringWorkletUrl, base::nullopt));
+  TryMakeRequest(kScoringWorkletUrl, kAcceptJavascript,
+                 ExpectedResponse::kUseFrameFactory);
+  TryMakeRequest(kScoringWorkletUrl, kAcceptJson, ExpectedResponse::kReject);
+  TryMakeRequest(kScoringWorkletUrl, "Unknown/Unknown",
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kScoringWorkletUrl, base::nullopt, ExpectedResponse::kReject);
 
-  EXPECT_TRUE(TryMakeRequest(kBiddingWorkletUrl1, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kBiddingWorkletUrl1, kAcceptJson));
-  EXPECT_FALSE(TryMakeRequest(kBiddingWorkletUrl1, "Unknown/Unknown"));
-  EXPECT_FALSE(TryMakeRequest(kBiddingWorkletUrl1, base::nullopt));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJson));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl1, "Unknown/Unknown"));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl1, base::nullopt));
+  TryMakeRequest(kBiddingWorkletUrl1, kAcceptJavascript,
+                 ExpectedResponse::kUseTrustedFactory);
+  TryMakeRequest(kBiddingWorkletUrl1, kAcceptJson, ExpectedResponse::kReject);
+  TryMakeRequest(kBiddingWorkletUrl1, "Unknown/Unknown",
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kBiddingWorkletUrl1, base::nullopt, ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJavascript,
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJson,
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl1, "Unknown/Unknown",
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl1, base::nullopt,
+                 ExpectedResponse::kReject);
 
-  EXPECT_TRUE(TryMakeRequest(kBiddingWorkletUrl2, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kBiddingWorkletUrl2, kAcceptJson));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl2, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kTrustedBiddingSignalsUrl2, kAcceptJson));
+  TryMakeRequest(kBiddingWorkletUrl2, kAcceptJavascript,
+                 ExpectedResponse::kUseTrustedFactory);
+  TryMakeRequest(kBiddingWorkletUrl2, kAcceptJson, ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl2, kAcceptJavascript,
+                 ExpectedResponse::kReject);
+  TryMakeRequest(kTrustedBiddingSignalsUrl2, kAcceptJson,
+                 ExpectedResponse::kReject);
 
-  EXPECT_TRUE(TryMakeRequest(kBiddingWorkletUrl3, kAcceptJavascript));
-  EXPECT_FALSE(TryMakeRequest(kBiddingWorkletUrl3, kAcceptJson));
+  TryMakeRequest(kBiddingWorkletUrl3, kAcceptJavascript,
+                 ExpectedResponse::kUseTrustedFactory);
+  TryMakeRequest(kBiddingWorkletUrl3, kAcceptJson, ExpectedResponse::kReject);
 }
 
 TEST_F(ActionUrlLoaderFactoryProxyTest, QueryStrings) {
@@ -266,40 +312,40 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, QueryStrings) {
 
   for (std::string query_string : kValidBiddingSignalsQueryStrings) {
     SCOPED_TRACE(query_string);
-    EXPECT_FALSE(
-        TryMakeRequest(kScoringWorkletUrl + query_string, kAcceptJavascript));
+    TryMakeRequest(kScoringWorkletUrl + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl1 + query_string, kAcceptJavascript));
-    EXPECT_TRUE(
-        TryMakeRequest(kTrustedBiddingSignalsUrl1 + query_string, kAcceptJson));
+    TryMakeRequest(kBiddingWorkletUrl1 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
+    TryMakeRequest(kTrustedBiddingSignalsUrl1 + query_string, kAcceptJson,
+                   ExpectedResponse::kUseTrustedFactory);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl2 + query_string, kAcceptJavascript));
-    EXPECT_TRUE(
-        TryMakeRequest(kTrustedBiddingSignalsUrl2 + query_string, kAcceptJson));
+    TryMakeRequest(kBiddingWorkletUrl2 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
+    TryMakeRequest(kTrustedBiddingSignalsUrl2 + query_string, kAcceptJson,
+                   ExpectedResponse::kUseTrustedFactory);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl3 + query_string, kAcceptJavascript));
+    TryMakeRequest(kBiddingWorkletUrl3 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
   }
 
   for (std::string query_string : kInvalidBiddingSignalsQueryStrings) {
     SCOPED_TRACE(query_string);
-    EXPECT_FALSE(
-        TryMakeRequest(kScoringWorkletUrl + query_string, kAcceptJavascript));
+    TryMakeRequest(kScoringWorkletUrl + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl1 + query_string, kAcceptJavascript));
-    EXPECT_FALSE(
-        TryMakeRequest(kTrustedBiddingSignalsUrl1 + query_string, kAcceptJson));
+    TryMakeRequest(kBiddingWorkletUrl1 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
+    TryMakeRequest(kTrustedBiddingSignalsUrl1 + query_string, kAcceptJson,
+                   ExpectedResponse::kReject);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl2 + query_string, kAcceptJavascript));
-    EXPECT_FALSE(
-        TryMakeRequest(kTrustedBiddingSignalsUrl2 + query_string, kAcceptJson));
+    TryMakeRequest(kBiddingWorkletUrl2 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
+    TryMakeRequest(kTrustedBiddingSignalsUrl2 + query_string, kAcceptJson,
+                   ExpectedResponse::kReject);
 
-    EXPECT_FALSE(
-        TryMakeRequest(kBiddingWorkletUrl3 + query_string, kAcceptJavascript));
+    TryMakeRequest(kBiddingWorkletUrl3 + query_string, kAcceptJavascript,
+                   ExpectedResponse::kReject);
   }
 }
 
@@ -325,15 +371,45 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, ExtraParametersIgnored) {
                             kAcceptJavascript);
 
   request.url = GURL(kScoringWorkletUrl);
-  EXPECT_TRUE(TryMakeRequest(request));
+  TryMakeRequest(request, ExpectedResponse::kUseFrameFactory);
 
   request.url = GURL(kBiddingWorkletUrl1);
-  EXPECT_TRUE(TryMakeRequest(request));
+  TryMakeRequest(request, ExpectedResponse::kUseTrustedFactory);
 
   request.url = GURL(std::string(kTrustedBiddingSignalsUrl1) +
                      "?hostname=foo.test&keys=bar");
   request.headers.SetHeader(net::HttpRequestHeaders::kAccept, kAcceptJson);
-  EXPECT_TRUE(TryMakeRequest(request));
+  TryMakeRequest(request, ExpectedResponse::kUseTrustedFactory);
+}
+
+// If a bidder URL matches the scoring URL, the publisher frame's
+// URLLoaderFactory should be used instead of the trusted one.
+TEST_F(ActionUrlLoaderFactoryProxyTest, BidderUrlMatchesScoringUrl) {
+  blink::mojom::AuctionAdConfigPtr auction_config =
+      blink::mojom::AuctionAdConfig::New();
+  auction_config->decision_logic_url = GURL(kScoringWorkletUrl);
+  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
+
+  bidders.emplace_back(auction_worklet::mojom::BiddingInterestGroup::New());
+  bidders.back()->group = blink::mojom::InterestGroup::New();
+  bidders.back()->group->bidding_url = GURL(kScoringWorkletUrl);
+
+  remote_url_loader_factory_.reset();
+  url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
+      remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
+      base::BindRepeating(
+          [](network::mojom::URLLoaderFactory* factory) { return factory; },
+          &proxied_frame_url_loader_factory_),
+      base::BindRepeating(
+          [](network::mojom::URLLoaderFactory* factory) { return factory; },
+          &proxied_trusted_url_loader_factory_),
+      frame_origin_, *auction_config, bidders);
+
+  // Make request twice, as will actually happen in this case.
+  TryMakeRequest(kScoringWorkletUrl, kAcceptJavascript,
+                 ExpectedResponse::kUseFrameFactory);
+  TryMakeRequest(kScoringWorkletUrl, kAcceptJavascript,
+                 ExpectedResponse::kUseFrameFactory);
 }
 
 }  // namespace content

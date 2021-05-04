@@ -75,7 +75,6 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "content/public/test/url_loader_monitor.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -225,7 +224,7 @@ class DeclarativeNetRequestBrowserTest
   // in test bodies.
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     base::AutoLock lock(requests_to_server_lock_);
-    requests_to_server_.insert(request.GetURL());
+    requests_to_server_[request.GetURL()] = request;
     if (url_to_wait_for_ == request.GetURL()) {
       ASSERT_TRUE(wait_for_request_run_loop_);
       url_to_wait_for_ = GURL();
@@ -545,9 +544,9 @@ class DeclarativeNetRequestBrowserTest
         browsertest_util::ScriptUserActivation::kDontActivate);
   }
 
-  std::set<GURL> GetAndResetRequestsToServer() {
+  std::map<GURL, net::test_server::HttpRequest> GetAndResetRequestsToServer() {
     base::AutoLock lock(requests_to_server_lock_);
-    std::set<GURL> results = requests_to_server_;
+    auto results = std::move(requests_to_server_);
     requests_to_server_.clear();
     return results;
   }
@@ -793,7 +792,8 @@ class DeclarativeNetRequestBrowserTest
   // Requests observed by the EmbeddedTestServer. This is accessed on both the
   // UI and the EmbeddedTestServer's IO thread. Access is protected by
   // `requests_to_server_lock_`.
-  std::set<GURL> requests_to_server_ GUARDED_BY(requests_to_server_lock_);
+  std::map<GURL, net::test_server::HttpRequest> requests_to_server_
+      GUARDED_BY(requests_to_server_lock_);
   // URL that `wait_for_request_run_loop_` is currently waiting to observe.
   GURL url_to_wait_for_ GUARDED_BY(requests_to_server_lock_);
   // RunLoop to quit when a request for `url_to_wait_for_` is observed.
@@ -2604,7 +2604,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     const GURL redirected_script_url =
         embedded_test_server()->GetURL("/subresources/script.js");
 
-    std::set<GURL> seen_requests = GetAndResetRequestsToServer();
+    std::map<GURL, net::test_server::HttpRequest> seen_requests =
+        GetAndResetRequestsToServer();
     EXPECT_EQ(!expect_script_redirected,
               base::Contains(seen_requests, requested_script_url));
     EXPECT_EQ(expect_script_redirected,
@@ -4538,7 +4539,8 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
                                        : "/page_with_two_frames.html");
     ui_test_utils::NavigateToURL(browser(), page_url);
 
-    const std::set<GURL> requests_seen = GetAndResetRequestsToServer();
+    std::map<GURL, net::test_server::HttpRequest> requests_seen =
+        GetAndResetRequestsToServer();
 
     for (const auto& path : paths_seen) {
       GURL expected_request_url = embedded_test_server()->GetURL(path);
@@ -5862,8 +5864,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
       LoadExtensionWithRules({custom_response_header_rule}, "test_extension",
                              {URLPattern::kAllUrlsPattern}));
 
-  content::URLLoaderMonitor monitor;
-
   std::string run_auction_command = content::JsReplace(
       R"(
          (async function() {
@@ -5889,18 +5889,18 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   WaitForRequest(bidder_report_url);
   WaitForRequest(decision_report_url);
   // Clear observed URLs.
-  GetAndResetRequestsToServer();
+  std::map<GURL, net::test_server::HttpRequest> requests =
+      GetAndResetRequestsToServer();
 
   // Make sure the add headers rule was applied to all requests related to the
   // auction.
   for (const GURL& expected_url : {bidding_logic_url, decision_logic_url,
                                    bidder_report_url, decision_report_url}) {
-    base::Optional<network::ResourceRequest> request =
-        monitor.GetRequestInfo(expected_url);
-    ASSERT_TRUE(request);
-    std::string header_value;
-    ASSERT_TRUE(request->headers.GetHeader(kAddedHeaderName, &header_value));
-    EXPECT_EQ(kAddedHeaderValue, header_value);
+    auto request = requests.find(expected_url);
+    ASSERT_NE(request, requests.end());
+    auto added_header = request->second.headers.find(kAddedHeaderName);
+    ASSERT_NE(added_header, request->second.headers.end());
+    EXPECT_EQ(kAddedHeaderValue, added_header->second);
   }
 
   // Now there are no pending requests for the auction. Add a rule to block the
