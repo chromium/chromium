@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -92,13 +91,6 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw the arc of the loading animation.
   if (loading_animation_)
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
-}
-
-void ArrowButtonView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LoginButton::GetAccessibleNodeData(node_data);
-  // TODO(tbarzic): Fix this - https://crbug.com/961930.
-  if (GetAccessibleName().empty())
-    node_data->SetNameExplicitlyEmpty();
 }
 
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {

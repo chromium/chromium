@@ -411,6 +411,8 @@ class RightPaneView : public NonAccessibleView {
         base::BindRepeating(&RightPaneView::SubmitButtonPressed,
                             base::Unretained(this)),
         kArrowButtonSizeDp);
+    submit_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LOG_IN_BUTTON_ACCESSIBLE_NAME));
     AddChildView(submit_button_);
   }
 

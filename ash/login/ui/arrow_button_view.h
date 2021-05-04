@@ -32,7 +32,6 @@ class ArrowButtonView : public LoginButton {
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Allows to control the loading animation (disabled by default). The
   // animation is an arc that gradually increases from a point to a full circle;
