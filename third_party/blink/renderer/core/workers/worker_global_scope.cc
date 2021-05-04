@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
@@ -403,6 +404,11 @@ void WorkerGlobalScope::AddInspectorIssue(
     mojom::blink::InspectorIssueInfoPtr info) {
   GetThread()->GetInspectorIssueStorage()->AddInspectorIssue(this,
                                                              std::move(info));
+}
+
+void WorkerGlobalScope::AddInspectorIssue(AuditsIssue issue) {
+  GetThread()->GetInspectorIssueStorage()->AddInspectorIssue(this,
+                                                             std::move(issue));
 }
 
 CoreProbeSink* WorkerGlobalScope::GetProbeSink() {

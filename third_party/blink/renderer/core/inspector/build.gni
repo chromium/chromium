@@ -34,6 +34,8 @@ blink_core_sources_inspector = [
   "inspector_attribution_issue.h",
   "inspector_audits_agent.cc",
   "inspector_audits_agent.h",
+  "inspector_audits_issue.cc",
+  "inspector_audits_issue.h",
   "inspector_base_agent.h",
   "inspector_css_agent.cc",
   "inspector_css_agent.h",

@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
 namespace blink {
@@ -13,6 +15,7 @@ namespace blink {
 static const unsigned kMaxIssueCount = 1000;
 
 InspectorIssueStorage::InspectorIssueStorage() = default;
+InspectorIssueStorage::~InspectorIssueStorage() = default;
 
 void InspectorIssueStorage::AddInspectorIssue(
     CoreProbeSink* sink,
@@ -34,6 +37,16 @@ void InspectorIssueStorage::AddInspectorIssue(
     CoreProbeSink* sink,
     mojom::blink::InspectorIssueInfoPtr info) {
   AddInspectorIssue(sink, InspectorIssue::Create(std::move(info)));
+}
+
+void InspectorIssueStorage::AddInspectorIssue(CoreProbeSink* sink,
+                                              AuditsIssue issue) {
+  AddInspectorIssue(sink, issue.TakeIssue());
+}
+
+void InspectorIssueStorage::AddInspectorIssue(ExecutionContext* context,
+                                              AuditsIssue issue) {
+  AddInspectorIssue(probe::ToCoreProbeSink(context), issue.TakeIssue());
 }
 
 void InspectorIssueStorage::AddInspectorIssue(

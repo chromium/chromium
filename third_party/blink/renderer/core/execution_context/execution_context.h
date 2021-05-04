@@ -74,6 +74,7 @@ class UkmRecorder;
 namespace blink {
 
 class Agent;
+class AuditsIssue;
 class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
@@ -246,6 +247,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     AddConsoleMessageImpl(message, discard_duplicates);
   }
   virtual void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) = 0;
+  virtual void AddInspectorIssue(AuditsIssue) = 0;
 
   bool IsContextPaused() const;
   WebURLLoader::DeferType DeferType() const;
