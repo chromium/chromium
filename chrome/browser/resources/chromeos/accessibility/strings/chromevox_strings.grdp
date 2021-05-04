@@ -2300,6 +2300,9 @@
   <message desc="A hint to the user for interacting with the menu control." name="IDS_CHROMEVOX_HINT_MENU">
     Press up or down arrow to navigate; enter to activate
   </message>
+  <message desc="A hint to the user for interacting with the menu control. This variant has a horizontal orientation." name="IDS_CHROMEVOX_HINT_MENU_HORIZONTAL" is_accessibility_with_no_ui="true">
+    Press left or right arrow to navigate; enter to activate
+  </message>
   <message desc="A hint to the user that there are details associated with this element." name="IDS_CHROMEVOX_HINT_DETAILS">
     Press Search+A, J to jump to details
   </message>

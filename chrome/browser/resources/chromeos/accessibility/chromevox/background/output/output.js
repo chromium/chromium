@@ -2147,13 +2147,19 @@ Output = class {
     }
 
     // Ancestry based hints.
+    /** @type {AutomationNode|undefined} */
+    let foundAncestor;
     if (uniqueAncestors.find(
             /** @type {function(?) : boolean} */ (AutomationPredicate.table))) {
       ret.push({msgId: 'hint_table'});
     }
-    if (uniqueAncestors.find(/** @type {function(?) : boolean} */ (
-            AutomationPredicate.roles([RoleType.MENU, RoleType.MENU_BAR])))) {
-      ret.push({msgId: 'hint_menu'});
+    if ((foundAncestor = uniqueAncestors.find(
+             /** @type {function(?) : boolean} */ (AutomationPredicate.roles(
+                 [RoleType.MENU, RoleType.MENU_BAR]))))) {
+      ret.push({
+        msgId: foundAncestor.state.horizontal ? 'hint_menu_horizontal' :
+                                                'hint_menu'
+      });
     }
     if (uniqueAncestors.find(
             /** @type {function(?) : boolean} */ (function(n) {

@@ -494,33 +494,56 @@ TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
 });
 
 TEST_F('ChromeVoxOutputE2ETest', 'Menu', function() {
-  this.runWithLoadedTree(
-      `
+  const site = `
     <div role="menu">
       <div role="menuitem">a</div>
       <div role="menuitemcheckbox">b</div>
       <div role="menuitemradio">c</div>
     </div>
-  `,
-      function(root) {
-        const el = root.firstChild.firstChild;
-        const range = cursors.Range.fromNode(el);
-        const o = new Output().withSpeechAndBraille(range, null, 'navigate');
-        checkSpeechOutput(
-            'a|Menu item| 1 of 3 |Menu',
-            [
-              {value: 'name', start: 0, end: 1},
-              {value: 'role', start: 21, end: 25}
-            ],
-            o);
-        checkBrailleOutput(
-            'a mnuitm 1/3 mnu',
-            [
-              {value: new OutputNodeSpan(el), start: 0, end: 12},
-              {value: new OutputNodeSpan(el.parent), start: 13, end: 16}
-            ],
-            o);
-      });
+    <div role="menubar" aria-orientation="horizontal"></div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    let el = root.firstChild.firstChild;
+    let range = cursors.Range.fromNode(el);
+    let o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'a|Menu item| 1 of 3 |Menu',
+        [
+          {value: 'name', start: 0, end: 1}, {value: 'role', start: 21, end: 25}
+        ],
+        o);
+    checkBrailleOutput(
+        'a mnuitm 1/3 mnu',
+        [
+          {value: new OutputNodeSpan(el), start: 0, end: 12},
+          {value: new OutputNodeSpan(el.parent), start: 13, end: 16}
+        ],
+        o);
+
+    // Ancestry.
+    el = root.firstChild;
+    range = cursors.Range.fromNode(el);
+    o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'Menu|with 3 items|' +
+            'Press up or down arrow to navigate; enter to activate',
+        [
+          {value: 'role', start: 0, end: 4},
+          {value: {delay: true}, start: 18, end: 71}
+        ],
+        o);
+
+    el = root.lastChild;
+    range = cursors.Range.fromNode(el);
+    o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'Menu bar|Press left or right arrow to navigate; enter to activate',
+        [
+          {value: 'role', start: 0, end: 8},
+          {value: {delay: true}, start: 9, end: 65}
+        ],
+        o);
+  });
 });
 
 TEST_F('ChromeVoxOutputE2ETest', 'ListBox', function() {
