@@ -612,8 +612,17 @@ IN_PROC_BROWSER_TEST_F(
   ExecuteJavascriptAndWaitForOk(call);
 }
 
+// TODO(http://crbug.com/1205560): This test is flaky on mac bots. Re-enable the
+// test after fixing the issue.
+#if defined(OS_MAC)
+#define MAYBE_InvalidSourceIdInIFrameAndCloseInFailureCb \
+  DISABLED_InvalidSourceIdInIFrameAndCloseInFailureCb
+#else
+#define MAYBE_InvalidSourceIdInIFrameAndCloseInFailureCb \
+  InvalidSourceIdInIFrameAndCloseInFailureCb
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       InvalidSourceIdInIFrameAndCloseInFailureCb) {
+                       MAYBE_InvalidSourceIdInIFrameAndCloseInFailureCb) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
