@@ -15,7 +15,7 @@
  * Note this code can be compiled outside of the Chromium build system against
  * the system zlib (-lz) with g++ or clang++ as follows:
  *
- *   g++|clang++ -O3 -Wall -std=c++11 -lstdc++ -lz zlib_bench.cc
+ *   g++|clang++ -O3 -Wall -std=c++11 zlib_bench.cc -lstdc++ -lz
  */
 
 #include <algorithm>
@@ -306,11 +306,10 @@ bool get_compression(int argc, char* argv[], int* value) {
   return *value >= 0 && *value <= 9;
 }
 
+const char* options = "gzip|zlib|raw [--compression 0:9] [--huffman|--rle]";
+
 void usage_exit(const char* program) {
-  printf(
-      "usage: %s gzip|zlib|raw [--compression 0:9] [--huffman|--rle] "
-      "files...\n",
-      program);
+  printf("usage: %s %s files...", program, options);
   exit(1);
 }
 
