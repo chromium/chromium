@@ -165,7 +165,8 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
   DCHECK_EQ(&iph_feature, current_iph_feature_);
   DCHECK(promo_bubble_);
 
-  widget_observer_.Remove(promo_bubble_->GetWidget());
+  DCHECK(widget_observation_.IsObservingSource(promo_bubble_->GetWidget()));
+  widget_observation_.Reset();
   promo_bubble_->GetWidget()->Close();
   promo_bubble_ = nullptr;
 
@@ -314,7 +315,7 @@ void FeaturePromoControllerViews::ShowPromoBubbleImpl(
 
   promo_bubble_ = FeaturePromoBubbleView::Create(std::move(create_params));
 
-  widget_observer_.Add(promo_bubble_->GetWidget());
+  widget_observation_.Observe(promo_bubble_->GetWidget());
 }
 
 void FeaturePromoControllerViews::HandleBubbleClosed() {
@@ -326,7 +327,8 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   DCHECK_NE(current_iph_feature_ != nullptr,
             current_critical_promo_.has_value());
 
-  widget_observer_.Remove(promo_bubble_->GetWidget());
+  DCHECK(widget_observation_.IsObservingSource(promo_bubble_->GetWidget()));
+  widget_observation_.Reset();
   promo_bubble_ = nullptr;
 
   if (anchor_view_tracker_.view())

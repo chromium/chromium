@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "ui/views/view_tracker.h"
@@ -154,7 +154,8 @@ class FeaturePromoControllerViews : public FeaturePromoController,
 
   bool promos_blocked_for_testing_ = false;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<FeaturePromoControllerViews> weak_ptr_factory_{this};
 };
