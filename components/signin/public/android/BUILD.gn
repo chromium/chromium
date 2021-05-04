@@ -33,8 +33,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/ChildAccountStatus.java",
     "java/src/org/chromium/components/signin/ConnectionRetry.java",
-    "java/src/org/chromium/components/signin/MutableObservableValue.java",
-    "java/src/org/chromium/components/signin/ObservableValue.java",
     "java/src/org/chromium/components/signin/PatternMatcher.java",
     "java/src/org/chromium/components/signin/ProfileDataSource.java",
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
@@ -129,7 +127,6 @@ java_library("junit") {
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
     "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
-    "junit/src/org/chromium/components/signin/ObservableValueTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
