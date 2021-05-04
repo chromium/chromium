@@ -466,6 +466,10 @@ def ci_builder(
     if tree_closing and bucket == "ci":
         notifies = (notifies or []) + ["chromium-tree-closer", "chromium-tree-closer-email"]
 
+    # Migrate executable to bbagent incrementally.
+    experiments = {}
+    experiments.setdefault("luci.buildbucket.use_bbagent", 100)
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
@@ -475,6 +479,7 @@ def ci_builder(
             bq_table = "luci-resultdb.chromium.ci_test_results",
         )],
         notifies = notifies,
+        experiments = experiments,
         **kwargs
     )
 
