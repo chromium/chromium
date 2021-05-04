@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -80,5 +81,24 @@ public class MerchantTrustMessageContextTest {
     public void testIsValidNullWebContents() {
         MerchantTrustMessageContext context = new MerchantTrustMessageContext(mMockGurl, null);
         assertFalse(context.isValid());
+    }
+
+    @Test
+    public void testGetHostName() {
+        assertEquals("", (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
+        assertEquals("fake_host",
+                (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getHostName());
+    }
+
+    @Test
+    public void testGetWebContents() {
+        assertEquals(mMockWebContents,
+                (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getWebContents());
+    }
+
+    @Test
+    public void testGetUrl() {
+        assertEquals(
+                mMockGurl, (new MerchantTrustMessageContext(mMockGurl, mMockWebContents)).getUrl());
     }
 }

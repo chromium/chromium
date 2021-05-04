@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
 /**
  * Additional data required for publishing and handling a merchant trust signals message.
  */

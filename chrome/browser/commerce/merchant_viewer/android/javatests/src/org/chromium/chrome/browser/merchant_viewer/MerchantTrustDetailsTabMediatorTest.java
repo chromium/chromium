@@ -39,7 +39,9 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
 /**
@@ -80,8 +82,14 @@ public class MerchantTrustDetailsTabMediatorTest {
     @Mock
     private MerchantTrustMetrics mMockMetrics;
 
+    @Mock
+    private NavigationHandle mMockNavigationHandle;
+
     @Captor
     private ArgumentCaptor<WebContentsDelegateAndroid> mWebContentsDelegateCaptor;
+
+    @Captor
+    private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
     private static final String DUMMY_SHEET_TITLE = "DUMMY_TITLE";
     private static final String DUMMY_URL = "dummy://visible/url";
@@ -209,6 +217,69 @@ public class MerchantTrustDetailsTabMediatorTest {
 
         verify(mMockSheetContent, times(1)).setProgress(eq(0f));
         verify(mMockSheetContent, times(1)).setProgressVisible(eq(true));
+    }
+
+    @Test
+    public void testWebContentsObserverLoadProgressChanged() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
+
+        float progress = 0.2f;
+        mWebContentsObserverCaptor.getValue().loadProgressChanged(progress);
+        verify(mMockSheetContent, times(1)).setProgress(eq(progress));
+    }
+
+    @Test
+    public void testWebContentsObserverDidStartNavigation() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
+
+        mWebContentsObserverCaptor.getValue().didStartNavigation(mMockNavigationHandle);
+        verify(mMockMetrics, times(1)).recordNavigateLinkOnBottomSheet();
+    }
+
+    @Test
+    public void testWebContentsObserverTitleWasSet() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
+
+        MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE.setForTesting(false);
+        mWebContentsObserverCaptor.getValue().titleWasSet(DUMMY_SHEET_TITLE);
+        verify(mMockSheetContent, times(0)).setTitle(eq(DUMMY_SHEET_TITLE));
+
+        MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE.setForTesting(true);
+        mWebContentsObserverCaptor.getValue().titleWasSet(DUMMY_SHEET_TITLE);
+        verify(mMockSheetContent, times(1)).setTitle(eq(DUMMY_SHEET_TITLE));
+    }
+
+    @Test
+    public void testWebContentsObserverDidFinishNavigation() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
+
+        doReturn(false).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(false).when(mMockNavigationHandle).hasCommitted();
+        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        verify(mMockSheetContent, times(0)).setUrl(any(GURL.class));
+
+        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(false).when(mMockNavigationHandle).hasCommitted();
+        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        verify(mMockSheetContent, times(0)).setUrl(any(GURL.class));
+
+        doReturn(false).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(true).when(mMockNavigationHandle).hasCommitted();
+        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        verify(mMockSheetContent, times(0)).setUrl(any(GURL.class));
+
+        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(true).when(mMockNavigationHandle).hasCommitted();
+        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        verify(mMockSheetContent, times(1)).setUrl(any(GURL.class));
     }
 
     private MerchantTrustDetailsTabMediator getMediatorUnderTest() {

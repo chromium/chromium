@@ -49,7 +49,9 @@ public class MerchantTrustSignalsCoordinator {
         this(context, windowAndroid, bottomSheetController, layoutView, tabModelSelector,
                 new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
                 new MerchantTrustSignalsDataProvider(),
-                new MerchantTrustSignalsEventStorage(profileSupplier.get()), metrics);
+                new MerchantTrustSignalsEventStorage(profileSupplier.get()), metrics,
+                new MerchantTrustDetailsTabCoordinator(context, windowAndroid,
+                        bottomSheetController, tabSupplier, layoutView, metrics));
     }
 
     @VisibleForTesting
@@ -57,7 +59,8 @@ public class MerchantTrustSignalsCoordinator {
             BottomSheetController bottomSheetController, View layoutView,
             TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler,
             Supplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
-            MerchantTrustSignalsEventStorage storage, MerchantTrustMetrics metrics) {
+            MerchantTrustSignalsEventStorage storage, MerchantTrustMetrics metrics,
+            MerchantTrustDetailsTabCoordinator detailsTabCoordinator) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
@@ -68,8 +71,7 @@ public class MerchantTrustSignalsCoordinator {
 
         mMediator = new MerchantTrustSignalsMediator(tabModelSelector, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
-        mDetailsTabCoordinator = new MerchantTrustDetailsTabCoordinator(
-                context, windowAndroid, bottomSheetController, tabSupplier, layoutView, mMetrics);
+        mDetailsTabCoordinator = detailsTabCoordinator;
     }
 
     /** Cleans up internal state. */
@@ -101,7 +103,8 @@ public class MerchantTrustSignalsCoordinator {
         }
     }
 
-    private void onMessageEnqueued(MerchantTrustMessageContext messageContext) {
+    @VisibleForTesting
+    void onMessageEnqueued(MerchantTrustMessageContext messageContext) {
         if (messageContext == null) {
             return;
         }

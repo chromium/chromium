@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.merchant_viewer;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,9 +32,9 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mTabSupplier;
     private final View mLayoutView;
-    private final MerchantTrustDetailsTabMediator mMediator;
     private final MerchantTrustMetrics mMetrics;
 
+    private MerchantTrustDetailsTabMediator mMediator;
     private WebContents mWebContents;
     private ContentView mWebContentView;
     private BottomSheetObserver mBottomSheetObserver;
@@ -94,7 +96,11 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
         return tab.getView().getHeight();
     }
 
-    private void destroyWebContents() {
+    @VisibleForTesting
+    void destroyWebContents() {
+        if (mSheetContent != null) {
+            mSheetContent.destroy();
+        }
         mSheetContent = null;
 
         if (mWebContents != null) {
@@ -173,5 +179,10 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
         if (maxViewHeight == 0 || mCurrentMaxViewHeight == maxViewHeight) return;
         mSheetContent.updateContentHeight(maxViewHeight);
         mCurrentMaxViewHeight = maxViewHeight;
+    }
+
+    @VisibleForTesting
+    void setMediatorForTesting(MerchantTrustDetailsTabMediator mediator) {
+        mMediator = mediator;
     }
 }

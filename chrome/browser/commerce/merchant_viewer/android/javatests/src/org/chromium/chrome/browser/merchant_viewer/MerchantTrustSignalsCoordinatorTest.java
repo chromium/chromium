@@ -131,6 +131,9 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Mock
     private MerchantTrustSignalsEvent mMockMerchantTrustSignalsEvent;
 
+    @Mock
+    private MerchantTrustDetailsTabCoordinator mMockDetailsTabCoordinator;
+
     @Captor
     private ArgumentCaptor<Callback> mOnMessageEnqueuedCallbackCaptor;
 
@@ -144,6 +147,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
+        doReturn("Test").when(mMockResources).getString(anyInt());
         doReturn("Test").when(mMockResources).getString(anyInt(), anyObject());
         doReturn("Test").when(mMockResources).getQuantityString(anyInt(), anyInt(), anyObject());
         doReturn(100).when(mMockResources).getDimensionPixelSize(any(Integer.class));
@@ -318,10 +322,31 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    public void testOnMessageEnqueued() {
+        MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
+        coordinator.onMessageEnqueued(null);
+        verify(mMockMerchantTrustStorage, times(0)).save(any(MerchantTrustSignalsEvent.class));
+
+        coordinator.onMessageEnqueued(new MerchantTrustMessageContext(mMockGurl, mMockWebContents));
+        verify(mMockMerchantTrustStorage, times(1)).save(any(MerchantTrustSignalsEvent.class));
+    }
+
+    @SmallTest
+    @Test
     public void testOnMessageDismissed() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
         coordinator.onMessageDismissed(DismissReason.TIMER);
         verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.TIMER));
+    }
+
+    @SmallTest
+    @Test
+    public void testOnMessagePrimaryAction() {
+        MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
+        coordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals);
+        verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
+        verify(mMockDetailsTabCoordinator, times(1))
+                .requestOpenSheet(any(GURL.class), any(String.class));
     }
 
     private void setMockTrustSignalsData(MerchantTrustSignals trustSignalsData) {
@@ -354,6 +379,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         return new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
                 mMockBottomSheetController, mMockDecorView, mMockTabModelSelector,
                 mMockMerchantMessageScheduler, mMockTabProvider, mMockMerchantTrustDataProvider,
-                mMockMerchantTrustStorage, mMockMetrics);
+                mMockMerchantTrustStorage, mMockMetrics, mMockDetailsTabCoordinator);
     }
 }
