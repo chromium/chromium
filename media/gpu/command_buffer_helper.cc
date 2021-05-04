@@ -48,10 +48,8 @@ class CommandBufferHelperImpl
 #endif  // defined(OS_MAC)
     );
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
-    // Use the shared image stub tracker instead of command buffer stub tracker
-    // since the created shared images could outlive the command buffer.
-    gpu::MemoryTracker* tracker = stub_->channel()->shared_image_stub();
-    tracker_ = std::make_unique<gpu::MemoryTypeTracker>(tracker);
+    tracker_ =
+        std::make_unique<gpu::MemoryTypeTracker>(stub_->GetMemoryTracker());
   }
 
   gl::GLContext* GetGLContext() override {

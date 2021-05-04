@@ -66,6 +66,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     }
     case DXGI_FORMAT_P010: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
+      output_pixel_format = PIXEL_FORMAT_ARGB;
 
       // TODO(liberato): handle case where we bind P010 directly (see dxva).
 
@@ -93,7 +94,6 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           // TODO(liberato): use the format checker, else bind P010.
           MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: 8 bit sRGB";
           output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-          output_pixel_format = PIXEL_FORMAT_ARGB;
           output_color_space = gfx::ColorSpace::CreateSRGB();
         } else {
           // Bind P010 directly, since we can't copy.
@@ -116,10 +116,9 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
         } else if (format_checker->CheckOutputFormatSupport(
                        DXGI_FORMAT_R10G10B10A2_UNORM)) {
-          MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: RGB10A2 HDR10/PQ";
+          MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: BGRA10 scRGBLinear";
           output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
-          output_pixel_format = PIXEL_FORMAT_XB30;
-          output_color_space = gfx::ColorSpace::CreateHDR10();
+          output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
         } else {
           // No support at all.  Just bind P010, and hope for the best.
           MEDIA_LOG(INFO, media_log)
@@ -150,10 +149,9 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   // If we're trying to produce an output texture that's different from what
   // the decoder is providing, then we need to copy it.  If sharing decoder
   // textures is not allowed, then copy either way.
-  bool needs_texture_copy =
-      !SupportsZeroCopy(gpu_preferences, workarounds) ||
-      (decoder_output_format != output_dxgi_format) ||
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
+  bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds) ||
+                            (decoder_output_format != output_dxgi_format) ||
+               base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
 
   MEDIA_LOG(INFO, media_log)
       << "D3D11VideoDecoder output color space: "
@@ -180,7 +178,8 @@ std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
-  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat());
+  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
+                                                   PixelFormat());
 }
 
 bool TextureSelector::WillCopyForTesting() const {
@@ -229,7 +228,9 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     return nullptr;
 
   return std::make_unique<CopyingTexture2DWrapper>(
-      size, std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat()),
+      size,
+      std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
+                                                PixelFormat()),
       video_processor_proxy_, out_texture, output_color_space_);
 }
 

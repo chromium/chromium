@@ -74,7 +74,9 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
-  DefaultTexture2DWrapper(const gfx::Size& size, DXGI_FORMAT dxgi_format);
+  DefaultTexture2DWrapper(const gfx::Size& size,
+                          DXGI_FORMAT dxgi_format,
+                          VideoPixelFormat pixel_format);
   ~DefaultTexture2DWrapper() override;
 
   Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -97,17 +99,36 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // can use the mailbox.
   class GpuResources {
    public:
-    GpuResources(OnErrorCB on_error_cb,
-                 GetCommandBufferHelperCB get_helper_cb,
-                 const std::vector<gpu::Mailbox>& mailboxes,
-                 const gfx::Size& size,
-                 DXGI_FORMAT dxgi_format,
-                 ComD3D11Texture2D texture,
-                 size_t array_slice);
+    GpuResources(OnErrorCB on_error_cb);
     ~GpuResources();
 
+    void Init(
+        GetCommandBufferHelperCB get_helper_cb,
+        const std::vector<gpu::Mailbox> mailboxes,
+        GLenum target,
+        gfx::Size size,
+        size_t textures_per_picture,
+        std::array<viz::ResourceFormat, VideoFrame::kMaxPlanes> texture_formats,
+        VideoPixelFormat pixel_format,
+        ComD3D11Texture2D texture,
+        size_t array_slice);
+
+    std::vector<uint32_t> service_ids_;
+
    private:
+    // Push a new |texture|, |array_slice| to |gl_image_|.
+    // Both |texture| and |array_slice| were set by Init.
+    void PushNewTexture();
+
+    // Notify our wrapper about |status|, if we haven't before.
+    void NotifyError(Status status);
+
+    // May be empty if we've already sent an error.
+    OnErrorCB on_error_cb_;
+
     scoped_refptr<CommandBufferHelper> helper_;
+    scoped_refptr<gl::GLImageDXGI> gl_image_;
+    EGLStreamKHR stream_;
 
     std::vector<std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>>
         shared_images_;
@@ -125,6 +146,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   base::SequenceBound<GpuResources> gpu_resources_;
   MailboxHolderArray mailbox_holders_;
   DXGI_FORMAT dxgi_format_;
+  VideoPixelFormat pixel_format_;
 
   base::WeakPtrFactory<DefaultTexture2DWrapper> weak_factory_{this};
 };
