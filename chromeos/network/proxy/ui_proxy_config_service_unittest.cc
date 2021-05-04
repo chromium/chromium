@@ -13,9 +13,9 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -106,16 +106,9 @@ class UIProxyConfigServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    shill_clients::InitializeFakes();
-    NetworkHandler::Initialize();
     ConfigureService(kTestUserWifiConfig);
     ConfigureService(kTestSharedWifiConfig);
     ConfigureService(kTestUnconfiguredWifiConfig);
-  }
-
-  void TearDown() override {
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
   }
 
   ~UIProxyConfigServiceTest() override = default;
@@ -149,6 +142,7 @@ class UIProxyConfigServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 TEST_F(UIProxyConfigServiceTest, UnknownNetwork) {

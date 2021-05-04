@@ -10,13 +10,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -94,10 +94,8 @@ class NetworkConnectTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    shill_clients::InitializeFakes();
     LoginState::Initialize();
     SetupDefaultShillState();
-    NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
 
     mock_delegate_ = std::make_unique<MockDelegate>();
@@ -114,8 +112,6 @@ class NetworkConnectTest : public testing::Test {
     NetworkConnect::Shutdown();
     mock_delegate_.reset();
     LoginState::Shutdown();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -193,6 +189,7 @@ class NetworkConnectTest : public testing::Test {
   std::unique_ptr<MockDelegate> mock_delegate_;
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
 

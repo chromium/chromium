@@ -5,10 +5,10 @@
 #include "chromeos/network/network_event_log.h"
 
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,15 +19,8 @@ namespace chromeos {
 class NetworkEventLogTest : public testing::Test {
  public:
   void SetUp() override {
-    shill_clients::InitializeFakes();
     SetupDefaultShillState();
-    NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
-  }
-
-  void TearDown() override {
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
   }
 
   const NetworkState* GetNetworkState(const std::string& service_path) {
@@ -108,6 +101,7 @@ class NetworkEventLogTest : public testing::Test {
   }
 
   base::test::TaskEnvironment environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 // See FakeShillManagerClient for default fake networks.

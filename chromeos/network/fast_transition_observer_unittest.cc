@@ -6,10 +6,9 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/fast_transition_observer.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +20,6 @@ namespace test {
 class FastTransitionObserverTest : public ::testing::Test {
  public:
   FastTransitionObserverTest() {
-    shill_clients::InitializeFakes();
-    network_state_handler_ = NetworkStateHandler::InitializeForTest();
-    NetworkHandler::Initialize();
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     local_state_->registry()->RegisterBooleanPref(
         prefs::kDeviceWiFiFastTransitionEnabled, false);
@@ -31,12 +27,8 @@ class FastTransitionObserverTest : public ::testing::Test {
   }
 
   ~FastTransitionObserverTest() override {
-    network_state_handler_->Shutdown();
     observer_.reset();
     local_state_.reset();
-    network_state_handler_.reset();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
   }
 
   TestingPrefServiceSimple* local_state() { return local_state_.get(); }
@@ -49,7 +41,7 @@ class FastTransitionObserverTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<FastTransitionObserver> observer_;
 
