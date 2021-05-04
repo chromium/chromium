@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.fonts.FontPreloader;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -37,9 +38,7 @@ import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Handles the First Run Experience sequences shown to the user launching Chrome for the first time.
@@ -118,8 +117,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private boolean mFlowIsKnown;
     private boolean mPostNativeAndPolicyPagesCreated;
     private boolean mNativeSideIsInitialized;
-    private Set<FirstRunFragment> mPagesToNotifyOfNativeInit;
-    private boolean mDeferredCompleteFRE;
 
     private FirstRunFlowSequencer mFirstRunFlowSequencer;
 
@@ -156,6 +153,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         ? new TosAndUmaFirstRunFragmentWithEnterpriseSupport.Page()
                         : new ToSAndUMAFirstRunFragment.Page());
         mFreProgressStates.add(FRE_PROGRESS_WELCOME_SHOWN);
+        mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
+        mPager.setAdapter(mPagerAdapter);
         // Other pages will be created by createPostNativeAndPoliciesPageSequence() after
         // native and policy service have been initialized.
     }
@@ -176,11 +175,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      * @see #areNativeAndPoliciesInitialized()
      */
     private void createPostNativeAndPoliciesPageSequence() {
-        // Note: Can't just use POST_NATIVE_SETUP_NEEDED for the early return, because this
-        // populates |mPages| which needs to be done even if onNativeDependenciesFullyInitialized()
-        // was performed in a previous session.
-        if (mPostNativeAndPolicyPagesCreated) return;
-
+        assert !mPostNativeAndPolicyPagesCreated;
         assert areNativeAndPoliciesInitialized();
         mFirstRunFlowSequencer.onNativeAndPoliciesInitialized(mFreProperties);
 
@@ -260,28 +255,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             @Override
             public void onFlowIsKnown(Bundle freProperties) {
                 mFlowIsKnown = true;
-                if (freProperties == null) {
-                    completeFirstRunExperience();
-                    return;
-                }
-
                 mFreProperties = freProperties;
-                createPageSequence();
-                if (areNativeAndPoliciesInitialized()) {
-                    createPostNativeAndPoliciesPageSequence();
-                }
 
-                if (mPages.size() == 0) {
-                    completeFirstRunExperience();
-                    return;
-                }
-
-                mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
-                mPager.setAdapter(mPagerAdapter);
-
-                if (areNativeAndPoliciesInitialized()) {
-                    skipPagesIfNecessary();
-                }
+                onInternalStateChanged();
 
                 recordFreProgressHistogram(mFreProgressStates.get(0));
                 long inflationCompletion = SystemClock.elapsedRealtime();
@@ -334,36 +310,36 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private void onNativeDependenciesFullyInitialized() {
         mNativeSideIsInitialized = true;
-        if (mDeferredCompleteFRE) {
-            completeFirstRunExperience();
-            mDeferredCompleteFRE = false;
-        } else if (mFlowIsKnown) {
-            boolean doCreatePostPolicyPageSequence = areNativeAndPoliciesInitialized();
-            // Note: If mFlowIsKnown is false, then we're not ready to create the post native page
-            // sequence - in that case this will be done when onFlowIsKnown() gets called.
-            if (doCreatePostPolicyPageSequence) {
-                createPostNativeAndPoliciesPageSequence();
-            }
 
-            if (mPagesToNotifyOfNativeInit != null) {
-                for (FirstRunFragment page : mPagesToNotifyOfNativeInit) {
-                    page.onNativeInitialized();
-                }
-                mPagesToNotifyOfNativeInit = null;
-            }
-
-            if (doCreatePostPolicyPageSequence) {
-                skipPagesIfNecessary();
-            }
-        }
+        onInternalStateChanged();
     }
 
     @Override
     protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
         super.onPolicyLoadListenerAvailable(onDevicePolicyFound);
 
-        if (areNativeAndPoliciesInitialized()) {
+        onInternalStateChanged();
+    }
+
+    private void onInternalStateChanged() {
+        if (!mFlowIsKnown) {
+            return;
+        }
+
+        if (mNativeSideIsInitialized && mFreProperties == null) {
+            completeFirstRunExperience();
+            return;
+        }
+
+        if (mPagerAdapter == null) {
+            createPageSequence();
+        }
+
+        if (!mPostNativeAndPolicyPagesCreated && areNativeAndPoliciesInitialized()) {
             createPostNativeAndPoliciesPageSequence();
+        }
+
+        if (areNativeAndPoliciesInitialized()) {
             skipPagesIfNecessary();
         }
     }
@@ -380,15 +356,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (!(fragment instanceof FirstRunFragment)) return;
 
         FirstRunFragment page = (FirstRunFragment) fragment;
-        if (mNativeSideIsInitialized) {
-            page.onNativeInitialized();
-            return;
-        }
-
-        if (mPagesToNotifyOfNativeInit == null) {
-            mPagesToNotifyOfNativeInit = new HashSet<>();
-        }
-        mPagesToNotifyOfNativeInit.add(page);
+        getLifecycleDispatcher().register(new NativeInitObserver() {
+            @Override
+            public void onFinishNativeInitialization() {
+                page.onNativeInitialized();
+            }
+        });
     }
 
     @Override
@@ -466,11 +439,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void completeFirstRunExperience() {
-        if (!mNativeSideIsInitialized) {
-            mDeferredCompleteFRE = true;
-            return;
-        }
-
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         if (!TextUtils.isEmpty(mResultSignInAccountName)) {
@@ -631,8 +599,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void skipPagesIfNecessary() {
-        if (mPagerAdapter == null) return;
-
         boolean shouldSkip = mPages.get(mPager.getCurrentItem()).shouldSkipPageOnCreate();
         while (shouldSkip) {
             if (!jumpToPage(mPager.getCurrentItem() + 1)) return;

@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
@@ -49,7 +50,16 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         }
     }
 
+    /** Alerts about some methods once ToSAndUMAFirstRunFragment executes them. */
+    public interface Observer {
+        /** See {@link #onNativeInitialized}. */
+        public void onNativeInitialized();
+    }
+
     private static boolean sShowUmaCheckBoxForTesting;
+
+    @Nullable
+    private static ToSAndUMAFirstRunFragment.Observer sObserver;
 
     private boolean mNativeInitialized;
     private boolean mTosButtonClicked;
@@ -174,6 +184,10 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
         mNativeInitialized = true;
         tryMarkTermsAccepted(false);
+
+        if (sObserver != null) {
+            sObserver.onNativeInitialized();
+        }
     }
 
     @Override
@@ -265,5 +279,11 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
     @VisibleForTesting
     public static void setShowUmaCheckBoxForTesting(boolean showForTesting) {
         sShowUmaCheckBoxForTesting = showForTesting;
+    }
+
+    @VisibleForTesting
+    public static void setObserverForTesting(ToSAndUMAFirstRunFragment.Observer observer) {
+        assert sObserver == null;
+        sObserver = observer;
     }
 }
