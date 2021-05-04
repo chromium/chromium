@@ -37,6 +37,7 @@ const CGFloat kIdentityControlMaxWidth = 327;
 #pragma mark - Public
 
 - (void)viewDidLoad {
+  self.bannerImage = [UIImage imageNamed:@"signin_screen_banner"];
   self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);
   if (!self.primaryActionString) {
