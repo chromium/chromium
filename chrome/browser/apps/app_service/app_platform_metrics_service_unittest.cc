@@ -250,6 +250,37 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         time_delta, count);
   }
 
+  void VerifyAppActivatedCount(int count, AppTypeName app_type_name) {
+    DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
+    std::string key = GetAppTypeHistogramName(app_type_name);
+
+    base::Optional<int> activated_count = update->FindIntPath(key);
+    if (count == 0) {
+      EXPECT_FALSE(activated_count.has_value());
+      return;
+    }
+
+    ASSERT_TRUE(activated_count.has_value());
+    EXPECT_EQ(count, activated_count.value());
+  }
+
+  void VerifyAppActivatedCountHistogram(base::HistogramBase::Count count,
+                                        AppTypeName app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
+            app_type_name),
+        count);
+  }
+
+  void VerifyAppActivatedHistogram(int count,
+                                   base::HistogramBase::Count expected_count,
+                                   AppTypeName app_type_name) {
+    histogram_tester().ExpectBucketCount(
+        AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
+            app_type_name),
+        count, expected_count);
+  }
+
   void VerifyAppUsageTimeCountHistogram(base::HistogramBase::Count count,
                                         AppTypeName app_type_name) {
     histogram_tester_.ExpectTotalCount(
@@ -352,8 +383,10 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
   // Set the browser window active.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kActiveInstanceState);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
   // Set the browser window running in the background.
   ModifyInstance(extension_misc::kChromeAppId,
                  browser1->window()->GetNativeWindow(), kInactiveInstanceState);
@@ -368,8 +401,10 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
 
   ModifyInstance(extension_misc::kChromeAppId,
                  browser2->window()->GetNativeWindow(), kActiveInstanceState);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kChromeBrowser);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
   ModifyInstance(extension_misc::kChromeAppId,
                  browser2->window()->GetNativeWindow(),
                  apps::InstanceState::kDestroyed);
@@ -385,6 +420,10 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
                                     /*expected_count=*/1,
                                     AppTypeName::kChromeBrowser);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/1,
+                              AppTypeName::kChromeBrowser);
 }
 
 // Tests the UMA metrics when launching an app in one day .
@@ -397,8 +436,11 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
+
   // Close the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(50));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
@@ -411,7 +453,11 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
                                          AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
                                     /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedHistogram(/*count*/ 1, /*expected_count=*/1,
+                              AppTypeName::kArc);
   VerifyAppRunningDuration(base::TimeDelta(), AppTypeName::kArc);
+  VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 
   // One more day passes.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
@@ -419,6 +465,7 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
                                          AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
                                     /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
 }
 
 // Tests the UMA metrics when launching an app multiple days.
@@ -431,10 +478,16 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
+
   // One day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
                                          AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedHistogram(/*count*/ 1, /*expected_count=*/1,
+                              AppTypeName::kArc);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
 
@@ -456,7 +509,9 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
                                     /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(2),
                                     /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
   VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
+  VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 }
 
 // Tests the UMA metrics when an app window is reactivated.
@@ -470,6 +525,7 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
+  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
 
   // Inactiva the window after running one hour.
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
@@ -478,9 +534,11 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   // Activa the window after running one hour.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kArc);
 
   // Close the window after running half hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(20));
   ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
@@ -495,6 +553,9 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   VerifyAppRunningDurationHistogram(
       base::TimeDelta::FromHours(1) + base::TimeDelta::FromMinutes(30),
       /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/1,
+                              AppTypeName::kArc);
 
   // 20 hours passes.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(20));
@@ -504,20 +565,29 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   window->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
 
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kArc);
+
   // Inactiva the window after running one hour.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(50));
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Activa the window after running one hour.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   ModifyInstance(app_id, window.get(), kActiveInstanceState);
 
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kArc);
+
   // One more day passes.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   VerifyAppRunningDurationCountHistogram(/*expected_count=*/2,
                                          AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
                                     /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/2,
+                              AppTypeName::kArc);
 
   // Inactiva the window after running one hour.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(3));
@@ -536,7 +606,9 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
                                          AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(3),
                                     /*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
   VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
+  VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTime) {

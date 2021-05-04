@@ -40,6 +40,7 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAppPlatformMetricsDayId, 0);
   registry->RegisterDictionaryPref(kAppRunningDuration);
+  registry->RegisterDictionaryPref(kAppActivatedCount);
 }
 
 // static

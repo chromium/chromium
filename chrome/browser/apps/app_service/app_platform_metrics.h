@@ -43,6 +43,7 @@ enum class AppTypeName {
 };
 
 extern const char kAppRunningDuration[];
+extern const char kAppActivatedCount[];
 
 extern const char kArcHistogramName[];
 extern const char kBuiltInHistogramName[];
@@ -83,6 +84,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // UMA metrics name for apps running duration in Chrome OS.
   static std::string GetAppsRunningDurationHistogramNameForTest(
+      AppTypeName app_type_name);
+
+  // UMA metrics name for app window activated count in Chrome OS.
+  static std::string GetAppsActivatedCountHistogramNameForTest(
       AppTypeName app_type_name);
 
   // UMA metrics name for apps usage time in Chrome OS.
@@ -129,12 +134,15 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   bool should_record_metrics_on_new_day_ = false;
   bool first_report_on_current_device_ = false;
+
   bool should_refresh_duration_pref = false;
+  bool should_refresh_activated_count_pref = false;
 
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
   std::map<aura::Window*, RunningStartTime> running_start_time_;
   std::map<AppTypeName, base::TimeDelta> running_duration_;
+  std::map<AppTypeName, int> activated_count_;
 
   // |start_time_per_five_minutes_| and |running_time_per_five_minutes_| are
   // used for accumulating app running duration per 5 minutes interval.

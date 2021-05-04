@@ -36,6 +36,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="WebApp" summary="Web apps"/>
 </variants>
 
+<histogram name="Apps.ActivatedCount.{AppType}" units="ms"
+    expires_after="2021-10-28">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    Recorded the app window activated times for {AppType} in Chrome OS. This is
+    logged when more than 24 hours pass after last log, or during the system
+    startup phase if more than 24 hours passed after last log.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
 <histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
     enum="Boolean" expires_after="M95">
   <owner>dmurph@chromium.org</owner>

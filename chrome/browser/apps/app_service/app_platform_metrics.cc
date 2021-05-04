@@ -31,6 +31,7 @@ namespace {
 // UMA metrics for a snapshot count of installed apps.
 constexpr char kAppsCountHistogramPrefix[] = "Apps.AppsCount.";
 constexpr char kAppsRunningDurationHistogramPrefix[] = "Apps.RunningDuration.";
+constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 
 constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
@@ -259,6 +260,8 @@ namespace apps {
 
 constexpr char kAppRunningDuration[] =
     "app_platform_metrics.app_running_duration";
+constexpr char kAppActivatedCount[] =
+    "app_platform_metrics.app_activated_count";
 
 constexpr char kArcHistogramName[] = "Arc";
 constexpr char kBuiltInHistogramName[] = "BuiltIn";
@@ -360,6 +363,12 @@ std::string AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
 }
 
 // static
+std::string AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
+    AppTypeName app_type_name) {
+  return kAppsActivatedCountHistogramPrefix +
+         GetAppTypeHistogramName(app_type_name);
+}
+
 std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsUsageTimeHistogramPrefix + GetAppTypeHistogramName(app_type_name);
@@ -379,13 +388,26 @@ void AppPlatformMetrics::OnNewDay() {
 }
 
 void AppPlatformMetrics::OnTenMinutes() {
+  if (should_refresh_activated_count_pref) {
+    should_refresh_activated_count_pref = false;
+    DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                                kAppActivatedCount);
+    for (auto it : activated_count_) {
+      std::string app_type_name = GetAppTypeHistogramName(it.first);
+      DCHECK(!app_type_name.empty());
+      activated_count_update->SetIntKey(app_type_name, it.second);
+    }
+  }
+
   if (should_refresh_duration_pref) {
     should_refresh_duration_pref = false;
-    DictionaryPrefUpdate update(profile_->GetPrefs(), kAppRunningDuration);
+    DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                                 kAppRunningDuration);
     for (auto it : running_duration_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
-      update->SetPath(app_type_name, util::TimeDeltaToValue(it.second));
+      running_duration_update->SetPath(app_type_name,
+                                       util::TimeDeltaToValue(it.second));
     }
   }
 }
@@ -439,6 +461,9 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
       running_start_time_[update.Window()].start_time = base::TimeTicks::Now();
       running_start_time_[update.Window()].app_type_name = app_type_name;
 
+      ++activated_count_[app_type_name];
+      should_refresh_activated_count_pref = true;
+
       start_time_per_five_minutes_[update.Window()].start_time =
           base::TimeTicks::Now();
       start_time_per_five_minutes_[update.Window()].app_type_name =
@@ -471,7 +496,11 @@ void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
 }
 
 void AppPlatformMetrics::InitRunningDuration() {
-  DictionaryPrefUpdate update(profile_->GetPrefs(), kAppRunningDuration);
+  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                               kAppRunningDuration);
+  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                              kAppActivatedCount);
+
   for (auto app_type_name : GetAppTypeNameSet()) {
     std::string key = GetAppTypeHistogramName(app_type_name);
     if (key.empty()) {
@@ -479,19 +508,28 @@ void AppPlatformMetrics::InitRunningDuration() {
     }
 
     base::Optional<base::TimeDelta> unreported_duration =
-        util::ValueToTimeDelta(update->FindPath(key));
-    if (!unreported_duration.has_value()) {
-      continue;
+        util::ValueToTimeDelta(running_duration_update->FindPath(key));
+    if (unreported_duration.has_value()) {
+      running_duration_[app_type_name] = unreported_duration.value();
     }
 
-    running_duration_[app_type_name] = unreported_duration.value();
+    base::Optional<int> count = activated_count_update->FindIntPath(key);
+    if (count.has_value()) {
+      activated_count_[app_type_name] = count.value();
+    }
   }
 }
 
 void AppPlatformMetrics::ClearRunningDuration() {
   running_duration_.clear();
-  DictionaryPrefUpdate update(profile_->GetPrefs(), kAppRunningDuration);
-  update->Clear();
+  activated_count_.clear();
+
+  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                               kAppRunningDuration);
+  running_duration_update->Clear();
+  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                              kAppActivatedCount);
+  activated_count_update->Clear();
 }
 
 void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
@@ -541,6 +579,13 @@ void AppPlatformMetrics::RecordAppsRunningDuration() {
         kAppsRunningDurationHistogramPrefix + GetAppTypeHistogramName(it.first),
         it.second, kMinDuration, kMaxDuration, kDurationBuckets);
   }
+
+  for (auto it : activated_count_) {
+    base::UmaHistogramCounts10000(
+        kAppsActivatedCountHistogramPrefix + GetAppTypeHistogramName(it.first),
+        it.second);
+  }
+
   ClearRunningDuration();
 }
 
