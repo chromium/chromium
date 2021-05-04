@@ -161,6 +161,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1205167")
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
         final Activity activity = mActivityTestRule.getActivity();
