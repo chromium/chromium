@@ -55,11 +55,20 @@ class PrivacySandboxSettingsTest : public testing::Test {
   void SetUp() override {
     InitializePrefsBeforeStart();
 
+    // Disable the sandbox feature to prevent profile creation automatically
+    // creating another copy of the service.
+    // TODO(crbug.com/1152336): When the feature has solidified, inject the
+    // service into the profile as required for tests.
+    feature_list()->InitAndDisableFeature(features::kPrivacySandboxSettings);
+
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
         HostContentSettingsMapFactory::GetForProfile(profile()),
         CookieSettingsFactory::GetForProfile(profile()).get(),
         profile()->GetPrefs(), policy_service(), sync_service(),
         identity_test_env()->identity_manager());
+
+    // Reset so tests can apply their desired feature state.
+    feature_list()->Reset();
   }
 
   virtual void InitializePrefsBeforeStart() {}

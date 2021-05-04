@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_event_logger.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -457,10 +458,11 @@ class FlocIdProviderSimpleFeatureParamUnitTest : public FlocIdProviderUnitTest {
  public:
   FlocIdProviderSimpleFeatureParamUnitTest() {
     feature_list_.Reset();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kFederatedLearningOfCohorts,
-        {{"update_interval", "24h"},
-         {"minimum_history_domain_size_required", "1"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kFederatedLearningOfCohorts,
+          {{"update_interval", "24h"},
+           {"minimum_history_domain_size_required", "1"}}}},
+        {{features::kPrivacySandboxSettings}});
   }
 };
 

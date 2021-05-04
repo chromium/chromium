@@ -763,10 +763,9 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
 
 // Enables the privacy sandbox settings page.
 const base::Feature kPrivacySandboxSettings{"PrivacySandboxSettings",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<std::string> kPrivacySandboxSettingsURL{
-    &kPrivacySandboxSettings, "website-url",
-    "https://web.dev/digging-into-the-privacy-sandbox/"};
+    &kPrivacySandboxSettings, "website-url", "https://www.privacysandbox.com"};
 
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
