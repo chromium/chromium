@@ -1,0 +1,785 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_not_equals: overflow-block should be equivalent to not (overflow-block: none) got disallowed value false
+Found 780 tests; 568 PASS, 212 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS subtest_1
+FAIL subtest_2 assert_true: expected true got false
+PASS subtest_3
+PASS subtest_4
+PASS subtest_5
+PASS subtest_6
+PASS subtest_7
+PASS subtest_8
+FAIL subtest_9 assert_true: expected true got false
+FAIL subtest_10 assert_true: expected true got false
+PASS subtest_11
+PASS subtest_12
+PASS subtest_13
+PASS subtest_14
+PASS subtest_15
+PASS subtest_16
+PASS subtest_17
+PASS subtest_18
+PASS subtest_19
+PASS subtest_20
+PASS subtest_21
+PASS subtest_22
+PASS subtest_23
+PASS subtest_24
+PASS subtest_25
+PASS subtest_26
+PASS subtest_27
+PASS subtest_28
+PASS subtest_29
+PASS subtest_30
+PASS subtest_31
+PASS subtest_32
+FAIL subtest_33 assert_true: expected true got false
+FAIL subtest_34 assert_true: expected true got false
+FAIL subtest_35 assert_true: expected true got false
+FAIL subtest_36 assert_true: expected true got false
+FAIL subtest_37 assert_true: expected true got false
+FAIL subtest_38 assert_true: expected true got false
+FAIL subtest_39 assert_true: expected true got false
+FAIL subtest_40 assert_true: expected true got false
+PASS subtest_41
+PASS subtest_42
+PASS subtest_43
+PASS subtest_44
+PASS subtest_45
+PASS subtest_46
+PASS subtest_47
+FAIL subtest_48 assert_true: expected true got false
+FAIL subtest_49 assert_true: expected true got false
+FAIL subtest_50 assert_true: expected true got false
+FAIL subtest_51 assert_true: expected true got false
+FAIL subtest_52 assert_true: expected true got false
+FAIL subtest_53 assert_true: expected true got false
+FAIL subtest_54 assert_true: expected true got false
+FAIL subtest_55 assert_true: expected true got false
+PASS subtest_56
+PASS subtest_57
+PASS subtest_58
+PASS subtest_59
+PASS subtest_60
+PASS subtest_61
+PASS subtest_62
+PASS subtest_63
+FAIL subtest_64 assert_true: expected true got false
+FAIL subtest_65 assert_true: expected true got false
+FAIL subtest_66 assert_true: expected true got false
+FAIL subtest_67 assert_true: expected true got false
+FAIL subtest_68 assert_true: expected true got false
+FAIL subtest_69 assert_true: expected true got false
+FAIL subtest_70 assert_true: expected true got false
+FAIL subtest_71 assert_true: expected true got false
+PASS subtest_72
+PASS subtest_73
+PASS subtest_74
+PASS subtest_75
+PASS subtest_76
+PASS subtest_77
+PASS subtest_78
+FAIL subtest_79 assert_true: expected true got false
+FAIL subtest_80 assert_true: expected true got false
+FAIL subtest_81 assert_true: expected true got false
+FAIL subtest_82 assert_true: expected true got false
+FAIL subtest_83 assert_true: expected true got false
+FAIL subtest_84 assert_true: expected true got false
+FAIL subtest_85 assert_true: expected true got false
+FAIL subtest_86 assert_true: expected true got false
+PASS subtest_87
+PASS subtest_88
+PASS subtest_89
+PASS subtest_90
+PASS subtest_91
+PASS subtest_92
+PASS subtest_93
+PASS subtest_94
+FAIL subtest_95 assert_true: expected true got false
+FAIL subtest_96 assert_true: expected true got false
+FAIL subtest_97 assert_true: expected true got false
+FAIL subtest_98 assert_true: expected true got false
+FAIL subtest_99 assert_true: expected true got false
+FAIL subtest_100 assert_true: expected true got false
+FAIL subtest_101 assert_true: expected true got false
+FAIL subtest_102 assert_true: expected true got false
+PASS subtest_103
+PASS subtest_104
+PASS subtest_105
+PASS subtest_106
+PASS subtest_107
+PASS subtest_108
+PASS subtest_109
+PASS subtest_110
+PASS subtest_111
+PASS subtest_112
+PASS subtest_113
+PASS subtest_114
+PASS subtest_115
+PASS subtest_116
+PASS subtest_117
+PASS subtest_118
+PASS subtest_119
+PASS subtest_120
+PASS subtest_121
+PASS subtest_122
+PASS subtest_123
+PASS subtest_124
+PASS subtest_125
+PASS subtest_126
+PASS subtest_127
+FAIL subtest_128 assert_true: expected true got false
+FAIL subtest_129 assert_true: expected true got false
+FAIL subtest_130 assert_true: expected true got false
+FAIL subtest_131 assert_true: expected true got false
+FAIL subtest_132 assert_true: expected true got false
+FAIL subtest_133 assert_true: expected true got false
+FAIL subtest_134 assert_true: expected true got false
+FAIL subtest_135 assert_true: expected true got false
+PASS subtest_136
+PASS subtest_137
+PASS subtest_138
+PASS subtest_139
+PASS subtest_140
+PASS subtest_141
+PASS subtest_142
+FAIL subtest_143 assert_true: expected true got false
+FAIL subtest_144 assert_true: expected true got false
+FAIL subtest_145 assert_true: expected true got false
+FAIL subtest_146 assert_true: expected true got false
+FAIL subtest_147 assert_true: expected true got false
+FAIL subtest_148 assert_true: expected true got false
+FAIL subtest_149 assert_true: expected true got false
+FAIL subtest_150 assert_true: expected true got false
+PASS subtest_151
+PASS subtest_152
+PASS subtest_153
+PASS subtest_154
+PASS subtest_155
+PASS subtest_156
+PASS subtest_157
+PASS subtest_158
+FAIL subtest_159 assert_true: expected true got false
+FAIL subtest_160 assert_true: expected true got false
+FAIL subtest_161 assert_true: expected true got false
+FAIL subtest_162 assert_true: expected true got false
+FAIL subtest_163 assert_true: expected true got false
+FAIL subtest_164 assert_true: expected true got false
+FAIL subtest_165 assert_true: expected true got false
+FAIL subtest_166 assert_true: expected true got false
+PASS subtest_167
+PASS subtest_168
+PASS subtest_169
+PASS subtest_170
+PASS subtest_171
+PASS subtest_172
+PASS subtest_173
+FAIL subtest_174 assert_true: expected true got false
+FAIL subtest_175 assert_true: expected true got false
+FAIL subtest_176 assert_true: expected true got false
+FAIL subtest_177 assert_true: expected true got false
+FAIL subtest_178 assert_true: expected true got false
+FAIL subtest_179 assert_true: expected true got false
+FAIL subtest_180 assert_true: expected true got false
+FAIL subtest_181 assert_true: expected true got false
+PASS subtest_182
+PASS subtest_183
+PASS subtest_184
+PASS subtest_185
+PASS subtest_186
+PASS subtest_187
+PASS subtest_188
+PASS subtest_189
+FAIL subtest_190 assert_true: expected true got false
+FAIL subtest_191 assert_true: expected true got false
+FAIL subtest_192 assert_true: expected true got false
+FAIL subtest_193 assert_true: expected true got false
+FAIL subtest_194 assert_true: expected true got false
+FAIL subtest_195 assert_true: expected true got false
+FAIL subtest_196 assert_true: expected true got false
+FAIL subtest_197 assert_true: expected true got false
+PASS subtest_198
+PASS subtest_199
+PASS subtest_200
+PASS subtest_201
+PASS subtest_202
+PASS subtest_203
+PASS subtest_204
+PASS subtest_205
+PASS subtest_206
+PASS subtest_207
+PASS subtest_208
+PASS subtest_209
+PASS subtest_210
+PASS subtest_211
+PASS subtest_212
+PASS subtest_213
+PASS subtest_214
+PASS subtest_215
+PASS subtest_216
+PASS subtest_217
+PASS subtest_218
+PASS subtest_219
+PASS subtest_220
+PASS subtest_221
+PASS subtest_222
+FAIL subtest_223 assert_true: expected true got false
+FAIL subtest_224 assert_true: expected true got false
+FAIL subtest_225 assert_true: expected true got false
+FAIL subtest_226 assert_true: expected true got false
+FAIL subtest_227 assert_true: expected true got false
+FAIL subtest_228 assert_true: expected true got false
+FAIL subtest_229 assert_true: expected true got false
+FAIL subtest_230 assert_true: expected true got false
+PASS subtest_231
+PASS subtest_232
+PASS subtest_233
+PASS subtest_234
+PASS subtest_235
+PASS subtest_236
+PASS subtest_237
+FAIL subtest_238 assert_true: expected true got false
+FAIL subtest_239 assert_true: expected true got false
+FAIL subtest_240 assert_true: expected true got false
+FAIL subtest_241 assert_true: expected true got false
+FAIL subtest_242 assert_true: expected true got false
+FAIL subtest_243 assert_true: expected true got false
+FAIL subtest_244 assert_true: expected true got false
+FAIL subtest_245 assert_true: expected true got false
+PASS subtest_246
+PASS subtest_247
+PASS subtest_248
+PASS subtest_249
+PASS subtest_250
+PASS subtest_251
+PASS subtest_252
+PASS subtest_253
+FAIL subtest_254 assert_true: expected true got false
+FAIL subtest_255 assert_true: expected true got false
+FAIL subtest_256 assert_true: expected true got false
+FAIL subtest_257 assert_true: expected true got false
+FAIL subtest_258 assert_true: expected true got false
+FAIL subtest_259 assert_true: expected true got false
+FAIL subtest_260 assert_true: expected true got false
+FAIL subtest_261 assert_true: expected true got false
+PASS subtest_262
+PASS subtest_263
+PASS subtest_264
+PASS subtest_265
+PASS subtest_266
+PASS subtest_267
+PASS subtest_268
+FAIL subtest_269 assert_true: expected true got false
+FAIL subtest_270 assert_true: expected true got false
+FAIL subtest_271 assert_true: expected true got false
+FAIL subtest_272 assert_true: expected true got false
+FAIL subtest_273 assert_true: expected true got false
+FAIL subtest_274 assert_true: expected true got false
+FAIL subtest_275 assert_true: expected true got false
+FAIL subtest_276 assert_true: expected true got false
+PASS subtest_277
+PASS subtest_278
+PASS subtest_279
+PASS subtest_280
+PASS subtest_281
+PASS subtest_282
+PASS subtest_283
+PASS subtest_284
+FAIL subtest_285 assert_true: expected true got false
+FAIL subtest_286 assert_true: expected true got false
+FAIL subtest_287 assert_true: expected true got false
+FAIL subtest_288 assert_true: expected true got false
+FAIL subtest_289 assert_true: expected true got false
+FAIL subtest_290 assert_true: expected true got false
+FAIL subtest_291 assert_true: expected true got false
+FAIL subtest_292 assert_true: expected true got false
+PASS subtest_293
+PASS subtest_294
+PASS subtest_295
+PASS subtest_296
+PASS subtest_297
+PASS subtest_298
+PASS subtest_299
+PASS subtest_300
+PASS subtest_301
+PASS subtest_302
+PASS subtest_303
+PASS subtest_304
+PASS subtest_305
+PASS subtest_306
+PASS subtest_307
+PASS subtest_308
+PASS subtest_309
+PASS subtest_310
+PASS subtest_311
+PASS subtest_312
+PASS subtest_313
+PASS subtest_314
+PASS subtest_315
+PASS subtest_316
+PASS subtest_317
+FAIL subtest_318 assert_true: expected true got false
+FAIL subtest_319 assert_true: expected true got false
+FAIL subtest_320 assert_true: expected true got false
+FAIL subtest_321 assert_true: expected true got false
+FAIL subtest_322 assert_true: expected true got false
+FAIL subtest_323 assert_true: expected true got false
+FAIL subtest_324 assert_true: expected true got false
+FAIL subtest_325 assert_true: expected true got false
+PASS subtest_326
+PASS subtest_327
+PASS subtest_328
+PASS subtest_329
+PASS subtest_330
+PASS subtest_331
+PASS subtest_332
+FAIL subtest_333 assert_true: expected true got false
+FAIL subtest_334 assert_true: expected true got false
+FAIL subtest_335 assert_true: expected true got false
+FAIL subtest_336 assert_true: expected true got false
+FAIL subtest_337 assert_true: expected true got false
+FAIL subtest_338 assert_true: expected true got false
+FAIL subtest_339 assert_true: expected true got false
+FAIL subtest_340 assert_true: expected true got false
+PASS subtest_341
+PASS subtest_342
+PASS subtest_343
+PASS subtest_344
+PASS subtest_345
+PASS subtest_346
+PASS subtest_347
+PASS subtest_348
+FAIL subtest_349 assert_true: expected true got false
+FAIL subtest_350 assert_true: expected true got false
+FAIL subtest_351 assert_true: expected true got false
+FAIL subtest_352 assert_true: expected true got false
+FAIL subtest_353 assert_true: expected true got false
+FAIL subtest_354 assert_true: expected true got false
+FAIL subtest_355 assert_true: expected true got false
+FAIL subtest_356 assert_true: expected true got false
+PASS subtest_357
+PASS subtest_358
+PASS subtest_359
+PASS subtest_360
+PASS subtest_361
+PASS subtest_362
+PASS subtest_363
+FAIL subtest_364 assert_true: expected true got false
+FAIL subtest_365 assert_true: expected true got false
+FAIL subtest_366 assert_true: expected true got false
+FAIL subtest_367 assert_true: expected true got false
+FAIL subtest_368 assert_true: expected true got false
+FAIL subtest_369 assert_true: expected true got false
+FAIL subtest_370 assert_true: expected true got false
+FAIL subtest_371 assert_true: expected true got false
+PASS subtest_372
+PASS subtest_373
+PASS subtest_374
+PASS subtest_375
+PASS subtest_376
+PASS subtest_377
+PASS subtest_378
+PASS subtest_379
+FAIL subtest_380 assert_true: expected true got false
+FAIL subtest_381 assert_true: expected true got false
+FAIL subtest_382 assert_true: expected true got false
+FAIL subtest_383 assert_true: expected true got false
+FAIL subtest_384 assert_true: expected true got false
+FAIL subtest_385 assert_true: expected true got false
+FAIL subtest_386 assert_true: expected true got false
+FAIL subtest_387 assert_true: expected true got false
+PASS subtest_388
+PASS subtest_389
+PASS subtest_390
+PASS subtest_391
+PASS subtest_392
+PASS subtest_393
+PASS subtest_394
+PASS subtest_395: all and (width: 117px) should apply
+FAIL subtest_396: all and (width = 117px) should apply assert_true: expected true got false
+PASS subtest_397: all and (width: 118px) should not apply
+PASS subtest_398: all and (width: 116px) should not apply
+PASS subtest_399: all and (width = 118px) should not apply
+PASS subtest_400: all and (width = 116px) should not apply
+PASS subtest_401: all and (min-width: 117px) should apply
+PASS subtest_402: all and (min-width: 118px) should not apply
+PASS subtest_403: all and (min-width: 116px) should apply
+PASS subtest_404: all and (max-width: 117px) should apply
+PASS subtest_405: all and (max-width: 118px) should apply
+PASS subtest_406: all and (max-width: 116px) should not apply
+PASS subtest_407: all and (min-width: 9em) should not apply
+PASS subtest_408: all and (min-width: 6em) should apply
+PASS subtest_409: all and (max-width: 9em) should apply
+PASS subtest_410: all and (max-width: 6em) should not apply
+FAIL subtest_411: (width <= 117px) should apply assert_true: expected true got false
+FAIL subtest_412: (width >= 117px) should apply assert_true: expected true got false
+PASS subtest_413: (width < 117px) should not apply
+PASS subtest_414: (width > 117px) should not apply
+FAIL subtest_415: (width < 118px) should apply assert_true: expected true got false
+FAIL subtest_416: (width <= 118px) should apply assert_true: expected true got false
+PASS subtest_417: (width > 118px) should not apply
+PASS subtest_418: (width >= 118px) should not apply
+FAIL subtest_419: (width > 116px) should apply assert_true: expected true got false
+FAIL subtest_420: (width >= 116px) should apply assert_true: expected true got false
+PASS subtest_421: (width < 116px) should not apply
+PASS subtest_422: (width <= 116px) should not apply
+PASS subtest_423: all and (height: 76px) should apply
+FAIL subtest_424: all and (height = 76px) should apply assert_true: expected true got false
+PASS subtest_425: all and (height: 77px) should not apply
+PASS subtest_426: all and (height: 75px) should not apply
+PASS subtest_427: all and (height = 77px) should not apply
+PASS subtest_428: all and (height = 75px) should not apply
+PASS subtest_429: all and (min-height: 76px) should apply
+PASS subtest_430: all and (min-height: 77px) should not apply
+PASS subtest_431: all and (min-height: 75px) should apply
+PASS subtest_432: all and (max-height: 76px) should apply
+PASS subtest_433: all and (max-height: 77px) should apply
+PASS subtest_434: all and (max-height: 75px) should not apply
+PASS subtest_435: all and (min-height: 6em) should not apply
+PASS subtest_436: all and (min-height: 3em) should apply
+PASS subtest_437: all and (max-height: 6em) should apply
+PASS subtest_438: all and (max-height: 3em) should not apply
+FAIL subtest_439: (height <= 76px) should apply assert_true: expected true got false
+FAIL subtest_440: (height >= 76px) should apply assert_true: expected true got false
+PASS subtest_441: (height < 76px) should not apply
+PASS subtest_442: (height > 76px) should not apply
+FAIL subtest_443: (height < 77px) should apply assert_true: expected true got false
+FAIL subtest_444: (height <= 77px) should apply assert_true: expected true got false
+PASS subtest_445: (height > 77px) should not apply
+PASS subtest_446: (height >= 77px) should not apply
+FAIL subtest_447: (height > 75px) should apply assert_true: expected true got false
+FAIL subtest_448: (height >= 75px) should apply assert_true: expected true got false
+PASS subtest_449: (height < 75px) should not apply
+PASS subtest_450: (height <= 75px) should not apply
+PASS subtest_451: all and (device-width: 1280px) should apply
+FAIL subtest_452: all and (device-width = 1280px) should apply assert_true: expected true got false
+PASS subtest_453: all and (device-width: 1281px) should not apply
+PASS subtest_454: all and (device-width: 1279px) should not apply
+PASS subtest_455: all and (device-width = 1281px) should not apply
+PASS subtest_456: all and (device-width = 1279px) should not apply
+PASS subtest_457: all and (min-device-width: 1280px) should apply
+PASS subtest_458: all and (min-device-width: 1281px) should not apply
+PASS subtest_459: all and (min-device-width: 1279px) should apply
+PASS subtest_460: all and (max-device-width: 1280px) should apply
+PASS subtest_461: all and (max-device-width: 1281px) should apply
+PASS subtest_462: all and (max-device-width: 1279px) should not apply
+PASS subtest_463: all and (min-device-width: 81em) should not apply
+PASS subtest_464: all and (min-device-width: 79em) should apply
+PASS subtest_465: all and (max-device-width: 81em) should apply
+PASS subtest_466: all and (max-device-width: 79em) should not apply
+FAIL subtest_467: (device-width <= 1280px) should apply assert_true: expected true got false
+FAIL subtest_468: (device-width >= 1280px) should apply assert_true: expected true got false
+PASS subtest_469: (device-width < 1280px) should not apply
+PASS subtest_470: (device-width > 1280px) should not apply
+FAIL subtest_471: (device-width < 1281px) should apply assert_true: expected true got false
+FAIL subtest_472: (device-width <= 1281px) should apply assert_true: expected true got false
+PASS subtest_473: (device-width > 1281px) should not apply
+PASS subtest_474: (device-width >= 1281px) should not apply
+FAIL subtest_475: (device-width > 1279px) should apply assert_true: expected true got false
+FAIL subtest_476: (device-width >= 1279px) should apply assert_true: expected true got false
+PASS subtest_477: (device-width < 1279px) should not apply
+PASS subtest_478: (device-width <= 1279px) should not apply
+PASS subtest_479: all and (device-height: 1024px) should apply
+FAIL subtest_480: all and (device-height = 1024px) should apply assert_true: expected true got false
+PASS subtest_481: all and (device-height: 1025px) should not apply
+PASS subtest_482: all and (device-height: 1023px) should not apply
+PASS subtest_483: all and (device-height = 1025px) should not apply
+PASS subtest_484: all and (device-height = 1023px) should not apply
+PASS subtest_485: all and (min-device-height: 1024px) should apply
+PASS subtest_486: all and (min-device-height: 1025px) should not apply
+PASS subtest_487: all and (min-device-height: 1023px) should apply
+PASS subtest_488: all and (max-device-height: 1024px) should apply
+PASS subtest_489: all and (max-device-height: 1025px) should apply
+PASS subtest_490: all and (max-device-height: 1023px) should not apply
+PASS subtest_491: all and (min-device-height: 65em) should not apply
+PASS subtest_492: all and (min-device-height: 63em) should apply
+PASS subtest_493: all and (max-device-height: 65em) should apply
+PASS subtest_494: all and (max-device-height: 63em) should not apply
+FAIL subtest_495: (device-height <= 1024px) should apply assert_true: expected true got false
+FAIL subtest_496: (device-height >= 1024px) should apply assert_true: expected true got false
+PASS subtest_497: (device-height < 1024px) should not apply
+PASS subtest_498: (device-height > 1024px) should not apply
+FAIL subtest_499: (device-height < 1025px) should apply assert_true: expected true got false
+FAIL subtest_500: (device-height <= 1025px) should apply assert_true: expected true got false
+PASS subtest_501: (device-height > 1025px) should not apply
+PASS subtest_502: (device-height >= 1025px) should not apply
+FAIL subtest_503: (device-height > 1023px) should apply assert_true: expected true got false
+FAIL subtest_504: (device-height >= 1023px) should apply assert_true: expected true got false
+PASS subtest_505: (device-height < 1023px) should not apply
+PASS subtest_506: (device-height <= 1023px) should not apply
+PASS subtest_507: all and (height) should apply
+PASS subtest_508: all and (width) should not apply
+PASS subtest_509: all and (height) should not apply
+PASS subtest_510: all and (width) should not apply
+PASS subtest_511: all and (device-height) should apply
+PASS subtest_512: all and (device-width) should apply
+PASS subtest_513: all and (height) should not apply
+PASS subtest_514: all and (width) should apply
+PASS subtest_515: all and (height) should apply
+PASS subtest_516: all and (width) should apply
+PASS subtest_517
+PASS subtest_518
+PASS subtest_519
+PASS subtest_520
+PASS subtest_521
+PASS subtest_522
+PASS subtest_523
+PASS subtest_524
+PASS subtest_525
+PASS subtest_526: (orientation) should apply
+PASS subtest_527: (orientation: landscape) should apply
+PASS subtest_528: (orientation: portrait) should not apply
+PASS subtest_529: not all and (orientation: portrait) should apply
+PASS subtest_530: (orientation) should apply
+PASS subtest_531: (orientation: landscape) should not apply
+PASS subtest_532: not all and (orientation: landscape) should apply
+PASS subtest_533: (orientation: portrait) should apply
+PASS subtest_534: (aspect-ratio: 59/80) should apply
+PASS subtest_535: (aspect-ratio: 58/80) should not apply
+PASS subtest_536: (aspect-ratio: 59/81) should not apply
+PASS subtest_537: (aspect-ratio: 60/80) should not apply
+PASS subtest_538: (aspect-ratio: 59/79) should not apply
+PASS subtest_539: (aspect-ratio: 177/240) should apply
+PASS subtest_540: (aspect-ratio: 413/560) should apply
+PASS subtest_541: (aspect-ratio: 5900/8000) should apply
+PASS subtest_542: (aspect-ratio: 5901/8000) should not apply
+PASS subtest_543: (aspect-ratio: 5899/8000) should not apply
+PASS subtest_544: (aspect-ratio: 5900/8001) should not apply
+PASS subtest_545: (aspect-ratio: 5900/7999) should not apply
+PASS subtest_546: (aspect-ratio) should apply
+PASS subtest_547: (min-aspect-ratio: 59/80) should apply
+PASS subtest_548: (min-aspect-ratio: 58/80) should apply
+PASS subtest_549: (min-aspect-ratio: 59/81) should apply
+PASS subtest_550: (min-aspect-ratio: 60/80) should not apply
+PASS subtest_551: (min-aspect-ratio: 59/79) should not apply
+PASS subtest_552
+PASS subtest_553: (max-aspect-ratio: 59/80) should apply
+PASS subtest_554: (max-aspect-ratio: 58/80) should not apply
+PASS subtest_555: (max-aspect-ratio: 59/81) should not apply
+PASS subtest_556: (max-aspect-ratio: 60/80) should apply
+PASS subtest_557: (max-aspect-ratio: 59/79) should apply
+PASS subtest_558
+PASS subtest_559: (device-aspect-ratio: 1280/1024) should apply
+PASS subtest_560: not all and (device-aspect-ratio: 1281/1024) should apply
+PASS subtest_561: all and (device-aspect-ratio: 1280/1023) should not apply
+PASS subtest_562: all and (device-aspect-ratio: 1279/1024) should not apply
+PASS subtest_563: not all and (device-aspect-ratio: 1280/1025) should apply
+PASS subtest_564: (device-aspect-ratio) should apply
+PASS subtest_565: (min-device-aspect-ratio: 1280/1024) should apply
+PASS subtest_566: all and (min-device-aspect-ratio: 1281/1024) should not apply
+PASS subtest_567: not all and (min-device-aspect-ratio: 1280/1023) should apply
+PASS subtest_568: not all and (min-device-aspect-ratio: 1279/1024) should not apply
+PASS subtest_569: all and (min-device-aspect-ratio: 1280/1025) should apply
+PASS subtest_570
+PASS subtest_571: all and (max-device-aspect-ratio: 1280/1024) should apply
+PASS subtest_572: (max-device-aspect-ratio: 1281/1024) should apply
+PASS subtest_573: (max-device-aspect-ratio: 1280/1023) should apply
+PASS subtest_574: all and (max-device-aspect-ratio: 1279/1024) should not apply
+PASS subtest_575: not all and (max-device-aspect-ratio: 1280/1025) should apply
+PASS subtest_576
+PASS subtest_577
+PASS subtest_578
+PASS subtest_579
+PASS subtest_580
+FAIL subtest_581 assert_true: expected true got false
+FAIL subtest_582 assert_true: expected true got false
+FAIL subtest_583 assert_true: expected true got false
+FAIL subtest_584 assert_true: expected true got false
+FAIL subtest_585 assert_true: expected true got false
+FAIL subtest_586 assert_true: expected true got false
+FAIL subtest_587 assert_true: expected true got false
+FAIL subtest_588 assert_true: expected true got false
+PASS subtest_589
+PASS subtest_590
+PASS subtest_591
+PASS subtest_592
+PASS subtest_593
+PASS subtest_594
+PASS subtest_595
+PASS subtest_596
+PASS subtest_597
+PASS subtest_598
+PASS subtest_599
+PASS subtest_600
+FAIL subtest_601 assert_true: expected true got false
+FAIL subtest_602 assert_true: expected true got false
+FAIL subtest_603 assert_true: expected true got false
+FAIL subtest_604 assert_true: expected true got false
+FAIL subtest_605 assert_true: expected true got false
+FAIL subtest_606 assert_true: expected true got false
+FAIL subtest_607 assert_true: expected true got false
+FAIL subtest_608 assert_true: expected true got false
+PASS subtest_609
+PASS subtest_610
+PASS subtest_611
+PASS subtest_612
+PASS subtest_613
+PASS subtest_614
+PASS subtest_615
+PASS subtest_616
+PASS monochrome_and_color
+PASS find_depth
+PASS subtest_617: all and (color:8) should apply
+PASS subtest_618: all and (color:7) should not apply
+PASS subtest_619: all and (color:9) should not apply
+PASS subtest_620: all and (max-color:8) should apply
+PASS subtest_621: all and (max-color:7) should not apply
+PASS subtest_622: all and (max-color:9) should apply
+PASS subtest_623: all and (color) should apply
+PASS subtest_624
+PASS subtest_625
+PASS subtest_626: all and (monochrome) should not apply
+PASS subtest_627
+PASS subtest_628
+PASS subtest_629: not all and (monochrome) should apply
+PASS subtest_630: not all and (color) should not apply
+PASS subtest_631: only all and (color) should apply
+PASS subtest_632: only all and (monochrome) should not apply
+PASS subtest_633
+PASS subtest_634
+PASS subtest_635
+PASS subtest_636
+PASS subtest_637
+PASS subtest_638
+PASS subtest_639
+PASS subtest_640
+PASS subtest_641
+PASS subtest_642
+PASS subtest_643
+PASS subtest_644
+PASS subtest_645
+PASS subtest_646
+PASS subtest_647
+PASS subtest_648
+PASS subtest_649
+PASS subtest_650
+PASS subtest_651: (color-index: 0) should apply
+PASS subtest_652: (color-index: 1) should not apply
+PASS subtest_653: (min-color-index: 0) should apply
+PASS subtest_654: (min-color-index: 1) should not apply
+PASS subtest_655: (max-color-index: 0) should apply
+PASS subtest_656: (max-color-index: 1) should apply
+PASS subtest_657: (max-color-index: 157) should apply
+PASS subtest_658
+PASS subtest_659
+PASS subtest_660
+PASS subtest_661
+PASS subtest_662
+PASS subtest_663
+PASS subtest_664
+PASS subtest_665
+PASS subtest_666
+PASS subtest_667
+PASS subtest_668
+PASS subtest_669
+PASS subtest_670
+PASS subtest_671
+PASS subtest_672
+PASS subtest_673
+PASS subtest_674
+PASS subtest_675
+PASS subtest_676
+PASS subtest_677
+PASS subtest_678
+PASS subtest_679
+PASS subtest_680
+PASS subtest_681
+PASS subtest_682
+PASS subtest_683
+PASS subtest_684
+PASS subtest_685
+PASS subtest_686
+PASS subtest_687
+PASS subtest_688
+PASS subtest_689
+PASS subtest_690
+PASS subtest_691
+PASS subtest_692
+PASS subtest_693
+PASS subtest_694
+PASS subtest_695
+PASS subtest_696
+PASS subtest_697
+PASS subtest_698
+PASS subtest_699
+PASS find_resolution
+PASS subtest_700: (resolution: 96dpi) should apply
+PASS subtest_701: (resolution: 1dppx) should apply
+PASS subtest_702: (resolution: 1x) should apply
+PASS subtest_703: (resolution: 97dpi) should not apply
+PASS subtest_704: (resolution: 95dpi) should not apply
+PASS subtest_705: (min-resolution: 95dpi) should apply
+PASS subtest_706: not all and (min-resolution: 95dpi) should not apply
+PASS subtest_707: not all and (min-resolution: 97dpi) should apply
+PASS subtest_708: all and (min-resolution: 97dpi) should not apply
+PASS subtest_709: (min-resolution: 37dpcm) should apply
+PASS subtest_710: (max-resolution: 39dpcm) should apply
+PASS subtest_711: (max-resolution: 37dpcm) should not apply
+PASS subtest_712: not all and (min-resolution: 39dpcm) should apply
+PASS subtest_713
+PASS subtest_714
+PASS subtest_715
+PASS subtest_716
+PASS subtest_717
+PASS subtest_718
+PASS subtest_719
+PASS subtest_720: (scan) should not apply
+PASS subtest_721: (scan: progressive) should not apply
+PASS subtest_722: (scan: interlace) should not apply
+PASS subtest_723: not all and (scan) should apply
+PASS subtest_724: not all and (scan: progressive) should apply
+PASS subtest_725: not all and (scan: interlace) should apply
+PASS subtest_726
+PASS subtest_727
+PASS subtest_728
+PASS subtest_729
+PASS subtest_730
+PASS subtest_731
+PASS subtest_732
+PASS subtest_733
+PASS subtest_734
+PASS subtest_735: (grid) should not apply
+PASS subtest_736: (grid: 0) should apply
+PASS subtest_737: (grid: 1) should not apply
+PASS subtest_738: (grid: 2) should not apply
+PASS subtest_739: (grid: -1) should not apply
+PASS subtest_740: (orientation should apply
+PASS subtest_741: not all and (orientation should not apply
+PASS subtest_742: (orientation: should not apply
+PASS subtest_743: (orientation:) should not apply
+PASS subtest_744: (orientation:  ) should not apply
+PASS subtest_745: all,(orientation: should apply
+PASS subtest_746: (orientation:,all should not apply
+PASS subtest_747: not all and (grid should apply
+PASS subtest_748: only all and (grid should not apply
+PASS subtest_749: (grid should not apply
+PASS subtest_750: all,(grid should apply
+PASS subtest_751: (grid,all should not apply
+PASS subtest_752: ,all should apply
+PASS subtest_753: all, should apply
+PASS subtest_754: ,all, should apply
+PASS subtest_755: all,badmedium should apply
+PASS subtest_756: badmedium,all should apply
+PASS subtest_757: ,badmedium, should not apply
+PASS subtest_758: all,(badexpression) should apply
+PASS subtest_759: (badexpression),all should apply
+PASS subtest_760: (badexpression),badmedium should not apply
+PASS subtest_761: badmedium,(badexpression) should not apply
+PASS subtest_762: all,[badsyntax] should apply
+PASS subtest_763: [badsyntax],all should apply
+PASS subtest_764: badmedium,[badsyntax] should not apply
+PASS subtest_765: [badsyntax],badmedium should not apply
+PASS subtest_766
+PASS subtest_767
+PASS subtest_768: all and min-color : 1 should not apply
+PASS subtest_769: (bogus) should not apply
+PASS subtest_770: not all and (bogus) should not apply
+PASS subtest_771: only all and (bogus) should not apply
+FAIL subtest_772 assert_true: expected true got false
+FAIL subtest_773 assert_true: expected true got false
+FAIL subtest_774 assert_true: expected true got false
+FAIL subtest_775 assert_true: expected true got false
+FAIL subtest_776 assert_true: expected true got false
+PASS subtest_777
+Harness: the test ran to completion.
+

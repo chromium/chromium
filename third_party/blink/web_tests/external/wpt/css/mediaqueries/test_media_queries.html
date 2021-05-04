@@ -33,13 +33,13 @@ function run() {
     function should_apply(q) {
       test(function() {
         assert_true(query_applies(q));
-      }, "subtest_" + ++testNum);
+      }, "subtest_" + ++testNum + ": " + q + " should apply");
     }
 
     function should_not_apply(q) {
       test(function() {
         assert_false(query_applies(q));
-      }, "subtest_" + ++testNum);
+      }, "subtest_" + ++testNum + ": " + q + " should not apply");
     }
 
     /*
@@ -141,6 +141,11 @@ function run() {
         } else {
           expression_should_not_be_parseable("min-" + feature + " " + separator + " -0");
           expression_should_not_be_parseable("max-" + feature + " " + separator + " -0");
+        }
+        if (separator == ">=") {
+          expression_should_not_be_parseable(feature + " " + "> =" + " 0px");
+        } else if (separator == "<=") {
+          expression_should_not_be_parseable(feature + " " + "< =" + " 0px");
         }
         expression_should_not_be_parseable(feature + " " + separator + " -1px");
         expression_should_not_be_parseable("min-" + feature + " " + separator + " -1px");

@@ -19,7 +19,7 @@ The most important sources of information and activity are:
 - [web-platform-tests.org](https://web-platform-tests.org): the documentation
   website; details how to set up the project, how to write tests, how to give
   and receive peer review, how to serve as an administrator, and more
-- [wpt.live](http://wpt.live): a public deployment of the test suite,
+- [wpt.live](https://wpt.live): a public deployment of the test suite,
   allowing anyone to run the tests by visiting from an
   Internet-enabled browser of their choice
 - [wpt.fyi](https://wpt.fyi): an archive of test results collected from an

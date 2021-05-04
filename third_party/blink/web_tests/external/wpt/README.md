@@ -21,7 +21,7 @@ The most important sources of information and activity are:
 - [web-platform-tests.org](https://web-platform-tests.org): the documentation
   website; details how to set up the project, how to write tests, how to give
   and receive peer review, how to serve as an administrator, and more
-- [wpt.live](http://wpt.live): a public deployment of the test suite,
+- [wpt.live](https://wpt.live): a public deployment of the test suite,
   allowing anyone to run the tests by visiting from an
   Internet-enabled browser of their choice
 - [wpt.fyi](https://wpt.fyi): an archive of test results collected from an
@@ -94,10 +94,11 @@ line endings, as it will cause lint errors. For git, please set
 Publication
 ===========
 
-The master branch is automatically synced to http://w3c-test.org/.
+The master branch is automatically synced to [wpt.live](https://wpt.live/) and
+[w3c-test.org](https://w3c-test.org/).
 
 Pull requests are
-[automatically mirrored](http://w3c-test.org/submissions/) except those
+[automatically mirrored](https://w3c-test.org/submissions/) except those
 that modify sensitive resources (such as `.py`). The latter require
 someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
 indicate the pull request has been checked.

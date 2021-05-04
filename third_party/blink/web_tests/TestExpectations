@@ -2520,6 +2520,15 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-will-change/will-change-stacking-context-mask-1.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-will-change/will-change-fixpos-cb-transform-style-1.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-will-change/will-change-fixpos-cb-contain-1.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/Create-valid-url-binaryType-blob.any.worker.html?wpt_flags=h2 [ Timeout ]
@@ -2891,7 +2900,6 @@ crbug.com/626703 [ Mac10.13 ] external/wpt/websockets/Create-valid-url-protocol-
 crbug.com/626703 [ Mac10.14 ] external/wpt/websockets/Create-valid-url-protocol-setCorrectly.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/Create-valid-url-protocol-setCorrectly.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-valid-url-protocol-setCorrectly.any.html?wpt_flags=h2 [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/url/a-element.html [ Failure Crash ]
 crbug.com/626703 [ Win10 ] external/wpt/url/a-element.html [ Failure Crash ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-020.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-020.html [ Failure ]
