@@ -159,7 +159,10 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
   } else {
     language_installed_ = false;
     language_progress_ = 0.0;
-    NotifyOnSodaError();
+
+    // TODO: Notify the observer of the specific language pack that failed to
+    // install. ChromeOS currently only supports the en-US language pack.
+    NotifyOnSodaLanguagePackError(speech::LanguageCode::kEnUs);
   }
   is_language_downloading_ = false;
 }
@@ -171,7 +174,10 @@ void SodaInstallerImplChromeOS::OnSodaProgress(double progress) {
 
 void SodaInstallerImplChromeOS::OnLanguageProgress(double progress) {
   language_progress_ = progress;
-  OnSodaCombinedProgress();
+
+  // TODO: Notify the observer of the specific language pack that is currently
+  // being installed. ChromeOS currently only supports the en-US language pack.
+  NotifyOnSodaLanguagePackProgress(progress, speech::LanguageCode::kEnUs);
 }
 
 void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {

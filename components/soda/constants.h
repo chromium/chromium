@@ -132,6 +132,10 @@ base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name);
 
+LanguageCode GetLanguageCodeByComponentId(const std::string& component_id);
+
+std::string GetLanguageName(LanguageCode language_code);
+
 }  // namespace speech
 
 #endif  // COMPONENTS_SODA_CONSTANTS_H_

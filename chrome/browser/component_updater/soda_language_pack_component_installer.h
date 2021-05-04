@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/component_updater/soda_component_installer.h"
 #include "components/component_updater/component_installer.h"
 #include "components/soda/constants.h"
 #include "components/update_client/update_client.h"
@@ -25,8 +26,6 @@ namespace component_updater {
 // Success callback to be run after the component is downloaded.
 using OnSodaLanguagePackComponentInstalledCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
-
-using OnSodaLanguagePackComponentReadyCallback = base::OnceClosure;
 
 class SodaLanguagePackComponentInstallerPolicy
     : public ComponentInstallerPolicy {
@@ -78,7 +77,7 @@ void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
     PrefService* prefs,
-    base::OnceClosure on_ready_callback);
+    OnSodaLanguagePackComponentReadyCallback on_ready_callback);
 
 }  // namespace component_updater
 

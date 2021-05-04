@@ -9,6 +9,7 @@
 
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
@@ -75,8 +76,14 @@ class CaptionController : public KeyedService,
 
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;
-  void OnSodaProgress(int progress) override {}
+  void OnSodaLanguagePackInstalled(
+      speech::LanguageCode language_code) override {}
+  void OnSodaProgress(int combined_progress) override {}
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override {
+  }
   void OnSodaError() override {}
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {}

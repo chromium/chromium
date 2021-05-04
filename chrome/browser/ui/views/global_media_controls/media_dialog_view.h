@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -120,8 +121,14 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   // SodaInstaller::Observer overrides:
   void OnSodaInstalled() override;
+  void OnSodaLanguagePackInstalled(
+      speech::LanguageCode language_code) override {}
   void OnSodaError() override;
-  void OnSodaProgress(int progress) override;
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
+  void OnSodaProgress(int combined_progress) override;
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override {
+  }
 
   MediaNotificationService* const service_;
 

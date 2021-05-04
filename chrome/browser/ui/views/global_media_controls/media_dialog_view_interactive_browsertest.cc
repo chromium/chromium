@@ -27,6 +27,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/soda/constants.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -556,6 +557,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     MediaDialogView::GetDialogViewForTesting()->OnSodaInstalled();
   }
 
+  void OnSodaLanguagePackInstalled() {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaLanguagePackInstalled(
+        speech::LanguageCode::kEnUs);
+  }
+
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
   TestMediaRouter* media_router_ = nullptr;
@@ -965,6 +971,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   OnSodaProgress(100);
+  EXPECT_EQ("Downloading… 100%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  OnSodaLanguagePackInstalled();
   EXPECT_EQ("Downloading… 100%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 

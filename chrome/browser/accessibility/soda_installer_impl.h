@@ -54,7 +54,7 @@ class SodaInstallerImpl : public SodaInstaller,
   void OnEvent(Events event, const std::string& id) override;
 
   void OnSodaBinaryInstalled();
-  void OnSodaLanguagePackInstalled();
+  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code);
 
   std::map<std::string, update_client::CrxUpdateItem> downloading_components_;
 

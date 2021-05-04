@@ -129,7 +129,7 @@ void SodaLanguagePackComponentInstallerPolicy::ComponentReady(
     on_installed_callback_.Run(install_dir);
 
   if (on_ready_callback_)
-    std::move(on_ready_callback_).Run();
+    std::move(on_ready_callback_).Run(language_config_.language_code);
 }
 
 base::FilePath SodaLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
@@ -172,7 +172,7 @@ void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
     PrefService* prefs,
-    base::OnceClosure on_ready_callback) {
+    OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(

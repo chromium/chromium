@@ -161,16 +161,15 @@ Polymer({
    * subtitle below the Live Caption toggle.
    * @param {!string} sodaDownloadProgress The message sent from the webui
    *     to be displayed as download progress for Live Caption.
+   * @param {!string} languageCode The language code indicating which language
+   *     pack the message applies to.
    * @private
    */
-  onSodaDownloadProgressChanged_(sodaDownloadProgress) {
-    if (this.enableLiveCaptionMultiLanguage_ &&
-        this.getPref('accessibility.captions.live_caption_enabled').value) {
+  onSodaDownloadProgressChanged_(sodaDownloadProgress, languageCode) {
+    if (this.enableLiveCaptionMultiLanguage_) {
       for (let i = 0; i < this.liveCaptionLanguages_.length; i++) {
         const language = this.liveCaptionLanguages_[i];
-        if (language.code ===
-            this.getPref('accessibility.captions.live_caption_language')
-                .value) {
+        if (language.code === languageCode) {
           language.downloadProgress = sodaDownloadProgress;
           this.notifyPath('liveCaptionLanguages_.' + i + '.downloadProgress');
           return;

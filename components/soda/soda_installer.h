@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/soda/constants.h"
 
 class PrefService;
 
@@ -20,15 +21,30 @@ class SodaInstaller {
   // Observer of the SODA (Speech On-Device API) installation.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the SODA installation has completed.
+    // Called when the SODA binary component and at least one language pack is
+    // installed.
     virtual void OnSodaInstalled() = 0;
 
-    // Called if there is an error in the SODA installation.
+    // Called when a SODA language pack component is installed.
+    virtual void OnSodaLanguagePackInstalled(LanguageCode language_code) = 0;
+
+    // Called if there is an error in the SODA binary or language pack
+    // installation.
     virtual void OnSodaError() = 0;
+
+    // Called if there is an error in a SODA language pack installation.
+    virtual void OnSodaLanguagePackError(
+        speech::LanguageCode language_code) = 0;
+
+    // Called during the SODA installation. Progress is the weighted average of
+    // the download percentage of the SODA binary and at least one language
+    // pack.
+    virtual void OnSodaProgress(int combined_progress) = 0;
 
     // Called during the SODA installation. Progress is the download percentage
     // out of 100.
-    virtual void OnSodaProgress(int progress) = 0;
+    virtual void OnSodaLanguagePackProgress(int language_progress,
+                                            LanguageCode language_code) = 0;
   };
 
   SodaInstaller();
@@ -100,15 +116,31 @@ class SodaInstaller {
   // space may not be freed immediately.
   virtual void UninstallSoda(PrefService* global_prefs) = 0;
 
-  // Notifies the observers that the SODA installation has completed.
+  // Notifies the observers that the installation of the SODA binary and at
+  // least one language pack has completed.
   void NotifyOnSodaInstalled();
 
-  // Notifies the observers that there is an error in the SODA installation.
+  // Notifies the observers that a SODA language pack installation has
+  // completed.
+  void NotifyOnSodaLanguagePackInstalled(speech::LanguageCode language_code);
+
+  // Notifies the observers that there is an error in the SODA binary
+  // installation.
   void NotifyOnSodaError();
 
-  // Notifies the observers of the progress percentage as SODA is installed/
-  // Progress is the download percentage out of 100.
-  void NotifyOnSodaProgress(int progress);
+  // Notifies the observers that there is an error in a SODA language pack
+  // installation.
+  void NotifyOnSodaLanguagePackError(speech::LanguageCode language_code);
+
+  // Notifies the observers of the combined progress as the SODA binary and
+  // language pack are installed. Progress is the download percentage out of
+  // 100.
+  void NotifyOnSodaProgress(int combined_progress);
+
+  // Notifies the observers of the progress percentage the SODA language pack is
+  // installed. Progress is the download percentage out of 100.
+  void NotifyOnSodaLanguagePackProgress(int language_progress,
+                                        LanguageCode language_code);
 
   base::ObserverList<Observer> observers_;
   bool soda_binary_installed_ = false;

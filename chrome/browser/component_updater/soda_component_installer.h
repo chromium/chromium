@@ -9,6 +9,7 @@
 
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/update_client/update_client.h"
 
 namespace component_updater {
@@ -18,6 +19,8 @@ using OnSodaComponentInstalledCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
 
 using OnSodaComponentReadyCallback = base::OnceClosure;
+using OnSodaLanguagePackComponentReadyCallback =
+    base::OnceCallback<void(speech::LanguageCode)>;
 
 class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
@@ -69,10 +72,11 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
                            base::OnceClosure on_registered_callback);
 
 // Should only be called by SodaInstaller.
-void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
-                                   PrefService* profile_prefs,
-                                   PrefService* global_prefs,
-                                   base::OnceClosure on_ready_callback);
+void RegisterSodaLanguageComponent(
+    ComponentUpdateService* cus,
+    PrefService* profile_prefs,
+    PrefService* global_prefs,
+    OnSodaLanguagePackComponentReadyCallback on_ready_callback);
 
 }  // namespace component_updater
 

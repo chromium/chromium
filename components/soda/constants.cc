@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/crx_file/id_util.h"
 
 namespace speech {
 
@@ -113,4 +114,31 @@ base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 
   return base::nullopt;
 }
+
+LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
+  for (const SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    if (crx_file::id_util::GenerateIdFromHash(config.public_key_sha,
+                                              sizeof(config.public_key_sha)) ==
+        component_id) {
+      return config.language_code;
+    }
+  }
+
+  return LanguageCode::kNone;
+}
+
+std::string GetLanguageName(LanguageCode language_code) {
+  std::string language_name;
+  if (language_code != speech::LanguageCode::kNone) {
+    base::Optional<speech::SodaLanguagePackComponentConfig> language_config =
+        speech::GetLanguageComponentConfig(language_code);
+    if (language_config.has_value()) {
+      language_name = language_config.value().language_name;
+    }
+  }
+
+  return language_name;
+}
+
 }  // namespace speech

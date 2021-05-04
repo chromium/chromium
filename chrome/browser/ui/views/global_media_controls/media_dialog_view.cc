@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/live_caption/pref_names.h"
+#include "components/soda/constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -367,9 +368,10 @@ void MediaDialogView::OnSodaError() {
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR));
 }
 
-void MediaDialogView::OnSodaProgress(int progress) {
+void MediaDialogView::OnSodaProgress(int combined_progress) {
   live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
-      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
+      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
+      combined_progress));
 }
 
 BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)

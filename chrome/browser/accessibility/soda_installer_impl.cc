@@ -145,6 +145,12 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
     return;
   }
 
+  LanguageCode language_code = LanguageCode::kNone;
+  if (id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
+    language_code = GetLanguageCodeByComponentId(id);
+    DCHECK_NE(language_code, LanguageCode::kNone);
+  }
+
   switch (event) {
     case Events::COMPONENT_UPDATE_FOUND:
     case Events::COMPONENT_UPDATE_READY:
@@ -154,14 +160,29 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
       update_client::CrxUpdateItem item;
       g_browser_process->component_updater()->GetComponentDetails(id, &item);
       downloading_components_[id] = item;
-      const int progress = GetDownloadProgress(downloading_components_);
+      const int combined_progress =
+          GetDownloadProgress(downloading_components_);
+
       // When GetDownloadProgress returns -1, do nothing. It returns -1 when the
       // downloaded or total bytes is unknown.
-      if (progress != -1) {
-        NotifyOnSodaProgress(progress);
+      if (combined_progress != -1) {
+        NotifyOnSodaProgress(combined_progress);
       }
+
+      if (language_code != LanguageCode::kNone) {
+        const int language_progress = GetDownloadProgress(
+            std::map<std::string, update_client::CrxUpdateItem>{{id, item}});
+        if (language_progress != -1) {
+          NotifyOnSodaLanguagePackProgress(language_progress, language_code);
+        }
+      }
+
     } break;
     case Events::COMPONENT_UPDATE_ERROR:
+      if (language_code != LanguageCode::kNone) {
+        NotifyOnSodaLanguagePackError(language_code);
+      }
+
       NotifyOnSodaError();
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
@@ -180,8 +201,11 @@ void SodaInstallerImpl::OnSodaBinaryInstalled() {
   }
 }
 
-void SodaInstallerImpl::OnSodaLanguagePackInstalled() {
+void SodaInstallerImpl::OnSodaLanguagePackInstalled(
+    speech::LanguageCode language_code) {
   language_installed_ = true;
+  NotifyOnSodaLanguagePackInstalled(language_code);
+
   if (soda_binary_installed_) {
     component_updater_observer_.RemoveAll();
     NotifyOnSodaInstalled();

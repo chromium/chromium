@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
 
@@ -70,14 +71,33 @@ void SodaInstaller::NotifyOnSodaInstalled() {
     observer.OnSodaInstalled();
 }
 
+void SodaInstaller::NotifyOnSodaLanguagePackInstalled(
+    speech::LanguageCode language_code) {
+  for (Observer& observer : observers_)
+    observer.OnSodaLanguagePackInstalled(language_code);
+}
+
 void SodaInstaller::NotifyOnSodaError() {
   for (Observer& observer : observers_)
     observer.OnSodaError();
 }
 
-void SodaInstaller::NotifyOnSodaProgress(int percent) {
+void SodaInstaller::NotifyOnSodaLanguagePackError(
+    speech::LanguageCode language_code) {
   for (Observer& observer : observers_)
-    observer.OnSodaProgress(percent);
+    observer.OnSodaLanguagePackError(language_code);
+}
+
+void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
+  for (Observer& observer : observers_)
+    observer.OnSodaProgress(combined_progress);
+}
+
+void SodaInstaller::NotifyOnSodaLanguagePackProgress(
+    int language_progress,
+    LanguageCode language_code) {
+  for (Observer& observer : observers_)
+    observer.OnSodaLanguagePackProgress(language_progress, language_code);
 }
 
 void SodaInstaller::NotifySodaInstalledForTesting() {

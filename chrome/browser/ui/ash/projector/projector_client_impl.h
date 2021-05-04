@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 
 class OnDeviceSpeechRecognizer;
@@ -42,11 +43,17 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
 
-  // speech::SodaIntaller::Observer:
+  // speech::SodaInstaller::Observer:
   void OnSodaInstalled() override;
   // We are not utilizing the following methods. Mark them as empty overrides.
+  void OnSodaLanguagePackInstalled(
+      speech::LanguageCode language_code) override {}
   void OnSodaError() override {}
-  void OnSodaProgress(int progress) override {}
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
+  void OnSodaProgress(int combined_progress) override {}
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override {
+  }
 
  private:
   SpeechRecognizerStatus recognizer_status_ =

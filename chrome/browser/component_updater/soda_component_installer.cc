@@ -239,10 +239,11 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
   }
 }
 
-void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
-                                   PrefService* profile_prefs,
-                                   PrefService* global_prefs,
-                                   base::OnceClosure on_ready_callback) {
+void RegisterSodaLanguageComponent(
+    ComponentUpdateService* cus,
+    PrefService* profile_prefs,
+    PrefService* global_prefs,
+    OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
