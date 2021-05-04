@@ -23,7 +23,6 @@ weblayer_resource_values_filter_rules = [
   "${_material_package}:[Bb]uttonToggleGroup",
   "${_material_package}:[Cc]alendar",
   "${_material_package}:[Cc]ardView",
-  "${_material_package}:\b[Cc]hip",
   "${_material_package}:design_snackbar",
   "${_material_package}:[Ff]loatingActionButton",
   "${_material_package}:[Mm]aterialAlertDialog",
@@ -49,7 +48,8 @@ weblayer_resource_exclusion_regex +=
 # Instead of manually filtering, unused resource removal would be better:
 # https://crbug.com/636448
 weblayer_resource_exclusion_regex += "|${_material_package}/layout"
-weblayer_resource_exclusion_regex += "|${_material_package}/color.*(choice|chip_|card_|calendar_|bottom_nav_|slider_)"
+weblayer_resource_exclusion_regex +=
+    "|${_material_package}/color.*(card_|calendar_|bottom_nav_|slider_)"
 weblayer_resource_exclusion_regex +=
     "|${_material_package}/drawable.*design_snackbar"
 weblayer_resource_exclusion_regex += "|${_material_package}/xml.*badge_"
