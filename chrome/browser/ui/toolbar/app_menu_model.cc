@@ -1001,10 +1001,14 @@ void AppMenuModel::UpdateSettingsItemState() {
         local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
   }
 
-  bool is_enabled = !system_features_disable_list_pref ||
-                    system_features_disable_list_pref->Find(
-                        base::Value(policy::SystemFeature::kBrowserSettings)) ==
-                        system_features_disable_list_pref->end();
+  bool is_enabled =
+      !system_features_disable_list_pref ||
+      // TODO(crbug.com/1187106): Use base::Contains once
+      // |system_features_disable_list_pref| is not a ListValue.
+      std::find(system_features_disable_list_pref->begin(),
+                system_features_disable_list_pref->end(),
+                base::Value(policy::SystemFeature::kBrowserSettings)) ==
+          system_features_disable_list_pref->end();
 
   int index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index != -1)
