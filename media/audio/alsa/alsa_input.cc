@@ -52,9 +52,9 @@ AlsaPcmInputStream::AlsaPcmInputStream(AudioManagerBase* audio_manager,
 
 AlsaPcmInputStream::~AlsaPcmInputStream() = default;
 
-bool AlsaPcmInputStream::Open() {
+AudioInputStream::OpenOutcome AlsaPcmInputStream::Open() {
   if (device_handle_)
-    return false;  // Already open.
+    return OpenOutcome::kAlreadyOpen;
 
   uint32_t packet_us = buffer_duration_.InMicroseconds();
   uint32_t buffer_us = packet_us * kNumPacketsInRingBuffer;
@@ -91,7 +91,8 @@ bool AlsaPcmInputStream::Open() {
     }
   }
 
-  return device_handle_ != nullptr;
+  return device_handle_ != nullptr ? OpenOutcome::kSuccess
+                                   : OpenOutcome::kFailed;
 }
 
 void AlsaPcmInputStream::Start(AudioInputCallback* callback) {

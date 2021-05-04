@@ -378,7 +378,7 @@ TEST_F(AudioLowLatencyInputOutputTest, DISABLED_FullDuplexDelayMeasurement) {
     return;
   }
 
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
   EXPECT_TRUE(aos->Open());
 
   FullDuplexAudioSinkSource full_duplex(

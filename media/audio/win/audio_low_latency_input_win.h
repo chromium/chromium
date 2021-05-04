@@ -130,7 +130,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   ~WASAPIAudioInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;

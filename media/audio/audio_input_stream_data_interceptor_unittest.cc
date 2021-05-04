@@ -30,7 +30,7 @@ class MockStream : public AudioInputStream {
  public:
   MockStream() = default;
   ~MockStream() override = default;
-  MOCK_METHOD0(Open, bool());
+  MOCK_METHOD0(Open, AudioInputStream::OpenOutcome());
   MOCK_METHOD1(Start, void(AudioInputStream::AudioInputCallback*));
   MOCK_METHOD0(Stop, void());
   MOCK_METHOD0(Close, void());

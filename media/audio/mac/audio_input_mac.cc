@@ -27,7 +27,7 @@ namespace {
 // should ideally be set to about the same value as in
 // audio_low_latency_input_mac.cc, to make comparing them reasonable.
 const int kInputCallbackStartTimeoutInSeconds = 8;
-}
+}  // namespace
 
 PCMQueueInAudioInputStream::PCMQueueInAudioInputStream(
     AudioManagerMac* manager,
@@ -66,7 +66,7 @@ PCMQueueInAudioInputStream::~PCMQueueInAudioInputStream() {
   DCHECK(!audio_queue_);
 }
 
-bool PCMQueueInAudioInputStream::Open() {
+AudioInputStream::OpenOutcome PCMQueueInAudioInputStream::Open() {
   OSStatus err = AudioQueueNewInput(&format_,
                                     &HandleInputBufferStatic,
                                     this,
@@ -76,9 +76,10 @@ bool PCMQueueInAudioInputStream::Open() {
                                     &audio_queue_);
   if (err != noErr) {
     HandleError(err);
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
   }
-  return SetupBuffers();
+  return SetupBuffers() ? AudioInputStream::OpenOutcome::kSuccess
+                        : AudioInputStream::OpenOutcome::kFailed;
 }
 
 void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {

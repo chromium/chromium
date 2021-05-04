@@ -145,7 +145,8 @@ class AudioInputTest : public testing::Test {
   void OpenAndClose() {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     ASSERT_TRUE(audio_input_stream_);
-    EXPECT_TRUE(audio_input_stream_->Open());
+    EXPECT_EQ(audio_input_stream_->Open(),
+              AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Close();
     audio_input_stream_ = nullptr;
   }
@@ -153,14 +154,16 @@ class AudioInputTest : public testing::Test {
   void OpenAndStart(AudioInputStream::AudioInputCallback* sink) {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     ASSERT_TRUE(audio_input_stream_);
-    EXPECT_TRUE(audio_input_stream_->Open());
+    EXPECT_EQ(audio_input_stream_->Open(),
+              AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Start(sink);
   }
 
   void OpenStopAndClose() {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     ASSERT_TRUE(audio_input_stream_);
-    EXPECT_TRUE(audio_input_stream_->Open());
+    EXPECT_EQ(audio_input_stream_->Open(),
+              AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Stop();
     audio_input_stream_->Close();
     audio_input_stream_ = nullptr;

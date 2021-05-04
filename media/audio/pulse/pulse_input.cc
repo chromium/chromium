@@ -56,25 +56,25 @@ PulseAudioInputStream::~PulseAudioInputStream() {
   DCHECK(!handle_);
 }
 
-bool PulseAudioInputStream::Open() {
+AudioInputStream::OpenOutcome PulseAudioInputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
   SendLogMessage("%s()", __func__);
   if (device_name_ == AudioDeviceDescription::kDefaultDeviceId &&
       audio_manager_->DefaultSourceIsMonitor()) {
     SendLogMessage("%s => (ERROR: can't open monitor device)", __func__);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   AutoPulseLock auto_lock(pa_mainloop_);
   if (!pulse::CreateInputStream(pa_mainloop_, pa_context_, &handle_, params_,
                                 device_name_, &StreamNotifyCallback, this)) {
     SendLogMessage("%s => (ERROR: failed to open PA stream)", __func__);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   DCHECK(handle_);
 
-  return true;
+  return OpenOutcome::kSuccess;
 }
 
 void PulseAudioInputStream::Start(AudioInputCallback* callback) {

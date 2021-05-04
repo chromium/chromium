@@ -61,11 +61,11 @@ FakeAudioInputStream::~FakeAudioInputStream() {
   DCHECK(!fake_audio_worker_);
 }
 
-bool FakeAudioInputStream::Open() {
+AudioInputStream::OpenOutcome FakeAudioInputStream::Open() {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   audio_bus_->Zero();
 
-  return true;
+  return OpenOutcome::kSuccess;
 }
 
 void FakeAudioInputStream::Start(AudioInputCallback* callback) {

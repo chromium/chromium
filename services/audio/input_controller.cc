@@ -418,10 +418,15 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
     return;
   }
 
-  if (!stream->Open()) {
+  auto open_outcome = stream->Open();
+  if (open_outcome != media::AudioInputStream::OpenOutcome::kSuccess) {
     stream->Close();
     LogCaptureStartupResult(CAPTURE_STARTUP_OPEN_STREAM_FAILED);
-    handler_->OnError(STREAM_OPEN_ERROR);
+    handler_->OnError(
+        open_outcome ==
+                media::AudioInputStream::OpenOutcome::kFailedSystemPermissions
+            ? STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR
+            : STREAM_OPEN_ERROR);
     return;
   }
 

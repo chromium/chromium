@@ -28,13 +28,12 @@ class AudioManagerBase;
 // beeping sound unless --use-file-for-fake-audio-capture=<file> is specified,
 // in which case the indicated .wav file will be read and played into the
 // stream.
-class MEDIA_EXPORT FakeAudioInputStream
-    : public AudioInputStream {
+class MEDIA_EXPORT FakeAudioInputStream : public AudioInputStream {
  public:
-  static AudioInputStream* MakeFakeStream(
-      AudioManagerBase* manager, const AudioParameters& params);
+  static AudioInputStream* MakeFakeStream(AudioManagerBase* manager,
+                                          const AudioParameters& params);
 
-  bool Open() override;
+  OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;

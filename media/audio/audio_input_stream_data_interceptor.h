@@ -36,7 +36,7 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   ~AudioInputStreamDataInterceptor() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  OpenOutcome Open() override;
   void Start(AudioInputStream::AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;

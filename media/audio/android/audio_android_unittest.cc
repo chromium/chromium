@@ -691,14 +691,16 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
 
   void OpenAndClose() {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    EXPECT_TRUE(audio_input_stream_->Open());
+    EXPECT_EQ(audio_input_stream_->Open(),
+              AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Close();
     audio_input_stream_ = nullptr;
   }
 
   void OpenAndStart(AudioInputStream::AudioInputCallback* sink) {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    EXPECT_TRUE(audio_input_stream_->Open());
+    EXPECT_EQ(audio_input_stream_->Open(),
+              AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Start(sink);
   }
 

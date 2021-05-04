@@ -184,7 +184,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamCreateAndClose) {
 TEST_F(MacAudioInputTest, AUAudioInputStreamOpenAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
   AudioInputStream* ais = CreateDefaultAudioInputStream();
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
   ais->Close();
 }
 
@@ -192,7 +192,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamOpenAndClose) {
 TEST_F(MacAudioInputTest, AUAudioInputStreamOpenStartAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
   AudioInputStream* ais = CreateDefaultAudioInputStream();
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
   MockAudioInputCallback sink;
   ais->Start(&sink);
   ais->Close();
@@ -202,7 +202,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamOpenStartAndClose) {
 TEST_F(MacAudioInputTest, AUAudioInputStreamOpenStartStopAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
   AudioInputStream* ais = CreateDefaultAudioInputStream();
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
   MockAudioInputCallback sink;
   ais->Start(&sink);
   ais->Stop();
@@ -217,7 +217,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamVerifyMonoRecording) {
 
   // Create an audio input stream which records in mono.
   AudioInputStream* ais = CreateAudioInputStream(CHANNEL_LAYOUT_MONO);
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
   MockAudioInputCallback sink;
 
@@ -246,7 +246,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamVerifyStereoRecording) {
 
   // Create an audio input stream which records in stereo.
   AudioInputStream* ais = CreateAudioInputStream(CHANNEL_LAYOUT_STEREO);
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
   MockAudioInputCallback sink;
 
@@ -286,7 +286,7 @@ TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
 
   int fs = static_cast<int>(AUAudioInputStream::HardwareSampleRate());
   AudioInputStream* ais = CreateDefaultAudioInputStream();
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
   fprintf(stderr, "               File name  : %s\n", file_name);
   fprintf(stderr, "               Sample rate: %d\n", fs);

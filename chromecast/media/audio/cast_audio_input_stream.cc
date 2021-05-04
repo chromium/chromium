@@ -28,7 +28,7 @@ CastAudioInputStream::~CastAudioInputStream() {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
 }
 
-bool CastAudioInputStream::Open() {
+::media::AudioInputStream::OpenOutcome CastAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   DCHECK(!capture_service_receiver_);
   LOG(INFO) << __func__ << " " << this << ".";
@@ -41,7 +41,7 @@ bool CastAudioInputStream::Open() {
   if ((channel_layout != ::media::CHANNEL_LAYOUT_MONO) &&
       (channel_layout != ::media::CHANNEL_LAYOUT_STEREO)) {
     LOG(WARNING) << "Unsupported channel layout: " << channel_layout;
-    return false;
+    return ::media::AudioInputStream::OpenOutcome::kFailed;
   }
   DCHECK_GE(audio_params_.channels(), 1);
   DCHECK_LE(audio_params_.channels(), 2);
@@ -56,7 +56,7 @@ bool CastAudioInputStream::Open() {
       audio_params_.frames_per_buffer()};
   capture_service_receiver_ =
       std::make_unique<CaptureServiceReceiver>(stream_info_, this);
-  return true;
+  return ::media::AudioInputStream::OpenOutcome::kSuccess;
 }
 
 void CastAudioInputStream::Start(AudioInputCallback* input_callback) {

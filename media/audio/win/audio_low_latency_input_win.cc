@@ -389,11 +389,11 @@ WASAPIAudioInputStream::~WASAPIAudioInputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool WASAPIAudioInputStream::Open() {
+AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
   if (opened_) {
-    return false;
+    return OpenOutcome::kAlreadyOpen;
   }
 
   // Obtain a reference to the IMMDevice interface of the capturing device with
@@ -401,7 +401,7 @@ bool WASAPIAudioInputStream::Open() {
   HRESULT hr = SetCaptureDevice();
   if (FAILED(hr)) {
     ReportOpenResult(hr);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   // Check if raw audio processing is supported for the selected capture device.
@@ -432,7 +432,7 @@ bool WASAPIAudioInputStream::Open() {
   if (FAILED(hr)) {
     open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
     ReportOpenResult(hr);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
 #ifndef NDEBUG
@@ -457,7 +457,7 @@ bool WASAPIAudioInputStream::Open() {
   if (!DesiredFormatIsSupported(&hr)) {
     open_result_ = OPEN_RESULT_FORMAT_NOT_SUPPORTED;
     ReportOpenResult(hr);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   // Initialize the audio stream between the client and the device using
@@ -468,7 +468,12 @@ bool WASAPIAudioInputStream::Open() {
   ReportOpenResult(hr);  // Report before we assign a value to |opened_|.
   opened_ = SUCCEEDED(hr);
 
-  return opened_;
+  if (opened_) {
+    return OpenOutcome::kSuccess;
+  }
+
+  return (hr == E_ACCESSDENIED) ? OpenOutcome::kFailedSystemPermissions
+                                : OpenOutcome::kFailed;
 }
 
 void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {

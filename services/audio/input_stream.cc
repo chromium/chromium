@@ -35,6 +35,8 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
       return "STREAM_OPEN_ERROR";
     case (InputController::STREAM_ERROR):
       return "STREAM_ERROR";
+    case (InputController::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR):
+      return "STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR";
     default:
       NOTREACHED();
   }

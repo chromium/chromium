@@ -59,6 +59,9 @@ class InputController final : public StreamMonitor {
     // Native input stream reports an error. Exact reason differs between
     // platforms.
     STREAM_ERROR,  // = 3
+
+    // Open failed due to lack of system permissions.
+    STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR,  // = 4
   };
 
 #if defined(AUDIO_POWER_MONITORING)

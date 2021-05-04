@@ -98,7 +98,7 @@ class MockAudioInputStream : public media::AudioInputStream {
   bool IsMuted() override { return false; }
   void SetOutputDeviceForAec(const std::string&) override {}
 
-  MOCK_METHOD0(Open, bool());
+  MOCK_METHOD0(Open, media::AudioInputStream::OpenOutcome());
   MOCK_METHOD1(SetVolume, void(double));
 };
 

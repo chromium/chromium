@@ -36,7 +36,7 @@ class CastAudioInputStream : public ::media::AudioInputStream,
   ~CastAudioInputStream() override;
 
   // ::media::AudioInputStream implementation:
-  bool Open() override;
+  ::media::AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* source_callback) override;
   void Stop() override;
   void Close() override;
