@@ -243,115 +243,102 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
   fuchsia::ui::views::ViewRef view_ref_;
 };
 
-// Verifies that RequestShow() is invoked multiple times if the virtual
-// keyboard service does not indicate that the keyboard is made visible.
-IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideCalledButIgnored) {
-  testing::InSequence s;
-  EXPECT_CALL(*controller_, RequestShow()).Times(2);
-  EXPECT_CALL(*controller_, RequestHide());
-  base::RunLoop run_loop;
-  EXPECT_CALL(*controller_, RequestShow())
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-
-  // Tap inside the text field. The IME should be summoned via a call to
-  // RequestShow().
-  content::SimulateTapAt(web_contents_,
-                         GetCoordinatesOfInputField(kInputFieldText));
-
-  // Change fields. RequestShow() should be called again, since the keyboard
-  // is not yet known to be visible.
-  content::SimulateTapAt(web_contents_,
-                         GetCoordinatesOfInputField(kInputFieldNumeric));
-
-  // Tap outside the text field. The IME should be dismissed, which will result
-  // in a call to RequestHide().
-  content::SimulateTapAt(web_contents_, kNoTarget);
-
-  // Tap back on a text field. RequestShow should be called.
-  content::SimulateTapAt(web_contents_,
-                         GetCoordinatesOfInputField(kInputFieldText));
-  run_loop.Run();
-}
-
 // Verifies that RequestShow() is not called redundantly if the virtual
 // keyboard is reported as visible.
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
   testing::InSequence s;
   base::RunLoop on_show_run_loop;
-  EXPECT_CALL(*controller_,
-              SetTextType(virtualkeyboard::TextType::ALPHANUMERIC));
+
+  // Alphanumeric field click.
   EXPECT_CALL(*controller_, RequestShow())
       .WillOnce(testing::InvokeWithoutArgs(
-          [&on_show_run_loop]() { on_show_run_loop.Quit(); }));
-  EXPECT_CALL(*controller_, SetTextType(virtualkeyboard::TextType::NUMERIC));
-  base::RunLoop on_hide_run_loop;
-  EXPECT_CALL(*controller_, RequestHide())
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&on_hide_run_loop]() { on_hide_run_loop.Quit(); }));
+          [&on_show_run_loop]() { on_show_run_loop.Quit(); }))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*controller_, RequestHide()).RetiresOnSaturation();
 
-  // Give focus to an input field, which will result in RequestShow() being
-  // called.
+  // Numeric field click.
+  base::RunLoop click_numeric_run_loop;
+  EXPECT_CALL(*controller_, SetTextType(virtualkeyboard::TextType::NUMERIC))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&click_numeric_run_loop]() { click_numeric_run_loop.Quit(); }))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*controller_, RequestShow()).RetiresOnSaturation();
+
+  // Input blur click.
+  EXPECT_CALL(*controller_, RequestHide()).RetiresOnSaturation();
+  base::RunLoop text_type_changed_run_loop;
+  EXPECT_CALL(*controller_,
+              SetTextType(virtualkeyboard::TextType::ALPHANUMERIC))
+      .WillOnce(testing::InvokeWithoutArgs([&text_type_changed_run_loop]() {
+        text_type_changed_run_loop.Quit();
+      }))
+      .RetiresOnSaturation();
+
   content::SimulateTapAt(web_contents_,
                          GetCoordinatesOfInputField(kInputFieldText));
   on_show_run_loop.Run();
+  EXPECT_EQ(controller_->text_type(), virtualkeyboard::TextType::ALPHANUMERIC);
 
   // Indicate that the virtual keyboard is now visible.
   controller_->AwaitWatchAndRespondWith(true);
+  base::RunLoop().RunUntilIdle();
 
   // Tap on another text field. RequestShow should not be called a second time
   // since the keyboard is already onscreen.
   content::SimulateTapAt(web_contents_,
                          GetCoordinatesOfInputField(kInputFieldNumeric));
-  base::RunLoop().RunUntilIdle();
+  click_numeric_run_loop.Run();
 
+  // Trigger input blur by clicking outside any input element.
   content::SimulateTapAt(web_contents_, kNoTarget);
-  on_hide_run_loop.Run();
+  text_type_changed_run_loop.Run();
 }
 
 // Gives focus to a sequence of HTML <input> nodes with different InputModes,
 // and verifies that the InputMode's FIDL equivalent is sent via SetTextType().
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
+  // Note that the service will elide type updates if there is no change,
+  // so the array is ordered to produce an update on each entry.
   const std::vector<std::pair<base::StringPiece, virtualkeyboard::TextType>>
       kInputTypeMappings = {
-          {kInputFieldText, virtualkeyboard::TextType::ALPHANUMERIC},
           {kInputFieldTel, virtualkeyboard::TextType::PHONE},
+          {kInputFieldSearch, virtualkeyboard::TextType::ALPHANUMERIC},
           {kInputFieldNumeric, virtualkeyboard::TextType::NUMERIC},
           {kInputFieldUrl, virtualkeyboard::TextType::ALPHANUMERIC},
-          {kInputFieldEmail, virtualkeyboard::TextType::ALPHANUMERIC},
           {kInputFieldDecimal, virtualkeyboard::TextType::NUMERIC},
-          {kInputFieldSearch, virtualkeyboard::TextType::ALPHANUMERIC},
+          {kInputFieldEmail, virtualkeyboard::TextType::ALPHANUMERIC},
       };
 
-  // Simulate like the keyboard is already shown, so that the test can focus on
-  // input type mappings without clutter from visibility management.
-  controller_->AwaitWatchAndRespondWith(true);
-  base::RunLoop().RunUntilIdle();
-
   // GMock expectations must be set upfront, hence the redundant for-each loop.
-  for (const auto& field_type_pair : kInputTypeMappings) {
+  testing::InSequence s;
+  virtualkeyboard::TextType previous_text_type =
+      virtualkeyboard::TextType::ALPHANUMERIC;
+  std::vector<base::RunLoop> set_type_loops(base::size(kInputTypeMappings));
+  for (size_t i = 0; i < base::size(kInputTypeMappings); ++i) {
+    const auto& field_type_pair = kInputTypeMappings[i];
+    DCHECK_NE(field_type_pair.second, previous_text_type);
+
     EXPECT_CALL(*controller_, SetTextType(field_type_pair.second))
+        .WillOnce(testing::InvokeWithoutArgs(
+            [run_loop = &set_type_loops[i]]() mutable { run_loop->Quit(); }))
         .RetiresOnSaturation();
+    previous_text_type = field_type_pair.second;
   }
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*controller_, RequestHide())
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  controller_->AwaitWatchAndRespondWith(false);
 
-  for (const auto& field_type_pair : kInputTypeMappings) {
-    content::SimulateTapAt(web_contents_,
-                           GetCoordinatesOfInputField(field_type_pair.first));
+  for (size_t i = 0; i < base::size(kInputTypeMappings); ++i) {
+    content::SimulateTapAt(
+        web_contents_, GetCoordinatesOfInputField(kInputTypeMappings[i].first));
+
+    // Spin the runloop until we've received the type update.
+    set_type_loops[i].Run();
   }
-
-  // Dismiss the virtual keyboard and wait for RequestHide().
-  content::SimulateTapAt(web_contents_, kNoTarget);
-  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, Disconnection) {
   testing::InSequence s;
   base::RunLoop on_show_run_loop;
-  EXPECT_CALL(*controller_,
-              SetTextType(virtualkeyboard::TextType::ALPHANUMERIC));
   EXPECT_CALL(*controller_, RequestShow())
       .WillOnce(testing::InvokeWithoutArgs(
           [&on_show_run_loop]() { on_show_run_loop.Quit(); }));
