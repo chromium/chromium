@@ -7074,6 +7074,9 @@ crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass 
 # Sheriff 2021-04-30
 crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Pass Failure ]
 
+# Appears to be timing out even when marked as Slow.
+crbug.com/1205184 [ Mac11.0 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]
+
 # Sheriff 2021-05-03
 crbug.com/1205133 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
 crbug.com/1205133 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
