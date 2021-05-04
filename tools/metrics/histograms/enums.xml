@@ -32368,6 +32368,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3888" label="WebGPU"/>
   <int value="3889" label="CSSFilterColorMatrix"/>
   <int value="3890" label="HTMLFencedFrameElement"/>
+  <int value="3891" label="CSSFilterLuminanceToAlpha"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -52,6 +52,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     SEPIA,
     SATURATE,
     HUE_ROTATE,
+    LUMINANCE_TO_ALPHA,
     INVERT,
     OPACITY,
     BRIGHTNESS,
@@ -69,6 +70,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case SEPIA:
       case SATURATE:
       case HUE_ROTATE:
+      case LUMINANCE_TO_ALPHA:
       case INVERT:
       case OPACITY:
       case BRIGHTNESS:
@@ -154,8 +156,9 @@ struct DowncastTraits<ReferenceFilterOperation> {
   }
 };
 
-// GRAYSCALE, SEPIA, SATURATE and HUE_ROTATE are variations on a basic color
-// matrix effect.  For HUE_ROTATE, the angle of rotation is stored in m_amount.
+// GRAYSCALE, SEPIA, SATURATE, HUE_ROTATE and LUMINANCE_TO_ALPHA are variations
+// on a basic color matrix effect.  For HUE_ROTATE, the angle of rotation is
+// stored in amount_. For LUMINANCE_TO_ALPHA amount_ is unused.
 class CORE_EXPORT BasicColorMatrixFilterOperation : public FilterOperation {
  public:
   BasicColorMatrixFilterOperation(double amount, OperationType type)
@@ -200,7 +203,8 @@ inline bool IsBasicColorMatrixFilterOperation(
   FilterOperation::OperationType type = operation.GetType();
   return type == FilterOperation::GRAYSCALE || type == FilterOperation::SEPIA ||
          type == FilterOperation::SATURATE ||
-         type == FilterOperation::HUE_ROTATE;
+         type == FilterOperation::HUE_ROTATE ||
+         type == FilterOperation::LUMINANCE_TO_ALPHA;
 }
 
 template <>

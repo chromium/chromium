@@ -196,6 +196,13 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
+      case FilterOperation::LUMINANCE_TO_ALPHA: {
+        Vector<float> input_parameters;
+        effect = MakeGarbageCollected<FEColorMatrix>(
+            parent_filter, FECOLORMATRIX_TYPE_LUMINANCETOALPHA,
+            std::move(input_parameters));
+        break;
+      }
       case FilterOperation::COLOR_MATRIX: {
         Vector<float> input_parameters =
             To<ColorMatrixFilterOperation>(filter_operation)->Values();
@@ -363,6 +370,10 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         }
         break;
       }
+      case FilterOperation::LUMINANCE_TO_ALPHA:
+        // LuminanceToAlpha only exists for SVG and Canvas filters.
+        NOTREACHED();
+        break;
       case FilterOperation::COLOR_MATRIX: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
