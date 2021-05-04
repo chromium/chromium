@@ -1851,20 +1851,28 @@ TEST(URLCanonTest, CanonicalizeFileURL) {
       // Busted refs shouldn't make the whole thing fail.
       {"file:///C:/asdf#\xc2", "file:///C:/asdf#%EF%BF%BD", true, Component(),
        Component(7, 8)},
+      {"file:///./s:", "file:///S:", true, Component(), Component(7, 3)},
 #else
       // Unix-style paths
-    {"file:///home/me", "file:///home/me", true, Component(), Component(7, 8)},
+      {"file:///home/me", "file:///home/me", true, Component(),
+       Component(7, 8)},
       // Windowsy ones should get still treated as Unix-style.
-    {"file:c:\\foo\\bar.html", "file:///c:/foo/bar.html", true, Component(), Component(7, 16)},
-    {"file:c|//foo\\bar.html", "file:///c%7C//foo/bar.html", true, Component(), Component(7, 19)},
+      {"file:c:\\foo\\bar.html", "file:///c:/foo/bar.html", true, Component(),
+       Component(7, 16)},
+      {"file:c|//foo\\bar.html", "file:///c%7C//foo/bar.html", true,
+       Component(), Component(7, 19)},
+      {"file:///./s:", "file:///s:", true, Component(), Component(7, 3)},
       // file: tests from WebKit (LayoutTests/fast/loader/url-parse-1.html)
-    {"//", "file:///", true, Component(), Component(7, 1)},
-    {"///", "file:///", true, Component(), Component(7, 1)},
-    {"///test", "file:///test", true, Component(), Component(7, 5)},
-    {"file://test", "file://test/", true, Component(7, 4), Component(11, 1)},
-    {"file://localhost",  "file://localhost/", true, Component(7, 9), Component(16, 1)},
-    {"file://localhost/", "file://localhost/", true, Component(7, 9), Component(16, 1)},
-    {"file://localhost/test", "file://localhost/test", true, Component(7, 9), Component(16, 5)},
+      {"//", "file:///", true, Component(), Component(7, 1)},
+      {"///", "file:///", true, Component(), Component(7, 1)},
+      {"///test", "file:///test", true, Component(), Component(7, 5)},
+      {"file://test", "file://test/", true, Component(7, 4), Component(11, 1)},
+      {"file://localhost", "file://localhost/", true, Component(7, 9),
+       Component(16, 1)},
+      {"file://localhost/", "file://localhost/", true, Component(7, 9),
+       Component(16, 1)},
+      {"file://localhost/test", "file://localhost/test", true, Component(7, 9),
+       Component(16, 5)},
 #endif  // _WIN32
   };
 
