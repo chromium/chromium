@@ -16,6 +16,8 @@ config("viz_service_implementation") {
 
 viz_component("service") {
   sources = [
+    "debugger/viz_debugger.cc",
+    "debugger/viz_debugger.h",
     "display/aggregated_frame.cc",
     "display/aggregated_frame.h",
     "display/bsp_tree.cc",
@@ -522,6 +524,7 @@ viz_source_set("gpu_service_dependencies") {
 viz_source_set("unit_tests") {
   testonly = true
   sources = [
+    "debugger/viz_debugger_unittest.cc",
     "display/bsp_tree_unittest.cc",
     "display/copy_output_scaling_pixeltest.cc",
     "display/delegated_ink_point_pixel_test_helper.cc",

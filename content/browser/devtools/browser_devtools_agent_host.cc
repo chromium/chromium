@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
+#include "components/viz/common/buildflags.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
@@ -23,6 +24,10 @@
 #include "content/browser/devtools/protocol/tethering_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+#include "content/browser/devtools/protocol/visual_debugger_handler.h"
+#endif
 
 namespace content {
 
@@ -81,6 +86,9 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
 
   session->AddHandler(std::make_unique<protocol::BrowserHandler>(
       session->GetClient()->MayWriteLocalFiles()));
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+  session->AddHandler(std::make_unique<protocol::VisualDebuggerHandler>());
+#endif
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::FetchHandler>(
       GetIOContext(),

@@ -6,6 +6,7 @@ include_rules = [
   "-components/viz/common/features.h",
   "-components/viz/common/switches.h",
   "-components/viz/service",
+  "+components/viz/service/debugger/viz_debugger.h",
   "+components/viz/service/gl/gpu_service_impl.h",
   "+components/viz/service/viz_service_export.h",
   "+gpu/config/gpu_feature_info.h",

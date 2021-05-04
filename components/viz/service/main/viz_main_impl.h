@@ -13,6 +13,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"
@@ -126,6 +127,12 @@ class VizMainImpl : public mojom::VizMain,
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
   void CreateVizDevTools(mojom::VizDevToolsParamsPtr params) override;
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+  void FilterDebugStream(base::Value filter_data) override;
+  void StartDebugStream(
+      mojo::PendingRemote<mojom::VizDebugOutput> debug_output) override;
+  void StopDebugStream() override;
+#endif
 
   // gpu::GpuInProcessThreadServiceDelegate implementation:
   scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
