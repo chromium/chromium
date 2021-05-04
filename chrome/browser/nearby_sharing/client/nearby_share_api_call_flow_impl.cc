@@ -148,8 +148,8 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
     error = NearbyShareHttpError::kOffline;
   }
 
-  NS_LOG(ERROR) << "API call failed, error code: "
-                << net::ErrorToString(net_error);
+  NS_LOG(ERROR) << "API call failed: "
+                << NearbyShareHttpStatus(net_error, head).ToString();
   if (body)
     NS_LOG(VERBOSE) << "API failure response body: " << *body;
 
