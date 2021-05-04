@@ -1,5 +1,12 @@
 # The browser process should not handle messages from web content
 
+![alt text](good-bad-ipc.png "Safe flow of IPC messages from renderer to
+browser, via reviewed APIs; together with two example unsafe flows via
+postMessage and via unreviewed APIs")
+
+(drawing source
+[here](https://docs.google.com/drawings/d/1SmqvOvLY_DnDxeJHKQRB3rACO0aVSHpyfTycV2v1P1w/edit?usp=sharing))
+
 Sometimes features are proposed in which the Chrome user interface (in the
 browser process) handles messages directly from web content (JavaScript, HTML
 etc.). For example, this could be done using the `postMessage` APIs which have
