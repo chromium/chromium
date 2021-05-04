@@ -14,24 +14,20 @@ been put in place for Android WebView apps. This is not allowed, because:
   has to be via Mojo such that the `mojom` interface definition files go through
   our [IPC security review process](mojo.md) (and will benefit from other future
   Mojo security improvements).
-* Websites are untrustworthy. TLS can’t guarantee the identity of a website —
+* Websites are untrustworthy. TLS can’t guarantee the provenance of a website —
   even pinning has limits — and so you must assume any messages from websites
   are malicious. Processing such messages in the browser process in C++ is
   likely a violation of the [Rule of Two](rule-of-2.md) and is extremely
   dangerous.
 * Even if you can comply with the Rule of Two (for example by using a safe
   language) it's simply difficult to produce robust APIs that are safe against
-  malicious data: the open web platform API review process is designed to flush
-  out any concerns. Any APIs or functionality accessible to web content
+  malicious data: the open web platform [API review
+  process](https://www.chromium.org/blink/launching-features) is designed to
+  flush out any concerns. Any APIs or functionality accessible to web content
   therefore needs to go via that process to give the best chance of spotting
   danger.
 * There are non-security concerns: It does not comply with the spirit of an open
   web platform which should be equally available on all user agents.
-
-Historically, there have been some instances where this rule has been violated
-and complexity has resulted. For example, the U2F short-cut caused long-term
-pain for the entire industry in moving to the open standard WebAuthn
-replacement.
 
 In order to support WebView, WebLayer, and CCT, APIs exist in Chrome to
 establish web message channels between the embedding application and web page.
@@ -39,3 +35,6 @@ These exist only to support these "embedding the web" scenarios, which are often
 used to build site- or purpose-specific browsers. General browser features
 should not use them because of the reasons stated above.
 
+Other mechanisms of bypassing normal processes might include exposing unreviewed
+APIs to a component extension, and making its APIs available to web content.
+These are similarly not allowed.
