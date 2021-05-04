@@ -328,7 +328,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
         {builder->Style().GetWritingMode(), builder->Direction()}, size);
     for (const auto& descendant : builder->oof_positioned_descendants_) {
       oof_positioned_descendants_->emplace_back(
-          descendant.node,
+          descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
           descendant.inline_container);
     }

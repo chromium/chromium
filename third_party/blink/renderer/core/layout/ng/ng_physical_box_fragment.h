@@ -195,12 +195,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                 ->oof_positioned_fragmentainer_descendants.IsEmpty();
   }
 
-  base::span<NGPhysicalOutOfFlowPositionedNode>
+  base::span<NGPhysicalOOFNodeForFragmentation>
   OutOfFlowPositionedFragmentainerDescendants() const {
     if (!const_has_rare_data_)
-      return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    HeapVector<NGPhysicalOutOfFlowPositionedNode>& descendants =
-        const_cast<HeapVector<NGPhysicalOutOfFlowPositionedNode>&>(
+      return base::span<NGPhysicalOOFNodeForFragmentation>();
+    HeapVector<NGPhysicalOOFNodeForFragmentation>& descendants =
+        const_cast<HeapVector<NGPhysicalOOFNodeForFragmentation>&>(
             ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
   }
@@ -442,7 +442,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     RareData(NGBoxFragmentBuilder*, PhysicalSize size);
     void Trace(Visitor*) const;
 
-    HeapVector<NGPhysicalOutOfFlowPositionedNode>
+    HeapVector<NGPhysicalOOFNodeForFragmentation>
         oof_positioned_fragmentainer_descendants;
     MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;

@@ -3026,7 +3026,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowDescendants(
 
   for (auto& out_of_flow_descendant : *out_of_flow_descendants) {
     GridItemData out_of_flow_item =
-        MeasureGridItem(out_of_flow_descendant.node);
+        MeasureGridItem(out_of_flow_descendant.Node());
 
     out_of_flow_item.ComputeOutOfFlowItemPlacement(column_track_collection,
                                                    grid_placement);

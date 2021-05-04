@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 
 namespace blink {
 
@@ -18,7 +19,7 @@ namespace blink {
 // once it reaches its containing block. A containing block holds the
 // containing block information needed to place these OOF positioned nodes once
 // they reach the fragmentation context root. See
-// NGPhysicalOutOfFlowPositionedNode/NGLogicalOutOfFlowPositionedNode for more
+// NGPhysicalOOFNodeForFragmentation/NGLogicalOutOfFlowPositionedNode for more
 // details.
 template <typename OffsetType>
 struct NGContainingBlock {
@@ -81,14 +82,66 @@ struct NGMulticolWithPendingOOFs
 // as a positioned-node reaches its containing block, it gets placed, and
 // doesn't bubble further up the tree.
 //
-// However, when fragmentation comes into play, we no longer place a
-// positioned-node as soon as it reaches its containing block. Instead, we
-// continue to bubble the positioned node up until it reaches the
-// fragmentation context root. There, it will get placed and properly
-// fragmented.
-//
 // This needs its static position [1] to be placed correctly in its containing
-// block. And in the case of fragmentation, this also needs the containing block
+// block.
+//
+// This is struct is allowed to be stored/persisted.
+//
+// [1] https://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width
+struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
+  DISALLOW_NEW();
+
+  using HorizontalEdge = NGPhysicalStaticPosition::HorizontalEdge;
+  using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
+
+ public:
+  Member<LayoutBox> box;
+  // Unpacked NGPhysicalStaticPosition.
+  PhysicalOffset static_position;
+  unsigned static_position_horizontal_edge : 2;
+  unsigned static_position_vertical_edge : 2;
+  // Whether or not this is an NGPhysicalOOFNodeForFragmentation.
+  unsigned is_for_fragmentation : 1;
+  // Continuation root of the optional inline container.
+  Member<const LayoutInline> inline_container;
+
+  NGPhysicalOutOfFlowPositionedNode(
+      NGBlockNode node,
+      NGPhysicalStaticPosition static_position,
+      const LayoutInline* inline_container = nullptr)
+      : box(node.GetLayoutBox()),
+        static_position(static_position.offset),
+        static_position_horizontal_edge(static_position.horizontal_edge),
+        static_position_vertical_edge(static_position.vertical_edge),
+        is_for_fragmentation(false),
+        inline_container(inline_container) {
+    DCHECK(!inline_container ||
+           inline_container == inline_container->ContinuationRoot());
+    DCHECK(node.IsBlock());
+  }
+
+  NGBlockNode Node() const { return NGBlockNode(box); }
+  HorizontalEdge GetStaticPositionHorizontalEdge() const {
+    return static_cast<HorizontalEdge>(static_position_horizontal_edge);
+  }
+  VerticalEdge GetStaticPositionVerticalEdge() const {
+    return static_cast<VerticalEdge>(static_position_vertical_edge);
+  }
+  NGPhysicalStaticPosition StaticPosition() const {
+    return {static_position, GetStaticPositionHorizontalEdge(),
+            GetStaticPositionVerticalEdge()};
+  }
+
+  void Trace(Visitor* visitor) const;
+  void TraceAfterDispatch(Visitor*) const;
+};
+
+// When fragmentation comes into play, we no longer place a positioned-node as
+// soon as it reaches its containing block. Instead, we continue to bubble the
+// positioned node up until it reaches the fragmentation context root. There, it
+// will get placed and properly fragmented.
+//
+// In addition to the static position, we also needs the containing block
 // fragment to be placed correctly within the fragmentation context root. In
 // addition, the containing block offset is needed to compute the start offset
 // and the initial fragmentainer of an out-of-flow positioned-node.
@@ -100,20 +153,15 @@ struct NGMulticolWithPendingOOFs
 // exists.
 //
 // This is struct is allowed to be stored/persisted.
-//
-// [1] https://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width
-struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode final {
+struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
+    : public NGPhysicalOutOfFlowPositionedNode {
   DISALLOW_NEW();
 
  public:
-  NGBlockNode node;
-  NGPhysicalStaticPosition static_position;
-  // Continuation root of the optional inline container.
-  Member<const LayoutInline> inline_container;
   NGContainingBlock<PhysicalOffset> containing_block;
   NGContainingBlock<PhysicalOffset> fixedpos_containing_block;
 
-  NGPhysicalOutOfFlowPositionedNode(
+  NGPhysicalOOFNodeForFragmentation(
       NGBlockNode node,
       NGPhysicalStaticPosition static_position,
       const LayoutInline* inline_container = nullptr,
@@ -121,21 +169,15 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode final {
           NGContainingBlock<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> fixedpos_containing_block =
           NGContainingBlock<PhysicalOffset>())
-      : node(node),
-        static_position(static_position),
-        inline_container(inline_container),
+      : NGPhysicalOutOfFlowPositionedNode(node,
+                                          static_position,
+                                          inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block) {
-    DCHECK(!inline_container ||
-           inline_container == inline_container->ContinuationRoot());
+    is_for_fragmentation = true;
   }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(node);
-    visitor->Trace(inline_container);
-    visitor->Trace(containing_block);
-    visitor->Trace(fixedpos_containing_block);
-  }
+  void TraceAfterDispatch(Visitor* visitor) const;
 };
 
 // The logical version of above. It is used within a an algorithm pass (within
@@ -148,7 +190,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
   DISALLOW_NEW();
 
  public:
-  NGBlockNode node;
+  Member<LayoutBox> box;
   NGLogicalStaticPosition static_position;
   // Continuation root of the optional inline container.
   Member<const LayoutInline> inline_container;
@@ -168,7 +210,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
       NGContainingBlock<LogicalOffset> fixedpos_containing_block =
           NGContainingBlock<LogicalOffset>(),
       const base::Optional<LogicalRect> containing_block_rect = base::nullopt)
-      : node(node),
+      : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
         needs_block_offset_adjustment(needs_block_offset_adjustment),
@@ -177,10 +219,13 @@ struct NGLogicalOutOfFlowPositionedNode final {
         containing_block_rect(containing_block_rect) {
     DCHECK(!inline_container ||
            inline_container == inline_container->ContinuationRoot());
+    DCHECK(node.IsBlock());
   }
 
+  NGBlockNode Node() const { return NGBlockNode(box); }
+
   void Trace(Visitor* visitor) const {
-    visitor->Trace(node);
+    visitor->Trace(box);
     visitor->Trace(inline_container);
     visitor->Trace(containing_block);
     visitor->Trace(fixedpos_containing_block);
@@ -191,6 +236,8 @@ struct NGLogicalOutOfFlowPositionedNode final {
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::NGPhysicalOutOfFlowPositionedNode)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGPhysicalOOFNodeForFragmentation)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::NGLogicalOutOfFlowPositionedNode)
 

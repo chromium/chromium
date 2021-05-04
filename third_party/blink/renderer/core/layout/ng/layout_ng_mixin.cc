@@ -355,7 +355,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // These are the unpositioned OOF descendants of the current OOF block.
   for (const auto& descendant :
        result->PhysicalFragment().OutOfFlowPositionedDescendants())
-    descendant.node.InsertIntoLegacyPositionedObjects();
+    descendant.Node().InsertIntoLegacyPositionedObjects();
 
   const auto& fragment = result->PhysicalFragment();
   DCHECK_GT(fragment.Children().size(), 0u);
@@ -400,7 +400,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
   for (const auto& descendant :
        physical_fragment.OutOfFlowPositionedDescendants())
-    descendant.node.InsertIntoLegacyPositionedObjects();
+    descendant.Node().InsertIntoLegacyPositionedObjects();
 
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.

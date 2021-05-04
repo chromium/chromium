@@ -445,7 +445,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
     oof_positioned_fragmentainer_descendants.emplace_back(
-        descendant.node,
+        descendant.Node(),
         descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
         PhysicalContainingBlock(builder, size, descendant.containing_block),

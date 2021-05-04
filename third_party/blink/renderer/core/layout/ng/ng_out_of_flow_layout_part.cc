@@ -184,11 +184,11 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     for (auto& candidate : candidates) {
       if (absolute_containing_block &&
           absolute_containing_block->CanContainOutOfFlowPositionedElement(
-              candidate.node.Style().GetPosition())) {
+              candidate.Node().Style().GetPosition())) {
         candidate.inline_container = absolute_containing_block;
       } else if (fixed_containing_block &&
                  fixed_containing_block->CanContainOutOfFlowPositionedElement(
-                     candidate.node.Style().GetPosition())) {
+                     candidate.Node().Style().GetPosition())) {
         candidate.inline_container = fixed_containing_block;
       }
       container_builder_->AddOutOfFlowDescendant(candidate);
@@ -354,7 +354,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         .stored_value->value;
   }
 
-  return candidate.node.Style().GetPosition() == EPosition::kAbsolute
+  return candidate.Node().Style().GetPosition() == EPosition::kAbsolute
              ? default_containing_block_info_for_absolute_
              : default_containing_block_info_for_fixed_;
 }
@@ -509,7 +509,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
   while (candidates->size() > 0) {
     ComputeInlineContainingBlocks(*candidates);
     for (auto& candidate : *candidates) {
-      LayoutBox* layout_box = candidate.node.GetLayoutBox();
+      LayoutBox* layout_box = candidate.box;
       if (!container_builder_->IsBlockFragmentationContextRoot())
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
       if (IsContainingBlockForCandidate(candidate) &&
@@ -522,7 +522,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           continue;
         }
         if (layout_box != only_layout)
-          candidate.node.InsertIntoLegacyPositionedObjects();
+          candidate.Node().InsertIntoLegacyPositionedObjects();
         NodeInfo node_info = SetupNodeInfo(candidate);
         NodeToLayout node_to_layout = {node_info,
                                        CalculateOffset(node_info, only_layout)};
@@ -531,7 +531,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         container_builder_->AddChild(result->PhysicalFragment(),
                                      result->OutOfFlowPositionedOffset(),
                                      candidate.inline_container);
-        placed_objects->insert(candidate.node.GetLayoutBox());
+        placed_objects->insert(layout_box);
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
       }
@@ -689,11 +689,11 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       const WritingModeConverter containing_block_converter(
           writing_direction, containing_block_fragment->Size());
       NGLogicalStaticPosition static_position =
-          descendant.static_position.ConvertToLogical(
+          descendant.StaticPosition().ConvertToLogical(
               containing_block_converter);
 
       NGLogicalOutOfFlowPositionedNode node = {
-          descendant.node,
+          descendant.Node(),
           static_position,
           descendant.inline_container,
           /* needs_block_offset_adjustment */ false,
@@ -824,7 +824,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
 NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     const NGLogicalOutOfFlowPositionedNode& oof_node) {
-  NGBlockNode node = oof_node.node;
+  NGBlockNode node = oof_node.Node();
   const NGPhysicalFragment* containing_block_fragment =
       oof_node.containing_block.fragment;
 
@@ -1097,15 +1097,15 @@ bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
   if (container_builder_->IsFragmentainerBoxType())
     return false;
 
-  EPosition position = candidate.node.Style().GetPosition();
+  EPosition position = candidate.Node().Style().GetPosition();
 
   // Candidates whose containing block is inline are always positioned inside
   // closest parent block flow.
   if (candidate.inline_container) {
     DCHECK(candidate.inline_container->CanContainOutOfFlowPositionedElement(
-        candidate.node.Style().GetPosition()));
+        position));
     return container_builder_->GetLayoutObject() ==
-           candidate.node.GetLayoutBox()->ContainingBlock();
+           candidate.box->ContainingBlock();
   }
   return (is_absolute_container_ && position == EPosition::kAbsolute) ||
          (is_fixed_container_ && position == EPosition::kFixed);
