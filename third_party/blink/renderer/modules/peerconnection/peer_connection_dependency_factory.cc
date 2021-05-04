@@ -259,7 +259,6 @@ const char PeerConnectionDependencyFactory::kSupplementName[] =
 
 PeerConnectionDependencyFactory& PeerConnectionDependencyFactory::From(
     ExecutionContext& context) {
-  DCHECK(!context.IsContextDestroyed());
   auto* supplement =
       Supplement<ExecutionContext>::From<PeerConnectionDependencyFactory>(
           context);
@@ -302,12 +301,9 @@ PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
 
 const scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
 PeerConnectionDependencyFactory::GetPcFactory() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!GetSupplementable()->IsContextDestroyed());
-
-  if (!pc_factory_)
+  if (!pc_factory_.get())
     CreatePeerConnectionFactory();
-  CHECK(pc_factory_);
+  CHECK(pc_factory_.get());
   return pc_factory_;
 }
 
@@ -389,9 +385,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CrossThreadUnretained(&start_signaling_event)));
 
   start_signaling_event.Wait();
-  DCHECK(pc_factory_);
-  DCHECK(socket_factory_);
-
   CHECK(GetSignalingThread());
 }
 
@@ -712,7 +705,6 @@ void PeerConnectionDependencyFactory::ContextDestroyed() {
 
 void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
   DVLOG(1) << "PeerConnectionDependencyFactory::CleanupPeerConnectionFactory()";
-  socket_factory_ = nullptr;
   pc_factory_ = nullptr;
   if (network_manager_) {
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -746,10 +738,7 @@ PeerConnectionDependencyFactory::GetWebRtcNetworkTaskRunner() {
 scoped_refptr<base::SingleThreadTaskRunner>
 PeerConnectionDependencyFactory::GetWebRtcSignalingTaskRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // If the context is already destroyed, we don't want to (re)create
-  // dependencies that were already cleaned-up.
-  if (!GetSupplementable()->IsContextDestroyed())
-    EnsureInitialized();
+  EnsureInitialized();
   return GetChromeSignalingThread().IsRunning()
              ? GetChromeSignalingThread().task_runner()
              : nullptr;
