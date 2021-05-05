@@ -252,6 +252,25 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         time_delta, count);
   }
 
+  void VerifyAppRunningPercentageCountHistogram(
+      base::HistogramBase::Count count,
+      AppTypeName app_type_name) {
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
+            app_type_name),
+        count);
+  }
+
+  void VerifyAppRunningPercentageHistogram(
+      int count,
+      base::HistogramBase::Count expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectBucketCount(
+        AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
+            app_type_name),
+        count, expected_count);
+  }
+
   void VerifyAppActivatedCount(int count, AppTypeName app_type_name) {
     DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
@@ -422,6 +441,11 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
                                     /*expected_count=*/1,
                                     AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageHistogram(100,
+                                      /*expected_count=*/1,
+                                      AppTypeName::kChromeBrowser);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1,
                                    AppTypeName::kChromeBrowser);
   VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/1,
@@ -467,6 +491,10 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
                                          AppTypeName::kArc);
   VerifyAppRunningDurationHistogram(base::TimeDelta::FromHours(1),
                                     /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kArc);
+  VerifyAppRunningPercentageHistogram(100,
+                                      /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppActivatedCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
 }
 
@@ -611,6 +639,49 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   VerifyAppActivatedCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
   VerifyAppRunningDuration(base::TimeDelta::FromHours(0), AppTypeName::kArc);
   VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
+}
+
+// Tests the app running percentage UMA metrics when launch a browser window
+// and an ARC app in one day.
+TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
+  // Launch a browser window.
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension);
+  std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
+  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Set the browser window active.
+  ModifyInstance(extension_misc::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+
+  // Set the browser window running in the background.
+  ModifyInstance(extension_misc::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
+
+  // Launch an ARC app.
+  std::string app_id = "aa";
+  InstallOneApp(app_id, apps::mojom::AppType::kArc);
+
+  // Create a window to simulate launching the app.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
+
+  // Close the window after running one hour.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
+
+  // One day passes.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kArc);
+  VerifyAppRunningPercentageHistogram(50,
+                                      /*expected_count=*/1,
+                                      AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageHistogram(50,
+                                      /*expected_count=*/1, AppTypeName::kArc);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTime) {

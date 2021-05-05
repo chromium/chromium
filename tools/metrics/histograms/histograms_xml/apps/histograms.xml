@@ -2019,6 +2019,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
+<histogram name="Apps.RunningPercentage.{AppType}" units="%"
+    expires_after="2021-10-28">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    Recorded the app running duration percentage for {AppType} in Chrome OS.
+    This is logged when more than 24 hours pass after last log, or during the
+    system startup phase if more than 24 hours passed after last log.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
 <histogram name="Apps.ScrollableShelf.AnimationSmoothness" units="%"
     expires_after="2021-08-01">
 <!-- Name completed by histogram suffixes

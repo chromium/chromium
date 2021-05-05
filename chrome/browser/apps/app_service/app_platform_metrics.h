@@ -86,6 +86,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   static std::string GetAppsRunningDurationHistogramNameForTest(
       AppTypeName app_type_name);
 
+  // UMA metrics name for apps running percentage in Chrome OS.
+  static std::string GetAppsRunningPercentageHistogramNameForTest(
+      AppTypeName app_type_name);
+
   // UMA metrics name for app window activated count in Chrome OS.
   static std::string GetAppsActivatedCountHistogramNameForTest(
       AppTypeName app_type_name);

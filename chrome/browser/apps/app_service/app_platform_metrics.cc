@@ -31,6 +31,8 @@ namespace {
 // UMA metrics for a snapshot count of installed apps.
 constexpr char kAppsCountHistogramPrefix[] = "Apps.AppsCount.";
 constexpr char kAppsRunningDurationHistogramPrefix[] = "Apps.RunningDuration.";
+constexpr char kAppsRunningPercentageHistogramPrefix[] =
+    "Apps.RunningPercentage.";
 constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 
@@ -363,6 +365,13 @@ std::string AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
 }
 
 // static
+std::string AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
+    AppTypeName app_type_name) {
+  return kAppsRunningPercentageHistogramPrefix +
+         GetAppTypeHistogramName(app_type_name);
+}
+
+// static
 std::string AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsActivatedCountHistogramPrefix +
@@ -574,10 +583,20 @@ void AppPlatformMetrics::RecordAppsRunningDuration() {
     it.second.start_time = base::TimeTicks::Now();
   }
 
+  base::TimeDelta total_running_duration;
   for (auto it : running_duration_) {
     base::UmaHistogramCustomTimes(
         kAppsRunningDurationHistogramPrefix + GetAppTypeHistogramName(it.first),
         it.second, kMinDuration, kMaxDuration, kDurationBuckets);
+    total_running_duration += it.second;
+  }
+
+  if (!total_running_duration.is_zero()) {
+    for (auto it : running_duration_) {
+      base::UmaHistogramPercentage(kAppsRunningPercentageHistogramPrefix +
+                                       GetAppTypeHistogramName(it.first),
+                                   100 * (it.second / total_running_duration));
+    }
   }
 
   for (auto it : activated_count_) {
