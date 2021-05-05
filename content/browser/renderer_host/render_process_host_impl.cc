@@ -524,7 +524,7 @@ class SessionStorageHolder : public base::SupportsUserData::Data {
 // MaybeTakeSpareRenderProcessHost is called with a BrowserContext that does not
 // match, the spare renderer is discarded. Only the default StoragePartition
 // will be able to use a spare renderer. The spare renderer will also not be
-// used as a guest renderer (is_for_guests_ == true).
+// used as a guest renderer (flags_ contains kForGuestsOnly).
 //
 // It is safe to call WarmupSpareRenderProcessHost multiple times, although if
 // called in a context where the spare renderer is not likely to be used
@@ -1536,22 +1536,27 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
       static_cast<StoragePartitionImpl*>(
           browser_context->GetStoragePartition(site_instance));
 
-  // If we've made a StoragePartition for guests (e.g., for the <webview> tag),
-  // stash the Site URL on it. This way, when we start a service worker inside
-  // this storage partition, we can create the appropriate SiteInstance for
-  // finding a process (e.g., we will try to start a worker from
-  // "https://example.com/sw.js" but need to use the guest site URL
-  // to get a process in the guest's StoragePartition.)
-  const bool is_for_guests_only = site_instance && site_instance->IsGuest();
-  if (is_for_guests_only &&
-      storage_partition_impl->site_for_guest_service_worker_or_shared_worker()
-          .is_empty()) {
-    storage_partition_impl->set_site_for_guest_service_worker_or_shared_worker(
-        site_instance->GetSiteInfo().site_url());
+  int flags = RenderProcessFlags::kNone;
+
+  if (site_instance && site_instance->IsGuest()) {
+    flags |= RenderProcessFlags::kForGuestsOnly;
+
+    // If we've made a StoragePartition for guests (e.g., for the <webview>
+    // tag), stash the Site URL on it. This way, when we start a service worker
+    // inside this storage partition, we can create the appropriate SiteInstance
+    // for finding a process (e.g., we will try to start a worker from
+    // "https://example.com/sw.js" but need to use the guest site URL to get a
+    // process in the guest's StoragePartition.)
+    if (storage_partition_impl->site_for_guest_service_worker_or_shared_worker()
+            .is_empty()) {
+      storage_partition_impl
+          ->set_site_for_guest_service_worker_or_shared_worker(
+              site_instance->GetSiteInfo().site_url());
+    }
   }
 
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
-                                   is_for_guests_only);
+                                   flags);
 }
 
 // static
@@ -1561,7 +1566,7 @@ const unsigned int RenderProcessHostImpl::kMaxFrameDepthForPriority =
 RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,
-    bool is_for_guests_only)
+    int flags)
     : fast_shutdown_started_(false),
       deleting_soon_(false),
 #ifndef NDEBUG
@@ -1587,7 +1592,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       storage_partition_impl_(storage_partition_impl),
       sudden_termination_allowed_(true),
       is_blocked_(false),
-      is_for_guests_only_(is_for_guests_only),
+      flags_(flags),
       is_unused_(true),
       delayed_cleanup_needed_(false),
       within_process_died_observer_(false),
@@ -1709,6 +1714,10 @@ void RenderProcessHostImpl::
 void RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
     CodeCacheHostReceiverHandler handler) {
   GetCodeCacheHostReceiverHandler() = handler;
+}
+
+void RenderProcessHostImpl::SetForGuestsOnlyForTesting() {
+  flags_ |= RenderProcessFlags::kForGuestsOnly;
 }
 
 RenderProcessHostImpl::~RenderProcessHostImpl() {
@@ -3083,7 +3092,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
 }
 
 bool RenderProcessHostImpl::IsForGuestsOnly() {
-  return is_for_guests_only_;
+  return !!(flags_ & RenderProcessFlags::kForGuestsOnly);
 }
 
 StoragePartition* RenderProcessHostImpl::GetStoragePartition() {

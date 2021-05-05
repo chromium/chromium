@@ -457,9 +457,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
 
-  void set_is_for_guests_only_for_testing(bool is_for_guests_only) {
-    is_for_guests_only_ = is_for_guests_only;
-  }
+  // Sets this RenderProcessHost to be guest only. For Testing only.
+  void SetForGuestsOnlyForTesting();
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
   // Launch the zygote early in the browser startup.
@@ -692,7 +691,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // A proxy for our IPC::Channel that lives on the IO thread.
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
-  // True if fast shutdown has been performed on this RPH.
+  // True if fast shutdown has been performed on this RenderProcessHost.
   bool fast_shutdown_started_;
 
   // True if shutdown from started by the |Shutdown()| method.
@@ -723,11 +722,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // methods here. At that point we'll remove this friend class.
   friend class AgentSchedulingGroupHost;
 
+  // A set of flags for this RenderProcessHost.
+  enum RenderProcessFlags : int {
+    kNone = 0,
+
+    // Indicates whether this RenderProcessHost is exclusively hosting guest
+    // RenderFrames.
+    kForGuestsOnly = 1 << 0
+  };
+
   // Use CreateRenderProcessHost() instead of calling this constructor
   // directly.
   RenderProcessHostImpl(BrowserContext* browser_context,
                         StoragePartitionImpl* storage_partition_impl,
-                        bool is_for_guests_only);
+                        int flags);
 
   // Initializes a new IPC::ChannelProxy in |channel_|, which will be
   // connected to the next child process launched for this host, if any.
@@ -888,8 +896,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   };
 
   // Helper to bind an interface callback whose lifetime is limited to that of
-  // the render process currently hosted by the RPHI. Callbacks added by this
-  // method will never run beyond the next invocation of Cleanup().
+  // the render process currently hosted by the RenderProcessHost. Callbacks
+  // added by this method will never run beyond the next invocation of
+  // Cleanup().
   template <typename CallbackType>
   void AddUIThreadInterface(service_manager::BinderRegistry* registry,
                             CallbackType callback) {
@@ -993,7 +1002,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to launch and terminate the process without blocking the UI thread.
   std::unique_ptr<ChildProcessLauncher> child_process_launcher_;
 
-  // The globally-unique identifier for this RPH.
+  // The globally-unique identifier for this RenderProcessHost.
   const int id_;
 
   BrowserContext* const browser_context_;
@@ -1034,9 +1043,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Records the last time we regarded the child process active.
   base::TimeTicks child_process_activity_time_;
 
-  // Indicates whether this RenderProcessHost is exclusively hosting guest
-  // RenderFrames.
-  bool is_for_guests_only_;
+  // A set of flags that influence RenderProcessHost behavior.
+  int flags_;
 
   // Indicates whether this RenderProcessHost is unused, meaning that it has
   // not committed any web content, and it has not been given to a SiteInstance
@@ -1065,7 +1073,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   base::TimeTicks keep_alive_start_time_;
 
   // Context shared for each mojom::PermissionService instance created for this
-  // RPH. This is destroyed early in ResetIPC() method.
+  // RenderProcessHost. This is destroyed early in ResetIPC() method.
   std::unique_ptr<PermissionServiceContext> permission_service_context_;
 
   // The memory allocator, if any, in which the renderer will write its metrics.
@@ -1103,7 +1111,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   int foreground_service_worker_count_ = 0;
 
   // A WeakPtrFactory which is reset every time Cleanup() runs. Used to vend
-  // WeakPtrs which are invalidated any time the RPHI is recycled.
+  // WeakPtrs which are invalidated any time the RenderProcessHost is recycled.
   base::Optional<base::WeakPtrFactory<RenderProcessHostImpl>>
       instance_weak_factory_;
 
