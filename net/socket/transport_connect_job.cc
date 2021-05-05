@@ -20,7 +20,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -271,8 +270,7 @@ int TransportConnectJob::DoResolveHost() {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
-  if (params_->secure_dns_policy() == SecureDnsPolicy::kDisable)
-    parameters.secure_dns_mode_override = SecureDnsMode::kOff;
+  parameters.secure_dns_policy = params_->secure_dns_policy();
   request_ = host_resolver()->CreateRequest(params_->destination(),
                                             params_->network_isolation_key(),
                                             net_log(), parameters);

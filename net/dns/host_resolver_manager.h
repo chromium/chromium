@@ -32,6 +32,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "url/gurl.h"
@@ -289,7 +290,7 @@ class NET_EXPORT HostResolverManager
       DnsQueryType requested_address_family,
       HostResolverSource source,
       HostResolverFlags flags,
-      base::Optional<SecureDnsMode> secure_dns_mode_override,
+      SecureDnsPolicy secure_dns_policy,
       ResolveHostParameters::CacheUsage cache_usage,
       const NetLogWithSource& request_net_log,
       HostCache* cache,
@@ -343,11 +344,8 @@ class NET_EXPORT HostResolverManager
       bool default_family_due_to_no_ipv6);
 
   // Returns the secure dns mode to use for a job, taking into account the
-  // global DnsConfig mode and any per-request override. Requests matching DoH
-  // server hostnames are downgraded to off mode to avoid infinite loops.
-  SecureDnsMode GetEffectiveSecureDnsMode(
-      const std::string& hostname,
-      base::Optional<SecureDnsMode> secure_dns_mode_override);
+  // global DnsConfig mode and any per-request policy.
+  SecureDnsMode GetEffectiveSecureDnsMode(SecureDnsPolicy secure_dns_policy);
 
   // Returns true if a catch-all DNS block has been set for unit tests. No
   // DnsTasks should be issued in this case.
@@ -366,16 +364,15 @@ class NET_EXPORT HostResolverManager
 
   // Initialized the sequence of tasks to run to resolve a request. The sequence
   // may be adjusted later and not all tasks need to be run.
-  void CreateTaskSequence(
-      const std::string& hostname,
-      DnsQueryType dns_query_type,
-      HostResolverSource source,
-      HostResolverFlags flags,
-      base::Optional<SecureDnsMode> secure_dns_mode_override,
-      ResolveHostParameters::CacheUsage cache_usage,
-      ResolveContext* resolve_context,
-      SecureDnsMode* out_effective_secure_dns_mode,
-      std::deque<TaskType>* out_tasks);
+  void CreateTaskSequence(const std::string& hostname,
+                          DnsQueryType dns_query_type,
+                          HostResolverSource source,
+                          HostResolverFlags flags,
+                          SecureDnsPolicy secure_dns_policy,
+                          ResolveHostParameters::CacheUsage cache_usage,
+                          ResolveContext* resolve_context,
+                          SecureDnsMode* out_effective_secure_dns_mode,
+                          std::deque<TaskType>* out_tasks);
 
   // Determines "effective" request parameters using manager properties and IPv6
   // reachability.
@@ -384,7 +381,7 @@ class NET_EXPORT HostResolverManager
       DnsQueryType dns_query_type,
       HostResolverSource source,
       HostResolverFlags flags,
-      base::Optional<SecureDnsMode> secure_dns_mode_override,
+      SecureDnsPolicy secure_dns_policy,
       ResolveHostParameters::CacheUsage cache_usage,
       const IPAddress* ip_address,
       const NetLogWithSource& net_log,

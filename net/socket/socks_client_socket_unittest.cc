@@ -16,7 +16,6 @@
 #include "net/base/winsock_init.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
@@ -463,12 +462,7 @@ TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
         &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));
-    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
-              host_resolver.last_secure_dns_mode_override().has_value());
-    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                host_resolver.last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy, host_resolver.last_secure_dns_policy());
   }
 }
 

@@ -34,6 +34,7 @@
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/url_request/url_request_context.h"
 
 #if defined(OS_WIN)
@@ -543,7 +544,7 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching,
                                            int cache_invalidation_num,
                                            bool require_matching_rule)
     : last_request_priority_(DEFAULT_PRIORITY),
-      last_secure_dns_mode_override_(base::nullopt),
+      last_secure_dns_policy_(SecureDnsPolicy::kAllow),
       synchronous_mode_(false),
       ondemand_mode_(false),
       initial_cache_invalidation_num_(cache_invalidation_num),
@@ -572,8 +573,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 
   last_request_priority_ = request->parameters().initial_priority;
   last_request_network_isolation_key_ = request->network_isolation_key();
-  last_secure_dns_mode_override_ =
-      request->parameters().secure_dns_mode_override;
+  last_secure_dns_policy_ = request->parameters().secure_dns_policy;
   num_resolve_++;
   AddressList addresses;
   base::Optional<HostCache::EntryStaleness> stale_info;

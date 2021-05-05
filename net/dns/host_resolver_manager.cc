@@ -4,6 +4,8 @@
 
 #include "net/dns/host_resolver_manager.h"
 #include "base/task/thread_pool.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 
 #if defined(OS_WIN)
 #include <Winsock2.h>
@@ -2769,8 +2771,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
   HostCache::Entry results = ResolveLocally(
       request->request_host().host(), request->network_isolation_key(),
       request->parameters().dns_query_type, request->parameters().source,
-      request->host_resolver_flags(),
-      request->parameters().secure_dns_mode_override,
+      request->host_resolver_flags(), request->parameters().secure_dns_policy,
       request->parameters().cache_usage, request->source_net_log(),
       request->host_cache(), request->resolve_context(), &effective_query_type,
       &effective_host_resolver_flags, &effective_secure_dns_mode, &tasks,
@@ -2803,7 +2804,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<SecureDnsMode> secure_dns_mode_override,
+    SecureDnsPolicy secure_dns_policy,
     ResolveHostParameters::CacheUsage cache_usage,
     const NetLogWithSource& source_net_log,
     HostCache* cache,
@@ -2823,10 +2824,10 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   }
 
   GetEffectiveParametersForRequest(
-      hostname, dns_query_type, source, flags, secure_dns_mode_override,
-      cache_usage, ip_address_ptr, source_net_log, resolve_context,
-      out_effective_query_type, out_effective_host_resolver_flags,
-      out_effective_secure_dns_mode, out_tasks);
+      hostname, dns_query_type, source, flags, secure_dns_policy, cache_usage,
+      ip_address_ptr, source_net_log, resolve_context, out_effective_query_type,
+      out_effective_host_resolver_flags, out_effective_secure_dns_mode,
+      out_tasks);
 
   if (!ip_address.IsValid()) {
     // Check that the caller supplied a valid hostname to resolve. For
@@ -3121,15 +3122,20 @@ std::unique_ptr<HostResolverManager::Job> HostResolverManager::RemoveJob(
 }
 
 SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
-    const std::string& hostname,
-    base::Optional<SecureDnsMode> secure_dns_mode_override) {
+    SecureDnsPolicy secure_dns_policy) {
+  // Use switch() instead of if() to ensure that all policies are handled.
+  switch (secure_dns_policy) {
+    case SecureDnsPolicy::kDisable:
+      return SecureDnsMode::kOff;
+    case SecureDnsPolicy::kAllow:
+      break;
+  }
+
   const DnsConfig* config =
       dns_client_ ? dns_client_->GetEffectiveConfig() : nullptr;
 
   SecureDnsMode secure_dns_mode = SecureDnsMode::kOff;
-  if (secure_dns_mode_override) {
-    secure_dns_mode = secure_dns_mode_override.value();
-  } else if (config) {
+  if (config) {
     secure_dns_mode = config->secure_dns_mode;
   }
   return secure_dns_mode;
@@ -3221,14 +3227,13 @@ void HostResolverManager::CreateTaskSequence(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<SecureDnsMode> secure_dns_mode_override,
+    SecureDnsPolicy secure_dns_policy,
     ResolveHostParameters::CacheUsage cache_usage,
     ResolveContext* resolve_context,
     SecureDnsMode* out_effective_secure_dns_mode,
     std::deque<TaskType>* out_tasks) {
   DCHECK(out_tasks->empty());
-  *out_effective_secure_dns_mode =
-      GetEffectiveSecureDnsMode(hostname, secure_dns_mode_override);
+  *out_effective_secure_dns_mode = GetEffectiveSecureDnsMode(secure_dns_policy);
 
   // A cache lookup should generally be performed first. For jobs involving a
   // DnsTask, this task may be replaced.
@@ -3311,7 +3316,7 @@ void HostResolverManager::GetEffectiveParametersForRequest(
     DnsQueryType dns_query_type,
     HostResolverSource source,
     HostResolverFlags flags,
-    base::Optional<SecureDnsMode> secure_dns_mode_override,
+    SecureDnsPolicy secure_dns_policy,
     ResolveHostParameters::CacheUsage cache_usage,
     const IPAddress* ip_address,
     const NetLogWithSource& net_log,
@@ -3343,9 +3348,8 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   }
 
   CreateTaskSequence(hostname, *out_effective_type, source,
-                     *out_effective_flags, secure_dns_mode_override,
-                     cache_usage, resolve_context,
-                     out_effective_secure_dns_mode, out_tasks);
+                     *out_effective_flags, secure_dns_policy, cache_usage,
+                     resolve_context, out_effective_secure_dns_mode, out_tasks);
 }
 
 bool HostResolverManager::IsIPv6Reachable(const NetLogWithSource& net_log) {

@@ -15,7 +15,6 @@
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_source.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/net_buildflags.h"
@@ -59,15 +58,8 @@ ConvertOptionalParameters(
   parameters.include_canonical_name = mojo_parameters->include_canonical_name;
   parameters.loopback_only = mojo_parameters->loopback_only;
   parameters.is_speculative = mojo_parameters->is_speculative;
-
-  // TODO(crbug.com/1200908): Pass the SecureDnsPolicy through unmodified.
-  net::SecureDnsPolicy secure_dns_policy;
   mojo::EnumTraits<mojom::SecureDnsPolicy, net::SecureDnsPolicy>::FromMojom(
-      mojo_parameters->secure_dns_policy, &secure_dns_policy);
-
-  if (secure_dns_policy == net::SecureDnsPolicy::kDisable) {
-    parameters.secure_dns_mode_override = net::SecureDnsMode::kOff;
-  }
+      mojo_parameters->secure_dns_policy, &parameters.secure_dns_policy);
   return parameters;
 }
 }  // namespace

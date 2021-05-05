@@ -36,7 +36,6 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/bidirectional_stream_request_info.h"
@@ -1180,8 +1179,8 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
 
-  EXPECT_FALSE(
-      session_deps.host_resolver->last_secure_dns_mode_override().has_value());
+  EXPECT_EQ(SecureDnsPolicy::kAllow,
+            session_deps.host_resolver->last_secure_dns_policy());
   EXPECT_EQ(GetSocketPoolGroupCount(ssl_pool), 1);
 
   std::unique_ptr<HttpStreamRequest> request2(
@@ -1191,8 +1190,8 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
 
-  EXPECT_FALSE(
-      session_deps.host_resolver->last_secure_dns_mode_override().has_value());
+  EXPECT_EQ(SecureDnsPolicy::kAllow,
+            session_deps.host_resolver->last_secure_dns_policy());
   EXPECT_EQ(GetSocketPoolGroupCount(ssl_pool), 1);
 
   request_info.secure_dns_policy = SecureDnsPolicy::kDisable;
@@ -1203,9 +1202,8 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
 
-  EXPECT_EQ(
-      net::SecureDnsMode::kOff,
-      session_deps.host_resolver->last_secure_dns_mode_override().value());
+  EXPECT_EQ(SecureDnsPolicy::kDisable,
+            session_deps.host_resolver->last_secure_dns_policy());
   EXPECT_EQ(GetSocketPoolGroupCount(ssl_pool), 2);
 }
 

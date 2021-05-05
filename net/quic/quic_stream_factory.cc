@@ -35,7 +35,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
@@ -704,8 +703,7 @@ int QuicStreamFactory::Job::DoResolveHost() {
     parameters.cache_usage =
         HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   }
-  if (key_.session_key().secure_dns_policy() == SecureDnsPolicy::kDisable)
-    parameters.secure_dns_mode_override = SecureDnsMode::kOff;
+  parameters.secure_dns_policy = key_.session_key().secure_dns_policy();
   resolve_host_request_ = host_resolver_->CreateRequest(
       key_.destination(), key_.session_key().network_isolation_key(), net_log_,
       parameters);

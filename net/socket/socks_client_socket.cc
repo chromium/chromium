@@ -13,7 +13,6 @@
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/public/dns_query_type.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -311,8 +310,7 @@ int SOCKSClientSocket::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::A;
   parameters.initial_priority = priority_;
-  if (secure_dns_policy_ == SecureDnsPolicy::kDisable)
-    parameters.secure_dns_mode_override = SecureDnsMode::kOff;
+  parameters.secure_dns_policy = secure_dns_policy_;
   resolve_host_request_ = host_resolver_->CreateRequest(
       destination_, network_isolation_key_, net_log_, parameters);
 

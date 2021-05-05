@@ -30,7 +30,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_protocol.h"
-#include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/net_buildflags.h"
 #include "net/test/gtest_util.h"
@@ -709,7 +709,7 @@ TEST_F(HostResolverTest, LoopbackOnly) {
               testing::ElementsAre(CreateExpectedEndPoint("127.0.12.24", 80)));
 }
 
-TEST_F(HostResolverTest, SecureDnsModeOverride) {
+TEST_F(HostResolverTest, HandlesSecureDnsPolicyParameter) {
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
 
   HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
@@ -731,8 +731,8 @@ TEST_F(HostResolverTest, SecureDnsModeOverride) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("127.0.0.1", 80)));
-  EXPECT_EQ(net::SecureDnsMode::kOff,
-            inner_resolver->last_secure_dns_mode_override().value());
+  EXPECT_EQ(net::SecureDnsPolicy::kDisable,
+            inner_resolver->last_secure_dns_policy());
 }
 
 TEST_F(HostResolverTest, Failure_Sync) {

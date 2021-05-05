@@ -31,7 +31,6 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -274,14 +273,8 @@ TEST_F(TransportClientSocketPoolTest, SetSecureDnsPolicy) {
                     LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                     pool_.get(), NetLogWithSource()));
-    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
-              session_deps_.host_resolver->last_secure_dns_mode_override()
-                  .has_value());
-    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
-      EXPECT_EQ(
-          net::SecureDnsMode::kOff,
-          session_deps_.host_resolver->last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy,
+              session_deps_.host_resolver->last_secure_dns_policy());
   }
 }
 

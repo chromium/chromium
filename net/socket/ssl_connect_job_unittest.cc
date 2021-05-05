@@ -24,7 +24,6 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
@@ -442,12 +441,7 @@ TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
                                         &test_delegate, nullptr /* net_log */);
 
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
-              host_resolver_.last_secure_dns_mode_override().has_value());
-    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                host_resolver_.last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy, host_resolver_.last_secure_dns_policy());
   }
 }
 

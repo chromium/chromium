@@ -80,7 +80,6 @@
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
 #include "net/http/http_auth.h"
@@ -4563,11 +4562,12 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
-    EXPECT_EQ(disable_secure_dns,
-              resolver->last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                resolver->last_secure_dns_mode_override().value());
+      EXPECT_EQ(net::SecureDnsPolicy::kDisable,
+                resolver->last_secure_dns_policy());
+    } else {
+      EXPECT_EQ(net::SecureDnsPolicy::kAllow,
+                resolver->last_secure_dns_policy());
     }
   }
 }
@@ -4609,11 +4609,12 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client->RunUntilComplete();
-    EXPECT_EQ(disable_secure_dns,
-              resolver.last_secure_dns_mode_override().has_value());
     if (disable_secure_dns) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                resolver.last_secure_dns_mode_override().value());
+      EXPECT_EQ(net::SecureDnsPolicy::kDisable,
+                resolver.last_secure_dns_policy());
+    } else {
+      EXPECT_EQ(net::SecureDnsPolicy::kAllow,
+                resolver.last_secure_dns_policy());
     }
   }
 }

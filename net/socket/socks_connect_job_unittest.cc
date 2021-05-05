@@ -16,7 +16,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
@@ -398,12 +397,7 @@ TEST_F(SOCKSConnectJobTest, SecureDnsPolicy) {
         CreateSOCKSParams(SOCKSVersion::V4, secure_dns_policy), &test_delegate,
         nullptr /* net_log */);
     ASSERT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
-              host_resolver_.last_secure_dns_mode_override().has_value());
-    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                host_resolver_.last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy, host_resolver_.last_secure_dns_policy());
   }
 }
 

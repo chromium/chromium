@@ -30,7 +30,6 @@
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -12966,9 +12965,8 @@ TEST_P(QuicStreamFactoryTest, HostResolverUsesParams) {
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
-  ASSERT_TRUE(host_resolver_->last_secure_dns_mode_override().has_value());
-  EXPECT_EQ(net::SecureDnsMode::kOff,
-            host_resolver_->last_secure_dns_mode_override().value());
+  EXPECT_EQ(net::SecureDnsPolicy::kDisable,
+            host_resolver_->last_secure_dns_policy());
   ASSERT_TRUE(host_resolver_->last_request_network_isolation_key().has_value());
   EXPECT_EQ(kNetworkIsolationKey,
             host_resolver_->last_request_network_isolation_key().value());

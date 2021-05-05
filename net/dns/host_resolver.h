@@ -24,7 +24,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 
 namespace base {
 class Value;
@@ -266,9 +266,8 @@ class NET_EXPORT HostResolver {
     // as is typically the case for LLMNR or mDNS queries without any results.
     bool avoid_multicast_resolution = false;
 
-    // Set to override the resolver's default secure dns mode for this request.
-    // TODO(crbug.com/1200908): Replace with a SecureDnsPolicy.
-    base::Optional<SecureDnsMode> secure_dns_mode_override = base::nullopt;
+    // Controls the resolver's Secure DNS behavior for this request.
+    SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow;
   };
 
   // Handler for an ongoing MDNS listening operation. Created by
