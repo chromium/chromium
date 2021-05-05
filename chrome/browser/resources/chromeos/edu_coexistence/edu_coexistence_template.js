@@ -11,4 +11,24 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [CrScrollableBehavior],
+
+  properties: {
+    /**
+     * Indicates whether the footer/button div should be shown.
+     * @private {boolean}
+     */
+    showButtonFooter_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  /**
+   * Shows/hides the button footer.
+   * @param {boolean} show Whether to show the footer.
+   */
+  showButtonFooter(show) {
+    this.showButtonFooter_ = show;
+  },
+
 });
