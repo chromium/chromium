@@ -4,6 +4,7 @@
 
 #include "cc/trees/frame_rate_estimator.h"
 
+#include "base/stl_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +69,29 @@ TEST_F(FrameRateEstimatorTest, InputPriorityMode) {
   task_runner_->RunUntilIdle();
   EXPECT_NE(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
+}
+
+TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
+  estimator_->SetFrameEstimationEnabled(true);
+  // Recorded rAF intervals at 30 fps.
+  const base::TimeDelta kIntervals[] = {
+      base::TimeDelta::FromMicroseconds(33425),
+      base::TimeDelta::FromMicroseconds(33298),
+      base::TimeDelta::FromMicroseconds(33396),
+      base::TimeDelta::FromMicroseconds(33339),
+      base::TimeDelta::FromMicroseconds(33431),
+      base::TimeDelta::FromMicroseconds(33320),
+      base::TimeDelta::FromMicroseconds(33364),
+      base::TimeDelta::FromMicroseconds(33360)};
+  const base::TimeDelta kIntervalForHalfFps =
+      viz::BeginFrameArgs::DefaultInterval() * 2;
+  base::TimeTicks time;
+  for (size_t i = 0; i <= base::size(kIntervals); ++i) {
+    estimator_->WillDraw(time);
+    EXPECT_EQ(kIntervalForHalfFps, estimator_->GetPreferredInterval());
+    if (i < base::size(kIntervals))
+      time += kIntervals[i];
+  }
 }
 }  // namespace
 }  // namespace cc

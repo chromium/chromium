@@ -49,7 +49,7 @@ void FrameRateEstimator::WillDraw(base::TimeTicks now) {
   // The delta below is to account for minor offsets in frame times.
   constexpr auto kFudgeDelta = base::TimeDelta::FromMilliseconds(1);
   constexpr auto kMinDelta =
-      (viz::BeginFrameArgs::DefaultInterval() * 2) + kFudgeDelta;
+      (viz::BeginFrameArgs::DefaultInterval() * 2) - kFudgeDelta;
   if (draw_delta < kMinDelta)
     num_of_consecutive_frames_with_min_delta_++;
   else
