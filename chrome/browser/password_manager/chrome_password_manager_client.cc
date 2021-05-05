@@ -448,7 +448,7 @@ bool ChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
                                            autofill_assistant::UIState::kShown;
 }
 
-password_manager::BiometricAuthenticator*
+scoped_refptr<password_manager::BiometricAuthenticator>
 ChromePasswordManagerClient::GetBiometricAuthenticator() {
 #if defined(OS_ANDROID)
   if (!biometric_authenticator_) {
@@ -456,7 +456,7 @@ ChromePasswordManagerClient::GetBiometricAuthenticator() {
         ChromeBiometricAuthenticator::Create(web_contents());
   }
 #endif
-  return biometric_authenticator_.get();
+  return biometric_authenticator_;
 }
 
 void ChromePasswordManagerClient::GeneratePassword(
@@ -1143,9 +1143,10 @@ ChromePasswordManagerClient::GetOrCreatePasswordAccessory() {
 
 TouchToFillController*
 ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
-  if (!touch_to_fill_controller_)
-    touch_to_fill_controller_ = std::make_unique<TouchToFillController>(this);
-
+  if (!touch_to_fill_controller_) {
+    touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
+        this, GetBiometricAuthenticator());
+  }
   return touch_to_fill_controller_.get();
 }
 #endif  // defined(OS_ANDROID)

@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -60,7 +61,6 @@ class TouchToFillController;
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
 
-class ChromeBiometricAuthenticator;
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
 class Profile;
@@ -126,8 +126,8 @@ class ChromePasswordManagerClient
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
   // This is currently only implemented for Android, on all other platforms this
   // will always be null.
-  password_manager::BiometricAuthenticator* GetBiometricAuthenticator()
-      override;
+  scoped_refptr<password_manager::BiometricAuthenticator>
+  GetBiometricAuthenticator() override;
   void GeneratePassword(
       autofill::password_generation::PasswordGenerationType type) override;
   void NotifyUserAutoSignin(
@@ -368,7 +368,8 @@ class ChromePasswordManagerClient
       generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
 
-  std::unique_ptr<ChromeBiometricAuthenticator> biometric_authenticator_;
+  scoped_refptr<password_manager::BiometricAuthenticator>
+      biometric_authenticator_;
 
   password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
 

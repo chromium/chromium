@@ -22,8 +22,11 @@ class ChromeBiometricAuthenticator
   // Create an instance of the ChromeBiometricAuthenticator. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error. So far only Android provides an implementation.
-  static std::unique_ptr<ChromeBiometricAuthenticator> Create(
+  static scoped_refptr<password_manager::BiometricAuthenticator> Create(
       content::WebContents* web_contents);
+
+ protected:
+  ~ChromeBiometricAuthenticator() override = default;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_

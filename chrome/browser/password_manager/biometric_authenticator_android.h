@@ -15,13 +15,29 @@
 class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
  public:
   explicit BiometricAuthenticatorAndroid(ui::WindowAndroid* window_android);
-  ~BiometricAuthenticatorAndroid() override;
 
+  // Checks whether biometrics are available.
   password_manager::BiometricsAvailability CanAuthenticate() override;
+
+  // Trigges an authentication flow based on biometrics, with the
+  // screen lock as fallback.
   void Authenticate(const password_manager::UiCredential& credential,
                     AuthenticateCallback callback) override;
 
+  // Should be called by the object using the authenticator if the purpose
+  // for which the auth was requested becomes obsolete or the object is
+  // destroyed.
+  void Cancel() override;
+
+  // Called by Java when the authentication completes.
+  void OnAuthenticationCompleted(JNIEnv* env, jboolean success);
+
  private:
+  ~BiometricAuthenticatorAndroid() override;
+
+  // Callback to be executed after the authentication completes.
+  AuthenticateCallback callback_;
+
   // This object is an instance of BiometricAuthenticatorBridge, i.e. the Java
   // counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

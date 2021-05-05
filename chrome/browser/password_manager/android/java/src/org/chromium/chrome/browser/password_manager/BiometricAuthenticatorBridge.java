@@ -16,19 +16,24 @@ import android.os.Build;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.ui.base.WindowAndroid;
 
 class BiometricAuthenticatorBridge {
     private final Context mContext;
+    private long mNativeBiometricAuthenticator;
 
-    private BiometricAuthenticatorBridge(WindowAndroid windowAndroid) {
+    private BiometricAuthenticatorBridge(
+            long nativeBiometricAuthenticator, WindowAndroid windowAndroid) {
         mContext = windowAndroid.getApplicationContext();
+        mNativeBiometricAuthenticator = nativeBiometricAuthenticator;
     }
 
     @CalledByNative
-    private static BiometricAuthenticatorBridge create(WindowAndroid windowAndroid) {
-        return new BiometricAuthenticatorBridge(windowAndroid);
+    private static BiometricAuthenticatorBridge create(
+            long nativeBiometricAuthenticator, WindowAndroid windowAndroid) {
+        return new BiometricAuthenticatorBridge(nativeBiometricAuthenticator, windowAndroid);
     }
 
     @CalledByNative
@@ -57,5 +62,29 @@ class BiometricAuthenticatorBridge {
                 return BiometricsAvailability.AVAILABLE;
             }
         }
+    }
+
+    @CalledByNative
+    void authenticate() {
+        // TODO(crbug.com/1031483): Trigger a biometric prompt.
+        onAuthenticationCompleted(true);
+    }
+
+    @CalledByNative
+    void cancel() {
+        mNativeBiometricAuthenticator = 0;
+        // TODO(crbug.com/1031483): Cancel the reauth if one is in progress.
+    }
+
+    void onAuthenticationCompleted(boolean success) {
+        if (mNativeBiometricAuthenticator != 0) {
+            BiometricAuthenticatorBridgeJni.get().onAuthenticationCompleted(
+                    mNativeBiometricAuthenticator, success);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onAuthenticationCompleted(long nativeBiometricAuthenticatorAndroid, boolean success);
     }
 }

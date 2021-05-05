@@ -491,6 +491,8 @@ static_library("test_support") {
     "android_affiliation/mock_affiliation_fetcher_delegate.h",
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
+    "mock_biometric_authenticator.cc",
+    "mock_biometric_authenticator.h",
     "mock_bulk_leak_check_service.cc",
     "mock_bulk_leak_check_service.h",
     "mock_password_feature_manager.cc",

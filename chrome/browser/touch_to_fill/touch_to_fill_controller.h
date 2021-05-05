@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -41,9 +43,12 @@ class TouchToFillController {
   };
 
   // No-op constructor for tests.
-  explicit TouchToFillController(
-      base::PassKey<class TouchToFillControllerTest>);
-  explicit TouchToFillController(ChromePasswordManagerClient* web_contents);
+  TouchToFillController(
+      base::PassKey<class TouchToFillControllerTest>,
+      scoped_refptr<password_manager::BiometricAuthenticator> authenticator);
+  TouchToFillController(
+      ChromePasswordManagerClient* password_client,
+      scoped_refptr<password_manager::BiometricAuthenticator> authenticator);
   TouchToFillController(const TouchToFillController&) = delete;
   TouchToFillController& operator=(const TouchToFillController&) = delete;
   ~TouchToFillController();
@@ -75,12 +80,27 @@ class TouchToFillController {
 #endif
 
  private:
+  // Called after the biometric reauth completes. If `authSuccessful` is
+  // true, `credential` will be filled into the form.
+  void OnReauthCompleted(password_manager::UiCredential credential,
+                         bool authSuccessful);
+
+  // Fills the credential into the form.
+  void FillCredential(const password_manager::UiCredential& credential);
+
   // Weak pointer to the ChromePasswordManagerClient this class is tied to.
   ChromePasswordManagerClient* password_client_ = nullptr;
 
   // Driver passed to the latest invocation of Show(). Gets cleared when
   // OnCredentialSelected() or OnDismissed() gets called.
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
+
+  // Authenticator used to trigger a biometric auth before filling.
+  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
+
+  // True while an authentication is in progress. Used to check whether there
+  // is an auth to cancel when this object is destroyed.
+  bool auth_in_progress_ = false;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 

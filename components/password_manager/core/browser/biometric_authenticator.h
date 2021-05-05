@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BIOMETRIC_AUTHENTICATOR_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
 
 namespace password_manager {
 
@@ -24,14 +25,13 @@ enum class BiometricsAvailability {
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.
-class BiometricAuthenticator {
+class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
   BiometricAuthenticator() = default;
   BiometricAuthenticator(const BiometricAuthenticator&) = delete;
   BiometricAuthenticator& operator=(const BiometricAuthenticator&) = delete;
-  virtual ~BiometricAuthenticator() = default;
 
   // Returns whether biometrics are available for a given device. Only if this
   // returns kAvailable, callers can expect Authenticate() to succeed.
@@ -41,6 +41,15 @@ class BiometricAuthenticator {
   // |callback| asynchronously on the main thread with the result.
   virtual void Authenticate(const UiCredential& credential,
                             AuthenticateCallback callback) = 0;
+
+  // Cancels an in-progress authentication.
+  virtual void Cancel() = 0;
+
+ protected:
+  virtual ~BiometricAuthenticator() = default;
+
+ private:
+  friend class base::RefCounted<BiometricAuthenticator>;
 };
 
 }  // namespace password_manager

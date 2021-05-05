@@ -182,7 +182,7 @@ class PasswordManagerClient {
 
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
-  virtual BiometricAuthenticator* GetBiometricAuthenticator();
+  virtual scoped_refptr<BiometricAuthenticator> GetBiometricAuthenticator();
 
   // Informs the embedder that the user has requested to generate a
   // password in the focused password field.

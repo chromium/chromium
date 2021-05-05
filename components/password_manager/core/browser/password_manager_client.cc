@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -34,7 +35,8 @@ void PasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver) {}
 
 void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}
 
-BiometricAuthenticator* PasswordManagerClient::GetBiometricAuthenticator() {
+scoped_refptr<BiometricAuthenticator>
+PasswordManagerClient::GetBiometricAuthenticator() {
   return nullptr;
 }
 
