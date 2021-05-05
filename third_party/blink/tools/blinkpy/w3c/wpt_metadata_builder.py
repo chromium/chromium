@@ -258,8 +258,9 @@ class WPTMetadataBuilder(object):
             if self.process_baselines:
                 test_baseline = self.port.expected_text(test_name)
                 if test_baseline:
-                    self._handle_test_with_baseline(test_name, test_baseline,
-                                                    tests_needing_metadata)
+                    self._handle_test_with_baseline(
+                        test_name, test_baseline.decode('utf8', 'replace'),
+                        tests_needing_metadata)
 
             # Next check for expectations, which could overwrite baselines
             expectation_line = self.expectations.get_expectations(test_name)
