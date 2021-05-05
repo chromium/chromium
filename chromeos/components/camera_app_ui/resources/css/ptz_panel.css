@@ -3,6 +3,9 @@
  * found in the LICENSE file. */
 
 #panel-container {
+  --divider-color: rgba(95, 99, 104, 0.38);
+  --divider-width: 1px;
+
   backdrop-filter: blur(10px);
   background: rgba(32, 33, 36, 0.9);
   border-radius: 4px;
@@ -310,9 +313,9 @@ body:is(:not(.has-pan-support), :not(.has-tilt-support), :not(.has-zoom-support)
 }
 
 .ptz-divider {
-  background: rgba(95, 99, 104, 0.38);
+  background: var(--divider-color);
   position: absolute;
-  width: 1px;
+  width: var(--divider-width);
 }
 
 #ptz-divider1 {
@@ -352,4 +355,16 @@ body:is(:not(.has-pan-support), :not(.has-tilt-support), :not(.has-zoom-support)
 
 body.has-pan-support.has-tilt-support.has-zoom-support .ptz-divider {
   height: 98px;
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support :is(#zoom-in, #zoom-out) {
+  border: var(--divider-width) solid var(--divider-color);
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #zoom-in {
+  border-left-width: 0;  /* csschecker-disable-line left-right */
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
+  border-right-width: 0;  /* csschecker-disable-line left-right */
 }
