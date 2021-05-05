@@ -61,7 +61,7 @@ void ChangeListPref(int index,
   ListPrefUpdate update(GetPrefs(index), pref_name);
   base::ListValue* list = update.Get();
   for (const auto& it : new_value) {
-    list->Append(it.CreateDeepCopy());
+    list->Append(it.Clone());
   }
 }
 
