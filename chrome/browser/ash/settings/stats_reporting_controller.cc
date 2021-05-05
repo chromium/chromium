@@ -86,7 +86,6 @@ bool StatsReportingController::IsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool value = false;
   if ((GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE ||
-       GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_UNKNOWN ||
        is_value_being_set_with_service_) &&
       GetPendingValue(&value)) {
     // Return the pending value if it exists and we are sure there is no owner
