@@ -7102,3 +7102,7 @@ crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Timeout 
 crbug.com/1205673 [ Linux ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/large-actual-column-count.html [ Pass Timeout ]
 crbug.com/1205673 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Pass Timeout ]
 crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Pass Failure ]
+
+# Browser Infra 2021-05-04
+# Re-enable once all Linux CI/CQ builders migrated to Bionic
+crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Pass Failure ]
