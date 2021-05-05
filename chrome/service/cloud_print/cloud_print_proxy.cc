@@ -89,8 +89,9 @@ void CloudPrintProxy::EnableForUserWithRobot(const std::string& robot_auth_code,
     // Keep only proxy id;
     service_prefs_->SetString(prefs::kCloudPrintProxyId, proxy_id);
   }
-  service_prefs_->SetValue(prefs::kCloudPrintUserSettings,
-                           user_settings.CreateDeepCopy());
+  service_prefs_->SetValue(
+      prefs::kCloudPrintUserSettings,
+      base::Value::ToUniquePtrValue(user_settings.Clone()));
   service_prefs_->WritePrefs();
 
   if (!CreateBackend())
