@@ -176,6 +176,26 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
         this));
   }
 
+  SetCreateInkDropMaskCallback(base::BindRepeating(
+      [](ToolbarButton* host) -> std::unique_ptr<views::InkDropMask> {
+        if (host->has_in_product_help_promo_) {
+          // This gets the latest ink drop insets. |SetTrailingMargin()| is
+          // called whenever our margins change (i.e. due to the window
+          // maximizing or minimizing) and updates our internal padding property
+          // accordingly.
+          const gfx::Insets ink_drop_insets = GetToolbarInkDropInsets(host);
+          const float corner_radius = (host->height() - ink_drop_insets.top() -
+                                       ink_drop_insets.bottom()) /
+                                      2.0f;
+          return std::make_unique<PulsingInkDropMask>(
+              host->ink_drop_container(), host->size(), ink_drop_insets,
+              corner_radius, kFeaturePromoPulseInsetDip);
+        }
+        return std::make_unique<views::PathInkDropMask>(host->size(),
+                                                        GetHighlightPath(host));
+      },
+      this));
+
   // Make sure icons are flipped by default so that back, forward, etc. follows
   // UI direction.
   SetFlipCanvasOnPaintForRTLUI(true);
@@ -563,22 +583,6 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
                                     : views::LabelButton::GetTooltipText(p);
 }
 
-std::unique_ptr<views::InkDropMask> ToolbarButton::CreateInkDropMask() const {
-  if (has_in_product_help_promo_) {
-    // This gets the latest ink drop insets. |SetTrailingMargin()| is called
-    // whenever our margins change (i.e. due to the window maximizing or
-    // minimizing) and updates our internal padding property accordingly.
-    const gfx::Insets ink_drop_insets = GetToolbarInkDropInsets(this);
-    const float corner_radius =
-        (height() - ink_drop_insets.top() - ink_drop_insets.bottom()) / 2.0f;
-    return std::make_unique<PulsingInkDropMask>(ink_drop_container(), size(),
-                                                ink_drop_insets, corner_radius,
-                                                kFeaturePromoPulseInsetDip);
-  }
-
-  return views::LabelButton::CreateInkDropMask();
-}
-
 SkColor ToolbarButton::GetInkDropBaseColor() const {
   // Ensure this doesn't get called when InstallableInkDrops are enabled.
   DCHECK(!base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
@@ -618,9 +622,9 @@ void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
 
   has_in_product_help_promo_ = has_in_product_help_promo;
 
-  // We override GetInkDropBaseColor() and CreateInkDropMask(), returning the
-  // promo values if we are showing an in-product help promo. Calling
-  // HostSizeChanged() will force the new mask and color to be fetched.
+  // We override GetInkDropBaseColor() and call SetCreateInkDropMaskCallback(),
+  // returning the promo values if we are showing an in-product help promo.
+  // Calling HostSizeChanged() will force the new mask and color to be fetched.
   //
   // TODO(collinbaker): Consider adding explicit way to recreate mask instead
   // of relying on HostSizeChanged() to do so.

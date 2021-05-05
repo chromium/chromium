@@ -128,15 +128,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
   const base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>&
   GetCreateInkDropHighlightCallback() const;
 
-  // Subclasses can override to return a mask for the ink drop. By default,
-  // this generates a mask based on HighlightPathGenerator.
-  // TODO(pbos): Replace overrides with HighlightPathGenerator usage and remove
-  // this function.
-  virtual std::unique_ptr<views::InkDropMask> CreateInkDropMask() const;
-
-  // Callback version of CreateInkDropMask(). Note that this is called in the
-  // base implementation of CreateInkDropMask(), so if "it's not working", check
-  // the class hierarchy for overrides.
+  // Callback replacement of CreateInkDropMask().
+  // TODO(pbos): Investigate removing this. It currently is only used by
+  // ToolbarButton.
   void SetCreateInkDropMaskCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback);
 
@@ -232,18 +226,6 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // Returns true if an ink drop instance has been created.
   bool HasInkDrop() const;
 
-  // Initializes and sets a mask on |ink_drop_layer|. No-op if
-  // CreateInkDropMask() returns null. This will not run if |AddInkDropClip()|
-  // succeeds in the default implementation of |AddInkDropLayer()|.
-  void InstallInkDropMask(ui::Layer* ink_drop_layer);
-
-  void ResetInkDropMask();
-
-  // Adds a clip rect on the root layer of the ink drop impl. This is a more
-  // performant alternative to using circles or rectangle mask layers. Returns
-  // true if a clip was added.
-  bool AddInkDropClip(ui::Layer* ink_drop_layer);
-
   // Returns a large ink drop size based on the |small_size| that works well
   // with the SquareInkDropRipple animation durations.
   static gfx::Size CalculateLargeInkDropSize(const gfx::Size& small_size);
@@ -273,6 +255,19 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   const InkDropEventHandler* GetEventHandler() const;
   InkDropEventHandler* GetEventHandler();
+
+  // This generates a mask for the InkDrop.
+  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const;
+
+  // Adds a clip rect on the root layer of the ink drop impl. This is a more
+  // performant alternative to using circles or rectangle mask layers. Returns
+  // true if a clip was added.
+  bool AddInkDropClip(ui::Layer* ink_drop_layer);
+
+  // Initializes and sets a mask on `ink_drop_layer`. This will not run if
+  // AddInkDropClip() succeeds in the default implementation of
+  // AddInkDropLayer().
+  void InstallInkDropMask(ui::Layer* ink_drop_layer);
 
   // Defines what type of |ink_drop_| to create.
   InkDropMode ink_drop_mode_ = InkDropMode::OFF;
