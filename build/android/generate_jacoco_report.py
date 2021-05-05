@@ -40,22 +40,27 @@ _DEVICE_CLASS_EXCLUDE_SUFFIX = 'host_filter.jar'
 _HOST_CLASS_EXCLUDE_SUFFIX = 'device_filter.jar'
 
 
-def _CreateClassfileArgs(class_files, exclude_suffix=None):
-  """Returns a list of files that don't have a given suffix.
+def _CreateClassfileArgs(class_files, exclude_suffix=None, include_substr=None):
+  """Returns a filtered list of files with classfile option.
 
   Args:
     class_files: A list of class files.
     exclude_suffix: Suffix to look for to exclude.
+    include_substr: A substring that must be present to include the file.
+        exclude_suffix takes precedence over this.
 
   Returns:
     A list of files that don't use the suffix.
   """
   result_class_files = []
   for f in class_files:
-    if exclude_suffix:
-      if not f.endswith(exclude_suffix):
-        result_class_files += ['--classfiles', f]
-    else:
+    include_file = True
+    if exclude_suffix and f.endswith(exclude_suffix):
+      include_file = False
+    # Exclude overrides include.
+    if include_file and include_substr and include_substr not in f:
+      include_file = False
+    if include_file:
       result_class_files += ['--classfiles', f]
 
   return result_class_files
@@ -68,7 +73,8 @@ def _GenerateReportOutputArgs(args, class_files, report_type):
   elif report_type == 'host':
     class_jar_exclude = _HOST_CLASS_EXCLUDE_SUFFIX
 
-  cmd = _CreateClassfileArgs(class_files, class_jar_exclude)
+  cmd = _CreateClassfileArgs(class_files, class_jar_exclude,
+                             args.include_substr_filter)
   if args.format == 'html':
     report_dir = os.path.join(args.output_dir, report_type)
     if not os.path.exists(report_dir):
@@ -141,6 +147,10 @@ def _ParseArguments(parser):
       'host classpath files. Host would typically be used for junit tests '
       ' and device for tests that run on the device. Only used for xml and csv'
       ' reports.')
+  parser.add_argument('--include-substr-filter',
+                      help='Substring that must be included in classjars.',
+                      type=str,
+                      default='')
   parser.add_argument('--output-dir', help='html report output directory.')
   parser.add_argument('--output-file',
                       help='xml file to write device coverage results.')
@@ -241,6 +251,7 @@ def main():
     # report and we wouldn't know which one a developer needed.
     device_cmd = cmd + _GenerateReportOutputArgs(args, class_files, 'device')
     host_cmd = cmd + _GenerateReportOutputArgs(args, class_files, 'host')
+
     device_exit_code = cmd_helper.RunCmd(device_cmd)
     host_exit_code = cmd_helper.RunCmd(host_cmd)
     exit_code = device_exit_code or host_exit_code

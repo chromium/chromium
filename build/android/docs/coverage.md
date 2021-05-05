@@ -29,6 +29,10 @@ class files and runtime **.exec** files. Then we need to process them using the
 3. The coverage results of JUnit and instrumentation tests will be merged
    automatically if they are in the same directory.
 
+4. If generating coverage and there are duplicate class files, as can happen
+   when generating coverage for downstream targets, use the
+   --include-substr-filter option to choose jars in the desired directory.
+
 ## How to generate coverage report
 
 1. Now we have generated .exec files already. We can create a JaCoCo HTML/XML/CSV
