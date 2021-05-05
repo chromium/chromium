@@ -329,14 +329,20 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     if (metadata_ && metadata_->presentation_area() == new_presentation_area)
       return true;
 
+    // If (0,0) of a visual is clipped out, it can result in delegated ink not
+    // being drawn at all. This is more common when DComp Surfaces are enabled,
+    // but doesn't negatively impact things when the swapchain is used, so just
+    // offset the visual instead of clipping the top left corner in all cases.
+    ink_visual_->SetOffsetX(new_presentation_area.x());
+    ink_visual_->SetOffsetY(new_presentation_area.y());
+
     D2D_RECT_F clip_rect;
     clip_rect.bottom = new_presentation_area.bottom();
-    clip_rect.left = new_presentation_area.x();
     clip_rect.right = new_presentation_area.right();
-    clip_rect.top = new_presentation_area.y();
-    // If setting the clip failed, we want to bail early so that a trail can't
-    // incorrectly appear over things on the user's screen.
-    return SUCCEEDED(ink_visual_->SetClip(clip_rect));
+    // If setting the clip or committing failed, we want to bail early so that a
+    // trail can't incorrectly appear over things on the user's screen.
+    return SUCCEEDED(ink_visual_->SetClip(clip_rect)) &&
+           SUCCEEDED(dcomp_device_->Commit());
   }
 
   void RemoveSavedPointsOlderThanMetadata() {
@@ -362,17 +368,20 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
     DCHECK(delegated_ink_trail_);
 
+    InkTrailPoint ink_point;
+    ink_point.radius = metadata_->diameter() / 2.f;
+    // In order to account for the visual offset, the point must be offset in
+    // the opposite direction.
+    ink_point.x = point.point().x() - metadata_->presentation_area().x();
+    ink_point.y = point.point().y() - metadata_->presentation_area().y();
+    unsigned int token;
+
     // AddTrailPoints() can accept and draw more than one InkTrailPoint per
     // call. However, all the points get lumped together in the one token then,
     // which means that they can only be removed all together. This may be fine
     // in some scenarios, but in the vast majority of cases we will need to
     // remove one point at a time, so we choose to only add one InkTrailPoint at
     // a time.
-    InkTrailPoint ink_point;
-    ink_point.radius = metadata_->diameter() / 2.f;
-    ink_point.x = point.point().x();
-    ink_point.y = point.point().y();
-    unsigned int token;
     if (TraceEventOnFailure(
             delegated_ink_trail_->AddTrailPoints(&ink_point,
                                                  /*inkPointsCount*/ 1, &token),
