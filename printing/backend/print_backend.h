@@ -172,7 +172,13 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterCapsAndDefaults {
 class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
     : public base::RefCountedThreadSafe<PrintBackend> {
  public:
-  // Enumerates the list of installed local and network printers.
+  // Enumerates the list of installed local and network printers.  It will
+  // return true when the available installed printers have been enumerated
+  // into `printer_list`.  Note that `printer_list` must not be null and also
+  // should be empty prior to this call.  If there are no printers installed
+  // then it will still return true, and `printer_list` remains empty.  It
+  // returns false when an error has occurred trying to get the list of
+  // printers.
   virtual bool EnumeratePrinters(PrinterList* printer_list) = 0;
 
   // Gets the default printer name. Empty string if no default printer.

@@ -125,11 +125,22 @@ bool PrintBackendCUPS::EnumeratePrinters(PrinterList* printer_list) {
 
   cups_dest_t* destinations = nullptr;
   int num_dests = GetDests(&destinations);
-  if (!num_dests && cupsLastError() > IPP_OK_EVENTS_COMPLETE) {
-    VLOG(1) << "CUPS: Error getting printers from CUPS server"
-            << ", server: " << print_server_url_
-            << ", error: " << static_cast<int>(cupsLastError());
-    return false;
+  DCHECK_GE(num_dests, 0);
+  if (!num_dests) {
+    // No destinations could mean the operation failed or that there are simply
+    // no printer drivers installed.  Rely upon CUPS error code to distinguish
+    // between these.
+    DCHECK(!destinations);
+    const ipp_status_t last_error = cupsLastError();
+    if (last_error != IPP_STATUS_ERROR_NOT_FOUND) {
+      VLOG(1) << "CUPS: Error getting printers from CUPS server"
+              << ", server: " << print_server_url_
+              << ", error: " << static_cast<int>(last_error) << " - "
+              << cupsLastErrorString();
+      return false;
+    }
+    VLOG(1) << "CUPS: No printers found for CUPS server: " << print_server_url_;
+    return true;
   }
 
   for (int printer_index = 0; printer_index < num_dests; ++printer_index) {

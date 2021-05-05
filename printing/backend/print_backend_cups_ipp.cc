@@ -35,14 +35,24 @@ bool PrintBackendCupsIpp::EnumeratePrinters(PrinterList* printer_list) {
   std::vector<std::unique_ptr<CupsPrinter>> printers =
       cups_connection_->GetDests();
   if (printers.empty()) {
-    LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
-                 << ", server: " << cups_connection_->server_name()
-                 << ", error: "
-                 << static_cast<int>(cups_connection_->last_error());
-
-    return false;
+    // No destinations could mean the operation failed or that there are simply
+    // no printer drivers installed.  Rely upon CUPS error code to distinguish
+    // between these.
+    const int last_error = cups_connection_->last_error();
+    if (last_error != IPP_STATUS_ERROR_NOT_FOUND) {
+      LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
+                   << ", server: " << cups_connection_->server_name()
+                   << ", error: " << last_error << " - "
+                   << cups_connection_->last_error_message();
+      return false;
+    }
+    VLOG(1) << "CUPS: No printers found for CUPS server: "
+            << cups_connection_->server_name();
+    return true;
   }
 
+  VLOG(1) << "CUPS: found " << printers.size()
+          << " printers from CUPS server: " << cups_connection_->server_name();
   for (const auto& printer : printers) {
     PrinterBasicInfo basic_info;
     if (printer->ToPrinterInfo(&basic_info)) {

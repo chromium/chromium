@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +21,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hglobal.h"
+#include "base/win/windows_types.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_info_win.h"
 #include "printing/backend/win_helper.h"
@@ -195,8 +197,12 @@ bool PrintBackendWin::EnumeratePrinters(PrinterList* printer_list) {
   const DWORD kLevel = 4;
   EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, kLevel,
                nullptr, 0, &bytes_needed, &count_returned);
-  if (!bytes_needed)
-    return false;
+  if (!bytes_needed) {
+    // No bytes needed could mean the operation failed or that there are simply
+    // no printer drivers installed.  Rely upon system error code to
+    // distinguish between these.
+    return logging::GetLastSystemErrorCode() == ERROR_SUCCESS;
+  }
 
   auto printer_info_buffer = std::make_unique<BYTE[]>(bytes_needed);
   if (!EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr,

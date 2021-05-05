@@ -20,8 +20,9 @@ TestPrintBackend::TestPrintBackend() : PrintBackend(/*locale=*/std::string()) {}
 TestPrintBackend::~TestPrintBackend() = default;
 
 bool TestPrintBackend::EnumeratePrinters(PrinterList* printer_list) {
+  DCHECK(printer_list->empty());
   if (printer_map_.empty())
-    return false;
+    return true;
 
   for (const auto& entry : printer_map_) {
     const std::unique_ptr<PrinterData>& data = entry.second;

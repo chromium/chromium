@@ -91,6 +91,7 @@ class MockCupsConnection : public CupsConnection {
                     PrinterStatus* printer_status));
   MOCK_CONST_METHOD0(server_name, std::string());
   MOCK_CONST_METHOD0(last_error, int());
+  MOCK_CONST_METHOD0(last_error_message, std::string());
 
   MOCK_METHOD1(GetPrinter,
                std::unique_ptr<CupsPrinter>(const std::string& printer_name));

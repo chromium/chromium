@@ -256,6 +256,7 @@ static_library("test_support") {
 test("printing_unittests") {
   sources = [
     "backend/mojom/print_backend_mojom_traits_unittest.cc",
+    "backend/print_backend_unittest.cc",
     "backend/print_backend_utils_unittest.cc",
     "backend/test_print_backend_unittest.cc",
     "metafile_skia_unittest.cc",

@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsConnection {
   virtual std::string server_name() const = 0;
 
   virtual int last_error() const = 0;
+  virtual std::string last_error_message() const = 0;
 };
 
 }  // namespace printing

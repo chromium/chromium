@@ -78,9 +78,7 @@ class TestPrintBackendTest : public testing::Test {
   }
 
   // Get the test print backend.
-  TestPrintBackend* GetPrintBackend() const {
-    return test_print_backend_.get();
-  }
+  TestPrintBackend* GetPrintBackend() { return test_print_backend_.get(); }
 
  private:
   scoped_refptr<TestPrintBackend> test_print_backend_;
@@ -90,13 +88,19 @@ TEST_F(TestPrintBackendTest, EnumeratePrinters) {
   const PrinterList kPrinterList{kAlternatePrinterInfo, kDefaultPrinterInfo};
   PrinterList printer_list;
 
-  // Should return false when there are no printers in the environment.
-  EXPECT_FALSE(GetPrintBackend()->EnumeratePrinters(&printer_list));
-
   AddPrinters();
 
   EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
   EXPECT_THAT(printer_list, testing::ContainerEq(kPrinterList));
+}
+
+TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
+  const PrinterList kPrinterList{kAlternatePrinterInfo, kDefaultPrinterInfo};
+  PrinterList printer_list;
+
+  // Should return true even when there are no printers in the environment.
+  EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
+  EXPECT_TRUE(printer_list.empty());
 }
 
 TEST_F(TestPrintBackendTest, DefaultPrinterName) {

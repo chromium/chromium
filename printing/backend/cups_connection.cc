@@ -176,6 +176,9 @@ class CupsConnectionImpl : public CupsConnection {
   std::string server_name() const override { return print_server_url_.host(); }
 
   int last_error() const override { return cupsLastError(); }
+  std::string last_error_message() const override {
+    return cupsLastErrorString();
+  }
 
  private:
   // lazily initialize http connection
