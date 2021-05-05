@@ -95,6 +95,14 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
             browser_state_.get()));
   }
 
+  void SimulateTransitionToCurrentStage() {
+    InitStage previousStage =
+        app_state_.initStage == InitStageStart
+            ? InitStageStart
+            : static_cast<InitStage>(app_state_.initStage - 1);
+    [agent_ appState:app_state_ didTransitionFromInitStage:previousStage];
+  }
+
   AppMetricsAppStateAgent* agent_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeAppState* app_state_;
@@ -113,6 +121,8 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDuration) {
   scene.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
+
+  SimulateTransitionToCurrentStage();
 
   // Going foreground starts the session.
   scene.activationLevel = SceneActivationLevelForegroundInactive;
@@ -134,6 +144,8 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationMultiwindow) {
 
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
+
+  SimulateTransitionToCurrentStage();
 
   // One scene is enough to start a session.
   sceneA.activationLevel = SceneActivationLevelForegroundInactive;
@@ -165,6 +177,8 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
 
+  SimulateTransitionToCurrentStage();
+
   // Going to background at app start doesn't log anything.
   scene.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_started_count());
@@ -177,7 +191,7 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
 
   // Session starts when safe mode completes.
   app_state_.initStageForTesting = InitStageFinal;
-  [agent_ appStateDidExitSafeMode:app_state_];
+  SimulateTransitionToCurrentStage();
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
 

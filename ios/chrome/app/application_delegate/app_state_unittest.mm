@@ -523,8 +523,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   id browserLauncherMock = getBrowserLauncherMock();
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
-  // Expected calls on AppState#coordinatorDidExitSafeMode.
-  [[appStateObserverMock expect] appStateDidExitSafeMode:appState];
+  // Expected calls after safe mode.
   [[browserLauncherMock expect]
       startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 

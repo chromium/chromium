@@ -39,9 +39,6 @@ typedef NS_ENUM(NSUInteger, InitStage) {
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState;
 
-// Called after the app exits safe mode.
-- (void)appStateDidExitSafeMode:(AppState*)appState;
-
 // Called when |AppState.lastTappedWindow| changes.
 - (void)appState:(AppState*)appState lastTappedWindowChanged:(UIWindow*)window;
 

@@ -629,6 +629,15 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   return @[];
 }
 
+- (NSArray<SceneState*>*)foregroundScenes {
+  return [self.connectedScenes
+      filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                   SceneState* scene,
+                                                   NSDictionary* bindings) {
+        return scene.activationLevel >= SceneActivationLevelForegroundInactive;
+      }]];
+}
+
 - (void)setLastTappedWindow:(UIWindow*)window {
   if (_lastTappedWindow == window) {
     return;
@@ -654,9 +663,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)initializeUIPostSafeMode {
-  //  Cache the safe mode status which is needed later on to complete the
-  //  post-safemode initialization.
-  BOOL wasInSafeMode = self.inSafeMode;
   // Make sure that safe mode is turned off before moving further with the
   // browser startup.
   self.inSafeMode = NO;
@@ -666,12 +672,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // -startUpBrowserForegroundInitialization.
   DCHECK([self.startupInformation isColdStart]);
   [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
-
-  if (wasInSafeMode) {
-    // Complete the transition out of safe mode if the app was really in safe
-    // mode.
-    [self.observers appStateDidExitSafeMode:self];
-  }
 
   if (EnableSyntheticCrashReportsForUte()) {
     // Must be called after sequenced context creation, which happens in
