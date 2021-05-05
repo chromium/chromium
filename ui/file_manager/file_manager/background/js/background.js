@@ -144,9 +144,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
           this.onContextMenuClicked_.bind(this));
     }
 
-    chrome.contextMenus.onClicked.addListener(
-        this.onContextMenuClicked_.bind(this));
-
     // Initialize string and volume manager related stuffs.
     this.initializationPromise_.then(strings => {
       this.stringData = strings;
