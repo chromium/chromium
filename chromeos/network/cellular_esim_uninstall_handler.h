@@ -82,14 +82,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
  private:
   enum class UninstallState {
     kIdle,
+    kCheckingNetworkState,
     kDisconnectingNetwork,
     kInhibitingShill,
     kRequestingInstalledProfiles,
     kDisablingProfile,
     kUninstallingProfile,
     kRemovingShillService,
-    kSuccess,
-    kFailure,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const UninstallState& step);
@@ -111,31 +110,46 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
   };
 
-  void ProcessUninstallRequest();
+  void ProcessPendingUninstallRequests();
   void TransitionToUninstallState(UninstallState next_state);
-  void AttemptNetworkDisconnectIfRequired();
+  void CompleteCurrentRequest(bool success);
+
+  const std::string& GetIccidForCurrentRequest() const;
+  const NetworkState* GetNetworkStateForCurrentRequest() const;
+
+  void CheckNetworkState();
+
+  void AttemptNetworkDisconnect(const NetworkState* network);
+  void OnDisconnectSuccess();
+  void OnDisconnectFailure(const std::string& error_name,
+                           std::unique_ptr<base::DictionaryValue> error_data);
+
   void AttemptShillInhibit();
   void OnShillInhibit(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+
   void AttemptRequestInstalledProfiles();
   void OnRefreshProfileListResult(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
-  void AttemptDisableProfileIfRequired();
+
+  void AttemptDisableProfile();
+  void OnDisableProfile(HermesResponseStatus status);
+
   void AttemptUninstallProfile();
+  void OnUninstallProfile(HermesResponseStatus status);
+
   void AttemptRemoveShillService();
-  void TransitionUninstallStateOnHermesSuccess(UninstallState next_state,
-                                               HermesResponseStatus status);
-  void TransitionUninstallStateOnSuccessBoolean(UninstallState next_state,
-                                                bool success);
-  void OnNetworkHandlerError(const std::string& error_name,
-                             std::unique_ptr<base::DictionaryValue> error_data);
-  const NetworkState* GetNetworkStateForIccid(const std::string& iccid);
+  void OnRemoveServiceSuccess();
+  void OnRemoveServiceFailure(
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
+
   void CheckStaleESimServices();
-  NetworkStateHandler::NetworkStateList GetESimCellularNetworks();
+
+  NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
   bool HasQueuedRequest(const std::string& iccid) const;
 
   UninstallState state_ = UninstallState::kIdle;
-  const NetworkState* curr_request_network_state_ = nullptr;
   base::circular_deque<std::unique_ptr<UninstallRequest>> uninstall_requests_;
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
