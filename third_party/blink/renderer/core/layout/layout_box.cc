@@ -7709,6 +7709,9 @@ void LayoutBox::CheckIsVisualOverflowComputed() const {
     return;
   if (!CanUseFragmentsForVisualOverflow())
     return;
+  // TODO(crbug.com/1203402): MathML needs some more work.
+  if (IsMathML())
+    return;
   for (const NGPhysicalBoxFragment& fragment : PhysicalFragments())
     DCHECK(fragment.IsInkOverflowComputed());
 }

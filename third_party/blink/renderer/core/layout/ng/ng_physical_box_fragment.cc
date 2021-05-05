@@ -597,17 +597,6 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   return this;
 }
 
-bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
-  if (UNLIKELY(IsLegacyLayoutRoot()))
-    return false;
-  // TODO(crbug.com/1144203): Following conditions are not supported in NG
-  // visual overflow yet.
-  if (UNLIKELY(IsMathML()))
-    return false;
-  DCHECK(IsInlineBox() || OwnerLayoutBox());
-  return true;
-}
-
 PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());

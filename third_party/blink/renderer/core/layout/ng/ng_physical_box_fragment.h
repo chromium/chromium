@@ -415,7 +415,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   // Returns if this fragment can compute ink overflow.
-  bool CanUseFragmentsForInkOverflow() const;
+  bool CanUseFragmentsForInkOverflow() const { return !IsLegacyLayoutRoot(); }
   // Recalculates and updates |*InkOverflow|.
   void RecalcInkOverflow();
   // |RecalcInkOverflow| using the given contents ink overflow rect.
