@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
   // test doesn't provide coverage for that.
   // Note: If "object-src" is not set in the CSP, the `<embed>` element fails to
   // load and times out.
-  constexpr char loadPdf[] = R"(
+  constexpr char kLoadPdf[] = R"(
       (() => {
         const embedBlob =  document.createElement('embed');
         embedBlob.type ='application/pdf';
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
       })();
   )";
 
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, loadPdf));
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kLoadPdf));
 }
 
 // These tests try to load files bundled in our CIPD package. The CIPD package
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   // button and is calculated from a hash of the label ("Annotate"). This id is
   // used since cl/366443893 because the UI toolkit has loose guarantees about
   // where the actual label appears in the shadow DOM.
-  constexpr char clickAnnotate[] = R"(
+  constexpr char kClickAnnotate[] = R"(
     (async () => {
       const annotateButton = await waitForNode(
           '#icon-button-3709949292', ['backlight-app-bar', 'backlight-app']);
@@ -265,13 +265,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
       return true;
     })();
   )";
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, clickAnnotate));
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickAnnotate));
 
   // Checks ink is loaded for images by ensuring the ink engine canvas has a non
   // zero width and height attributes (checking <canvas.width/height is
   // insufficient since it has a default width of 300 and height of 150).
   // Note: The loading of ink engine elements can be async.
-  constexpr char checkInkLoaded[] = R"(
+  constexpr char kCheckInkLoaded[] = R"(
     (async () => {
       const inkEngineCanvas = await waitForNode(
           'canvas#ink-engine[width]', ['backlight-image-handler']);
@@ -284,7 +284,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   )";
   // TODO(b/175840855): Consider checking `inkEngineCanvas` size, it is
   // currently different to image size.
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, checkInkLoaded));
+  EXPECT_EQ(true,
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, kCheckInkLoaded));
 }
 
 // Tests that clicking on the 'Info' button in the app bar opens the information
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
   // Expect info panel to not be open on first load.
-  constexpr char hasInfoPanelOpen[] = R"(
+  constexpr char kHasInfoPanelOpen[] = R"(
     (async () => {
       const metadataPanel = await getNode(
           'backlight-metadata-panel', ['backlight-image-handler']);
@@ -308,14 +309,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
     })();
   )";
   EXPECT_EQ(false,
-            MediaAppUiBrowserTest::EvalJsInAppFrame(app, hasInfoPanelOpen));
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
 
   // Click info button.
   // Note the button id (icon-button-2283726) corresponds to the info panel
   // button and is calculated from a hash of the label ("Info"). This id is
   // used because the UI toolkit has loose guarantees about where the actual
   // label appears in the shadow DOM.
-  constexpr char clickInfo[] = R"(
+  constexpr char kClickInfo[] = R"(
     (async () => {
       const infoButton = await getNode(
           '#icon-button-2283726', ['backlight-app-bar', 'backlight-app']);
@@ -323,11 +324,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
       return true;
     })();
   )";
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, clickInfo));
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickInfo));
 
   // Expect info panel to be open after clicking info button.
   EXPECT_EQ(true,
-            MediaAppUiBrowserTest::EvalJsInAppFrame(app, hasInfoPanelOpen));
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
