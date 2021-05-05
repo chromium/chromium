@@ -1,0 +1,122 @@
+# Action base name,Parameters (* = default parameter),State Check,ManualOnly,Status,Description
+add_policy_app_internal_tabbed_no_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,WIP,Internal method of adding a policy app - does not fully test the enterprise integration.
+add_policy_app_internal_tabbed_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Internal method of adding a policy app - does not fully test the enterprise integration.
+add_policy_app_internal_windowed_no_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,WIP,Internal method of adding a policy app - does not fully test the enterprise integration.
+add_policy_app_internal_windowed_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Internal method of adding a policy app - does not fully test the enterprise integration.
+add_policy_app_tabbed_no_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,"Add a force-installed enterprise policy app to the user profile (must be managed profile). tabbed, no platform shortcut"
+add_policy_app_tabbed_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Internal Impl,"Add a force-installed enterprise policy app to the user profile (must be managed profile). tabbed, with platform shortcut"
+add_policy_app_windowed_no_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,"Add a force-installed enterprise policy app to the user profile (must be managed profile). windowed, no platform shortcut"
+add_policy_app_windowed_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Internal Impl,"Add a force-installed enterprise policy app to the user profile (must be managed profile). windowed, with platform shortcut"
+assert_app_badge_empty,site_a* | site_b,Y,Y,Awaiting Platform Integration,Check that the 'badge' on the app icon is empty
+assert_app_badge_has_value,site_a* | site_b,Y,Y,Awaiting Platform Integration,Check that the 'badge' on the app icon has a value
+assert_app_badge_updated,site_a* | site_b,Y,Y,Awaiting Platform Integration,Check that the 'badge' on the app icon has changed values
+assert_app_in_list,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Internal Impl,
+assert_app_in_list_icon_correct,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Not Yet Implemented,Check that the icon for the given app in the app list is correct.
+assert_app_in_list_locally_installed,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Internal Impl,
+assert_app_in_list_not_locally_installed,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Internal Impl,Check that the given app is in the app list and is not installed (greyed out icon)
+assert_app_in_list_not_windowed,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Not Yet Implemented,"Check that the given app is in the list, and launches in a browser tab"
+assert_app_in_list_windowed,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Not Yet Implemented,"Check that the given app is in the list, and launches in a dedicated window"
+assert_app_installed_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Abandoned,
+assert_app_list_empty,,Y,,Not Yet Implemented,The app list is empty (no apps)
+assert_app_locally_installed_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,WIP,
+assert_app_not_in_list,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,Check that the given app is NOT in the app list
+assert_app_not_installed_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Abandoned,
+assert_app_not_locally_installed_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,
+assert_correct_window_title,,Y,,Not Yet Implemented,Check that the window title is correct
+assert_create_shortcut_not_shown,,Y,,Not Yet Implemented,"Check that the ""Create Shortcut"" menu option (3-dot->""More Tools""->""Create Shortcut) is greyed out"
+assert_create_shortcut_shown,,Y,,Not Yet Implemented,"Check that the ""Create Shortcut"" menu option (3-dot->""More Tools""->""Create Shortcut) is shown"
+assert_icon_correct_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Not Yet Implemented,internal-only
+assert_install_icon_not_shown,,Y,,Implemented,"Check that the ""Install"" icon in the omnibox is not shown"
+assert_install_icon_shown,,Y,,Implemented,"Check that the ""Install"" icon in the omnibox is shown"
+assert_installable,,Y,,Implemented,
+assert_launch_icon_not_shown,,Y,,Implemented,
+assert_launch_icon_shown,,Y,,Implemented,
+assert_manifest_display_mode_browser_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,internal-only
+assert_manifest_display_mode_minimal_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,WIP,internal-only
+assert_manifest_display_mode_standalone_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,internal-only
+assert_navigation_start_url,,Y,,Not Yet Implemented,
+assert_no_toolbar,,Y,,Not Yet Implemented,
+assert_not_installable_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Not Yet Implemented,Internal evaluation of whether a site is installable or not.
+assert_old_chrome_version,84*,Y,,Not Yet Implemented,
+assert_platform_shortcut_created,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,Y,Awaiting Platform Integration,The desktop platform shortcut has been removed.
+assert_platform_shortcut_exists,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,Y,Awaiting Platform Integration,The desktop platform shortcut exists.
+assert_platform_shortcut_icon_correct,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,Y,Awaiting Platform Integration,The icon of the platform shortcut (on the desktop) is correct
+assert_platform_shortcut_not_exists,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,Y,Awaiting Platform Integration,The desktop platform shortcut has been removed.
+assert_platform_shortcut_right_click_menu_has_actions,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,Y,Awaiting Platform Integration,"Check that the platform shortcut, when right clicked, displays actions that the user can click on"
+assert_scope_correct_internal_site_a,site_a* | site_a_foo | site_a_bar,Y,,Not Yet Implemented,
+assert_scope_correct_internal_site_a_foo,site_a* | site_a_foo | site_a_bar,Y,,Not Yet Implemented,
+assert_tab_created,,Y,,Implemented,A tab was created in a chrome browser window
+assert_theme_color,site_a* | site_a_foo | site_a_bar | site_b,Y,,Not Yet Implemented,Asserts that the theme color of the given app window is correct.
+assert_theme_color_internal,site_a* | site_a_foo | site_a_bar | site_b,Y,,Not Yet Implemented,Asserts that the theme color of the given app window is correct.
+assert_toolbar,,Y,,Not Yet Implemented,Check that the PWA window has a custom toolbar to show the out-of-scope url.
+assert_user_display_mode_browser_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,internal-only
+assert_user_display_mode_standalone_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,Y,,Implemented,internal-only
+assert_window_closed,,Y,,Implemented,The window was closed
+assert_window_color_correct,,Y,,Not Yet Implemented,The color of the window has changed.
+assert_window_created,,Y,,Implemented,A window was created.
+assert_window_display_minimal,,Y,,Implemented,"Check that the window is a PWA window, and has minimal browser controls."
+assert_window_display_standalone,,Y,,Implemented,"Check that the window is a PWA window, and has no browser controls."
+assert_window_icon_correct,,Y,,Not Yet Implemented,
+assert_window_title,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,
+chrome_update,,,,Not Yet Implemented,Update chrome from the past to the present
+chrome_update_with_bmo_migration,,,,Abandoned,Update chrome from pre-m85 to post-m85
+clear_app_badge,site_a* | site_b,,,Awaiting Platform Integration,The WebApp clears the 'badge' value from it's icon
+close_browser,,,,Abandoned,Close the browser window.
+close_custom_toolbar,,,,Not Yet Implemented,Press the 'x' button on the custom toolbar that is towards the top of the WebApp window.
+close_pwa,,,,Implemented,Close the WebApp window.
+copy_pwa_url,,,,Not Yet Implemented,"Click the ""Copy URL"" option in the apps window's 3 dot menu"
+create_shortcuts,,,,Not Yet Implemented,create shortcut in app list
+delete_platform_shortcut,,,,Awaiting Platform Integration,Delete the shortcut that lives on the operating system
+delete_profile,,,,Not Yet Implemented,Delete the user profile.
+drag_url_to_apps_list,,,,Awaiting Platform Integration,"Open chrome://apps in a separage window, and drag a url (highlight & drag url from the omnibox) to the chrome://apps page"
+force_manifest_update_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,WIP,Force chrome to process a manifest update for a web app.
+install_create_shortcut_tabbed,,,,Implemented,Menu -> Create Shortcuts -> Uncheck 'open as window'
+install_create_shortcut_windowed,,,,Implemented,Menu -> Create Shortcuts -> check 'open as window'
+install_internal_tabbed,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,"Installation using internal API, which skips a lot of the UI and user code."
+install_internal_windowed,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,"Installation using internal API, which skips a lot of the UI and user code."
+install_locally,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Internal Impl,"Complete installation of the not-locally-installed app by right-clicking on the grey icon in the app listing and selecting ""Install"""
+install_locally_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,"Complete installation of the not-locally-installed app by right-clicking on the grey icon in the app listing and selecting ""Install"""
+install_omnibox_or_menu,,,,Implemented,"Install the WebApp by clicking on the install icon in the omnibox, or ""Install _"" in the 3-dot menu."
+install_using_omnibox_icon,,,,Not Yet Implemented,
+launch_from_list,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,Launch the app from the app list
+launch_from_omnibox_or_menu,,,,Not Yet Implemented,"Launch by using the 'launch' icon in the omnibox, or from the 3-dot menu entry."
+launch_from_platform_shortcut,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,Lauch an app from a platform shortcut on the user's desktop or start menu.
+launch_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Launching using internal API
+list_apps,,,,Not Yet Implemented,"e.g. go to chrome://apps on non-ChromeOS, or app list on ChromeOS"
+list_apps_internal,,,,Implemented,
+manifest_update_colors,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,The website updates it's manifest.json to change the 'theme' color
+manifest_update_display_browser,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,Updates the display property of the manifest to 'browser' on the given site's manifest
+manifest_update_display_minimal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Updates the display property of the manifest to 'minimal' on the given site's manifest
+manifest_update_display_standalone,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Abandoned,Updates the display property of the manifest to 'standalone' on the given site's manifest
+manifest_update_icons,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,Updates the icon field in the manifest of the website.
+manifest_update_scope_site_a,site_a* | site_a_foo | site_a_bar,,,Implemented,"Update the scope of site a, to the given scope"
+manifest_update_scope_site_a_foo,site_a* | site_a_foo | site_a_bar,,,Abandoned,"Update the scope of site a/foo/, to the given scope"
+navigate_browser_in_scope,site_a* | site_a_foo | site_a_bar | site_b,,,Implemented,Navigate the browser to a website that is part of a PWA (e.g. twitter.com)
+navigate_browser_out_scope,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Navigate the browser to a website that is NOT part of the PWA (e.g. twitter.com)
+navigate_crashed_url,,,,Not Yet Implemented,"Navigate to a page that crashes, or simulates a crashed renderer. chrome://crash"
+navigate_installable,site_a* | site_a_foo | site_a_bar | site_b,,,Implemented,"Specifies the scope. site_a: https://example.com/, site_a_foo: https://example.com/foo,  site_a_bar: https://example.com/bar"
+navigate_link_target_blank,,,,Not Yet Implemented,"Click on a href link on the current page, where the target of the link is ""_blank"""
+navigate_not_installable,site_c*,,,Implemented,Navigate to a URL that is NOT installable.
+navigate_notfound_url,,,,WIP,Navigate to a url that returns a 404 server error.
+navigate_pwa_in_scope,site_a* | site_a_foo | site_a_bar | site_b,,,Not Yet Implemented,"Navigate the webapp to a url that is in-scope of the webapp (same origin, basically)"
+navigate_pwa_out_scope,site_a* | site_a_foo | site_a_bar | site_b | external,,,Not Yet Implemented,"Navigate the webapp to a url that is out-of-scope of the webapp (different origin, basically)"
+navigate_to_installable,site_a* | site_a_foo | site_a_bar | site_b,,,Not Yet Implemented,
+open_in_chrome,,,,Not Yet Implemented,Click on the 'open in chrome' link in the 3-dot menu of the app window
+remove_policy_app,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,Remove a force-installed policy app to the user profile (must be managed profile)
+remove_policy_app_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Abandoned,
+restart_chrome_for_manifest_update,site_a* | site_a_foo | site_a_bar | site_b,,,Abandoned,Restart chrome
+set_app_badge,site_a* | site_b,,,Awaiting Platform Integration,Set the app badge for the given site to a value.
+set_open_in_tab,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Internal Impl,"Uncheck the ""open in window"" checkbox in the right-click menu of the app icon, in the app list page"
+set_open_in_tab_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,
+set_open_in_window,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Internal Impl,"Check the ""open in window"" checkbox in the right-click menu of the app icon, in the app list page"
+set_open_in_window_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,
+switch_incognito_profile,,,,Not Yet Implemented,Switch to using incognito mode
+switch_profile_clients,user_a_client_2* | user_a_client_1,,,Implemented,Switch to a different instance of chrome signed in to the same profile
+sync_turn_off,,,,Implemented,"Turn chrome sync off for ""Apps"": chrome://settings/syncSetup/advanced"
+sync_turn_on,,,,Implemented,"Turn chrome sync on for ""Apps"": chrome://settings/syncSetup/advanced"
+uninstall_from_app_list,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Not Yet Implemented,Uninstall the webapp from the app list.
+uninstall_from_menu,,,,Implemented,Uninstall the webapp from the 3-dot menu in the webapp window
+uninstall_internal,site_a* | site_a_foo | site_a_bar | site_b | site_c,,,Implemented,
+uninstall_windows_control_panel,site_a* | site_a_foo | site_a_bar | site_b | site_c,,Y,Abandoned,Uninstall the webapp through the windows control panel (not implemented yet).
+use_pwa_window_controls,,,,Not Yet Implemented,Verify that web app window controls work
+user_signin,,,,Implemented,Sign in to chrome  / chrome sync

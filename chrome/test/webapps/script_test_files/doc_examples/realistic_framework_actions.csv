@@ -1,0 +1,7 @@
+
+assert_install_icon_shown
+assert_window_created
+assert_window_title_site_a
+install_using_create_shortcut
+install_internal_site_a
+navigate_to_installable_site_a
