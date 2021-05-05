@@ -52,6 +52,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
@@ -805,8 +806,8 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
       send_tab_to_self::ShareToSingleTarget(
           location_bar_view_->GetWebContents());
-      send_tab_to_self::RecordSendTabToSelfClickResult(
-          send_tab_to_self::kOmniboxMenu, SendTabToSelfClickResult::kClickItem);
+      send_tab_to_self::RecordDeviceClicked(
+          send_tab_to_self::ShareEntryPoint::kOmniboxMenu);
       return;
 
     // These commands do invoke the popup.

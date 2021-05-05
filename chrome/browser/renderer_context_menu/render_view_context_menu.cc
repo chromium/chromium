@@ -117,6 +117,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
@@ -2392,16 +2393,16 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
       send_tab_to_self::ShareToSingleTarget(
           GetBrowser()->tab_strip_model()->GetActiveWebContents());
-      send_tab_to_self::RecordSendTabToSelfClickResult(
-          send_tab_to_self::kContentMenu, SendTabToSelfClickResult::kClickItem);
+      send_tab_to_self::RecordDeviceClicked(
+          send_tab_to_self::ShareEntryPoint::kContentMenu);
       break;
 
     case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
       send_tab_to_self::ShareToSingleTarget(
           GetBrowser()->tab_strip_model()->GetActiveWebContents(),
           params_.link_url);
-      send_tab_to_self::RecordSendTabToSelfClickResult(
-          send_tab_to_self::kLinkMenu, SendTabToSelfClickResult::kClickItem);
+      send_tab_to_self::RecordDeviceClicked(
+          send_tab_to_self::ShareEntryPoint::kLinkMenu);
       break;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE: {

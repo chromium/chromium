@@ -47,6 +47,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -1405,8 +1406,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
     case CommandSendTabToSelfSingleTarget: {
       send_tab_to_self::ShareToSingleTarget(GetWebContentsAt(context_index));
-      send_tab_to_self::RecordSendTabToSelfClickResult(
-          send_tab_to_self::kTabMenu, SendTabToSelfClickResult::kClickItem);
+      send_tab_to_self::RecordDeviceClicked(
+          send_tab_to_self::ShareEntryPoint::kTabMenu);
       break;
     }
 

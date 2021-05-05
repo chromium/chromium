@@ -17070,6 +17070,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jeffreycohen@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
+  <suffix name="AndroidShareSheet"
+      label="Option to show in the android share sheet"/>
   <suffix name="ContentMenu" label="Option shown in the content context menu"/>
   <suffix name="LinkMenu" label="Option shown in the link context menu"/>
   <suffix name="OmniboxIcon" label="Icon shown in the omnibox"/>

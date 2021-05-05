@@ -76,12 +76,6 @@ void ShareToSingleTarget(content::WebContents* tab, const GURL& link_url) {
                  link_url);
 }
 
-void RecordSendTabToSelfClickResult(const std::string& entry_point,
-                                    SendTabToSelfClickResult state) {
-  base::UmaHistogramEnumeration("SendTabToSelf." + entry_point + ".ClickResult",
-                                state);
-}
-
 size_t GetValidDeviceCount(Profile* profile) {
   SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);

@@ -11,6 +11,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -61,18 +62,16 @@ int CommandIdToVectorIndex(int command_id) {
 }
 
 // Converts menu type to string.
-const std::string MenuTypeToString(SendTabToSelfMenuType menu_type) {
+ShareEntryPoint MenuTypeToEntryPoint(SendTabToSelfMenuType menu_type) {
   switch (menu_type) {
     case SendTabToSelfMenuType::kTab:
-      return kTabMenu;
+      return ShareEntryPoint::kTabMenu;
     case SendTabToSelfMenuType::kContent:
-      return kContentMenu;
+      return ShareEntryPoint::kContentMenu;
     case SendTabToSelfMenuType::kOmnibox:
-      return kOmniboxMenu;
+      return ShareEntryPoint::kOmniboxMenu;
     case SendTabToSelfMenuType::kLink:
-      return kLinkMenu;
-    default:
-      NOTREACHED();
+      return ShareEntryPoint::kLinkMenu;
   }
 }
 
@@ -125,8 +124,7 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
     CreateNewEntry(tab_, item.device_name, item.cache_guid);
   }
 
-  RecordSendTabToSelfClickResult(MenuTypeToString(menu_type_),
-                                 SendTabToSelfClickResult::kClickItem);
+  send_tab_to_self::RecordDeviceClicked(MenuTypeToEntryPoint(menu_type_));
   return;
 }
 

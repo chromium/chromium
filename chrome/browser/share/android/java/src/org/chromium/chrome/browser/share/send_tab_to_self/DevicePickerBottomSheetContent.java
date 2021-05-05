@@ -18,7 +18,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetrics.SendTabToSelfShareClickResult;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -175,8 +174,7 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SendTabToSelfShareClickResult.recordClickResult(
-                SendTabToSelfShareClickResult.ClickType.CLICK_ITEM);
+        MetricsRecorder.recordDeviceClickedInShareSheet();
         TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
         SendTabToSelfAndroidBridge.addEntry(

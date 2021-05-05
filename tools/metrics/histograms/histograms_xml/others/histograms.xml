@@ -13828,21 +13828,22 @@ should be kept until we remove incident reporting. -->
   <summary>The time spent before the screen locker is ready.</summary>
 </histogram>
 
-<histogram name="SendTabToSelf.AndroidShareSheet.ClickResult"
-    enum="SendTabToSelfClickResult" expires_after="M97">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>tgupta@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>Tracks the user flow for sending a tab for SendTabToSelf.</summary>
-</histogram>
-
 <histogram base="true" name="SendTabToSelf.ClickResult"
     enum="SendTabToSelfClickResult" expires_after="M97">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <summary>
-    Record whether the user has clicked the item when it is shown.
+    Records user flow for SendTabToSelf feature.
+
+    Only the &quot;SendTabToSelf target device is clicked&quot; bucket is
+    recorded today, causing sharing of a tab with the tapped device. Until M84
+    other buckets were recorded. Because each bucket represents a different
+    aspect of the flow, it's important to look at &quot;bucket count&quot;, not
+    &quot;bucket proportion&quot;.
+
+    On iOS this was not recorded between M85 and M90, inclusive (see
+    crbug.com/1204944).
   </summary>
 </histogram>
 

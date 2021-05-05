@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -78,8 +79,7 @@ Profile* SendTabToSelfBubbleController::GetProfile() const {
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_name,
     const std::string& target_device_guid) {
-  RecordSendTabToSelfClickResult(kOmniboxIcon,
-                                 SendTabToSelfClickResult::kClickItem);
+  send_tab_to_self::RecordDeviceClicked(ShareEntryPoint::kOmniboxIcon);
   CreateNewEntry(web_contents_, target_device_name, target_device_guid, GURL());
 }
 
