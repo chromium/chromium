@@ -165,63 +165,66 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
   content::RenderFrameHost* frame_host =
       navigation_handle->GetRenderFrameHost();
 
+  base::Optional<blink::FrameAdEvidence> ad_evidence_for_navigation;
+
   // Update the ad status of a frame given the new navigation. This may tag or
   // untag a frame as an ad.
   if (!navigation_handle->IsInMainFrame()) {
     blink::FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(frame_host);
+    DCHECK_EQ(ad_evidence.parent_is_ad(),
+              base::Contains(ad_frames_,
+                             frame_host->GetParent()->GetFrameTreeNodeId()));
     ad_evidence.set_is_complete();
+    ad_evidence_for_navigation = ad_evidence;
 
     SetIsAdSubframe(frame_host, ad_evidence.IndicatesAdSubframe());
   }
 
+  mojom::ActivationState activation_state =
+      ActivationStateForNextCommittedLoad(navigation_handle);
+
+  TRACE_EVENT2(
+      TRACE_DISABLED_BY_DEFAULT("loading"),
+      "ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation",
+      "activation_state", static_cast<int>(activation_state.activation_level),
+      "render_frame_host", navigation_handle->GetRenderFrameHost());
+
+  mojo::AssociatedRemote<mojom::SubresourceFilterAgent> agent;
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+
+  // We send `ad_evidence_for_navigation` even if the frame is not tagged as an
+  // ad. This ensures the renderer's copy is up-to-date, including propagating
+  // it on cross-process navigations.
+  agent->ActivateForNextCommittedLoad(activation_state.Clone(),
+                                      ad_evidence_for_navigation);
+}
+
+mojom::ActivationState
+ContentSubresourceFilterThrottleManager::ActivationStateForNextCommittedLoad(
+    content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNetErrorCode() != net::OK)
-    return;
+    return mojom::ActivationState();
 
   auto it =
       ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
   if (it == ongoing_activation_throttles_.end())
-    return;
+    return mojom::ActivationState();
 
   // Main frame throttles with disabled page-level activation will not have
   // associated filters.
   ActivationStateComputingNavigationThrottle* throttle = it->second;
   AsyncDocumentSubresourceFilter* filter = throttle->filter();
   if (!filter)
-    return;
+    return mojom::ActivationState();
 
   // A filter with DISABLED activation indicates a corrupted ruleset.
-  mojom::ActivationLevel level = filter->activation_state().activation_level;
-  if (level == mojom::ActivationLevel::kDisabled)
-    return;
-
-  TRACE_EVENT2(
-      TRACE_DISABLED_BY_DEFAULT("loading"),
-      "ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation",
-      "activation_state", static_cast<int>(level), "render_frame_host",
-      frame_host);
-
-  throttle->WillSendActivationToRenderer();
-
-  bool is_ad_subframe =
-      base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId());
-  DCHECK(!is_ad_subframe || !navigation_handle->IsInMainFrame());
-
-  base::Optional<blink::FrameAdEvidence> ad_evidence;
-  if (!navigation_handle->IsInMainFrame()) {
-    ad_evidence = EnsureFrameAdEvidence(frame_host);
-    DCHECK_EQ(ad_evidence->IndicatesAdSubframe(), is_ad_subframe);
-    DCHECK_EQ(ad_evidence->parent_is_ad(),
-              base::Contains(ad_frames_,
-                             frame_host->GetParent()->GetFrameTreeNodeId()));
+  if (filter->activation_state().activation_level ==
+      mojom::ActivationLevel::kDisabled) {
+    return mojom::ActivationState();
   }
 
-  mojo::AssociatedRemote<mojom::SubresourceFilterAgent> agent;
-  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
-
-  // TODO(crbug.com/1190189): Notify the renderer even when activation is
-  // disabled.
-  agent->ActivateForNextCommittedLoad(filter->activation_state().Clone(),
-                                      ad_evidence);
+  throttle->WillSendActivationToRenderer();
+  return filter->activation_state();
 }
 
 void ContentSubresourceFilterThrottleManager::DidFinishNavigation(

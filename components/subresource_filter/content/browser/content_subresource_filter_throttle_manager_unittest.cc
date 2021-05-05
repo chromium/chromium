@@ -98,9 +98,11 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
     is_ad_subframe_ = false;
     return is_ad_subframe;
   }
-  bool LastActivated() {
-    bool activated = last_activation_ && last_activation_->activation_level !=
-                                             mojom::ActivationLevel::kDisabled;
+  base::Optional<bool> LastActivated() {
+    if (!last_activation_)
+      return base::nullopt;
+    bool activated =
+        last_activation_->activation_level != mojom::ActivationLevel::kDisabled;
     last_activation_.reset();
     return activated;
   }
@@ -227,16 +229,20 @@ class ContentSubresourceFilterThrottleManagerTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void ExpectActivationSignalForFrame(content::RenderFrameHost* rfh,
-                                      bool expect_activation,
-                                      bool expect_is_ad_subframe = false) {
+  void ExpectActivationSignalForFrame(
+      content::RenderFrameHost* rfh,
+      bool expect_activation,
+      bool expect_is_ad_subframe = false,
+      bool expect_activation_sent_to_agent = true) {
     // In some cases we need to verify that messages were _not_ sent, in which
     // case using a Wait() idiom would cause hangs. RunUntilIdle instead to
     // ensure mojo calls make it to the fake agent.
     base::RunLoop().RunUntilIdle();
     FakeSubresourceFilterAgent* agent = agent_map_[rfh].get();
-    EXPECT_EQ(expect_activation, agent->LastActivated());
+    base::Optional<bool> last_activated = agent->LastActivated();
+    EXPECT_EQ(expect_activation, last_activated && *last_activated);
     EXPECT_EQ(expect_is_ad_subframe, agent->LastAdSubframe());
+    EXPECT_EQ(expect_activation_sent_to_agent, last_activated.has_value());
   }
 
   // Helper methods:
@@ -615,7 +621,12 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   GURL url2 = GURL(base::StringPrintf("%s#ref", kTestURLWithActivation));
   CreateTestNavigation(url2, main_rfh());
   navigation_simulator()->CommitSameDocument();
-  ExpectActivationSignalForFrame(main_rfh(), false /* expect_activation */);
+
+  // Same-document navigations do not pass through ReadyToCommitNavigation so no
+  // ActivateForNextCommittedLoad mojo call is expected.
+  ExpectActivationSignalForFrame(main_rfh(), false /* expect_activation */,
+                                 false /* expect_is_ad_subframe */,
+                                 false /* expect_activation_sent_to_agent */);
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
 #if defined(OS_ANDROID)
@@ -746,7 +757,12 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   CreateTestNavigation(same_site_inactive_url, main_rfh());
   SimulateFailedNavigation(navigation_simulator(), net::ERR_ABORTED);
   EXPECT_TRUE(ManagerHasRulesetHandle());
-  ExpectActivationSignalForFrame(main_rfh(), false /* expect_activation */);
+
+  // The aborted navigation does not pass through ReadyToCommitNavigation so no
+  // ActivateForNextCommittedLoad mojo call is expected.
+  ExpectActivationSignalForFrame(main_rfh(), false /* expect_activation */,
+                                 false /* expect_is_ad_subframe */,
+                                 false /* expect_activation_sent_to_agent */);
 
   // A subframe navigation fail.
   CreateSubframeWithTestNavigation(

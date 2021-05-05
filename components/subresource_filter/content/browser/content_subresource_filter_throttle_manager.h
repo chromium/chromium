@@ -226,6 +226,9 @@ class ContentSubresourceFilterThrottleManager
   blink::FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
 
+  mojom::ActivationState ActivationStateForNextCommittedLoad(
+      content::NavigationHandle* navigation_handle);
+
   // Registers `render_frame_host` as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
