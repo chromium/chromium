@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,7 +24,10 @@
 #include "content/public/common/child_process_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "ui/accessibility/accessibility_switches.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/accessibility/accessibility_features.h"
+#endif
 
 // Invalid speech session.
 static const int kInvalidSessionId = -1;
@@ -134,10 +138,14 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   if (session_ != kInvalidSessionId)
     StopOnIOThread();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't filter profanities if flag is enabled for experimental listening.
   // This would match desired OnDeviceSpeechRecognizer behavior.
   bool filter_profanities =
-      !switches::IsExperimentalAccessibilityDictationListeningEnabled();
+      !features::IsExperimentalAccessibilityDictationListeningEnabled();
+#else
+  bool filter_profanities = true;
+#endif
   content::SpeechRecognitionSessionConfig config;
   config.language = locale_;
   config.continuous = true;

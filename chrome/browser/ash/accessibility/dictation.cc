@@ -18,6 +18,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
@@ -116,7 +117,7 @@ bool Dictation::OnToggleDictation() {
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
     no_speech_timeout_ =
-        switches::IsExperimentalAccessibilityDictationListeningEnabled()
+        features::IsExperimentalAccessibilityDictationListeningEnabled()
             ? kDeviceNoSpeechTimeout
             : kNetworkNoSpeechTimeout;
     no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
@@ -149,7 +150,7 @@ void Dictation::OnSpeechResult(
     StartSpeechTimeout(no_speech_timeout_);
   } else {
     StartSpeechTimeout(
-        switches::IsExperimentalAccessibilityDictationListeningEnabled()
+        features::IsExperimentalAccessibilityDictationListeningEnabled()
             ? no_speech_timeout_
             : no_new_speech_timeout_);
     // If ChromeVox is enabled, we don't want to show intermediate results
@@ -161,7 +162,7 @@ void Dictation::OnSpeechResult(
       input_context->UpdateCompositionText(*composition_, 0, true);
     return;
   }
-  if (switches::IsExperimentalAccessibilityDictationListeningEnabled()) {
+  if (features::IsExperimentalAccessibilityDictationListeningEnabled()) {
     CommitCurrentText();
   } else {
     // Turn off after finalized speech.

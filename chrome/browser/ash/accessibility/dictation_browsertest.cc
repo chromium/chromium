@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
@@ -84,8 +85,11 @@ class DictationTest : public InProcessBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().first == kTestWithLongerListening) {
-      command_line->AppendSwitch(
-          switches::kEnableExperimentalAccessibilityDictationListening);
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kExperimentalAccessibilityDictationListening);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kExperimentalAccessibilityDictationListening);
     }
     if (GetParam().second == kOnDeviceRecognition) {
       command_line->AppendSwitch(
@@ -222,6 +226,8 @@ class DictationTest : public InProcessBrowserTest,
   // For on-device recognition.
   // Unowned.
   speech::FakeSpeechRecognitionService* fake_service_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

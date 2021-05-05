@@ -118,6 +118,15 @@ bool IsSwitchAccessPointScanningEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kEnableSwitchAccessPointScanning);
 }
+
+const base::Feature kExperimentalAccessibilityDictationListening{
+    "ExperimentalAccessibilityDictationListening",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsExperimentalAccessibilityDictationListeningEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationListening);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

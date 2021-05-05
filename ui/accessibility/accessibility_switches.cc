@@ -22,12 +22,6 @@ const char kEnableExperimentalAccessibilityDictationExtension[] =
 const char kEnableExperimentalAccessibilityDictationOffline[] =
     "enable-experimental-accessibility-dictation-offline";
 
-// Enables dictation using web speech to listen for a longer duration,
-// and for dictation with web speech or on-device speech to continue listening
-// after speech is finalized.
-const char kEnableExperimentalAccessibilityDictationListening[] =
-    "enable-experimental-accessibility-dictation-listening";
-
 // Enables support for visually debugging the accessibility labels
 // feature, which provides images descriptions for screen reader users.
 const char kEnableExperimentalAccessibilityLabelsDebugging[] =
@@ -63,11 +57,6 @@ bool IsExperimentalAccessibilityDictationExtensionEnabled() {
 bool IsExperimentalAccessibilityDictationOfflineEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityDictationOffline);
-}
-
-bool IsExperimentalAccessibilityDictationListeningEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalAccessibilityDictationListening);
 }
 
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {

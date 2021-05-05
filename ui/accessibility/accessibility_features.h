@@ -100,6 +100,16 @@ AX_BASE_EXPORT extern const base::Feature kEnableSwitchAccessPointScanning;
 // Returns true if the feature to allow point scanning in switch access is
 // enabled.
 AX_BASE_EXPORT bool IsSwitchAccessPointScanningEnabled();
+
+// Enables dictation using web speech to listen for a longer duration and
+// allow profanity, and for dictation with web speech or on-device speech
+// to continue listening after speech is finalized.
+AX_BASE_EXPORT extern const base::Feature
+    kExperimentalAccessibilityDictationListening;
+
+// Returns true if the feature to allow experimental listening features for
+// Dictation is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationListeningEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,
