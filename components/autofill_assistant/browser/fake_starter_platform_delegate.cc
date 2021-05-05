@@ -29,6 +29,14 @@ void FakeStarterPlatformDelegate::StartRegularScript(
   }
 }
 
+bool FakeStarterPlatformDelegate::IsRegularScriptRunning() const {
+  return is_regular_script_running_;
+}
+
+bool FakeStarterPlatformDelegate::IsRegularScriptVisible() const {
+  return is_regular_script_visible_;
+}
+
 WebsiteLoginManager* FakeStarterPlatformDelegate::GetWebsiteLoginManager()
     const {
   return website_login_manager_;

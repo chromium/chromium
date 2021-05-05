@@ -52,6 +52,8 @@ class StarterAndroid : public StarterPlatformDelegate,
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
       const base::Optional<TriggerScriptProto>& trigger_script) override;
+  bool IsRegularScriptRunning() const override;
+  bool IsRegularScriptVisible() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
   version_info::Channel GetChannel() const override;
   bool GetFeatureModuleInstalled() const override;

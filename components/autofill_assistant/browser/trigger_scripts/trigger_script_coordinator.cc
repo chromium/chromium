@@ -39,7 +39,8 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
     const GURL& get_trigger_scripts_server,
     std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
     std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
-    ukm::UkmRecorder* ukm_recorder)
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId ukm_source_id)
     : content::WebContentsObserver(web_contents),
       starter_delegate_(starter_delegate),
       ui_delegate_(starter_delegate->CreateTriggerScriptUiDelegate()),
@@ -48,7 +49,8 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
       web_controller_(std::move(web_controller)),
       static_trigger_conditions_(std::move(static_trigger_conditions)),
       dynamic_trigger_conditions_(std::move(dynamic_trigger_conditions)),
-      ukm_recorder_(ukm_recorder) {}
+      ukm_recorder_(ukm_recorder),
+      ukm_source_id_(ukm_source_id) {}
 
 TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 
@@ -116,7 +118,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
       initial_trigger_condition_evaluations_;
 
   Metrics::RecordLiteScriptShownToUser(
-      ukm_recorder_, web_contents(), UNSPECIFIED_TRIGGER_UI_TYPE,
+      ukm_recorder_, ukm_source_id_, UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_RUNNING);
   ui_delegate_->Attach(this);
   StartCheckingTriggerConditions();
@@ -128,7 +130,7 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
     case TriggerScriptProto::NOT_NOW:
       if (visible_trigger_script_ != -1) {
         Metrics::RecordLiteScriptShownToUser(
-            ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
+            ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
             Metrics::LiteScriptShownToUser::LITE_SCRIPT_NOT_NOW);
         trigger_scripts_[visible_trigger_script_]
             ->waiting_for_precondition_no_longer_true(true);
@@ -174,32 +176,32 @@ void TriggerScriptCoordinator::OnOnboardingFinished(bool onboardingShown,
       switch (result) {
         case OnboardingResult::DISMISSED:
           Metrics::RecordLiteScriptOnboarding(
-              ukm_recorder_, web_contents(), trigger_ui_type,
+              ukm_recorder_, ukm_source_id_, trigger_ui_type,
               Metrics::LiteScriptOnboarding::
                   LITE_SCRIPT_ONBOARDING_SEEN_AND_DISMISSED);
           break;
         case OnboardingResult::REJECTED:
           Metrics::RecordLiteScriptOnboarding(
-              ukm_recorder_, web_contents(), trigger_ui_type,
+              ukm_recorder_, ukm_source_id_, trigger_ui_type,
               Metrics::LiteScriptOnboarding::
                   LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED);
           break;
         case OnboardingResult::NAVIGATION:
           Metrics::RecordLiteScriptOnboarding(
-              ukm_recorder_, web_contents(), trigger_ui_type,
+              ukm_recorder_, ukm_source_id_, trigger_ui_type,
               Metrics::LiteScriptOnboarding::
                   LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION);
           break;
         case OnboardingResult::ACCEPTED:
           Metrics::RecordLiteScriptOnboarding(
-              ukm_recorder_, web_contents(), trigger_ui_type,
+              ukm_recorder_, ukm_source_id_, trigger_ui_type,
               Metrics::LiteScriptOnboarding::
                   LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED);
           break;
       }
     } else {
       Metrics::RecordLiteScriptOnboarding(
-          ukm_recorder_, web_contents(), trigger_ui_type,
+          ukm_recorder_, ukm_source_id_, trigger_ui_type,
           Metrics::LiteScriptOnboarding::
               LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED);
     }
@@ -229,7 +231,7 @@ void TriggerScriptCoordinator::OnBottomSheetClosedWithSwipe() {
     return;
   }
   Metrics::RecordLiteScriptShownToUser(
-      ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
+      ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SWIPE_DISMISSED);
   PerformTriggerScriptAction(trigger_scripts_[visible_trigger_script_]
                                  ->AsProto()
@@ -276,7 +278,7 @@ void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
                                          LITE_SCRIPT_PROMPT_FAILED_NAVIGATE) {
     starter_delegate_->HideOnboarding();
     Metrics::RecordLiteScriptOnboarding(
-        ukm_recorder_, web_contents(), trigger_ui_type,
+        ukm_recorder_, ukm_source_id_, trigger_ui_type,
         Metrics::LiteScriptOnboarding::
             LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION);
   }
@@ -308,7 +310,7 @@ void TriggerScriptCoordinator::DidFinishNavigation(
 
   // The user has navigated away from the target domain. This will cancel the
   // current trigger script session.
-  if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), deeplink_url_) &&
+  if (!url_utils::IsSamePublicSuffixDomain(GetCurrentURL(), deeplink_url_) &&
       !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                         additional_allowed_domains_)) {
 #ifndef NDEBUG
@@ -345,7 +347,7 @@ void TriggerScriptCoordinator::OnTabInteractabilityChanged(bool interactable) {
   OnEffectiveVisibilityChanged();
 }
 
-const TriggerContext& TriggerScriptCoordinator::GetTriggerContext() const {
+TriggerContext& TriggerScriptCoordinator::GetTriggerContext() const {
   return *trigger_context_;
 }
 
@@ -380,7 +382,7 @@ void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
 void TriggerScriptCoordinator::WebContentsDestroyed() {
   if (!finished_state_recorded_) {
     Metrics::RecordLiteScriptFinished(
-        ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
+        ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
         visible_trigger_script_ == -1
             ? Metrics::LiteScriptFinishedState::
                   LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE
@@ -426,7 +428,7 @@ void TriggerScriptCoordinator::ShowTriggerScript(int index) {
   // set first thing.
 
   Metrics::RecordLiteScriptShownToUser(
-      ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
+      ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SHOWN_TO_USER);
   ui_delegate_->ShowTriggerScript(
       trigger_scripts_[index]->AsProto().user_interface());
@@ -473,7 +475,7 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
   if (visible_trigger_script_ != -1 &&
       !evaluated_trigger_conditions[visible_trigger_script_]) {
     Metrics::RecordLiteScriptShownToUser(
-        ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
+        ukm_recorder_, ukm_source_id_, GetTriggerUiTypeForVisibleScript(),
         Metrics::LiteScriptShownToUser::
             LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE);
     HideTriggerScript();
@@ -544,7 +546,7 @@ void TriggerScriptCoordinator::RunCallback(
     const base::Optional<TriggerScriptProto>& trigger_script) {
   if (!finished_state_recorded_) {
     finished_state_recorded_ = true;
-    Metrics::RecordLiteScriptFinished(ukm_recorder_, web_contents(),
+    Metrics::RecordLiteScriptFinished(ukm_recorder_, ukm_source_id_,
                                       trigger_ui_type, state);
   }
   std::move(callback_).Run(state, std::move(trigger_context_), trigger_script);

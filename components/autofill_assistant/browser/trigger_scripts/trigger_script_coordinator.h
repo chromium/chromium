@@ -66,7 +66,8 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       const GURL& get_trigger_scripts_server,
       std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
       std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
-      ukm::UkmRecorder* ukm_recorder);
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId ukm_source_id);
   ~TriggerScriptCoordinator() override;
   TriggerScriptCoordinator(const TriggerScriptCoordinator&) = delete;
   TriggerScriptCoordinator& operator=(const TriggerScriptCoordinator&) = delete;
@@ -113,8 +114,8 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // tab-switcher.
   void OnTabInteractabilityChanged(bool interactable);
 
-  // Const access to the trigger context associated with this coordinator.
-  const TriggerContext& GetTriggerContext() const;
+  // Access to the trigger context associated with this coordinator.
+  TriggerContext& GetTriggerContext() const;
 
   // Returns the deeplink that this coordinator was started on.
   const GURL& GetDeeplink() const;
@@ -228,8 +229,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // |remaining_trigger_condition_evaluations_|.
   int64_t initial_trigger_condition_evaluations_ = -1;
 
-  // The UKM recorder used for metrics.
+  // The UKM recorder and source id to use for metrics.
   ukm::UkmRecorder* const ukm_recorder_;
+  const ukm::SourceId ukm_source_id_;
 
   // Flag to ensure that we only get one LiteScriptFinished event per run.
   bool finished_state_recorded_ = false;

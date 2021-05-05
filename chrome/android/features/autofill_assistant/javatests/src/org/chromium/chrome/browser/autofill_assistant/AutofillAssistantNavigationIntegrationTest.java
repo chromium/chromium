@@ -303,16 +303,4 @@ public class AutofillAssistantNavigationIntegrationTest {
         waitUntilViewAssertionTrue(
                 withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }
-
-    @Test
-    @MediumTest
-    public void navigateDuringOnboardingRemovesUI() throws Exception {
-        // Onboarding has not been accepted.
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
-        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-        mTestRule.loadUrl(getURL(TEST_PAGE_B));
-        waitUntilViewAssertionTrue(
-                withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-    }
 }

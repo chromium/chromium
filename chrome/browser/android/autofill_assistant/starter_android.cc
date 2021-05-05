@@ -275,6 +275,22 @@ void StarterAndroid::StartRegularScript(
       trigger_script);
 }
 
+bool StarterAndroid::IsRegularScriptRunning() const {
+  auto* client_android = ClientAndroid::FromWebContents(web_contents_);
+  if (!client_android) {
+    return false;
+  }
+  return client_android->IsRunning();
+}
+
+bool StarterAndroid::IsRegularScriptVisible() const {
+  auto* client_android = ClientAndroid::FromWebContents(web_contents_);
+  if (!client_android) {
+    return false;
+  }
+  return client_android->IsVisible();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid)
 
 }  // namespace autofill_assistant

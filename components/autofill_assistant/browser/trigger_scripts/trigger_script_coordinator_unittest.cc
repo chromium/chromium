@@ -90,13 +90,13 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
       coordinator_->OnTriggerScriptShown(true);
     });
 
+    SimulateNavigateToUrl(GURL(kFakeDeepLink));
     coordinator_ = std::make_unique<TriggerScriptCoordinator>(
         &fake_platform_delegate_, web_contents(),
         std::move(mock_web_controller), std::move(mock_request_sender),
         GURL(kFakeServerUrl), std::move(mock_static_trigger_conditions),
-        std::move(mock_dynamic_trigger_conditions), &ukm_recorder_);
-
-    SimulateNavigateToUrl(GURL(kFakeDeepLink));
+        std::move(mock_dynamic_trigger_conditions), &ukm_recorder_,
+        ukm::GetSourceIdForWebContentsDocument(web_contents()));
   }
 
   void TearDown() override {
@@ -124,8 +124,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     auto entries =
         ukm_recorder_.GetEntriesByName("AutofillAssistant.LiteScriptFinished");
     ASSERT_THAT(entries.size(), Eq(1u));
-    ukm_recorder_.ExpectEntrySourceHasUrl(
-        entries[0], web_contents()->GetLastCommittedURL());
+    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
     EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "TriggerUIType"),
               static_cast<int64_t>(type));
     EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "LiteScriptFinished"),
@@ -139,8 +138,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
                                       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
         "AutofillAssistant.LiteScriptShownToUser");
-    ukm_recorder_.ExpectEntrySourceHasUrl(
-        entries[0], web_contents()->GetLastCommittedURL());
+    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
     int actual_times = 0;
     for (const auto* entry : entries) {
       if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptShownToUser") ==
@@ -159,8 +157,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
         "AutofillAssistant.LiteScriptOnboarding");
-    ukm_recorder_.ExpectEntrySourceHasUrl(
-        entries[0], web_contents()->GetLastCommittedURL());
+    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], GURL(kFakeDeepLink));
     int actual_times = 0;
     for (const auto* entry : entries) {
       if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptOnboarding") ==
@@ -788,20 +785,20 @@ TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
                       mock_callback_.Get());
 
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              SetURL(GURL("http://example.com/trigger_page")))
+              SetURL(GURL("https://example.com/trigger_page")))
       .Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               GetPathPatternMatches(".*trigger_page.*"))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
-  SimulateNavigateToUrl(GURL("http://example.com/trigger_page"));
+  SimulateNavigateToUrl(GURL("https://example.com/trigger_page"));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckDomainMatch) {
   GetTriggerScriptsResponseProto response;
   response.add_trigger_scripts()
       ->mutable_trigger_condition()
-      ->set_domain_with_scheme("http://example.com");
+      ->set_domain_with_scheme("https://example.com");
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -817,13 +814,13 @@ TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckDomainMatch) {
                       mock_callback_.Get());
 
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              SetURL(GURL("http://example.com/trigger_page")))
+              SetURL(GURL("https://example.com/trigger_page")))
       .Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              GetDomainAndSchemeMatches(GURL("http://example.com")))
+              GetDomainAndSchemeMatches(GURL("https://example.com")))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
-  SimulateNavigateToUrl(GURL("http://example.com/trigger_page"));
+  SimulateNavigateToUrl(GURL("https://example.com/trigger_page"));
 }
 
 TEST_F(TriggerScriptCoordinatorTest,

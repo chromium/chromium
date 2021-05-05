@@ -5079,6 +5079,8 @@ others/histograms.xml -->
   <int value="7" label="Feature disabled"/>
   <int value="8" label="No initial url"/>
   <int value="9" label="Mandatory parameter missing"/>
+  <int value="10" label="Navigated away"/>
+  <int value="11" label="Navigation error"/>
 </enum>
 
 <enum name="AutofillAssistantOnBoarding">

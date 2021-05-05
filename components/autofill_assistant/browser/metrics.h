@@ -8,7 +8,6 @@
 #include <ostream>
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/startup_util.h"
-#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace autofill_assistant {
@@ -214,6 +213,10 @@ class Metrics {
     LITE_SCRIPT_NO_INITIAL_URL = 8,
     // Since Chrome M-91. A mandatory script parameter was missing.
     LITE_SCRIPT_MANDATORY_PARAMETER_MISSING = 9,
+    // Since Chrome M-92. The user never navigated to a different domain.
+    LITE_SCRIPT_NAVIGATED_AWAY = 10,
+    // Since Chrome M-92. The navigation to the target domain failed.
+    LITE_SCRIPT_NAVIGATION_ERROR = 11,
 
     // DEPRECATED, only sent by Chrome M-86 and M-87.
     //
@@ -223,7 +226,7 @@ class Metrics {
     // User has rejected the onboarding and thus opted out of the experience.
     LITE_SCRIPT_ONBOARDING_REJECTED = 2,
 
-    kMaxValue = LITE_SCRIPT_MANDATORY_PARAMETER_MISSING
+    kMaxValue = LITE_SCRIPT_NAVIGATION_ERROR
   };
 
   // The different ways in which a lite script may finish.
@@ -351,20 +354,23 @@ class Metrics {
                                                       bool initially_right,
                                                       bool success);
   static void RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
-                                      content::WebContents* web_contents,
+                                      ukm::SourceId source_id,
+                                      LiteScriptStarted event);
+  static void RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
+                                      ukm::SourceId source_id,
                                       StartupUtil::StartupMode startup_mode,
                                       bool feature_module_installed,
                                       bool is_first_time_user);
   static void RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
-                                       content::WebContents* web_contents,
+                                       ukm::SourceId source_id,
                                        TriggerUIType trigger_ui_type,
                                        LiteScriptFinishedState event);
   static void RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
-                                          content::WebContents* web_contents,
+                                          ukm::SourceId source_id,
                                           TriggerUIType trigger_ui_type,
                                           LiteScriptShownToUser event);
   static void RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
-                                         content::WebContents* web_contents,
+                                         ukm::SourceId source_id,
                                          TriggerUIType trigger_ui_type,
                                          LiteScriptOnboarding event);
   static void RecordOnboardingResult(OnBoarding event);

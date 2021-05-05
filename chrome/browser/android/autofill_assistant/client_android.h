@@ -47,6 +47,12 @@ class ClientAndroid : public Client,
   // Returns the corresponding Java AutofillAssistantClient.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // Returns whether a flow is currently running.
+  bool IsRunning() const;
+
+  // Returns whether UI is currently being displayed to the user.
+  bool IsVisible() const;
+
   bool Start(const GURL& url,
              std::unique_ptr<TriggerContext> trigger_context,
              std::unique_ptr<Service> test_service_to_inject,

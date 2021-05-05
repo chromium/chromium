@@ -99,6 +99,15 @@ base::android::ScopedJavaLocalRef<jobject> ClientAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }
 
+bool ClientAndroid::IsRunning() const {
+  return controller_ != nullptr;
+}
+
+bool ClientAndroid::IsVisible() const {
+  return ui_controller_android_ != nullptr &&
+         ui_controller_android_->IsAttached();
+}
+
 bool ClientAndroid::Start(
     const GURL& url,
     std::unique_ptr<TriggerContext> trigger_context,

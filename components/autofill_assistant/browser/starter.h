@@ -50,6 +50,8 @@ class Starter : public content::WebContentsObserver {
   void Start(std::unique_ptr<TriggerContext> trigger_context);
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -69,7 +71,8 @@ class Starter : public content::WebContentsObserver {
   // is currently running, this will record |state| as the reason for stopping.
   // This will also hide any currently shown UI (such as a trigger script or the
   // onboarding).
-  void CancelPendingStartup(Metrics::LiteScriptFinishedState state);
+  void CancelPendingStartup(
+      base::Optional<Metrics::LiteScriptFinishedState> state);
 
   // Installs the feature module if necessary, otherwise directly invokes
   // |OnFeatureModuleInstalled|.
@@ -115,7 +118,19 @@ class Starter : public content::WebContentsObserver {
 
   void DeleteTriggerScriptCoordinator();
 
+  // Returns a pointer to the currently pending trigger context, or nullptr.
+  // Use this method instead of directly accessing |pending_trigger_context_| in
+  // cases where the context could be temporarily owned by
+  // |trigger_script_coordinator_|.
+  TriggerContext* GetPendingTriggerContext() const;
+
+  // The UKM source id to use for UKM metrics. This usually points to the last
+  // committed URL, except during navigations, in which case it will point to
+  // the source id that the finished navigation will eventually have.
+  ukm::SourceId next_ukm_source_id_ = ukm::kInvalidSourceId;
+
   bool waiting_for_onboarding_ = false;
+  bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
   StarterPlatformDelegate* platform_delegate_ = nullptr;
   ukm::UkmRecorder* ukm_recorder_ = nullptr;

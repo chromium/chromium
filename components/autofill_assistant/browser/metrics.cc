@@ -150,7 +150,16 @@ void Metrics::RecordPaymentRequestMandatoryPostalCode(bool required,
 
 // static
 void Metrics::RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
-                                      content::WebContents* web_contents,
+                                      ukm::SourceId source_id,
+                                      LiteScriptStarted event) {
+  ukm::builders::AutofillAssistant_LiteScriptStarted(source_id)
+      .SetLiteScriptStarted(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
+                                      ukm::SourceId source_id,
                                       StartupUtil::StartupMode startup_mode,
                                       bool feature_module_installed,
                                       bool is_first_time_user) {
@@ -185,19 +194,15 @@ void Metrics::RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
       return;
   }
 
-  ukm::builders::AutofillAssistant_LiteScriptStarted(
-      ukm::GetSourceIdForWebContentsDocument(web_contents))
-      .SetLiteScriptStarted(static_cast<int64_t>(event))
-      .Record(ukm_recorder);
+  RecordLiteScriptStarted(ukm_recorder, source_id, event);
 }
 
 // static
 void Metrics::RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
-                                       content::WebContents* web_contents,
+                                       ukm::SourceId source_id,
                                        TriggerUIType trigger_ui_type,
                                        LiteScriptFinishedState event) {
-  ukm::builders::AutofillAssistant_LiteScriptFinished(
-      ukm::GetSourceIdForWebContentsDocument(web_contents))
+  ukm::builders::AutofillAssistant_LiteScriptFinished(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptFinished(static_cast<int64_t>(event))
       .Record(ukm_recorder);
@@ -205,11 +210,10 @@ void Metrics::RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
 
 // static
 void Metrics::RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
-                                          content::WebContents* web_contents,
+                                          ukm::SourceId source_id,
                                           TriggerUIType trigger_ui_type,
                                           LiteScriptShownToUser event) {
-  ukm::builders::AutofillAssistant_LiteScriptShownToUser(
-      ukm::GetSourceIdForWebContentsDocument(web_contents))
+  ukm::builders::AutofillAssistant_LiteScriptShownToUser(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptShownToUser(static_cast<int64_t>(event))
       .Record(ukm_recorder);
@@ -217,11 +221,10 @@ void Metrics::RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
 
 // static
 void Metrics::RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
-                                         content::WebContents* web_contents,
+                                         ukm::SourceId source_id,
                                          TriggerUIType trigger_ui_type,
                                          LiteScriptOnboarding event) {
-  ukm::builders::AutofillAssistant_LiteScriptOnboarding(
-      ukm::GetSourceIdForWebContentsDocument(web_contents))
+  ukm::builders::AutofillAssistant_LiteScriptOnboarding(source_id)
       .SetTriggerUIType(static_cast<int64_t>(trigger_ui_type))
       .SetLiteScriptOnboarding(static_cast<int64_t>(event))
       .Record(ukm_recorder);

@@ -173,18 +173,17 @@ class StarterTest : public content::RenderViewHostTestHarness {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptOnboarding");
   }
 
-  // Simulates a redirect-navigation to |redirect_url|, followed by a regular
-  // navigation to |url|.
-  void SimulateRedirectToUrl(const GURL& url, const GURL& redirect_url) {
+  // Simulates a navigation from the last committed URL to urls[size-1] along
+  // the intermediate redirect-hops in |urls|.
+  void SimulateRedirectToUrl(const std::vector<GURL>& urls) {
     std::unique_ptr<content::NavigationSimulator> simulator =
         content::NavigationSimulator::CreateRendererInitiated(
-            GURL(url), web_contents()->GetMainFrame());
+            web_contents()->GetLastCommittedURL(),
+            web_contents()->GetMainFrame());
     simulator->Start();
-    simulator->Redirect(redirect_url);
-    simulator->Commit();
-    simulator = content::NavigationSimulator::CreateRendererInitiated(
-        GURL(url), web_contents()->GetMainFrame());
-    simulator->Start();
+    for (const auto& url : urls) {
+      simulator->Redirect(url);
+    }
     simulator->Commit();
   }
 
@@ -305,7 +304,7 @@ TEST_F(StarterTest, FailWhenFeatureDisabled) {
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "abc"}};
   TriggerContext::Options options;
-  options.initial_url = "https://www.example.com";
+  options.initial_url = kExampleDeeplink;
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndDisableFeature(
       features::kAutofillAssistantProactiveHelp);
@@ -329,7 +328,7 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
   EXPECT_CALL(mock_start_regular_script_callback_,
@@ -362,7 +361,7 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
   EXPECT_CALL(mock_start_regular_script_callback_,
@@ -460,7 +459,7 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
@@ -490,7 +489,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink},
       {"INTENT", "SHOPPING_ASSISTED_CHECKOUT"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
@@ -519,7 +518,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -546,7 +545,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -573,7 +572,7 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
   options.onboarding_shown = false;
@@ -593,7 +592,7 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             // ORIGINAL_DEEPLINK, not for the |initial_url|.
             GetTriggerScriptsRequestProto request;
             ASSERT_TRUE(request.ParseFromString(request_body));
-            EXPECT_THAT(request.url(), Eq(GURL("https://www.example.com")));
+            EXPECT_THAT(request.url(), Eq(GURL(kExampleDeeplink)));
             std::move(callback).Run(net::HTTP_OK,
                                     CreateTriggerScriptResponseForTest());
           }));
@@ -631,7 +630,7 @@ TEST_F(StarterTest, Base64TriggerScriptFailsForInvalidBase64) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "#invalid_hashtag"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
@@ -661,7 +660,7 @@ TEST_F(StarterTest, Base64TriggerScriptFailsIfProactiveHelpIsDisabled) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
@@ -693,7 +692,7 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
   options.onboarding_shown = false;
@@ -735,7 +734,7 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
 
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
@@ -790,7 +789,7 @@ TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{}));
@@ -822,7 +821,7 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         ASSERT_TRUE(trigger_script_coordinator_ != nullptr);
@@ -839,18 +838,11 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
-
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.different.com"));
-  // TODO(b/185476714): Fix lite script metrics to record for ORIGINAL_DEEPLINK
-  // instead of the current URL.
   EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE,
-      GURL("https://www.different.com")));
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE));
   EXPECT_TRUE(UkmLiteScriptOnboarding(
       Metrics::LiteScriptOnboarding::
-          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
-      GURL("https://www.different.com")));
+          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -868,22 +860,22 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{}));
 
-  // Expect that the onboarding is not interrupted by a redirect to the
-  // ORIGINAL_DEEPLINK.
-  SimulateRedirectToUrl(GURL("https://www.example.com"),
-                        GURL("http://redirect.example.com"));
+  // Expect that the onboarding is not interrupted by a navigation to a
+  // subdomain of the ORIGINAL_DEEPLINK, nor by redirects along the way.
+  SimulateRedirectToUrl(
+      {GURL("http://redirect.com/example"), GURL("https://login.example.com")});
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
                                      0u);
 
-  // Redirecting to a different URL will cancel the onboarding.
-  SimulateRedirectToUrl(GURL("https://www.different.com"),
-                        GURL("http://redirect.example.com"));
+  // Navigating to a different domain will cancel the onboarding.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.different.com"));
 
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -912,7 +904,7 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
-      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
@@ -1029,6 +1021,218 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST_F(StarterTest, StartTriggerScriptBeforeRedirectRecordsUkmForTargetUrl) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.feature_module_installed_ = true;
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+
+  // Simulate a real flow that starts on some trigger site, which then redirects
+  // to the deeplink.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://some-trigger-site.com"));
+
+  // Start the flow before the trigger site has had a chance to navigate to the
+  // target domain. This commonly happens due to android intent handling
+  // happening before navigations are started.
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
+
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          web_contents()->GetLastCommittedURL(),
+          web_contents()->GetMainFrame());
+  simulator->Start();
+  simulator->Redirect(GURL("https://redirect.com/to/www/example/com"));
+  simulator->Redirect(GURL(kExampleDeeplink));
+  // To spice things up a bit more, we redirect to a subdomain of the target
+  // domain instead.
+  simulator->Redirect(GURL("https://signin.example.com"));
+  simulator->Commit();
+
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
+      GURL("https://signin.example.com")));
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST_F(StarterTest, RedirectFailsDuringPendingTriggerScriptStart) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.feature_module_installed_ = true;
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+
+  // Simulate a real flow that starts on some trigger site, which then redirects
+  // to the deeplink.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://some-trigger-site.com"));
+
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(0);
+
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          web_contents()->GetLastCommittedURL(),
+          web_contents()->GetMainFrame());
+  simulator->Start();
+  simulator->Redirect(GURL("https://redirect.com/to/www/example/com"));
+  simulator->Fail(net::ERR_BLOCKED_BY_CLIENT);
+  simulator->CommitErrorPage();
+
+  // Note that this impression is recorded for the last URL that a navigation-
+  // start event occurred for. We never reached the target domain, so this is
+  // unfortunately the best we can do.
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_NAVIGATION_ERROR,
+      GURL("https://redirect.com/to/www/example/com")));
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectTotalCount(
+      "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST_F(StarterTest, StartTriggerScriptDuringRedirectRecordsUkmForTargetUrl) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.feature_module_installed_ = true;
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+
+  // Simulate a real flow that starts on some trigger site, which then redirects
+  // to the deeplink.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://some-trigger-site.com"));
+
+  // Begin a navigation, then start the flow before the navigation is committed.
+  // UKM should still be recorded for the final URL, not the redirect URL.
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          web_contents()->GetLastCommittedURL(),
+          web_contents()->GetMainFrame());
+  simulator->Start();
+  simulator->Redirect(GURL("https://redirect.com/to/www/example/com"));
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+  simulator->Redirect(GURL(kExampleDeeplink));
+  simulator->Commit();
+
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
+      GURL(kExampleDeeplink)));
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST_F(StarterTest, RegularStartupDoesNotWaitForNavigationToFinish) {
+  SetupPlatformDelegateForReturningUser();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://some-trigger-site.com"));
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          web_contents()->GetLastCommittedURL(),
+          web_contents()->GetMainFrame());
+  simulator->Start();
+  simulator->Redirect(GURL("https://redirect.com/to/www/example/com"));
+
+  {
+    EXPECT_CALL(mock_start_regular_script_callback_,
+                Run(GURL(kExampleDeeplink), _, _));
+    starter_->Start(std::make_unique<TriggerContext>(
+        std::make_unique<ScriptParameters>(script_parameters), options));
+  }
+
+  simulator->Redirect(GURL(kExampleDeeplink));
+  simulator->Commit();
+
+  EXPECT_FALSE(UkmLiteScriptStarted());
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
+                                      Metrics::OnBoarding::OB_ACCEPTED, 1u);
+  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
+                                      Metrics::OnBoarding::OB_NOT_SHOWN, 1u);
+}
+
+TEST_F(StarterTest, DoNotStartImplicitlyIfAlreadyRunning) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.is_regular_script_running_ = true;
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInChromeTriggering);
+  starter_->CheckSettings();
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/cart"));
+
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(UkmLiteScriptStarted());
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectTotalCount(
+      "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
                                      0u);
 }
