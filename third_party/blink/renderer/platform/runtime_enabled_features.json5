@@ -1187,8 +1187,7 @@
     },
     {
       name: "LayoutNGReplaced",
-      depends_on: ["LayoutNG"],
-      status: "stable",
+      depends_on: ["LayoutNG"]
     },
     {
       name: "LayoutNGTable",
