@@ -12,10 +12,10 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/macros.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace message_center {

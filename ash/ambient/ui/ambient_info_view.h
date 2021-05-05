@@ -7,7 +7,7 @@
 
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {

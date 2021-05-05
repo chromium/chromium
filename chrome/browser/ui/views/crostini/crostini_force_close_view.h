@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_FORCE_CLOSE_VIEW_H_
 
 #include "base/callback.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 #include <string>
 

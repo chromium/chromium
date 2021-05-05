@@ -9,10 +9,10 @@
 #include "base/strings/string_piece.h"
 #include "components/qr_code_generator/dino_image.h"
 #include "components/qr_code_generator/qr_code_generator.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 using QRCode = QRCodeGenerator;

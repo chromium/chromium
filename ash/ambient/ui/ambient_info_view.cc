@@ -10,11 +10,11 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {

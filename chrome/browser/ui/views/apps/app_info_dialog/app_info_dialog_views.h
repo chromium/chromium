@@ -10,7 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 

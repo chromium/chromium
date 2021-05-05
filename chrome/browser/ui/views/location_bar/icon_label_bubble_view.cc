@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -31,7 +32,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -581,7 +581,7 @@ void IconLabelBubbleView::UpdateBorder() {
 BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                ForegroundColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(double, AnimationValue)
 ADD_READONLY_PROPERTY_METADATA(int, InternalSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ExtraInternalSpacing)

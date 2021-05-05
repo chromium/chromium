@@ -10,10 +10,10 @@
 #include "ash/hud_display/hud_properties.h"
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/layout/layout_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace hud_display {

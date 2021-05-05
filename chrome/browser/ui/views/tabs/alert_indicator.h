@@ -9,8 +9,8 @@
 
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class Tab;
 

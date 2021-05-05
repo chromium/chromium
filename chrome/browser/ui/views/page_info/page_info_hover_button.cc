@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/page_info/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop.h"
@@ -20,7 +21,6 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace {

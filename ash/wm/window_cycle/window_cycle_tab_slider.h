@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ash/wm/wm_highlight_item_border.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class Size;

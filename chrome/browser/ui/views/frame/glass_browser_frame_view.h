@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/non_client_view.h"
 
 class BrowserView;

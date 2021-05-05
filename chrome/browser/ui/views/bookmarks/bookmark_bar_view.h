@@ -19,13 +19,13 @@
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class BookmarkBarViewObserver;

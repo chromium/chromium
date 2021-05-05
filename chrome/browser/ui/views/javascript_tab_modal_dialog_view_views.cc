@@ -9,12 +9,12 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 JavaScriptTabModalDialogViewViews::~JavaScriptTabModalDialogViewViews() =
     default;

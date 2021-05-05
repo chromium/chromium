@@ -22,6 +22,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/notification_source.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -37,7 +38,6 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_constants.h"
 
 using views::LabelButtonBorder;

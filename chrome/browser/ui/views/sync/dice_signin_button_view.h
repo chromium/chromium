@@ -8,8 +8,8 @@
 #include "base/optional.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // Sign-in button view used for Desktop Identity Consistency that presents the

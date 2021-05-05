@@ -17,10 +17,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {

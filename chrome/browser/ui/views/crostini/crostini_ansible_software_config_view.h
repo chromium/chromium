@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class Profile;
 

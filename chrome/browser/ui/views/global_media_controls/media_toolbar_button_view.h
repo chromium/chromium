@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 class BrowserView;

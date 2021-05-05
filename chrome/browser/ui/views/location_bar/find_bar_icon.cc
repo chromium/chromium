@@ -10,8 +10,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 FindBarIcon::FindBarIcon(
     Browser* browser,

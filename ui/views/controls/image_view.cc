@@ -12,11 +12,11 @@
 #include "skia/ext/image_operations.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/image_model_utils.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -289,11 +289,6 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   return scaled_image_;
 }
 
-DEFINE_ENUM_CONVERTERS(ImageView::Alignment,
-                       {ImageView::Alignment::kLeading, u"kLeading"},
-                       {ImageView::Alignment::kCenter, u"kCenter"},
-                       {ImageView::Alignment::kTrailing, u"kTrailing"})
-
 BEGIN_METADATA(ImageView, View)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
@@ -302,3 +297,8 @@ ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::ImageView::Alignment,
+                       {views::ImageView::Alignment::kLeading, u"kLeading"},
+                       {views::ImageView::Alignment::kCenter, u"kCenter"},
+                       {views::ImageView::Alignment::kTrailing, u"kTrailing"})

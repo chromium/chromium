@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

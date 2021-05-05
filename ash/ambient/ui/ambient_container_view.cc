@@ -13,9 +13,9 @@
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 

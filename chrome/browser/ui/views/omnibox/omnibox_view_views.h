@@ -22,6 +22,7 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
@@ -30,7 +31,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/input_method_manager.h"

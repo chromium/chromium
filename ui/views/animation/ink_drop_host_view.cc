@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/gfx/color_palette.h"
@@ -19,7 +20,6 @@
 #include "ui/views/animation/square_ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 

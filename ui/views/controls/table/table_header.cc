@@ -14,13 +14,13 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 
 namespace views {

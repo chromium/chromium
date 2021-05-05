@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;

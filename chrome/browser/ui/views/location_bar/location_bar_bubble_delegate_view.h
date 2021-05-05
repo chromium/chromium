@@ -10,10 +10,10 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/event_monitor.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;

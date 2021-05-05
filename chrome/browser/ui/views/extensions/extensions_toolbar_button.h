@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;

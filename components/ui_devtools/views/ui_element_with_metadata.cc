@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/views/element_utility.h"
-#include "ui/views/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_types.h"
 
 namespace ui_devtools {
 
@@ -49,12 +49,12 @@ UIElementWithMetaData::GetCustomPropertiesForMatchedStyle() const {
     class_properties.clear();
   }
 
-  views::metadata::ClassMetaData* metadata = GetClassMetaData();
+  ui::metadata::ClassMetaData* metadata = GetClassMetaData();
   void* instance = GetClassInstance();
   for (auto member = metadata->begin(); member != metadata->end(); member++) {
     auto flags = (*member)->GetPropertyFlags();
-    if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
-        !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
+    if (!!(flags & ui::metadata::PropertyFlags::kSerializable) ||
+        !!(flags & ui::metadata::PropertyFlags::kReadOnly)) {
       class_properties.emplace_back(
           (*member)->GetMemberNamePrefix() + (*member)->member_name(),
           base::UTF16ToUTF8((*member)->GetValueAsString(instance)));
@@ -86,7 +86,7 @@ bool UIElementWithMetaData::SetPropertiesFromString(const std::string& text) {
   if (tokens.size() == 0UL)
     return false;
 
-  views::metadata::ClassMetaData* metadata = GetClassMetaData();
+  ui::metadata::ClassMetaData* metadata = GetClassMetaData();
   void* instance = GetClassInstance();
 
   for (size_t i = 0; i < tokens.size() - 1; i += 2) {
@@ -96,7 +96,7 @@ bool UIElementWithMetaData::SetPropertiesFromString(const std::string& text) {
     // Remove any type editor "prefixes" from the property name.
     StripPrefix(property_name);
 
-    views::metadata::MemberMetaDataBase* member =
+    ui::metadata::MemberMetaDataBase* member =
         metadata->FindMemberData(property_name);
     if (!member) {
       DLOG(ERROR) << "UI DevTools: Can not find property " << property_name
@@ -115,9 +115,9 @@ bool UIElementWithMetaData::SetPropertiesFromString(const std::string& text) {
     }
 
     auto property_flags = member->GetPropertyFlags();
-    if (!!(property_flags & views::metadata::PropertyFlags::kReadOnly))
+    if (!!(property_flags & ui::metadata::PropertyFlags::kReadOnly))
       continue;
-    DCHECK(!!(property_flags & views::metadata::PropertyFlags::kSerializable));
+    DCHECK(!!(property_flags & ui::metadata::PropertyFlags::kSerializable));
     member->SetValueAsString(instance, base::UTF8ToUTF16(property_value));
     property_set = true;
   }
@@ -129,7 +129,7 @@ void UIElementWithMetaData::InitSources() {
   if (GetLayer())
     AddSource("ui/compositor/layer.h", 0);
 
-  for (views::metadata::ClassMetaData* metadata = GetClassMetaData();
+  for (ui::metadata::ClassMetaData* metadata = GetClassMetaData();
        metadata != nullptr; metadata = metadata->parent_class_meta_data()) {
     // If class has Metadata properties, add their sources.
     if (!metadata->members().empty()) {

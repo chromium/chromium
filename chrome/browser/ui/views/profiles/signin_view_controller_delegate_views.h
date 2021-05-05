@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;

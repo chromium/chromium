@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "components/flags_ui/feature_entry.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Browser;

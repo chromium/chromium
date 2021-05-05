@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace chromeos {
 

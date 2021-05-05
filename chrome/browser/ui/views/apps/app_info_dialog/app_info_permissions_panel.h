@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "extensions/common/permissions/permission_message_provider.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class Profile;

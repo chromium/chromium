@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 

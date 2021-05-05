@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -19,7 +20,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 namespace views {
@@ -328,6 +328,15 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 
+BEGIN_METADATA(FrameCaptionButton, Button)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
+ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
+ADD_PROPERTY_METADATA(bool, PaintAsActive)
+END_METADATA
+
+}  // namespace views
+
 DEFINE_ENUM_CONVERTERS(
     views::CaptionButtonIcon,
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MINIMIZE,
@@ -351,11 +360,3 @@ DEFINE_ENUM_CONVERTERS(
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_COUNT,
      u"CAPTION_BUTTON_ICON_COUNT"})
 
-BEGIN_METADATA(FrameCaptionButton, Button)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
-ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
-ADD_PROPERTY_METADATA(bool, PaintAsActive)
-END_METADATA
-
-}  // namespace views

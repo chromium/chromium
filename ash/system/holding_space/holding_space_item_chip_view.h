@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class Label;

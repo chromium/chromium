@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;

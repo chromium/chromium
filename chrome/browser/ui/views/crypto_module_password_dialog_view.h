@@ -10,8 +10,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {

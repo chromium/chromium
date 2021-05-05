@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/window/dialog_delegate.h"
 

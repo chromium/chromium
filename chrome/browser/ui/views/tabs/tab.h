@@ -17,6 +17,7 @@
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/layout.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/point.h"
@@ -25,7 +26,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/masked_targeter_delegate.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 class AlertIndicator;

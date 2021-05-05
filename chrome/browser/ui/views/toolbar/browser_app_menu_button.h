@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ToolbarView;

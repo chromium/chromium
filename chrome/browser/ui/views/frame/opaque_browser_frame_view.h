@@ -13,9 +13,9 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/linux_ui/linux_ui.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/non_client_view.h"
 

@@ -52,7 +52,7 @@ class WidgetElement : public views::WidgetRemovalsObserver,
 
  protected:
   ui::Layer* GetLayer() const override;
-  views::metadata::ClassMetaData* GetClassMetaData() const override;
+  ui::metadata::ClassMetaData* GetClassMetaData() const override;
   void* GetClassInstance() const override;
 
  private:

@@ -12,11 +12,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
     ProfilePickerForceSigninDialogHost* host,

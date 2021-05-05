@@ -10,8 +10,8 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/metrics_util.h"

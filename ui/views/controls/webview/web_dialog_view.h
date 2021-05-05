@@ -13,11 +13,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/controls/webview/webview_export.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"

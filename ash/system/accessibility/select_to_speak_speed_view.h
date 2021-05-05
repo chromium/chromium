@@ -7,10 +7,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ash {

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -26,7 +27,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

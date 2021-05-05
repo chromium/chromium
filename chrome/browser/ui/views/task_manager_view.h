@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;

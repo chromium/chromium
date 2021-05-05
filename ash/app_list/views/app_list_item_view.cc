@@ -26,6 +26,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
@@ -50,7 +51,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

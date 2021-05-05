@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ExtensionPermissionsView::ExtensionPermissionsView(int available_width)
     : available_width_(available_width) {

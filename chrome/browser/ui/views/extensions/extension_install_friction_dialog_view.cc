@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/controls/button/label_button.h"
@@ -29,7 +30,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace chrome {
 

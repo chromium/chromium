@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/type_conversion.h"
 
 namespace views {
@@ -145,20 +145,6 @@ FlexRule FlexLayoutView::GetDefaultFlexRule() const {
   return layout_->GetDefaultFlexRule();
 }
 
-DEFINE_ENUM_CONVERTERS(LayoutOrientation,
-                       {LayoutOrientation::kHorizontal, u"kHorizontal"},
-                       {LayoutOrientation::kVertical, u"kVertical"})
-
-DEFINE_ENUM_CONVERTERS(LayoutAlignment,
-                       {LayoutAlignment::kStart, u"kStart"},
-                       {LayoutAlignment::kCenter, u"kCenter"},
-                       {LayoutAlignment::kEnd, u"kEnd"},
-                       {LayoutAlignment::kStretch, u"kStretch"})
-
-DEFINE_ENUM_CONVERTERS(FlexAllocationOrder,
-                       {FlexAllocationOrder::kNormal, u"kNormal"},
-                       {FlexAllocationOrder::kReverse, u"kReverse"})
-
 BEGIN_METADATA(FlexLayoutView, View)
 ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)
 ADD_PROPERTY_METADATA(LayoutAlignment, MainAxisAlignment)
@@ -172,3 +158,17 @@ ADD_PROPERTY_METADATA(FlexAllocationOrder, FlexAllocationOrder)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::LayoutOrientation,
+                       {views::LayoutOrientation::kHorizontal, u"kHorizontal"},
+                       {views::LayoutOrientation::kVertical, u"kVertical"})
+
+DEFINE_ENUM_CONVERTERS(views::LayoutAlignment,
+                       {views::LayoutAlignment::kStart, u"kStart"},
+                       {views::LayoutAlignment::kCenter, u"kCenter"},
+                       {views::LayoutAlignment::kEnd, u"kEnd"},
+                       {views::LayoutAlignment::kStretch, u"kStretch"})
+
+DEFINE_ENUM_CONVERTERS(views::FlexAllocationOrder,
+                       {views::FlexAllocationOrder::kNormal, u"kNormal"},
+                       {views::FlexAllocationOrder::kReverse, u"kReverse"})

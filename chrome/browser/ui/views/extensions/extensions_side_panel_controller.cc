@@ -16,8 +16,8 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/url_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 

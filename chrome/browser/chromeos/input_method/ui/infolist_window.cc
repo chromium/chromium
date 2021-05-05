@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/input_method/ui/candidate_window_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -23,7 +24,6 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 

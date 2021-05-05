@@ -16,8 +16,8 @@
 #include "components/payments/content/payment_request_dialog.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/throbber.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {

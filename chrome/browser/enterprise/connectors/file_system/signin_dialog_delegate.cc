@@ -22,8 +22,8 @@
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
 namespace {

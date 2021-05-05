@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
@@ -22,7 +23,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class OmniboxMatchCellView;

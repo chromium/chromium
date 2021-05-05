@@ -6,7 +6,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 NonAccessibleImageView::NonAccessibleImageView() {}
 

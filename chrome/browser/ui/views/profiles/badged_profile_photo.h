@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // Creates a bagded profile photo for the current profile card in the

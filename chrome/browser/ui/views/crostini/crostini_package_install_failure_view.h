@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // Displays error information when the user fails to install a package.
 class CrostiniPackageInstallFailureView

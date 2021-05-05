@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIPS_CONTAINER_H_
 
 #include "ash/ash_export.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

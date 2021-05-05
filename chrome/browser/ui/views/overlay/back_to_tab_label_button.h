@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_BACK_TO_TAB_LABEL_BUTTON_H_
 
 #include "base/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // A button representing a back-to-tab button.
 class BackToTabLabelButton : public views::LabelButton {

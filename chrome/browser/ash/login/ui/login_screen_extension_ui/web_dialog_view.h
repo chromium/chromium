@@ -10,8 +10,8 @@
 
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 namespace content {

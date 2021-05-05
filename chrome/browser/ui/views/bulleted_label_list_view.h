@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
 
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class BulletedLabelListView : public views::View {

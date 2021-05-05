@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ViewStack::ViewStack()
     : slide_in_animator_(std::make_unique<views::BoundsAnimator>(this)),

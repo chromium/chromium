@@ -10,11 +10,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 

@@ -10,9 +10,9 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {

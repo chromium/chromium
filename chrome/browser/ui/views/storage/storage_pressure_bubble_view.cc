@@ -16,8 +16,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 

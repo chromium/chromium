@@ -10,9 +10,9 @@
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class Browser;
 

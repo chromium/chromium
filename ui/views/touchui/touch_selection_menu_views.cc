@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -23,7 +24,6 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 namespace {

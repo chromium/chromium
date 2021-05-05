@@ -12,9 +12,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/accessible_pane_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace views {

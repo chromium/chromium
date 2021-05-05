@@ -8,11 +8,11 @@
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"

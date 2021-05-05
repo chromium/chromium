@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "components/ui_devtools/ui_element.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/metadata/metadata_types.h"
 
 namespace ui_devtools {
 
@@ -37,7 +37,7 @@ class UIElementWithMetaData : public UIElement {
                         UIElement* parent);
 
   // Returns the metadata for the class instance type for this specific element.
-  virtual views::metadata::ClassMetaData* GetClassMetaData() const = 0;
+  virtual ui::metadata::ClassMetaData* GetClassMetaData() const = 0;
   // Returns an opaque pointer for the actual instance which this element
   // represents.
   virtual void* GetClassInstance() const = 0;

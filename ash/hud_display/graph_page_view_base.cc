@@ -10,6 +10,7 @@
 #include "ash/hud_display/legend.h"
 #include "ash/hud_display/solid_source_background.h"
 #include "base/bind.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -17,7 +18,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
 
 namespace ash {

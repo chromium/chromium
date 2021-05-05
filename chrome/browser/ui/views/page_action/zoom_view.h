@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ZOOM_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the zoom icon in the Omnibox.
 class ZoomView : public PageActionIconView {

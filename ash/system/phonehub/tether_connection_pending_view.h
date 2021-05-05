@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

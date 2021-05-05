@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ProfileIndicatorIcon::ProfileIndicatorIcon() {
   // In RTL mode, the incognito icon should be looking the opposite direction.

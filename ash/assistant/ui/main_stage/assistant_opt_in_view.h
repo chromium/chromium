@@ -8,7 +8,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

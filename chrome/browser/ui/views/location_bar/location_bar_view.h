@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -38,7 +39,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;

@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "media/audio/audio_device_description.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace {
 class ExpandDeviceSelectorButton;

@@ -8,8 +8,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace crostini {
 enum class CrostiniResult;

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/profiles/badged_profile_photo.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -21,7 +22,6 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,

@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "ui/base/class_property.h"
-#include "ui/views/metadata/type_conversion.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/views_export.h"
 
@@ -63,7 +63,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename T>
   Builder& SetProperty(const ui::ClassProperty<T>* property,
-                       metadata::ArgType<T> value) {
+                       ui::metadata::ArgType<T> value) {
     auto setter =
         std::make_unique<internal::ClassPropertyValueSetter<ViewClass_, T>>(
             property, value);
@@ -73,7 +73,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename T>
   Builder& SetProperty(const ui::ClassProperty<T*>* property,
-                       metadata::ArgType<T> value) {
+                       ui::metadata::ArgType<T> value) {
     auto setter =
         std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
             property, value);
@@ -172,14 +172,13 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     view_class##BuilderT& operator=(view_class##BuilderT&&) = default;      \
     ~view_class##BuilderT() override = default;
 
-#define VIEW_BUILDER_PROPERTY(property_type, property_name)                   \
-  BuilderT& Set##property_name(                                               \
-      ::views::metadata::ArgType<property_type> value) {                      \
-    auto setter = std::make_unique<::views::internal::PropertySetter<         \
-        ViewClass_, property_type, decltype(&ViewClass_::Set##property_name), \
-        &ViewClass_::Set##property_name>>(std::move(value));                  \
-    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter)); \
-    return *static_cast<BuilderT*>(this);                                     \
+#define VIEW_BUILDER_PROPERTY(property_type, property_name)                    \
+  BuilderT& Set##property_name(::ui::metadata::ArgType<property_type> value) { \
+    auto setter = std::make_unique<::views::internal::PropertySetter<          \
+        ViewClass_, property_type, decltype(&ViewClass_::Set##property_name),  \
+        &ViewClass_::Set##property_name>>(std::move(value));                   \
+    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));  \
+    return *static_cast<BuilderT*>(this);                                      \
   }
 
 #define VIEW_BUILDER_METHOD(method_name)                                      \
@@ -213,8 +212,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
 #define VIEW_BUILDER_PROPERTY_DEFAULT(property_type, property_name, default)  \
-  BuilderT& Set##property_name(                                               \
-      ::views::metadata::ArgType<property_type> value = default) {            \
+  BuilderT& Set##property_name(::ui::metadata::ArgType<property_type> value = \
+                                   default) {                                 \
     auto setter = std::make_unique<::views::internal::PropertySetter<         \
         ViewClass_, property_type, decltype(&ViewClass_::Set##property_name), \
         &ViewClass_::Set##property_name>>(std::move(value));                  \

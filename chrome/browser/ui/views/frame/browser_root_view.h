@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/root_view.h"
 
 class ToolbarView;

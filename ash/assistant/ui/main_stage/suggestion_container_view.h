@@ -16,8 +16,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;

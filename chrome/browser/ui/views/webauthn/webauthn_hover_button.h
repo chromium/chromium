@@ -9,7 +9,7 @@
 #include <string>
 
 #include "chrome/browser/ui/views/hover_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;

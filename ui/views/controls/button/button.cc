@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -28,7 +29,6 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 
@@ -687,19 +687,13 @@ void Button::OnEnabledChanged() {
   }
 }
 
-DEFINE_ENUM_CONVERTERS(Button::ButtonState,
-                       {Button::STATE_NORMAL, u"STATE_NORMAL"},
-                       {Button::STATE_HOVERED, u"STATE_HOVERED"},
-                       {Button::STATE_PRESSED, u"STATE_PRESSED"},
-                       {Button::STATE_DISABLED, u"STATE_DISABLED"})
-
 BEGIN_METADATA(Button, InkDropHostView)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)
 ADD_PROPERTY_METADATA(bool, HideInkDropWhenShowingContextMenu)
-ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)
@@ -708,3 +702,9 @@ ADD_PROPERTY_METADATA(int, TriggerableEventFlags)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::Button::ButtonState,
+                       {views::Button::STATE_NORMAL, u"STATE_NORMAL"},
+                       {views::Button::STATE_HOVERED, u"STATE_HOVERED"},
+                       {views::Button::STATE_PRESSED, u"STATE_PRESSED"},
+                       {views::Button::STATE_DISABLED, u"STATE_DISABLED"})

@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class Profile;

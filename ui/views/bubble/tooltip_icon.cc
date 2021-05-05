@@ -8,10 +8,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_watcher_view_host.h"
 
 namespace views {

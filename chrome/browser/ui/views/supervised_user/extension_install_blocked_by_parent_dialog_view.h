@@ -9,9 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace extensions {

@@ -20,6 +20,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/l10n/l10n_font_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -33,7 +34,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
@@ -1778,13 +1778,6 @@ void Widget::ClearFocusFromWidget() {
     focus_manager->ViewRemoved(root_view_.get());
 }
 
-DEFINE_ENUM_CONVERTERS(ui::ZOrderLevel,
-                       {ui::ZOrderLevel::kNormal, u"kNormal"},
-                       {ui::ZOrderLevel::kFloatingWindow, u"kFloatingWindow"},
-                       {ui::ZOrderLevel::kFloatingUIElement,
-                        u"kFloatingUIElement"},
-                       {ui::ZOrderLevel::kSecuritySurface, u"kSecuritySurface"})
-
 BEGIN_METADATA_BASE(Widget)
 ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ClientAreaBoundsInScreen)
@@ -1810,3 +1803,10 @@ internal::NativeWidgetPrivate* NativeWidgetPrivate::AsNativeWidgetPrivate() {
 
 }  // namespace internal
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(ui::ZOrderLevel,
+                       {ui::ZOrderLevel::kNormal, u"kNormal"},
+                       {ui::ZOrderLevel::kFloatingWindow, u"kFloatingWindow"},
+                       {ui::ZOrderLevel::kFloatingUIElement,
+                        u"kFloatingUIElement"},
+                       {ui::ZOrderLevel::kSecuritySurface, u"kSecuritySurface"})

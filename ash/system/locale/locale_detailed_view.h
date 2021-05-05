@@ -10,7 +10,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 namespace tray {

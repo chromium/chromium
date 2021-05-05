@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -17,7 +18,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

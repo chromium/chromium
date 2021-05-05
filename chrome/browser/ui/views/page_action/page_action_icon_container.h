@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class PageActionIconController;

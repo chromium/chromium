@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -22,7 +23,6 @@
 #include "ui/views/controls/menu/menu_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 

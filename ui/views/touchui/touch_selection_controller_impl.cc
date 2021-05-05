@@ -15,14 +15,14 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -372,12 +372,6 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   // Owning widget.
   Widget* widget_ = nullptr;
 };
-
-DEFINE_ENUM_CONVERTERS(gfx::SelectionBound::Type,
-                       {gfx::SelectionBound::Type::LEFT, u"LEFT"},
-                       {gfx::SelectionBound::Type::RIGHT, u"RIGHT"},
-                       {gfx::SelectionBound::Type::CENTER, u"CENTER"},
-                       {gfx::SelectionBound::Type::EMPTY, u"EMPTY"})
 
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
@@ -744,3 +738,9 @@ View* TouchSelectionControllerImpl::GetHandle2View() {
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(gfx::SelectionBound::Type,
+                       {gfx::SelectionBound::Type::LEFT, u"LEFT"},
+                       {gfx::SelectionBound::Type::RIGHT, u"RIGHT"},
+                       {gfx::SelectionBound::Type::CENTER, u"CENTER"},
+                       {gfx::SelectionBound::Type::EMPTY, u"EMPTY"})

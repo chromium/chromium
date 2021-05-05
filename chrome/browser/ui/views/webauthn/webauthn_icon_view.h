@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class WebAuthnBubbleView;

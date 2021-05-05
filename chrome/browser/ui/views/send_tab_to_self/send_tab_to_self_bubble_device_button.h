@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace send_tab_to_self {
 

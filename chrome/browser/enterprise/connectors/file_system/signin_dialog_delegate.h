@@ -16,8 +16,8 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace enterprise_connectors {

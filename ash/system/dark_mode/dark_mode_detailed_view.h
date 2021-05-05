@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_H_
 
 #include "ash/system/tray/tray_detailed_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class Label;

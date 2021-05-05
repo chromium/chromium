@@ -11,8 +11,8 @@
 
 #include "base/optional.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 AppDialogView::AppDialogView(const gfx::ImageSkia& image)
     : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {

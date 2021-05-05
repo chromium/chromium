@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/default_style.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/tween.h"
@@ -34,7 +35,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -489,14 +489,6 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
                              ui::NativeTheme::kColorId_TabSelectedBorderColor));
 }
 
-DEFINE_ENUM_CONVERTERS(TabbedPane::Orientation,
-                       {TabbedPane::Orientation::kHorizontal, u"HORIZONTAL"},
-                       {TabbedPane::Orientation::kVertical, u"VERTICAL"})
-
-DEFINE_ENUM_CONVERTERS(TabbedPane::TabStripStyle,
-                       {TabbedPane::TabStripStyle::kBorder, u"BORDER"},
-                       {TabbedPane::TabStripStyle::kHighlight, u"HIGHLIGHT"})
-
 BEGIN_METADATA(TabStrip, View)
 ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
@@ -629,3 +621,13 @@ BEGIN_METADATA(TabbedPane, View)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::TabbedPane::Orientation,
+                       {views::TabbedPane::Orientation::kHorizontal,
+                        u"HORIZONTAL"},
+                       {views::TabbedPane::Orientation::kVertical, u"VERTICAL"})
+
+DEFINE_ENUM_CONVERTERS(views::TabbedPane::TabStripStyle,
+                       {views::TabbedPane::TabStripStyle::kBorder, u"BORDER"},
+                       {views::TabbedPane::TabStripStyle::kHighlight,
+                        u"HIGHLIGHT"})

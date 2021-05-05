@@ -10,10 +10,10 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace chromeos {

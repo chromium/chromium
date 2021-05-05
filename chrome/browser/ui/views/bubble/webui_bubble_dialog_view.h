@@ -7,9 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 

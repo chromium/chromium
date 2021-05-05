@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
 
 #include "chrome/browser/ui/view_ids.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class GlassBrowserFrameView;
 

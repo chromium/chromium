@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // Label styled for use in AppInfo dialog so accessible users can step through
 // and have each line read.

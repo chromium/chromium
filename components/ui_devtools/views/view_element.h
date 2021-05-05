@@ -46,7 +46,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
 
  protected:
-  views::metadata::ClassMetaData* GetClassMetaData() const override;
+  ui::metadata::ClassMetaData* GetClassMetaData() const override;
   void* GetClassInstance() const override;
   ui::Layer* GetLayer() const override;
 

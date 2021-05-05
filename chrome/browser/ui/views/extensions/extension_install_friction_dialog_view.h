@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/callback.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class PageNavigator;

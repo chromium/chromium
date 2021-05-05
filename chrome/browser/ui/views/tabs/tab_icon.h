@@ -7,11 +7,11 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace base {

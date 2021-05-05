@@ -5,8 +5,8 @@
 #ifndef UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 

@@ -10,8 +10,8 @@
 
 #include "base/macros.h"
 #include "net/ssl/client_cert_identity.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/table/table_view_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {

@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

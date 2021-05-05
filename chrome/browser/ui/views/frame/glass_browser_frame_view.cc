@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/win/hwnd_metrics.h"
@@ -42,7 +43,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/win/hwnd_util.h"
 #include "ui/views/window/client_view.h"
 

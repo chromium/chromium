@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -17,7 +18,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 

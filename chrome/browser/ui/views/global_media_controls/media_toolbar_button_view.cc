@@ -24,6 +24,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -31,7 +32,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&MediaToolbarButtonView::ButtonPressed,

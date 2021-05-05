@@ -6,8 +6,8 @@
 #define COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
 
 #include "base/callback.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // FullscreenControlView shows a FAB (floating action button from the material

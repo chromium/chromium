@@ -10,8 +10,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/views/debug/debugger_utils.h"
-#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -42,8 +42,8 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
 template <typename V>
 bool IsViewClass(View* view) {
   static_assert(std::is_base_of<View, V>::value, "Only View classes supported");
-  metadata::ClassMetaData* parent = V::MetaData();
-  metadata::ClassMetaData* child = view->GetClassMetaData();
+  ui::metadata::ClassMetaData* parent = V::MetaData();
+  ui::metadata::ClassMetaData* child = view->GetClassMetaData();
   while (child && child != parent)
     child = child->parent_class_meta_data();
   return !!child;

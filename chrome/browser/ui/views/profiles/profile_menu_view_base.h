@@ -17,10 +17,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 
 class Browser;

@@ -955,8 +955,8 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 }  // namespace
 
 // static
-std::u16string views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
-    views::metadata::ArgType<TabStyle::TabColors> source_value) {
+std::u16string ui::metadata::TypeConverter<TabStyle::TabColors>::ToString(
+    ui::metadata::ArgType<TabStyle::TabColors> source_value) {
   return base::ASCIIToUTF16(base::StringPrintf(
       "{%s,%s}",
       color_utils::SkColorToRgbaString(source_value.foreground_color).c_str(),
@@ -964,7 +964,7 @@ std::u16string views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
 }
 
 // static
-base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
+base::Optional<TabStyle::TabColors> ui::metadata::TypeConverter<
     TabStyle::TabColors>::FromString(const std::u16string& source_value) {
   std::u16string trimmed_string;
   base::TrimString(source_value, u"{ }", &trimmed_string);
@@ -980,8 +980,8 @@ base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
 }
 
 // static
-views::metadata::ValidStrings
-views::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
+ui::metadata::ValidStrings
+ui::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
   return ValidStrings();
 }
 

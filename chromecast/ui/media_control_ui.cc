@@ -12,12 +12,12 @@
 #include "base/threading/thread_checker.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 #define LOG_VIEW(name) DVLOG(1) << #name << ": " << name->bounds().ToString();
 

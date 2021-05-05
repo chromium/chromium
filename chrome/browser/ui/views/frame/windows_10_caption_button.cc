@@ -10,12 +10,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,
@@ -274,5 +274,5 @@ ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                BaseColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 END_METADATA

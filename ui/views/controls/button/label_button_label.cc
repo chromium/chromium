@@ -4,7 +4,7 @@
 
 #include "ui/views/controls/button/label_button_label.h"
 
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace views {
 

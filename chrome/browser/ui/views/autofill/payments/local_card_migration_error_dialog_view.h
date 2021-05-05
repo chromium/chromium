@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_METADATA_METADATA_CACHE_H_
-#define UI_VIEWS_METADATA_METADATA_CACHE_H_
+#ifndef UI_BASE_METADATA_METADATA_CACHE_H_
+#define UI_BASE_METADATA_METADATA_CACHE_H_
 
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/views/metadata/metadata_types.h"
-#include "ui/views/views_export.h"
+#include "ui/base/metadata/metadata_types.h"
 
-namespace views {
+namespace ui {
 namespace metadata {
 
 class ClassMetaData;
@@ -23,7 +23,7 @@ class ClassMetaData;
 // MetaDataCache is implemented as a singleton. This also implies that each
 // instance of ClassMetaData registered into the cache represents one and only
 // one class type.
-class VIEWS_EXPORT MetaDataCache {
+class COMPONENT_EXPORT(UI_BASE) MetaDataCache {
  public:
   MetaDataCache();
 
@@ -46,7 +46,8 @@ class VIEWS_EXPORT MetaDataCache {
 //
 // Registers the class metadata into the global cache. Will DCHECK if the
 // metadata for a class is already registered.
-VIEWS_EXPORT void RegisterClassInfo(std::unique_ptr<ClassMetaData> meta_data);
+COMPONENT_EXPORT(UI_BASE)
+void RegisterClassInfo(std::unique_ptr<ClassMetaData> meta_data);
 
 // Help function for creating and registering the metadata container into the
 // global cache for a given class. The metadata information is owned by the
@@ -60,6 +61,6 @@ ClassMetaData* MakeAndRegisterClassInfo() {
 }
 
 }  // namespace metadata
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_METADATA_METADATA_CACHE_H_
+#endif  // UI_BASE_METADATA_METADATA_CACHE_H_

@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

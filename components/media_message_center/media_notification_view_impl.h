@@ -10,9 +10,9 @@
 #include "base/optional.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace message_center {
 class NotificationHeaderView;

@@ -35,6 +35,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -42,7 +43,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 #include "ui/wm/core/coordinate_conversion.h"
 

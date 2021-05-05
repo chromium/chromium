@@ -18,8 +18,8 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 TranslateIconView::TranslateIconView(
     CommandUpdater* command_updater,

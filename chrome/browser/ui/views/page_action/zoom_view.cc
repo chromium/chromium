@@ -13,9 +13,9 @@
 #include "components/zoom/zoom_controller.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                    PageActionIconView::Delegate* page_action_icon_delegate)

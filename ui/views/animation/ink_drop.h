@@ -9,12 +9,12 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_state.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 

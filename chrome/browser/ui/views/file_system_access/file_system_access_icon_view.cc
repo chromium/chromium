@@ -16,7 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 FileSystemAccessIconView::FileSystemAccessIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class MultiAnimation;

@@ -26,11 +26,11 @@
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
 

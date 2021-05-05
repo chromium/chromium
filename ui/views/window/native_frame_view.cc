@@ -5,7 +5,7 @@
 #include "ui/views/window/native_frame_view.h"
 
 #include "build/build_config.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 

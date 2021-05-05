@@ -7,6 +7,7 @@
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/border.h"
@@ -15,7 +16,6 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 

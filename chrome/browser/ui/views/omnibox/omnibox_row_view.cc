@@ -20,6 +20,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -31,8 +33,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/style/typography.h"
 
@@ -270,19 +270,19 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 
 template <>
-struct views::metadata::TypeConverter<OmniboxPopupModel::Selection>
-    : public views::metadata::BaseTypeConverter<true> {
+struct ui::metadata::TypeConverter<OmniboxPopupModel::Selection>
+    : public ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
-      views::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
+      ui::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
   static base::Optional<OmniboxPopupModel::Selection> FromString(
       const std::u16string& source_value);
-  static views::metadata::ValidStrings GetValidStrings() { return {}; }
+  static ui::metadata::ValidStrings GetValidStrings() { return {}; }
 };
 
 // static
 std::u16string
-views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
-    views::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
+ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
+    ui::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
   return u"{" + base::NumberToString16(source_value.line) + u"," +
          TypeConverter<OmniboxPopupModel::LineState>::ToString(
              source_value.state) +
@@ -291,7 +291,7 @@ views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
 
 // static
 base::Optional<OmniboxPopupModel::Selection>
-views::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
+ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
     const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

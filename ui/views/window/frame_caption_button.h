@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/views_export.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/caption_button_types.h"

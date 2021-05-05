@@ -9,8 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 

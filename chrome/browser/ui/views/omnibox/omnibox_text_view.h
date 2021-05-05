@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {

@@ -9,9 +9,9 @@
 #include <string>
 
 #include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

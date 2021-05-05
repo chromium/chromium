@@ -4,10 +4,10 @@
 
 #include "ui/message_center/views/proportional_image_view.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center_style.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace message_center {
 

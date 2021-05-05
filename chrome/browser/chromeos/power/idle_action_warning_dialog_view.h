@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace chromeos {

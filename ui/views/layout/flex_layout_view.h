@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"

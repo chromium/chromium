@@ -7,10 +7,10 @@
 
 #include "base/optional.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 namespace sharesheet {

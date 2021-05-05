@@ -8,12 +8,12 @@
 #include <list>
 
 #include "base/observer_list.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // A general view container for any type of toolbar icons.

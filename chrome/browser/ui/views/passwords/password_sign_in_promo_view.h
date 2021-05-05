@@ -7,8 +7,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/sign_in_promo_bubble_controller.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace content {

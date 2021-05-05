@@ -13,8 +13,8 @@
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 // EyeDropperView is used on Aura platforms and on the Mac before 10.15.

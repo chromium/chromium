@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // The dialog informing the user they are about to be logged out or locked
 // because they removed their security token (smart card).

@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"

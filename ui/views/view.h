@@ -34,6 +34,8 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
@@ -50,7 +52,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_targeter.h"
@@ -128,11 +129,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   View* move_view = nullptr;
 };
 
-// Used to identify the CallbackList<> within the PropertyChangedVectors map.
-using PropertyKey = const void*;
-
-using PropertyChangedCallbacks = base::RepeatingClosureList;
-using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
+using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
 
 // The elements in PropertyEffects represent bits which define what effect(s) a
 // changed Property has on the containing class. Additional elements should
@@ -275,7 +272,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::EventTarget,
                           public ui::EventHandler,
                           public ui::PropertyHandler,
-                          public views::metadata::MetaDataProvider {
+                          public ui::metadata::MetaDataProvider {
  public:
   using Views = std::vector<View*>;
 
@@ -389,6 +386,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Creation and lifetime -----------------------------------------------------
 
   View();
+  View(const View&) = delete;
+  View& operator=(const View&) = delete;
   ~View() override;
 
   // By default a View is owned by its parent unless specified otherwise here.
@@ -1619,10 +1618,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Property Support ----------------------------------------------------------
 
-  base::CallbackListSubscription AddPropertyChangedCallback(
-      PropertyKey property,
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
-  void OnPropertyChanged(PropertyKey property,
+  void OnPropertyChanged(ui::metadata::PropertyKey property,
                          PropertyEffects property_effects);
 
  private:
@@ -1660,9 +1656,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     gfx::Size GetPreferredSize(const View* host) const override;
     int GetPreferredHeightForWidth(const View* host, int width) const override;
   };
-
-  using PropertyChangedVectors =
-      std::map<PropertyKey, std::unique_ptr<PropertyChangedCallbacks>>;
 
   // Painting  -----------------------------------------------------------------
 
@@ -2142,13 +2135,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   base::ObserverList<ViewObserver>::Unchecked observers_;
 
-  // Property Changed Callbacks ------------------------------------------------
-  PropertyChangedVectors property_changed_vectors_;
-
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
-
-  DISALLOW_COPY_AND_ASSIGN(View);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)

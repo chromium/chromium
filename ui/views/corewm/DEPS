@@ -14,10 +14,10 @@ specific_include_rules = {
   ],
 
   "tooltip_aura.cc": [
+    "+ui/base/metadata/metadata_header_macros.h",
+    "+ui/base/metadata/metadata_impl_macros.h",
     "+ui/views/background.h",
     "+ui/views/border.h",
-    "+ui/views/metadata/metadata_header_macros.h",
-    "+ui/views/metadata/metadata_impl_macros.h",
     "+ui/views/painter.h",
     "+ui/views/widget/widget.h",
     "+ui/views/view.h",

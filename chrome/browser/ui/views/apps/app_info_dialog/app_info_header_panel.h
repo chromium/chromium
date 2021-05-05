@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class Profile;

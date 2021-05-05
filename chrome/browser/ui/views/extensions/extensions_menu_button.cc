@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 ExtensionsMenuButton::ExtensionsMenuButton(

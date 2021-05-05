@@ -17,6 +17,8 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,8 +26,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/non_client_view.h"
@@ -101,7 +101,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::EventSource,
                             public FocusTraversable,
                             public ui::NativeThemeObserver,
-                            public metadata::MetaDataProvider {
+                            public ui::metadata::MetaDataProvider {
  public:
   METADATA_HEADER_BASE(Widget);
   using Widgets = std::set<Widget*>;

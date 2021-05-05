@@ -4,9 +4,9 @@
 
 #include "ui/views/controls/theme_tracking_image_view.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

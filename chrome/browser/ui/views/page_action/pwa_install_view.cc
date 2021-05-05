@@ -32,7 +32,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace {
 

@@ -13,9 +13,9 @@
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -207,7 +207,7 @@ bool ViewElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
   return true;
 }
 
-views::metadata::ClassMetaData* ViewElement::GetClassMetaData() const {
+ui::metadata::ClassMetaData* ViewElement::GetClassMetaData() const {
   return view_->GetClassMetaData();
 }
 

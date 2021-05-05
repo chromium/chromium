@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_METADATA_PROPERTY_METADATA_H_
-#define UI_VIEWS_METADATA_PROPERTY_METADATA_H_
+#ifndef UI_BASE_METADATA_PROPERTY_METADATA_H_
+#define UI_BASE_METADATA_PROPERTY_METADATA_H_
 
 #include <string>
 #include <type_traits>
 #include <utility>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/class_property.h"
-#include "ui/views/metadata/metadata_cache.h"
-#include "ui/views/metadata/metadata_types.h"
-#include "ui/views/metadata/type_conversion.h"
-#include "ui/views/view.h"
-#include "ui/views/view_utils.h"
-#include "ui/views/views_export.h"
+#include "ui/base/metadata/base_type_conversion.h"
+#include "ui/base/metadata/metadata_cache.h"
+#include "ui/base/metadata/metadata_types.h"
 
-namespace views {
+namespace ui {
 namespace metadata {
 namespace internal {
 
@@ -63,8 +61,8 @@ template <typename TClass,
           typename TValue,
           typename TRet,
           TRet (TClass::*Get)() const,
-          typename TConverter = TypeConverter<TValue>>
-class ObjectPropertyReadOnlyMetaData : public MemberMetaDataBase {
+          typename TConverter = ui::metadata::TypeConverter<TValue>>
+class ObjectPropertyReadOnlyMetaData : public ui::metadata::MemberMetaDataBase {
  public:
   using MemberMetaDataBase::MemberMetaDataBase;
   ObjectPropertyReadOnlyMetaData(const ObjectPropertyReadOnlyMetaData&) =
@@ -79,10 +77,10 @@ class ObjectPropertyReadOnlyMetaData : public MemberMetaDataBase {
     return TConverter::ToString((static_cast<TClass*>(obj)->*Get)());
   }
 
-  PropertyFlags GetPropertyFlags() const override {
-    return kTypeIsSerializable
-               ? (PropertyFlags::kReadOnly | PropertyFlags::kSerializable)
-               : PropertyFlags::kReadOnly;
+  ui::metadata::PropertyFlags GetPropertyFlags() const override {
+    return kTypeIsSerializable ? (ui::metadata::PropertyFlags::kReadOnly |
+                                  ui::metadata::PropertyFlags::kSerializable)
+                               : ui::metadata::PropertyFlags::kReadOnly;
   }
 
   const char* GetMemberNamePrefix() const override {
@@ -105,7 +103,7 @@ template <typename TClass,
           TSig Set,
           typename TRet,
           TRet (TClass::*Get)() const,
-          typename TConverter = TypeConverter<TValue>>
+          typename TConverter = ui::metadata::TypeConverter<TValue>>
 class ObjectPropertyMetaData
     : public ObjectPropertyReadOnlyMetaData<TClass,
                                             TValue,
@@ -127,18 +125,19 @@ class ObjectPropertyMetaData
     }
   }
 
-  MemberMetaDataBase::ValueStrings GetValidValues() const override {
+  ui::metadata::MemberMetaDataBase::ValueStrings GetValidValues()
+      const override {
     if (!kTypeIsSerializable)
       return {};
     return TConverter::GetValidStrings();
   }
 
-  PropertyFlags GetPropertyFlags() const override {
-    PropertyFlags flags = PropertyFlags::kEmpty;
+  ui::metadata::PropertyFlags GetPropertyFlags() const override {
+    ui::metadata::PropertyFlags flags = ui::metadata::PropertyFlags::kEmpty;
     if (kTypeIsSerializable)
-      flags = flags | PropertyFlags::kSerializable;
+      flags = flags | ui::metadata::PropertyFlags::kSerializable;
     if (kTypeIsReadOnly)
-      flags = flags | PropertyFlags::kReadOnly;
+      flags = flags | ui::metadata::PropertyFlags::kReadOnly;
     return flags;
   }
 
@@ -150,10 +149,11 @@ class ObjectPropertyMetaData
 // Represents metadata for a ui::ClassProperty attached on a class instance.
 // Converts property value to |TValue| when possible. This allows inspecting
 // the actual value when the property is a pointer of type |TValue*|.
-template <typename TKey,
+template <typename TClass,
+          typename TKey,
           typename TValue,
-          typename TConverter = TypeConverter<TValue>>
-class ClassPropertyMetaData : public MemberMetaDataBase {
+          typename TConverter = ui::metadata::TypeConverter<TValue>>
+class ClassPropertyMetaData : public ui::metadata::MemberMetaDataBase {
  public:
   using TypeHelper = internal::ClassPropertyMetaDataTypeHelper<TKey, TValue>;
   ClassPropertyMetaData(TKey key, const std::string& property_type)
@@ -166,12 +166,8 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
   // If the property value is an pointer of type |TKValue*| and
   // |TKValue| == |TValue|, dereferences the pointer.
   std::u16string GetValueAsString(void* obj) const override {
-    // This cast (here and below) is needed since the direct cast to
-    // ui::PropertyHandler* won't work due to the MI nature of View.
-    DCHECK(views::IsViewClass<View>(static_cast<View*>(obj)));
     typename TypeHelper::TKValue value =
-        static_cast<ui::PropertyHandler*>(static_cast<View*>(obj))
-            ->GetProperty(key_);
+        static_cast<TClass*>(obj)->GetProperty(key_);
     if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
       return u"(not assigned)";
     } else {
@@ -184,19 +180,16 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
 
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
     base::Optional<TValue> value = TConverter::FromString(new_value);
-    if (value) {
-      DCHECK(views::IsViewClass<View>(static_cast<View*>(obj)));
-      static_cast<ui::PropertyHandler*>(static_cast<View*>(obj))
-          ->SetProperty(key_, *value);
-    }
+    if (value)
+      static_cast<TClass*>(obj)->SetProperty(key_, *value);
   }
 
-  PropertyFlags GetPropertyFlags() const override {
-    PropertyFlags flags = PropertyFlags::kEmpty;
+  ui::metadata::PropertyFlags GetPropertyFlags() const override {
+    ui::metadata::PropertyFlags flags = ui::metadata::PropertyFlags::kEmpty;
     if (kTypeIsSerializable)
-      flags = flags | PropertyFlags::kSerializable;
+      flags = flags | ui::metadata::PropertyFlags::kSerializable;
     if (kTypeIsReadOnly)
-      flags = flags | PropertyFlags::kReadOnly;
+      flags = flags | ui::metadata::PropertyFlags::kReadOnly;
     return flags;
   }
 
@@ -208,6 +201,6 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
 };
 
 }  // namespace metadata
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_METADATA_PROPERTY_METADATA_H_
+#endif  // UI_BASE_METADATA_PROPERTY_METADATA_H_

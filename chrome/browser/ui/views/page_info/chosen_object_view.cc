@@ -15,6 +15,7 @@
 #include "components/page_info/page_info_delegate.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -23,7 +24,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ChosenObjectView::ChosenObjectView(
     std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,

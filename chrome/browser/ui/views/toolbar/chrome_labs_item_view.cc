@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -19,7 +20,6 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 

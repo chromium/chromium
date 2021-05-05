@@ -23,6 +23,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -41,7 +42,6 @@
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 
@@ -1707,10 +1707,6 @@ AXVirtualView* TableView::GetVirtualAccessibilityCell(
   return i->get();
 }
 
-DEFINE_ENUM_CONVERTERS(TableTypes,
-                       {TableTypes::TEXT_ONLY, u"TEXT_ONLY"},
-                       {TableTypes::ICON_AND_TEXT, u"ICON_AND_TEXT"})
-
 BEGIN_METADATA(TableView, View)
 ADD_READONLY_PROPERTY_METADATA(int, RowCount)
 ADD_READONLY_PROPERTY_METADATA(int, FirstSelectedRow)
@@ -1724,3 +1720,7 @@ ADD_PROPERTY_METADATA(bool, SortOnPaint)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::TableTypes,
+                       {views::TableTypes::TEXT_ONLY, u"TEXT_ONLY"},
+                       {views::TableTypes::ICON_AND_TEXT, u"ICON_AND_TEXT"})

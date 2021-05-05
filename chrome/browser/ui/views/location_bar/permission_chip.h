@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {

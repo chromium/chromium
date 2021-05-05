@@ -8,11 +8,11 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 PageActionIconLoadingIndicatorView::PageActionIconLoadingIndicatorView(
     PageActionIconView* parent)

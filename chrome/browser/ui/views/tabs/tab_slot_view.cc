@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 TabSlotView::TabSlotView() = default;
 TabSlotView::~TabSlotView() = default;

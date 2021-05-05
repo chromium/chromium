@@ -7,7 +7,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

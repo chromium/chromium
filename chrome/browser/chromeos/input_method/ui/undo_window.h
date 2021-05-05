@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_UNDO_WINDOW_H_
 
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ui {

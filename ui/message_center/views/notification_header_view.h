@@ -7,11 +7,11 @@
 
 #include "base/optional.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;

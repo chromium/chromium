@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class CookieInfoView;

@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model_observer.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class AuthenticatorRequestSheetView;

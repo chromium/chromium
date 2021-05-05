@@ -6,9 +6,9 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

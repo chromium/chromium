@@ -11,10 +11,10 @@
 
 #include "base/callback_helpers.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace base {

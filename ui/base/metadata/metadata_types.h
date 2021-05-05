@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_METADATA_METADATA_TYPES_H_
-#define UI_VIEWS_METADATA_METADATA_TYPES_H_
+#ifndef UI_BASE_METADATA_METADATA_TYPES_H_
+#define UI_BASE_METADATA_METADATA_TYPES_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/callback_list.h"
+#include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/views/views_export.h"
 
-namespace views {
-
-class View;
-
+namespace ui {
 namespace metadata {
 
 enum class PropertyFlags : uint32_t {
@@ -34,30 +35,51 @@ enum class PropertyFlags : uint32_t {
   kSerializable = 0x100,
 };
 
-VIEWS_EXPORT extern PropertyFlags operator|(PropertyFlags op1,
-                                            PropertyFlags op2);
-VIEWS_EXPORT extern PropertyFlags operator&(PropertyFlags op1,
-                                            PropertyFlags op2);
-VIEWS_EXPORT extern PropertyFlags operator^(PropertyFlags op1,
-                                            PropertyFlags op2);
-VIEWS_EXPORT extern bool operator!(PropertyFlags op);
+COMPONENT_EXPORT(UI_BASE)
+extern PropertyFlags operator|(PropertyFlags op1, PropertyFlags op2);
+COMPONENT_EXPORT(UI_BASE)
+extern PropertyFlags operator&(PropertyFlags op1, PropertyFlags op2);
+COMPONENT_EXPORT(UI_BASE)
+extern PropertyFlags operator^(PropertyFlags op1, PropertyFlags op2);
+COMPONENT_EXPORT(UI_BASE) extern bool operator!(PropertyFlags op);
+
+// Used to identify the CallbackList<> within the PropertyChangedVectors map.
+using PropertyKey = const void*;
+
+using PropertyChangedCallbacks = base::RepeatingClosureList;
+using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
 
 // Interface for classes that provide ClassMetaData (via macros in
 // metadata_header_macros.h). GetClassMetaData() is automatically overridden and
 // implemented in the relevant macros, so a class must merely have
 // MetaDataProvider somewhere in its ancestry.
-class MetaDataProvider {
+class COMPONENT_EXPORT(UI_BASE) MetaDataProvider {
  public:
+  MetaDataProvider();
+  ~MetaDataProvider();
   virtual class ClassMetaData* GetClassMetaData() = 0;
+
+ protected:
+  base::CallbackListSubscription AddPropertyChangedCallback(
+      PropertyKey property,
+      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  void TriggerChangedCallback(PropertyKey property);
+
+ private:
+  using PropertyChangedVectors =
+      std::map<PropertyKey, std::unique_ptr<PropertyChangedCallbacks>>;
+
+  // Property Changed Callbacks ------------------------------------------------
+  PropertyChangedVectors property_changed_vectors_;
 };
 
 class MemberMetaDataBase;
 
 // Represents the 'meta data' that describes a class. Using the appropriate
-// macros in ui/views/metadata/metadata_impl_macros.h, a descendant of this
+// macros in ui/base/metadata/metadata_impl_macros.h, a descendant of this
 // class is declared within the scope of the containing class. See information
 // about using the macros in the comment for the views::View class.
-class VIEWS_EXPORT ClassMetaData {
+class COMPONENT_EXPORT(UI_BASE) ClassMetaData {
  public:
   ClassMetaData();
   ClassMetaData(std::string file, int line);
@@ -89,7 +111,7 @@ class VIEWS_EXPORT ClassMetaData {
   //    for(views::MemberMetaDataBase* member : class_meta_data) {
   //      OperateOn(member);
   //    }
-  class VIEWS_EXPORT ClassMemberIterator
+  class COMPONENT_EXPORT(UI_BASE) ClassMemberIterator
       : public std::iterator<std::forward_iterator_tag, MemberMetaDataBase*> {
    public:
     ClassMemberIterator(const ClassMemberIterator& other);
@@ -143,7 +165,7 @@ class VIEWS_EXPORT ClassMetaData {
 // Abstract base class to represent meta data about class members.
 // Provides basic information (such as the name of the member), and templated
 // accessors to get/set the value of the member on an object.
-class VIEWS_EXPORT MemberMetaDataBase {
+class COMPONENT_EXPORT(UI_BASE) MemberMetaDataBase {
  public:
   using ValueStrings = std::vector<std::u16string>;
   MemberMetaDataBase(const std::string& member_name,
@@ -186,6 +208,6 @@ class VIEWS_EXPORT MemberMetaDataBase {
 };  // class MemberMetaDataBase
 
 }  // namespace metadata
-}  // namespace views
+}  // namespace ui
 
-#endif  // UI_VIEWS_METADATA_METADATA_TYPES_H_
+#endif  // UI_BASE_METADATA_METADATA_TYPES_H_

@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/secure_payment_confirmation_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace payments {

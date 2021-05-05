@@ -7,12 +7,12 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ExtensionContextMenuController;

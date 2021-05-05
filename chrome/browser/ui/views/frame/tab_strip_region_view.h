@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class FlexLayout;

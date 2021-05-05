@@ -17,10 +17,10 @@
 #include "content/public/browser/render_view_host.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/origin.h"
 
 LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(

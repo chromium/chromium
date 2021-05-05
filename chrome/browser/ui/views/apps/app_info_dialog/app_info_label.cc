@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 AppInfoLabel::AppInfoLabel(const std::u16string& text)
     : AppInfoLabel(text,

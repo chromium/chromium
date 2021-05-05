@@ -10,7 +10,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_ICON_VIEW_H_
 
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class TabIconViewModel;
 

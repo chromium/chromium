@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 

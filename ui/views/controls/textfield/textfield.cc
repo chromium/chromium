@@ -32,6 +32,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -59,7 +60,6 @@
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
@@ -2667,12 +2667,14 @@ ADD_PROPERTY_METADATA(bool, ReadOnly)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
-ADD_PROPERTY_METADATA(SkColor, TextColor, metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(SkColor, SelectionTextColor, metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, TextColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor,
+                      SelectionTextColor,
+                      ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
-                      metadata::SkColorConverter)
+                      ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
 ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)

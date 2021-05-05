@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;

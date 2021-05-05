@@ -13,8 +13,7 @@
 #include <vector>
 
 #include "ui/base/class_property.h"
-#include "ui/views/metadata/type_conversion.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -48,7 +47,7 @@ class PropertySetterBase {
 template <typename TClass, typename TValue, typename TSig, TSig Set>
 class PropertySetter : public PropertySetterBase {
  public:
-  explicit PropertySetter(metadata::ArgType<TValue> value)
+  explicit PropertySetter(ui::metadata::ArgType<TValue> value)
       : value_(std::move(value)) {}
   PropertySetter(const PropertySetter&) = delete;
   PropertySetter& operator=(const PropertySetter&) = delete;

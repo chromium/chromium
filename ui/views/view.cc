@@ -29,6 +29,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
@@ -57,7 +58,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -2270,31 +2270,11 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
     SchedulePaint();
 }
 
-base::CallbackListSubscription View::AddPropertyChangedCallback(
-    PropertyKey property,
-    PropertyChangedCallback callback) {
-  auto entry = property_changed_vectors_.find(property);
-  if (entry == property_changed_vectors_.end()) {
-    entry = property_changed_vectors_
-                .emplace(property, std::make_unique<PropertyChangedCallbacks>())
-                .first;
-  }
-  PropertyChangedCallbacks* property_changed_callbacks = entry->second.get();
-
-  return property_changed_callbacks->Add(std::move(callback));
-}
-
-void View::OnPropertyChanged(PropertyKey property,
+void View::OnPropertyChanged(ui::metadata::PropertyKey property,
                              PropertyEffects property_effects) {
   if (property_effects != kPropertyEffectsNone)
     HandlePropertyChangeEffects(property_effects);
-
-  auto entry = property_changed_vectors_.find(property);
-  if (entry == property_changed_vectors_.end())
-    return;
-
-  PropertyChangedCallbacks* property_changed_callbacks = entry->second.get();
-  property_changed_callbacks->Notify();
+  TriggerChangedCallback(property);
 }
 
 int View::GetX() const {
@@ -3237,12 +3217,6 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
   return preferred_height;
 }
 
-DEFINE_ENUM_CONVERTERS(View::FocusBehavior,
-                       {View::FocusBehavior::ACCESSIBLE_ONLY,
-                        u"ACCESSIBLE_ONLY"},
-                       {View::FocusBehavior::ALWAYS, u"ALWAYS"},
-                       {View::FocusBehavior::NEVER, u"NEVER"})
-
 // This block requires the existence of METADATA_HEADER(View) in the class
 // declaration for View.
 BEGIN_METADATA_BASE(View)
@@ -3274,3 +3248,9 @@ ADD_CLASS_PROPERTY_METADATA(bool, kViewIgnoredByLayoutKey)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::View::FocusBehavior,
+                       {views::View::FocusBehavior::ACCESSIBLE_ONLY,
+                        u"ACCESSIBLE_ONLY"},
+                       {views::View::FocusBehavior::ALWAYS, u"ALWAYS"},
+                       {views::View::FocusBehavior::NEVER, u"NEVER"})

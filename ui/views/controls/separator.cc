@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -95,7 +95,7 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
 }
 
 BEGIN_METADATA(Separator, View)
-ADD_PROPERTY_METADATA(SkColor, Color, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(int, PreferredHeight)
 END_METADATA
 

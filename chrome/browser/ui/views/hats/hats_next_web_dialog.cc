@@ -29,14 +29,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 constexpr gfx::Size HatsNextWebDialog::kMinSize;

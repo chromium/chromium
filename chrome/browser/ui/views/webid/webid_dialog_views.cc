@@ -10,12 +10,12 @@
 #include "chrome/browser/ui/views/webid/webid_permission_view.h"
 #include "chrome/browser/ui/views/webid/webid_signin_page_view.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 

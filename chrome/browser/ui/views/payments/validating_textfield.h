@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace payments {
 

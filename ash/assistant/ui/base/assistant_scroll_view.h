@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {

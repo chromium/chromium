@@ -6,9 +6,9 @@
 #define ASH_SYSTEM_ACCESSIBILITY_FLOATING_MENU_BUTTON_H_
 
 #include "ash/system/tray/tray_constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace gfx {

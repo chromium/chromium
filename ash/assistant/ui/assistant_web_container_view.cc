@@ -14,13 +14,13 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/assistant/assistant_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
 namespace ash {

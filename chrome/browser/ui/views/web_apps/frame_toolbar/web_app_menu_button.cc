@@ -18,12 +18,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -109,5 +109,5 @@ void WebAppMenuButton::FadeHighlightOff() {
 }
 
 BEGIN_METADATA(WebAppMenuButton, AppMenuButton)
-ADD_PROPERTY_METADATA(SkColor, Color, views::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
 END_METADATA

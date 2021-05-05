@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

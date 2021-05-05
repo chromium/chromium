@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;

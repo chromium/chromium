@@ -21,6 +21,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -32,7 +33,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class DownloadShelfView;

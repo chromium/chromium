@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace {
 class WebAppNonClientFrameViewAshTest;

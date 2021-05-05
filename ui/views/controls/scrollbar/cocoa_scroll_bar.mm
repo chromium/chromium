@@ -9,12 +9,12 @@
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

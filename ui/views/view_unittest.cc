@@ -33,6 +33,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
@@ -55,7 +56,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
@@ -5373,9 +5373,9 @@ TEST_F(ViewTest, TestEnabledPropertyMetadata) {
   auto subscription = test_view->AddEnabledChangedCallback(base::BindRepeating(
       [](bool* enabled_changed) { *enabled_changed = true; },
       &enabled_changed));
-  views::metadata::ClassMetaData* view_metadata = View::MetaData();
+  ui::metadata::ClassMetaData* view_metadata = View::MetaData();
   ASSERT_TRUE(view_metadata);
-  views::metadata::MemberMetaDataBase* enabled_property =
+  ui::metadata::MemberMetaDataBase* enabled_property =
       view_metadata->FindMemberData("Enabled");
   ASSERT_TRUE(enabled_property);
   std::u16string false_value = u"false";
@@ -5387,9 +5387,9 @@ TEST_F(ViewTest, TestEnabledPropertyMetadata) {
 
 TEST_F(ViewTest, TestMarginsPropertyMetadata) {
   auto test_view = std::make_unique<View>();
-  views::metadata::ClassMetaData* view_metadata = View::MetaData();
+  ui::metadata::ClassMetaData* view_metadata = View::MetaData();
   ASSERT_TRUE(view_metadata);
-  views::metadata::MemberMetaDataBase* insets_property =
+  ui::metadata::MemberMetaDataBase* insets_property =
       view_metadata->FindMemberData("kMarginsKey");
   ASSERT_TRUE(insets_property);
   std::u16string insets_value = u"8,8,8,8";

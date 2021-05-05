@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class TableView;

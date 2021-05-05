@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
@@ -32,7 +33,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
 namespace {

@@ -10,9 +10,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);

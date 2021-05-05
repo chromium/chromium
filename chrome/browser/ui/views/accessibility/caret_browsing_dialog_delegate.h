@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CARET_BROWSING_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CARET_BROWSING_DIALOG_DELEGATE_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class PrefService;

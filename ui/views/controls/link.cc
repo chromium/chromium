@@ -11,13 +11,13 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
@@ -230,9 +230,7 @@ void Link::ConfigureFocus() {
 }
 
 BEGIN_METADATA(Link, Label)
-ADD_READONLY_PROPERTY_METADATA(SkColor,
-                               Color,
-                               views::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
 END_METADATA
 
 }  // namespace views

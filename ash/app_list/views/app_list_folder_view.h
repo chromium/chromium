@@ -14,9 +14,9 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
 #include "base/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 

@@ -17,9 +17,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 

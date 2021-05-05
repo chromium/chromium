@@ -10,8 +10,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/numerics/safe_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

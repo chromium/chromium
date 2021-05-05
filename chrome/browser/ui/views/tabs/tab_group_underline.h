@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_UNDERLINE_H_
 
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class TabGroupViews;

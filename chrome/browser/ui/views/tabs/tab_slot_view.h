@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // View that can be laid out in the tabstrip.

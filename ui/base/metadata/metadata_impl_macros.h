@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_METADATA_METADATA_IMPL_MACROS_H_
-#define UI_VIEWS_METADATA_METADATA_IMPL_MACROS_H_
+#ifndef UI_BASE_METADATA_METADATA_IMPL_MACROS_H_
+#define UI_BASE_METADATA_METADATA_IMPL_MACROS_H_
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ui/views/metadata/metadata_cache.h"
-#include "ui/views/metadata/metadata_macros_internal.h"
-#include "ui/views/metadata/property_metadata.h"
+#include "ui/base/metadata/metadata_cache.h"
+#include "ui/base/metadata/metadata_macros_internal.h"
+#include "ui/base/metadata/property_metadata.h"
 
 // Generate the implementation of the metadata accessors and internal class with
 // additional macros for defining the class' properties.
@@ -78,4 +78,4 @@
                                                        #property_type); \
   AddMemberData(std::move(property_key##_prop));
 
-#endif  // UI_VIEWS_METADATA_METADATA_IMPL_MACROS_H_
+#endif  // UI_BASE_METADATA_METADATA_IMPL_MACROS_H_

@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "ui/base/ime/candidate_window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ui {

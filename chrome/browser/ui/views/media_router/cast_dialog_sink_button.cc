@@ -28,6 +28,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -37,8 +39,6 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

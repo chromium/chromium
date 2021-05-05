@@ -7,9 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/masked_targeter_delegate.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // This is a Button subclass that shows the tab closed icon.
 //

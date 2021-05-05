@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {

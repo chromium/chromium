@@ -50,7 +50,7 @@ void ViewDebugWrapperImpl::ForAllProperties(PropCallback callback) {
   views::View* view = const_cast<views::View*>(view_);
   for (auto* member : *(view->GetClassMetaData())) {
     auto flags = member->GetPropertyFlags();
-    if (!!(flags & views::metadata::PropertyFlags::kSerializable)) {
+    if (!!(flags & ui::metadata::PropertyFlags::kSerializable)) {
       callback.Run(member->member_name(),
                    base::UTF16ToUTF8(member->GetValueAsString(view)));
     }

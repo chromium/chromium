@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace ui_devtools {
@@ -94,7 +94,7 @@ class MockNamedTestView : public views::View {
 
 BEGIN_METADATA(MockNamedTestView, views::View)
 ADD_PROPERTY_METADATA(bool, BoolProperty)
-ADD_PROPERTY_METADATA(SkColor, ColorProperty, views::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, ColorProperty, ui::metadata::SkColorConverter)
 END_METADATA
 
 class ViewElementTest : public views::ViewsTestBase {

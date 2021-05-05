@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/menu/new_badge.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"

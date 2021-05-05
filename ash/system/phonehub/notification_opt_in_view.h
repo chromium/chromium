@@ -9,8 +9,8 @@
 #include "ash/system/phonehub/interstitial_view_button.h"
 #include "base/scoped_observation.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

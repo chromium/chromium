@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chromeos/components/security_token_pin/constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 

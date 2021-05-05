@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEB_FOOTER_EXPERIMENT_VIEW_H_
 
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class Profile;
 

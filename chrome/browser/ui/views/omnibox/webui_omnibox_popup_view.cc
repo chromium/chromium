@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 WebUIOmniboxPopupView::WebUIOmniboxPopupView(
     content::BrowserContext* browser_context)

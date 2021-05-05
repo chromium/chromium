@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -19,7 +20,6 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {

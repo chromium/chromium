@@ -11,13 +11,13 @@
 #include "base/notreached.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

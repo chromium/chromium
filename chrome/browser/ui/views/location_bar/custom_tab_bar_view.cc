@@ -28,6 +28,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -42,8 +44,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -197,7 +197,7 @@ BEGIN_METADATA(CustomTabBarTitleOriginView, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumWidth)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                LocationColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 END_METADATA
 
 CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
@@ -546,7 +546,7 @@ bool CustomTabBarView::GetShowTitle() const {
 BEGIN_METADATA(CustomTabBarView, views::AccessiblePaneView)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                DefaultFrameColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(base::Optional<SkColor>, ThemeColor)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowTitle)
 END_METADATA

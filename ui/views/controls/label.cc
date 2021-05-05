@@ -24,6 +24,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -35,7 +36,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/selection_controller.h"
 
@@ -1248,13 +1248,15 @@ ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
-ADD_PROPERTY_METADATA(SkColor, EnabledColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, EnabledColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(gfx::ElideBehavior, ElideBehavior)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(SkColor, SelectionTextColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor,
+                      SelectionTextColor,
+                      ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
-                      metadata::SkColorConverter)
+                      ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, SubpixelRenderingEnabled)
 ADD_PROPERTY_METADATA(bool, SkipSubpixelRenderingOpacityCheck)
 ADD_PROPERTY_METADATA(gfx::ShadowValues, Shadows)

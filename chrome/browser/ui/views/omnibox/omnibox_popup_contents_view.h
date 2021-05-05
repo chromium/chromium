@@ -11,10 +11,10 @@
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 

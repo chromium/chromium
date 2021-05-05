@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -18,7 +19,6 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class TabStripModel;

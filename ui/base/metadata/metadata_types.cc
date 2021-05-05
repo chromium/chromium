@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_types.h"
 
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "ui/views/metadata/type_conversion.h"
+#include "ui/base/metadata/base_type_conversion.h"
 
-namespace views {
+namespace ui {
 namespace metadata {
 
 PropertyFlags operator|(PropertyFlags op1, PropertyFlags op2) {
@@ -31,6 +31,33 @@ PropertyFlags operator^(PropertyFlags op1, PropertyFlags op2) {
 
 bool operator!(PropertyFlags op) {
   return !static_cast<bool>(op);
+}
+
+MetaDataProvider::MetaDataProvider() = default;
+
+MetaDataProvider::~MetaDataProvider() = default;
+
+base::CallbackListSubscription MetaDataProvider::AddPropertyChangedCallback(
+    PropertyKey property,
+    PropertyChangedCallback callback) {
+  auto entry = property_changed_vectors_.find(property);
+  if (entry == property_changed_vectors_.end()) {
+    entry = property_changed_vectors_
+                .emplace(property, std::make_unique<PropertyChangedCallbacks>())
+                .first;
+  }
+  PropertyChangedCallbacks* property_changed_callbacks = entry->second.get();
+
+  return property_changed_callbacks->Add(std::move(callback));
+}
+
+void MetaDataProvider::TriggerChangedCallback(PropertyKey property) {
+  auto entry = property_changed_vectors_.find(property);
+  if (entry == property_changed_vectors_.end())
+    return;
+
+  PropertyChangedCallbacks* property_changed_callbacks = entry->second.get();
+  property_changed_callbacks->Notify();
 }
 
 ClassMetaData::ClassMetaData() = default;
@@ -91,14 +118,14 @@ bool ClassMetaData::ClassMemberIterator::operator==(
          current_collection_ == rhs.current_collection_;
 }
 
-ClassMetaData::ClassMemberIterator& ClassMetaData::ClassMemberIterator::
-operator++() {
+ClassMetaData::ClassMemberIterator&
+ClassMetaData::ClassMemberIterator::operator++() {
   IncrementHelper();
   return *this;
 }
 
-ClassMetaData::ClassMemberIterator ClassMetaData::ClassMemberIterator::
-operator++(int) {
+ClassMetaData::ClassMemberIterator
+ClassMetaData::ClassMemberIterator::operator++(int) {
   ClassMetaData::ClassMemberIterator tmp(*this);
   IncrementHelper();
   return tmp;
@@ -151,4 +178,4 @@ MemberMetaDataBase::ValueStrings MemberMetaDataBase::GetValidValues() const {
 }
 
 }  // namespace metadata
-}  // namespace views
+}  // namespace ui

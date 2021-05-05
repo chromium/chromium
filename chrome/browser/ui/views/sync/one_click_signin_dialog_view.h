@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // This class allows users to confirm sync signin in cases where signin is

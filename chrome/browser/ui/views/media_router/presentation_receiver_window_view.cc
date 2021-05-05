@@ -36,12 +36,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_MAC)

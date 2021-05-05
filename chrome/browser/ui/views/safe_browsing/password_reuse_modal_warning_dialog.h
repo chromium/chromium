@@ -9,8 +9,8 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {

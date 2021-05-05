@@ -11,8 +11,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace gfx {

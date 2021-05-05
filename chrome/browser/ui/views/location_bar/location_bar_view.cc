@@ -103,6 +103,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -125,7 +126,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -1352,7 +1352,7 @@ BEGIN_METADATA(LocationBarView, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                OpaqueBorderColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
 ADD_PROPERTY_METADATA(std::u16string, ImeInlineAutocompletion)
 ADD_PROPERTY_METADATA(std::u16string, OmniboxAdditionalText)
@@ -1360,7 +1360,7 @@ ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumTrailingWidth)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                BorderColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, LocalBoundsWithoutEndcaps)
 ADD_READONLY_PROPERTY_METADATA(bool, PopupMode)
 END_METADATA

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class BrowserView;

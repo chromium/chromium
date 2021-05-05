@@ -8,6 +8,7 @@
 
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -15,7 +16,6 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 

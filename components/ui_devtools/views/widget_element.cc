@@ -108,7 +108,7 @@ bool WidgetElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
   return true;
 }
 
-views::metadata::ClassMetaData* WidgetElement::GetClassMetaData() const {
+ui::metadata::ClassMetaData* WidgetElement::GetClassMetaData() const {
   return widget_->GetClassMetaData();
 }
 

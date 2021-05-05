@@ -11,7 +11,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Profile;

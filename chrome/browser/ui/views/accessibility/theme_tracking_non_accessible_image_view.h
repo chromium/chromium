@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_THEME_TRACKING_NON_ACCESSIBLE_IMAGE_VIEW_H_
 
 #include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/theme_tracking_image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 // ImageView that sets the "invisible" state on AXNodeData so that
 // the image is not traversed by screen readers. It also tracks the theme to

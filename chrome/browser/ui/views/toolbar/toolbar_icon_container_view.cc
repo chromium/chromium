@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -20,7 +21,6 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -283,6 +283,6 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
 }
 
 BEGIN_METADATA(ToolbarIconContainerView, views::View)
-ADD_PROPERTY_METADATA(SkColor, IconColor, views::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, IconColor, ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

@@ -8,8 +8,8 @@
 #include <stddef.h>
 
 #include "components/infobars/core/infobar_container.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_targeter_delegate.h"
 
 // The views-specific implementation of InfoBarContainer.

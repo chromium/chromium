@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/metadata/metadata_cache.h"
+#include "ui/base/metadata/metadata_cache.h"
 
 #include <algorithm>
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "ui/views/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_types.h"
 
-namespace views {
+namespace ui {
 namespace metadata {
 
 MetaDataCache::MetaDataCache() = default;
@@ -47,4 +47,4 @@ void RegisterClassInfo(std::unique_ptr<ClassMetaData> meta_data) {
 }
 
 }  // namespace metadata
-}  // namespace views
+}  // namespace ui

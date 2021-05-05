@@ -17,13 +17,13 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_WIN)
 #include "chrome/browser/win/app_icon.h"

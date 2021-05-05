@@ -5,9 +5,9 @@
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace {

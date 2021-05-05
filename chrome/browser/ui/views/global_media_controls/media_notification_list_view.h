@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class MediaNotificationContainerImplView;
 class OverlayMediaNotification;
