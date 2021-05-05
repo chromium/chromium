@@ -47,6 +47,8 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/language/core/browser/pref_names.h"
@@ -288,7 +290,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
                          arc::mojom::WindowInfoPtr window_info) {
   DCHECK(!launch_intent.has_value() || !launch_intent->empty());
   if (user_action != UserInteractionType::NOT_USER_INITIATED)
-    UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction", user_action);
+    arc::ArcMetricsService::RecordArcUserInteraction(context, user_action);
 
   Profile* const profile = Profile::FromBrowserContext(context);
 

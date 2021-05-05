@@ -19,7 +19,6 @@
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/exo/wm_helper.h"
@@ -143,6 +142,23 @@ void ArcMetricsService::Shutdown() {
   for (auto& obs : app_kill_observers_)
     obs.OnArcMetricsServiceDestroyed();
   app_kill_observers_.Clear();
+}
+
+// static
+void ArcMetricsService::RecordArcUserInteraction(
+    content::BrowserContext* context,
+    UserInteractionType type) {
+  DCHECK(context);
+  auto* service = GetForBrowserContext(context);
+  if (!service) {
+    LOG(WARNING) << "Cannot get ArcMetricsService for context " << context;
+    return;
+  }
+  service->RecordArcUserInteraction(type);
+}
+
+void ArcMetricsService::RecordArcUserInteraction(UserInteractionType type) {
+  UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction", type);
 }
 
 void ArcMetricsService::SetHistogramNamer(HistogramNamer histogram_namer) {
@@ -375,9 +391,7 @@ void ArcMetricsService::OnWindowActivated(
     gamepad_interaction_recorded_ = false;
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "Arc.UserInteraction",
-      UserInteractionType::APP_CONTENT_WINDOW_INTERACTION);
+  RecordArcUserInteraction(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION);
 }
 
 void ArcMetricsService::OnGamepadEvent(const ui::GamepadEvent& event) {
@@ -386,8 +400,7 @@ void ArcMetricsService::OnGamepadEvent(const ui::GamepadEvent& event) {
   if (gamepad_interaction_recorded_)
     return;
   gamepad_interaction_recorded_ = true;
-  UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction",
-                            UserInteractionType::GAMEPAD_INTERACTION);
+  RecordArcUserInteraction(UserInteractionType::GAMEPAD_INTERACTION);
 }
 
 void ArcMetricsService::OnTaskCreated(int32_t task_id,

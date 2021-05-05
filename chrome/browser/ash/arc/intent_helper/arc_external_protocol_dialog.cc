@@ -492,8 +492,8 @@ void OnIntentPickerClosed(
     apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
         Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
     apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-        selected_app_package, entry_type, reason,
-        apps::Source::kExternalProtocol, should_persist);
+        web_contents->GetBrowserContext(), selected_app_package, entry_type,
+        reason, apps::Source::kExternalProtocol, should_persist);
     return;
   }
 
@@ -587,8 +587,8 @@ void OnIntentPickerClosed(
       url_scheme, entry_type, protocol_accepted, should_persist);
 
   apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      selected_app_package, entry_type, reason, apps::Source::kExternalProtocol,
-      should_persist);
+      web_contents->GetBrowserContext(), selected_app_package, entry_type,
+      reason, apps::Source::kExternalProtocol, should_persist);
 }
 
 // Called when ARC returned activity icons for the |handlers|.
@@ -678,9 +678,9 @@ void OnUrlHandlerList(int render_process_host_id,
 
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+  auto* context = web_contents->GetBrowserContext();
   auto* intent_helper_bridge =
-      web_contents ? ArcIntentHelperBridge::GetForBrowserContext(
-                         web_contents->GetBrowserContext())
+      web_contents ? ArcIntentHelperBridge::GetForBrowserContext(context)
                    : nullptr;
 
   // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
@@ -700,7 +700,7 @@ void OnUrlHandlerList(int render_process_host_id,
                 handlers.size(), &result, safe_to_bypass_ui)) {
     if (result == GetActionResult::HANDLE_URL_IN_ARC) {
       apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-          std::string(), apps::PickerEntryType::kArc,
+          context, std::string(), apps::PickerEntryType::kArc,
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
           apps::Source::kExternalProtocol,
           /*should_persist=*/false);

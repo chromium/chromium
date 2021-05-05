@@ -13,6 +13,10 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace apps {
 
 class IntentHandlingMetrics {
@@ -98,6 +102,7 @@ class IntentHandlingMetrics {
                                         Platform platform);
 
   static void RecordIntentPickerUserInteractionMetrics(
+      content::BrowserContext* context,
       const std::string& selected_app_package,
       PickerEntryType entry_type,
       IntentPickerCloseReason close_reason,

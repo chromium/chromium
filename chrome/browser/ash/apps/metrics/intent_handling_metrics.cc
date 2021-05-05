@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 
 namespace apps {
 
@@ -29,6 +30,7 @@ void IntentHandlingMetrics::RecordIntentPickerMetrics(Source source,
 }
 
 void IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+    content::BrowserContext* context,
     const std::string& selected_app_package,
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
@@ -37,8 +39,8 @@ void IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
   if (entry_type == PickerEntryType::kArc &&
       (close_reason == IntentPickerCloseReason::PREFERRED_APP_FOUND ||
        close_reason == IntentPickerCloseReason::OPEN_APP)) {
-    UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction",
-                              arc::UserInteractionType::APP_STARTED_FROM_LINK);
+    arc::ArcMetricsService::RecordArcUserInteraction(
+        context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
   PickerAction action =
       GetPickerAction(entry_type, close_reason, should_persist);

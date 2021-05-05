@@ -39,6 +39,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
@@ -690,9 +691,8 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     arc_file_system->OpenUrlsWithPermission(std::move(request),
                                             base::DoNothing());
 
-    UMA_HISTOGRAM_ENUMERATION(
-        "Arc.UserInteraction",
-        arc::UserInteractionType::APP_STARTED_FROM_STYLUS_TOOLS);
+    arc::ArcMetricsService::RecordArcUserInteraction(
+        profile, arc::UserInteractionType::APP_STARTED_FROM_STYLUS_TOOLS);
 
     return LaunchResult::ANDROID_SUCCESS;
   }

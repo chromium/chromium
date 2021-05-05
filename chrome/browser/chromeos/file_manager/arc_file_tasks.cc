@@ -31,6 +31,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -306,9 +307,8 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   std::move(done).Run(
       extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Arc.UserInteraction",
-      arc::UserInteractionType::APP_STARTED_FROM_FILE_MANAGER);
+  arc::ArcMetricsService::RecordArcUserInteraction(
+      profile, arc::UserInteractionType::APP_STARTED_FROM_FILE_MANAGER);
 }
 
 }  // namespace

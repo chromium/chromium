@@ -157,6 +157,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       // separately in ArcNotificationItemImpl.
       if (event->type() == ui::ET_MOUSE_RELEASED ||
           event->type() == ui::ET_GESTURE_TAP) {
+        // TODO(b/185943161): Record this in arc::ArcMetricsService.
         UMA_HISTOGRAM_ENUMERATION(
             "Arc.UserInteraction",
             arc::UserInteractionType::NOTIFICATION_INTERACTION);

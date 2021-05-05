@@ -184,6 +184,7 @@ void ArcNotificationItemImpl::Click() {
   // This is reached when user focuses on the notification and hits enter on
   // keyboard. Mouse clicks and taps are handled separately in
   // ArcNotificationContentView.
+  // TODO(b/185943161): Record this in arc::ArcMetricsService.
   UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction",
                             arc::UserInteractionType::NOTIFICATION_INTERACTION);
 }

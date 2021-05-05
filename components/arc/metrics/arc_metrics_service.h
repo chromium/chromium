@@ -18,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -76,6 +77,10 @@ class ArcMetricsService : public KeyedService,
 
   // KeyedService overrides.
   void Shutdown() override;
+
+  // Records one of Arc.UserInteraction UMA stats. |context| cannot be null.
+  static void RecordArcUserInteraction(content::BrowserContext* context,
+                                       UserInteractionType type);
 
   // Sets the histogram namer. Required to not have a dependency on browser
   // codebase.
@@ -193,6 +198,7 @@ class ArcMetricsService : public KeyedService,
     DISALLOW_COPY_AND_ASSIGN(AppLauncherObserver);
   };
 
+  void RecordArcUserInteraction(UserInteractionType type);
   void RequestProcessList();
   void ParseProcessList(std::vector<mojom::RunningAppProcessInfoPtr> processes);
 

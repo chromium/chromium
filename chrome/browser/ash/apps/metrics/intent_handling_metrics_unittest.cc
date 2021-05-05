@@ -8,14 +8,19 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/arc/arc_prefs.h"
+#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/metrics/arc_metrics_service.h"
+#include "components/arc/metrics/stability_metrics_manager.h"
+#include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
 
-typedef testing::Test IntentHandlingMetricsTest;
-
-TEST_F(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
+TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
   base::HistogramTester histogram_tester;
 
   IntentHandlingMetrics test = IntentHandlingMetrics();
@@ -41,14 +46,39 @@ TEST_F(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
       IntentHandlingMetrics::Platform::ARC, 1);
 }
 
-TEST_F(IntentHandlingMetricsTest,
+// A fixture class that sets up arc::ArcMetricsService.
+class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
+ protected:
+  IntentHandlingMetricsTestWithMetricsService() = default;
+  IntentHandlingMetricsTestWithMetricsService(
+      const IntentHandlingMetricsTestWithMetricsService&) = delete;
+  IntentHandlingMetricsTestWithMetricsService& operator=(
+      const IntentHandlingMetricsTestWithMetricsService&) = delete;
+  ~IntentHandlingMetricsTestWithMetricsService() override = default;
+
+  void SetUp() override {
+    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    arc::StabilityMetricsManager::Initialize(&local_state_);
+    arc::ArcMetricsService::GetForBrowserContextForTesting(profile());
+  }
+
+  Profile* profile() { return &profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  arc::ArcServiceManager arc_service_manager_;
+  TestingPrefServiceSimple local_state_;
+  TestingProfile profile_;
+};
+
+TEST_F(IntentHandlingMetricsTestWithMetricsService,
        TestRecordIntentPickerUserInteractionMetrics) {
   base::HistogramTester histogram_tester;
 
   IntentHandlingMetrics test = IntentHandlingMetrics();
   test.RecordIntentPickerUserInteractionMetrics(
-      "app_package", PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
-      Source::kExternalProtocol, true);
+      profile(), "app_package", PickerEntryType::kArc,
+      IntentPickerCloseReason::OPEN_APP, Source::kExternalProtocol, true);
 
   histogram_tester.ExpectBucketCount(
       "Arc.UserInteraction", arc::UserInteractionType::APP_STARTED_FROM_LINK,
@@ -59,7 +89,7 @@ TEST_F(IntentHandlingMetricsTest,
       IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED, 1);
 }
 
-TEST_F(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
+TEST(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
   base::HistogramTester histogram_tester;
 
   IntentHandlingMetrics test = IntentHandlingMetrics();
@@ -71,7 +101,7 @@ TEST_F(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
       arc::ProtocolAction::IRC_ACCEPTED_PERSISTED, 1);
 }
 
-TEST_F(IntentHandlingMetricsTest, TestRecordOpenBrowserMetrics) {
+TEST(IntentHandlingMetricsTest, TestRecordOpenBrowserMetrics) {
   base::HistogramTester histogram_tester;
 
   IntentHandlingMetrics test;

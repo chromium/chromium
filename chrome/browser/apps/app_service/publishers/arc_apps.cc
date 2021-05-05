@@ -41,6 +41,8 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
@@ -670,8 +672,8 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction",
-                            user_interaction_type.value());
+  arc::ArcMetricsService::RecordArcUserInteraction(
+      profile_, user_interaction_type.value());
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
