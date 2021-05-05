@@ -115,7 +115,7 @@ void FidoDeviceAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   if (!request.pin_auth &&
       options_->user_verification_availability ==
           UserVerificationAvailability::kSupportedAndConfigured &&
-      !request.is_u2f_only) {
+      !options_->make_cred_uv_not_required && !request.is_u2f_only) {
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request.user_verification = UserVerificationRequirement::kDiscouraged;

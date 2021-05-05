@@ -3840,29 +3840,25 @@ class UVTestAuthenticatorClientDelegate
 
 class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
  public:
+  // ContentBrowserClient:
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<UVTestAuthenticatorClientDelegate>(
-        &collected_pin_, &min_pin_length_, &did_bio_enrollment_,
-        cancel_bio_enrollment_);
+        &collected_pin, &min_pin_length, &did_bio_enrollment,
+        cancel_bio_enrollment);
   }
 
-  bool collected_pin() { return collected_pin_; }
+  TestWebAuthenticationDelegate web_authentication_delegate;
 
-  uint32_t min_pin_length() { return min_pin_length_; }
-
-  bool did_bio_enrollment() { return did_bio_enrollment_; }
-
-  void set_cancel_bio_enrollment(bool cancel_bio_enrollment) {
-    cancel_bio_enrollment_ = cancel_bio_enrollment;
-  }
-
- private:
-  bool collected_pin_;
-  uint32_t min_pin_length_ = 0;
-  bool did_bio_enrollment_;
-  bool cancel_bio_enrollment_ = false;
+  bool collected_pin;
+  uint32_t min_pin_length = 0;
+  bool did_bio_enrollment;
+  bool cancel_bio_enrollment = false;
 };
 
 class UVAuthenticatorImplTest : public AuthenticatorImplTest {
@@ -4993,8 +4989,8 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialFallBackToPin) {
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
 }
 
 TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialCryptotoken) {
@@ -5037,16 +5033,16 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialInlineBioEnrollment) {
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
-  EXPECT_TRUE(test_client_.did_bio_enrollment());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
+  EXPECT_TRUE(test_client_.did_bio_enrollment);
   EXPECT_TRUE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
 }
 
 // Test making a credential skipping biometric enrollment during credential
 // creation.
 TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialSkipInlineBioEnrollment) {
-  test_client_.set_cancel_bio_enrollment(true);
+  test_client_.cancel_bio_enrollment = true;
 
   device::VirtualCtap2Device::Config config;
   config.internal_uv_support = true;
@@ -5064,10 +5060,55 @@ TEST_F(InternalUVAuthenticatorImplTest, MakeCredentialSkipInlineBioEnrollment) {
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
-  EXPECT_TRUE(test_client_.did_bio_enrollment());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
+  EXPECT_TRUE(test_client_.did_bio_enrollment);
   EXPECT_FALSE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
+}
+
+TEST_F(InternalUVAuthenticatorImplTest, MakeCredUvNotRqd) {
+  // Test that on an authenticator with the makeCredUvNotRqd option enabled,
+  // non-discoverable credentials can be created without requiring UV or a PIN.
+  for (bool discoverable : {false, true}) {
+    for (bool request_uv : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "discoverable=" << discoverable
+                                      << " request_uv=" << request_uv);
+
+      test_client_.web_authentication_delegate.supports_resident_keys = true;
+      ResetVirtualDevice();
+      device::VirtualCtap2Device::Config config;
+      config.u2f_support = true;
+      config.internal_uv_support = true;
+      config.user_verification_succeeds = true;
+      config.pin_support = true;
+      config.resident_key_support = true;
+      config.pin_uv_auth_token_support = true;
+      config.allow_non_resident_credential_creation_without_uv = true;
+      config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+      virtual_device_factory_->SetCtap2Config(config);
+      virtual_device_factory_->mutable_state()->pin = kTestPIN;
+      virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+
+      PublicKeyCredentialCreationOptionsPtr request = make_credential_options();
+      request->authenticator_selection
+          ->SetUserVerificationRequirementForTesting(
+              request_uv ? device::UserVerificationRequirement::kPreferred
+                         : device::UserVerificationRequirement::kDiscouraged);
+      request->authenticator_selection->SetResidentKeyForTesting(
+          discoverable ? device::ResidentKeyRequirement::kPreferred
+                       : device::ResidentKeyRequirement::kDiscouraged);
+
+      MakeCredentialResult result =
+          AuthenticatorMakeCredential(std::move(request));
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      EXPECT_EQ(HasUV(result.response), discoverable || request_uv);
+      EXPECT_FALSE(test_client_.collected_pin);
+      // Requests shouldn't fall back to creating U2F credentials.
+      EXPECT_FALSE(virtual_device_factory_->mutable_state()
+                       ->registrations.begin()
+                       ->second.is_u2f);
+    }
+  }
 }
 
 TEST_F(InternalUVAuthenticatorImplTest, GetAssertion) {
@@ -5123,8 +5164,8 @@ TEST_F(InternalUVAuthenticatorImplTest, GetAssertionFallbackToPIN) {
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   EXPECT_TRUE(HasUV(result.response));
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
 }
 
 TEST_F(InternalUVAuthenticatorImplTest, GetAssertionCryptotoken) {
@@ -5259,8 +5300,8 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionFallBackToPin) {
             AuthenticatorStatus::SUCCESS);
   // 5 retries + 1 tap for the actual get assertion request.
   EXPECT_EQ(taps, 6);
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -5284,8 +5325,8 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionUvBlockedFallBackToPin) {
 
   EXPECT_EQ(AuthenticatorGetAssertion(get_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -5378,8 +5419,8 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialFallBackToPin) {
             AuthenticatorStatus::SUCCESS);
   // 5 retries + 1 tap for the actual get assertion request.
   EXPECT_EQ(taps, 6);
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
@@ -5403,8 +5444,8 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUvBlockedFallBackToPin) {
 
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::SUCCESS);
-  EXPECT_TRUE(test_client_.collected_pin());
-  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length());
+  EXPECT_TRUE(test_client_.collected_pin);
+  EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
