@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
@@ -29,6 +30,14 @@ class WorkletLoader;
 // Represents a bidder worklet for FLEDGE
 // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md). Loads and runs the
 // bidder worklet's Javascript.
+//
+// Each worklet object can only be used to load and run a single script's
+// generateBid() and (if the bid is won) reportWin() once.
+//
+// TODO(mmenke): Make worklets reuseable. Allow a single BidderWorklet instance
+// to both be used for two generateBid() calls for different interest groups
+// with the same owner in the same auction, and to be used to bid for the same
+// interest group in different auctions.
 class BidderWorklet {
  public:
   struct BidResult {
@@ -83,11 +92,16 @@ class BidderWorklet {
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
-  // Must be destroyed before `v8_helper`. No data is leaked between consecutive
-  // invocations of this method, or between invocations of this method and
-  // GenerateBid().
+  // Must be destroyed before `v8_helper`.
+  //
+  // Data is cached and reused in GenerateBid() and ReportWin().
   BidderWorklet(network::mojom::URLLoaderFactory* url_loader_factory,
-                const GURL& script_source_url,
+                mojom::BiddingInterestGroupPtr bidding_interest_group,
+                const base::Optional<std::string>& auction_signals_json,
+                const base::Optional<std::string>& per_buyer_signals_json,
+                const url::Origin& browser_signal_top_window_origin,
+                const std::string& browser_signal_seller,
+                base::Time auction_start_time,
                 AuctionV8Helper* v8_helper,
                 LoadWorkletCallback load_worklet_callback);
   explicit BidderWorklet(const BidderWorklet&) = delete;
@@ -96,29 +110,12 @@ class BidderWorklet {
 
   // Calls generateBid(), and returns resulting bid, if any. May only be called
   // once BidderWorklet has successfully loaded.
-  BidResult GenerateBid(
-      const blink::mojom::InterestGroup& interest_group,
-      const base::Optional<std::string>& auction_signals_json,
-      const base::Optional<std::string>& per_buyer_signals_json,
-      const std::vector<std::string>& trusted_bidding_signals_keys,
-      TrustedBiddingSignals* trusted_bidding_signals,
-      const std::string& browser_signal_top_window_hostname,
-      const std::string& browser_signal_seller,
-      int browser_signal_join_count,
-      int browser_signal_bid_count,
-      const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
-          browser_signal_prev_wins,
-      base::Time auction_start_time);
+  BidResult GenerateBid(TrustedBiddingSignals* trusted_bidding_signals);
 
   // Calls reportWin(), and returns reporting information. May only be called
   // once the worklet has successfully loaded.
   ReportWinResult ReportWin(
-      const base::Optional<std::string>& auction_signals_json,
-      const base::Optional<std::string>& per_buyer_signals_json,
       const std::string& seller_signals_json,
-      const std::string& browser_signal_top_window_hostname,
-      const url::Origin& browser_signal_interest_group_owner,
-      const std::string& browser_signal_interest_group_name,
       const GURL& browser_signal_render_url,
       const std::string& browser_signal_ad_render_fingerprint,
       double browser_signal_bid);
@@ -129,6 +126,14 @@ class BidderWorklet {
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script);
 
   AuctionV8Helper* const v8_helper_;
+  const mojom::BiddingInterestGroupPtr bidding_interest_group_;
+
+  const base::Optional<std::string> auction_signals_json_;
+  const base::Optional<std::string> per_buyer_signals_json_;
+  const std::string browser_signal_top_window_hostname_;
+  const std::string browser_signal_seller_;
+  const base::Time auction_start_time_;
+
   std::unique_ptr<WorkletLoader> worklet_loader_;
 
   // Compiled script, not bound to any context. Can be repeatedly bound to

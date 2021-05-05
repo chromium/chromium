@@ -68,13 +68,28 @@ BidderWorklet::ReportWinResult::ReportWinResult(GURL report_url)
 
 BidderWorklet::BidderWorklet(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const GURL& script_source_url,
+    mojom::BiddingInterestGroupPtr bidding_interest_group,
+    const base::Optional<std::string>& auction_signals_json,
+    const base::Optional<std::string>& per_buyer_signals_json,
+    const url::Origin& browser_signal_top_window_origin,
+    const std::string& browser_signal_seller,
+    base::Time auction_start_time,
     AuctionV8Helper* v8_helper,
     LoadWorkletCallback load_worklet_callback)
-    : v8_helper_(v8_helper) {
+    : v8_helper_(v8_helper),
+      bidding_interest_group_(std::move(bidding_interest_group)),
+      auction_signals_json_(auction_signals_json),
+      per_buyer_signals_json_(per_buyer_signals_json),
+      browser_signal_top_window_hostname_(
+          browser_signal_top_window_origin.host()),
+      browser_signal_seller_(browser_signal_seller),
+      auction_start_time_(auction_start_time) {
   DCHECK(load_worklet_callback);
+  // TODO(mmenke): Remove up the value_or() - auction worklets shouldn't be
+  // created when there's no bidding URL.
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory, script_source_url, v8_helper,
+      url_loader_factory,
+      bidding_interest_group_->group->bidding_url.value_or(GURL()), v8_helper,
       base::BindOnce(&BidderWorklet::OnDownloadComplete, base::Unretained(this),
                      std::move(load_worklet_callback)));
 }
@@ -82,18 +97,9 @@ BidderWorklet::BidderWorklet(
 BidderWorklet::~BidderWorklet() = default;
 
 BidderWorklet::BidResult BidderWorklet::GenerateBid(
-    const blink::mojom::InterestGroup& interest_group,
-    const base::Optional<std::string>& auction_signals_json,
-    const base::Optional<std::string>& per_buyer_signals_json,
-    const std::vector<std::string>& trusted_bidding_signals_keys,
-    TrustedBiddingSignals* trusted_bidding_signals,
-    const std::string& browser_signal_top_window_hostname,
-    const std::string& browser_signal_seller,
-    int browser_signal_join_count,
-    int browser_signal_bid_count,
-    const std::vector<mojo::StructPtr<mojom::PreviousWin>>&
-        browser_signal_prev_wins,
-    base::Time auction_start_time) {
+    TrustedBiddingSignals* trusted_bidding_signals) {
+  const blink::mojom::InterestGroup& interest_group =
+      *bidding_interest_group_->group;
   // Can't make a bid without any ads.
   if (!interest_group.ads)
     return BidResult();
@@ -140,35 +146,39 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
 
   args.push_back(std::move(interest_group_object));
 
-  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json,
+  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json_,
                              &args) ||
-      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json,
+      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
                              &args)) {
     return BidResult();
   }
 
   v8::Local<v8::Value> trusted_signals;
-  if (!trusted_bidding_signals || trusted_bidding_signals_keys.empty()) {
+  if (!trusted_bidding_signals ||
+      !interest_group.trusted_bidding_signals_keys ||
+      interest_group.trusted_bidding_signals_keys->empty()) {
     trusted_signals = v8::Null(isolate);
   } else {
     trusted_signals = trusted_bidding_signals->GetSignals(
-        context, trusted_bidding_signals_keys);
+        context, *interest_group.trusted_bidding_signals_keys);
   }
   args.push_back(trusted_signals);
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
-                                browser_signal_top_window_hostname) ||
-      !browser_signals_dict.Set("seller", browser_signal_seller) ||
-      !browser_signals_dict.Set("joinCount", browser_signal_join_count) ||
-      !browser_signals_dict.Set("bidCount", browser_signal_bid_count)) {
+                                browser_signal_top_window_hostname_) ||
+      !browser_signals_dict.Set("seller", browser_signal_seller_) ||
+      !browser_signals_dict.Set("joinCount",
+                                bidding_interest_group_->signals->join_count) ||
+      !browser_signals_dict.Set("bidCount",
+                                bidding_interest_group_->signals->bid_count)) {
     return BidResult();
   }
 
   std::vector<v8::Local<v8::Value>> prev_wins_v8;
-  for (const auto& prev_win : browser_signal_prev_wins) {
-    int64_t time_delta = (auction_start_time - prev_win->time).InSeconds();
+  for (const auto& prev_win : bidding_interest_group_->signals->prev_wins) {
+    int64_t time_delta = (auction_start_time_ - prev_win->time).InSeconds();
     // Don't give negative times if clock has changed since last auction win.
     // Clock changes do mean times can be out of numerical order, despite being
     // in chronological order.
@@ -230,12 +240,7 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
 }
 
 BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
-    const base::Optional<std::string>& auction_signals_json,
-    const base::Optional<std::string>& per_buyer_signals_json,
     const std::string& seller_signals_json,
-    const std::string& browser_signal_top_window_hostname,
-    const url::Origin& browser_signal_interest_group_owner,
-    const std::string& browser_signal_interest_group_name,
     const GURL& browser_signal_render_url,
     const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid) {
@@ -252,9 +257,9 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
-  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json,
+  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json_,
                              &args) ||
-      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json,
+      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
     return ReportWinResult();
@@ -263,12 +268,12 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
-                                browser_signal_top_window_hostname) ||
+                                browser_signal_top_window_hostname_) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
-          browser_signal_interest_group_owner.Serialize()) ||
+          bidding_interest_group_->group->owner.Serialize()) ||
       !browser_signals_dict.Set("interestGroupName",
-                                browser_signal_interest_group_name) ||
+                                bidding_interest_group_->group->name) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("adRenderFingerprint",

@@ -60,7 +60,10 @@ void AuctionRunner::StartBidding() {
     bid_state->bidder = bidder.get();
     // TODO(morlovich): Straight skip if URL is missing.
     bid_state->bidder_worklet = std::make_unique<BidderWorklet>(
-        url_loader_factory_.get(), bidder->group->bidding_url.value_or(GURL()),
+        url_loader_factory_.get(), bidder->Clone(),
+        auction_config_->auction_signals, PerBuyerSignals(bid_state),
+        browser_signals_->top_frame_origin,
+        browser_signals_->seller.Serialize(), auction_start_time_,
         &auction_v8_helper_,
         base::BindOnce(&AuctionRunner::OnBidderScriptLoaded,
                        base::Unretained(this), bid_state));
@@ -128,16 +131,8 @@ void AuctionRunner::MaybeRunBid(BidState* state) {
 
 void AuctionRunner::RunBid(BidState* state) {
   base::TimeTicks start = base::TimeTicks::Now();
-  state->bid_result = state->bidder_worklet->GenerateBid(
-      *state->bidder->group, auction_config_->auction_signals,
-      PerBuyerSignals(state),
-      state->bidder->group->trusted_bidding_signals_keys.value_or(
-          std::vector<std::string>()),
-      state->trusted_bidding_signals.get(),
-      browser_signals_->top_frame_origin.host(),
-      browser_signals_->seller.Serialize(), state->bidder->signals->join_count,
-      state->bidder->signals->bid_count, state->bidder->signals->prev_wins,
-      auction_start_time_);
+  state->bid_result =
+      state->bidder_worklet->GenerateBid(state->trusted_bidding_signals.get());
   state->bid_duration = base::TimeTicks::Now() - start;
 }
 
@@ -241,10 +236,7 @@ BidderWorklet::ReportWinResult AuctionRunner::ReportBidWin(
     const BidState* best_bid,
     const SellerWorklet::Report& seller_report) {
   return best_bid->bidder_worklet->ReportWin(
-      auction_config_->auction_signals, PerBuyerSignals(best_bid),
-      seller_report.signals_for_winner,
-      browser_signals_->top_frame_origin.host(), best_bid->bidder->group->owner,
-      best_bid->bidder->group->name, best_bid->bid_result.render_url,
+      seller_report.signals_for_winner, best_bid->bid_result.render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result.bid);
 }
 

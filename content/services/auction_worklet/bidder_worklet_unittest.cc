@@ -75,15 +75,17 @@ class BidderWorkletTest : public testing::Test {
     interest_group_ads_.clear();
     interest_group_ads_.push_back(blink::mojom::InterestGroupAd::New(
         GURL("https://response.test/"), base::nullopt /* metadata */));
+    browser_signal_join_count_ = 2;
+    browser_signal_bid_count_ = 3;
+    browser_signal_prev_wins_.clear();
+
     auction_signals_ = "[\"auction_signals\"]";
     null_auction_signals_ = false;
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
     null_per_buyer_signals_ = false;
-    browser_signal_top_window_hostname_ = "browser_signal_top_window_hostname";
+    browser_signal_top_window_origin_ =
+        url::Origin::Create(GURL("https://top.window.test/"));
     browser_signal_seller_ = "browser_signal_seller";
-    browser_signal_join_count_ = 2;
-    browser_signal_bid_count_ = 3;
-    browser_signal_prev_wins_.clear();
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_ad_render_fingerprint_ =
@@ -106,7 +108,8 @@ class BidderWorkletTest : public testing::Test {
       const std::string& javascript,
       const BidderWorklet::BidResult& expected_result) {
     SCOPED_TRACE(javascript);
-    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
+    AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                          javascript);
     RunGenerateBidExpectingResult(expected_result);
   }
 
@@ -123,31 +126,7 @@ class BidderWorkletTest : public testing::Test {
   }
 
   BidderWorklet::BidResult RunGenerateBid(BidderWorklet* bidder_worket) {
-    blink::mojom::InterestGroupPtr interest_group =
-        blink::mojom::InterestGroup::New();
-    interest_group->owner = interest_group_owner_;
-    interest_group->name = interest_group_name_;
-    // Convert a string to an optional. Empty string means empty optional value.
-    if (!interest_group_user_bidding_signals_.empty()) {
-      interest_group->user_bidding_signals =
-          interest_group_user_bidding_signals_;
-    }
-    interest_group->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
-    for (const auto& ad : interest_group_ads_) {
-      interest_group->ads->emplace_back(ad.Clone());
-    }
-    return bidder_worket->GenerateBid(
-        *interest_group,
-        null_auction_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(auction_signals_),
-        null_per_buyer_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(per_buyer_signals_),
-        trusted_bidding_signals_keys_, trusted_bidding_signals_.get(),
-        browser_signal_top_window_hostname_, browser_signal_seller_,
-        browser_signal_join_count_, browser_signal_bid_count_,
-        browser_signal_prev_wins_, auction_start_time_);
+    return bidder_worket->GenerateBid(trusted_bidding_signals_.get());
   }
 
   void ExpectBidResultsEqual(const BidderWorklet::BidResult& expected_result,
@@ -173,7 +152,8 @@ class BidderWorkletTest : public testing::Test {
       const std::string& javascript,
       const GURL& expected_report_url) {
     SCOPED_TRACE(javascript);
-    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
+    AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                          javascript);
     RunReportWinExpectingResult(expected_report_url);
   }
 
@@ -184,14 +164,7 @@ class BidderWorkletTest : public testing::Test {
     ASSERT_TRUE(bidder_worket);
 
     BidderWorklet::ReportWinResult actual_result = bidder_worket->ReportWin(
-        null_auction_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(auction_signals_),
-        null_per_buyer_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(per_buyer_signals_),
-        seller_signals_, browser_signal_top_window_hostname_,
-        interest_group_owner_, interest_group_name_, browser_signal_render_url_,
+        seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_);
     EXPECT_EQ(!expected_report_url.is_empty(), actual_result.success);
     EXPECT_EQ(expected_report_url, actual_result.report_url);
@@ -202,9 +175,42 @@ class BidderWorkletTest : public testing::Test {
   std::unique_ptr<BidderWorklet> CreateWorklet() {
     CHECK(!load_script_run_loop_);
 
+    blink::mojom::InterestGroupPtr interest_group =
+        blink::mojom::InterestGroup::New();
+    interest_group->owner = interest_group_owner_;
+    interest_group->name = interest_group_name_;
+    interest_group->bidding_url = interest_group_bidding_url_;
+    // Convert a string to an optional. Empty string means empty optional value.
+    if (!interest_group_user_bidding_signals_.empty()) {
+      interest_group->user_bidding_signals =
+          interest_group_user_bidding_signals_;
+    }
+    interest_group->trusted_bidding_signals_keys =
+        interest_group_trusted_bidding_signals_keys_;
+    interest_group->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
+    for (const auto& ad : interest_group_ads_) {
+      interest_group->ads->emplace_back(ad.Clone());
+    }
+
+    mojom::BiddingBrowserSignalsPtr bidding_browser_signals =
+        mojom::BiddingBrowserSignals::New(
+            browser_signal_join_count_, browser_signal_bid_count_,
+            CloneWinList(browser_signal_prev_wins_));
+    mojom::BiddingInterestGroupPtr bidding_interest_group =
+        mojom::BiddingInterestGroup::New(std::move(interest_group),
+                                         std::move(bidding_browser_signals));
+
     create_worklet_succeeded_ = false;
     auto bidder_worket = std::make_unique<BidderWorklet>(
-        &url_loader_factory_, url_, &v8_helper_,
+        &url_loader_factory_, std::move(bidding_interest_group),
+        null_auction_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(auction_signals_),
+        null_per_buyer_signals_
+            ? base::nullopt
+            : base::make_optional<std::string>(per_buyer_signals_),
+        browser_signal_top_window_origin_, browser_signal_seller_,
+        auction_start_time_, &v8_helper_,
         base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
                        base::Unretained(this)));
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -216,6 +222,15 @@ class BidderWorkletTest : public testing::Test {
   }
 
  protected:
+  std::vector<mojo::StructPtr<mojom::PreviousWin>> CloneWinList(
+      const std::vector<mojo::StructPtr<mojom::PreviousWin>>& prev_win_list) {
+    std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
+    for (const auto& prev_win : prev_win_list) {
+      out.push_back(prev_win->Clone());
+    }
+    return out;
+  }
+
   void CreateWorkletCallback(bool success) {
     create_worklet_succeeded_ = success;
     load_script_run_loop_->Quit();
@@ -223,17 +238,19 @@ class BidderWorkletTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  const GURL url_ = GURL("https://url.test/");
-
-  // Arguments passed to generateBid() and reportWin(). Arguments that both
-  // methods take are shared, as are interest group fields that also appear in
-  // `browserSignals`.
+  // Values used to construct the BiddingInterestGroup passed to the
+  // BidderWorklet.
   url::Origin interest_group_owner_;
   std::string interest_group_name_;
-  // This is actually an option value, but to make testing easier, use a string.
-  // An empty string means nullptr.
+  const GURL interest_group_bidding_url_ = GURL("https://url.test/");
+  // This is actually an optional value, but to make testing easier, use a
+  // string. An empty string means nullptr.
   std::string interest_group_user_bidding_signals_;
   std::vector<blink::mojom::InterestGroupAdPtr> interest_group_ads_;
+  std::vector<std::string> interest_group_trusted_bidding_signals_keys_;
+  int browser_signal_join_count_;
+  int browser_signal_bid_count_;
+  std::vector<mojo::StructPtr<mojom::PreviousWin>> browser_signal_prev_wins_;
 
   std::string auction_signals_;
   // true to pass nullopt rather than `auction_signals_`.
@@ -243,12 +260,8 @@ class BidderWorkletTest : public testing::Test {
   // true to pass nullopt rather than `per_buyer_signals_`.
   bool null_per_buyer_signals_ = false;
 
-  std::string browser_signal_top_window_hostname_;
+  url::Origin browser_signal_top_window_origin_;
   std::string browser_signal_seller_;
-  int browser_signal_join_count_;
-  int browser_signal_bid_count_;
-  std::vector<mojo::StructPtr<mojom::PreviousWin>> browser_signal_prev_wins_;
-  std::vector<std::string> trusted_bidding_signals_keys_;
   std::unique_ptr<TrustedBiddingSignals> trusted_bidding_signals_;
   std::string seller_signals_;
   GURL browser_signal_render_url_;
@@ -270,13 +283,15 @@ class BidderWorkletTest : public testing::Test {
 };
 
 TEST_F(BidderWorkletTest, NetworkError) {
-  url_loader_factory_.AddResponse(url_.spec(), CreateBasicGenerateBidScript(),
+  url_loader_factory_.AddResponse(interest_group_bidding_url_.spec(),
+                                  CreateBasicGenerateBidScript(),
                                   net::HTTP_NOT_FOUND);
   EXPECT_FALSE(CreateWorklet());
 }
 
 TEST_F(BidderWorkletTest, CompileError) {
-  AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
 }
 
@@ -489,11 +504,6 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
           &per_buyer_signals_,
       },
       {
-          "browserSignals.topWindowHostname",
-          false /* is_json */,
-          &browser_signal_top_window_hostname_,
-      },
-      {
           "browserSignals.seller",
           false /* is_json */,
           &browser_signal_seller_,
@@ -556,6 +566,14 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad:typeof interestGroup.userBiddingSignals, bid:1, render:"https://response.test/"})",
       BidderWorklet::BidResult(R"("undefined")", 1,
+                               GURL("https://response.test/")));
+  SetDefaultParameters();
+
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://top.window.test/"));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: browserSignals.topWindowHostname, bid:1, render:"https://response.test/"})",
+      BidderWorklet::BidResult(R"("top.window.test")", 1,
                                GURL("https://response.test/")));
   SetDefaultParameters();
 
@@ -780,18 +798,18 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       BidderWorklet::BidResult("null", 1, GURL("https://response.test/")));
 
-  trusted_bidding_signals_keys_ = {"key1"};
+  interest_group_trusted_bidding_signals_keys_ = {"key1"};
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals["key1"], bid:1, render:"https://response.test/"})",
       BidderWorklet::BidResult("1", 1, GURL("https://response.test/")));
 
-  trusted_bidding_signals_keys_ = {"key2"};
+  interest_group_trusted_bidding_signals_keys_ = {"key2"};
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       BidderWorklet::BidResult(R"({"key2":[2]})", 1,
                                GURL("https://response.test/")));
 
-  trusted_bidding_signals_keys_ = {"key1", "key2"};
+  interest_group_trusted_bidding_signals_keys_ = {"key1", "key2"};
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       BidderWorklet::BidResult(R"({"key1":1,"key2":[2]})", 1,
@@ -851,11 +869,6 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
           &seller_signals_,
       },
       {
-          "browserSignals.topWindowHostname",
-          false /* is_json */,
-          &browser_signal_top_window_hostname_,
-      },
-      {
           "browserSignals.interestGroupName",
           false /* is_json */,
           &interest_group_name_,
@@ -895,6 +908,13 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo(browserSignals.interestGroupOwner))",
       GURL("https://[::1]:40000/"));
+  SetDefaultParameters();
+
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://top.window.test/"));
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(sendReportTo("https://" + browserSignals.topWindowHostname))",
+      GURL("https://top.window.test/"));
   SetDefaultParameters();
 
   browser_signal_render_url_ = GURL("https://shrimp.test/");
@@ -949,7 +969,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   // Use arrays so that all values are references, to catch both the case where
   // variables are persisted, and the case where what they refer to is
   // persisted, but variables are overwritten between runs.
-  AddJavascriptResponse(&url_loader_factory_, url_,
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         R"(
         // Globally scoped variable.
         if (!globalThis.var1)
