@@ -47,3 +47,9 @@ void CombiningUploadList::ClearUploadList(const base::Time& begin,
     sublist->ClearUploadList(begin, end);
   }
 }
+
+void CombiningUploadList::RequestSingleUpload(const std::string& local_id) {
+  for (const scoped_refptr<UploadList>& sublist : sublists_) {
+    sublist->RequestSingleUpload(local_id);
+  }
+}

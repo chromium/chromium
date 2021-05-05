@@ -22,6 +22,7 @@ class CombiningUploadList : public UploadList {
   ~CombiningUploadList() override;
   std::vector<UploadInfo> LoadUploadList() override;
   void ClearUploadList(const base::Time& begin, const base::Time& end) override;
+  void RequestSingleUpload(const std::string& local_id) override;
 
  private:
   const std::vector<scoped_refptr<UploadList>> sublists_;

@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/upload_list/text_log_upload_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -274,6 +275,28 @@ TEST_F(CombiningUploadListTest, Clear) {
             R"({"upload_time":"1614003000","upload_id":"ddee0003"}
 {"upload_time":"1614009000","upload_id":"ddee0009"}
 )");
+}
+
+class MockUploadList : public UploadList {
+ public:
+  MOCK_METHOD0(LoadUploadList, std::vector<UploadInfo>());
+  MOCK_METHOD2(ClearUploadList, void(const base::Time&, const base::Time&));
+  MOCK_METHOD1(RequestSingleUpload, void(const std::string&));
+
+ protected:
+  ~MockUploadList() final = default;
+};
+
+TEST_F(CombiningUploadListTest, RequestSingleUpload) {
+  auto mock_list1 = base::MakeRefCounted<MockUploadList>();
+  auto mock_list2 = base::MakeRefCounted<MockUploadList>();
+  auto combined_lists = base::MakeRefCounted<CombiningUploadList>(
+      std::vector<scoped_refptr<UploadList>>({mock_list1, mock_list2}));
+
+  constexpr char kLocalId[] = "12345";
+  EXPECT_CALL(*mock_list1, RequestSingleUpload(kLocalId));
+  EXPECT_CALL(*mock_list2, RequestSingleUpload(kLocalId));
+  combined_lists->RequestSingleUploadAsync(kLocalId);
 }
 
 }  // namespace
