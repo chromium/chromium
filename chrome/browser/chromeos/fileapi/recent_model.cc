@@ -49,7 +49,7 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
   // Downloads / MyFiles.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetDownloadsMountPointName(profile),
-      false /* ignore_dotfiles */, 0 /* max_depth unlimited */,
+      true /* ignore_dotfiles */, 0 /* max_depth unlimited */,
       "FileBrowser.Recent.LoadDownloads"));
   sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
   return sources;
