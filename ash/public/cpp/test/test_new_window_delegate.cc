@@ -15,6 +15,7 @@ void TestNewWindowDelegate::NewTab() {}
 void TestNewWindowDelegate::NewTabWithUrl(const GURL& url,
                                           bool from_user_interaction) {}
 void TestNewWindowDelegate::NewWindow(bool incognito) {}
+void TestNewWindowDelegate::OpenCalculator() {}
 void TestNewWindowDelegate::OpenFileManager() {}
 void TestNewWindowDelegate::OpenDownloadsFolder() {}
 void TestNewWindowDelegate::OpenCrosh() {}

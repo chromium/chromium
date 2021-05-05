@@ -36,6 +36,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when the user uses Ctrl-N or Ctrl-Shift-N to open a new window.
   virtual void NewWindow(bool incognito) = 0;
 
+  // Invoked when an accelerator (calculator key) is used to open calculator.
+  virtual void OpenCalculator() = 0;
+
   // Invoked when an accelerator is used to open the file manager.
   virtual void OpenFileManager() = 0;
 

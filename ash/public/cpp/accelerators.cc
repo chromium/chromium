@@ -63,6 +63,7 @@ const AcceleratorData kAcceleratorData[] = {
     {false, ui::VKEY_SLEEP, ui::EF_NONE, LOCK_RELEASED},
     {true, ui::VKEY_POWER, ui::EF_NONE, POWER_PRESSED},
     {false, ui::VKEY_POWER, ui::EF_NONE, POWER_RELEASED},
+    {true, ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE, OPEN_CALCULATOR},
     {true, ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
      OPEN_DIAGNOSTICS},
     {true, ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, OPEN_FILE_MANAGER},

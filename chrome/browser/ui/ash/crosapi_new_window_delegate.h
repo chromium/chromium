@@ -24,6 +24,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
   void NewTab() override;
   void NewTabWithUrl(const GURL& url, bool from_user_interaction) override;
   void NewWindow(bool incognito) override;
+  void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;
   void OpenCrosh() override;

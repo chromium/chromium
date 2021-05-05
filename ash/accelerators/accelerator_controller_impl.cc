@@ -554,6 +554,11 @@ void HandleSwitchToNextIme(const ui::Accelerator& accelerator) {
   Shell::Get()->ime_controller()->SwitchToNextIme();
 }
 
+void HandleCalculator() {
+  base::RecordAction(UserMetricsAction("Accel_Open_Calculator"));
+  NewWindowDelegate::GetInstance()->OpenCalculator();
+}
+
 void HandleDiagnostics() {
   base::RecordAction(UserMetricsAction("Accel_Open_Diagnostics"));
   NewWindowDelegate::GetInstance()->OpenDiagnostics();
@@ -2089,6 +2094,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case MEDIA_STOP:
     case NEW_TAB:
     case NEW_WINDOW:
+    case OPEN_CALCULATOR:
     case OPEN_CROSH:
     case OPEN_DIAGNOSTICS:
     case OPEN_FEEDBACK_PAGE:
@@ -2318,6 +2324,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case NEW_WINDOW:
       HandleNewWindow();
+      break;
+    case OPEN_CALCULATOR:
+      HandleCalculator();
       break;
     case OPEN_CROSH:
       HandleCrosh();

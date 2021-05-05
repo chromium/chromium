@@ -31,6 +31,10 @@ void CrosapiNewWindowDelegate::NewWindow(bool incognito) {
   crosapi::BrowserManager::Get()->NewWindow(incognito);
 }
 
+void CrosapiNewWindowDelegate::OpenCalculator() {
+  delegate_->OpenCalculator();
+}
+
 void CrosapiNewWindowDelegate::OpenFileManager() {
   delegate_->OpenFileManager();
 }

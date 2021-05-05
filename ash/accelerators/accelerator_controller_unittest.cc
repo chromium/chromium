@@ -31,6 +31,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -68,6 +69,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -220,11 +222,22 @@ class DummyKeyboardBrightnessControlDelegate
   DISALLOW_COPY_AND_ASSIGN(DummyKeyboardBrightnessControlDelegate);
 };
 
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void, OpenCalculator, (), (override));
+};
+
 }  // namespace
 
 class AcceleratorControllerTest : public AshTestBase {
  public:
-  AcceleratorControllerTest() = default;
+  AcceleratorControllerTest() {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
+  }
   ~AcceleratorControllerTest() override = default;
 
   void SetUp() override {
@@ -361,6 +374,8 @@ class AcceleratorControllerTest : public AshTestBase {
 
   AcceleratorControllerImpl* controller_ = nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
+  MockNewWindowDelegate* new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AcceleratorControllerTest);
@@ -2126,6 +2141,18 @@ TEST_F(AcceleratorControllerTest, DeskShortcuts_Old) {
       ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
   EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
       ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+}
+
+TEST_F(AcceleratorControllerTest, CalculatorKey) {
+  // Verify that the launch calculator key (VKEY_MEDIA_LAUNCH_APP2) is
+  // registered.
+  ui::Accelerator accelerator(ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE);
+  EXPECT_TRUE(controller_->IsRegistered(accelerator));
+
+  // Verify that the delegate to open the app is called.
+  EXPECT_CALL(*new_window_delegate_, OpenCalculator)
+      .WillOnce(testing::Return());
+  EXPECT_TRUE(ProcessInController(accelerator));
 }
 
 namespace {

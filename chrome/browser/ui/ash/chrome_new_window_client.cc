@@ -355,6 +355,29 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito) {
                    : profile);
 }
 
+void ChromeNewWindowClient::OpenCalculator() {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  if (!registry)
+    return;
+
+  const extensions::Extension* extension =
+      registry->GetInstalledExtension(extension_misc::kCalculatorAppId);
+  if (!extension)
+    return;
+
+  auto url = GURL(extensions::Extension::GetBaseURLFromExtensionId(
+                      extension_misc::kCalculatorAppId)
+                      .spec());
+  apps::LaunchPlatformAppWithUrl(profile, extension,
+                                 /*handler_id=*/std::string(), url,
+                                 /*referrer_url=*/GURL());
+
+  apps::RecordAppLaunch(extension_misc::kCalculatorAppId,
+                        apps::mojom::LaunchSource::kFromKeyboard);
+}
+
 void ChromeNewWindowClient::OpenFileManager() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   apps::AppServiceProxyChromeOs* proxy =
