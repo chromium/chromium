@@ -308,7 +308,7 @@ void SharedImageInterfaceProxy::WaitSyncToken(const SyncToken& sync_token) {
       GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
   {
     base::AutoLock lock(lock_);
-    last_flush_id_ = host_->EnqueueDeferredMessage(GpuChannelMsg_Nop(),
+    last_flush_id_ = host_->EnqueueDeferredMessage(GpuChannelMsg_Nop(route_id_),
                                                    std::move(dependencies));
   }
 }

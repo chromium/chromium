@@ -214,7 +214,7 @@ IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
 
 // Simple NOP message which can be used as fence to ensure all previous sent
 // messages have been received.
-IPC_SYNC_MESSAGE_CONTROL0_0(GpuChannelMsg_Nop)
+IPC_SYNC_MESSAGE_ROUTED0_0(GpuChannelMsg_Nop)
 
 // Creates a StreamTexture attached to the provided |stream_id|.
 IPC_SYNC_MESSAGE_CONTROL1_1(GpuChannelMsg_CreateStreamTexture,
