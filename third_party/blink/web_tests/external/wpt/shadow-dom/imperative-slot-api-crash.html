@@ -14,10 +14,10 @@ This test passes if it does not crash.
   var slot1 = document.createElement("slot");
   slot1.id = "first_slot";
   shadow_root.appendChild(slot1);
-  slot1.assign([child1]);
+  slot1.assign(child1);
   slot1.remove();
   slot1 = document.createElement("slot");
   slot1.id = "second_slot";
   shadow_root.appendChild(slot1);
-  slot1.assign([child1]); // Shouldn't crash here
+  slot1.assign(child1); // Shouldn't crash here
 </script>

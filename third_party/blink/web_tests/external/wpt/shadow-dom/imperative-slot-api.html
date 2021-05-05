@@ -16,7 +16,7 @@ test(() => {
   assert_not_equals(tTree.host1.attachShadow({ mode: 'open', slotAssignment: 'manual'}),
                     null, 'slot assignment manual should work');
   assert_not_equals(tTree.host2.attachShadow({ mode: 'open', slotAssignment: 'named'}),
-                    null, 'slot assignment auto should work');
+                    null, 'slot assignment named should work');
   assert_throws_js(TypeError, () => {
     tTree.host3.attachShadow({ mode: 'open', slotAssignment: 'exceptional' })},
                 'others should throw exception');
@@ -47,14 +47,25 @@ test(() => {
 <script>
 test(() => {
   let tTree = createTestTree(test_assign);
+  tTree.s1.assign(c1,c2); // Should work
+  assert_throws_js(TypeError, () => {
+    tTree.s1.assign([c1,c2])
+  }, 'sequence not allowed');
+  assert_throws_js(TypeError, () => {
+    tTree.s1.assign([])
+  }, 'including empty sequences');
+}, 'slot.attach() should take variadic not sequence.');
+
+test(() => {
+  let tTree = createTestTree(test_assign);
   assert_array_equals(tTree.s2.assignedElements(), []);
   assert_equals(tTree.c1.assignedSlot, null);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
 
-  tTree.s2.assign([tTree.c2, tTree.c3]);
+  tTree.s2.assign(tTree.c2, tTree.c3);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
   assert_array_equals(tTree.s2.assignedNodes(), [tTree.c2, tTree.c3]);
 }, 'Imperative slot API can assign nodes in manual slot assignment.');
@@ -62,19 +73,19 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c2, tTree.c3, tTree.c1]);
+  tTree.s1.assign(tTree.c2, tTree.c3, tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c3, tTree.c1]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s1);
   assert_equals(tTree.c3.assignedSlot, tTree.s1);
 
-  tTree.s1.assign([tTree.c1, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c2);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s1);
   assert_equals(tTree.c3.assignedSlot, null);
 
-  tTree.s1.assign([tTree.c3, tTree.c2, tTree.c1]);
+  tTree.s1.assign(tTree.c3, tTree.c2, tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c3, tTree.c2, tTree.c1]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s1);
@@ -84,17 +95,17 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c2, tTree.c3, tTree.c1]);
+  tTree.s1.assign(tTree.c2, tTree.c3, tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c3, tTree.c1]);
 
-  tTree.s2.assign([tTree.c2]);
+  tTree.s2.assign(tTree.c2);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c3, tTree.c1]);
   assert_array_equals(tTree.s2.assignedNodes(), [tTree.c2]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s2);
   assert_equals(tTree.c3.assignedSlot, tTree.s1);
 
-  tTree.s3.assign([tTree.c3]);
+  tTree.s3.assign(tTree.c3);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
   assert_array_equals(tTree.s2.assignedNodes(), [tTree.c2]);
   assert_array_equals(tTree.s3.assignedNodes(), [tTree.c3]);
@@ -106,9 +117,9 @@ test(() => {
 test(() => {
  let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1]);
-  tTree.s2.assign([tTree.c2, tTree.c1]);
-  tTree.s3.assign([tTree.c1, tTree.c3]);
+  tTree.s1.assign(tTree.c1);
+  tTree.s2.assign(tTree.c2, tTree.c1);
+  tTree.s3.assign(tTree.c1, tTree.c3);
 
   assert_array_equals(tTree.s1.assignedNodes(), []);
   assert_array_equals(tTree.s2.assignedNodes(), [tTree.c2]);
@@ -123,7 +134,7 @@ test(() => {
 
   // tTree.c4 is invalid for tTree.host slot assignment.
   // No exception should be thrown here.
-  tTree.s1.assign([tTree.c1, tTree.c4, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c4, tTree.c2);
 
   // All observable assignments should skip c4.
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
@@ -151,7 +162,7 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c2, tTree.c3]);
+  tTree.s1.assign(tTree.c1, tTree.c2, tTree.c3);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2, tTree.c3]);
 
   tTree.host4.append(tTree.s1);
@@ -161,7 +172,7 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c2, tTree.c3]);
+  tTree.s1.assign(tTree.c1, tTree.c2, tTree.c3);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2, tTree.c3]);
 
   tTree.shadow_root.insertBefore(tTree.s2, tTree.s1);
@@ -179,14 +190,14 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c2, tTree.c3]);
+  tTree.s1.assign(tTree.c1, tTree.c2, tTree.c3);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2, tTree.c3]);
 
   tTree.host4.append(tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c2, tTree.c3]);
   assert_array_equals(tTree.s4.assignedNodes(), []);
 
-  tTree.s4.assign([tTree.c1]);
+  tTree.s4.assign(tTree.c1);
   assert_array_equals(tTree.s4.assignedNodes(), [tTree.c1]);
   assert_equals(tTree.c1.assignedSlot, tTree.s4);
 }, 'Appending slottable to different host, it loses slot assignment. It can be re-assigned within a new host.');
@@ -194,7 +205,7 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
 
   tTree.shadow_root4.insertBefore(tTree.s1, tTree.s4);
@@ -209,17 +220,17 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c1, tTree.c1]);
+  tTree.s1.assign(tTree.c1, tTree.c1, tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1]);
 
-  tTree.s1.assign([tTree.c1, tTree.c1, tTree.c2, tTree.c2, tTree.c1]);
+  tTree.s1.assign(tTree.c1, tTree.c1, tTree.c2, tTree.c2, tTree.c1);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
 }, 'Assignment with the same node in parameters should be ignored, first one wins.');
 
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c2, tTree.c3]);
+  tTree.s1.assign(tTree.c1, tTree.c2, tTree.c3);
   tTree.s1.remove();
 
   assert_equals(tTree.c1.assignedSlot, null);
@@ -235,7 +246,7 @@ test(() => {
   const isolatedDocNode2 = document.implementation.createHTMLDocument("").body;
   isolatedDocNode2.appendChild(tTree.s1);
 
-  tTree.s1.assign([tTree.c1, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c2);
   assert_array_equals(tTree.s1.assignedNodes(), [], 's1 not inside shadow root');
   assert_equals(tTree.c1.assignedSlot, null);
   assert_equals(tTree.c2.assignedSlot, null);
@@ -250,7 +261,7 @@ test(() => {
 test(() => {
   let tTree = createTestTree(test_assign);
 
-  tTree.s1.assign([tTree.c1, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c2);
   assert_array_equals(tTree.s1.assignedNodes(), [tTree.c1, tTree.c2]);
   assert_equals(tTree.c1.assignedSlot, tTree.s1);
   assert_equals(tTree.c2.assignedSlot, tTree.s1);

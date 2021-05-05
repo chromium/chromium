@@ -90,8 +90,8 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise, s2Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
-  tTree.s2.assign([tTree.c2]);
+  tTree.s1.assign(tTree.c1);
+  tTree.s2.assign(tTree.c2);
 
   assert_equals(data.s1EventCount, 0, 'slotchange event must not be fired synchronously');
   assert_equals(data.s2EventCount, 0);
@@ -107,8 +107,8 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise, s2Promise] = monitorSlots(data);
 
-  tTree.s1.assign([]);;
-  tTree.s2.assign([]);
+  tTree.s1.assign();;
+  tTree.s2.assign();
   tTree.host.insertBefore(tTree.c4, tTree.c1);
 
   Promise.all([s1Promise, s2Promise]).then(test.step_func_done(() => {
@@ -128,14 +128,14 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange,test, data);
   let [s1Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c2);
 
   s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
 
     [s1Promise] = monitorSlots(data);
-    tTree.s1.assign([tTree.c1, tTree.c2]);
-    tTree.s1.assign([tTree.c1, tTree.c2, tTree.c1, tTree.c2, tTree.c2]);
+    tTree.s1.assign(tTree.c1, tTree.c2);
+    tTree.s1.assign(tTree.c1, tTree.c2, tTree.c1, tTree.c2, tTree.c2);
 
     s1Promise.then(test.step_func_done(() => {
       assert_equals(data.s1EventCount, 1);
@@ -153,8 +153,8 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise, s2Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
-  tTree.s2.assign([tTree.c2]);
+  tTree.s1.assign(tTree.c1);
+  tTree.s2.assign(tTree.c2);
 
   Promise.all([s1Promise, s2Promise]).then(test.step_func_done(() => {
     assert_equals(data.s1EventCount, 1);
@@ -167,13 +167,13 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise, s2Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
 
   s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
 
     [s1Promise, s2Promise] = monitorSlots(data);
-    tTree.s2.assign([tTree.c1]);
+    tTree.s2.assign(tTree.c1);
 
     Promise.all([s1Promise, s2Promise]).then(test.step_func_done(() => {
       assert_equals(data.s1EventCount, 2);
@@ -187,13 +187,13 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
 
   s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
 
     [s1Promise] = monitorSlots(data);
-    tTree.s1.assign([]);
+    tTree.s1.assign();
 
     s1Promise.then(test.step_func_done(() => {
       assert_equals(data.s1EventCount, 2);
@@ -206,13 +206,13 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1, tTree.c2]);
+  tTree.s1.assign(tTree.c1, tTree.c2);
 
   s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
 
     [s1Promise] = monitorSlots(data);
-    tTree.s1.assign([tTree.c2, tTree.c1]);
+    tTree.s1.assign(tTree.c2, tTree.c1);
 
     s1Promise.then(test.step_func_done(() => {
       assert_equals(data.s1EventCount, 2);
@@ -225,7 +225,7 @@ promise_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   let [s1Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
 
   return s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
@@ -245,7 +245,7 @@ promise_test((test) => {
   let tTree = setupShadowDOM(test_slotchange, test, data);
   [s1Promise] = monitorSlots(data);
 
-  tTree.s1.assign([tTree.c1]);
+  tTree.s1.assign(tTree.c1);
 
   return s1Promise.then(test.step_func(() => {
     assert_equals(data.s1EventCount, 1);
@@ -341,13 +341,13 @@ async_test((test) => {
   let tTree = setupShadowDOM(test_nested_slotchange, test, data);
   let [s1Promise, s2Promise, s3Promise] = monitorSlots(data);
 
-  tTree.s3.assign([tTree.s1]);
+  tTree.s3.assign(tTree.s1);
 
   s3Promise.then(test.step_func(() => {
     assert_equals(data.s3EventCount, 1);
     [s1Promise, s2Promise, s3Promise] = monitorSlots(data);
 
-    tTree.s1.assign([tTree.c1]);
+    tTree.s1.assign(tTree.c1);
 
     Promise.all([s1Promise, s3Promise]).then(test.step_func_done(() => {
       assert_equals(data.s1EventCount, 1);
