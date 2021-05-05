@@ -7111,3 +7111,4 @@ crbug.com/1205780 [ Mac10.14 ] external/wpt/css/mediaqueries/test_media_queries.
 crbug.com/1205780 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure Pass ]
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
+crbug.com/1206019 [ Linux ] http/tests/devtools/sources/snippet-module.js [ Failure ]
