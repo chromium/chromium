@@ -236,26 +236,12 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
-        # TODO(crbug/1200134): Remove it once blink tests is fixed on
-        # bionic bots.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
           '--debug',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
           'shards': 25,
         },
       },
@@ -609,25 +595,17 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
-      # TODO(crbug/1200334): Remove it once interactive_ui_tests is fixed on
-      # bionic bots.
       'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
       },
       'Linux Tests (dbg)(1)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
         # crbug.com/1066161
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
           'shards': 20,
         },
       },
@@ -1790,26 +1768,6 @@
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
-      # TODO(crbug/1199425): Remove it once interactive_ui_tests is fixed on
-      # bionic bots.
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
-      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
@@ -2281,24 +2239,6 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
-        # TODO(crbug/1200134): Remove it once blink tests is fixed on
-        # bionic bots.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Ubuntu-16.04',
-            }
-          ],
-        },
       },
       'linux-code-coverage': {
         'args': [
