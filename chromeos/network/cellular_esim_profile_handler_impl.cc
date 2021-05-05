@@ -236,4 +236,16 @@ bool CellularESimProfileHandlerImpl::CellularDeviceExists() const {
              NetworkTypePattern::Cellular()) != nullptr;
 }
 
+void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
+  DCHECK(device_prefs_);
+
+  device_prefs_->Set(prefs::kESimProfiles,
+                     base::Value(base::Value::Type::LIST));
+  device_prefs_->Set(prefs::kESimRefreshedEuiccs,
+                     base::Value(base::Value::Type::LIST));
+
+  NET_LOG(EVENT) << "Resetting eSIM profile cache";
+  OnHermesPropertiesUpdated();
+}
+
 }  // namespace chromeos

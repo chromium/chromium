@@ -32,6 +32,7 @@
 #include "chrome/grit/network_ui_resources_map.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
 #include "chromeos/components/network_ui/network_health_resource_provider.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -62,6 +63,7 @@ constexpr char kGetNetworkProperties[] = "getShillNetworkProperties";
 constexpr char kGetDeviceProperties[] = "getShillDeviceProperties";
 constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
 constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
+constexpr char kResetESimCache[] = "resetESimCache";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
@@ -101,6 +103,31 @@ void SetDeviceProperties(base::Value* dictionary) {
     dictionary->SetKey(shill::kDeviceProperty, std::move(device_dictionary));
 }
 
+class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
+ public:
+  NetworkDiagnosticsMessageHandler() = default;
+  ~NetworkDiagnosticsMessageHandler() override = default;
+
+  void RegisterMessages() override {
+    web_ui()->RegisterMessageCallback(
+        "OpenFeedbackDialog",
+        base::BindRepeating(
+            &NetworkDiagnosticsMessageHandler::OpenFeedbackDialog,
+            base::Unretained(this)));
+  }
+
+ private:
+  void OpenFeedbackDialog(const base::ListValue* value) {
+    const std::string result = value->GetList()[0].GetString();
+    chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
+                             "" /*description_template*/,
+                             "" /*description_template_placeholder*/,
+                             "network-health", result);
+  }
+};
+
+}  // namespace
+
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
   NetworkConfigMessageHandler() {}
@@ -131,6 +158,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         base::BindRepeating(
             &NetworkConfigMessageHandler::OpenCellularActivationUi,
             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kResetESimCache,
+        base::BindRepeating(&NetworkConfigMessageHandler::ResetESimCache,
+                            base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
@@ -256,6 +287,17 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, response);
   }
 
+  void ResetESimCache(const base::ListValue* arg_list) {
+    CellularESimProfileHandler* handler =
+        NetworkHandler::Get()->cellular_esim_profile_handler();
+    if (!handler)
+      return;
+
+    CellularESimProfileHandlerImpl* handler_impl =
+        static_cast<CellularESimProfileHandlerImpl*>(handler);
+    handler_impl->ResetESimProfileCache();
+  }
+
   void ShowNetworkDetails(const base::ListValue* arg_list) {
     CHECK_EQ(1u, arg_list->GetSize());
     std::string guid;
@@ -346,31 +388,6 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   DISALLOW_COPY_AND_ASSIGN(NetworkConfigMessageHandler);
 };
 
-class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
- public:
-  NetworkDiagnosticsMessageHandler() = default;
-  ~NetworkDiagnosticsMessageHandler() override = default;
-
-  void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
-        "OpenFeedbackDialog",
-        base::BindRepeating(
-            &NetworkDiagnosticsMessageHandler::OpenFeedbackDialog,
-            base::Unretained(this)));
-  }
-
- private:
-  void OpenFeedbackDialog(const base::ListValue* value) {
-    const std::string result = value->GetList()[0].GetString();
-    chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
-                             "" /*description_template*/,
-                             "" /*description_template_placeholder*/,
-                             "network-health", result);
-  }
-};
-
-}  // namespace
-
 // static
 void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
   localized_strings->SetString("titleText",
@@ -454,6 +471,15 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
   localized_strings->SetString(
       "noCellularErrorText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT));
+
+  localized_strings->SetString(
+      "resetESimCacheLabel",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
+  localized_strings->SetString(
+      "resetESimCacheButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
 
   localized_strings->SetString(
       "addNewWifiLabel",

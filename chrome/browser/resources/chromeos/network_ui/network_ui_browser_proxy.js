@@ -37,6 +37,8 @@ export class NetworkUIBrowserProxy {
    */
   openCellularActivationUi() {}
 
+  resetESimCache() {}
+
   /**
    * @param {string} debugging
    * @return {Promise<!Array>}
@@ -100,6 +102,11 @@ export class NetworkUIBrowserProxyImpl {
   /** @override */
   openCellularActivationUi() {
     return sendWithPromise('openCellularActivationUi');
+  }
+
+  /** @override */
+  resetESimCache() {
+    chrome.send('resetESimCache');
   }
 
   /** @override */

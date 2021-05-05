@@ -120,6 +120,11 @@ Polymer({
   },
 
   /** @private */
+  onResetESimCacheClick_() {
+    this.browserProxy_.resetESimCache();
+  },
+
+  /** @private */
   showAddNewWifi_() {
     this.browserProxy_.showAddNewWifi();
   },

@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
  private:
   friend class CellularESimProfileHandlerImplTest;
+  friend class NetworkConfigMessageHandler;
 
   // CellularESimProfileHandler:
   void InitInternal() override;
@@ -45,6 +46,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   void StoreEuiccPathsToPrefs(const base::flat_set<std::string>& paths);
   void UpdateProfilesFromHermes();
   bool CellularDeviceExists() const;
+
+  // Used by chrome://network debug page; not meant to be called during normal
+  // usage.
+  void ResetESimProfileCache();
 
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;

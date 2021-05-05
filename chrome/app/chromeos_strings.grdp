@@ -3550,6 +3550,12 @@
   <message name="IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT" desc="Text displayed when the cellular activation UI cannot be opened because no cellular network exists.">
     No cellular network exists
   </message>
+  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_LABEL" desc="Label for section of the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in Chrome OS.">
+    Reset eSIM profiles
+  </message>
+  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT" desc="Text for button in the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in Chrome OS. After this button is clicked, Chrome needs to request that the hardware re-scan for installed profiles.">
+    Reset eSIM profile cache
+  </message>
   <message name="IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL" desc="Label for section dealing with showing the 'Add new Wi-Fi network' dialog.">
     New Wi-Fi Network Dialog
   </message>
