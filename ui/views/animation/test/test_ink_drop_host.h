@@ -44,7 +44,6 @@ class TestInkDropHost : public InkDropHostView {
 
   // InkDropHostView:
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const override;
 
  private:
   int num_ink_drop_layers_added_ = 0;

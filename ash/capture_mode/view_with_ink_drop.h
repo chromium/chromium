@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "base/bind.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 
@@ -37,19 +38,18 @@ class ViewWithInkDrop : public T {
     views::InkDrop::UseInkDropForFloodFillRipple(this,
                                                  /*highlight_on_hover=*/false,
                                                  /*highlight_on_focus=*/false);
+    T::SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](views::InkDropHostView* host) {
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+          highlight->set_visible_opacity(
+              capture_mode::kInkDropHighlightVisibleOpacity);
+          return highlight;
+        },
+        this));
   }
 
   ~ViewWithInkDrop() override = default;
-
-  // views::InkDropHostView:
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(T::size()), GetInkDropBaseColor());
-    highlight->set_visible_opacity(
-        capture_mode::kInkDropHighlightVisibleOpacity);
-    return highlight;
-  }
 
   SkColor GetInkDropBaseColor() const override {
     return capture_mode::kInkDropBaseColor;

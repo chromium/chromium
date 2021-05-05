@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
+#include "base/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -79,14 +80,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   }
 
   OmniboxPopupModel::Selection selection() { return selection_; }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    // MdTextButton uses custom colors when creating ink drop highlight.
-    // We need the base implementation that uses GetInkDropBaseColor for
-    // highlight.
-    return views::InkDropHostView::CreateInkDropHighlight();
-  }
 
   void OnThemeChanged() override {
     MdTextButton::OnThemeChanged();

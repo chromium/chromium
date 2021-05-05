@@ -26,6 +26,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -181,6 +182,28 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  SetCreateInkDropHighlightCallback(base::BindRepeating(
+      [](TrayBackgroundView* host) {
+        gfx::Rect bounds = host->GetBackgroundBounds();
+        // Currently, we don't handle view resize. To compensate for that,
+        // enlarge the bounds by two tray icons so that the highlight looks good
+        // even if two more icons are added when it is visible. Note that ink
+        // drop mask handles resize correctly, so the extra highlight would be
+        // clipped.
+        // TODO(mohsen): Remove this extra size when resize is handled properly
+        // (see https://crbug.com/669253).
+        const int icon_size = kTrayIconSize + 2 * kTrayImageItemPadding;
+        bounds.set_width(bounds.width() + 2 * icon_size);
+        bounds.set_height(bounds.height() + 2 * icon_size);
+        const AshColorProvider::RippleAttributes ripple_attributes =
+            AshColorProvider::Get()->GetRippleAttributes();
+        auto highlight = std::make_unique<views::InkDropHighlight>(
+            gfx::SizeF(bounds.size()), ripple_attributes.base_color);
+        highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
+        return highlight;
+      },
+      this));
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
 
@@ -332,26 +355,6 @@ std::unique_ptr<views::InkDropRipple> TrayBackgroundView::CreateInkDropRipple()
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetBackgroundInsets(), GetInkDropCenterBasedOnLastEvent(),
       ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
-}
-
-std::unique_ptr<views::InkDropHighlight>
-TrayBackgroundView::CreateInkDropHighlight() const {
-  gfx::Rect bounds = GetBackgroundBounds();
-  // Currently, we don't handle view resize. To compensate for that, enlarge the
-  // bounds by two tray icons so that the highlight looks good even if two more
-  // icons are added when it is visible. Note that ink drop mask handles resize
-  // correctly, so the extra highlight would be clipped.
-  // TODO(mohsen): Remove this extra size when resize is handled properly (see
-  // https://crbug.com/669253).
-  const int icon_size = kTrayIconSize + 2 * kTrayImageItemPadding;
-  bounds.set_width(bounds.width() + 2 * icon_size);
-  bounds.set_height(bounds.height() + 2 * icon_size);
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(bounds.size()), ripple_attributes.base_color);
-  highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
-  return highlight;
 }
 
 void TrayBackgroundView::OnThemeChanged() {

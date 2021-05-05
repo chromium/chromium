@@ -19,8 +19,6 @@ class ASH_EXPORT LoginButton : public views::ImageButton {
 
   // views::InkDropHost:
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
 
  protected:
   virtual int GetInkDropRadius() const;

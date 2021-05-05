@@ -60,6 +60,14 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
                                                /*highlight_on_hover=*/true);
         },
         this));
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](PageIndicatorButton* host) {
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()), host->ripple_base_color_);
+          highlight->set_visible_opacity(host->highlight_opacity_);
+          return highlight;
+        },
+        this));
   }
 
   ~PageIndicatorButton() override {}
@@ -121,14 +129,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
         size(), GetLocalBounds().InsetsFrom(bounds),
         GetInkDropCenterBasedOnLastEvent(), ripple_base_color_,
         inkdrop_opacity_);
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), ripple_base_color_);
-    highlight->set_visible_opacity(highlight_opacity_);
-    return highlight;
   }
 
   void NotifyClick(const ui::Event& event) override {

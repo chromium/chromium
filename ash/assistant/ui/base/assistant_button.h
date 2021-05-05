@@ -73,8 +73,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
   // views::ImageButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
 
  private:

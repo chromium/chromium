@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -132,6 +133,13 @@ class ToastOverlayButton : public views::LabelButton {
       : views::LabelButton(std::move(callback), text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](InkDropHostView* host) {
+          return std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->GetLocalBounds().size()),
+              host->GetInkDropBaseColor());
+        },
+        this));
 
     // Treat the space below the baseline as a margin.
     int vertical_spacing =
@@ -147,14 +155,6 @@ class ToastOverlayButton : public views::LabelButton {
   ToastOverlayButton(const ToastOverlayButton&) = delete;
   ToastOverlayButton& operator=(const ToastOverlayButton&) = delete;
   ~ToastOverlayButton() override = default;
-
- protected:
-  // views::LabelButton:
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    return std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(GetLocalBounds().size()), GetInkDropBaseColor());
-  }
 
  private:
   friend class ToastOverlay;  // for ToastOverlay::ClickDismissButtonForTesting.

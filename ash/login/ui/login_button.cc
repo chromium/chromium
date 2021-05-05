@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/login/ui/views_utils.h"
+#include "base/bind.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 
@@ -29,6 +30,12 @@ LoginButton::LoginButton(PressedCallback callback)
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
+  SetCreateInkDropHighlightCallback(base::BindRepeating(
+      [](InkDropHostView* host) {
+        return std::make_unique<views::InkDropHighlight>(
+            gfx::SizeF(host->size()), kInkDropHighlightColor);
+      },
+      this));
 
   SetInstallFocusRingOnFocus(true);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
@@ -47,12 +54,6 @@ std::unique_ptr<views::InkDropRipple> LoginButton::CreateInkDropRipple() const {
       size(), GetLocalBounds().InsetsFrom(bounds),
       GetInkDropCenterBasedOnLastEvent(), kInkDropRippleColor,
       1.f /*visible_opacity*/);
-}
-
-std::unique_ptr<views::InkDropHighlight> LoginButton::CreateInkDropHighlight()
-    const {
-  return std::make_unique<views::InkDropHighlight>(gfx::SizeF(size()),
-                                                   kInkDropHighlightColor);
 }
 
 int LoginButton::GetInkDropRadius() const {

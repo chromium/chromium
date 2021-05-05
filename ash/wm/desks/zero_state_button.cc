@@ -59,6 +59,18 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::InkDrop::UseInkDropForFloodFillRipple(this,
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/false);
+  SetCreateInkDropHighlightCallback(base::BindRepeating(
+      [](DeskButtonBase* host) {
+        auto highlight = std::make_unique<views::InkDropHighlight>(
+            gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+        highlight->set_visible_opacity(
+            AshColorProvider::Get()
+                ->GetRippleAttributes(host->background_color_)
+                .highlight_opacity);
+        return highlight;
+      },
+      this));
+
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
@@ -93,16 +105,6 @@ void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
                                                           : GetLocalBounds()),
                           corner_radius_, flags);
   }
-}
-
-std::unique_ptr<views::InkDropHighlight>
-DeskButtonBase::CreateInkDropHighlight() const {
-  auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(size()), GetInkDropBaseColor());
-  highlight->set_visible_opacity(AshColorProvider::Get()
-                                     ->GetRippleAttributes(background_color_)
-                                     .highlight_opacity);
-  return highlight;
 }
 
 SkColor DeskButtonBase::GetInkDropBaseColor() const {

@@ -107,6 +107,15 @@ class BasePinButton : public views::InkDropHostView {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](BasePinButton* host) {
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()),
+              host->palette_.pin_ink_drop_highlight_color);
+          highlight->set_visible_opacity(1.0f);
+          return highlight;
+        },
+        this));
 
     views::FocusRing* focus_ring = views::FocusRing::Install(this);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
@@ -160,14 +169,6 @@ class BasePinButton : public views::InkDropHostView {
         GetInkDropCenterBasedOnLastEvent(), palette_.pin_ink_drop_ripple_color,
         /*visible_opacity=*/1.f);
   }
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), palette_.pin_ink_drop_highlight_color);
-    highlight->set_visible_opacity(1.f);
-    return highlight;
-  }
-
  protected:
   // Called when the button has been pressed.
   virtual void DispatchPress(ui::Event* event) {

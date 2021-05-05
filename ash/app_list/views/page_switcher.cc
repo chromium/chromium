@@ -57,10 +57,26 @@ class PageSwitcherButton : public views::Button {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
     views::InkDrop::UseInkDropForFloodFillRipple(this);
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](PageSwitcherButton* host) {
+          const AppListColorProvider* const color_provider =
+              AppListColorProvider::Get();
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()),
+              color_provider->GetRippleAttributesBaseColor(
+                  host->background_color_));
+          highlight->set_visible_opacity(
+              color_provider->GetRippleAttributesHighlightOpacity(
+                  host->background_color_));
+          return highlight;
+        },
+        this));
+
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, is_root_app_grid_page_switcher ? kInkDropRadiusForRootGrid
                                              : kInkDropRadiusForFolderGrid);
   }
+
   PageSwitcherButton(const PageSwitcherButton&) = delete;
   PageSwitcherButton& operator=(const PageSwitcherButton&) = delete;
 
@@ -102,17 +118,6 @@ class PageSwitcherButton : public views::Button {
         GetInkDropCenterBasedOnLastEvent(),
         color_provider->GetRippleAttributesBaseColor(background_color_),
         color_provider->GetRippleAttributesInkDropOpacity(background_color_));
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    const AppListColorProvider* color_provider = AppListColorProvider::Get();
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()),
-        color_provider->GetRippleAttributesBaseColor(background_color_));
-    highlight->set_visible_opacity(
-        color_provider->GetRippleAttributesHighlightOpacity(background_color_));
-    return highlight;
   }
 
   void NotifyClick(const ui::Event& event) override {

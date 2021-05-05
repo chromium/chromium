@@ -116,7 +116,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Creates and returns the visual effect used for hover and focus. Used by
   // InkDropImpl instances.
-  virtual std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
+  std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
 
   // Callback version of CreateInkDropHighlight(). Note that this is called in
   // the base implementation of CreateInkDropHighlight(), so if "it's not

@@ -14,6 +14,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -155,6 +156,13 @@ class MediaActionButton : public views::ImageButton {
         icon_size_(icon_size) {
     SetInkDropMode(views::Button::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](InkDropHostView* host) {
+          return std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+        },
+        this));
+
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetBorder(
@@ -180,12 +188,6 @@ class MediaActionButton : public views::ImageButton {
     set_tag(static_cast<int>(action));
     SetTooltipText(accessible_name);
     UpdateIcon();
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    return std::make_unique<views::InkDropHighlight>(gfx::SizeF(size()),
-                                                     GetInkDropBaseColor());
   }
 
   // views::View:

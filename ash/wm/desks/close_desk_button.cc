@@ -8,6 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -30,6 +31,15 @@ CloseDeskButton::CloseDeskButton(PressedCallback callback)
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   views::InkDrop::UseInkDropForFloodFillRipple(this);
+  SetCreateInkDropHighlightCallback(base::BindRepeating(
+      [](CloseDeskButton* host) {
+        auto highlight = std::make_unique<views::InkDropHighlight>(
+            gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+        highlight->set_visible_opacity(host->highlight_opacity_);
+        return highlight;
+      },
+      this));
+
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -42,14 +52,6 @@ CloseDeskButton::~CloseDeskButton() = default;
 
 const char* CloseDeskButton::GetClassName() const {
   return "CloseDeskButton";
-}
-
-std::unique_ptr<views::InkDropHighlight>
-CloseDeskButton::CreateInkDropHighlight() const {
-  auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(size()), GetInkDropBaseColor());
-  highlight->set_visible_opacity(highlight_opacity_);
-  return highlight;
 }
 
 SkColor CloseDeskButton::GetInkDropBaseColor() const {

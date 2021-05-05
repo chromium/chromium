@@ -49,8 +49,6 @@ class ASH_EXPORT ActionableView : public views::Button {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
 
  private:
   void ButtonPressed(const ui::Event& event);

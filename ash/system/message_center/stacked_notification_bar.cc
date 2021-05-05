@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/rounded_label_button.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -49,6 +50,18 @@ class StackingBarLabelButton : public views::LabelButton {
     TrayPopupUtils::ConfigureTrayPopupButton(
         this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true,
         /*highlight_on_focus=*/true);
+    // SetCreateInkDropHighlightCallback is explicitly called after
+    // ConfigureTrayPopupButton as the former configures the InkDrop and this
+    // overrides that behavior.
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](InkDropHostView* host) {
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()), message_center_style::kInkRippleColor);
+          highlight->set_visible_opacity(
+              message_center_style::kInkRippleOpacity);
+          return highlight;
+        },
+        this));
   }
 
   ~StackingBarLabelButton() override = default;
@@ -84,14 +97,6 @@ class StackingBarLabelButton : public views::LabelButton {
         size(), GetInkDropCenterBasedOnLastEvent(),
         message_center_style::kInkRippleColor,
         message_center_style::kInkRippleOpacity);
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), message_center_style::kInkRippleColor);
-    highlight->set_visible_opacity(message_center_style::kInkRippleOpacity);
-    return highlight;
   }
 
  private:

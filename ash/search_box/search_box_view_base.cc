@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
+#include "base/bind.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -95,6 +96,16 @@ class SearchBoxImageButton : public views::ImageButton {
     SetInkDropMode(InkDropMode::ON);
     // InkDropState will reset after clicking.
     SetHasInkDropActionOnClick(true);
+    SetCreateInkDropHighlightCallback(base::BindRepeating(
+        [](InkDropHostView* host) {
+          constexpr SkColor ripple_color =
+              SkColorSetA(gfx::kGoogleGrey900, 0x12);
+          auto highlight = std::make_unique<views::InkDropHighlight>(
+              gfx::SizeF(host->size()), ripple_color);
+          highlight->set_visible_opacity(1.f);
+          return highlight;
+        },
+        this));
 
     SetPreferredSize({kSearchBoxButtonSizeDip, kSearchBoxButtonSizeDip});
     SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -137,15 +148,6 @@ class SearchBoxImageButton : public views::ImageButton {
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetLocalBounds().InsetsFrom(bounds),
         GetInkDropCenterBasedOnLastEvent(), ripple_color, 1.0f);
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    constexpr SkColor ripple_color = SkColorSetA(gfx::kGoogleGrey900, 0x12);
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), ripple_color);
-    highlight->set_visible_opacity(1.f);
-    return highlight;
   }
 
  private:
