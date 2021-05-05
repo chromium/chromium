@@ -32,7 +32,10 @@ class CommandBufferHelperImpl
       public gpu::CommandBufferStub::DestructionObserver {
  public:
   explicit CommandBufferHelperImpl(gpu::CommandBufferStub* stub)
-      : CommandBufferHelper(stub->channel()->task_runner()), stub_(stub) {
+      : CommandBufferHelper(stub->channel()->task_runner()),
+        stub_(stub),
+        memory_tracker_(this),
+        memory_type_tracker_(&memory_tracker_) {
     DVLOG(1) << __func__;
     DCHECK(stub_->channel()->task_runner()->BelongsToCurrentThread());
 
@@ -48,8 +51,6 @@ class CommandBufferHelperImpl
 #endif  // defined(OS_MAC)
     );
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
-    tracker_ =
-        std::make_unique<gpu::MemoryTypeTracker>(stub_->GetMemoryTracker());
   }
 
   gl::GLContext* GetGLContext() override {
@@ -63,6 +64,11 @@ class CommandBufferHelperImpl
   }
 
   gpu::SharedImageStub* GetSharedImageStub() override {
+    return shared_image_stub();
+  }
+
+  // Const variant of above method for internal callers.
+  gpu::SharedImageStub* shared_image_stub() const {
     if (!stub_)
       return nullptr;
     return stub_->channel()->shared_image_stub();
@@ -89,7 +95,7 @@ class CommandBufferHelperImpl
     return stub_->channel()
         ->gpu_channel_manager()
         ->shared_image_manager()
-        ->Register(std::move(backing), tracker_.get());
+        ->Register(std::move(backing), &memory_type_tracker_);
   }
 
   gpu::TextureBase* GetTexture(GLuint service_id) const override {
@@ -209,6 +215,51 @@ class CommandBufferHelperImpl
   }
 
  private:
+  // Helper class to forward memory tracking calls to shared image stub.
+  // Necessary because the underlying stub and channel can get destroyed before
+  // the CommandBufferHelper and its clients.
+  class MemoryTrackerImpl : public gpu::MemoryTracker {
+   public:
+    explicit MemoryTrackerImpl(CommandBufferHelperImpl* helper)
+        : helper_(helper) {
+      if (auto* stub = helper_->shared_image_stub()) {
+        // We assume these don't change after initialization.
+        client_id_ = stub->ClientId();
+        client_tracing_id_ = stub->ClientTracingId();
+        context_group_tracing_id_ = stub->ContextGroupTracingId();
+      }
+    }
+    ~MemoryTrackerImpl() override = default;
+
+    MemoryTrackerImpl(const MemoryTrackerImpl&) = delete;
+    MemoryTrackerImpl& operator=(const MemoryTrackerImpl&) = delete;
+
+    void TrackMemoryAllocatedChange(int64_t delta) override {
+      if (auto* stub = helper_->shared_image_stub())
+        stub->TrackMemoryAllocatedChange(delta);
+    }
+
+    uint64_t GetSize() const override {
+      if (auto* stub = helper_->shared_image_stub())
+        return stub->GetSize();
+      return 0;
+    }
+
+    int ClientId() const override { return client_id_; }
+
+    uint64_t ClientTracingId() const override { return client_tracing_id_; }
+
+    uint64_t ContextGroupTracingId() const override {
+      return context_group_tracing_id_;
+    }
+
+   private:
+    CommandBufferHelperImpl* const helper_;
+    int client_id_ = 0;
+    uint64_t client_tracing_id_ = 0;
+    uint64_t context_group_tracing_id_ = 0;
+  };
+
   ~CommandBufferHelperImpl() override {
     DVLOG(1) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -257,7 +308,8 @@ class CommandBufferHelperImpl
 
   WillDestroyStubCB will_destroy_stub_cb_;
 
-  std::unique_ptr<gpu::MemoryTypeTracker> tracker_;
+  MemoryTrackerImpl memory_tracker_;
+  gpu::MemoryTypeTracker memory_type_tracker_;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(CommandBufferHelperImpl);
