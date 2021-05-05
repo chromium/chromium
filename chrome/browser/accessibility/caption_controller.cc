@@ -96,10 +96,12 @@ void CaptionController::Init() {
     StopLiveCaption();
   }
 
+  // BrowserAccessibilityState can outlive |this|, use WeakPtr to ensure that
+  // callback is not called on destroyed object.
   content::BrowserAccessibilityState::GetInstance()
       ->AddUIThreadHistogramCallback(base::BindOnce(
           &CaptionController::UpdateAccessibilityCaptionHistograms,
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptionController::OnLiveCaptionEnabledChanged() {

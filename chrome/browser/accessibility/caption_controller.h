@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
@@ -113,6 +114,8 @@ class CaptionController : public KeyedService,
   // feature being enabled--we wait for SODA to download first. This flag
   // ensures that the UI is not constructed or deconstructed twice.
   bool is_ui_constructed_ = false;
+
+  base::WeakPtrFactory<CaptionController> weak_ptr_factory_{this};
 };
 
 }  // namespace captions
