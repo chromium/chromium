@@ -61,6 +61,7 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
 #include "v8/include/v8.h"
 
@@ -289,6 +290,18 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
+bool PdfViewWebPlugin::HasSelection() const {
+  return !selected_text_.IsEmpty();
+}
+
+blink::WebString PdfViewWebPlugin::SelectionAsText() const {
+  return selected_text_;
+}
+
+blink::WebString PdfViewWebPlugin::SelectionAsMarkup() const {
+  return selected_text_;
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }
@@ -347,7 +360,9 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
 void PdfViewWebPlugin::EnteredEditMode() {}
 
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
-  NOTIMPLEMENTED();
+  selected_text_ = blink::WebString::FromUTF8(selected_text);
+  GetValidContainerFrame()->TextSelectionChanged(
+      selected_text_, /*offset=*/0, gfx::Range(0, selected_text_.length()));
 }
 
 void PdfViewWebPlugin::SetLinkUnderCursor(

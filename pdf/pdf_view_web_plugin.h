@@ -14,6 +14,7 @@
 #include "pdf/post_message_sender.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -73,6 +74,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidReceiveData(const char* data, size_t data_length) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
+  bool HasSelection() const override;
+  blink::WebString SelectionAsText() const override;
+  blink::WebString SelectionAsMarkup() const override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
   // PdfViewPluginBase:
@@ -165,6 +169,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Invalidates the entire web plugin container and schedules a paint of the
   // page in it.
   void InvalidatePluginContainer();
+
+  blink::WebString selected_text_;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
