@@ -723,6 +723,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.PageLoad.TriggerDecision.AllTriggerDecisions"
     enum="TranslateTriggerDecision" expires_after="M92">
+  <obsolete>
+    Removed M92. This histogram was used to estimate the impact of masking on
+    Translate.PageLoad.TriggerDecision. We found that masking was having minimal
+    impact, so this histogram is no longer needed.
+  </obsolete>
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -740,6 +745,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.PageLoad.TriggerDecision.TotalCount"
     units="trigger decisions" expires_after="M92">
+  <obsolete>
+    Removed M92. This histogram was used to estimate the impact of masking on
+    Translate.PageLoad.TriggerDecision. We found that masking w as having
+    minimal impact, so this histogram is no longer needed.
+  </obsolete>
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>

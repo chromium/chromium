@@ -46,8 +46,6 @@ extern const char kTranslatePageLoadRankerDecision[];
 extern const char kTranslatePageLoadRankerTimerShouldOfferTranslation[];
 extern const char kTranslatePageLoadRankerVersion[];
 extern const char kTranslatePageLoadTriggerDecision[];
-extern const char kTranslatePageLoadTriggerDecisionAllTriggerDecisions[];
-extern const char kTranslatePageLoadTriggerDecisionTotalCount[];
 
 class NullTranslateMetricsLogger : public TranslateMetricsLogger {
  public:
@@ -210,7 +208,6 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Stores the reason for the initial state of the page load. In the case there
   // are multiple reasons, only the first reported reason is stored.
   TriggerDecision trigger_decision_ = TriggerDecision::kUninitialized;
-  std::vector<TriggerDecision> all_trigger_decisions_;
   bool autofill_assistant_deferred_trigger_decision_ = false;
 
   // Tracks the different dimensions that determine the state of Translate.
