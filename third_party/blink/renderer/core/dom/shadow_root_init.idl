@@ -10,5 +10,5 @@ enum SlotAssignmentMode { "manual", "named" };
 dictionary ShadowRootInit {
     required ShadowRootMode mode;
     boolean delegatesFocus;
-    [RuntimeEnabled=ManualSlotting] SlotAssignmentMode slotAssignment;
+    SlotAssignmentMode slotAssignment;
 };

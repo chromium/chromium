@@ -34,7 +34,7 @@ interface ShadowRoot : DocumentFragment {
     // https://crbug.com/1058762 has been fixed.
     [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
     readonly attribute boolean delegatesFocus;
-    [RuntimeEnabled=ManualSlotting] readonly attribute SlotAssignmentMode slotAssignment;
+    readonly attribute SlotAssignmentMode slotAssignment;
 
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});

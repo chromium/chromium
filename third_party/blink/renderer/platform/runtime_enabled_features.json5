@@ -1231,10 +1231,6 @@
       "implied_by": ["DeviceAttributes", "ManagedConfiguration"],
     },
     {
-      name:"ManualSlotting",
-      status:"stable",
-    },
-    {
       name: "MathMLCore",
       status:"experimental",
       depends_on: ["LayoutNG"],
