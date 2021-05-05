@@ -562,7 +562,6 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-005.xht 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-006.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-001.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ Failure ]
-crbug.com/1114280 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-003.xht [ Failure ]
 
 #### external/wpt/css/css-position
 crbug.com/752022 external/wpt/css/css-position/sticky/position-sticky-offset-overflow.html [ Failure ]
@@ -570,18 +569,6 @@ crbug.com/752022 external/wpt/css/css-position/sticky/position-sticky-offset-ove
 #### external/wpt/css/css-sizing
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Failure ]
 crbug.com/1164135 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-026.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-sizing/aspect-ratio/replaced-element-034.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-001.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-002.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-003.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-004.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-005.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-006.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-007.html [ Failure ]
-crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-008.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-001.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-002.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-003.html [ Failure ]
 
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]
@@ -834,8 +821,9 @@ crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-004a.ht
 crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.html [ Failure ]
 crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.html [ Failure ]
 
-# Correct min/max content sizes for a replaced element wont be supported until ReplacedNG.
-crbug.com/1114280 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-006.html [ Failure ]
+# Bad test expectations, but we aren't sure if web compatible yet.
+crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Failure ]
+crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-006.html [ Failure ]
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
@@ -4143,7 +4131,7 @@ crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-asp
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-aspect-ratio-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-003.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-grid/grid-items/aspect-ratio-004.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-items/aspect-ratio-004.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Failure ]
@@ -4241,6 +4229,7 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repea
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-aspect-ratio-002.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-003.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/aspect-ratio-004.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-002.html [ Pass ]
@@ -4825,13 +4814,6 @@ crbug.com/595993 external/wpt/service-workers/service-worker/fetch-header-visibi
 crbug.com/619427 [ Mac ] fast/overflow/overflow-height-float-not-removed-crash3.html [ Pass Failure ]
 
 # [css-ui] Imported tests from W3C suite.
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-014.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-015.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-016.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-018.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-019.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-024.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/box-sizing-025.html [ Failure ]
 crbug.com/669473 external/wpt/css/css-ui/outline-005.html [ Failure ]
 crbug.com/669473 external/wpt/css/css-ui/outline-006.html [ Failure ]
 
