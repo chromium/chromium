@@ -1140,30 +1140,35 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
 void DevToolsUIBindings::DevicesDiscoveryConfigUpdated() {
   base::DictionaryValue config;
   config.Set(kConfigDiscoverUsbDevices,
-             profile_->GetPrefs()
-                 ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
-                 ->GetValue()
-                 ->CreateDeepCopy());
+             base::Value::ToUniquePtrValue(
+                 profile_->GetPrefs()
+                     ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
+                     ->GetValue()
+                     ->Clone()));
   config.Set(kConfigPortForwardingEnabled,
-             profile_->GetPrefs()
-                 ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
-                 ->GetValue()
-                 ->CreateDeepCopy());
+             base::Value::ToUniquePtrValue(
+                 profile_->GetPrefs()
+                     ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
+                     ->GetValue()
+                     ->Clone()));
   config.Set(kConfigPortForwardingConfig,
-             profile_->GetPrefs()
-                 ->FindPreference(prefs::kDevToolsPortForwardingConfig)
-                 ->GetValue()
-                 ->CreateDeepCopy());
+             base::Value::ToUniquePtrValue(
+                 profile_->GetPrefs()
+                     ->FindPreference(prefs::kDevToolsPortForwardingConfig)
+                     ->GetValue()
+                     ->Clone()));
   config.Set(kConfigNetworkDiscoveryEnabled,
-             profile_->GetPrefs()
-                 ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-                 ->GetValue()
-                 ->CreateDeepCopy());
+             base::Value::ToUniquePtrValue(
+                 profile_->GetPrefs()
+                     ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
+                     ->GetValue()
+                     ->Clone()));
   config.Set(kConfigNetworkDiscoveryConfig,
-             profile_->GetPrefs()
-                 ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
-                 ->GetValue()
-                 ->CreateDeepCopy());
+             base::Value::ToUniquePtrValue(
+                 profile_->GetPrefs()
+                     ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
+                     ->GetValue()
+                     ->Clone()));
   CallClientMethod("DevToolsAPI", "devicesDiscoveryConfigChanged",
                    std::move(config));
 }
