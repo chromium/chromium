@@ -21,7 +21,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -78,12 +77,11 @@ class MockAutofillClient : public autofill::TestAutofillClient {
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   MockAutofillDriver(content::RenderFrameHost* rfh, MockAutofillClient* client)
-      : ContentAutofillDriver(
-            rfh,
-            client,
-            kAppLocale,
-            kDownloadState,
-            AutofillManager::AutofillManagerFactoryCallback()) {}
+      : ContentAutofillDriver(rfh,
+                              client,
+                              kAppLocale,
+                              kDownloadState,
+                              nullptr) {}
 
   ~MockAutofillDriver() override = default;
   MOCK_CONST_METHOD0(GetAxTreeId, ui::AXTreeID());

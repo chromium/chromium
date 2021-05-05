@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/browser/content_autofill_driver.h"
 
-#include <memory>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -64,21 +64,15 @@ ContentAutofillDriver::ContentAutofillDriver(
     AutofillClient* client,
     const std::string& app_locale,
     AutofillManager::AutofillDownloadManagerState enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback)
+    AutofillProvider* provider)
     : render_frame_host_(render_frame_host),
       browser_autofill_manager_(nullptr),
       key_press_handler_manager_(this),
       log_manager_(client->GetLogManager()) {
-  // AutofillManager isn't used if provider is valid, Autofill provider is
-  // currently used by Android WebView only.
-  if (autofill_manager_factory_callback) {
-    autofill_manager_ = autofill_manager_factory_callback.Run(
-        this, client, app_locale, enable_download_manager);
-    GetAutofillAgent()->SetUserGestureRequired(false);
-    GetAutofillAgent()->SetSecureContextRequired(true);
-    GetAutofillAgent()->SetFocusRequiresScroll(false);
-    GetAutofillAgent()->SetQueryPasswordSuggestion(true);
+  // BrowserAutofillManager isn't used if provider is valid, Autofill provider
+  // is currently used by Android WebView only.
+  if (provider) {
+    SetAutofillProvider(provider, client, enable_download_manager);
   } else {
     SetBrowserAutofillManager(std::make_unique<BrowserAutofillManager>(
         this, client, app_locale, enable_download_manager));
@@ -177,11 +171,11 @@ void ContentAutofillDriver::SendFormDataToRenderer(
 
 void ContentAutofillDriver::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
-  AutofillManager* manager = browser_autofill_manager_
+  AutofillManager* handler = browser_autofill_manager_
                                  ? browser_autofill_manager_
                                  : autofill_manager_.get();
-  DCHECK(manager);
-  manager->PropagateAutofillPredictions(render_frame_host_, forms);
+  DCHECK(handler);
+  handler->PropagateAutofillPredictions(render_frame_host_, forms);
 }
 
 void ContentAutofillDriver::HandleParsedForms(
@@ -377,7 +371,7 @@ void ContentAutofillDriver::DidNavigateFrame(
   ShowOfferNotificationIfApplicable(navigation_handle);
 
   // When IsServedFromBackForwardCache, the form data is not parsed
-  // again. So, we should keep and use the autofill manager's
+  // again. So, we should keep and use the autofill handler's
   // form_structures from BFCache for form submit.
   if (navigation_handle->IsServedFromBackForwardCache())
     return;
@@ -435,6 +429,18 @@ void ContentAutofillDriver::RemoveHandler(
   view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(handler);
 }
 
+void ContentAutofillDriver::SetAutofillProvider(
+    AutofillProvider* provider,
+    AutofillClient* client,
+    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+  autofill_manager_ = std::make_unique<AndroidAutofillManager>(
+      this, client, provider, enable_download_manager);
+  GetAutofillAgent()->SetUserGestureRequired(false);
+  GetAutofillAgent()->SetSecureContextRequired(true);
+  GetAutofillAgent()->SetFocusRequiresScroll(false);
+  GetAutofillAgent()->SetQueryPasswordSuggestion(true);
+}
+
 bool ContentAutofillDriver::DocumentUsedWebOTP() const {
   return render_frame_host_->DocumentUsedWebOTP();
 }
@@ -473,6 +479,16 @@ void ContentAutofillDriver::ReportAutofillWebOTPMetrics(
   UMA_HISTOGRAM_ENUMERATION(
       "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
       static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
+}
+
+void ContentAutofillDriver::SetAutofillProviderForTesting(
+    AutofillProvider* provider,
+    AutofillClient* client) {
+  SetAutofillProvider(provider, client,
+                      AutofillManager::AutofillDownloadManagerState::
+                          DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+  // BrowserAutofillManager isn't used if provider is valid.
+  browser_autofill_manager_ = nullptr;
 }
 
 void ContentAutofillDriver::ShowOfferNotificationIfApplicable(

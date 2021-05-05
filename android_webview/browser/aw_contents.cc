@@ -63,7 +63,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/android/provider/autofill_provider_android.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/android_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -327,8 +327,7 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
                    is_download_manager_disabled_for_testing())
           ? autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
           : autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-      base::BindRepeating(&autofill::AndroidAutofillManager::Create,
-                          autofill_provider_.get()));
+      autofill_provider_.get());
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {

@@ -57,15 +57,6 @@ class AutofillManager
     virtual void OnFormParsed() = 0;
   };
 
-  // The factory method for the embedder to create the subclass of
-  // AutofillManager in ContentAutofillDriver.
-  using AutofillManagerFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<AutofillManager>(
-          AutofillDriver*,
-          AutofillClient*,
-          const std::string& app_locale,
-          AutofillManager::AutofillDownloadManagerState)>;
-
   // Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
   // channel.
   static bool IsRawMetadataUploadingEnabled(version_info::Channel channel);
