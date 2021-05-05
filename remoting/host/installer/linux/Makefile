@@ -27,6 +27,8 @@ ME2ME_NM_PROGNAME = $(BUILD_DIR)/remoting_native_messaging_host
 ME2ME_NM_DEBUGFILE = $(ME2ME_NM_PROGNAME).debug
 REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
 REMOTE_ASSISTANCE_DEBUGFILE = $(REMOTE_ASSISTANCE_PROGNAME).debug
+REMOTE_OPEN_URL_PROGNAME = $(BUILD_DIR)/remote_open_url
+REMOTE_OPEN_URL_DEBUGFILE = $(REMOTE_OPEN_URL_PROGNAME).debug
 
 all:
 
@@ -80,6 +82,11 @@ install:
 	  "$(INSTALL_DIR)/remote-assistance-host"
 	eu-strip -f "$(REMOTE_ASSISTANCE_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/remote-assistance-host"
+
+	install "$(REMOTE_OPEN_URL_PROGNAME)" \
+	  "$(INSTALL_DIR)/remote-open-url"
+	eu-strip -f "$(REMOTE_OPEN_URL_DEBUGFILE)" \
+	  "$(INSTALL_DIR)/remote-open-url"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"

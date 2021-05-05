@@ -58,6 +58,7 @@ if (enable_me2me_host) {
       ":remoting_me2me_host_copy_user_session",
       ":remoting_me2me_host_copy_user_session_wrapper",
       ":remoting_native_messaging_host",
+      "//remoting/host:remote_open_url",
       "//remoting/host:remoting_me2me_host",
     ]
   }
