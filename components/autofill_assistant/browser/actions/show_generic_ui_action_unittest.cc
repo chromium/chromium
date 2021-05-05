@@ -14,6 +14,8 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,12 +38,13 @@ using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
-class ShowGenericUiActionTest : public content::RenderViewHostTestHarness {
+class ShowGenericUiActionTest : public testing::Test {
  public:
-  ShowGenericUiActionTest() {}
-
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    content::WebContentsTester::For(web_contents_.get())
+        ->SetLastCommittedURL(GURL(kFakeUrl));
 
     ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _))
         .WillByDefault(
@@ -67,10 +70,8 @@ class ShowGenericUiActionTest : public content::RenderViewHostTestHarness {
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
                 WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));
-    content::WebContentsTester::For(web_contents())
-        ->SetLastCommittedURL(GURL(kFakeUrl));
     ON_CALL(mock_action_delegate_, GetWebContents())
-        .WillByDefault(Return(web_contents()));
+        .WillByDefault(Return(web_contents_.get()));
   }
 
  protected:
@@ -85,6 +86,10 @@ class ShowGenericUiActionTest : public content::RenderViewHostTestHarness {
     return action;
   }
 
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   UserData user_data_;
   UserModel user_model_;
   MockPersonalDataManager mock_personal_data_manager_;

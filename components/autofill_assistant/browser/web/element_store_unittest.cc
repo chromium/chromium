@@ -9,6 +9,8 @@
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,18 +18,12 @@
 namespace autofill_assistant {
 namespace {
 
-class ElementStoreTest : public content::RenderViewHostTestHarness {
+class ElementStoreTest : public testing::Test {
  public:
-  ElementStoreTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ElementStoreTest() override {}
-
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
-
-    element_store_ = std::make_unique<ElementStore>(web_contents());
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    element_store_ = std::make_unique<ElementStore>(web_contents_.get());
   }
 
  protected:
@@ -36,7 +32,7 @@ class ElementStoreTest : public content::RenderViewHostTestHarness {
     auto element = std::make_unique<ElementFinder::Result>();
     element->dom_object.object_data.object_id = object_id;
     element->dom_object.object_data.node_frame_id =
-        web_contents()->GetMainFrame()->GetDevToolsFrameToken().ToString();
+        web_contents_->GetMainFrame()->GetDevToolsFrameToken().ToString();
     return element;
   }
 
@@ -47,6 +43,10 @@ class ElementStoreTest : public content::RenderViewHostTestHarness {
     element_store_->AddElement(client_id, element->dom_object);
   }
 
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ElementStore> element_store_;
 };
 
@@ -87,7 +87,7 @@ TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
   ElementFinder::Result result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
-  EXPECT_EQ(web_contents()->GetMainFrame(), result.container_frame_host);
+  EXPECT_EQ(web_contents_->GetMainFrame(), result.container_frame_host);
 }
 
 TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {

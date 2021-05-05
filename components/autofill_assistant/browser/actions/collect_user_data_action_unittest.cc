@@ -20,6 +20,8 @@
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,10 +56,13 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 
-class CollectUserDataActionTest : public content::RenderViewHostTestHarness {
+class CollectUserDataActionTest : public testing::Test {
  public:
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    content::WebContentsTester::For(web_contents_.get())
+        ->SetLastCommittedURL(GURL(kFakeUrl));
 
     ON_CALL(mock_action_delegate_, GetPersonalDataManager)
         .WillByDefault(Return(&mock_personal_data_manager_));
@@ -78,21 +83,21 @@ class CollectUserDataActionTest : public content::RenderViewHostTestHarness {
               std::move(collect_user_data_options->confirm_callback)
                   .Run(&user_data_, &user_model_);
             }));
-
     ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
                 WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));
     ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
-
-    content::WebContentsTester::For(web_contents())
-        ->SetLastCommittedURL(GURL(kFakeUrl));
     ON_CALL(mock_action_delegate_, GetWebContents())
-        .WillByDefault(Return(web_contents()));
+        .WillByDefault(Return(web_contents_.get()));
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   MockPersonalDataManager mock_personal_data_manager_;
   MockWebsiteLoginManager mock_website_login_manager_;
