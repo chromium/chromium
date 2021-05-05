@@ -23,7 +23,7 @@ namespace libassistant {
 
 class ChromiumHttpConnectionFactory;
 
-class ChromiumApiDelegate : public assistant_client::FuchsiaApiDelegate {
+class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
  public:
   explicit ChromiumApiDelegate(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
