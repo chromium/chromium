@@ -29,57 +29,56 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
                   sizeof(*this),
                   visual_rect,
                   /*draws_content*/ true),
-      scrollbar_(std::move(scrollbar)),
-      scroll_translation_(scroll_translation),
-      element_id_(element_id) {
+      data_(new Data{std::move(scrollbar), scroll_translation, element_id}) {
   DCHECK(IsScrollbar());
   DCHECK(!scroll_translation || scroll_translation->ScrollNode());
 }
 
 sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
-  if (record_) {
-    DCHECK(!scrollbar_->NeedsRepaintPart(
+  auto* scrollbar = data_->scrollbar_.get();
+  if (data_->record_) {
+    DCHECK(!scrollbar->NeedsRepaintPart(
         cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS));
-    DCHECK(!scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::THUMB));
-    return record_;
+    DCHECK(!scrollbar->NeedsRepaintPart(cc::ScrollbarPart::THUMB));
+    return data_->record_;
   }
 
   PaintRecorder recorder;
   const IntRect& rect = VisualRect();
   recorder.beginRecording(rect);
   auto* canvas = recorder.getRecordingCanvas();
-  scrollbar_->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
-                        rect);
-  gfx::Rect thumb_rect = scrollbar_->ThumbRect();
+  scrollbar->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
+                       rect);
+  gfx::Rect thumb_rect = data_->scrollbar_->ThumbRect();
   thumb_rect.Offset(rect.X(), rect.Y());
-  scrollbar_->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
+  scrollbar->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
 
-  record_ = recorder.finishRecordingAsPicture();
-  return record_;
+  data_->record_ = recorder.finishRecordingAsPicture();
+  return data_->record_;
 }
 
 scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
     cc::ScrollbarLayerBase* existing_layer) const {
   // This function is called when the scrollbar is composited. We don't need
   // record_ which is for non-composited scrollbars.
-  record_ = nullptr;
+  data_->record_ = nullptr;
 
-  auto layer =
-      cc::ScrollbarLayerBase::CreateOrReuse(scrollbar_, existing_layer);
+  auto* scrollbar = data_->scrollbar_.get();
+  auto layer = cc::ScrollbarLayerBase::CreateOrReuse(scrollbar, existing_layer);
   layer->SetIsDrawable(true);
-  if (!scrollbar_->IsSolidColor())
+  if (!scrollbar->IsSolidColor())
     layer->SetHitTestable(true);
-  layer->SetElementId(element_id_);
+  layer->SetElementId(data_->element_id_);
   layer->SetScrollElementId(
-      scroll_translation_
-          ? scroll_translation_->ScrollNode()->GetCompositorElementId()
+      data_->scroll_translation_
+          ? data_->scroll_translation_->ScrollNode()->GetCompositorElementId()
           : CompositorElementId());
   layer->SetOffsetToTransformParent(
       gfx::Vector2dF(FloatPoint(VisualRect().Location())));
   layer->SetBounds(gfx::Size(VisualRect().Size()));
 
-  if (scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::THUMB) ||
-      scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS))
+  if (scrollbar->NeedsRepaintPart(cc::ScrollbarPart::THUMB) ||
+      scrollbar->NeedsRepaintPart(cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS))
     layer->SetNeedsDisplay();
   return layer;
 }
@@ -94,15 +93,16 @@ bool ScrollbarDisplayItem::Equals(const DisplayItem& other) const {
   // can catch most under-invalidation cases.
   const auto& other_scrollbar_item =
       static_cast<const ScrollbarDisplayItem&>(other);
-  return scroll_translation_ == other_scrollbar_item.scroll_translation_ &&
-         element_id_ == other_scrollbar_item.element_id_;
+  return data_->scroll_translation_ ==
+             other_scrollbar_item.data_->scroll_translation_ &&
+         data_->element_id_ == other_scrollbar_item.data_->element_id_;
 }
 
 #if DCHECK_IS_ON()
 void ScrollbarDisplayItem::PropertiesAsJSON(JSONObject& json) const {
   DisplayItem::PropertiesAsJSON(json);
   json.SetString("scrollTranslation",
-                 String::Format("%p", scroll_translation_));
+                 String::Format("%p", data_->scroll_translation_));
 }
 #endif
 

@@ -24,7 +24,6 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
                   type,
                   sizeof(*this),
                   IntRect(offset, IntSize(layer->bounds()))),
-      offset_(offset),
       layer_(std::move(layer)) {
   DCHECK(IsForeignLayerType(type));
 }
@@ -39,8 +38,6 @@ bool ForeignLayerDisplayItem::Equals(const DisplayItem& other) const {
 void ForeignLayerDisplayItem::PropertiesAsJSON(JSONObject& json) const {
   DisplayItem::PropertiesAsJSON(json);
   json.SetInteger("layer", GetLayer()->id());
-  json.SetDouble("offset_x", Offset().X());
-  json.SetDouble("offset_y", Offset().Y());
 }
 #endif
 

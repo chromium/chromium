@@ -37,9 +37,9 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                        CompositorElementId element_id);
 
   const TransformPaintPropertyNode* ScrollTranslation() const {
-    return scroll_translation_;
+    return data_->scroll_translation_;
   }
-  CompositorElementId ElementId() const { return element_id_; }
+  CompositorElementId ElementId() const { return data_->element_id_; }
 
   // Paints the scrollbar into the internal paint record, for non-composited
   // scrollbar.
@@ -67,11 +67,19 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                      CompositorElementId element_id);
 
  private:
-  scoped_refptr<cc::Scrollbar> scrollbar_;
-  const TransformPaintPropertyNode* scroll_translation_;
-  CompositorElementId element_id_;
-  // This is lazily created for non-composited scrollbar.
-  mutable sk_sp<const PaintRecord> record_;
+  struct Data {
+    scoped_refptr<cc::Scrollbar> scrollbar_;
+    const TransformPaintPropertyNode* scroll_translation_;
+    CompositorElementId element_id_;
+    // This is lazily created for non-composited scrollbar.
+    mutable sk_sp<const PaintRecord> record_;
+  };
+  // This is to make ScrollbarDisplayItem not bigger than other DisplayItems,
+  // so that we can store different types of DisplayItems in DisplayItemList
+  // with fixed item size without big gaps. The unique_ptr indirection won't
+  // affect performance much because ScrollbarDisplayItems are rare in the
+  // painted result.
+  std::unique_ptr<Data> data_;
 };
 
 }  // namespace blink

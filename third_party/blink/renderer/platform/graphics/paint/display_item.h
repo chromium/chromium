@@ -169,7 +169,9 @@ class PLATFORM_EXPORT DisplayItem {
             static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
         draws_content_(draws_content),
         is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false) {
+        is_tombstone_(false),
+        known_to_be_opaque_is_set_(false),
+        known_to_be_opaque_(false) {
     // |derived_size| must fit in |derived_size_|.
     // If it doesn't, enlarge |derived_size_| and fix this assert.
     SECURITY_DCHECK(derived_size == derived_size_);
@@ -302,6 +304,11 @@ class PLATFORM_EXPORT DisplayItem {
   unsigned draws_content_ : 1;
   unsigned is_cacheable_ : 1;
   unsigned is_tombstone_ : 1;
+
+ protected:
+  // These are for DrawingDisplayItem to save memory.
+  mutable unsigned known_to_be_opaque_is_set_ : 1;
+  mutable unsigned known_to_be_opaque_ : 1;
 };
 
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {

@@ -145,7 +145,8 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
         static_cast<const ForeignLayerDisplayItem&>(
             pending_layer.FirstDisplayItem());
     layer = foreign_layer_display_item.GetLayer();
-    layer_offset = FloatPoint(foreign_layer_display_item.Offset());
+    layer_offset =
+        FloatPoint(foreign_layer_display_item.VisualRect().Location());
   }
   layer->SetOffsetToTransformParent(gfx::Vector2dF(
       layer_offset + pending_layer.offset_of_decomposited_transforms));

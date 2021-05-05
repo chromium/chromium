@@ -36,10 +36,7 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
   void PropertiesAsJSON(JSONObject&) const final;
 #endif
 
-  IntPoint Offset() const { return offset_; }
-
  private:
-  IntPoint offset_;
   scoped_refptr<cc::Layer> layer_;
 };
 
