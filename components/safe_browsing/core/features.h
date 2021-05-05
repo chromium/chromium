@@ -88,15 +88,6 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // Controls whether the real time URL lookup is enabled.
 extern const base::Feature kRealTimeUrlLookupEnabled;
 
-// Controls whether to do real time URL lookup for enterprise users. If both
-// this feature and the enterprise policies are enabled, the enterprise real
-// time URL lookup will be enabled and the consumer real time URL lookup will be
-// disabled.
-extern const base::Feature kRealTimeUrlLookupEnabledForEnterprise;
-
-// Controls whether to use the GA endpoint for enterprise real time URL lookup.
-extern const base::Feature kRealTimeUrlLookupEnterpriseGaEndpoint;
-
 // Controls whether the GAIA-keyed real time URL lookup is enabled.
 extern const base::Feature kRealTimeUrlLookupEnabledWithToken;
 

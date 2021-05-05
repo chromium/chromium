@@ -96,10 +96,6 @@ bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledForEnterprise)) {
-    return false;
-  }
-
   if (!has_valid_dm_token) {
     return false;
   }

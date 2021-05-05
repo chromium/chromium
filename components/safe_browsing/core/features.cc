@@ -90,14 +90,6 @@ const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
 const base::Feature kRealTimeUrlLookupEnabled{
     "SafeBrowsingRealTimeUrlLookupEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRealTimeUrlLookupEnabledForEnterprise{
-    "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kRealTimeUrlLookupEnterpriseGaEndpoint{
-    "SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kRealTimeUrlLookupEnabledWithToken{
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -152,8 +144,6 @@ constexpr struct {
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupEnabled, true},
-    {&kRealTimeUrlLookupEnabledForEnterprise, true},
-    {&kRealTimeUrlLookupEnterpriseGaEndpoint, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},

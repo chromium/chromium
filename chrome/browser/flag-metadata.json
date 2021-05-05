@@ -4563,14 +4563,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "safe-browsing-real-time-url-lookup-enterprise-ga-endpoint",
-    "owners": [
-      "xinghuilu",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "safety-check-chrome-cleaner-child",
     "owners": [
       "rainhard",

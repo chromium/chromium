@@ -5738,13 +5738,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kEnhancedProtectionPromoCard)},
 #endif
 
-    {"safe-browsing-real-time-url-lookup-enterprise-ga-endpoint",
-     flag_descriptions::kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName,
-     flag_descriptions::
-         kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kRealTimeUrlLookupEnterpriseGaEndpoint)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"gesture-properties-dbus-service",
      flag_descriptions::kEnableGesturePropertiesDBusServiceName,

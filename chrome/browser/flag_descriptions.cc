@@ -2148,13 +2148,6 @@ const char kPrinterStatusDialogDescription[] =
     "Enables printer status icons and labels for saved printers on the Print "
     "Preview destination dialog";
 
-const char kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName[] =
-    "Use the new GA endpoint to perform enterprise real time URL check.";
-
-const char kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointDescription[] =
-    "If enabled, the enterprise real time URL check will be sent to the new "
-    "endpoint.";
-
 const char kSafetyTipName[] =
     "Show Safety Tip UI when visiting low-reputation websites";
 const char kSafetyTipDescription[] =

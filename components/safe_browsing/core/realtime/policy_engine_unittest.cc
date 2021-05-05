@@ -178,29 +178,16 @@ TEST_F(
 TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
   // Is off the record profile.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kRealTimeUrlLookupEnabledForEnterprise);
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(/*has_valid_dm_token=*/true,
                                                    /*is_off_the_record=*/true));
   }
-  // Feature flag disabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kRealTimeUrlLookupEnabledForEnterprise);
-    EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
-        /*has_valid_dm_token=*/true, /*is_off_the_record=*/false));
-  }
   // No valid DM token.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kRealTimeUrlLookupEnabledForEnterprise);
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/false, /*is_off_the_record=*/false));
   }
   // Policy disabled.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kRealTimeUrlLookupEnabledForEnterprise);
     pref_service_.SetUserPref(
         prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
         std::make_unique<base::Value>(REAL_TIME_CHECK_DISABLED));
@@ -209,8 +196,6 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
   }
   // Policy enabled.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kRealTimeUrlLookupEnabledForEnterprise);
     pref_service_.SetUserPref(
         prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
         std::make_unique<base::Value>(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
