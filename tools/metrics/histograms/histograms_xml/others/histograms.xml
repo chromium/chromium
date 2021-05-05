@@ -18831,7 +18831,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
-    expires_after="2021-10-04">
+    expires_after="2021-10-25">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -18842,7 +18842,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseTabAction"
-    enum="WebUITabStripCloseTabActions" expires_after="2021-10-10">
+    enum="WebUITabStripCloseTabActions" expires_after="2021-10-25">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -18853,7 +18853,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2021-10-04">
+    expires_after="2021-10-25">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -18864,7 +18864,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenDuration" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-10-25">
   <owner>collinbaker@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -18874,7 +18874,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebUITabStrip.TabActivation" units="ms" expires_after="M90">
+<histogram name="WebUITabStrip.TabActivation" units="ms"
+    expires_after="2021-10-25">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
