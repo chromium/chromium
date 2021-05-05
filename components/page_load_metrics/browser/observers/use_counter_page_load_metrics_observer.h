@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace internal {
@@ -53,6 +54,18 @@ class UseCounterPageLoadMetricsObserver
   // Returns a list of opt-in UKM features for use counter.
   static const UkmFeatureList& GetAllowedUkmFeatures();
 
+  // Records an `UseCounterFeature` through UMA_HISTOGRAM_ENUMERATION if
+  // the feature has not been recorded before.
+  void RecordUseCounterFeature(content::RenderFrameHost*,
+                               const blink::UseCounterFeature&);
+
+  // Records a WebFeature in main frame if `rfh` is a main frame and the feature
+  // has not been recorded before.
+  void RecordMainFrameWebFeature(content::RenderFrameHost*,
+                                 blink::mojom::WebFeature);
+
+  // Records UKM subset of WebFeatures, if the WebFeature is observed in the
+  // page.
   void RecordUkmFeatures();
 
   // To keep tracks of which features have been measured.
