@@ -130,18 +130,14 @@ class VIEWS_EXPORT InkDrop {
 // as a non-ancestor view to labels so that the labels can paint on an opaque
 // canvas. This is used to avoid ugly text renderings when labels with subpixel
 // rendering enabled are painted onto a non-opaque canvas.
-class VIEWS_EXPORT InkDropContainerView : public views::View {
+// TODO(pbos): Replace with a function that returns unique_ptr<View>, this only
+// calls SetProcessEventsWithinSubtree(false) right now.
+class VIEWS_EXPORT InkDropContainerView : public View {
  public:
   METADATA_HEADER(InkDropContainerView);
   InkDropContainerView();
   InkDropContainerView(const InkDropContainerView&) = delete;
   InkDropContainerView& operator=(const InkDropContainerView&) = delete;
-
-  void AddInkDropLayer(ui::Layer* ink_drop_layer);
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
-
-  // View:
-  bool GetCanProcessEventsWithinSubtree() const override;
 };
 
 }  // namespace views

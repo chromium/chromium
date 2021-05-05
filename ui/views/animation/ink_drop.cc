@@ -106,24 +106,9 @@ void InkDrop::NotifyInkDropRippleAnimationEnded(InkDropState ink_drop_state) {
     observer.InkDropRippleAnimationEnded(ink_drop_state);
 }
 
-InkDropContainerView::InkDropContainerView() = default;
-
-void InkDropContainerView::AddInkDropLayer(ui::Layer* ink_drop_layer) {
-  SetPaintToLayer();
-  SetVisible(true);
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->Add(ink_drop_layer);
-}
-
-void InkDropContainerView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
-  layer()->Remove(ink_drop_layer);
-  SetVisible(false);
-  DestroyLayer();
-}
-
-bool InkDropContainerView::GetCanProcessEventsWithinSubtree() const {
+InkDropContainerView::InkDropContainerView() {
   // Ensure the container View is found as the EventTarget instead of this.
-  return false;
+  SetCanProcessEventsWithinSubtree(false);
 }
 
 BEGIN_METADATA(InkDropContainerView, views::View)

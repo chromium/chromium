@@ -85,24 +85,11 @@ class TestButton : public Button {
     return custom_key_click_action_;
   }
 
-  void OnClickCanceled(const ui::Event& event) override { canceled_ = true; }
-
   // Button:
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ++ink_drop_layer_add_count_;
-    Button::AddInkDropLayer(ink_drop_layer);
-  }
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ++ink_drop_layer_remove_count_;
-    Button::RemoveInkDropLayer(ink_drop_layer);
-  }
+  void OnClickCanceled(const ui::Event& event) override { canceled_ = true; }
 
   bool pressed() const { return pressed_; }
   bool canceled() const { return canceled_; }
-  int ink_drop_layer_add_count() const { return ink_drop_layer_add_count_; }
-  int ink_drop_layer_remove_count() const {
-    return ink_drop_layer_remove_count_;
-  }
 
   void set_custom_key_click_action(KeyClickAction custom_key_click_action) {
     custom_key_click_action_ = custom_key_click_action;
@@ -114,14 +101,11 @@ class TestButton : public Button {
   }
 
   // Raised visibility of OnFocus() to public
-  void OnFocus() override { Button::OnFocus(); }
+  using Button::OnFocus;
 
  private:
   bool pressed_ = false;
   bool canceled_ = false;
-
-  int ink_drop_layer_add_count_ = 0;
-  int ink_drop_layer_remove_count_ = 0;
 
   KeyClickAction custom_key_click_action_ = KeyClickAction::kNone;
 
@@ -751,16 +735,10 @@ class VisibilityTestButton : public TestButton {
   ~VisibilityTestButton() override {
     if (layer())
       ADD_FAILURE();
-  }
-
-  // TestButton:
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ADD_FAILURE();
-    TestButton::AddInkDropLayer(ink_drop_layer);
-  }
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override {
-    ADD_FAILURE();
-    TestButton::RemoveInkDropLayer(ink_drop_layer);
+    auto ink_drop_layer_add_failure_callback =
+        base::BindRepeating([](ui::Layer*) { ADD_FAILURE(); });
+    SetAddInkDropLayerCallback(ink_drop_layer_add_failure_callback);
+    SetRemoveInkDropLayerCallback(ink_drop_layer_add_failure_callback);
   }
 };
 

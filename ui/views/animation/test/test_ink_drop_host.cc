@@ -78,17 +78,20 @@ class TestInkDropHighlight : public InkDropHighlight {
 
 TestInkDropHost::TestInkDropHost() {
   InkDrop::UseInkDropWithoutAutoHighlight(this);
+
+  SetAddInkDropLayerCallback(base::BindRepeating(
+      [](TestInkDropHost* host, ui::Layer*) {
+        ++host->num_ink_drop_layers_added_;
+      },
+      this));
+  SetRemoveInkDropLayerCallback(base::BindRepeating(
+      [](TestInkDropHost* host, ui::Layer*) {
+        ++host->num_ink_drop_layers_removed_;
+      },
+      this));
 }
 
 TestInkDropHost::~TestInkDropHost() = default;
-
-void TestInkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
-  ++num_ink_drop_layers_added_;
-}
-
-void TestInkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
-  ++num_ink_drop_layers_removed_;
-}
 
 std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {
   std::unique_ptr<InkDropRipple> ripple(new TestInkDropRipple(
