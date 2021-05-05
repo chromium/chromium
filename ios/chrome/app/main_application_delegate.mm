@@ -331,28 +331,13 @@ const int kMainIntentCheckDelay = 1;
 #pragma mark Continuing User Activity and Handling Quick Actions
 
 - (BOOL)application:(UIApplication*)application
-    willContinueUserActivityWithType:(NSString*)userActivityType {
-  if (_appState.initStage <= InitStageSafeMode)
-    return NO;
-
-  // Enusre Chrome is fuilly started up in case it had launched to the
-  // background.
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
-
-  return
-      [UserActivityHandler willContinueUserActivityWithType:userActivityType];
-}
-
-- (BOOL)application:(UIApplication*)application
     continueUserActivity:(NSUserActivity*)userActivity
       restorationHandler:
           (void (^)(NSArray<id<UIUserActivityRestoring>>*))restorationHandler {
-  if (_appState.initStage <= InitStageSafeMode)
+  if (_appState.initStage <= InitStageSafeMode ||
+      _browserLauncher.browserInitializationStage <
+          INITIALIZATION_STAGE_FOREGROUND)
     return NO;
-
-  // Enusre Chrome is fuilly started up in case it had launched to the
-  // background.
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   BOOL applicationIsActive =
       [application applicationState] == UIApplicationStateActive;
@@ -370,12 +355,10 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
-  if (_appState.initStage <= InitStageSafeMode)
+  if (_appState.initStage <= InitStageSafeMode ||
+      _browserLauncher.browserInitializationStage <
+          INITIALIZATION_STAGE_FOREGROUND)
     return;
-
-  // Enusre Chrome is fuilly started up in case it had launched to the
-  // background.
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   [UserActivityHandler
       performActionForShortcutItem:shortcutItem
@@ -395,15 +378,10 @@ const int kMainIntentCheckDelay = 1;
 - (BOOL)application:(UIApplication*)application
             openURL:(NSURL*)url
             options:(NSDictionary<NSString*, id>*)options {
-  if (_appState.initStage <= InitStageSafeMode)
+  if (_appState.initStage <= InitStageSafeMode ||
+      _browserLauncher.browserInitializationStage <
+          INITIALIZATION_STAGE_FOREGROUND)
     return NO;
-
-  // The various URL handling mechanisms require that the application has
-  // fully started up; there are some cases (crbug.com/658420) where a
-  // launch via this method crashes because some services (specifically,
-  // CommandLine) aren't initialized yet. So: before anything further is
-  // done, make sure that Chrome is fully started up.
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   if (ios::GetChromeBrowserProvider()
           ->GetChromeIdentityService()
