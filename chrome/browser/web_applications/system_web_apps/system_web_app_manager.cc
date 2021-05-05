@@ -195,6 +195,12 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
     infos.at(SystemAppType::HELP).minimum_window_size = {600, 320};
     infos.at(SystemAppType::HELP).capture_navigations = true;
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kHelpAppLauncherSearch)) {
+      infos.at(SystemAppType::HELP).timer_info = SystemAppBackgroundTaskInfo(
+          base::nullopt, GURL("chrome://help-app/background"),
+          /*open_immediately=*/true);
+    }
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::MEDIA)) {

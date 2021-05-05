@@ -54,7 +54,33 @@ class ShowoffApp extends HTMLElement {
 window.customElements.define('showoff-app', ShowoffApp);
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (document.location.pathname === '/background') {
+    // In the background page, don't render the app.
+    doBackgroundTasks();
+    return;
+  }
+
   // The "real" app first loads translations for populating strings in the app
   // for the initial load, then does this.
   document.body.appendChild(new ShowoffApp());
 });
+
+/**
+ * Do the background processing and then close the page.
+ * Based on the internal version: go/help-app-internal-dobackgroundtasks. This
+ * function's implementation should be kept up to date with the internal
+ * version.
+ */
+async function doBackgroundTasks() {
+  if (window.customLaunchData.delegate) {
+    await window.customLaunchData.delegate.updateLauncherSearchIndex([{
+      id: 'mock-app-test-id',
+      title: 'Title',
+      mainCategoryName: 'Help',
+      tags: ['verycomplicatedsearchquery'],
+      urlPathWithParameters: 'help/sub/3399763/',
+      locale: ''
+    }]);
+    window.customLaunchData.delegate.closeBackgroundPage();
+  }
+}

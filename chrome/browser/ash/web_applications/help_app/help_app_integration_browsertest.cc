@@ -6,10 +6,13 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +47,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/idle/idle.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -440,6 +445,88 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                      run_loop.QuitClosure().Run();
                    }));
   run_loop.Run();
+}
+
+// Test that the Help App background task works.
+// It should open and update the index for launcher search, then close.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2BackgroundTaskUpdatesLauncherSearchIndex) {
+  WaitForTestSystemAppInstall();
+  ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
+
+  const GURL bg_task_url("chrome://help-app/background");
+  content::TestNavigationObserver navigation_observer(bg_task_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Wait for system apps background tasks to start.
+  base::RunLoop run_loop;
+  web_app::WebAppProvider::Get(browser()->profile())
+      ->system_web_app_manager()
+      .on_tasks_started()
+      .Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  auto& tasks = GetManager().GetBackgroundTasksForTesting();
+
+  // Find the help app's background task.
+  const auto& help_task = std::find_if(
+      tasks.begin(), tasks.end(),
+      [&bg_task_url](
+          const std::unique_ptr<web_app::SystemAppBackgroundTask>& x) {
+        return x->url_for_testing() == bg_task_url;
+      });
+  ASSERT_NE(help_task, tasks.end());
+
+  auto* timer = help_task->get()->get_timer_for_testing();
+  EXPECT_EQ(web_app::SystemAppBackgroundTask::INITIAL_WAIT,
+            help_task->get()->get_state_for_testing());
+  // The "Immediate" timer waits for several minutes, and it's hard to mock time
+  // properly in a browser test, so just fire the timer now. We're not testing
+  // that base::Timer works.
+  timer->FireNow();
+
+  navigation_observer.Wait();
+
+  // Wait until the background page closes. It's closed when the web contents
+  // becomes null.
+  // TODO(b/186819234): Add a way to wait for the task instead of polling.
+  base::RunLoop bg_page_run_loop;
+  base::RepeatingTimer check_timer;
+  check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10),
+                    base::BindLambdaForTesting([&]() {
+                      if (help_task->get()->web_contents_for_testing())
+                        return;
+                      bg_page_run_loop.QuitClosure().Run();
+                    }));
+  bg_page_run_loop.Run();
+
+  EXPECT_EQ(help_task->get()->opened_count_for_testing(), 1u);
+
+// TODO(b/187231134): Replace this with a single build flag.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // This part only works in non-branded builds because it uses fake data added
+  // by the mock app.
+  // Search using the search handler to confirm that the update happened.
+  base::RunLoop search_run_loop;
+  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+      ->search_handler()
+      ->Search(u"verycomplicatedsearchquery",
+               /*max_num_results=*/1u,
+               base::BindLambdaForTesting(
+                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                           search_results) {
+                     ASSERT_EQ(search_results.size(), 1u);
+                     EXPECT_EQ(search_results[0]->id, "mock-app-test-id");
+                     EXPECT_EQ(search_results[0]->title, u"Title");
+                     EXPECT_EQ(search_results[0]->main_category, u"Help");
+                     EXPECT_EQ(search_results[0]->locale, "");
+                     EXPECT_EQ(search_results[0]->url_path_with_parameters,
+                               "help/sub/3399763/");
+                     EXPECT_GT(search_results[0]->relevance_score, 0.01);
+                     search_run_loop.QuitClosure().Run();
+                   }));
+  search_run_loop.Run();
+#endif
 }
 
 // Test that the Help App opens when Gesture help requested.
