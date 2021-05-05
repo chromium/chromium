@@ -164,8 +164,8 @@ base::Optional<std::string> GetDisableReason(
   }
 
   // Remove if gated on a disabled feature.
-  if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
-                                     *options.gate_on_feature, *profile)) {
+  if (options.gate_on_feature &&
+      !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
     return options.install_url.spec() +
            " disabled because feature is disabled: " + *options.gate_on_feature;
   }
@@ -541,11 +541,10 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
                   IsPreinstalledAppInstallFeatureEnabled(
-                      kMigrateDefaultChromeAppToWebAppsGSuite.name, *profile_));
-  SetMigrationRun(
-      profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
-      IsPreinstalledAppInstallFeatureEnabled(
-          kMigrateDefaultChromeAppToWebAppsNonGSuite.name, *profile_));
+                      kMigrateDefaultChromeAppToWebAppsGSuite.name));
+  SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
+                  IsPreinstalledAppInstallFeatureEnabled(
+                      kMigrateDefaultChromeAppToWebAppsNonGSuite.name));
 
   if (callback) {
     std::move(callback).Run(std::move(install_results),

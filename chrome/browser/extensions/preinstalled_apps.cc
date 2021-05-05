@@ -188,8 +188,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
           pref.FindStringPath(kWebAppMigrationFlag);
       if (!web_app_flag)
         return false;  // Isn't migrating.
-      if (web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_flag,
-                                                          *profile)) {
+      if (web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_flag)) {
         // The feature is still enabled; it's responsible for the behavior.
         return false;
       }
