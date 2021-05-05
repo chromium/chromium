@@ -133,7 +133,7 @@ StateStore::StateStore(Profile* profile)
   if (value_dict) {
     if (value_dict->empty())
       transaction.ClearAll();
-    else if (!incidents_sent_ || !incidents_sent_->Equals(value_dict.get()))
+    else if (!incidents_sent_ || *incidents_sent_ != *value_dict)
       transaction.ReplacePrefDict(std::move(value_dict));
   }
 
