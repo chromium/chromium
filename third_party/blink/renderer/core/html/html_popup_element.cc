@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -76,6 +77,89 @@ void HTMLPopupElement::show() {
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   PushNewPopupElement(this);
   MarkStyleDirty();
+  SetFocus();
+}
+
+bool HTMLPopupElement::IsKeyboardFocusable() const {
+  // Popup is not keyboard focusable.
+  return false;
+}
+bool HTMLPopupElement::IsMouseFocusable() const {
+  // Popup *is* mouse focusable.
+  return true;
+}
+
+// TODO(masonf) This should really live in either Element or FocusController.
+// The spec for
+// https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
+// does not include dialogs or popups yet.
+Element* HTMLPopupElement::GetFocusableArea(bool autofocus_only) const {
+  Node* next = nullptr;
+  for (Node* node = FlatTreeTraversal::FirstChild(*this); node; node = next) {
+    if (IsA<HTMLPopupElement>(*node) || IsA<HTMLDialogElement>(*node)) {
+      next = FlatTreeTraversal::NextSkippingChildren(*node, this);
+      continue;
+    }
+    next = FlatTreeTraversal::Next(*node, this);
+    auto* element = DynamicTo<Element>(node);
+    if (element && element->IsFocusable() &&
+        (!autofocus_only || element->IsAutofocusable())) {
+      return element;
+    }
+  }
+  return nullptr;
+}
+
+void HTMLPopupElement::focus(const FocusParams& params) {
+  if (hasAttribute(html_names::kDelegatesfocusAttr)) {
+    if (auto* node_to_focus = GetFocusableArea(/*autofocus_only=*/false)) {
+      node_to_focus->focus(params);
+    }
+  } else {
+    HTMLElement::focus(params);
+  }
+}
+
+void HTMLPopupElement::SetFocus() {
+  // The layout must be updated here because we call Element::isFocusable,
+  // which requires an up-to-date layout.
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+
+  Element* control = nullptr;
+  if (IsAutofocusable() || hasAttribute(html_names::kDelegatesfocusAttr)) {
+    // If the <popup> has the autofocus or delegatesfocus, focus it.
+    control = this;
+  } else {
+    // Otherwise, look for a child control that has the autofocus attribute.
+    control = GetFocusableArea(/*autofocus_only=*/true);
+  }
+
+  // If the popup does not use autofocus or delegatesfocus, then the focus
+  // should remain on the currently active element.
+  // https://open-ui.org/components/popup.research.explainer#autofocus-logic
+  if (!control)
+    return;
+
+  // 3. Run the focusing steps for control.
+  DCHECK(control->IsFocusable());
+  control->focus();
+
+  // 4. Let topDocument be the active document of control's node document's
+  // browsing context's top-level browsing context.
+  // 5. If control's node document's origin is not the same as the origin of
+  // topDocument, then return.
+  Document& doc = control->GetDocument();
+  if (!doc.IsActive())
+    return;
+  if (!doc.IsInMainFrame() &&
+      !doc.TopFrameOrigin()->CanAccess(
+          doc.GetExecutionContext()->GetSecurityOrigin())) {
+    return;
+  }
+
+  // 6. Empty topDocument's autofocus candidates.
+  // 7. Set topDocument's autofocus processed flag to true.
+  doc.TopDocument().FinalizeAutofocus();
 }
 
 Node::InsertionNotificationRequest HTMLPopupElement::InsertedInto(
