@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base//window_properties.h"
@@ -33,6 +34,8 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -1049,11 +1052,16 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   params.show_state = show_state;
   // Make shell surface a transient child if |parent_| has been set and
   // container_ isn't specified.
-  if (ash::desks_util::IsDeskContainerId(container_) && parent_) {
-    params.parent = parent_;
+  aura::Window* root_window =
+      WMHelper::GetInstance()->GetRootWindowForNewWindows();
+  if (ash::desks_util::IsDeskContainerId(container_)) {
+    DCHECK_EQ(ash::desks_util::GetActiveDeskContainerId(), container_);
+    if (parent_)
+      params.parent = parent_;
+    else
+      params.context = root_window;
   } else {
-    params.parent = ash::Shell::GetContainer(
-        WMHelper::GetInstance()->GetRootWindowForNewWindows(), container_);
+    params.parent = ash::Shell::GetContainer(root_window, container_);
   }
   params.bounds = gfx::Rect(origin_, gfx::Size());
 
@@ -1082,6 +1090,12 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   params.activatable = activatable
                            ? views::Widget::InitParams::Activatable::kYes
                            : views::Widget::InitParams::Activatable::kNo;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  full_restore::ModifyWidgetParams(params.init_properties_container.GetProperty(
+                                       full_restore::kRestoreWindowIdKey),
+                                   &params);
+#endif
 
   OverrideInitParams(&params);
 
