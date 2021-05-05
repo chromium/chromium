@@ -146,6 +146,33 @@
       "use_libfuzzer": true
     }
   },
+  "Linux Builder (core-32) (goma)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
+  "Linux Builder (core-32) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
+  "Linux Builder (core-32) (runsc) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Linux Builder (deps-cache) (reclient)": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

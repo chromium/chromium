@@ -6,6 +6,21 @@
       "chromium_builder_asan"
     ]
   },
+  "Linux Builder (core-32) (goma)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "Linux Builder (core-32) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "Linux Builder (core-32) (runsc) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Linux Builder (deps-cache) (reclient)": {
     "additional_compile_targets": [
       "all"
