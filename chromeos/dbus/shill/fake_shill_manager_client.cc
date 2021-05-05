@@ -47,7 +47,7 @@ bool s_dynamic_wep = false;
 struct ValueEquals {
   explicit ValueEquals(const base::Value* first) : first_(first) {}
   bool operator()(const base::Value* second) const {
-    return first_->Equals(second);
+    return *first_ == *second;
   }
   const base::Value* first_;
 };
