@@ -194,6 +194,7 @@ def try_builder(
         )
 
 def blink_builder(*, name, goma_backend = None, **kwargs):
+    kwargs.setdefault("os", builders.os.LINUX_BIONIC_REMOVE)
     return try_builder(
         name = name,
         builder_group = "tryserver.blink",
