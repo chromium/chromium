@@ -82,6 +82,7 @@ public class FeedSurfaceMediator
         implements NewTabPageLayout.ScrollDelegate, ContextMenuManager.TouchEnabledDelegate,
                    TemplateUrlServiceObserver, ListMenu.Delegate,
                    EnhancedProtectionPromoStateListener, IdentityManager.Observer {
+    private static final String TAG = "FeedSurfaceMediator";
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
@@ -223,6 +224,7 @@ public class FeedSurfaceMediator
     private int mThumbnailWidth;
     private int mThumbnailHeight;
     private int mThumbnailScrollY;
+    private int mRestoreTabId;
 
     /** The model representing feed-related cog menu items. */
     private ModelList mFeedMenuModel;
@@ -361,6 +363,7 @@ public class FeedSurfaceMediator
     void restoreSavedInstanceState(String json) {
         ScrollState state = ScrollState.fromJson(json);
         if (state == null) return;
+        mRestoreTabId = state.tabId;
         if (mSectionHeaderModel != null) {
             mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, state.tabId);
         }
@@ -397,13 +400,17 @@ public class FeedSurfaceMediator
             mCoordinator.initializeIph();
             mSigninManager.getIdentityManager().addObserver(this);
 
-            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
 
             setUpWebFeedTab();
+
+            // Set the current tab index to what restoreSavedInstanceState had.
+            if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
         } else {
             // Show feed if there is no header that would allow user to hide feed.
             // This is currently only relevant for the two panes start surface.
