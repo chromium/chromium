@@ -1267,7 +1267,10 @@ bool ChromeUserManagerImpl::ShouldReportUser(const std::string& user_id) const {
   const base::ListValue& reporting_users =
       *(GetLocalState()->GetList(::prefs::kReportingUsers));
   base::Value user_id_value(FullyCanonicalize(user_id));
-  return !(reporting_users.Find(user_id_value) == reporting_users.end());
+  // TODO(crbug.com/1187106): Use base::Contains once |reporting_users| is not a
+  // ListValue.
+  return !(std::find(reporting_users.begin(), reporting_users.end(),
+                     user_id_value) == reporting_users.end());
 }
 
 bool ChromeUserManagerImpl::IsManagedSessionEnabledForUser(
