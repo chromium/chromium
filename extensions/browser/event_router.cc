@@ -528,7 +528,7 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   for (size_t i = 0; i < filter_list->GetSize(); i++) {
     DictionaryValue* filter_value = nullptr;
     CHECK(filter_list->GetDictionary(i, &filter_value));
-    if (filter_value->Equals(filter)) {
+    if (*filter_value == *filter) {
       filter_list->Remove(i, nullptr);
       break;
     }

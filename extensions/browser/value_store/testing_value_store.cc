@@ -95,7 +95,7 @@ ValueStore::WriteResult TestingValueStore::Set(
        !it.IsAtEnd(); it.Advance()) {
     base::Value* old_value = NULL;
     if (!storage_.GetWithoutPathExpansion(it.key(), &old_value) ||
-        !old_value->Equals(&it.value())) {
+        *old_value != it.value()) {
       changes.emplace_back(it.key(),
                            old_value
                                ? base::Optional<base::Value>(old_value->Clone())

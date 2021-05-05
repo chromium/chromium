@@ -1502,7 +1502,7 @@ void ExtensionPrefs::UpdateManifest(const Extension* extension) {
     const base::DictionaryValue* old_manifest = NULL;
     bool update_required =
         !extension_dict->GetDictionary(kPrefManifest, &old_manifest) ||
-        !extension->manifest()->value()->Equals(old_manifest);
+        *extension->manifest()->value() != *old_manifest;
     if (update_required) {
       UpdateExtensionPref(extension->id(), kPrefManifest,
                           extension->manifest()->value()->CreateDeepCopy());
