@@ -422,6 +422,10 @@ void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   auto mutable_box = box_.GetMutableForPainting();
   mutable_box.SavePreviousSize();
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1205708): Audit this.
+  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+#endif
   if (NeedsToSavePreviousOverflowData())
     mutable_box.SavePreviousOverflowData();
   else
