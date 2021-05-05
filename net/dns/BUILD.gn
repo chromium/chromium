@@ -26,126 +26,121 @@ source_set("dns") {
 
   public = []
   sources = [
+    "address_info.cc",
+    "address_info.h",
+    "address_sorter.h",
+    "context_host_resolver.cc",
+    "context_host_resolver.h",
+    "dns_alias_utility.cc",
+    "dns_alias_utility.h",
+    "dns_config.cc",
+    "dns_config_service.cc",
+    "dns_config_service.h",
+    "dns_hosts.cc",
+    "dns_hosts.h",
+    "dns_query.cc",
+    "dns_query.h",
+    "dns_reloader.cc",
+    "dns_reloader.h",
+    "dns_response.cc",
+    "dns_response_result_extractor.cc",
+    "dns_response_result_extractor.h",
+    "dns_server_iterator.cc",
+    "dns_server_iterator.h",
+    "dns_session.cc",
+    "dns_session.h",
+    "dns_socket_allocator.cc",
+    "dns_socket_allocator.h",
+    "dns_transaction.cc",
+    "dns_udp_tracker.cc",
+    "dns_udp_tracker.h",
     "dns_util.cc",
     "dns_util.h",
+    "host_cache.cc",
+    "host_resolver.cc",
+    "host_resolver_manager.cc",
+    "host_resolver_mdns_listener_impl.cc",
+    "host_resolver_mdns_listener_impl.h",
+    "host_resolver_mdns_task.cc",
+    "host_resolver_mdns_task.h",
+    "host_resolver_proc.cc",
+    "host_resolver_proc.h",
+    "https_record_rdata.cc",
+    "httpssvc_metrics.cc",
+    "httpssvc_metrics.h",
+    "mapped_host_resolver.cc",
+    "nsswitch_reader.cc",
+    "nsswitch_reader.h",
+    "record_parsed.cc",
+    "record_rdata.cc",
+    "resolve_context.cc",
+    "resolve_context.h",
+    "serial_worker.cc",
+    "serial_worker.h",
+    "system_dns_config_change_notifier.cc",
+    "system_dns_config_change_notifier.h",
   ]
 
-  if (!is_nacl) {
+  if (is_win) {
     sources += [
-      "address_info.cc",
-      "address_info.h",
-      "address_sorter.h",
-      "context_host_resolver.cc",
-      "context_host_resolver.h",
-      "dns_alias_utility.cc",
-      "dns_alias_utility.h",
-      "dns_config.cc",
-      "dns_config_service.cc",
-      "dns_config_service.h",
-      "dns_hosts.cc",
-      "dns_hosts.h",
-      "dns_query.cc",
-      "dns_query.h",
-      "dns_reloader.cc",
-      "dns_reloader.h",
-      "dns_response.cc",
-      "dns_response_result_extractor.cc",
-      "dns_response_result_extractor.h",
-      "dns_server_iterator.cc",
-      "dns_server_iterator.h",
-      "dns_session.cc",
-      "dns_session.h",
-      "dns_socket_allocator.cc",
-      "dns_socket_allocator.h",
-      "dns_transaction.cc",
-      "dns_udp_tracker.cc",
-      "dns_udp_tracker.h",
-      "host_cache.cc",
-      "host_resolver.cc",
-      "host_resolver_manager.cc",
-      "host_resolver_mdns_listener_impl.cc",
-      "host_resolver_mdns_listener_impl.h",
-      "host_resolver_mdns_task.cc",
-      "host_resolver_mdns_task.h",
-      "host_resolver_proc.cc",
-      "host_resolver_proc.h",
-      "https_record_rdata.cc",
-      "httpssvc_metrics.cc",
-      "httpssvc_metrics.h",
-      "mapped_host_resolver.cc",
-      "nsswitch_reader.cc",
-      "nsswitch_reader.h",
-      "record_parsed.cc",
-      "record_rdata.cc",
-      "resolve_context.cc",
-      "resolve_context.h",
-      "serial_worker.cc",
-      "serial_worker.h",
-      "system_dns_config_change_notifier.cc",
-      "system_dns_config_change_notifier.h",
+      "address_sorter_win.cc",
+      "dns_config_service_win.cc",
+      "dns_config_service_win.h",
     ]
+  }
 
-    if (is_win) {
+  if (is_mac) {
+    sources += [
+      "dns_config_watcher_mac.cc",
+      "dns_config_watcher_mac.h",
+      "notify_watcher_mac.cc",
+      "notify_watcher_mac.h",
+    ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "dns_config_service_fuchsia.cc",
+      "dns_config_service_fuchsia.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "dns_config_service_android.cc",
+      "dns_config_service_android.h",
+    ]
+  } else if (is_linux) {
+    sources += [
+      "dns_config_service_linux.cc",
+      "dns_config_service_linux.h",
+    ]
+  } else if (is_posix) {
+    sources += [
+      "dns_config_service_posix.cc",
+      "dns_config_service_posix.h",
+    ]
+  }
+
+  if (enable_built_in_dns) {
+    sources += [ "dns_client.cc" ]
+
+    if (is_posix || is_fuchsia) {
       sources += [
-        "address_sorter_win.cc",
-        "dns_config_service_win.cc",
-        "dns_config_service_win.h",
+        "address_sorter_posix.cc",
+        "address_sorter_posix.h",
       ]
     }
+  }
 
-    if (is_mac) {
-      sources += [
-        "dns_config_watcher_mac.cc",
-        "dns_config_watcher_mac.h",
-        "notify_watcher_mac.cc",
-        "notify_watcher_mac.h",
-      ]
-    }
-
-    if (is_fuchsia) {
-      sources += [
-        "dns_config_service_fuchsia.cc",
-        "dns_config_service_fuchsia.h",
-      ]
-    }
-
-    if (is_android) {
-      sources += [
-        "dns_config_service_android.cc",
-        "dns_config_service_android.h",
-      ]
-    } else if (is_linux) {
-      sources += [
-        "dns_config_service_linux.cc",
-        "dns_config_service_linux.h",
-      ]
-    } else if (is_posix) {
-      sources += [
-        "dns_config_service_posix.cc",
-        "dns_config_service_posix.h",
-      ]
-    }
-
-    if (enable_built_in_dns) {
-      sources += [ "dns_client.cc" ]
-
-      if (is_posix || is_fuchsia) {
-        sources += [
-          "address_sorter_posix.cc",
-          "address_sorter_posix.h",
-        ]
-      }
-    }
-
-    if (enable_mdns) {
-      sources += [
-        "mdns_cache.cc",
-        "mdns_cache.h",
-        "mdns_client.cc",
-        "mdns_client_impl.cc",
-        "mdns_client_impl.h",
-      ]
-    }
+  if (enable_mdns) {
+    sources += [
+      "mdns_cache.cc",
+      "mdns_cache.h",
+      "mdns_client.cc",
+      "mdns_client_impl.cc",
+      "mdns_client_impl.h",
+    ]
   }
 
   deps = [ "//net:net_deps" ]
@@ -218,18 +213,14 @@ source_set("host_resolver") {
     "//services/proxy_resolver/*",
   ]
 
-  sources = []
+  sources = [
+    "dns_config.h",
+    "host_cache.h",
+    "host_resolver.h",
+    "host_resolver_source.h",
+    "mapped_host_resolver.h",
+  ]
   public = []
-
-  if (!is_nacl) {
-    sources += [
-      "dns_config.h",
-      "host_cache.h",
-      "host_resolver.h",
-      "host_resolver_source.h",
-      "mapped_host_resolver.h",
-    ]
-  }
 
   deps = [
     "//net:net_deps",
@@ -271,12 +262,8 @@ source_set("host_resolver_manager") {
     "//services/network/*",
   ]
 
-  sources = []
+  sources = [ "host_resolver_manager.h" ]
   public = []
-
-  if (!is_nacl) {
-    sources += [ "host_resolver_manager.h" ]
-  }
 
   deps = [
     ":host_resolver",
@@ -322,19 +309,15 @@ source_set("dns_client") {
     "//services/network/*",
   ]
 
-  sources = []
+  sources = [
+    "dns_client.h",
+    "dns_response.h",
+    "dns_transaction.h",
+    "https_record_rdata.h",
+    "record_parsed.h",
+    "record_rdata.h",
+  ]
   public = []
-
-  if (!is_nacl) {
-    sources += [
-      "dns_client.h",
-      "dns_response.h",
-      "dns_transaction.h",
-      "https_record_rdata.h",
-      "record_parsed.h",
-      "record_rdata.h",
-    ]
-  }
 
   deps = [
     ":host_resolver",
@@ -387,7 +370,7 @@ source_set("mdns_client") {
   public = []
   sources = []
 
-  if (!is_nacl && enable_mdns) {
+  if (enable_mdns) {
     sources += [ "mdns_client.h" ]
   }
 

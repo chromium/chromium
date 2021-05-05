@@ -13,14 +13,9 @@
 #include "net/cert/crl_set.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-
-#if defined(OS_NACL)
-#include "base/notreached.h"
-#else
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
-#endif
 
 namespace net {
 
@@ -82,10 +77,6 @@ bool CertVerifier::RequestParams::operator<(
 // static
 std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-#if defined(OS_NACL)
-  NOTIMPLEMENTED();
-  return nullptr;
-#else
   scoped_refptr<CertVerifyProc> verify_proc;
 #if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   verify_proc =
@@ -104,7 +95,6 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
 #endif
 
   return std::make_unique<MultiThreadedCertVerifier>(std::move(verify_proc));
-#endif
 }
 
 // static

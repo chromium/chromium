@@ -90,13 +90,11 @@ NET_EXPORT base::Optional<std::string> DnsDomainToString(
 NET_EXPORT_PRIVATE std::string GetURLFromTemplateWithoutParameters(
     const std::string& server_template);
 
-#if !defined(OS_NACL)
 NET_EXPORT_PRIVATE
 base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
     const char* field_trial_name,
     base::TimeDelta default_delta,
     NetworkChangeNotifier::ConnectionType connection_type);
-#endif  // !defined(OS_NACL)
 
 // How similar or different two AddressLists are (see values for details).
 // Used in histograms; do not modify existing values.

@@ -38,7 +38,7 @@
 // This matches logic in tcp_client_socket.cc. Only used once, but defining it
 // in this file instead of just inlining the OS checks where its used makes it
 // more grep-able.
-#if !defined(OS_ANDROID) && !defined(OS_NACL)
+#if !defined(OS_ANDROID)
 #define TCP_CLIENT_SOCKET_OBSERVES_SUSPEND
 #endif
 
