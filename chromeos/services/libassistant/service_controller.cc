@@ -327,7 +327,7 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
 
   assistant_manager_internal()
       ->GetFuchsiaApiHelperOrDie()
-      ->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+      ->SetFuchsiaApiDelegate(chromium_api_delegate_.get());
 }
 
 void ServiceController::CreateChromiumApiDelegate(
