@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/file_icon_util.h"
+#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,6 +24,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,6 +47,14 @@ const std::u16string ConcatenateFileNames(
     const std::vector<std::string>& file_names) {
   auto all_file_names = base::JoinString(file_names, ", ");
   return base::ASCIIToUTF16(all_file_names);
+}
+
+gfx::ImageSkia CreatePlaceholderIcon(const gfx::VectorIcon& icon) {
+  gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
+      icon, ash::sharesheet::kImagePreviewPlaceholderIconContentSize,
+      ash::sharesheet::kImagePreviewPlaceholderIconColor);
+  return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(
+      file_type_icon, ash::sharesheet::kImagePreviewSize);
 }
 
 }  // namespace
@@ -84,10 +96,11 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
     ShowTextPreview();
 
     if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
-      LoadImage();
+      ResolveImage();
     } else {
       // TODO(crbug.com/2650014): Update to text icon.
-      image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
+      image_preview_->SetImage(
+          CreatePlaceholderIcon(chromeos::kFiletypeGenericIcon));
     }
   }
 }
@@ -96,8 +109,7 @@ SharesheetHeaderView::~SharesheetHeaderView() = default;
 
 void SharesheetHeaderView::InitaliseImageView() {
   image_preview_ = AddChildView(std::make_unique<views::ImageView>());
-  image_preview_->SetImageSize(
-      gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize));
+  image_preview_->SetImageSize(kImagePreviewSize);
   image_preview_->SetPaintToLayer();
   image_preview_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kImagePreviewCornerRadius));
@@ -213,7 +225,7 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
 }
 
 // TODO(crbug.com/2650014) Optimise to load several images.
-void SharesheetHeaderView::LoadImage() {
+void SharesheetHeaderView::ResolveImage() {
   base::FilePath file_path;
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileSystemContextForExtensionId(
@@ -222,29 +234,30 @@ void SharesheetHeaderView::LoadImage() {
       fs_context->CrackURL(intent_->file_urls.value().front());
   file_path = fs_url.path();
 
+  image_ = std::make_unique<HoldingSpaceImage>(
+      kImagePreviewSize, file_path,
+      base::BindRepeating(&SharesheetHeaderView::LoadImage,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::Optional<gfx::ImageSkia>(
+          CreatePlaceholderIcon(chromeos::kFiletypeImageIcon)));
+  image_subscription_ = image_->AddImageSkiaChangedCallback(base::BindRepeating(
+      &SharesheetHeaderView::OnImageLoaded, weak_ptr_factory_.GetWeakPtr()));
+  image_preview_->SetImage(image_->GetImageSkia(kImagePreviewSize));
+}
+
+void SharesheetHeaderView::LoadImage(
+    const base::FilePath& file_path,
+    const gfx::Size& size,
+    HoldingSpaceImage::BitmapCallback callback) {
   // This works for all shares right now because currently when we share data
   // that is not from the Files app (web share and ARC),
   // those files are being temporarily saved to disk before being shared.
   // If those implementations change, this will need to be updated.
-  thumbnail_loader_.Load(
-      {file_path, gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize)},
-      base::BindOnce(&SharesheetHeaderView::OnImageLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+  thumbnail_loader_.Load({file_path, size}, std::move(callback));
 }
 
-void SharesheetHeaderView::OnImageLoaded(const SkBitmap* bitmap,
-                                         base::File::Error error) {
-  if (error != base::File::FILE_OK) {
-    // TODO(crbug.com/2650014): Handle error case:
-    // Add placeholder icons for each mimetype.
-    image_preview_->SetImage(gfx::CreateVectorIcon(kAddIcon));
-    return;
-  }
-
-  // TODO(crbug.com/1189945): Update to use custom ImageSkiaSource so that
-  // image will scale with device scale factor.
-  image_preview_->SetImage(
-      gfx::Image::CreateFrom1xBitmap(*bitmap).AsImageSkia());
+void SharesheetHeaderView::OnImageLoaded() {
+  image_preview_->SetImage(image_->GetImageSkia(kImagePreviewSize));
 }
 
 BEGIN_METADATA(SharesheetHeaderView, views::View)

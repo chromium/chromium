@@ -60,11 +60,7 @@ gfx::ImageSkia CreateFileTypeImageSkia(const base::FilePath& file_path,
   const gfx::ImageSkia file_type_icon =
       is_folder ? GetIconFromType(IconType::kFolder, dark_background)
                 : GetIconForPath(file_path, dark_background);
-
-  // Superimpose the `file_type_icon` over an empty image in order to center it
-  // within the image at a fixed size.
-  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateEmptyImageSkia(size), file_type_icon);
+  return HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon, size);
 }
 
 }  // namespace
@@ -97,14 +93,18 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
 
 // HoldingSpaceImage -----------------------------------------------------------
 
-HoldingSpaceImage::HoldingSpaceImage(const gfx::Size& max_size,
-                                     const base::FilePath& backing_file_path,
-                                     AsyncBitmapResolver async_bitmap_resolver)
+HoldingSpaceImage::HoldingSpaceImage(
+    const gfx::Size& max_size,
+    const base::FilePath& backing_file_path,
+    AsyncBitmapResolver async_bitmap_resolver,
+    base::Optional<gfx::ImageSkia> file_type_icon)
     : max_size_(max_size),
       backing_file_path_(backing_file_path),
-      async_bitmap_resolver_(async_bitmap_resolver) {
-  // Use an empty `placeholder_` until a bitmap is asynchronously returned.
-  placeholder_ = CreateEmptyImageSkia(max_size_);
+      async_bitmap_resolver_(async_bitmap_resolver),
+      file_type_icon_(std::move(file_type_icon)) {
+  // If there is no supplied `file_type_icon`, use an empty `placeholder_` until
+  // a bitmap is asynchronously returned.
+  placeholder_ = file_type_icon_.value_or(CreateEmptyImageSkia(max_size_));
   CreateImageSkia();
 }
 
@@ -137,6 +137,16 @@ gfx::Size HoldingSpaceImage::GetMaxSizeForType(HoldingSpaceItem::Type type) {
 // static
 void HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(bool value) {
   g_use_zero_invalidation_delay_for_testing = value;
+}
+
+// static
+gfx::ImageSkia HoldingSpaceImage::SuperimposeOverEmptyImage(
+    const gfx::ImageSkia& icon,
+    const gfx::Size& size) {
+  // Superimpose the `icon` over an empty image in order to center it
+  // within the image at a fixed size.
+  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      CreateEmptyImageSkia(size), icon);
 }
 
 bool HoldingSpaceImage::operator==(const HoldingSpaceImage& rhs) const {
@@ -213,6 +223,8 @@ gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
   // When an error occurs, fallback to an image representing file type.
   if (async_bitmap_resolver_error_ &&
       async_bitmap_resolver_error_ != base::File::FILE_OK) {
+    if (file_type_icon_)
+      return file_type_icon_.value();
     const bool is_folder =
         async_bitmap_resolver_error_ == base::File::FILE_ERROR_NOT_A_FILE;
     return CreateFileTypeImageSkia(backing_file_path_, is_folder, size,

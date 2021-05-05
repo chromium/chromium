@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_HEADER_VIEW_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_HEADER_VIEW_H_
 
+#include <memory>
+
+#include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "base/callback_list.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -49,8 +53,11 @@ class SharesheetHeaderView : public views::View {
   // from share_target_utils.h to a common place and reuse the function here.
   std::vector<std::u16string> ExtractShareText();
 
-  void LoadImage();
-  void OnImageLoaded(const SkBitmap* bitmap, base::File::Error error);
+  void ResolveImage();
+  void LoadImage(const base::FilePath& file_path,
+                 const gfx::Size& size,
+                 HoldingSpaceImage::BitmapCallback callback);
+  void OnImageLoaded();
 
   // Contains the share title and text preview views.
   views::View* text_view_ = nullptr;
@@ -58,7 +65,11 @@ class SharesheetHeaderView : public views::View {
 
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
+
   ThumbnailLoader thumbnail_loader_;
+  base::CallbackListSubscription image_subscription_;
+  // TODO(crbug.com/1156343): Clean up to use our own FileThumbnailImage class.
+  std::unique_ptr<HoldingSpaceImage> image_;
 
   base::WeakPtrFactory<SharesheetHeaderView> weak_ptr_factory_{this};
 };

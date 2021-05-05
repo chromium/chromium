@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONSTANTS_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONSTANTS_H_
 
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 namespace sharesheet {
@@ -14,7 +16,11 @@ namespace sharesheet {
 constexpr int kSpacing = 24;
 
 constexpr size_t kTextPreviewMaximumLines = 3;
+constexpr gfx::Size kImagePreviewSize(::sharesheet::kIconSize,
+                                      ::sharesheet::kIconSize);
 constexpr int kImagePreviewCornerRadius = 4;
+constexpr int kImagePreviewPlaceholderIconContentSize = 20;
+constexpr SkColor kImagePreviewPlaceholderIconColor = gfx::kGoogleBlue600;
 constexpr SkColor kImagePreviewPlaceholderBackgroundColor = gfx::kGoogleBlue050;
 
 constexpr int kHeaderViewBetweenChildSpacing = 12;

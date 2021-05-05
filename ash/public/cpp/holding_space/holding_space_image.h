@@ -33,9 +33,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
                                    const gfx::Size& size,
                                    BitmapCallback callback)>;
 
-  HoldingSpaceImage(const gfx::Size& max_size,
-                    const base::FilePath& backing_file_path,
-                    AsyncBitmapResolver async_bitmap_resolver);
+  // TODO(crbug.com/1189945): Rename to FilesThumbnailImage and create a
+  // PlaceholderImage factory that is passed in which generates/sets images.
+  HoldingSpaceImage(
+      const gfx::Size& max_size,
+      const base::FilePath& backing_file_path,
+      AsyncBitmapResolver async_bitmap_resolver,
+      base::Optional<gfx::ImageSkia> file_type_icon = base::nullopt);
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
@@ -44,6 +48,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   static gfx::Size GetMaxSizeForType(HoldingSpaceItem::Type type);
 
   static void SetUseZeroInvalidationDelayForTesting(bool value);
+
+  static gfx::ImageSkia SuperimposeOverEmptyImage(const gfx::ImageSkia& icon,
+                                                  const gfx::Size& size);
 
   bool operator==(const HoldingSpaceImage& rhs) const;
 
@@ -104,6 +111,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
 
   gfx::ImageSkia image_skia_;
   gfx::ImageSkia placeholder_;
+  base::Optional<gfx::ImageSkia> file_type_icon_;
 
   // Timer used to throttle image invalidate requests.
   base::OneShotTimer invalidate_timer_;
