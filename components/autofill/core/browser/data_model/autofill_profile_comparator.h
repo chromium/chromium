@@ -79,6 +79,24 @@ class AutofillProfileComparator {
   // character is skippable if it is punctuation or white space.
   bool HasOnlySkippableCharacters(base::StringPiece16 text) const;
 
+  // Get the difference in 'types' of two profiles. The difference is determined
+  // with respect to the provided `app_locale`.
+  static std::vector<ProfileValueDifference> GetProfileDifference(
+      const AutofillProfile& first_profile,
+      const AutofillProfile& second_profile,
+      ServerFieldTypeSet types,
+      const std::string& app_locale);
+
+  // Same as `GetProfileDifference()` but returns a map that maps the type to a
+  // pair of strings that contain the corresponding value from the first and
+  // second profile.
+  static base::flat_map<ServerFieldType,
+                        std::pair<std::u16string, std::u16string>>
+  GetProfileDifferenceMap(const AutofillProfile& first_profile,
+                          const AutofillProfile& second_profile,
+                          ServerFieldTypeSet types,
+                          const std::string& app_locale);
+
   // Get the difference of two profiles for settings-visible values.
   // The difference is determined with respect to the provided `app_locale`.
   static std::vector<ProfileValueDifference>

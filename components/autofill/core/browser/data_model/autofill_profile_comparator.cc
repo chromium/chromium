@@ -244,14 +244,15 @@ AutofillProfileComparator::AutofillProfileComparator(
 AutofillProfileComparator::~AutofillProfileComparator() = default;
 
 std::vector<ProfileValueDifference>
-AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+AutofillProfileComparator::GetProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
+    ServerFieldTypeSet types,
     const std::string& app_locale) {
   std::vector<ProfileValueDifference> difference;
-  difference.reserve(GetUserVisibleTypes().size());
+  difference.reserve(types.size());
 
-  for (auto type : GetUserVisibleTypes()) {
+  for (auto type : types) {
     const std::u16string& first_value = first_profile.GetInfo(type, app_locale);
     const std::u16string& second_value =
         second_profile.GetInfo(type, app_locale);
@@ -264,19 +265,18 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
 }
 
 base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
-AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
+AutofillProfileComparator::GetProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
+    ServerFieldTypeSet types,
     const std::string& app_locale) {
   std::vector<
       std::pair<ServerFieldType, std::pair<std::u16string, std::u16string>>>
       result;
+  result.reserve(types.size());
 
-  result.reserve(GetUserVisibleTypes().size());
-
-  for (auto& diff :
-       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-           first_profile, second_profile, app_locale)) {
+  for (auto& diff : AutofillProfileComparator::GetProfileDifference(
+           first_profile, second_profile, types, app_locale)) {
     result.push_back(
         {diff.type,
          {std::move(diff.first_value), std::move(diff.second_value)}});
@@ -284,6 +284,24 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
   return base::flat_map<ServerFieldType,
                         std::pair<std::u16string, std::u16string>>(
       std::move(result));
+}
+
+std::vector<ProfileValueDifference>
+AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  return GetProfileDifference(first_profile, second_profile,
+                              GetUserVisibleTypes(), app_locale);
+}
+
+base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  return GetProfileDifferenceMap(first_profile, second_profile,
+                                 GetUserVisibleTypes(), app_locale);
 }
 
 bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
