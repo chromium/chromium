@@ -97,7 +97,7 @@
 
 @interface BrowserViewWrangler () {
   ChromeBrowserState* _browserState;
-  SceneState* _sceneState;
+  __weak SceneState* _sceneState;
   __weak id<ApplicationCommands> _applicationCommandEndpoint;
   __weak id<BrowsingDataCommands> _browsingDataCommandEndpoint;
   BOOL _isShutdown;
