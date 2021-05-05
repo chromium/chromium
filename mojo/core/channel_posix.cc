@@ -124,7 +124,8 @@ ChannelPosix::ChannelPosix(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : Channel(delegate, handle_policy),
       self_(this),
-      io_task_runner_(io_task_runner) {
+      io_task_runner_(io_task_runner),
+      write_lock_("ChannelPosix.write_lock_") {
   if (connection_params.server_endpoint().is_valid())
     server_ = connection_params.TakeServerEndpoint();
   else
