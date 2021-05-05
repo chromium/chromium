@@ -7,10 +7,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/unified_heap_controller.h"
-#else  // !USE_V8_OILPAN
+#if !BUILDFLAG(USE_V8_OILPAN)
 #include "third_party/blink/renderer/platform/heap/impl/unified_heap_controller.h"
-#endif  // !USE_V8_OILPAN
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_UNIFIED_HEAP_CONTROLLER_H_

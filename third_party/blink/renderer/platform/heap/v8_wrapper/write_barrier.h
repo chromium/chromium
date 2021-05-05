@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_WRITE_BARRIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_WRITE_BARRIER_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/heap-consistency.h"
 
 namespace blink {
