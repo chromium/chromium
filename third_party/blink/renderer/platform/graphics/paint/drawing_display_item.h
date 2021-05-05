@@ -67,7 +67,6 @@ inline DrawingDisplayItem::DrawingDisplayItem(const DisplayItemClient& client,
                                               sk_sp<const PaintRecord> record)
     : DisplayItem(client,
                   type,
-                  sizeof(*this),
                   visual_rect,
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {

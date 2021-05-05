@@ -5,59 +5,154 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 
-#include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/graphics/contiguous_container.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class JSONArray;
 
-// kDisplayItemAlignment must be a multiple of alignof(derived display item) for
-// each derived display item; the ideal value is the least common multiple.
-// The validity of kDisplayItemAlignment and kMaximumDisplayItemSize are checked
-// in PaintController::CreateAndAppend().
-static constexpr wtf_size_t kDisplayItemAlignment =
-    alignof(ScrollbarDisplayItem);
-static constexpr wtf_size_t kMaximumDisplayItemSize =
-    sizeof(ScrollbarDisplayItem);
-
-// A container for a list of display items.
-class PLATFORM_EXPORT DisplayItemList
-    : public ContiguousContainer<DisplayItem, kDisplayItemAlignment> {
+// A container for a list of display items of various types.
+class PLATFORM_EXPORT DisplayItemList {
  public:
-  static constexpr wtf_size_t kDefaultCapacityInBytes = 512;
+  static constexpr wtf_size_t kDefaultCapacity = 16;
 
-  // Using 0 as the default value to make 0 also fall back to
-  // kDefaultCapacityInBytes.
-  explicit DisplayItemList(wtf_size_t initial_capacity_in_bytes = 0)
-      : ContiguousContainer(kMaximumDisplayItemSize,
-                            initial_capacity_in_bytes
-                                ? initial_capacity_in_bytes
-                                : kDefaultCapacityInBytes) {}
+  // Using 0 as the default value to make 0 also fall back to kDefaultCapacity.
+  // The initial capacity will be allocated when the first item is appended.
+  explicit DisplayItemList(wtf_size_t initial_capacity = 0)
+      : initial_capacity_(initial_capacity ? initial_capacity
+                                           : kDefaultCapacity) {}
+  ~DisplayItemList();
+
+  DisplayItemList(const DisplayItemList&) = delete;
+  DisplayItemList& operator=(const DisplayItemList&) = delete;
+  DisplayItemList(DisplayItemList&&) = delete;
+  DisplayItemList& operator=(DisplayItemList&&) = delete;
+
+  template <class DerivedItemType, typename... Args>
+  DerivedItemType& AllocateAndConstruct(Args&&... args) {
+    static_assert(WTF::IsSubclass<DerivedItemType, DisplayItem>::value,
+                  "Must use subclass of DisplayItem.");
+    static_assert(sizeof(DerivedItemType) <= kMaxItemSize,
+                  "DisplayItem subclass is larger than kMaxItemSize.");
+    static_assert(kAlignment % alignof(DerivedItemType) == 0,
+                  "Derived type requires stronger alignment.");
+    DisplayItem& result = AllocateUninitializedItem();
+    new (&result) DerivedItemType(std::forward<Args>(args)...);
+    return static_cast<DerivedItemType&>(result);
+  }
 
   DisplayItem& AppendByMoving(DisplayItem& item) {
     SECURITY_CHECK(!item.IsTombstone());
-    DisplayItem& result =
-        ContiguousContainer::AppendByMoving(item, item.DerivedSize());
-    SetupTombstone(item, result);
-    return result;
+    DisplayItem& new_item = AllocateUninitializedItem();
+    MoveItem(item, new_item);
+    return new_item;
   }
 
   DisplayItem& ReplaceLastByMoving(DisplayItem& item) {
     SECURITY_CHECK(!item.IsTombstone());
-    DCHECK_EQ(back().DerivedSize(), item.DerivedSize());
-    DisplayItem& result =
-        ContiguousContainer::ReplaceLastByMoving(item, item.DerivedSize());
-    SetupTombstone(item, result);
-    return result;
+    DisplayItem& last = back();
+    last.~DisplayItem();
+    MoveItem(item, last);
+    return last;
+  }
+
+ private:
+  // Declares itself as a forward iterator, but also supports a few more
+  // things. The whole random access iterator interface is a bit much.
+  template <typename BaseIterator, typename ItemType>
+  class IteratorWrapper
+      : public std::iterator<std::forward_iterator_tag, ItemType> {
+    DISALLOW_NEW();
+
+   public:
+    IteratorWrapper() = default;
+    explicit IteratorWrapper(const BaseIterator& it) : it_(it) {}
+
+    bool operator==(const IteratorWrapper& other) const {
+      return it_ == other.it_;
+    }
+    bool operator!=(const IteratorWrapper& other) const {
+      return it_ != other.it_;
+    }
+    bool operator<(const IteratorWrapper& other) const {
+      return it_ < other.it_;
+    }
+    ItemType& operator*() const { return reinterpret_cast<ItemType&>(*it_); }
+    ItemType* operator->() const { return &operator*(); }
+    IteratorWrapper operator+(std::ptrdiff_t n) const {
+      return IteratorWrapper(it_ + n);
+    }
+    IteratorWrapper operator++(int) {
+      IteratorWrapper tmp = *this;
+      ++it_;
+      return tmp;
+    }
+    std::ptrdiff_t operator-(const IteratorWrapper& other) const {
+      return it_ - other.it_;
+    }
+    IteratorWrapper& operator++() {
+      ++it_;
+      return *this;
+    }
+
+   private:
+    BaseIterator it_;
+  };
+
+  // kAlignment must be a multiple of alignof(derived display item) for each
+  // derived display item; the ideal value is the least common multiple.
+  // The validity of kAlignment and kMaxItemSize are checked in
+  // AllocateAndConstruct().
+  static constexpr wtf_size_t kAlignment = alignof(ScrollbarDisplayItem);
+  static constexpr wtf_size_t kMaxItemSize = sizeof(ScrollbarDisplayItem);
+
+  struct ItemSlot {
+    alignas(kAlignment) uint8_t data[kMaxItemSize];
+  };
+  using ItemVector = Vector<ItemSlot>;
+
+ public:
+  using value_type = DisplayItem;
+  using iterator = IteratorWrapper<ItemVector::iterator, DisplayItem>;
+  using const_iterator =
+      IteratorWrapper<ItemVector::const_iterator, const DisplayItem>;
+  iterator begin() { return iterator(items_.begin()); }
+  iterator end() { return iterator(items_.end()); }
+  const_iterator begin() const { return const_iterator(items_.begin()); }
+  const_iterator end() const { return const_iterator(items_.end()); }
+
+  DisplayItem& front() { return *begin(); }
+  const DisplayItem& front() const { return *begin(); }
+  DisplayItem& back() {
+    DCHECK(size());
+    return (*this)[size() - 1];
+  }
+  const DisplayItem& back() const {
+    DCHECK(size());
+    return (*this)[size() - 1];
+  }
+
+  DisplayItem& operator[](wtf_size_t index) { return *(begin() + index); }
+  const DisplayItem& operator[](wtf_size_t index) const {
+    return *(begin() + index);
+  }
+
+  wtf_size_t size() const { return items_.size(); }
+  bool IsEmpty() const { return !size(); }
+
+  size_t MemoryUsageInBytes() const {
+    return sizeof(*this) + items_.CapacityInBytes();
   }
 
   // Useful for iterating with a range-based for loop.
   template <typename Iterator>
   class Range {
+    DISALLOW_NEW();
+
    public:
     Range(const Iterator& begin, const Iterator& end)
         : begin_(begin), end_(end) {}
@@ -103,10 +198,20 @@ class PLATFORM_EXPORT DisplayItemList
 #endif  // DCHECK_IS_ON()
 
  private:
-  // Called by AppendByMoving() and ReplaceLastByMoving() which created a
-  // tombstone/"dead display item" that can be safely destructed but should
-  // never be used except for debugging and raster invalidation.
-  void SetupTombstone(DisplayItem& item, const DisplayItem& new_item) {
+  DisplayItem& AllocateUninitializedItem() {
+    if (items_.IsEmpty())
+      items_.ReserveCapacity(initial_capacity_);
+    items_.emplace_back();
+    return reinterpret_cast<DisplayItem&>(items_.back());
+  }
+
+  void MoveItem(DisplayItem& item, DisplayItem& new_item) {
+    memcpy(static_cast<void*>(&new_item), static_cast<void*>(&item),
+           kMaxItemSize);
+
+    // Created a tombstone/"dead display item" that can be safely destructed but
+    // should never be used except for debugging and raster invalidation.
+    new (&item) DisplayItem;
     DCHECK(item.IsTombstone());
     // We need |visual_rect_| and |outset_for_raster_effects_| of the old
     // display item for raster invalidation. Also, the fields that make up the
@@ -121,6 +226,9 @@ class PLATFORM_EXPORT DisplayItemList
     item.visual_rect_ = new_item.visual_rect_;
     item.raster_effect_outset_ = new_item.raster_effect_outset_;
   }
+
+  ItemVector items_;
+  wtf_size_t initial_capacity_;
 };
 
 using DisplayItemIterator = DisplayItemList::const_iterator;
