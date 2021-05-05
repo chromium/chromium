@@ -4088,6 +4088,85 @@ TEST_P(PasswordManagerTest, SubmittedManagerClearingOnSuccessfulLogin) {
   EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
 }
 
+// Check that on successful login the credentials are checked for leak depending
+// on mute state of insecure credential.
+TEST_P(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    true);
+
+  auto mock_factory =
+      std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
+  manager()->set_leak_factory(std::move(mock_factory));
+
+  const PasswordForm form = MakeSimpleForm();
+  std::vector<FormData> observed = {form.form_data};
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Add muted insecure credentials.
+  std::vector<InsecureCredential> insecure_credentials = {InsecureCredential(
+      form.signon_realm, form.username_value, base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(true))};
+  EXPECT_CALL(*store_, GetMatchingInsecureCredentialsImpl(form.signon_realm))
+      .WillOnce(Return(insecure_credentials));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance, Start).Times(0);
+
+  // Now the password manager waits for the navigation to complete.
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+}
+
+// Tests that check for leaks happens even if there are muted credentials for
+// the same domain, but with different username.
+TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    true);
+
+  auto mock_factory =
+      std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
+  MockLeakDetectionCheckFactory* weak_factory = mock_factory.get();
+  manager()->set_leak_factory(std::move(mock_factory));
+
+  const PasswordForm form = MakeSimpleForm();
+  std::vector<FormData> observed = {form.form_data};
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Add muted insecure credentials.
+  std::vector<InsecureCredential> insecure_credentials = {InsecureCredential(
+      form.signon_realm, u"different_username", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(true))};
+  EXPECT_CALL(*store_, GetMatchingInsecureCredentialsImpl(form.signon_realm))
+      .WillOnce(Return(insecure_credentials));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance, Start);
+  EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+
+  // Now the password manager waits for the navigation to complete.
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());
 
 }  // namespace password_manager

@@ -192,6 +192,15 @@ FormData SimplifiedFormDataFromFormStructure(
   return form_data;
 }
 
+bool HasMutedCredentials(base::span<const InsecureCredential> credentials,
+                         const std::u16string& username) {
+  return base::ranges::any_of(credentials, [&username](const auto& credential) {
+    return credential.username == username && credential.is_muted &&
+           (credential.insecure_type == InsecureType::kLeaked ||
+            credential.insecure_type == InsecureType::kPhished);
+  });
+}
+
 }  // namespace
 
 // static
@@ -950,7 +959,13 @@ void PasswordManager::OnLoginSuccessful() {
   DCHECK(submitted_manager->GetSubmittedForm());
 
   client_->GetStoreResultFilter()->ReportFormLoginSuccess(*submitted_manager);
-  leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
+  // Check for leaks only if there are no muted credentials.
+  if (!HasMutedCredentials(
+          submitted_manager->GetInsecureCredentials(),
+          submitted_manager->GetSubmittedForm()->username_value) ||
+      !base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
+    leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
+  }
 
   auto submission_event =
       submitted_manager->GetSubmittedForm()->submission_event;

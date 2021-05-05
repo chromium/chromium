@@ -126,6 +126,12 @@ void FormFetcherImpl::Fetch() {
   // The desktop bubble needs this information.
   password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
                                                  this);
+#else
+  if (base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
+    // We need this information to mute leak detection warming.
+    password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
+                                                   this);
+  }
 #endif
 }
 

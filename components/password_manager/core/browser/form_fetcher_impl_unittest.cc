@@ -536,9 +536,29 @@ TEST_P(FormFetcherImplTest, DontFetchStatistics) {
 }
 
 TEST_P(FormFetcherImplTest, DontFetchInsecure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    false);
   EXPECT_CALL(*mock_store_, GetMatchingInsecureCredentialsImpl).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
+}
+
+TEST_P(FormFetcherImplTest, FetchInsecure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    true);
+  std::vector<InsecureCredential> list = {InsecureCredential(
+      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false))};
+  EXPECT_CALL(*mock_store_,
+              GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
+      .WillOnce(Return(list));
+  form_fetcher_->Fetch();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
+              UnorderedElementsAreArray(list));
 }
 #endif
 
