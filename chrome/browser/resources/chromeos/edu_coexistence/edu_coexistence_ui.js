@@ -126,8 +126,8 @@ Polymer({
    */
   configureUiForGaiaFlow() {
     var currentUrl = new URL(this.webview_.src);
-    var contentContainer =
-        this.$$('edu-coexistence-template').$$('div.content-container');
+    var template = this.$$('edu-coexistence-template');
+    var contentContainer = template.$$('div.content-container');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
       this.$$('edu-coexistence-button').newOobeStyleEnabled =
@@ -139,12 +139,11 @@ Polymer({
       this.showGaiaButtons_ = true;
       // Shrink the content-container so that the buttons line up more closely
       // with the server rendered buttons.
-      contentContainer.style.height = 'calc(100% - 245px)';
+      contentContainer.style.height = 'calc(100% - 90px)';
 
       // Don't show the "Next" button if the EDU authentication got forwarded to
       // a non-Google SSO page.
       this.showGaiaNextButton_ = currentUrl.hostname.endsWith('.google.com');
-
     } else {
       // Hide the GAIA Buttons.
       this.showGaiaButtons_ = false;
@@ -155,6 +154,8 @@ Polymer({
       // Restore the content container div to 100%
       contentContainer.style.height = '100%';
     }
+
+    template.showButtonFooter(this.showGaiaButtons_);
   },
 
   /** @override */
