@@ -1005,6 +1005,8 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1108,6 +1110,8 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1116,6 +1120,8 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1124,6 +1130,8 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1243,6 +1251,8 @@ try_.chromium_linux_builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1251,6 +1261,8 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1415,6 +1427,8 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202745)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
