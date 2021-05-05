@@ -7699,6 +7699,11 @@ LayoutRect LayoutBox::VisualOverflowRectAllowingUnset() const {
   return VisualOverflowRect();
 }
 
+PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
+  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  return PhysicalVisualOverflowRect();
+}
+
 void LayoutBox::CheckIsVisualOverflowComputed() const {
   if (NGInkOverflow::ReadUnsetAsNoneScope::IsActive())
     return;

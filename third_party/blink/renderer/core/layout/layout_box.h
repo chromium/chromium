@@ -609,13 +609,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return FlipForWritingMode(VisualOverflowRect());
   }
-  // VisualOverflow has DCHECK for reading before it is computed. This function
-  // pretends there is no visual overflow when it is not computed.
+  // VisualOverflow has DCHECK for reading before it is computed. These
+  // functions pretend there is no visual overflow when it is not computed.
+  // TODO(crbug.com/1205708): Audit the usages and fix issues.
 #if DCHECK_IS_ON()
   LayoutRect VisualOverflowRectAllowingUnset() const;
+  PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const;
 #else
   ALWAYS_INLINE LayoutRect VisualOverflowRectAllowingUnset() const {
     return VisualOverflowRect();
+  }
+  ALWAYS_INLINE PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const {
+    return PhysicalVisualOverflowRect();
   }
 #endif
   LayoutUnit LogicalLeftVisualOverflow() const {

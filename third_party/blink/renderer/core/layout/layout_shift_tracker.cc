@@ -190,7 +190,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
     return false;
 
   const auto& box = To<LayoutBox>(object);
-  if (SmallerThanRegionGranularity(box.VisualOverflowRect()))
+  if (SmallerThanRegionGranularity(box.VisualOverflowRectAllowingUnset()))
     return false;
 
   if (auto* display_lock_context = box.GetDisplayLockContext()) {
