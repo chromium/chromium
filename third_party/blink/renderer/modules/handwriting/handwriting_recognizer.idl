@@ -9,7 +9,7 @@
   RuntimeEnabled=HandwritingRecognition
 ] interface HandwritingRecognizer {
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionStartDrawing]
   HandwritingDrawing startDrawing(optional HandwritingHints hints = {});
 
   [RaisesException] void finish();

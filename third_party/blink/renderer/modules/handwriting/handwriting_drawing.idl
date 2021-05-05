@@ -13,6 +13,6 @@
   void clear();
   sequence<HandwritingStroke> getStrokes();
 
-  [CallWith=ScriptState]
+  [CallWith=ScriptState, MeasureAs=HandwritingRecognitionGetPrediction]
   Promise<sequence<HandwritingPrediction>> getPrediction();
 };
