@@ -76,7 +76,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
 #include "third_party/blink/public/common/switches.h"
 #endif
 
@@ -114,9 +114,9 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  // ChromeOS testing via linux, chromeos and maybe others, is flaky
-  // due to slower loading interacting with deferred commits.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
+  // Testing on some platforms is flaky due to slower loading interacting with
+  // deferred commits.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
@@ -735,13 +735,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
 
 // Tests that the tapping gesture with cntl/cmd key on a link open the
 // backgournd tab.
-// crbug.com/1192343: flaky on Mac
-#if defined(OS_MAC)
-#define MAYBE_TapGestureWithCtrlKey DISABLED_TapGestureWithCtrlKey
-#else
-#define MAYBE_TapGestureWithCtrlKey TapGestureWithCtrlKey
-#endif
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_TapGestureWithCtrlKey) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, TapGestureWithCtrlKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL url(embedded_test_server()->GetURL(
