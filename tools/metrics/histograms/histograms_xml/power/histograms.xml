@@ -983,6 +983,22 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.PowerScheduler.ProcessPowerModeChange.{ProcessType}"
+    enum="PowerMode" expires_after="2021-10-04">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Records the new value of the {ProcessType} process power mode every time a
+    change is detected (happens on the order of once per second).
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="browser"/>
+    <variant name="GPU" summary="GPU"/>
+    <variant name="Other" summary="other type of"/>
+    <variant name="Renderer" summary="renderer"/>
+  </token>
+</histogram>
+
 <histogram name="Power.PowerScheduler.ThrottlingDuration" units="ms"
     expires_after="2021-10-29">
   <owner>eseckler@chromium.org</owner>
