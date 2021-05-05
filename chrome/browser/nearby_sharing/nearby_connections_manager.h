@@ -94,7 +94,7 @@ class NearbyConnectionsManager {
                                 ConnectionsCallback callback) = 0;
 
   // Stops advertising through Nearby Connections.
-  virtual void StopAdvertising() = 0;
+  virtual void StopAdvertising(ConnectionsCallback callback) = 0;
 
   // Starts discovery through Nearby Connections. Caller is expected to ensure
   // |listener| remains valid until StopDiscovery is called.

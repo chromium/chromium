@@ -34,7 +34,7 @@ class FakeNearbyConnectionsManager
                         PowerLevel power_level,
                         DataUsage data_usage,
                         ConnectionsCallback callback) override;
-  void StopAdvertising() override;
+  void StopAdvertising(ConnectionsCallback callback) override;
   void StartDiscovery(DiscoveryListener* listener,
                       DataUsage data_usage,
                       ConnectionsCallback callback) override;
@@ -81,6 +81,9 @@ class FakeNearbyConnectionsManager
   void SetIncomingPayload(int64_t payload_id, PayloadPtr payload);
   base::Optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
   bool WasPayloadCanceled(const int64_t& payload_id) const;
+  void CleanupForProcessStopped();
+  ConnectionsCallback GetStartAdvertisingCallback();
+  ConnectionsCallback GetStopAdvertisingCallback();
 
   bool is_shutdown() const { return is_shutdown_; }
   DataUsage advertising_data_usage() const { return advertising_data_usage_; }
@@ -112,6 +115,9 @@ class FakeNearbyConnectionsManager
   bool has_incoming_payloads() { return !incoming_payloads_.empty(); }
 
  private:
+  void HandleStartAdvertisingCallback(ConnectionsStatus status);
+  void HandleStopAdvertisingCallback(ConnectionsStatus status);
+
   IncomingConnectionListener* advertising_listener_ = nullptr;
   DiscoveryListener* discovery_listener_ = nullptr;
   bool is_shutdown_ = false;
@@ -127,6 +133,10 @@ class FakeNearbyConnectionsManager
   base::Optional<std::vector<uint8_t>> advertising_endpoint_info_;
   std::set<std::string> disconnected_endpoints_;
   std::set<int64_t> canceled_payload_ids_;
+  bool capture_next_stop_advertising_callback_ = false;
+  ConnectionsCallback pending_stop_advertising_callback_;
+  bool capture_next_start_advertising_callback_ = false;
+  ConnectionsCallback pending_start_advertising_callback_;
 
   // Maps endpoint_id to endpoint_info.
   std::map<std::string, std::vector<uint8_t>> connection_endpoint_infos_;

@@ -74,7 +74,7 @@ suite('NearbyShare', function() {
   suite('EnabledTests', function() {
     setup(function() {
       sharedSetup(true);
-      dialog.showHighVisibilityPage();
+      dialog.showHighVisibilityPage(/*shutoffTimeoutInSeconds=*/ 5 * 60);
       Polymer.dom.flush();
     });
 
@@ -138,20 +138,23 @@ suite('NearbyShare', function() {
           // If a share target comes in, we show it.
           await fakeReceiveManager.unregisterForegroundReceiveSurface();
           Polymer.dom.flush();
+          assertTrue(dialog.closing_);
           assertFalse(isVisible('cr-dialog'));
         });
 
     test(
-        'unregister surface, OnTransferUpdate, does not close dialog',
+        'OnTransferUpdate, unregister surface, does not close dialog',
         async function() {
           await test_util.waitAfterNextRender(dialog);
           // When attached we enter high visibility mode by default
           assertTrue(isVisible('nearby-share-high-visibility-page'));
           assertFalse(isVisible('nearby-share-confirm-page'));
           // If a share target comes in, we show it.
-          await fakeReceiveManager.unregisterForegroundReceiveSurface();
           const target =
               fakeReceiveManager.simulateShareTargetArrival('testName', '1234');
+          Polymer.dom.flush();
+          assertFalse(dialog.closing_);
+          await fakeReceiveManager.unregisterForegroundReceiveSurface();
           Polymer.dom.flush();
           assertFalse(dialog.closing_);
         });

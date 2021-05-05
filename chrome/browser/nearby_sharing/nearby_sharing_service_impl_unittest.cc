@@ -1824,6 +1824,52 @@ TEST_F(NearbySharingServiceImplTest,
             fake_nearby_connections_manager_->advertising_data_usage());
 }
 
+TEST_F(
+    NearbySharingServiceImplTest,
+    UnregisterForegroundReceiveSurfaceVisibilityAllContactsRestartsAdvertising) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  prefs_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                    static_cast<int>(Visibility::kAllContacts));
+  service_->FlushMojoForTesting();
+
+  // Register both foreground and background receive surfaces
+  MockTransferUpdateCallback background_transfer_callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &background_transfer_callback,
+      NearbySharingService::ReceiveSurfaceState::kBackground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+
+  MockTransferUpdateCallback foreground_transfer_callback;
+  result = service_->RegisterReceiveSurface(
+      &foreground_transfer_callback,
+      NearbySharingService::ReceiveSurfaceState::kForeground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+
+  // Unregister the foreground surface. Advertising is stopped and restarted
+  // with low power. The service reports InHighVisibility until the
+  // StopAdvertising callback is called.
+  FakeNearbyConnectionsManager::ConnectionsCallback stop_advertising_callback =
+      fake_nearby_connections_manager_->GetStopAdvertisingCallback();
+  FakeNearbyConnectionsManager::ConnectionsCallback start_advertising_callback =
+      fake_nearby_connections_manager_->GetStartAdvertisingCallback();
+  result = service_->UnregisterReceiveSurface(&foreground_transfer_callback);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_TRUE(service_->IsInHighVisibility());
+
+  std::move(stop_advertising_callback)
+      .Run(NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(service_->IsInHighVisibility());
+
+  std::move(start_advertising_callback)
+      .Run(NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(service_->IsInHighVisibility());
+}
+
 TEST_F(NearbySharingServiceImplTest,
        NoNetworkRegisterReceiveSurfaceIsAdvertising) {
   MockTransferUpdateCallback callback;
@@ -3830,6 +3876,7 @@ TEST_F(NearbySharingServiceImplTest, ProcessStoppedCallsObservers) {
 
   // Signal a process crash, check that the observer is called and high
   // visibility is stopped.
+  fake_nearby_connections_manager_->CleanupForProcessStopped();
   std::move(process_stopped_callback_)
       .Run(chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
                kCrash);

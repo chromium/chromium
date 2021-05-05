@@ -20,22 +20,36 @@ void FakeNearbyConnectionsManager::StartAdvertising(
     PowerLevel power_level,
     DataUsage data_usage,
     ConnectionsCallback callback) {
+  DCHECK(!IsAdvertising());
   is_shutdown_ = false;
   advertising_listener_ = listener;
   advertising_data_usage_ = data_usage;
   advertising_power_level_ = power_level;
   advertising_endpoint_info_ = std::move(endpoint_info);
-  std::move(callback).Run(
-      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+  if (capture_next_start_advertising_callback_) {
+    pending_start_advertising_callback_ = std::move(callback);
+    capture_next_start_advertising_callback_ = false;
+  } else {
+    std::move(callback).Run(
+        NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+  }
 }
 
-void FakeNearbyConnectionsManager::StopAdvertising() {
+void FakeNearbyConnectionsManager::StopAdvertising(
+    ConnectionsCallback callback) {
   DCHECK(IsAdvertising());
   DCHECK(!is_shutdown());
   advertising_listener_ = nullptr;
   advertising_data_usage_ = DataUsage::kUnknown;
   advertising_power_level_ = PowerLevel::kUnknown;
   advertising_endpoint_info_.reset();
+  if (capture_next_stop_advertising_callback_) {
+    pending_stop_advertising_callback_ = std::move(callback);
+    capture_next_stop_advertising_callback_ = false;
+  } else {
+    std::move(callback).Run(
+        NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+  }
 }
 
 void FakeNearbyConnectionsManager::StartDiscovery(
@@ -235,4 +249,47 @@ FakeNearbyConnectionsManager::GetRegisteredPayloadPath(int64_t payload_id) {
     return base::nullopt;
 
   return it->second;
+}
+
+void FakeNearbyConnectionsManager::CleanupForProcessStopped() {
+  advertising_listener_ = nullptr;
+  advertising_data_usage_ = DataUsage::kUnknown;
+  advertising_power_level_ = PowerLevel::kUnknown;
+  advertising_endpoint_info_.reset();
+
+  discovery_listener_ = nullptr;
+
+  is_shutdown_ = true;
+}
+
+FakeNearbyConnectionsManager::ConnectionsCallback
+FakeNearbyConnectionsManager::GetStartAdvertisingCallback() {
+  capture_next_start_advertising_callback_ = true;
+  return base::BindOnce(
+      &FakeNearbyConnectionsManager::HandleStartAdvertisingCallback,
+      base::Unretained(this));
+}
+
+FakeNearbyConnectionsManager::ConnectionsCallback
+FakeNearbyConnectionsManager::GetStopAdvertisingCallback() {
+  capture_next_stop_advertising_callback_ = true;
+  return base::BindOnce(
+      &FakeNearbyConnectionsManager::HandleStopAdvertisingCallback,
+      base::Unretained(this));
+}
+
+void FakeNearbyConnectionsManager::HandleStartAdvertisingCallback(
+    ConnectionsStatus status) {
+  if (pending_start_advertising_callback_) {
+    std::move(pending_start_advertising_callback_).Run(status);
+  }
+  capture_next_start_advertising_callback_ = false;
+}
+
+void FakeNearbyConnectionsManager::HandleStopAdvertisingCallback(
+    ConnectionsStatus status) {
+  if (pending_stop_advertising_callback_) {
+    std::move(pending_stop_advertising_callback_).Run(status);
+  }
+  capture_next_stop_advertising_callback_ = false;
 }

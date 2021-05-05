@@ -1923,22 +1923,28 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
 }
 
 void NearbySharingServiceImpl::StopAdvertising() {
-  SetInHighVisibility(false);
   if (advertising_power_level_ == PowerLevel::kUnknown) {
     NS_LOG(VERBOSE) << __func__ << ": Not currently advertising, ignoring.";
     return;
   }
 
-  nearby_connections_manager_->StopAdvertising();
-  advertising_power_level_ = PowerLevel::kUnknown;
+  nearby_connections_manager_->StopAdvertising(
+      base::BindOnce(&NearbySharingServiceImpl::OnStopAdvertisingResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
   // advertising interval asynchronously and wait for the result or use the
   // updated API referenced in the bug which allows setting a per-advertisement
   // interval.
+  NS_LOG(VERBOSE) << __func__ << ": Stop advertising requested";
 
-  NS_LOG(VERBOSE) << __func__ << ": Advertising has stopped";
+  // Set power level to unknown immediately instead of waiting for the callback.
+  // In the case of restarting advertising (e.g. turning off high visibility
+  // with contact-based enabled), StartAdvertising will be called
+  // immediately after StopAdvertising and will fail if the power level
+  // indicates already advertising.
+  advertising_power_level_ = PowerLevel::kUnknown;
 }
 
 void NearbySharingServiceImpl::StartScanning() {
@@ -3836,6 +3842,28 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
       observer.OnStartAdvertisingFailure();
     }
   }
+}
+
+void NearbySharingServiceImpl::OnStopAdvertisingResult(
+    NearbyConnectionsManager::ConnectionsStatus status) {
+  if (status == NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": StopAdvertising over Nearby Connections was successful.";
+  } else {
+    NS_LOG(ERROR) << __func__
+                  << ": StopAdvertising over Nearby Connections failed: "
+                  << NearbyConnectionsManager::ConnectionsStatusToString(
+                         status);
+  }
+
+  // The |advertising_power_level_| is set in |StopAdvertising| instead of here
+  // at the callback because when restarting advertising, |StartAdvertising| is
+  // called immediately after |StopAdvertising| without waiting for the
+  // callback. Nearby Connections queues the requests and completes them in
+  // order, so waiting for Stop to complete is unnecessary, but Start will fail
+  // if the |advertising_power_level_| indicates we are already advertising.
+  SetInHighVisibility(false);
 }
 
 void NearbySharingServiceImpl::OnStartDiscoveryResult(
