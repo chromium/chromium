@@ -67,6 +67,7 @@ TrackedChildPendingURLLoaderFactoryBundle::CreateFactory() {
 TrackedChildURLLoaderFactoryBundle::TrackedChildURLLoaderFactoryBundle(
     std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>
         pending_factories) {
+  recordreplay::RegisterPointer(this);
   DCHECK(pending_factories->main_thread_host_bundle());
   main_thread_host_bundle_ =
       std::move(pending_factories->main_thread_host_bundle());
@@ -75,6 +76,7 @@ TrackedChildURLLoaderFactoryBundle::TrackedChildURLLoaderFactoryBundle(
 }
 
 TrackedChildURLLoaderFactoryBundle::~TrackedChildURLLoaderFactoryBundle() {
+  recordreplay::UnregisterPointer(this);
   RemoveObserverOnMainThread();
 }
 
@@ -218,6 +220,10 @@ bool HostChildURLLoaderFactoryBundle::IsHostChildURLLoaderFactoryBundle()
 void HostChildURLLoaderFactoryBundle::AddObserver(
     TrackedChildURLLoaderFactoryBundle* observer,
     std::unique_ptr<ObserverPtrAndTaskRunner> observer_info) {
+  recordreplay::Assert("HostChildURLLoaderFactoryBundle::AddObserver Start %lu %lu %lu",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(observer),
+                       recordreplay::PointerId(observer_info->second.get()));
   DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   (*observer_list_)[observer] = std::move(observer_info);
@@ -225,7 +231,8 @@ void HostChildURLLoaderFactoryBundle::AddObserver(
 
 void HostChildURLLoaderFactoryBundle::RemoveObserver(
     TrackedChildURLLoaderFactoryBundle* observer) {
-  recordreplay::Assert("HostChildURLLoaderFactoryBundle::RemoveObserver Start");
+  recordreplay::Assert("HostChildURLLoaderFactoryBundle::RemoveObserver Start %lu %lu",
+                       recordreplay::PointerId(this), recordreplay::PointerId(observer));
   DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   observer_list_->erase(observer);
