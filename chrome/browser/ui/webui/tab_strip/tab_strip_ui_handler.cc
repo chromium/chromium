@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -196,6 +197,8 @@ TabStripUIHandler::TabStripUIHandler(Browser* browser,
 TabStripUIHandler::~TabStripUIHandler() = default;
 
 void TabStripUIHandler::NotifyLayoutChanged() {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:NotifyLayoutChanged");
   if (!IsJavascriptAllowed())
     return;
   FireWebUIListener("layout-changed", embedder_->GetLayout().AsDictionary());
@@ -221,6 +224,7 @@ void TabStripUIHandler::OnJavascriptAllowed() {
 
 // TabStripModelObserver:
 void TabStripUIHandler::OnTabGroupChanged(const TabGroupChange& change) {
+  TRACE_EVENT0("browser", "custom_metric:TabStripUIHandler:OnTabGroupChanged");
   switch (change.type) {
     case TabGroupChange::kCreated:
     case TabGroupChange::kEditorOpened:
@@ -264,6 +268,8 @@ void TabStripUIHandler::TabGroupedStateChanged(
     base::Optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:TabGroupedStateChanged");
   int tab_id = extensions::ExtensionTabUtil::GetTabId(contents);
   if (group.has_value()) {
     FireWebUIListener("tab-group-state-changed", base::Value(tab_id),
@@ -279,6 +285,8 @@ void TabStripUIHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:OnTabStripModelChanged");
   if (tab_strip_model->empty())
     return;
 
@@ -361,6 +369,7 @@ void TabStripUIHandler::OnTabStripModelChanged(
 void TabStripUIHandler::TabChangedAt(content::WebContents* contents,
                                      int index,
                                      TabChangeType change_type) {
+  TRACE_EVENT0("browser", "custom_metric:TabStripUIHandler:TabChangedAt");
   FireWebUIListener("tab-updated", GetTabData(contents, index));
 }
 
@@ -594,6 +603,7 @@ base::DictionaryValue TabStripUIHandler::GetTabGroupData(TabGroup* group) {
 }
 
 void TabStripUIHandler::HandleGetTabs(const base::ListValue* args) {
+  TRACE_EVENT0("browser", "custom_metric:TabStripUIHandler:HandleGetTabs");
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
 
@@ -606,6 +616,8 @@ void TabStripUIHandler::HandleGetTabs(const base::ListValue* args) {
 }
 
 void TabStripUIHandler::HandleGetGroupVisualData(const base::ListValue* args) {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:HandleGetGroupVisualData");
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
 
@@ -622,6 +634,8 @@ void TabStripUIHandler::HandleGetGroupVisualData(const base::ListValue* args) {
 }
 
 void TabStripUIHandler::HandleGetThemeColors(const base::ListValue* args) {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:HandleGetThemeColors");
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
 
@@ -900,6 +914,7 @@ void TabStripUIHandler::HandleShowTabContextMenu(const base::ListValue* args) {
 }
 
 void TabStripUIHandler::HandleGetLayout(const base::ListValue* args) {
+  TRACE_EVENT0("browser", "custom_metric:TabStripUIHandler:HandleGetLayout");
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
 
@@ -908,6 +923,8 @@ void TabStripUIHandler::HandleGetLayout(const base::ListValue* args) {
 }
 
 void TabStripUIHandler::HandleSetThumbnailTracked(const base::ListValue* args) {
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:HandleSetThumbnailTracked");
   AllowJavascript();
 
   int tab_id = args->GetList()[0].GetInt();
@@ -957,6 +974,8 @@ void TabStripUIHandler::HandleThumbnailUpdate(
     ThumbnailTracker::CompressedThumbnailData image) {
   // Send base-64 encoded image to JS side. If |image| is blank (i.e.
   // there is no data), send a blank URI.
+  TRACE_EVENT0("browser",
+               "custom_metric:TabStripUIHandler:HandleThumbnailUpdate");
   std::string data_uri;
   if (image)
     data_uri = webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
