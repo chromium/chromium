@@ -73,6 +73,7 @@ class ASH_EXPORT FullRestoreController
 
   // aura::WindowObserver:
   void OnWindowStackingChanged(aura::Window* window) override;
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   bool is_restoring_snap_state() const { return is_restoring_snap_state_; }

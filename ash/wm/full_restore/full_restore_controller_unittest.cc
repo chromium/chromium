@@ -7,6 +7,8 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
@@ -857,6 +859,25 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
       CreateTestFullRestoredWidgetFromRestoreId(restore_id)->GetNativeWindow();
   EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
   EXPECT_EQ(expected_bounds, window->GetBoundsInScreen());
+}
+
+// Tests that when windows are restored in tablet mode the hotseat is hidden.
+// See crbug.com/1202923.
+TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
+  // Enter tablet mode and check that the hotseat is not hidden.
+  TabletModeControllerTestApi().EnterTabletMode();
+  HotseatWidget* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
+  EXPECT_EQ(HotseatState::kShownHomeLauncher, hotseat_widget->state());
+
+  // Add an entry and restore it. The widget should be visible and the hotseat
+  // should now be hidden.
+  AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
+                     chromeos::WindowStateType::kNormal);
+  views::Widget* restored_widget =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+  EXPECT_TRUE(restored_widget->IsVisible());
+  EXPECT_EQ(HotseatState::kHidden, hotseat_widget->state());
+  // TODO(chinsenj|sammiequon): Ensure that the app list is deactivated here.
 }
 
 }  // namespace ash

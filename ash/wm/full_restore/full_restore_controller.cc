@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -241,6 +242,30 @@ void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
   // management feature, it can be cleared of its activation index
   // key since it is no longer used in the stacking algorithm.
   window->ClearProperty(full_restore::kActivationIndexKey);
+}
+
+void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
+                                                      bool visible) {
+  if (!windows_observation_.IsObservingSource(window))
+    return;
+
+  // Early return if `window` isn't visible, we're not in tablet mode, or the
+  // app list is null.
+  aura::Window* app_list_window =
+      Shell::Get()->app_list_controller()->GetWindow();
+  if (!visible || !Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      !app_list_window) {
+    return;
+  }
+
+  // Because windows are shown inactive, they don't take focus/activation. This
+  // can lead to situations in tablet mode where the app list is active and
+  // visibly below restored windows. This causes the hotseat widget to not be
+  // hidden, so deactivate the app list. See crbug.com/1202923.
+  auto* app_list_widget =
+      views::Widget::GetWidgetForNativeWindow(app_list_window);
+  if (app_list_widget->IsActive() && WindowState::Get(window)->IsMaximized())
+    app_list_widget->Deactivate();
 }
 
 void FullRestoreController::OnWindowDestroying(aura::Window* window) {
