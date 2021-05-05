@@ -74,6 +74,9 @@ Polymer({
    * @private
    */
   getTitleString_() {
+    if (!this.esimProfileName_) {
+      return '';
+    }
     return this.i18n('esimRemoveProfileDialogTitle', this.esimProfileName_);
   },
 

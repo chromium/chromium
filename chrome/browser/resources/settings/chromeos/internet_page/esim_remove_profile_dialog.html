@@ -16,6 +16,10 @@
         --cr-dialog-width: 324px;
       }
 
+      #title {
+        height: 15px;
+      }
+
       #warningMessage {
         --iron-icon-fill-color: #5F6368;
         --iron-icon-height: 16px;
@@ -33,7 +37,9 @@
       }
     </style>
     <cr-dialog id="dialog" show-on-attach>
-      <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
+      <div id="title" slot="title">
+        [[getTitleString_(esimProfileName_)]]
+      </div>
       <div slot="body">
         <div>$i18n{eSimRemoveProfileDialogDescription}</div>
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
