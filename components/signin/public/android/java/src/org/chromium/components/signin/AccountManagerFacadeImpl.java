@@ -50,15 +50,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private final AccountManagerDelegate mDelegate;
     private final AccountRestrictionPatternReceiver mAccountRestrictionPatternReceiver;
-    private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
-            new AtomicReference<>();
 
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
-    private AccountManagerResult<List<Account>> mAllAccounts;
-
-    private final AtomicReference<AccountManagerResult<List<Account>>> mFilteredAccounts =
+    private final AtomicReference<List<Account>> mAllAccounts = new AtomicReference<>();
+    private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
+    private final AtomicReference<List<Account>> mFilteredAccounts = new AtomicReference<>();
     private final CountDownLatch mPopulateAccountCacheLatch = new CountDownLatch(1);
 
     private int mUpdateTasksCounter;
@@ -113,8 +111,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mFilteredAccounts.get() != null;
     }
 
-    private List<Account> getGoogleAccounts() throws AccountManagerDelegateException {
-        AccountManagerResult<List<Account>> maybeAccounts = mFilteredAccounts.get();
+    @Override
+    public List<Account> tryGetGoogleAccounts() {
+        List<Account> maybeAccounts = mFilteredAccounts.get();
         if (maybeAccounts == null) {
             try {
                 // First call to update hasn't finished executing yet, should wait for it
@@ -130,16 +129,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 throw new RuntimeException("Interrupted waiting for accounts", e);
             }
         }
-        return maybeAccounts.get();
-    }
-
-    @Override
-    public List<Account> tryGetGoogleAccounts() {
-        try {
-            return getGoogleAccounts();
-        } catch (AccountManagerDelegateException e) {
-            return Collections.emptyList();
-        }
+        return maybeAccounts;
     }
 
     /**
@@ -282,21 +272,20 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         new UpdateAccountsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private AccountManagerResult<List<Account>> getAllAccounts() {
+    private List<Account> getAllAccounts() {
         try {
-            List<Account> accounts = Arrays.asList(mDelegate.getAccountsSync());
-            return new AccountManagerResult<>(Collections.unmodifiableList(accounts));
+            return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccountsSync()));
         } catch (AccountManagerDelegateException ex) {
-            return new AccountManagerResult<>(ex);
+            return Collections.emptyList();
         }
     }
 
-    private AccountManagerResult<List<Account>> getFilteredAccounts() {
-        if (mAllAccounts.hasException() || mAccountRestrictionPatterns.get().isEmpty()) {
-            return mAllAccounts;
+    private List<Account> getFilteredAccounts() {
+        if (mAccountRestrictionPatterns.get().isEmpty()) {
+            return mAllAccounts.get();
         }
-        ArrayList<Account> filteredAccounts = new ArrayList<>();
-        for (Account account : mAllAccounts.getValue()) {
+        final List<Account> filteredAccounts = new ArrayList<>();
+        for (Account account : mAllAccounts.get()) {
             for (PatternMatcher pattern : mAccountRestrictionPatterns.get()) {
                 if (pattern.matches(account.name)) {
                     filteredAccounts.add(account);
@@ -304,7 +293,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 }
             }
         }
-        return new AccountManagerResult<>(Collections.unmodifiableList(filteredAccounts));
+        return Collections.unmodifiableList(filteredAccounts);
     }
 
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
@@ -313,8 +302,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         fireOnAccountsChangedNotification();
     }
 
-    private void setAllAccounts(AccountManagerResult<List<Account>> allAccounts) {
-        mAllAccounts = allAccounts;
+    private void setAllAccounts(List<Account> allAccounts) {
+        mAllAccounts.set(allAccounts);
         mFilteredAccounts.set(getFilteredAccounts());
         fireOnAccountsChangedNotification();
     }
@@ -350,7 +339,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         protected Void doInBackground() {
             mAccountRestrictionPatterns.set(
                     mAccountRestrictionPatternReceiver.getRestrictionPatterns());
-            mAllAccounts = getAllAccounts();
+            mAllAccounts.set(getAllAccounts());
             mFilteredAccounts.set(getFilteredAccounts());
             // It's important that countDown() is called on background thread and not in
             // onPostExecute, as UI thread may be blocked in getGoogleAccounts waiting on the latch.
@@ -369,19 +358,19 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }
     }
 
-    private class UpdateAccountsTask extends AsyncTask<AccountManagerResult<List<Account>>> {
+    private class UpdateAccountsTask extends AsyncTask<List<Account>> {
         @Override
         protected void onPreExecute() {
             incrementUpdateCounter();
         }
 
         @Override
-        protected AccountManagerResult<List<Account>> doInBackground() {
+        protected List<Account> doInBackground() {
             return getAllAccounts();
         }
 
         @Override
-        protected void onPostExecute(AccountManagerResult<List<Account>> allAccounts) {
+        protected void onPostExecute(List<Account> allAccounts) {
             setAllAccounts(allAccounts);
             decrementUpdateCounter();
         }
