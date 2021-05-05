@@ -203,9 +203,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The length of a WebAPK session (launch/foregrounding to backgrounding) in
     milliseconds. {WebApkDistributorType}
   </summary>
-  <token key="WebApkDistributorType" variants="WebApkDistributorType">
-    <variant name=""/>
-  </token>
+  <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
 </histogram>
 
 <histogram name="WebApk.ShellApkVersion2{WebApkDistributorType}" units="units"
