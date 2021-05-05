@@ -56,6 +56,10 @@ class CookieManagerImpl : public CookieManager {
   void RemoveCookieChangedCallback(JNIEnv* env, int id);
 #endif
 
+  // Fires the cookie flush timer immediately and waits for the flush to
+  // complete. Returns true if the flush timer was running.
+  bool FireFlushTimerForTesting();
+
  private:
   bool SetCookieInternal(const GURL& url,
                          const std::string& value,
@@ -64,11 +68,17 @@ class CookieManagerImpl : public CookieManager {
                                        const std::string* name,
                                        CookieChangedCallback callback);
   void RemoveCookieChangedCallbackInternal(int id);
+  void OnCookieSet(SetCookieCallback callback, bool success);
+  void OnFlushTimerFired();
 
   content::BrowserContext* browser_context_;
   mojo::ReceiverSet<network::mojom::CookieChangeListener,
                     std::unique_ptr<network::mojom::CookieChangeListener>>
       cookie_change_receivers_;
+
+  std::unique_ptr<base::OneShotTimer> flush_timer_;
+  std::unique_ptr<base::RunLoop> flush_run_loop_for_testing_;
+
   base::WeakPtrFactory<CookieManagerImpl> weak_factory_{this};
 };
 
