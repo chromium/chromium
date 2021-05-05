@@ -7,9 +7,8 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,7 +38,7 @@ std::string GetAlwaysOnPackageName() {
   bool success = false;
   std::string package_name;
   chromeos::ShillManagerClient* shill_manager =
-      chromeos::DBusThreadManager::Get()->GetShillManagerClient();
+      chromeos::ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
       base::BindOnce(&OnGetProperties, base::Unretained(&success),
@@ -59,22 +58,14 @@ class AlwaysOnVpnManagerTest : public testing::Test {
   AlwaysOnVpnManagerTest() = default;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
-    chromeos::NetworkHandler::Initialize();
-    EXPECT_TRUE(chromeos::NetworkHandler::IsInitialized());
     arc::prefs::RegisterProfilePrefs(pref_service()->registry());
-  }
-
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(AlwaysOnVpnManagerTest);
