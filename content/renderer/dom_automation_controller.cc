@@ -6,7 +6,6 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
-#include "content/common/frame_messages.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/v8_value_converter_impl.h"
 #include "gin/handle.h"

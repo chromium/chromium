@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_canvas.h"
 #include "content/common/content_export.h"
-#include "content/common/frame_messages.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/pepper_player_delegate.h"
-#include "content/common/frame_messages.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"

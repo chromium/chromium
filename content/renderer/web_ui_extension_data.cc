@@ -4,7 +4,6 @@
 
 #include "content/renderer/web_ui_extension_data.h"
 
-#include "content/common/frame_messages.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"

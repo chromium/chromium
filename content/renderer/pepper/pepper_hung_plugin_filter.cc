@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "content/child/child_process.h"
-#include "content/common/frame_messages.h"
 #include "content/renderer/render_thread_impl.h"
 
 namespace content {

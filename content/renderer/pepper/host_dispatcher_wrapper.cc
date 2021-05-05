@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "content/common/frame_messages.h"
 #include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"

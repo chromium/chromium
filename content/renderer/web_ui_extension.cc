@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "content/common/frame_messages.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"

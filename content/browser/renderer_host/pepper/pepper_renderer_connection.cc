@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
-#include "content/common/frame_messages.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"

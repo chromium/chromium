@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/content_settings",
+  "+components/viz/common",
   "+printing/mojom",
   "+third_party/skia/include",
+  "+third_party/blink/public",
   "+ui/base/cursor",
   "+ui/base/mojom",
   "+ui/gfx/geometry",

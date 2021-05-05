@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/notreached.h"
-#include "content/common/frame_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/pepper/pepper_in_process_router.h"
