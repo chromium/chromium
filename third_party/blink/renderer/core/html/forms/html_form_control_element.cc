@@ -264,7 +264,7 @@ bool HTMLFormControlElement::IsKeyboardFocusable() const {
     return HTMLElement::IsKeyboardFocusable();
 
   // Skip tabIndex check in a parent class.
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLFormControlElement::MayTriggerVirtualKeyboard() const {

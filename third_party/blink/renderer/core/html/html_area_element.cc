@@ -184,11 +184,11 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
 }
 
 bool HTMLAreaElement::IsKeyboardFocusable() const {
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLAreaElement::IsMouseFocusable() const {
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLAreaElement::IsFocusableStyle() const {

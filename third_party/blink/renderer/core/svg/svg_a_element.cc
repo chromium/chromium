@@ -196,7 +196,7 @@ bool SVGAElement::IsMouseFocusable() const {
 }
 
 bool SVGAElement::IsKeyboardFocusable() const {
-  if (IsFocusable() && Element::SupportsFocus())
+  if (IsBaseElementFocusable() && Element::SupportsFocus())
     return SVGElement::IsKeyboardFocusable();
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
     return false;

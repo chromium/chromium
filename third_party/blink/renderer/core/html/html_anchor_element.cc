@@ -130,6 +130,8 @@ bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
 }
 
 bool HTMLAnchorElement::IsMouseFocusable() const {
+  if (!IsFocusableStyleAfterUpdate())
+    return false;
   if (IsLink())
     return SupportsFocus();
 
@@ -137,9 +139,11 @@ bool HTMLAnchorElement::IsMouseFocusable() const {
 }
 
 bool HTMLAnchorElement::IsKeyboardFocusable() const {
-  DCHECK(GetDocument().IsActive());
+  if (!IsFocusableStyleAfterUpdate())
+    return false;
 
-  if (IsFocusable() && Element::SupportsFocus())
+  // Anchor is focusable if the base element supports focus and is focusable.
+  if (IsBaseElementFocusable() && Element::SupportsFocus())
     return HTMLElement::IsKeyboardFocusable();
 
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())

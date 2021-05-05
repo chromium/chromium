@@ -4109,8 +4109,12 @@ bool Element::SupportsSpatialNavigationFocus() const {
           HasEventListeners(event_type_names::kFocusout));
 }
 
-bool Element::IsFocusable() const {
+bool Element::IsBaseElementFocusable() const {
   return Element::IsMouseFocusable() || Element::IsKeyboardFocusable();
+}
+
+bool Element::IsFocusable() const {
+  return IsMouseFocusable() || IsKeyboardFocusable();
 }
 
 bool Element::IsFocusableStyleAfterUpdate() const {

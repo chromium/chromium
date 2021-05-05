@@ -651,6 +651,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsFocusable() const;
   virtual bool IsKeyboardFocusable() const;
   virtual bool IsMouseFocusable() const;
+  // IsBaseElementFocusable() is used by some subclasses to check if the base
+  // element is focusable. This is used to avoid infinite recursion.
+  bool IsBaseElementFocusable() const;
   bool IsFocusedElementInDocument() const;
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;

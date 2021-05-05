@@ -506,7 +506,7 @@ bool InputType::CanSetStringValue() const {
 }
 
 bool InputType::IsKeyboardFocusable() const {
-  return GetElement().IsFocusable();
+  return GetElement().IsBaseElementFocusable();
 }
 
 bool InputType::MayTriggerVirtualKeyboard() const {
