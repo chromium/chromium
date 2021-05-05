@@ -52,7 +52,6 @@ sync_pb::PersistedEntityData CreatePersistedFromRemoteData(
 
 sync_pb::PersistedEntityData CreatePersistedFromLocalData(
     const SyncData& sync_data) {
-  DCHECK(sync_data.IsLocal());
   DCHECK(sync_data.IsValid());
   DCHECK(!sync_data.GetTitle().empty());
 
@@ -139,9 +138,10 @@ class LocalChangeProcessor : public SyncChangeProcessor {
         case SyncChange::ACTION_ADD:
         case SyncChange::ACTION_UPDATE: {
           DCHECK_EQ(type_, change.sync_data().GetDataType());
-          DCHECK(change.sync_data().IsLocal())
-              << " from " << change.location().ToString();
           DCHECK(change.sync_data().IsValid())
+              << " from " << change.location().ToString();
+          // Local adds and updates must have a non-unique-title.
+          DCHECK(!change.sync_data().GetTitle().empty())
               << " from " << change.location().ToString();
 
           const ClientTagHash client_tag_hash =

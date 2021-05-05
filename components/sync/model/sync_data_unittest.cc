@@ -37,7 +37,6 @@ TEST_F(SyncDataTest, NoArgCtor) {
 TEST_F(SyncDataTest, CreateLocalDelete) {
   SyncData data = SyncData::CreateLocalDelete(kSyncTag, kDatatype);
   EXPECT_TRUE(data.IsValid());
-  EXPECT_TRUE(data.IsLocal());
   EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag),
             data.GetClientTagHash());
   EXPECT_EQ(kDatatype, data.GetDataType());
@@ -48,7 +47,6 @@ TEST_F(SyncDataTest, CreateLocalData) {
   SyncData data =
       SyncData::CreateLocalData(kSyncTag, kNonUniqueTitle, specifics);
   EXPECT_TRUE(data.IsValid());
-  EXPECT_TRUE(data.IsLocal());
   EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag),
             data.GetClientTagHash());
   EXPECT_EQ(kDatatype, data.GetDataType());
@@ -62,7 +60,6 @@ TEST_F(SyncDataTest, CreateRemoteData) {
   SyncData data = SyncData::CreateRemoteData(
       specifics, ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag));
   EXPECT_TRUE(data.IsValid());
-  EXPECT_FALSE(data.IsLocal());
   EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag),
             data.GetClientTagHash());
   EXPECT_TRUE(data.GetSpecifics().has_preference());

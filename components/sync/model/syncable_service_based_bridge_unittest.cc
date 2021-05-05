@@ -48,8 +48,8 @@ sync_pb::EntitySpecifics GetTestSpecifics(const std::string& name = "name") {
   return specifics;
 }
 
-MATCHER_P(SyncDataRemoteMatches, name, "") {
-  return arg.IsValid() && !arg.IsLocal() && arg.GetDataType() == kModelType &&
+MATCHER_P(SyncDataMatches, name, "") {
+  return arg.IsValid() && arg.GetDataType() == kModelType &&
          arg.GetSpecifics().preference().name() == name;
 }
 
@@ -207,9 +207,9 @@ TEST_F(SyncableServiceBasedBridgeTest,
   // Once the initial data is fetched from the server,
   // MergeDataAndStartSyncing() should be exercised.
   EXPECT_CALL(syncable_service_,
-              MergeDataAndStartSyncing(
-                  kModelType, ElementsAre(SyncDataRemoteMatches("name1")),
-                  NotNull(), NotNull()));
+              MergeDataAndStartSyncing(kModelType,
+                                       ElementsAre(SyncDataMatches("name1")),
+                                       NotNull(), NotNull()));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
 }
@@ -336,9 +336,9 @@ TEST_F(SyncableServiceBasedBridgeTest,
   InitializeBridge();
 
   EXPECT_CALL(syncable_service_,
-              MergeDataAndStartSyncing(
-                  kModelType, ElementsAre(SyncDataRemoteMatches("name1")),
-                  NotNull(), NotNull()));
+              MergeDataAndStartSyncing(kModelType,
+                                       ElementsAre(SyncDataMatches("name1")),
+                                       NotNull(), NotNull()));
   StartSyncing();
 }
 

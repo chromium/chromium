@@ -15,7 +15,7 @@ SyncChange::SyncChange(const base::Location& from_here,
                        SyncChangeType change_type,
                        const SyncData& sync_data)
     : location_(from_here), change_type_(change_type), sync_data_(sync_data) {
-  DCHECK(IsValid());
+  DCHECK(IsValid()) << " from " << from_here.ToString();
 }
 
 SyncChange::~SyncChange() {}
@@ -31,19 +31,9 @@ bool SyncChange::IsValid() const {
     return false;
   }
 
-  // Data from the syncer must always have valid specifics.
-  if (!sync_data_.IsLocal()) {
-    return true;
-  }
-
-  // Local changes must always have a unique tag.
+  // Changes must always have a unique tag.
   if (sync_data_.GetClientTagHash().value().empty()) {
     return false;
-  }
-
-  // Adds and updates must have a non-unique-title.
-  if (change_type_ == ACTION_ADD || change_type_ == ACTION_UPDATE) {
-    return !sync_data_.GetTitle().empty();
   }
 
   return true;

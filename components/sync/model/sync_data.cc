@@ -39,14 +39,14 @@ void SyncData::ImmutableSyncEntityTraits::Swap(sync_pb::SyncEntity* t1,
   t1->Swap(t2);
 }
 
-SyncData::SyncData() : is_local_(false), is_valid_(false) {}
+SyncData::SyncData() : is_valid_(false) {}
 
-SyncData::SyncData(bool is_local, sync_pb::SyncEntity* entity)
-    : immutable_entity_(entity), is_local_(is_local), is_valid_(true) {}
+SyncData::SyncData(sync_pb::SyncEntity* entity)
+    : immutable_entity_(entity), is_valid_(true) {}
 
 SyncData::SyncData(const SyncData& other) = default;
 
-SyncData::~SyncData() {}
+SyncData::~SyncData() = default;
 
 // Static.
 SyncData SyncData::CreateLocalDelete(const std::string& client_tag_unhashed,
@@ -72,7 +72,7 @@ SyncData SyncData::CreateLocalData(const std::string& client_tag_unhashed,
   entity.set_non_unique_name(non_unique_title);
   entity.mutable_specifics()->CopyFrom(specifics);
 
-  return SyncData(/*is_local=*/true, &entity);
+  return SyncData(&entity);
 }
 
 // Static.
@@ -81,7 +81,7 @@ SyncData SyncData::CreateRemoteData(sync_pb::EntitySpecifics specifics,
   sync_pb::SyncEntity entity;
   *entity.mutable_specifics() = std::move(specifics);
   entity.set_client_defined_unique_tag(client_tag_hash.value());
-  return SyncData(/*is_local=*/false, &entity);
+  return SyncData(&entity);
 }
 
 bool SyncData::IsValid() const {
@@ -105,10 +105,6 @@ const std::string& SyncData::GetTitle() const {
   return immutable_entity_.Get().non_unique_name();
 }
 
-bool SyncData::IsLocal() const {
-  return is_local_;
-}
-
 std::string SyncData::ToString() const {
   if (!IsValid())
     return "<Invalid SyncData>";
@@ -118,11 +114,9 @@ std::string SyncData::ToString() const {
   base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &specifics);
-  std::string is_local_string = IsLocal() ? "true" : "false";
 
-  return "{ isLocal: " + is_local_string + ", type: " + type +
-         ", tagHash: " + GetClientTagHash().value() + ", title: " + GetTitle() +
-         ", specifics: " + specifics + "}";
+  return "{ type: " + type + ", tagHash: " + GetClientTagHash().value() +
+         ", title: " + GetTitle() + ", specifics: " + specifics + "}";
 }
 
 void PrintTo(const SyncData& sync_data, std::ostream* os) {

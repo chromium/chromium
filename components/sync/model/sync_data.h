@@ -72,9 +72,6 @@ class SyncData {
   // going TO the syncer, not from.
   const std::string& GetTitle() const;
 
-  // Whether this sync data is for local data or data coming from the syncer.
-  bool IsLocal() const;
-
   std::string ToString() const;
 
  private:
@@ -100,14 +97,11 @@ class SyncData {
   // The actual shared sync entity being held.
   ImmutableSyncEntity immutable_entity_;
 
-  // Whether this SyncData represents a local change.
-  bool is_local_;
-
   // Whether this SyncData holds valid data.
   bool is_valid_;
 
   // Clears |entity|.
-  SyncData(bool is_local_, sync_pb::SyncEntity* entity);
+  explicit SyncData(sync_pb::SyncEntity* entity);
 };
 
 // gmock printer helper.
