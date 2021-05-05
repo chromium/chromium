@@ -315,6 +315,23 @@ void WaylandEventSource::OnTouchCancelEvent() {
   touch_points_.clear();
 }
 
+void WaylandEventSource::OnPinchEvent(EventType event_type,
+                                      const gfx::Vector2dF& delta,
+                                      base::TimeTicks timestamp,
+                                      int device_id,
+                                      base::Optional<float> scale) {
+  GestureEventDetails details(event_type);
+  details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
+  if (scale)
+    details.set_scale(*scale);
+
+  auto location = pointer_location_ + delta;
+  GestureEvent event(location.x(), location.y(), 0 /* flags */, timestamp,
+                     details);
+  event.set_source_device_id(device_id);
+  DispatchEvent(&event);
+}
+
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
   DCHECK(HasAnyPointerButtonFlag(button));
   return pointer_flags_ & button;

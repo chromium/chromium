@@ -358,7 +358,7 @@ bool WaylandWindow::ShouldUseLayerForShapedWindow() const {
 }
 
 bool WaylandWindow::CanDispatchEvent(const PlatformEvent& event) {
-  if (event->IsMouseEvent())
+  if (event->IsMouseEvent() || event->IsPinchEvent())
     return has_pointer_focus_;
   if (event->IsKeyEvent())
     return has_keyboard_focus_;

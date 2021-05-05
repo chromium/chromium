@@ -587,7 +587,8 @@ void WaylandConnection::Global(void* data,
     }
     connection->wayland_zwp_pointer_gestures_ =
         std::make_unique<WaylandZwpPointerGestures>(
-            zwp_pointer_gestures_v1.release(), connection);
+            zwp_pointer_gestures_v1.release(), connection,
+            connection->event_source());
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =

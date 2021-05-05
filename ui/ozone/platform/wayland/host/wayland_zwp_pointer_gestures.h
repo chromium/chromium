@@ -5,7 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_POINTER_GESTURES_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_POINTER_GESTURES_H_
 
+#include "base/time/time.h"
+#include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+
+namespace gfx {
+class Vector2dF;
+}
 
 namespace ui {
 
@@ -14,8 +20,11 @@ class WaylandConnection;
 // Wraps the zwp_pointer_gestures and zwp_pointer_gesture_pinch_v1 objects.
 class WaylandZwpPointerGestures {
  public:
+  class Delegate;
+
   WaylandZwpPointerGestures(zwp_pointer_gestures_v1* pointer_gestures,
-                            WaylandConnection* connection);
+                            WaylandConnection* connection,
+                            Delegate* delegate);
   WaylandZwpPointerGestures(const WaylandZwpPointerGestures&) = delete;
   WaylandZwpPointerGestures& operator=(const WaylandZwpPointerGestures&) =
       delete;
@@ -52,6 +61,16 @@ class WaylandZwpPointerGestures {
   wl::Object<zwp_pointer_gestures_v1> obj_;
   wl::Object<zwp_pointer_gesture_pinch_v1> pinch_;
   WaylandConnection* const connection_;
+  Delegate* const delegate_;
+};
+
+class WaylandZwpPointerGestures::Delegate {
+ public:
+  virtual void OnPinchEvent(EventType event_type,
+                            const gfx::Vector2dF& delta,
+                            base::TimeTicks timestamp,
+                            int device_id,
+                            base::Optional<float> scale = base::nullopt) = 0;
 };
 
 }  // namespace ui

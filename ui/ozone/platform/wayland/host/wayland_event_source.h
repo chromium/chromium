@@ -22,13 +22,14 @@
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 
 struct wl_display;
 
 namespace gfx {
 class Vector2d;
+class Vector2dF;
 }
 
 namespace ui {
@@ -47,7 +48,8 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandWindowObserver,
                            public WaylandKeyboard::Delegate,
                            public WaylandPointer::Delegate,
-                           public WaylandTouch::Delegate {
+                           public WaylandTouch::Delegate,
+                           public WaylandZwpPointerGestures::Delegate {
  public:
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
@@ -119,6 +121,13 @@ class WaylandEventSource : public PlatformEventSource,
                           base::TimeTicks timestamp,
                           PointerId id) override;
   void OnTouchCancelEvent() override;
+
+  // WaylandZwpPointerGesture::Delegate:
+  void OnPinchEvent(EventType event_type,
+                    const gfx::Vector2dF& delta,
+                    base::TimeTicks timestamp,
+                    int device_id,
+                    base::Optional<float> scale) override;
 
  private:
   struct PointerFrame {

@@ -5,18 +5,25 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 
 #include <pointer-gestures-unstable-v1-client-protocol.h>
+#include <wayland-util.h>
 
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 namespace ui {
 
 WaylandZwpPointerGestures::WaylandZwpPointerGestures(
     zwp_pointer_gestures_v1* pointer_gestures,
-    WaylandConnection* connection)
-    : obj_(pointer_gestures), connection_(connection) {
+    WaylandConnection* connection,
+    Delegate* delegate)
+    : obj_(pointer_gestures), connection_(connection), delegate_(delegate) {
   DCHECK(obj_);
   DCHECK(connection_);
+  DCHECK(delegate_);
 }
 
 WaylandZwpPointerGestures::~WaylandZwpPointerGestures() = default;
@@ -45,7 +52,14 @@ void WaylandZwpPointerGestures::OnPinchBegin(
     uint32_t time,
     struct wl_surface* surface,
     uint32_t fingers) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+
+  base::TimeTicks timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+
+  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_BEGIN,
+                                gfx::Vector2dF() /*delta*/, timestamp,
+                                thiz->obj_.id());
 }
 
 // static
@@ -57,7 +71,14 @@ void WaylandZwpPointerGestures::OnPinchUpdate(
     wl_fixed_t dy,
     wl_fixed_t scale,
     wl_fixed_t rotation) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+
+  base::TimeTicks timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+
+  gfx::Vector2dF delta = {wl_fixed_to_double(dx), wl_fixed_to_double(dy)};
+  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_UPDATE, delta, timestamp,
+                                thiz->obj_.id(), wl_fixed_to_double(scale));
 }
 
 void WaylandZwpPointerGestures::OnPinchEnd(
@@ -66,7 +87,14 @@ void WaylandZwpPointerGestures::OnPinchEnd(
     uint32_t serial,
     uint32_t time,
     int32_t cancelled) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+
+  base::TimeTicks timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+
+  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_END,
+                                gfx::Vector2dF() /*delta*/, timestamp,
+                                thiz->obj_.id());
 }
 
 }  // namespace ui
