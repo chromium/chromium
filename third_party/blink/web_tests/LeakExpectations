@@ -203,6 +203,9 @@ crbug.com/1199904 [ Linux ] virtual/site-isolated-code-cache/http/tests/devtools
 # Sheriff 2021-05-03
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
 
+# Sheriff 2021-05-05
+crbug.com/1205815 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/snippet-module.js [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
