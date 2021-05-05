@@ -4823,9 +4823,9 @@ TEST_P(SequenceManagerTest, ReclaimMemoryRemovesCorrectQueueFromSet) {
 
   std::vector<int> order;
 
-  CancelableClosure cancelable_closure1(
+  CancelableRepeatingClosure cancelable_closure1(
       BindLambdaForTesting([&]() { order.push_back(10); }));
-  CancelableClosure cancelable_closure2(
+  CancelableRepeatingClosure cancelable_closure2(
       BindLambdaForTesting([&]() { order.push_back(11); }));
   queue1->task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
                                     order.push_back(1);

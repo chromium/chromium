@@ -1282,38 +1282,40 @@ TEST_F(BindTest, ArgumentCopies) {
   int assigns = 0;
 
   CopyCounter counter(&copies, &assigns);
-  Bind(&VoidPolymorphic<CopyCounter>::Run, counter);
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run, counter);
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
-  Bind(&VoidPolymorphic<CopyCounter>::Run, CopyCounter(&copies, &assigns));
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run,
+                CopyCounter(&copies, &assigns));
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
-  Bind(&VoidPolymorphic<CopyCounter>::Run).Run(counter);
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run).Run(counter);
   EXPECT_EQ(2, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
-  Bind(&VoidPolymorphic<CopyCounter>::Run).Run(CopyCounter(&copies, &assigns));
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run)
+      .Run(CopyCounter(&copies, &assigns));
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
   DerivedCopyMoveCounter derived(&copies, &assigns, nullptr, nullptr);
-  Bind(&VoidPolymorphic<CopyCounter>::Run).Run(CopyCounter(derived));
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run).Run(CopyCounter(derived));
   EXPECT_EQ(2, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
-  Bind(&VoidPolymorphic<CopyCounter>::Run)
+  BindRepeating(&VoidPolymorphic<CopyCounter>::Run)
       .Run(CopyCounter(
           DerivedCopyMoveCounter(&copies, &assigns, nullptr, nullptr)));
   EXPECT_EQ(2, copies);
@@ -1326,8 +1328,8 @@ TEST_F(BindTest, ArgumentMoves) {
   int move_constructs = 0;
   int move_assigns = 0;
 
-  Bind(&VoidPolymorphic<const MoveCounter&>::Run,
-       MoveCounter(&move_constructs, &move_assigns));
+  BindRepeating(&VoidPolymorphic<const MoveCounter&>::Run,
+                MoveCounter(&move_constructs, &move_assigns));
   EXPECT_EQ(1, move_constructs);
   EXPECT_EQ(0, move_assigns);
 
@@ -1336,14 +1338,14 @@ TEST_F(BindTest, ArgumentMoves) {
 
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<MoveCounter>::Run)
+  BindRepeating(&VoidPolymorphic<MoveCounter>::Run)
       .Run(MoveCounter(&move_constructs, &move_assigns));
   EXPECT_EQ(1, move_constructs);
   EXPECT_EQ(0, move_assigns);
 
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<MoveCounter>::Run)
+  BindRepeating(&VoidPolymorphic<MoveCounter>::Run)
       .Run(MoveCounter(DerivedCopyMoveCounter(
           nullptr, nullptr, &move_constructs, &move_assigns)));
   EXPECT_EQ(2, move_constructs);
@@ -1362,7 +1364,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   int move_assigns = 0;
 
   CopyMoveCounter counter(&copies, &assigns, &move_constructs, &move_assigns);
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run, counter);
+  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run, counter);
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
   EXPECT_EQ(0, move_constructs);
@@ -1372,8 +1374,9 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run,
-       CopyMoveCounter(&copies, &assigns, &move_constructs, &move_assigns));
+  BindRepeating(
+      &VoidPolymorphic<CopyMoveCounter>::Run,
+      CopyMoveCounter(&copies, &assigns, &move_constructs, &move_assigns));
   EXPECT_EQ(0, copies);
   EXPECT_EQ(0, assigns);
   EXPECT_EQ(1, move_constructs);
@@ -1383,7 +1386,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run).Run(counter);
+  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run).Run(counter);
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
   EXPECT_EQ(1, move_constructs);
@@ -1393,7 +1396,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run)
+  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run)
       .Run(CopyMoveCounter(&copies, &assigns, &move_constructs, &move_assigns));
   EXPECT_EQ(0, copies);
   EXPECT_EQ(0, assigns);
@@ -1406,7 +1409,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run)
+  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run)
       .Run(CopyMoveCounter(derived_counter));
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
@@ -1417,7 +1420,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  Bind(&VoidPolymorphic<CopyMoveCounter>::Run)
+  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run)
       .Run(CopyMoveCounter(DerivedCopyMoveCounter(
           &copies, &assigns, &move_constructs, &move_assigns)));
   EXPECT_EQ(0, copies);
@@ -1444,8 +1447,8 @@ TEST_F(BindTest, CapturelessLambda) {
       char(int, double),
       internal::ExtractCallableRunType<decltype(h)>>::value));
 
-  EXPECT_EQ(42, Bind([] { return 42; }).Run());
-  EXPECT_EQ(42, Bind([](int i) { return i * 7; }, 6).Run());
+  EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
+  EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
 
   int x = 1;
   base::RepeatingCallback<void(int)> cb =

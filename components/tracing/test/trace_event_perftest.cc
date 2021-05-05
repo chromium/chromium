@@ -49,7 +49,7 @@ class TraceEventPerfTest : public ::testing::Test {
     base::RunLoop run_loop;
     TraceLog::GetInstance()->SetDisabled();
     TraceLog::GetInstance()->Flush(
-        Bind(&OnTraceDataCollected, run_loop.QuitClosure()));
+        BindRepeating(&OnTraceDataCollected, run_loop.QuitClosure()));
     run_loop.Run();
   }
 

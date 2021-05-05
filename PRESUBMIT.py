@@ -327,30 +327,6 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
     ),
 )
 
-# Directories that contain deprecated Bind() or Callback types.
-# Find sub-directories from a given directory by running:
-# for i in `find . -maxdepth 1 -type d|sort`; do
-#   echo "-- $i"
-#   (cd $i; git grep -nP \
-#     'base::(Bind\(|(Cancelable)?(Callback<|Closure))'|wc -l)
-# done
-#
-# TODO(crbug.com/714018): Remove (or narrow the scope of) paths from this list
-# when they have been converted to modern callback types (OnceCallback,
-# RepeatingCallback, BindOnce, BindRepeating) in order to enable presubmit
-# checks for them and prevent regressions.
-_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
-  '^base/callback.h',  # Intentional.
-  '^base/cancelable_callback.h',  # Intentional.
-  "^docs/callback\\.md",  # Intentional
-  "^docs/process/lsc/large_scale_changes\\.md",  # Intentional
-  '^extensions/browser/api/webcam_private',
-  '^third_party/blink/PRESUBMIT_test.py', # Intentional.
-  '^third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py' # Intentional pylint: disable=line-too-long
-  '^tools/clang/base_bind_rewriters/',  # Intentional.
-  '^tools/gdb/gdb_chrome.py',  # Intentional.
-))
-
 # Format: Sequence of tuples containing:
 # * String pattern or, if starting with a slash, a regular expression.
 # * Sequence of strings to show when the pattern matches.
@@ -761,51 +737,6 @@ _BANNED_CPP_FUNCTIONS = (
       ),
       False,
       (),
-    ),
-    (
-      r'/\bbase::Bind\(',
-      (
-          'Please use base::Bind{Once,Repeating} instead',
-          'of base::Bind. (crbug.com/714018)',
-      ),
-      False,
-      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
-    ),
-    (
-      r'/\bbase::Callback[<:]',
-      (
-          'Please use base::{Once,Repeating}Callback instead',
-          'of base::Callback. (crbug.com/714018)',
-      ),
-      False,
-      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
-    ),
-    (
-      r'/\bbase::Closure\b',
-      (
-          'Please use base::{Once,Repeating}Closure instead',
-          'of base::Closure. (crbug.com/714018)',
-      ),
-      False,
-      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
-    ),
-    (
-      r'/\bbase::CancelableCallback[<:]',
-      (
-          'Please use base::Cancelable{Once,Repeating}Callback instead',
-          'of base::CancelableCallback. (crbug.com/714018)',
-      ),
-      False,
-      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
-    ),
-    (
-      r'/\bbase::CancelableClosure\b',
-      (
-          'Please use base::Cancelable{Once,Repeating}Closure instead',
-          'of base::CancelableClosure. (crbug.com/714018)',
-      ),
-      False,
-      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
     ),
     (
       r'/\bRunMessageLoop\b',

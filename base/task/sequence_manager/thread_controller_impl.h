@@ -120,7 +120,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   const TickClock* time_source_;
   RepeatingClosure immediate_do_work_closure_;
   RepeatingClosure delayed_do_work_closure_;
-  CancelableClosure cancelable_delayed_do_work_closure_;
+  CancelableRepeatingClosure cancelable_delayed_do_work_closure_;
   SequencedTaskSource* sequence_ = nullptr;  // Not owned.
   TaskAnnotator task_annotator_;
   WorkDeduplicator work_deduplicator_;

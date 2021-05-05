@@ -48,9 +48,6 @@
 // will be a no-op. Note that |IsCancelled()| and |is_null()| are distinct:
 // simply cancelling a callback will not also make it null.
 //
-// base::Callback is currently a type alias for base::RepeatingCallback. In the
-// future, we expect to flip this to default to base::OnceCallback.
-//
 // See //docs/callback.md for the full documentation.
 
 namespace base {

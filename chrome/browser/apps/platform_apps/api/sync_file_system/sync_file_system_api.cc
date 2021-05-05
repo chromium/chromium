@@ -108,8 +108,8 @@ SyncFileSystemDeleteFileSystemFunction::Run() {
       BindOnce(
           &storage::FileSystemContext::DeleteFileSystem, file_system_context,
           url::Origin::Create(source_url().GetOrigin()), file_system_url.type(),
-          Bind(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
-               this)));
+          BindOnce(&SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem,
+                   this)));
   return RespondLater();
 }
 
@@ -212,7 +212,7 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusFunction::Run() {
 
   sync_file_system_service->GetFileSyncStatus(
       file_system_url,
-      Bind(&SyncFileSystemGetFileStatusFunction::DidGetFileStatus, this));
+      BindOnce(&SyncFileSystemGetFileStatusFunction::DidGetFileStatus, this));
   return RespondLater();
 }
 
@@ -264,8 +264,8 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
 
     sync_file_system_service->GetFileSyncStatus(
         file_system_url,
-        Bind(&SyncFileSystemGetFileStatusesFunction::DidGetFileStatus, this,
-             file_system_url));
+        BindOnce(&SyncFileSystemGetFileStatusesFunction::DidGetFileStatus, this,
+                 file_system_url));
   }
 
   return RespondLater();
@@ -339,8 +339,8 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
           &storage::QuotaManager::GetUsageAndQuotaForWebApps, quota_manager,
           url::Origin::Create(source_url()),
           storage::FileSystemTypeToQuotaStorageType(file_system_url.type()),
-          Bind(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
-               this)));
+          BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
+                   this)));
 
   return RespondLater();
 }

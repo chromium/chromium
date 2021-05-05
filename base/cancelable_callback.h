@@ -147,10 +147,6 @@ using CancelableRepeatingCallback =
     internal::CancelableCallbackImpl<RepeatingCallback<Signature>>;
 using CancelableRepeatingClosure = CancelableRepeatingCallback<void()>;
 
-template <typename Signature>
-using CancelableCallback = CancelableRepeatingCallback<Signature>;
-using CancelableClosure = CancelableCallback<void()>;
-
 }  // namespace base
 
 #endif  // BASE_CANCELABLE_CALLBACK_H_

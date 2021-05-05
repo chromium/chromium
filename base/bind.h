@@ -45,9 +45,6 @@
 //   auto cb = base::BindOnce(&C::F, instance);
 //   std::move(cb).Run();  // Identical to instance->F()
 //
-// base::Bind is currently a type alias for base::BindRepeating(). In the
-// future, we expect to flip this to default to base::BindOnce().
-//
 // See //docs/callback.md for the full documentation.
 //
 // -----------------------------------------------------------------------------
@@ -91,17 +88,6 @@ BindRepeating(Functor&& functor, Args&&... args) {
                                                std::forward<Args>(args)...);
 }
 
-// Unannotated Bind.
-// TODO(tzik): Deprecate this and migrate to OnceCallback and
-// RepeatingCallback, once they get ready.
-template <typename Functor, typename... Args>
-inline Callback<internal::MakeUnboundRunType<Functor, Args...>> Bind(
-    Functor&& functor,
-    Args&&... args) {
-  return base::BindRepeating(std::forward<Functor>(functor),
-                             std::forward<Args>(args)...);
-}
-
 // Special cases for binding to a base::Callback without extra bound arguments.
 // We CHECK() the validity of callback to guard against null pointers
 // accidentally ending up in posted tasks, causing hard-to-debug crashes.
@@ -120,12 +106,6 @@ OnceCallback<Signature> BindOnce(RepeatingCallback<Signature> callback) {
 template <typename Signature>
 RepeatingCallback<Signature> BindRepeating(
     RepeatingCallback<Signature> callback) {
-  CHECK(callback);
-  return callback;
-}
-
-template <typename Signature>
-Callback<Signature> Bind(Callback<Signature> callback) {
   CHECK(callback);
   return callback;
 }

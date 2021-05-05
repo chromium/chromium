@@ -1147,20 +1147,20 @@ TEST_F(TaskEnvironmentTest, CancelPendingTask) {
   EXPECT_EQ(TimeDelta::Max(),
             task_environment.NextMainThreadPendingTaskDelay());
 
-  CancelableClosure task2(BindRepeating([]() {}));
+  CancelableRepeatingClosure task2(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task2.callback(),
                                                  TimeDelta::FromSeconds(1));
   task2.Cancel();
   EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
 
-  CancelableClosure task3(BindRepeating([]() {}));
+  CancelableRepeatingClosure task3(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task3.callback(),
                                                  TimeDelta::FromSeconds(1));
   task3.Cancel();
   EXPECT_EQ(TimeDelta::Max(),
             task_environment.NextMainThreadPendingTaskDelay());
 
-  CancelableClosure task4(BindRepeating([]() {}));
+  CancelableRepeatingClosure task4(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task4.callback(),
                                                  TimeDelta::FromSeconds(1));
   task4.Cancel();
@@ -1185,7 +1185,7 @@ TEST_F(TaskEnvironmentTest, NoFastForwardToCancelledTask) {
       TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
   TimeTicks start_time = task_environment.NowTicks();
-  CancelableClosure task(BindRepeating([]() {}));
+  CancelableRepeatingClosure task(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task.callback(),
                                                  TimeDelta::FromSeconds(1));
   EXPECT_EQ(TimeDelta::FromSeconds(1),
@@ -1199,7 +1199,7 @@ TEST_F(TaskEnvironmentTest, NextTaskIsDelayed) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   EXPECT_FALSE(task_environment.NextTaskIsDelayed());
-  CancelableClosure task(BindRepeating([]() {}));
+  CancelableRepeatingClosure task(BindRepeating([]() {}));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, task.callback(),
                                                  TimeDelta::FromSeconds(1));
   EXPECT_TRUE(task_environment.NextTaskIsDelayed());
