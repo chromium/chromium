@@ -4025,6 +4025,7 @@ source_set("unit_tests") {
     "input_method/native_input_method_engine_unittest.cc",
     "input_method/personal_info_suggester_unittest.cc",
     "input_method/suggestions_collector_unittest.cc",
+    "input_method/suggestions_service_client_unittest.cc",
     "input_method/ui/candidate_view_unittest.cc",
     "input_method/ui/candidate_window_view_unittest.cc",
     "input_method/ui/input_method_menu_item_unittest.cc",

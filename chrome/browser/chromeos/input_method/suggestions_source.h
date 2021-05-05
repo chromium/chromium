@@ -29,12 +29,15 @@ class AsyncSuggestionsSource {
  public:
   virtual ~AsyncSuggestionsSource() = default;
 
-  using GetSuggestionsCallback =
+  using RequestSuggestionsCallback =
       base::OnceCallback<void(const std::vector<ime::TextSuggestion>&)>;
 
   // Fetch the suggestions from this object, any suggestions fetched will be
   // returned in the callback passed.
-  virtual void GetSuggestions(GetSuggestionsCallback callback) = 0;
+  virtual void RequestSuggestions(
+      const std::string& preceding_text,
+      const std::vector<ime::TextCompletionCandidate>& completion_candidates,
+      RequestSuggestionsCallback callback) = 0;
 
   // Is the source ready to produce suggestions?
   virtual bool IsAvailable() = 0;

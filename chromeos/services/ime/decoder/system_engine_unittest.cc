@@ -361,8 +361,8 @@ TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
   EXPECT_EQ(request->mode, TextSuggestionMode::kPrediction);
   EXPECT_EQ(request->text, "hello there!");
   EXPECT_EQ(static_cast<int>(request->completion_candidates.size()), 1);
-  EXPECT_EQ(request->completion_candidates[0]->text, "hello");
-  EXPECT_FLOAT_EQ(request->completion_candidates[0]->normalized_score, 0.55);
+  EXPECT_EQ(request->completion_candidates[0].text, "hello");
+  EXPECT_FLOAT_EQ(request->completion_candidates[0].score, 0.55);
 }
 
 TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {

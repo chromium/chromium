@@ -43,9 +43,11 @@ void SuggestionsCollector::GatherSuggestions(
     return;
   }
 
-  suggestions_service_client_->GetSuggestions(base::BindOnce(
-      &SuggestionsCollector::OnSuggestionsGathered, base::Unretained(this),
-      std::move(callback), assistive_suggestions));
+  suggestions_service_client_->RequestSuggestions(
+      request->text, request->completion_candidates,
+      base::BindOnce(&SuggestionsCollector::OnSuggestionsGathered,
+                     base::Unretained(this), std::move(callback),
+                     assistive_suggestions));
 }
 
 void SuggestionsCollector::OnSuggestionsGathered(

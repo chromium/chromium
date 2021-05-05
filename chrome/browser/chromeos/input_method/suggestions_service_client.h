@@ -10,16 +10,33 @@
 #include "base/callback.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
+// A client interface to the TextSuggestions service found in the ML service.
 class SuggestionsServiceClient : public AsyncSuggestionsSource {
  public:
   SuggestionsServiceClient();
+  ~SuggestionsServiceClient() override;
 
   // AsyncSuggestionsSource overrides
-  void GetSuggestions(GetSuggestionsCallback callback) override;
+  void RequestSuggestions(
+      const std::string& preceding_text,
+      const std::vector<ime::TextCompletionCandidate>& completion_candidates,
+      RequestSuggestionsCallback callback) override;
   bool IsAvailable() override;
+
+ private:
+  // Called when results are returned from the suggestions service
+  void OnSuggestionsReturned(
+      RequestSuggestionsCallback callback,
+      chromeos::machine_learning::mojom::TextSuggesterResultPtr result);
+
+  mojo::Remote<chromeos::machine_learning::mojom::TextSuggester>
+      text_suggester_;
+  bool text_suggester_loaded_ = false;
 };
 
 }  // namespace chromeos

@@ -224,11 +224,9 @@ mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
   mojo_suggestions_request->mode =
       ProtoToTextSuggestionMode(suggestions_request.suggestion_mode());
   for (const auto& candidate : suggestions_request.completion_candidates()) {
-    auto mojo_candidate = mojom::CompletionCandidate::New();
-    mojo_candidate->text = candidate.text();
-    mojo_candidate->normalized_score = candidate.normalized_score();
     mojo_suggestions_request->completion_candidates.push_back(
-        std::move(mojo_candidate));
+        TextCompletionCandidate{.text = candidate.text(),
+                                .score = candidate.normalized_score()});
   }
   return mojo_suggestions_request;
 }

@@ -54,6 +54,26 @@ struct StructTraits<chromeos::ime::mojom::SuggestionCandidateDataView,
   static bool Read(SuggestionCandidateDataView input, TextSuggestion* output);
 };
 
+template <>
+struct StructTraits<chromeos::ime::mojom::CompletionCandidateDataView,
+                    chromeos::ime::TextCompletionCandidate> {
+  using CompletionCandidateDataView =
+      ::chromeos::ime::mojom::CompletionCandidateDataView;
+  using TextCompletionCandidate = ::chromeos::ime::TextCompletionCandidate;
+
+  static const std::string& text(const TextCompletionCandidate& candidate) {
+    return candidate.text;
+  }
+
+  static const float& normalized_score(
+      const TextCompletionCandidate& candidate) {
+    return candidate.score;
+  }
+
+  static bool Read(CompletionCandidateDataView input,
+                   TextCompletionCandidate* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_

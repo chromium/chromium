@@ -168,8 +168,8 @@ TEST(ProtoConversionTest, ProtoToSuggestionsRequest) {
   EXPECT_EQ(result->text, "gday mate");
   EXPECT_EQ(result->mode, ime::TextSuggestionMode::kPrediction);
   EXPECT_EQ(static_cast<int>(result->completion_candidates.size()), 1);
-  EXPECT_EQ(result->completion_candidates[0]->text, "something");
-  EXPECT_FLOAT_EQ(result->completion_candidates[0]->normalized_score, 0.55);
+  EXPECT_EQ(result->completion_candidates[0].text, "something");
+  EXPECT_FLOAT_EQ(result->completion_candidates[0].score, 0.55);
 }
 
 }  // namespace ime

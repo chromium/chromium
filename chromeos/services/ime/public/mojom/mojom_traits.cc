@@ -9,10 +9,13 @@
 namespace mojo {
 namespace {
 
+using CompletionCandidateDataView =
+    chromeos::ime::mojom::CompletionCandidateDataView;
 using SuggestionMode = chromeos::ime::mojom::SuggestionMode;
 using SuggestionType = chromeos::ime::mojom::SuggestionType;
 using SuggestionCandidateDataView =
     chromeos::ime::mojom::SuggestionCandidateDataView;
+using TextCompletionCandidate = chromeos::ime::TextCompletionCandidate;
 using TextSuggestionMode = chromeos::ime::TextSuggestionMode;
 using TextSuggestionType = chromeos::ime::TextSuggestionType;
 using TextSuggestion = chromeos::ime::TextSuggestion;
@@ -83,6 +86,15 @@ bool StructTraits<SuggestionCandidateDataView, TextSuggestion>::Read(
     return false;
   if (!input.ReadText(&output->text))
     return false;
+  return true;
+}
+
+bool StructTraits<CompletionCandidateDataView, TextCompletionCandidate>::Read(
+    CompletionCandidateDataView input,
+    TextCompletionCandidate* output) {
+  if (!input.ReadText(&output->text))
+    return false;
+  output->score = input.normalized_score();
   return true;
 }
 

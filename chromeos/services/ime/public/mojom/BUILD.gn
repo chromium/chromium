@@ -17,6 +17,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "chromeos.ime.mojom.CompletionCandidate"
+          cpp = "::chromeos::ime::TextCompletionCandidate"
+        },
+        {
           mojom = "chromeos.ime.mojom.SuggestionMode"
           cpp = "::chromeos::ime::TextSuggestionMode"
         },

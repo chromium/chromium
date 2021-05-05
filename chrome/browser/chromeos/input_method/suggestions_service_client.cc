@@ -4,18 +4,98 @@
 
 #include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 
-namespace chromeos {
+#include "base/bind.h"
+#include "base/optional.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 
-SuggestionsServiceClient::SuggestionsServiceClient() {
-  // TODO(crbug/1146266): Complete setup of text suggestion service client.
+namespace chromeos {
+namespace {
+
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
+using ::chromeos::machine_learning::mojom::NextWordCompletionCandidate;
+using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
+using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
+using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
+
+base::Optional<TextSuggestion> ToTextSuggestion(
+    const TextSuggestionCandidatePtr& candidate) {
+  if (!candidate->is_multi_word()) {
+    // TODO(crbug/1146266): Handle emoji suggestions
+    return base::nullopt;
+  }
+
+  return TextSuggestion{
+      // TODO(crbug/1146266): Introduce suggestion mode to suggestion service
+      // interface. For the moment, everything is a prediction.
+      .mode = TextSuggestionMode::kPrediction,
+      .type = TextSuggestionType::kMultiWord,
+      .text = candidate->get_multi_word()->text};
 }
 
-void SuggestionsServiceClient::GetSuggestions(GetSuggestionsCallback callback) {
-  std::move(callback).Run(std::vector<ime::TextSuggestion>{});
+}  // namespace
+
+SuggestionsServiceClient::SuggestionsServiceClient() {
+  chromeos::machine_learning::ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadTextSuggester(
+          text_suggester_.BindNewPipeAndPassReceiver(),
+          base::BindOnce(
+              [](bool* text_suggester_loaded_,
+                 chromeos::machine_learning::mojom::LoadModelResult result) {
+                *text_suggester_loaded_ =
+                    result ==
+                    chromeos::machine_learning::mojom::LoadModelResult::OK;
+              },
+              &text_suggester_loaded_));
+}
+
+SuggestionsServiceClient::~SuggestionsServiceClient() = default;
+
+void SuggestionsServiceClient::RequestSuggestions(
+    const std::string& preceding_text,
+    const std::vector<ime::TextCompletionCandidate>& completion_candidates,
+    RequestSuggestionsCallback callback) {
+  if (!IsAvailable()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto query = TextSuggesterQuery::New();
+  query->text = preceding_text;
+
+  for (const auto& candidate : completion_candidates) {
+    auto next_word_candidate = NextWordCompletionCandidate::New();
+    next_word_candidate->text = candidate.text;
+    next_word_candidate->normalized_score = candidate.score;
+    query->next_word_candidates.push_back(std::move(next_word_candidate));
+  }
+
+  text_suggester_->Suggest(
+      std::move(query),
+      base::BindOnce(&SuggestionsServiceClient::OnSuggestionsReturned,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void SuggestionsServiceClient::OnSuggestionsReturned(
+    RequestSuggestionsCallback callback,
+    chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
+  std::vector<TextSuggestion> suggestions;
+
+  for (const auto& candidate : result->candidates) {
+    auto suggestion = ToTextSuggestion(std::move(candidate));
+    if (suggestion) {
+      // Drop any unknown suggestions
+      suggestions.push_back(suggestion.value());
+    }
+  }
+
+  std::move(callback).Run(suggestions);
 }
 
 bool SuggestionsServiceClient::IsAvailable() {
-  return false;
+  return text_suggester_loaded_;
 }
 
 }  // namespace chromeos

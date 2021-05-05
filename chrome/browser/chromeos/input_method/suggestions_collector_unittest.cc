@@ -16,6 +16,7 @@
 namespace chromeos {
 namespace {
 
+using TextCompletionCandidate = ::chromeos::ime::TextCompletionCandidate;
 using TextSuggestion = ::chromeos::ime::TextSuggestion;
 using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
 using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
@@ -34,7 +35,10 @@ class FakeAssistiveSuggester : public SuggestionsSource {
 
 class FakeSuggestionsService : public AsyncSuggestionsSource {
  public:
-  void GetSuggestions(GetSuggestionsCallback callback) override {
+  void RequestSuggestions(
+      const std::string& preceding_text,
+      const std::vector<TextCompletionCandidate>& completion_candidates,
+      RequestSuggestionsCallback callback) override {
     std::move(callback).Run(suggestions_);
   }
 

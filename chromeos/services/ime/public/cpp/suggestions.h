@@ -37,6 +37,14 @@ struct TextSuggestion {
   }
 };
 
+struct TextCompletionCandidate {
+  // Text to complete the current word
+  std::string text;
+
+  // The confidence scoring for the candidate
+  float score;
+};
+
 }  // namespace ime
 }  // namespace chromeos
 
