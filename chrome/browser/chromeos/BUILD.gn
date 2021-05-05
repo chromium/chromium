@@ -224,6 +224,7 @@ source_set("chromeos") {
     "//chromeos/disks",
     "//chromeos/geolocation",
     "//chromeos/ime:gencode",
+    "//chromeos/language/language_packs",
     "//chromeos/login/auth",
     "//chromeos/login/login_state",
     "//chromeos/login/session",
