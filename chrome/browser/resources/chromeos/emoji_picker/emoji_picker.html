@@ -86,6 +86,7 @@
 
   .chevron {
     background-color: var(--cr-card-background-color);
+    border-radius: 0;
     height: var(--emoji-group-button-size);
     margin: 0;
     padding: 0;
@@ -98,6 +99,10 @@
     left: calc((var(--emoji-picker-width) -
       2 * var(--emoji-picker-side-padding)) / 9 * 8
       + var(--emoji-picker-side-padding));
+    /* Icons may become visible to the right of this during scrolling without
+     * the additional padding.
+     */
+    padding-inline-end: 5px;
   }
 
   #left-chevron {
