@@ -82,6 +82,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/in_progress_download_manager.h"
@@ -4635,6 +4636,10 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadLargeDataURL) {
 class InProgressDownloadTest : public DownloadTest {
  public:
   InProgressDownloadTest() {
+    feature_list_.InitWithFeatures(
+        {download::features::kUseInProgressDownloadManagerForDownloadService},
+        {});
+
     // The in progress download manager will be released from
     // `DownloadManagerUtils` during creation of the `DownloadManagerImpl`. As
     // the `DownloadManagerImpl` may be created before test bodies can run,
@@ -4677,6 +4682,7 @@ class InProgressDownloadTest : public DownloadTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   download::InProgressDownloadManager* in_progress_manager_ = nullptr;
 };
 
@@ -4753,7 +4759,6 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
 
 // Check that InProgressDownloadManager can handle transient downloads with the
 // same GUID.
-// TODO(crbug.com/1204298): Disabled due to flakines.
 IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
                        DownloadURLWithInProgressManager) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
