@@ -94,12 +94,15 @@ class RobotsRulesParser {
 
   // Contains one robots.txt rule.
   struct RobotsRule {
-    RobotsRule(bool is_allow_rule, const std::string& pattern)
-        : is_allow_rule_(is_allow_rule), pattern_(pattern) {}
+    RobotsRule(bool is_allow_rule,
+               const std::string& glob,
+               const std::string& pattern)
+        : is_allow_rule_(is_allow_rule), glob_(glob), pattern_(pattern) {}
 
     bool Match(const std::string& path) const;
 
     const bool is_allow_rule_;
+    const std::string glob_;
     const std::string pattern_;
   };
 

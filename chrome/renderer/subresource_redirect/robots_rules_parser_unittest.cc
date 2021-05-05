@@ -381,6 +381,62 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest, TestRulesAreCaseSensitive) {
 }
 
 TEST_F(SubresourceRedirectRobotsRulesParserTest,
+       TestRulesHandleSpecialGlobSymbols) {
+  SetUpRobotsRules({
+      {kRuleTypeAllow, "/allo?ed"},
+      {kRuleTypeAllow, "/foo"},
+      {kRuleTypeAllow, "/bar$"},
+      {kRuleTypeAllow, "/boo$$"},
+      {kRuleTypeAllow, "/baz*"},
+      {kRuleTypeAllow, "/bop*$"},
+      {kRuleTypeAllow, "*startwithstar"},
+      {kRuleTypeAllow, "*anchoredtoend$"},
+      {kRuleTypeDisallow, "/"},
+  });
+  VerifyReceivedRobotsRulesCountHistogram(9);
+
+  // The '?' character is *not* treated as a special globbing symbol.
+  CheckRobotsRules("/allo?ed.jpg", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+
+  // A pattern without a final '$' is not anchored to the end of the string.
+  CheckRobotsRules("/foo", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kAllowed);
+
+  // A pattern with a final '$' is anchored to the end of the string.
+  CheckRobotsRules("/bar", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+
+  // When a pattern ends with two '$' characters, the first '$' is a literal,
+  // and the second matches the end of the string.
+  CheckRobotsRules("/boo$", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/boo$$", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/boo", RobotsRulesParser::CheckResult::kDisallowed);
+  CheckRobotsRules("/boo$.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+
+  // A trailing '*' has no effect, and it is compatible with '$'.
+  CheckRobotsRules("/baz", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bazfoo", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bop", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/bopfoo", RobotsRulesParser::CheckResult::kAllowed);
+
+  // Patterns with leading '*' are not anchored to the beginning of the string.
+  CheckRobotsRules("/startwithstar", RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/ZZZstartwithstar",
+                   RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/ZZZstartwithstarbar",
+                   RobotsRulesParser::CheckResult::kAllowed);
+
+  // Patterns with leading '*' correctly interact with trailing '$'.
+  CheckRobotsRules("/ZZZanchoredtoend",
+                   RobotsRulesParser::CheckResult::kAllowed);
+  CheckRobotsRules("/ZZZanchoredtoendZZZ",
+                   RobotsRulesParser::CheckResult::kDisallowed);
+
+  VerifyTotalRobotsRulesApplyHistograms(19);
+}
+
+TEST_F(SubresourceRedirectRobotsRulesParserTest,
        TestInvalidatePendingRequests) {
   auto receiver1 = CheckRobotsRulesAsync("/allowed.jpg", 1 /*render_frame_id*/);
   auto receiver2 =

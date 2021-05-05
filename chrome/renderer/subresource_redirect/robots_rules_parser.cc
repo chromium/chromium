@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -64,6 +65,43 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
   return true;
 }
 
+// Converts the given robots rule pattern to a pattern compatible with
+// |base::MatchPattern|.
+//
+// Robots rule patterns have slightly different semantics than the pattern
+// inputs for |base::MatchPattern|. They support '*', which matches zero or more
+// of any character, and '$', which matches the end of the input string. On the
+// other hand, |base::MatchPattern| supports '*' and '?', zero or one of any
+// character, but not '$'.
+//
+// Both patterns are anchored at the beginning of the input string, but
+// |base::MatchPattern| is also implicitly anchored to the end of the string.
+// That is, the pattern must match the whole string in order to match.
+//
+// We can convert the given |robots_rule| to one that is compatible with
+// |base::MatchPattern| by taking care of optionally-present '$' character and
+// backslash-escaping any '?' characters, since they should be interpreted
+// literally .
+std::string ConvertRobotsRuleToGlob(const std::string& robots_rule) {
+  if (robots_rule.empty())
+    return "*";
+  std::string glob(robots_rule);
+  // Any '\' characters that appear in |robots_rule| are meant as literals. To
+  // prevent |base::MatchPattern| from interpreting bare '\' as an escape
+  // character, we replace each bare backslash with two backslashes.
+  base::ReplaceSubstringsAfterOffset(&glob, 0, "\\", "\\\\");
+  // |base::MatchPattern| treats '?' as a special symbol, but robots rule
+  // patterns do not. Escape each occurrence with a backslash.
+  base::ReplaceSubstringsAfterOffset(&glob, 0, "?", "\\?");
+  // |base::MatchPattern| implicitly anchors to the end of the string, but
+  // |robots rule patterns require an explicit trailing '$'.
+  if (glob.back() == '$')
+    glob.pop_back();
+  else
+    glob.push_back('*');
+  return glob;
+}
+
 void RecordRobotsRulesReceiveResultHistogram(
     RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult result) {
   UMA_HISTOGRAM_ENUMERATION(
@@ -78,7 +116,10 @@ void RecordRobotsRulesApplyDurationHistogram(base::TimeDelta duration) {
 }  // namespace
 
 bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
-  return IsMatchingRobotsRule(path, pattern_);
+  const bool kCanonicalResult = IsMatchingRobotsRule(path, pattern_);
+  const bool kGlobResult = base::MatchPattern(path, glob_);
+  DCHECK_EQ(kCanonicalResult, kGlobResult);
+  return kGlobResult;
 }
 
 RobotsRulesParser::RobotsRulesParser(
@@ -113,12 +154,22 @@ void RobotsRulesParser::UpdateRobotsRules(
   rules_receive_state_ = is_parse_success ? RulesReceiveState::kSuccess
                                           : RulesReceiveState::kParseFailed;
   if (is_parse_success) {
-    robots_rules_.reserve(robots_rules.image_ordered_rules_size());
+    robots_rules_.reserve(robots_rules.image_ordered_rules().size());
+    std::set<std::string> allowed_pattern_set;
+    std::set<std::string> disallowed_pattern_set;
     for (const auto& rule : robots_rules.image_ordered_rules()) {
       if (rule.has_allowed_pattern()) {
-        robots_rules_.emplace_back(true, rule.allowed_pattern());
+        const std::string& pattern = rule.allowed_pattern();
+        if (allowed_pattern_set.insert(pattern).second) {
+          robots_rules_.emplace_back(true, ConvertRobotsRuleToGlob(pattern),
+                                     pattern);
+        }
       } else if (rule.has_disallowed_pattern()) {
-        robots_rules_.emplace_back(false, rule.disallowed_pattern());
+        const std::string& pattern = rule.disallowed_pattern();
+        if (disallowed_pattern_set.insert(pattern).second) {
+          robots_rules_.emplace_back(false, ConvertRobotsRuleToGlob(pattern),
+                                     pattern);
+        }
       }
     }
     UMA_HISTOGRAM_COUNTS_1000("SubresourceRedirect.RobotRulesDecider.Count",
