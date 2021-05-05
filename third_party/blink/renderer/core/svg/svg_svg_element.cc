@@ -651,7 +651,7 @@ base::Optional<float> SVGSVGElement::IntrinsicWidth() const {
   if (width_attr.IsPercentage())
     return base::nullopt;
   SVGLengthContext length_context(this);
-  return width_attr.Value(length_context);
+  return std::max(0.0f, width_attr.Value(length_context));
 }
 
 base::Optional<float> SVGSVGElement::IntrinsicHeight() const {
@@ -662,7 +662,7 @@ base::Optional<float> SVGSVGElement::IntrinsicHeight() const {
   if (height_attr.IsPercentage())
     return base::nullopt;
   SVGLengthContext length_context(this);
-  return height_attr.Value(length_context);
+  return std::max(0.0f, height_attr.Value(length_context));
 }
 
 AffineTransform SVGSVGElement::ViewBoxToViewTransform(
