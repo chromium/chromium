@@ -2018,8 +2018,7 @@ void XRSession::OnInputStateChangeInternal(
     // cross-origin content. If that's the case, the input source is set as
     // invisible, and must not return poses or hit test results.
     bool hide_input_source = false;
-    if (IsFeatureEnabled(device::mojom::XRSessionFeature::DOM_OVERLAY) &&
-        overlay_element_ && input_state->overlay_pointer_position) {
+    if (overlay_element_ && input_state->overlay_pointer_position) {
       input_source->ProcessOverlayHitTest(overlay_element_, input_state);
       if (!stored_input_source && !input_source->IsVisible()) {
         DVLOG(2) << __func__ << ": (new) hidden_input_source";
