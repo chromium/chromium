@@ -43,11 +43,10 @@ class ConversionStorageDelegateImplTest : public testing::Test {
 
 TEST_F(ConversionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, /*conversion_time=*/impression_time)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            reports[0].report_time);
+  ConversionReport report =
+      GetReport(impression_time, /*conversion_time=*/impression_time);
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2), report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -55,11 +54,9 @@ TEST_F(ConversionStorageDelegateImplTest,
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(2) -
                                base::TimeDelta::FromMinutes(1);
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, conversion_time)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(7),
-            reports[0].report_time);
+  ConversionReport report = GetReport(impression_time, conversion_time);
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(7), report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -70,11 +67,9 @@ TEST_F(ConversionStorageDelegateImplTest,
   // before the deadline.
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(2) -
                                base::TimeDelta::FromMinutes(61);
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, conversion_time)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            reports[0].report_time);
+  ConversionReport report = GetReport(impression_time, conversion_time);
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2), report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -83,12 +78,10 @@ TEST_F(ConversionStorageDelegateImplTest,
   base::Time conversion_time = impression_time + base::TimeDelta::FromHours(1);
 
   // Set the impression to expire before the two day window.
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromHours(2))};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            reports[0].report_time);
+  ConversionReport report = GetReport(impression_time, conversion_time,
+                                      /*expiry=*/base::TimeDelta::FromHours(2));
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
+  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2), report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -97,15 +90,14 @@ TEST_F(ConversionStorageDelegateImplTest,
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
 
   // Set the impression to expire before the two day window.
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(4))};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  ConversionReport report = GetReport(impression_time, conversion_time,
+                                      /*expiry=*/base::TimeDelta::FromDays(4));
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
-            reports[0].report_time);
+            report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -114,68 +106,40 @@ TEST_F(ConversionStorageDelegateImplTest,
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(7);
 
   // Set the impression to expire before the two day window.
-  std::vector<ConversionReport> reports = {
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::TimeDelta::FromDays(9))};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  ConversionReport report = GetReport(impression_time, conversion_time,
+                                      /*expiry=*/base::TimeDelta::FromDays(9));
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(9) +
                 base::TimeDelta::FromHours(1),
-            reports[0].report_time);
+            report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
        SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
-  std::vector<ConversionReport> reports = {GetReport(
-      impression_time, conversion_time, /*expiry=*/base::TimeDelta::FromDays(1),
-      StorableImpression::SourceType::kEvent)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  ConversionReport report = GetReport(impression_time, conversion_time,
+                                      /*expiry=*/base::TimeDelta::FromDays(1),
+                                      StorableImpression::SourceType::kEvent);
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2) +
                 base::TimeDelta::FromHours(1),
-            reports[0].report_time);
+            report.report_time);
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
        SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
   base::Time impression_time = base::Time::Now();
   base::Time conversion_time = impression_time + base::TimeDelta::FromDays(3);
-  std::vector<ConversionReport> reports = {GetReport(
-      impression_time, conversion_time, /*expiry=*/base::TimeDelta::FromDays(4),
-      StorableImpression::SourceType::kEvent)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
+  ConversionReport report = GetReport(impression_time, conversion_time,
+                                      /*expiry=*/base::TimeDelta::FromDays(4),
+                                      StorableImpression::SourceType::kEvent);
+  ConversionStorageDelegateImpl().ProcessNewConversionReport(report);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
-            reports[0].report_time);
-}
-
-TEST_F(ConversionStorageDelegateImplTest,
-       SingleReportForConversion_AttributionCreditAssigned) {
-  base::Time now = base::Time::Now();
-  std::vector<ConversionReport> reports = {
-      GetReport(/*impression_time=*/now, /*conversion_time=*/now)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(1u, reports.size());
-  EXPECT_EQ(100, reports[0].attribution_credit);
-}
-
-TEST_F(ConversionStorageDelegateImplTest,
-       TwoReportsForConversion_LastReceivesCredit) {
-  base::Time now = base::Time::Now();
-  std::vector<ConversionReport> reports = {
-      GetReport(/*impression_time=*/now, /*conversion_time=*/now),
-      GetReport(/*impression_time=*/now + base::TimeDelta::FromHours(100),
-                /*conversion_time=*/now)};
-  ConversionStorageDelegateImpl().ProcessNewConversionReports(&reports);
-  EXPECT_EQ(2u, reports.size());
-  EXPECT_EQ(0, reports[0].attribution_credit);
-  EXPECT_EQ(100, reports[1].attribution_credit);
-
-  // Ensure the reports were not rearranged.
-  EXPECT_EQ(now + base::TimeDelta::FromHours(100),
-            reports[1].impression.impression_time());
+            report.report_time);
 }
 
 }  // namespace content

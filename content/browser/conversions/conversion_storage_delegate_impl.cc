@@ -4,6 +4,8 @@
 
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
 
+#include <algorithm>
+
 namespace content {
 
 ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
@@ -11,25 +13,23 @@ ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-void ConversionStorageDelegateImpl::ProcessNewConversionReports(
-    std::vector<ConversionReport>* reports) {
+const StorableImpression&
+ConversionStorageDelegateImpl::GetImpressionToAttribute(
+    const std::vector<StorableImpression>& impressions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!reports->empty());
-  ConversionReport* last_report = &(reports->at(0));
+  DCHECK(!impressions.empty());
 
-  // Assign attribution credits to each report that will be sent at report time.
-  // This performs "last click" attribution which assigns the report
-  // for the most recent impression a credit of 100, and the rest a credit of 0.
-  for (ConversionReport& report : *reports) {
-    report.report_time = GetReportTimeForConversion(report);
+  return *std::max_element(
+      impressions.begin(), impressions.end(),
+      [](const StorableImpression& a, const StorableImpression& b) {
+        return a.impression_time() < b.impression_time();
+      });
+}
 
-    report.attribution_credit = 0;
-    if (report.impression.impression_time() >
-        last_report->impression.impression_time())
-      last_report = &report;
-  }
-
-  last_report->attribution_credit = 100;
+void ConversionStorageDelegateImpl::ProcessNewConversionReport(
+    ConversionReport& report) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  report.report_time = GetReportTimeForConversion(report);
 }
 
 int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression(

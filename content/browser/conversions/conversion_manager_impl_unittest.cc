@@ -214,7 +214,6 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
       /*conversion_time=*/clock().Now(),
       /*report_time=*/clock().Now() + kFirstReportingWindow,
       base::nullopt /* conversion_id */);
-  expected_report.attribution_credit = 100;
 
   base::RunLoop run_loop;
   auto reports_callback =
@@ -335,14 +334,12 @@ TEST_F(ConversionManagerImplTest, ClearData) {
 TEST_F(ConversionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  conversion_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   conversion_manager_->HandleConversion(DefaultConversion());
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
   conversion_manager_->SendReportsForWebUI(base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(0));
-  EXPECT_EQ(2u, test_reporter_->num_reports());
+  EXPECT_EQ(1u, test_reporter_->num_reports());
 }
 
 // TODO(crbug.com/1088449): Flaky on Linux and Android.

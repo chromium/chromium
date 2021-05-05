@@ -289,8 +289,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[1].innerText === "7" &&
-          table.children[0].children[6].innerText === "Navigation" &&
-          table.children[1].children[6].innerText === "Event") {
+          table.children[0].children[5].innerText === "Navigation" &&
+          table.children[1].children[5].innerText === "Event") {
         document.title = $1;
       }
     });

@@ -36,7 +36,7 @@ namespace {
 std::string GetReportUrl(std::string impression_data) {
   return base::StrCat(
       {"https://report.test/.well-known/register-conversion?impression-data=",
-       impression_data, "&conversion-data=", impression_data, "&credit=0"});
+       impression_data, "&conversion-data=", impression_data});
 }
 
 // Create a simple report where impression data/conversion data/conversion id
@@ -198,13 +198,12 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
                           /*conversion_id=*/1);
-  report.attribution_credit = 50;
   network_sender_->SendReport(&report, base::DoNothing());
 
   std::string expected_report_url(
       "https://a.com/.well-known/"
       "register-conversion?impression-data=impression&conversion-data="
-      "conversion&credit=50");
+      "conversion");
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       expected_report_url, ""));
 }
@@ -226,7 +225,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   const network::ResourceRequest* pending_request;
   std::string expected_report_url(
       "https://a.com/.well-known/"
-      "register-conversion?impression-data=1&conversion-data=1&credit=0");
+      "register-conversion?impression-data=1&conversion-data=1");
   EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_report_url,
                                                  &pending_request));
 

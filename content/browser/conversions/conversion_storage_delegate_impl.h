@@ -9,12 +9,13 @@
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 // Implementation of the storage delegate. This class handles assigning
-// attribution credits and report times to newly created conversion reports. It
+// report times to newly created conversion reports. It
 // also controls constants for ConversionStorage. This is owned by
 // ConversionStorageSql, and should only be accessed on the conversions storage
 // task runner.
@@ -29,8 +30,9 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   ~ConversionStorageDelegateImpl() override = default;
 
   // ConversionStorageDelegate:
-  void ProcessNewConversionReports(
-      std::vector<ConversionReport>* reports) override;
+  const StorableImpression& GetImpressionToAttribute(
+      const std::vector<StorableImpression>& impressions) override;
+  void ProcessNewConversionReport(ConversionReport& report) override;
   int GetMaxConversionsPerImpression(
       StorableImpression::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;

@@ -20,7 +20,6 @@ struct WebUIConversionReport {
   url.mojom.Origin conversion_origin;
   url.mojom.Origin reporting_origin;
   double report_time;
-  int32 attribution_credit;
   SourceType source_type;
 };
 

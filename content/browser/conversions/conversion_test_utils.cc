@@ -5,6 +5,7 @@
 #include "content/browser/conversions/conversion_test_utils.h"
 
 #include <limits.h>
+#include <algorithm>
 
 #include <tuple>
 
@@ -89,20 +90,21 @@ void ConfigurableConversionTestBrowserClient::
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
-void ConfigurableStorageDelegate::ProcessNewConversionReports(
-    std::vector<ConversionReport>* reports) {
-  // Note: reports are ordered by impression time, descending.
-  for (auto& report : *reports) {
-    report.report_time = report.impression.impression_time() +
-                         base::TimeDelta::FromMilliseconds(report_time_ms_);
+const StorableImpression& ConfigurableStorageDelegate::GetImpressionToAttribute(
+    const std::vector<StorableImpression>& impressions) {
+  DCHECK(!impressions.empty());
 
-    // If attribution credits were provided, associate them with reports
-    // in order.
-    if (!attribution_credits_.empty()) {
-      report.attribution_credit = attribution_credits_.front();
-      attribution_credits_.pop_front();
-    }
-  }
+  return *std::max_element(
+      impressions.begin(), impressions.end(),
+      [](const StorableImpression& a, const StorableImpression& b) {
+        return a.impression_time() < b.impression_time();
+      });
+}
+
+void ConfigurableStorageDelegate::ProcessNewConversionReport(
+    ConversionReport& report) {
+  report.report_time = report.impression.impression_time() +
+                       base::TimeDelta::FromMilliseconds(report_time_ms_);
 }
 int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
     StorableImpression::SourceType source_type) const {
@@ -287,8 +289,7 @@ testing::AssertionResult ReportsEqual(
                            conversion.impression.reporting_origin(),
                            conversion.impression.impression_time(),
                            conversion.impression.expiry_time(),
-                           conversion.conversion_data, conversion.report_time,
-                           conversion.attribution_credit);
+                           conversion.conversion_data, conversion.report_time);
   };
 
   if (expected.size() != actual.size())

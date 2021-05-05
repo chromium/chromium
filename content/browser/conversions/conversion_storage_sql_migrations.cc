@@ -82,6 +82,10 @@ bool ConversionStorageSqlMigrations::UpgradeSchema(
     if (!MigrateToVersion4(conversion_storage, db, meta_table))
       return false;
   }
+  if (meta_table->GetVersionNumber() == 4) {
+    if (!MigrateToVersion5(conversion_storage, db, meta_table))
+      return false;
+  }
   // Add similar if () blocks for new versions here.
 
   base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
@@ -306,6 +310,32 @@ bool ConversionStorageSqlMigrations::MigrateToVersion4(
     return false;
 
   meta_table->SetVersionNumber(4);
+  return transaction.Commit();
+}
+
+bool ConversionStorageSqlMigrations::MigrateToVersion5(
+    ConversionStorageSql* conversion_storage,
+    sql::Database* db,
+    sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Any corresponding impressions will naturally be cleaned up by the expiry
+  // logic.
+  const char kDropZeroCreditConversionsSql[] =
+      "DELETE FROM conversions WHERE attribution_credit = 0";
+  if (!db->Execute(kDropZeroCreditConversionsSql))
+    return false;
+
+  const char kDropAttributionCreditColumnSql[] =
+      "ALTER TABLE conversions DROP COLUMN attribution_credit";
+  if (!db->Execute(kDropAttributionCreditColumnSql))
+    return false;
+
+  meta_table->SetVersionNumber(5);
   return transaction.Commit();
 }
 

@@ -107,8 +107,7 @@ function createReportRow(report) {
   td[2].textContent = UrlToText(report.conversionOrigin);
   td[3].textContent = UrlToText(report.reportingOrigin);
   td[4].textContent = new Date(report.reportTime).toLocaleString();
-  td[5].textContent = report.attributionCredit;
-  td[6].textContent = SourceTypeToText(report.sourceType);
+  td[5].textContent = SourceTypeToText(report.sourceType);
   return document.importNode(template.content, true);
 }
 

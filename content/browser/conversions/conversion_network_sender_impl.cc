@@ -74,10 +74,9 @@ GURL GetReportUrl(const content::ConversionReport& report) {
   url::Replacements<char> replacements;
   const char kEndpointPath[] = "/.well-known/register-conversion";
   replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  std::string query = base::StrCat(
-      {"impression-data=", report.impression.impression_data(),
-       "&conversion-data=", report.conversion_data,
-       "&credit=", base::NumberToString(report.attribution_credit)});
+  std::string query =
+      base::StrCat({"impression-data=", report.impression.impression_data(),
+                    "&conversion-data=", report.conversion_data});
   replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
   return report.impression.reporting_origin().GetURL().ReplaceComponents(
       replacements);

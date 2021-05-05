@@ -46,12 +46,6 @@ struct CONTENT_EXPORT ConversionReport {
   // the purposes of logging metrics.
   base::TimeDelta extra_delay;
 
-  // The attribution credit assigned to this conversion report. This is derived
-  // from the set of all impressions that matched a singular conversion event.
-  // This should be in the range 0-100. A set of ConversionReports for one
-  // conversion event should have their |attribution_credit| sum equal to 100.
-  int attribution_credit = 0;
-
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
   const base::Optional<int64_t> conversion_id;

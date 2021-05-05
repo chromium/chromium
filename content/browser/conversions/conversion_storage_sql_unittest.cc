@@ -255,10 +255,10 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
   }
 
   EXPECT_EQ(
-      10, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_EQ(
-      10, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
@@ -282,9 +282,9 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
   EXPECT_EQ(0u, rate_limit_rows);
 
   histograms.ExpectUniqueSample(
-      "Conversions.ImpressionsDeletedInDataClearOperation", 10, 1);
+      "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.ReportsDeletedInDataClearOperation", 20, 1);
+      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
 }
 
 TEST_F(ConversionStorageSqlTest, MaxImpressionsPerOrigin) {
@@ -294,14 +294,14 @@ TEST_F(ConversionStorageSqlTest, MaxImpressionsPerOrigin) {
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   EXPECT_EQ(
-      2, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 
   CloseDatabase();
   sql::Database raw_db;
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t impression_rows;
   sql::test::CountTableRows(&raw_db, "impressions", &impression_rows);
-  EXPECT_EQ(2u, impression_rows);
+  EXPECT_EQ(1u, impression_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
   EXPECT_EQ(1u, rate_limit_rows);
