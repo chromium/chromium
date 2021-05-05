@@ -782,9 +782,11 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const base::Optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
-  // The primary surface is unavailable and there is no fallback
-  // surface specified so create a SolidColorDrawQuad with the default
-  // background color.
+  TRACE_EVENT1("viz", "SurfaceAggregator::EmitDefaultBackgroundColorQuad",
+               "surface_range", surface_quad->surface_range.ToString());
+
+  // No matching surface was found so create a SolidColorDrawQuad with the
+  // SurfaceDrawQuad default background color.
   SkColor background_color = surface_quad->default_background_color;
   auto* shared_quad_state =
       CopySharedQuadState(surface_quad->shared_quad_state, target_transform,
