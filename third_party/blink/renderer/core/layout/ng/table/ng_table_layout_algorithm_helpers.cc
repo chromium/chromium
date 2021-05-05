@@ -100,9 +100,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       }
     } break;
     case kPercentageGuess: {
-      // Percent columns grow in proportion to difference between their
-      // percentage size and minimum size.
-      // Auto/Fixed columns get min inline size.
+      // Percent columns grow, auto/fixed get min inline size.
       LayoutUnit percent_inline_size_increases =
           guess_size_total_increases[kPercentageGuess];
       LayoutUnit distributable_inline_size =
@@ -296,10 +294,8 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           *last_computed_size += rounding_error_inline_size;
         }
       } else if (percent_columns_count > 0) {
-        // All remaining columns are percent.
-        // They grow to max(col minimum, %ge size) + additional size
-        // proportional to column percent.
-        LayoutUnit rounding_error_inline_size = distributable_inline_size;
+        // All remaining columns are percent. Grow them.
+        LayoutUnit rounding_error_inline_size = target_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
         for (const NGTableTypes::Column* column = start_column;
@@ -308,18 +304,13 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             continue;
           DCHECK(column->percent);
           last_computed_size = computed_size;
-          LayoutUnit percent_inline_size =
-              column->ResolvePercentInlineSize(target_inline_size);
-          LayoutUnit delta;
-          if (total_percent != 0.0f) {
-            delta = LayoutUnit(distributable_inline_size * *column->percent /
-                               total_percent);
+          if (total_percent > 0.0f) {
+            *computed_size = LayoutUnit(*column->percent / total_percent *
+                                        target_inline_size);
           } else {
-            delta = LayoutUnit(distributable_inline_size.ToFloat() /
-                               percent_columns_count);
+            *computed_size = distributable_inline_size / percent_columns_count;
           }
-          rounding_error_inline_size -= delta;
-          *computed_size = percent_inline_size + delta;
+          rounding_error_inline_size -= *computed_size;
         }
         if (rounding_error_inline_size != LayoutUnit()) {
           DCHECK(last_computed_size);
