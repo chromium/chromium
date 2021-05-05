@@ -60,21 +60,30 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   // Returns false for nullptr.
   static bool IsManagedByNonBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+    static_assert(
+        std::numeric_limits<uintptr_t>::max() / PageAllocationGranularity() <
+            non_brp_pool_bits_.size(),
+        "The bitmap is too small, will result in unchecked out of bounds "
+        "accesses.");
     // It is safe to read |non_brp_pool_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(non_brp_pool_bits_)
-        .test(address_as_uintptr / PageAllocationGranularity());
+    return TS_UNCHECKED_READ(
+        non_brp_pool_bits_)[address_as_uintptr / PageAllocationGranularity()];
   }
 
   // Returns false for nullptr.
   static bool IsManagedByBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+    static_assert(std::numeric_limits<uintptr_t>::max() >>
+                      kBitShiftOfBRPPoolBitmap < brp_pool_bits_.size(),
+                  "The bitmap is too small, will result in unchecked out of "
+                  "bounds accesses.");
     // It is safe to read |brp_pool_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(brp_pool_bits_)
-        .test(address_as_uintptr >> kBitShiftOfBRPPoolBitmap);
+    return TS_UNCHECKED_READ(
+        brp_pool_bits_)[address_as_uintptr >> kBitShiftOfBRPPoolBitmap];
   }
 
 #if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
