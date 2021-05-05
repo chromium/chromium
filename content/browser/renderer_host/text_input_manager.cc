@@ -88,6 +88,27 @@ gfx::Range TextInputManager::GetAutocorrectRange() const {
   return gfx::Range();
 }
 
+base::Optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
+    gfx::Range range) const {
+  if (!active_view_)
+    return base::nullopt;
+
+  for (const auto& ime_text_span_info :
+       text_input_state_map_.at(active_view_)->ime_text_spans_info) {
+    if (ime_text_span_info->span.type ==
+            ui::ImeTextSpan::Type::kGrammarSuggestion &&
+        ime_text_span_info->span.suggestions.size() > 0) {
+      auto span_range = gfx::Range(ime_text_span_info->span.start_offset,
+                                   ime_text_span_info->span.end_offset);
+      if (span_range.Contains(range)) {
+        return ui::GrammarFragment(span_range,
+                                   ime_text_span_info->span.suggestions[0]);
+      }
+    }
+  }
+  return base::nullopt;
+}
+
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
     RenderWidgetHostViewBase* view) const {
   DCHECK(!view || IsRegistered(view));

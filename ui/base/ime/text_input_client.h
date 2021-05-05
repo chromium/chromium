@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -265,6 +266,21 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Returns true if the operation was successful. If |range| is invalid, then
   // no modifications are made and this function returns false.
   virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
+
+  // Returns the grammar fragment which contains |range|. If non-existent,
+  // returns an empty Fragment.
+  virtual base::Optional<GrammarFragment> GetGrammarFragment(
+      const gfx::Range& range);
+
+  // Clears all the grammar fragments in |range|, returns whether the operation
+  // is successful. Should return true if the there is no fragment in the range.
+  virtual bool ClearGrammarFragments(const gfx::Range& range);
+
+  // Adds new grammar markers according to |fragments|. Clients should show
+  // some visual indications such as underlining. Returns whether the operation
+  // is successful.
+  virtual bool AddGrammarFragments(
+      const std::vector<GrammarFragment>& fragments);
 #endif
 
 #if defined(OS_WIN)

@@ -642,7 +642,7 @@ bool ArcImeService::SetCompositionFromExistingText(
 }
 
 gfx::Range ArcImeService::GetAutocorrectRange() const {
-  // TODO(https:://crbug.com/1091088): Implement this method.
+  // TODO(https://crbug.com/1091088): Implement this method.
   return gfx::Range();
 }
 
@@ -669,7 +669,27 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
           TextInputClient::SubClass::kArcImeService);
     }
   }
-  // TODO(https:://crbug.com/1091088): Implement this method.
+  // TODO(https://crbug.com/1091088): Implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+base::Optional<ui::GrammarFragment> ArcImeService::GetGrammarFragment(
+    const gfx::Range& range) {
+  // TODO(https://crbug.com/1201454): Implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return base::nullopt;
+}
+
+bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
+  // TODO(https://crbug.com/1201454): Implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+bool ArcImeService::AddGrammarFragments(
+    const std::vector<ui::GrammarFragment>& fragments) {
+  // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

@@ -21,6 +21,8 @@ component("ime_types") {
     "candidate_window.h",
     "composition_text.cc",
     "composition_text.h",
+    "grammar_fragment.cc",
+    "grammar_fragment.h",
     "ime_text_span.cc",
     "ime_text_span.h",
     "infolist_entry.cc",
