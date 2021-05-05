@@ -8,6 +8,8 @@
 
 var goog = {};
 
+goog.addDependency = function() {};
+
 goog.provide = function(n) {
   globalThis[n] = {};
 };
