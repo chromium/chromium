@@ -14470,6 +14470,11 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Cache hit, but the entry was stale"/>
 </enum>
 
+<enum name="CpuAffinityMode">
+  <int value="0" label="kDefault"/>
+  <int value="1" label="kLittleCoresOnly"/>
+</enum>
+
 <enum name="CpuTimeMetricsThreadType">
   <summary>Thread types used for CPU time metric breakdowns.</summary>
   <int value="0" label="UnattributedThread">
