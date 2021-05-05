@@ -360,6 +360,16 @@
       "chromium_builder_asan"
     ]
   },
+  "TSAN Release (core-32) (goma)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
+  "TSAN Release (core-32) (reclient)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
   "TSAN Release (deps-cache) (reclient)": {
     "additional_compile_targets": [
       "chromium_builder_asan"

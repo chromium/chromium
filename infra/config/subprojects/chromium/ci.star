@@ -3568,6 +3568,37 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "TSAN Release (core-32) (goma)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux tsan",
+        short_name = "rre",
+    ),
+    cores = 32,
+    goma_jobs = 250,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
+)
+
+ci.fyi_builder(
+    name = "TSAN Release (core-32) (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux tsan",
+        short_name = "rre",
+    ),
+    cores = 32,
+    goma_backend = None,
+    reclient_instance = "rbe-chromium-trusted",
+    reclient_jobs = 250,
+    reclient_rewrapper_env = {"RBE_cache_silo": "TSAN Release (core-32) (reclient)"},
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
+)
+
+ci.fyi_builder(
     name = "TSAN Release (deps-cache) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
