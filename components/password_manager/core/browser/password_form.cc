@@ -289,7 +289,7 @@ std::ostream& operator<<(std::ostream& os, const PasswordForm& form) {
        !it_default_key_values.IsAtEnd(); it_default_key_values.Advance()) {
     const base::Value* actual_value;
     if (form_json.Get(it_default_key_values.key(), &actual_value) &&
-        it_default_key_values.value().Equals(actual_value)) {
+        it_default_key_values.value() == *actual_value) {
       form_json.Remove(it_default_key_values.key(), nullptr);
     }
   }
