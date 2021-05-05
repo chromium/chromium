@@ -98,7 +98,7 @@ class Value;
 //
 // Migrating code will require conversions on API boundaries. This can be done
 // cheaply by making use of overloaded base::Value constructors and the
-// Value::TakeList() and Value::TakeDict() APIs.
+// `Value::TakeList()` and `Value::TakeDict()` APIs.
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
@@ -177,7 +177,7 @@ class BASE_EXPORT Value {
 
   ~Value();
 
-  // Returns the name for a given |type|.
+  // Returns the name for a given `type`.
   static const char* GetTypeName(Type type);
 
   // Returns the type of the value stored by the current Value object.
@@ -211,18 +211,18 @@ class BASE_EXPORT Value {
 
   // Returns the Values in a list as a view. The mutable overload allows for
   // modification of the underlying values, but does not allow changing the
-  // structure of the list. If this is desired, use TakeList(), perform the
+  // structure of the list. If this is desired, use `TakeList()`, perform the
   // operations, and return the list back to the Value via move assignment.
   ListView GetList();
   ConstListView GetList() const;
 
   // Transfers ownership of the underlying list to the caller. Subsequent
-  // calls to GetList() will return an empty list.
-  // Note: This requires that type() is Type::LIST.
+  // calls to `GetList()` will return an empty list.
+  // Note: This requires that `type()` is Type::LIST.
   ListStorage TakeList();
 
-  // Appends |value| to the end of the list.
-  // Note: These CHECK that type() is Type::LIST.
+  // Appends `value` to the end of the list.
+  // Note: These CHECK that `type()` is Type::LIST.
   void Append(bool value);
   void Append(int value);
   void Append(double value);
@@ -232,7 +232,7 @@ class BASE_EXPORT Value {
   void Append(std::string&& value);
   void Append(const char16_t* value);
 
-  // Disable Append() from other pointers, so that there is no silent
+  // Disable `Append()` from other pointers, so that there is no silent
   // conversion to bool.
   template <typename T,
             typename = std::enable_if_t<
@@ -243,67 +243,67 @@ class BASE_EXPORT Value {
   void Append(StringPiece16 value);
   void Append(Value&& value);
 
-  // Inserts |value| before |pos|.
-  // Note: This CHECK that type() is Type::LIST.
+  // Inserts `value` before `pos`.
+  // Note: This CHECK that `type()` is Type::LIST.
   CheckedContiguousIterator<Value> Insert(
       CheckedContiguousConstIterator<Value> pos,
       Value&& value);
 
-  // Erases the Value pointed to by |iter|. Returns false if |iter| is out of
+  // Erases the Value pointed to by `iter`. Returns false if `iter` is out of
   // bounds.
-  // Note: This requires that type() is Type::LIST.
+  // Note: This requires that `type()` is Type::LIST.
   bool EraseListIter(CheckedContiguousConstIterator<Value> iter);
 
-  // Erases all Values that compare equal to |val|. Returns the number of
+  // Erases all Values that compare equal to `val`. Returns the number of
   // deleted Values.
-  // Note: This requires that type() is Type::LIST.
+  // Note: This requires that `type()` is Type::LIST.
   size_t EraseListValue(const Value& val);
 
-  // Erases all Values for which |pred| returns true. Returns the number of
+  // Erases all Values for which `pred` returns true. Returns the number of
   // deleted Values.
-  // Note: This requires that type() is Type::LIST.
+  // Note: This requires that `type()` is Type::LIST.
   template <typename Predicate>
   size_t EraseListValueIf(Predicate pred) {
     return base::EraseIf(list(), pred);
   }
 
   // Erases all Values from the list.
-  // Note: This requires that type() is Type::LIST.
+  // Note: This requires that `type()` is Type::LIST.
   void ClearList();
 
-  // |FindKey| looks up |key| in the underlying dictionary. If found, it returns
+  // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
   // a pointer to the element. Otherwise it returns nullptr.
   // returned. Callers are expected to perform a check against null before using
   // the pointer.
-  // Note: This requires that type() is Type::DICTIONARY.
+  // Note: This requires that `type()` is Type::DICTIONARY.
   //
   // Example:
   //   auto* found = FindKey("foo");
   Value* FindKey(StringPiece key);
   const Value* FindKey(StringPiece key) const;
 
-  // |FindKeyOfType| is similar to |FindKey|, but it also requires the found
-  // value to have type |type|. If no type is found, or the found value is of a
+  // `FindKeyOfType` is similar to `FindKey`, but it also requires the found
+  // value to have type `type`. If no type is found, or the found value is of a
   // different type nullptr is returned.
   // Callers are expected to perform a check against null before using the
   // pointer.
-  // Note: This requires that type() is Type::DICTIONARY.
+  // Note: This requires that `type()` is Type::DICTIONARY.
   //
   // Example:
   //   auto* found = FindKey("foo", Type::DOUBLE);
   Value* FindKeyOfType(StringPiece key, Type type);
   const Value* FindKeyOfType(StringPiece key, Type type) const;
 
-  // These are convenience forms of |FindKey|. They return |base::nullopt| if
+  // These are convenience forms of `FindKey`. They return `base`:nullopt| if
   // the value is not found or doesn't have the type specified in the
   // function's name.
   base::Optional<bool> FindBoolKey(StringPiece key) const;
   base::Optional<int> FindIntKey(StringPiece key) const;
-  // Note FindDoubleKey() will auto-convert INTEGER keys to their double
-  // value, for consistency with GetDouble().
+  // Note `FindDoubleKey()` will auto-convert INTEGER keys to their double
+  // value, for consistency with `GetDouble()`.
   base::Optional<double> FindDoubleKey(StringPiece key) const;
 
-  // |FindStringKey| returns |nullptr| if value is not found or not a string.
+  // `FindStringKey` returns `nullptr` if value is not found or not a string.
   const std::string* FindStringKey(StringPiece key) const;
   std::string* FindStringKey(StringPiece key);
 
@@ -318,11 +318,11 @@ class BASE_EXPORT Value {
   const Value* FindListKey(StringPiece key) const;
   Value* FindListKey(StringPiece key);
 
-  // |SetKey| looks up |key| in the underlying dictionary and sets the mapped
-  // value to |value|. If |key| could not be found, a new element is inserted.
+  // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
+  // value to `value`. If `key` could not be found, a new element is inserted.
   // A pointer to the modified item is returned.
-  // Note: This requires that type() is Type::DICTIONARY.
-  // Note: Prefer Set<Type>Key() for simple values.
+  // Note: This requires that `type()` is Type::DICTIONARY.
+  // Note: Prefer `Set<Type>Key()` for simple values.
   //
   // Example:
   //   SetKey("foo", std::move(myvalue));
@@ -332,9 +332,9 @@ class BASE_EXPORT Value {
   // This overload is necessary to avoid ambiguity for const char* arguments.
   Value* SetKey(const char* key, Value&& value);
 
-  // |Set<Type>Key| looks up |key| in the underlying dictionary and associates
-  // a corresponding Value() constructed from the second parameter. Compared
-  // to SetKey(), this avoids un-necessary temporary Value() creation, as well
+  // `Set`Type>Key` looks up `key` in the underlying dictionary and associates a
+  // corresponding Value() constructed from the second parameter. Compared to
+  // `SetKey()`, this avoids un-necessary temporary `Value()` creation, as well
   // ambiguities in the value type.
   Value* SetBoolKey(StringPiece key, bool val);
   Value* SetIntKey(StringPiece key, int val);
@@ -346,21 +346,21 @@ class BASE_EXPORT Value {
   Value* SetStringKey(StringPiece key, const char* val);
   Value* SetStringKey(StringPiece key, std::string&& val);
 
-  // This attempts to remove the value associated with |key|. In case of
+  // This attempts to remove the value associated with `key`. In case of
   // failure, e.g. the key does not exist, false is returned and the underlying
-  // dictionary is not changed. In case of success, |key| is deleted from the
+  // dictionary is not changed. In case of success, `key` is deleted from the
   // dictionary and the method returns true.
-  // Note: This requires that type() is Type::DICTIONARY.
+  // Note: This requires that `type()` is Type::DICTIONARY.
   //
   // Example:
   //   bool success = dict.RemoveKey("foo");
   bool RemoveKey(StringPiece key);
 
-  // This attempts to extract the value associated with |key|. In case of
+  // This attempts to extract the value associated with `key`. In case of
   // failure, e.g. the key does not exist, nullopt is returned and the
-  // underlying dictionary is not changed. In case of success, |key| is deleted
+  // underlying dictionary is not changed. In case of success, `key` is deleted
   // from the dictionary and the method returns the extracted Value.
-  // Note: This requires that type() is Type::DICTIONARY.
+  // Note: This requires that `type()` is Type::DICTIONARY.
   //
   // Example:
   //   Optional<Value> maybe_value = dict.ExtractKey("foo");
@@ -388,7 +388,7 @@ class BASE_EXPORT Value {
   // span<const StringPiece>. The latter is useful to use a
   // std::vector<std::string> as a parameter but creates huge dynamic
   // allocations and should be avoided!
-  // Note: If there is only one component in the path, use FindKey() instead.
+  // Note: If there is only one component in the path, use `FindKey()` instead.
   //
   // Example:
   //   std::vector<StringPiece> components = ...
@@ -400,9 +400,9 @@ class BASE_EXPORT Value {
 
   // Like FindPath() but will only return the value if the leaf Value type
   // matches the given type. Will return nullptr otherwise.
-  // Note: Prefer Find<Type>Path() for simple values.
+  // Note: Prefer `Find<Type>Path()` for simple values.
   //
-  // Note: If there is only one component in the path, use FindKeyOfType()
+  // Note: If there is only one component in the path, use `FindKeyOfType()`
   // instead for slightly better performance.
   Value* FindPathOfType(StringPiece path, Type type);
   const Value* FindPathOfType(StringPiece path, Type type) const;
@@ -440,8 +440,8 @@ class BASE_EXPORT Value {
   // Example:
   //   value.SetPath("foo.bar", std::move(myvalue));
   //
-  // Note: If there is only one component in the path, use SetKey() instead.
-  // Note: Using Set<Type>Path() might be more convenient and efficient.
+  // Note: If there is only one component in the path, use `SetKey()` instead.
+  // Note: Using `Set<Type>Path()` might be more convenient and efficient.
   Value* SetPath(StringPiece path, Value&& value);
 
   // These setters are more convenient and efficient than the corresponding
@@ -454,7 +454,7 @@ class BASE_EXPORT Value {
   Value* SetStringPath(StringPiece path, std::string&& value);
   Value* SetStringPath(StringPiece path, StringPiece16 value);
 
-  // Deprecated: use the ones that take a StringPiece path parameter instead.
+  // Deprecated: use the `SetPath(StringPiece, ...)` methods above instead.
   Value* SetPath(std::initializer_list<StringPiece> path, Value&& value);
   Value* SetPath(span<const StringPiece> path, Value&& value);
 
@@ -462,9 +462,10 @@ class BASE_EXPORT Value {
   //
   // If the current value is not a dictionary or any path component does not
   // exist, this operation fails, leaves underlying Values untouched and returns
-  // |false|. In case intermediate dictionaries become empty as a result of this
+  // `false`. In case intermediate dictionaries become empty as a result of this
   // path removal, they will be removed as well.
-  // Note: If there is only one component in the path, use ExtractKey() instead.
+  // Note: If there is only one component in the path, use `ExtractKey()`
+  // instead.
   //
   // Example:
   //   bool success = value.RemovePath("foo.bar");
@@ -477,7 +478,8 @@ class BASE_EXPORT Value {
   // nullopt. In case intermediate dictionaries become empty as a result of this
   // path removal, they will be removed as well. Returns the extracted value on
   // success.
-  // Note: If there is only one component in the path, use ExtractKey() instead.
+  // Note: If there is only one component in the path, use `ExtractKey()`
+  // instead.
   //
   // Example:
   //   Optional<Value> maybe_value = value.ExtractPath("foo.bar");
@@ -486,58 +488,59 @@ class BASE_EXPORT Value {
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;
 
-  // |DictItems| returns a proxy object that exposes iterators to the underlying
+  // `DictItems` returns a proxy object that exposes iterators to the underlying
   // dictionary. These are intended for iteration over all items in the
   // dictionary and are compatible with for-each loops and standard library
   // algorithms.
   //
-  // Unlike with std::map, a range-for over the non-const version of DictItems()
-  // will range over items of type pair<const std::string&, Value&>, so code of
-  // the form
+  // Unlike with std::map, a range-for over the non-const version of
+  // `DictItems()` will range over items of type
+  // `pair<const std::string&, Value&>`, so code of the form
   //   for (auto kv : my_value.DictItems())
   //     Mutate(kv.second);
-  // will actually alter |my_value| in place (if it isn't const).
+  // will actually alter `my_value` in place (if it isn't const).
   //
-  // Note: These CHECK that type() is Type::DICTIONARY.
+  // Note: These CHECK that `type()` is Type::DICTIONARY.
   dict_iterator_proxy DictItems();
   const_dict_iterator_proxy DictItems() const;
 
   // Transfers ownership of the underlying dict to the caller. Subsequent
   // calls to DictItems() will return an empty dict.
-  // Note: This requires that type() is Type::DICTIONARY.
+  // Note: This requires that `type()` is Type::DICTIONARY.
   DictStorage TakeDict();
 
   // Returns the size of the dictionary, if the dictionary is empty, and clears
-  // the dictionary. Note: These CHECK that type() is Type::DICTIONARY.
+  // the dictionary. Note: These CHECK that `type()` is Type::DICTIONARY.
   size_t DictSize() const;
   bool DictEmpty() const;
   void DictClear();
 
-  // Merge |dictionary| into this value. This is done recursively, i.e. any
+  // Merge `dictionary` into this value. This is done recursively, i.e. any
   // sub-dictionaries will be merged as well. In case of key collisions, the
   // passed in dictionary takes precedence and data already present will be
-  // replaced. Values within |dictionary| are deep-copied, so |dictionary| may
+  // replaced. Values within `dictionary` are deep-copied, so `dictionary` may
   // be freed any time after this call.
-  // Note: This requires that type() and dictionary->type() is Type::DICTIONARY.
+  // Note: This requires that `type()` and `dictionary->type()` is
+  // Type::DICTIONARY.
   void MergeDictionary(const Value* dictionary);
 
   // These methods allow the convenient retrieval of the contents of the Value.
   // If the current object can be converted into the given type, the value is
-  // returned through the |out_value| parameter and true is returned;
-  // otherwise, false is returned and |out_value| is unchanged.
-  // DEPRECATED, use GetIfBool() instead.
+  // returned through the `out_value` parameter and true is returned;
+  // otherwise, false is returned and `out_value` is unchanged.
+  // DEPRECATED, use `GetIfBool()` instead.
   bool GetAsBoolean(bool* out_value) const;
-  // DEPRECATED, use GetIfInt() instead.
+  // DEPRECATED, use `GetIfInt()` instead.
   bool GetAsInteger(int* out_value) const;
-  // DEPRECATED, use GetIfDouble() instead.
+  // DEPRECATED, use `GetIfDouble()` instead.
   bool GetAsDouble(double* out_value) const;
-  // DEPRECATED, use GetIfString() instead.
+  // DEPRECATED, use `GetIfString()` instead.
   bool GetAsString(std::string* out_value) const;
   bool GetAsString(std::u16string* out_value) const;
   bool GetAsString(const Value** out_value) const;
   bool GetAsString(StringPiece* out_value) const;
   // ListValue::From is the equivalent for std::unique_ptr conversions.
-  // DEPRECATED, use is_list() instead.
+  // DEPRECATED, use `is_list()` instead.
   bool GetAsList(ListValue** out_value);
   bool GetAsList(const ListValue** out_value) const;
   // DictionaryValue::From is the equivalent for std::unique_ptr conversions.
@@ -549,10 +552,10 @@ class BASE_EXPORT Value {
   // to the copy. The caller gets ownership of the copy, of course.
   // Subclasses return their own type directly in their overrides;
   // this works because C++ supports covariant return types.
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   Value* DeepCopy() const;
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<Value> CreateDeepCopy() const;
 
@@ -566,7 +569,7 @@ class BASE_EXPORT Value {
   BASE_EXPORT friend bool operator>=(const Value& lhs, const Value& rhs);
 
   // Compares if two Value objects have equal contents.
-  // DEPRECATED, use operator==(const Value& lhs, const Value& rhs) instead.
+  // DEPRECATED, use `operator==(const Value& lhs, const Value& rhs)` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   bool Equals(const Value* other) const;
 
@@ -632,13 +635,13 @@ class BASE_EXPORT Value {
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"
 // parsing for recursive access; see the comment at the top of the file. Keys
-// are |std::string|s and should be UTF-8 encoded.
+// are `std`:string|s and should be UTF-8 encoded.
 class BASE_EXPORT DictionaryValue : public Value {
  public:
   using const_iterator = LegacyDictStorage::const_iterator;
   using iterator = LegacyDictStorage::iterator;
 
-  // Returns |value| if it is a dictionary, nullptr otherwise.
+  // Returns `value` if it is a dictionary, nullptr otherwise.
   static std::unique_ptr<DictionaryValue> From(std::unique_ptr<Value> value);
 
   DictionaryValue();
@@ -646,7 +649,7 @@ class BASE_EXPORT DictionaryValue : public Value {
   explicit DictionaryValue(LegacyDictStorage&& in_dict) noexcept;
 
   // Returns true if the current dictionary has a value for the given key.
-  // DEPRECATED, use Value::FindKey(key) instead.
+  // DEPRECATED, use `Value::FindKey(key)` instead.
   bool HasKey(StringPiece key) const;
 
   // Returns the number of Values in this dictionary.
@@ -656,7 +659,7 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool empty() const { return dict().empty(); }
 
   // Clears any current contents of this dictionary.
-  // DEPRECATED, use Value::DictClear() instead.
+  // DEPRECATED, use `Value::DictClear()` instead.
   void Clear();
 
   // Sets the Value associated with the given path starting from this object.
@@ -665,32 +668,32 @@ class BASE_EXPORT DictionaryValue : public Value {
   // within a key, but there are no other restrictions on keys.
   // If the key at any step of the way doesn't exist, or exists but isn't
   // a DictionaryValue, a new DictionaryValue will be created and attached
-  // to the path in that location. |in_value| must be non-null.
+  // to the path in that location. `in_value` must be non-null.
   // Returns a pointer to the inserted value.
-  // DEPRECATED, use Value::SetPath(path, value) instead.
+  // DEPRECATED, use `Value::SetPath(path, value)` instead.
   Value* Set(StringPiece path, std::unique_ptr<Value> in_value);
 
   // Convenience forms of Set().  These methods will replace any existing
   // value at that path, even if it has a different type.
-  // DEPRECATED, use Value::SetBoolKey() or Value::SetBoolPath().
+  // DEPRECATED, use `Value::SetBoolKey()` or `Value::SetBoolPath()`.
   Value* SetBoolean(StringPiece path, bool in_value);
-  // DEPRECATED, use Value::SetIntPath().
+  // DEPRECATED, use `Value::SetIntPath()`.
   Value* SetInteger(StringPiece path, int in_value);
-  // DEPRECATED, use Value::SetDoublePath().
+  // DEPRECATED, use `Value::SetDoublePath()`.
   Value* SetDouble(StringPiece path, double in_value);
-  // DEPRECATED, use Value::SetStringPath().
+  // DEPRECATED, use `Value::SetStringPath()`.
   Value* SetString(StringPiece path, StringPiece in_value);
-  // DEPRECATED, use Value::SetStringPath().
+  // DEPRECATED, use `Value::SetStringPath()`.
   Value* SetString(StringPiece path, const std::u16string& in_value);
-  // DEPRECATED, use Value::SetPath().
+  // DEPRECATED, use `Value::SetPath()`.
   DictionaryValue* SetDictionary(StringPiece path,
                                  std::unique_ptr<DictionaryValue> in_value);
-  // DEPRECATED, use Value::SetPath().
+  // DEPRECATED, use `Value::SetPath()`.
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths.
-  // DEPRECATED, use Value::SetKey(key, value) instead.
+  // DEPRECATED, use `Value::SetKey(key, value)` instead.
   Value* SetWithoutPathExpansion(StringPiece key,
                                  std::unique_ptr<Value> in_value);
 
@@ -698,111 +701,114 @@ class BASE_EXPORT DictionaryValue : public Value {
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
   // into the next DictionaryValue down.  If the path can be resolved
   // successfully, the value for the last key in the path will be returned
-  // through the |out_value| parameter, and the function will return true.
-  // Otherwise, it will return false and |out_value| will be untouched.
+  // through the `out_value` parameter, and the function will return true.
+  // Otherwise, it will return false and `out_value` will be untouched.
   // Note that the dictionary always owns the value that's returned.
-  // |out_value| is optional and will only be set if non-NULL.
-  // DEPRECATED, use Value::FindPath(path) instead.
+  // `out_value` is optional and will only be set if non-NULL.
+  // DEPRECATED, use `Value::FindPath(path)` instead.
   bool Get(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use Value::FindPath(path) instead.
+  // DEPRECATED, use `Value::FindPath(path)` instead.
   bool Get(StringPiece path, Value** out_value);
 
-  // These are convenience forms of Get().  The value will be retrieved
+  // These are convenience forms of `Get()`.  The value will be retrieved
   // and the return value will be true if the path is valid and the value at
   // the end of the path can be returned in the form specified.
-  // |out_value| is optional and will only be set if non-NULL.
-  // DEPRECATED, use Value::FindBoolPath(path) instead.
+  // `out_value` is optional and will only be set if non-NULL.
+  // DEPRECATED, use `Value::FindBoolPath(path)` instead.
   bool GetBoolean(StringPiece path, bool* out_value) const;
-  // DEPRECATED, use Value::FindIntPath(path) instead.
+  // DEPRECATED, use `Value::FindIntPath(path)` instead.
   bool GetInteger(StringPiece path, int* out_value) const;
   // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
   // doubles.
-  // DEPRECATED, use Value::FindDoublePath(path).
+  // DEPRECATED, use `Value::FindDoublePath(path)`.
   bool GetDouble(StringPiece path, double* out_value) const;
-  // DEPRECATED, use Value::FindStringPath(path) instead.
+  // DEPRECATED, use `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use Value::FindStringPath(path) instead.
+  // DEPRECATED, use `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::u16string* out_value) const;
-  // DEPRECATED, use Value::FindString(path) and IsAsciiString() instead.
+  // DEPRECATED, use `Value::FindString(path)` and `IsAsciiString()` instead.
   bool GetStringASCII(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use Value::FindBlobPath(path) instead.
+  // DEPRECATED, use `Value::FindBlobPath(path)` instead.
   bool GetBinary(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use Value::FindBlobPath(path) instead.
+  // DEPRECATED, use `Value::FindBlobPath(path)` instead.
   bool GetBinary(StringPiece path, Value** out_value);
-  // DEPRECATED, use Value::FindPath(path) and Value's Dictionary API instead.
+  // DEPRECATED, use `Value::FindPath(path)` and Value's Dictionary API
+  // instead.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
-  // DEPRECATED, use Value::FindPath(path) and Value's Dictionary API instead.
+  // DEPRECATED, use `Value::FindPath(path)` and Value's Dictionary API
+  // instead.
   bool GetDictionary(StringPiece path, DictionaryValue** out_value);
-  // DEPRECATED, use Value::FindPath(path) and Value::GetList() instead.
+  // DEPRECATED, use `Value::FindPath(path)` and `Value::GetList()` instead.
   bool GetList(StringPiece path, const ListValue** out_value) const;
-  // DEPRECATED, use Value::FindPath(path) and Value::GetList() instead.
+  // DEPRECATED, use `Value::FindPath(path)` and `Value::GetList()` instead.
   bool GetList(StringPiece path, ListValue** out_value);
 
-  // Like Get(), but without special treatment of '.'.  This allows e.g. URLs to
-  // be used as paths.
-  // DEPRECATED, use Value::FindKey(key) instead.
+  // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
+  // to be used as paths.
+  // DEPRECATED, use `Value::FindKey(key)` instead.
   bool GetWithoutPathExpansion(StringPiece key, const Value** out_value) const;
-  // DEPRECATED, use Value::FindKey(key) instead.
+  // DEPRECATED, use `Value::FindKey(key)` instead.
   bool GetWithoutPathExpansion(StringPiece key, Value** out_value);
-  // DEPRECATED, use Value::FindBoolKey(key) instead.
+  // DEPRECATED, use `Value::FindBoolKey(key)` instead.
   bool GetBooleanWithoutPathExpansion(StringPiece key, bool* out_value) const;
-  // DEPRECATED, use Value::FindIntKey(key) instead.
+  // DEPRECATED, use `Value::FindIntKey(key)` instead.
   bool GetIntegerWithoutPathExpansion(StringPiece key, int* out_value) const;
-  // DEPRECATED, use Value::FindDoubleKey(key) instead.
+  // DEPRECATED, use `Value::FindDoubleKey(key)` instead.
   bool GetDoubleWithoutPathExpansion(StringPiece key, double* out_value) const;
-  // DEPRECATED, use Value::FindStringKey(key) instead.
+  // DEPRECATED, use `Value::FindStringKey(key)` instead.
   bool GetStringWithoutPathExpansion(StringPiece key,
                                      std::string* out_value) const;
-  // DEPRECATED, use Value::FindStringKey(key) and UTF8ToUTF16() instead.
+  // DEPRECATED, use `Value::FindStringKey(key)` and UTF8ToUTF16() instead.
   bool GetStringWithoutPathExpansion(StringPiece key,
                                      std::u16string* out_value) const;
-  // DEPRECATED, use Value::FindDictKey(key) instead.
+  // DEPRECATED, use `Value::FindDictKey(key)` instead.
   bool GetDictionaryWithoutPathExpansion(
       StringPiece key,
       const DictionaryValue** out_value) const;
-  // DEPRECATED, use Value::FindDictKey(key) instead.
+  // DEPRECATED, use `Value::FindDictKey(key)` instead.
   bool GetDictionaryWithoutPathExpansion(StringPiece key,
                                          DictionaryValue** out_value);
-  // DEPRECATED, use Value::FindListKey(key) instead.
+  // DEPRECATED, use `Value::FindListKey(key)` instead.
   bool GetListWithoutPathExpansion(StringPiece key,
                                    const ListValue** out_value) const;
-  // DEPRECATED, use Value::FindListKey(key) instead.
+  // DEPRECATED, use `Value::FindListKey(key)` instead.
   bool GetListWithoutPathExpansion(StringPiece key, ListValue** out_value);
 
   // Removes the Value with the specified path from this dictionary (or one
   // of its child dictionaries, if the path is more than just a local key).
-  // If |out_value| is non-NULL, the removed Value will be passed out via
-  // |out_value|.  If |out_value| is NULL, the removed value will be deleted.
-  // This method returns true if |path| is a valid path; otherwise it will
+  // If `out_value` is non-NULL, the removed Value will be passed out via
+  // `out_value`.  If `out_value` is NULL, the removed value will be deleted.
+  // This method returns true if `path` is a valid path; otherwise it will
   // return false and the DictionaryValue object will be unchanged.
-  // DEPRECATED, use Value::RemovePath(path) or Value::ExtractPath(path)
+  // DEPRECATED, use `Value::RemovePath(path)` or `Value::ExtractPath(path)`
   // instead.
   bool Remove(StringPiece path, std::unique_ptr<Value>* out_value);
 
   // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
-  // DEPRECATED, use Value::RemoveKey(key) or Value::ExtractKey(key) instead.
+  // DEPRECATED, use `Value::RemoveKey(key)` or `Value::ExtractKey(key)`
+  // instead.
   bool RemoveWithoutPathExpansion(StringPiece key,
                                   std::unique_ptr<Value>* out_value);
 
-  // Removes a path, clearing out all dictionaries on |path| that remain empty
-  // after removing the value at |path|.
-  // DEPRECATED, use Value::RemovePath(path) or Value::ExtractPath(path)
+  // Removes a path, clearing out all dictionaries on `path` that remain empty
+  // after removing the value at `path`.
+  // DEPRECATED, use `Value::RemovePath(path)` or `Value::ExtractPath(path)`
   // instead.
   bool RemovePath(StringPiece path, std::unique_ptr<Value>* out_value);
 
   using Value::RemovePath;  // DictionaryValue::RemovePath shadows otherwise.
 
-  // Makes a copy of |this| but doesn't include empty dictionaries and lists in
-  // the copy.  This never returns NULL, even if |this| itself is empty.
+  // Makes a copy of `this` but doesn't include empty dictionaries and lists in
+  // the copy.  This never returns NULL, even if `this` itself is empty.
   std::unique_ptr<DictionaryValue> DeepCopyWithoutEmptyChildren() const;
 
-  // Swaps contents with the |other| dictionary.
+  // Swaps contents with the `other` dictionary.
   void Swap(DictionaryValue* other);
 
   // This class provides an iterator over both keys and values in the
   // dictionary.  It can't be used to modify the dictionary.
-  // DEPRECATED, use Value::DictItems() instead.
+  // DEPRECATED, use `Value::DictItems()` instead.
   class BASE_EXPORT Iterator {
    public:
     explicit Iterator(const DictionaryValue& target);
@@ -821,18 +827,18 @@ class BASE_EXPORT DictionaryValue : public Value {
   };
 
   // Iteration.
-  // DEPRECATED, use Value::DictItems() instead.
+  // DEPRECATED, use `Value::DictItems()` instead.
   iterator begin() { return dict().begin(); }
   iterator end() { return dict().end(); }
 
-  // DEPRECATED, use Value::DictItems() instead.
+  // DEPRECATED, use `Value::DictItems()` instead.
   const_iterator begin() const { return dict().begin(); }
   const_iterator end() const { return dict().end(); }
 
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   DictionaryValue* DeepCopy() const;
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<DictionaryValue> CreateDeepCopy() const;
 };
@@ -844,7 +850,7 @@ class BASE_EXPORT ListValue : public Value {
   using const_iterator = ListView::const_iterator;
   using iterator = ListView::iterator;
 
-  // Returns |value| if it is a list, nullptr otherwise.
+  // Returns `value` if it is a list, nullptr otherwise.
   static std::unique_ptr<ListValue> From(std::unique_ptr<Value> value);
 
   ListValue();
@@ -852,15 +858,15 @@ class BASE_EXPORT ListValue : public Value {
   explicit ListValue(ListStorage&& in_list) noexcept;
 
   // Clears the contents of this ListValue
-  // DEPRECATED, use ClearList() instead.
+  // DEPRECATED, use `ClearList()` instead.
   void Clear();
 
   // Returns the number of Values in this list.
-  // DEPRECATED, use GetList()::size() instead.
+  // DEPRECATED, use `GetList()::size()` instead.
   size_t GetSize() const { return list().size(); }
 
   // Returns whether the list is empty.
-  // DEPRECATED, use GetList()::empty() instead.
+  // DEPRECATED, use `GetList()::empty()` instead.
   bool empty() const { return list().empty(); }
 
   // Sets the list item at the given index to be the Value specified by
@@ -868,30 +874,30 @@ class BASE_EXPORT ListValue : public Value {
   // Values will be used to pad out the list.
   // Returns true if successful, or false if the index was negative or
   // the value is a null pointer.
-  // DEPRECATED, use GetList()::operator[] instead.
+  // DEPRECATED, use `GetList()::operator[] instead.
   bool Set(size_t index, std::unique_ptr<Value> in_value);
 
-  // Gets the Value at the given index.  Modifies |out_value| (and returns true)
+  // Gets the Value at the given index.  Modifies `out_value` (and returns true)
   // only if the index falls within the current list range.
-  // Note that the list always owns the Value passed out via |out_value|.
-  // |out_value| is optional and will only be set if non-NULL.
-  // DEPRECATED, use GetList()::operator[] instead.
+  // Note that the list always owns the Value passed out via `out_value`.
+  // `out_value` is optional and will only be set if non-NULL.
+  // DEPRECATED, use `GetList()::operator[] instead.
   bool Get(size_t index, const Value** out_value) const;
   bool Get(size_t index, Value** out_value);
 
-  // Convenience forms of Get().  Modifies |out_value| (and returns true)
+  // Convenience forms of `Get()`.  Modifies `out_value` (and returns true)
   // only if the index is valid and the Value at that index can be returned
   // in the specified form.
-  // |out_value| is optional and will only be set if non-NULL.
-  // DEPRECATED, use GetList()::operator[]::GetBool() instead.
+  // `out_value` is optional and will only be set if non-NULL.
+  // DEPRECATED, use `GetList()::operator[]::GetBool()` instead.
   bool GetBoolean(size_t index, bool* out_value) const;
-  // DEPRECATED, use GetList()::operator[]::GetInt() instead.
+  // DEPRECATED, use `GetList()::operator[]::GetInt()` instead.
   bool GetInteger(size_t index, int* out_value) const;
   // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
   // doubles.
-  // DEPRECATED, use GetList()::operator[]::GetDouble() instead.
+  // DEPRECATED, use `GetList()::operator[]::GetDouble()` instead.
   bool GetDouble(size_t index, double* out_value) const;
-  // DEPRECATED, use GetList()::operator[]::GetString() instead.
+  // DEPRECATED, use `GetList()::operator[]::GetString()` instead.
   bool GetString(size_t index, std::string* out_value) const;
   bool GetString(size_t index, std::u16string* out_value) const;
 
@@ -899,82 +905,82 @@ class BASE_EXPORT ListValue : public Value {
   bool GetDictionary(size_t index, DictionaryValue** out_value);
 
   using Value::GetList;
-  // DEPRECATED, use GetList()::operator[]::GetList() instead.
+  // DEPRECATED, use `GetList()::operator[]::GetList()` instead.
   bool GetList(size_t index, const ListValue** out_value) const;
   bool GetList(size_t index, ListValue** out_value);
 
   // Removes the Value with the specified index from this list.
-  // If |out_value| is non-NULL, the removed Value AND ITS OWNERSHIP will be
-  // passed out via |out_value|.  If |out_value| is NULL, the removed value will
-  // be deleted.  This method returns true if |index| is valid; otherwise
+  // If `out_value` is non-NULL, the removed Value AND ITS OWNERSHIP will be
+  // passed out via `out_value`.  If `out_value` is NULL, the removed value will
+  // be deleted.  This method returns true if `index` is valid; otherwise
   // it will return false and the ListValue object will be unchanged.
-  // DEPRECATED, use GetList()::erase() instead.
+  // DEPRECATED, use `GetList()::erase()` instead.
   bool Remove(size_t index, std::unique_ptr<Value>* out_value);
 
-  // Removes the first instance of |value| found in the list, if any, and
-  // deletes it. |index| is the location where |value| was found. Returns false
+  // Removes the first instance of `value` found in the list, if any, and
+  // deletes it. `index` is the location where `value` was found. Returns false
   // if not found.
-  // DEPRECATED, use GetList()::erase() instead.
+  // DEPRECATED, use `GetList()::erase()` instead.
   bool Remove(const Value& value, size_t* index);
 
-  // Removes the element at |iter|. If |out_value| is NULL, the value will be
+  // Removes the element at `iter`. If `out_value` is NULL, the value will be
   // deleted, otherwise ownership of the value is passed back to the caller.
   // Returns an iterator pointing to the location of the element that
   // followed the erased element.
-  // DEPRECATED, use GetList()::erase() instead.
+  // DEPRECATED, use `GetList()::erase()` instead.
   iterator Erase(iterator iter, std::unique_ptr<Value>* out_value);
 
   using Value::Append;
   // Appends a Value to the end of the list.
-  // DEPRECATED, use Value::Append() instead.
+  // DEPRECATED, use `Value::Append()` instead.
   void Append(std::unique_ptr<Value> in_value);
 
   // Convenience forms of Append.
-  // DEPRECATED, use Value::Append() instead.
+  // DEPRECATED, use `Value::Append()` instead.
   void AppendBoolean(bool in_value);
   void AppendInteger(int in_value);
   void AppendDouble(double in_value);
   void AppendString(StringPiece in_value);
   void AppendString(const std::u16string& in_value);
-  // DEPRECATED, use Value::Append() in a loop instead.
+  // DEPRECATED, use `Value::Append()` in a loop instead.
   void AppendStrings(const std::vector<std::string>& in_values);
 
   // Appends a Value if it's not already present. Returns true if successful,
   // or false if the value was already
-  // DEPRECATED, use std::find() with Value::Append() instead.
+  // DEPRECATED, use `std::find()` with `Value::Append()` instead.
   bool AppendIfNotPresent(std::unique_ptr<Value> in_value);
 
   using Value::Insert;
   // Insert a Value at index.
   // Returns true if successful, or false if the index was out of range.
-  // DEPRECATED, use Value::Insert() instead.
+  // DEPRECATED, use `Value::Insert()` instead.
   bool Insert(size_t index, std::unique_ptr<Value> in_value);
 
-  // Searches for the first instance of |value| in the list using the Equals
+  // Searches for the first instance of `value` in the list using the Equals
   // method of the Value type.
   // Returns a const_iterator to the found item or to end() if none exists.
-  // DEPRECATED, use std::find() instead.
+  // DEPRECATED, use `std::find()` instead.
   const_iterator Find(const Value& value) const;
 
-  // Swaps contents with the |other| list.
-  // DEPRECATED, use GetList()::swap() instead.
+  // Swaps contents with the `other` list.
+  // DEPRECATED, use `GetList()::swap()` instead.
   void Swap(ListValue* other);
 
   // Iteration.
-  // DEPRECATED, use GetList()::begin() instead.
+  // DEPRECATED, use `GetList()::begin()` instead.
   iterator begin() { return GetList().begin(); }
-  // DEPRECATED, use GetList()::end() instead.
+  // DEPRECATED, use `GetList()::end()` instead.
   iterator end() { return GetList().end(); }
 
-  // DEPRECATED, use GetList()::begin() instead.
+  // DEPRECATED, use `GetList()::begin()` instead.
   const_iterator begin() const { return GetList().begin(); }
-  // DEPRECATED, use GetList()::end() instead.
+  // DEPRECATED, use `GetList()::end()` instead.
   const_iterator end() const { return GetList().end(); }
 
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   ListValue* DeepCopy() const;
-  // DEPRECATED, use Value::Clone() instead.
+  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<ListValue> CreateDeepCopy() const;
 };
@@ -998,11 +1004,11 @@ class BASE_EXPORT ValueDeserializer {
   // If the return value is non-NULL, the caller takes ownership of returned
   // Value.
   //
-  // If the return value is nullptr, and if |error_code| is non-nullptr,
-  // |*error_code| will be set to an integer value representing the underlying
+  // If the return value is nullptr, and if `error_code` is non-nullptr,
+  // `*error_code` will be set to an integer value representing the underlying
   // error. See "enum ErrorCode" below for more detail about the integer value.
   //
-  // If |error_message| is non-nullptr, it will be filled in with a formatted
+  // If `error_message` is non-nullptr, it will be filled in with a formatted
   // error message including the location of the error if appropriate.
   virtual std::unique_ptr<Value> Deserialize(int* error_code,
                                              std::string* error_message) = 0;
@@ -1025,7 +1031,7 @@ class BASE_EXPORT ValueDeserializer {
     kErrorCodeFirstMetadataError = 1000,
   };
 
-  // The |error_code| argument can be one of the ErrorCode values, but it is
+  // The `error_code` argument can be one of the ErrorCode values, but it is
   // not restricted to only being 0, 1 or 1000. Subclasses of ValueDeserializer
   // can define their own error code values.
   static inline bool ErrorCodeIsDataError(int error_code) {
