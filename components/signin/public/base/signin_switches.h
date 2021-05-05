@@ -37,6 +37,9 @@ extern const base::Feature kDeprecateMenagerieAPI;
 // Killswitch for PO2TS migration to AccountManagerFacade.
 extern const base::Feature kUseAccountManagerFacade;
 #endif
+
+// Support for the minor mode.
+extern const base::Feature kMinorModeSupport;
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -35,4 +36,7 @@ const base::Feature kDeprecateMenagerieAPI{"DeprecateMenagerieAPI",
 const base::Feature kUseAccountManagerFacade{"kUseAccountManagerFacade",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
+
+const base::Feature kMinorModeSupport{"MinorModeSupport",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace switches

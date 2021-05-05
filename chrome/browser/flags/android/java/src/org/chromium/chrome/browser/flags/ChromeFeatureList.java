@@ -376,6 +376,7 @@ public abstract class ChromeFeatureList {
     public static final String MOBILE_IDENTITY_CONSISTENCY_M2 = "MobileIdentityConsistencyFRE";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
+    public static final String MINOR_MODE_SUPPORT = "MinorModeSupport";
     public static final String NOTIFICATION_SUSPENDER = "NotificationSuspender";
     public static final String OFFLINE_INDICATOR = "OfflineIndicator";
     public static final String OFFLINE_INDICATOR_V2 = "OfflineIndicatorV2";
