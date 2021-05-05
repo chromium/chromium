@@ -16,10 +16,6 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace infobars {
-class ContentInfoBarManager;
-}
-
 namespace subresource_filter {
 
 class SubresourceFilterProfileContext;
@@ -32,8 +28,7 @@ class ProfileInteractionManager
       public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
   ProfileInteractionManager(content::WebContents* web_contents,
-                            SubresourceFilterProfileContext* profile_context,
-                            infobars::ContentInfoBarManager* infobar_manager);
+                            SubresourceFilterProfileContext* profile_context);
   ~ProfileInteractionManager() override;
 
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
@@ -54,7 +49,9 @@ class ProfileInteractionManager
 
   // Invoked when a notification should potentially be shown to the user that
   // ads are being blocked on this page. Will make the final determination as to
-  // whether the notification should be shown.
+  // whether the notification should be shown. On Android this will show an
+  // infobar if appropriate and if an infobar::ContentInfoBarManager instance
+  // has been installed in web_contents() by the embedder.
   void MaybeShowNotification();
 
   // SubresourceFilterSafeBrowsingActivationThrottle::Delegate:
@@ -66,11 +63,6 @@ class ProfileInteractionManager
  private:
   // Unowned and must outlive this object.
   SubresourceFilterProfileContext* profile_context_ = nullptr;
-
-#if defined(OS_ANDROID)
-  // Unowned and must outlive this object.
-  infobars::ContentInfoBarManager* infobar_manager_ = nullptr;
-#endif
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
 };

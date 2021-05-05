@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
+#include "components/infobars/content/content_infobar_manager.h"  // nogncheck
 #include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 #endif
 
@@ -24,15 +25,9 @@ namespace subresource_filter {
 
 ProfileInteractionManager::ProfileInteractionManager(
     content::WebContents* web_contents,
-    SubresourceFilterProfileContext* profile_context,
-    infobars::ContentInfoBarManager* infobar_manager)
+    SubresourceFilterProfileContext* profile_context)
     : content::WebContentsObserver(web_contents),
-      profile_context_(profile_context)
-#if defined(OS_ANDROID)
-      ,
-      infobar_manager_(infobar_manager)
-#endif
-{
+      profile_context_(profile_context) {
   DCHECK(web_contents);
 }
 
@@ -133,7 +128,12 @@ void ProfileInteractionManager::MaybeShowNotification() {
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
 #if defined(OS_ANDROID)
-    subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager_);
+    // NOTE: It is acceptable for the embedder to not have installed an infobar
+    // manager.
+    if (auto* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents())) {
+      subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager);
+    }
 #endif
 
     // TODO(https://crbug.com/1103176): Plumb the actual frame reference here

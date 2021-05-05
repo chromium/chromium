@@ -166,13 +166,10 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     auto* contents = RenderViewHostTestHarness::web_contents();
     throttle_manager_test_support_ =
         std::make_unique<ThrottleManagerTestSupport>(contents);
-    infobar_manager_ =
-        std::make_unique<infobars::ContentInfoBarManager>(contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             throttle_manager_test_support_->profile_context(),
-            infobar_manager_.get(), /*database_manager=*/nullptr,
-            ruleset_dealer_.get(), contents);
+            /*database_manager=*/nullptr, ruleset_dealer_.get(), contents);
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
     Observe(contents);
@@ -341,14 +338,16 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     return &scoped_configuration_;
   }
 
-  bool presenting_ads_blocked_infobar() const {
-    if (infobar_manager_->infobar_count() == 0)
+  bool presenting_ads_blocked_infobar() {
+    auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+        content::RenderViewHostTestHarness::web_contents());
+    if (infobar_manager->infobar_count() == 0)
       return false;
 
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
-    EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
-    auto* infobar = infobar_manager_->infobar_at(0);
+    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+    auto* infobar = infobar_manager->infobar_at(0);
     EXPECT_EQ(infobar->delegate()->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 
@@ -369,7 +368,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
-  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;

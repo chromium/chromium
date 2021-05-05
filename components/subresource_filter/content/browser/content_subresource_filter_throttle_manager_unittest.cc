@@ -211,13 +211,10 @@ class ContentSubresourceFilterThrottleManagerTest
     // ShowNotification() being invoked.
     throttle_manager_test_support_->SetShouldUseSmartUI(false);
 
-    infobar_manager_ =
-        std::make_unique<infobars::ContentInfoBarManager>(web_contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             throttle_manager_test_support_->profile_context(),
-            infobar_manager_.get(), /*database_manager=*/nullptr,
-            dealer_handle_.get(), web_contents);
+            /*database_manager=*/nullptr, dealer_handle_.get(), web_contents);
 
     Observe(web_contents);
   }
@@ -286,14 +283,16 @@ class ContentSubresourceFilterThrottleManagerTest
     return content_settings->IsContentBlocked(ContentSettingsType::ADS);
   }
 
-  bool presenting_ads_blocked_infobar() const {
-    if (infobar_manager_->infobar_count() == 0)
+  bool presenting_ads_blocked_infobar() {
+    auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+        content::RenderViewHostTestHarness::web_contents());
+    if (infobar_manager->infobar_count() == 0)
       return false;
 
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
-    EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
-    auto* infobar = infobar_manager_->infobar_at(0);
+    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+    auto* infobar = infobar_manager->infobar_at(0);
     EXPECT_EQ(infobar->delegate()->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 
@@ -371,7 +370,6 @@ class ContentSubresourceFilterThrottleManagerTest
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
-  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
@@ -410,6 +408,27 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
+
+#if defined(OS_ANDROID)
+TEST_P(ContentSubresourceFilterThrottleManagerTest,
+       NoCrashWhenInfoBarManagerIsNotPresent) {
+  auto* web_contents = RenderViewHostTestHarness::web_contents();
+  web_contents->RemoveUserData(infobars::ContentInfoBarManager::UserDataKey());
+
+  // Commit a navigation that triggers page level activation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
+
+  // A disallowed subframe navigation should be successfully filtered, and the
+  // lack of infobar manager should not cause a crash.
+  CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateStartAndGetResult(navigation_simulator()));
+
+  EXPECT_TRUE(ads_blocked_in_content_settings());
+}
+#endif
 
 TEST_P(ContentSubresourceFilterThrottleManagerTest, NoPageActivation) {
   // This test assumes that we're not in DryRun mode.
@@ -916,8 +935,6 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   ThrottleManagerTestSupport throttle_manager_test_support(web_contents.get());
   SubresourceFilterProfileContext* profile_context =
       throttle_manager_test_support.profile_context();
-  auto infobar_manager =
-      std::make_unique<infobars::ContentInfoBarManager>(web_contents.get());
 
   {
     base::test::ScopedFeatureList scoped_feature;
@@ -926,8 +943,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
     // CreateForWebContents() should not do anything if the subresource filter
     // feature is not enabled.
     ContentSubresourceFilterThrottleManager::CreateForWebContents(
-        web_contents.get(), profile_context, infobar_manager.get(),
-        /*database_manager=*/nullptr, dealer_handle());
+        web_contents.get(), profile_context, /*database_manager=*/nullptr,
+        dealer_handle());
     EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
               nullptr);
@@ -936,7 +953,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   // If the subresource filter feature is enabled (as it is by default),
   // CreateForWebContents() should create and attach an instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), profile_context, infobar_manager.get(),
+      web_contents.get(), profile_context,
       /*database_manager=*/nullptr, dealer_handle());
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
@@ -945,7 +962,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
 
   // A second call should not attach a different instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), profile_context, infobar_manager.get(),
+      web_contents.get(), profile_context,
       /*database_manager=*/nullptr, dealer_handle());
   EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),

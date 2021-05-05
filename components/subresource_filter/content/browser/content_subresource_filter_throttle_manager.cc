@@ -90,7 +90,6 @@ const char ContentSubresourceFilterThrottleManager::
 void ContentSubresourceFilterThrottleManager::CreateForWebContents(
     content::WebContents* web_contents,
     SubresourceFilterProfileContext* profile_context,
-    infobars::ContentInfoBarManager* infobar_manager,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
     VerifiedRulesetDealer::Handle* dealer_handle) {
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
@@ -102,8 +101,7 @@ void ContentSubresourceFilterThrottleManager::CreateForWebContents(
   web_contents->SetUserData(
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey,
       std::make_unique<ContentSubresourceFilterThrottleManager>(
-          profile_context, infobar_manager, database_manager, dealer_handle,
-          web_contents));
+          profile_context, database_manager, dealer_handle, web_contents));
 }
 
 // static
@@ -118,7 +116,6 @@ ContentSubresourceFilterThrottleManager::FromWebContents(
 ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
         SubresourceFilterProfileContext* profile_context,
-        infobars::ContentInfoBarManager* infobar_manager,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
         VerifiedRulesetDealer::Handle* dealer_handle,
@@ -130,8 +127,7 @@ ContentSubresourceFilterThrottleManager::
       profile_interaction_manager_(
           std::make_unique<subresource_filter::ProfileInteractionManager>(
               web_contents,
-              profile_context,
-              infobar_manager)) {
+              profile_context)) {
   SubresourceFilterObserverManager::CreateForWebContents(web_contents);
   scoped_observation_.Observe(
       SubresourceFilterObserverManager::FromWebContents(web_contents));

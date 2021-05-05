@@ -288,14 +288,6 @@ void CreateContentSubresourceFilterThrottleManagerForWebContents(
           web_contents,
           SubresourceFilterProfileContextFactory::GetForBrowserContext(
               web_contents->GetBrowserContext()),
-  // Infobars are supported only on Android in WebLayer. This is not a
-  // problem as the subresource filter shows the infobar only on Android
-  // as well.
-#if defined(OS_ANDROID)
-          infobars::ContentInfoBarManager::FromWebContents(web_contents),
-#else
-          nullptr,
-#endif
           GetDatabaseManagerFromSafeBrowsingService(), dealer);
 }
 

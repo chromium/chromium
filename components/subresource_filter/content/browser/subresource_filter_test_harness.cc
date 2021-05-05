@@ -92,11 +92,10 @@ void SubresourceFilterTestHarness::SetUp() {
   throttle_manager_test_support_ =
       std::make_unique<ThrottleManagerTestSupport>(web_contents());
   database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-  infobar_manager_ =
-      std::make_unique<infobars::ContentInfoBarManager>(web_contents());
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents(), throttle_manager_test_support_->profile_context(),
-      infobar_manager_.get(), database_manager_, dealer);
+      database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.

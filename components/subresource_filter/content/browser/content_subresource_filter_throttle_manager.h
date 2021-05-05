@@ -34,10 +34,6 @@ class NavigationThrottle;
 class RenderFrameHost;
 }  // namespace content
 
-namespace infobars {
-class ContentInfoBarManager;
-}
-
 namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
@@ -97,7 +93,6 @@ class ContentSubresourceFilterThrottleManager
   static void CreateForWebContents(
       content::WebContents* web_contents,
       SubresourceFilterProfileContext* profile_context,
-      infobars::ContentInfoBarManager* infobar_manager,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       VerifiedRulesetDealer::Handle* dealer_handle);
@@ -107,7 +102,6 @@ class ContentSubresourceFilterThrottleManager
 
   ContentSubresourceFilterThrottleManager(
       SubresourceFilterProfileContext* profile_context,
-      infobars::ContentInfoBarManager* infobar_manager,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       VerifiedRulesetDealer::Handle* dealer_handle,
