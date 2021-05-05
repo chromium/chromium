@@ -277,6 +277,31 @@ Direct `PRAGMA` use limits our ability to customize and secure our SQLite build.
 Furthermore, some `PRAGMA` statements invalidate previously compiled queries,
 reducing the efficiency of Chrome's compiled query cache.
 
+#### Virtual tables
+
+[`CREATE VIRTUAL TABLE` statements](https://www.sqlite.org/vtab.html) should not
+be used. The desired functionality should be implemented in C++, and access
+storage using standard SQL statements.
+
+Virtual tables are [SQLite's module system](https://www.sqlite.org/vtab.html).
+SQL statements on virtual tables are essentially running arbitrary code, which
+makes them very difficult to reason about and maintain. Furthermore, the virtual
+table implementations don't receive the same level of fuzzing coverage as the
+SQLite core.
+
+Chrome's SQLite build has virtual table functionality reduced to the minimum
+needed to support [FTS3](https://www.sqlite.org/fts3.html) in WebSQL, and an
+internal feature.
+[SQLite's run-time loading mechanism](https://www.sqlite.org/loadext.html) is
+disabled, and most
+[built-in virtual tables](https://www.sqlite.org/vtablist.html) are disabled as
+well.
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's virtual table support using
+[SQLITE_OMIT_VIRTUALTABLE](https://sqlite.org/compile.html#omit_virtualtable).
+
 #### Foreign key constraints
 
 [SQL foreign key constraints](https://sqlite.org/foreignkeys.html) should not be
