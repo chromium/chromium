@@ -75,7 +75,7 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
         GetAllSettings(expected_profile, id));
     std::unique_ptr<base::DictionaryValue> actual(
         GetAllSettings(actual_profile, id));
-    if (!expected->Equals(actual.get())) {
+    if (*expected != *actual) {
       ADD_FAILURE() <<
           "Expected " << ToJson(*expected) << " got " << ToJson(*actual);
       same = false;
