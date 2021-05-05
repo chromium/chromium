@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -48,6 +49,26 @@ const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
 
 const int kMinGuResponsesToIgnoreKey = 50;
+
+// A proxy which can be called from any sequence and delegates the work to the
+// commit queue injected on construction.
+class CommitQueueProxy : public CommitQueue {
+ public:
+  // Must be called from the sequence where |commit_queue| lives.
+  explicit CommitQueueProxy(const base::WeakPtr<CommitQueue>& commit_queue)
+      : commit_queue_(commit_queue) {}
+  ~CommitQueueProxy() override = default;
+
+  void NudgeForCommit() override {
+    commit_queue_thread_->PostTask(
+        FROM_HERE, base::BindOnce(&CommitQueue::NudgeForCommit, commit_queue_));
+  }
+
+ private:
+  const base::WeakPtr<CommitQueue> commit_queue_;
+  const scoped_refptr<base::SequencedTaskRunner> commit_queue_thread_ =
+      base::SequencedTaskRunnerHandle::Get();
+};
 
 void AdaptClientTagForFullUpdateData(ModelType model_type,
                                      syncer::EntityData* data) {
@@ -150,15 +171,12 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
 ModelTypeWorker::ModelTypeWorker(
     ModelType type,
     const sync_pb::ModelTypeState& initial_state,
-    bool trigger_initial_sync,
     Cryptographer* cryptographer,
     bool encryption_enabled,
     PassphraseType passphrase_type,
     NudgeHandler* nudge_handler,
-    std::unique_ptr<ModelTypeProcessor> model_type_processor,
     CancelationSignal* cancelation_signal)
     : type_(type),
-      model_type_processor_(std::move(model_type_processor)),
       cryptographer_(cryptographer),
       nudge_handler_(nudge_handler),
       cancelation_signal_(cancelation_signal),
@@ -167,32 +185,11 @@ ModelTypeWorker::ModelTypeWorker(
       passphrase_type_(passphrase_type),
       min_gu_responses_to_ignore_key_(kMinGuResponsesToIgnoreKey) {
   DCHECK(cryptographer_);
-  DCHECK(model_type_processor_);
   DCHECK(type_ != PASSWORDS || encryption_enabled_);
 
   if (!CommitOnlyTypes().Has(GetModelType())) {
     DCHECK_EQ(type, GetModelTypeFromSpecificsFieldNumber(
                         initial_state.progress_marker().data_type_id()));
-  }
-
-  // Request an initial sync if it hasn't been completed yet.
-  if (trigger_initial_sync) {
-    nudge_handler_->NudgeForInitialDownload(type_);
-  }
-
-  // The persisted ModelTypeState might not have the most recent encryption
-  // key name, e.g. due to disk corruption, or because the cryptographer was
-  // updated before this worker was constructed. There will be no calls to
-  // EncryptionAcceptedMaybeApplyUpdates() or OnCryptographerChange() to update
-  // the key name in this case, so do it manually here.
-  bool had_outdated_key_name = UpdateTypeEncryptionKeyName();
-  // If the key was outdated and initial sync is already done, the processor
-  // risks relying on the incorrect key, so call ApplyPendingUpdates() to push
-  // the correct one. If initial sync isn't done yet, there's no risk and the
-  // first call to ApplyUpdates() will push the now-updated key.
-  if (had_outdated_key_name && model_type_state_.initial_sync_done()) {
-    // Might be a no-op as per BlockForEncryption().
-    ApplyPendingUpdates();
   }
 }
 
@@ -201,7 +198,40 @@ ModelTypeWorker::~ModelTypeWorker() {
       std::string("Sync.UndecryptedEntitiesOnDataTypeDisabled.") +
           ModelTypeToHistogramSuffix(type_),
       entries_pending_decryption_.size());
-  model_type_processor_->DisconnectSync();
+  if (model_type_processor_) {
+    // This will always be the case in production today.
+    model_type_processor_->DisconnectSync();
+  }
+}
+
+void ModelTypeWorker::ConnectSync(
+    std::unique_ptr<ModelTypeProcessor> model_type_processor) {
+  DCHECK(!model_type_processor_);
+  DCHECK(model_type_processor);
+
+  model_type_processor_ = std::move(model_type_processor);
+  // TODO(victorvianna): CommitQueueProxy is only needed by the
+  // ModelTypeProcessorProxy implementation, so it could possibly be moved
+  // there % changing ConnectSync() to take a raw pointer. This then allows
+  // removing base::test::SingleThreadTaskEnvironment from the unit test.
+  model_type_processor_->ConnectSync(
+      std::make_unique<CommitQueueProxy>(weak_ptr_factory_.GetWeakPtr()));
+
+  if (!model_type_state_.initial_sync_done()) {
+    nudge_handler_->NudgeForInitialDownload(type_);
+  }
+
+  // |model_type_state_| might have an outdated encryption key name, e.g.
+  // because |cryptographer_| was updated before this worker was constructed.
+  // OnCryptographerChange() and EncryptionAcceptedMaybeApplyUpdates() might
+  // never be called, so update the key manually here and push it to the
+  // processor. Only push if initial sync is done, otherwise this violates some
+  // of the processor assumptions; if initial sync isn't done, the now-updated
+  // key will be pushed on the first ApplyUpdates() call anyway.
+  bool had_outdated_key_name = UpdateTypeEncryptionKeyName();
+  if (had_outdated_key_name && model_type_state_.initial_sync_done()) {
+    ApplyPendingUpdates();
+  }
 }
 
 ModelType ModelTypeWorker::GetModelType() const {
@@ -448,6 +478,8 @@ void ModelTypeWorker::EncryptionAcceptedMaybeApplyUpdates() {
 }
 
 void ModelTypeWorker::ApplyPendingUpdates() {
+  DCHECK(model_type_processor_);
+
   if (BlockForEncryption()) {
     return;
   }
@@ -495,6 +527,8 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     size_t max_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_type_state_.initial_sync_done());
+  DCHECK(model_type_processor_);
+
   // Early return if type is not ready to commit (initial sync isn't done or
   // cryptographer has pending keys).
   if (!CanCommitItems()) {
@@ -580,10 +614,6 @@ size_t ModelTypeWorker::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(entries_pending_decryption_);
   memory_usage += EstimateMemoryUsage(pending_updates_);
   return memory_usage;
-}
-
-base::WeakPtr<ModelTypeWorker> ModelTypeWorker::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool ModelTypeWorker::IsTypeInitialized() const {

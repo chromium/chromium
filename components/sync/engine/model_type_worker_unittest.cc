@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
@@ -123,11 +124,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   ModelTypeWorkerTest(ModelType model_type, bool is_encrypted_type)
       : model_type_(model_type),
         is_encrypted_type_(is_encrypted_type),
-        encryption_keys_count_(0),
-        update_encryption_filter_index_(0),
-        mock_type_processor_(nullptr),
-        mock_server_(std::make_unique<SingleTypeMockServer>(model_type)),
-        is_processor_disconnected_(false) {}
+        mock_server_(std::make_unique<SingleTypeMockServer>(model_type)) {}
 
   ~ModelTypeWorkerTest() override {}
 
@@ -173,18 +170,18 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Initialize with a custom initial ModelTypeState and pending updates.
   void InitializeWithState(const ModelType type, const ModelTypeState& state) {
-    DCHECK(!worker());
+    DCHECK(!worker_);
+    worker_ = std::make_unique<ModelTypeWorker>(
+        type, state, &cryptographer_, is_encrypted_type_,
+        PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
+        &cancelation_signal_);
 
     // We don't get to own this object. The |worker_| keeps a unique_ptr to it.
     auto processor = std::make_unique<MockModelTypeProcessor>();
     mock_type_processor_ = processor.get();
     processor->SetDisconnectCallback(base::BindOnce(
         &ModelTypeWorkerTest::DisconnectProcessor, base::Unretained(this)));
-
-    worker_ = std::make_unique<ModelTypeWorker>(
-        type, state, !state.initial_sync_done(), &cryptographer_,
-        is_encrypted_type_, PassphraseType::kImplicitPassphrase,
-        &mock_nudge_handler_, std::move(processor), &cancelation_signal_);
+    worker_->ConnectSync(std::move(processor));
   }
 
   // If the type isn't encrypted yet, makes the cryptographer available to the
@@ -437,22 +434,24 @@ class ModelTypeWorkerTest : public ::testing::Test {
   }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
   const ModelType model_type_;
 
   FakeCryptographer cryptographer_;
 
   // Determines whether |worker_| has access to the cryptographer or not.
   // Can be set to true via EnableEncryptionOrNotify().
-  bool is_encrypted_type_;
+  bool is_encrypted_type_ = false;
 
   // The number of encryption keys known to the cryptographer. Keys are
   // identified by an index from 1 to |encryption_keys_count_| and the last one
   // might not have been decrypted yet.
-  int encryption_keys_count_;
+  int encryption_keys_count_ = 0;
 
   // The number of the encryption key used to encrypt incoming updates. A zero
   // value implies no encryption.
-  int update_encryption_filter_index_;
+  int update_encryption_filter_index_ = 0;
 
   CancelationSignal cancelation_signal_;
 
@@ -461,7 +460,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Non-owned, possibly null pointer. This object belongs to the
   // ModelTypeWorker under test.
-  MockModelTypeProcessor* mock_type_processor_;
+  MockModelTypeProcessor* mock_type_processor_ = nullptr;
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test
@@ -472,7 +471,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   // sync.
   MockNudgeHandler mock_nudge_handler_;
 
-  bool is_processor_disconnected_;
+  bool is_processor_disconnected_ = false;
 
   StatusController status_controller_;
 };

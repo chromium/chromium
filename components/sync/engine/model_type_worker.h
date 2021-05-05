@@ -75,15 +75,14 @@ class ModelTypeWorker : public UpdateHandler,
   };
 
   // |cryptographer|, |nudge_handler| and |cancelation_signal| must be non-null
-  // and outlive this object.
+  // and outlive the worker. Calling this will construct the object but not
+  // more, ConnectSync() must be called immediately afterwards.
   ModelTypeWorker(ModelType type,
                   const sync_pb::ModelTypeState& initial_state,
-                  bool trigger_initial_sync,
                   Cryptographer* cryptographer,
                   bool encryption_enabled,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
-                  std::unique_ptr<ModelTypeProcessor> model_type_processor,
                   CancelationSignal* cancelation_signal);
   ~ModelTypeWorker() override;
 
@@ -94,6 +93,15 @@ class ModelTypeWorker : public UpdateHandler,
       ModelType model_type,
       const sync_pb::SyncEntity& update_entity,
       UpdateResponseData* response_data);
+
+  // Initializes the two relevant communication channels: ModelTypeWorker ->
+  // ModelTypeProcessor (GetUpdates) and ModelTypeProcessor -> ModelTypeWorker
+  // (Commit). Both channels are closed when the worker is destroyed. This is
+  // done outside of the constructor to avoid the object being used while it's
+  // still being built.
+  // Must be called immediately after the constructor, prior to using other
+  // methods.
+  void ConnectSync(std::unique_ptr<ModelTypeProcessor> model_type_processor);
 
   ModelType GetModelType() const;
 
@@ -143,8 +151,6 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
-
-  base::WeakPtr<ModelTypeWorker> AsWeakPtr();
 
   bool HasLocalChangesForTest() const;
 
@@ -229,9 +235,6 @@ class ModelTypeWorker : public UpdateHandler,
 
   const ModelType type_;
 
-  // Pointer to the ModelTypeProcessor associated with this worker. Never null.
-  const std::unique_ptr<ModelTypeProcessor> model_type_processor_;
-
   Cryptographer* const cryptographer_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
@@ -240,6 +243,10 @@ class ModelTypeWorker : public UpdateHandler,
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
   CancelationSignal* const cancelation_signal_;
+
+  // Pointer to the ModelTypeProcessor associated with this worker. Initialized
+  // with ConnectSync().
+  std::unique_ptr<ModelTypeProcessor> model_type_processor_;
 
   // State that applies to the entire model type.
   sync_pb::ModelTypeState model_type_state_;

@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine/model_type_worker.h"
@@ -21,35 +19,6 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 
 namespace syncer {
-
-namespace {
-
-class CommitQueueProxy : public CommitQueue {
- public:
-  CommitQueueProxy(const base::WeakPtr<CommitQueue>& worker,
-                   const scoped_refptr<base::SequencedTaskRunner>& sync_thread);
-  ~CommitQueueProxy() override;
-
-  void NudgeForCommit() override;
-
- private:
-  base::WeakPtr<CommitQueue> worker_;
-  scoped_refptr<base::SequencedTaskRunner> sync_thread_;
-};
-
-CommitQueueProxy::CommitQueueProxy(
-    const base::WeakPtr<CommitQueue>& worker,
-    const scoped_refptr<base::SequencedTaskRunner>& sync_thread)
-    : worker_(worker), sync_thread_(sync_thread) {}
-
-CommitQueueProxy::~CommitQueueProxy() {}
-
-void CommitQueueProxy::NudgeForCommit() {
-  sync_thread_->PostTask(FROM_HERE,
-                         base::BindOnce(&CommitQueue::NudgeForCommit, worker_));
-}
-
-}  // namespace
 
 ModelTypeRegistry::ModelTypeRegistry(
     NudgeHandler* nudge_handler,
@@ -73,20 +42,11 @@ void ModelTypeRegistry::ConnectDataType(
   DCHECK(commit_contributor_map_.find(type) == commit_contributor_map_.end());
   DVLOG(1) << "Enabling an off-thread sync type: " << ModelTypeToString(type);
 
-  // Save a raw pointer to the processor for connecting later.
-  ModelTypeProcessor* type_processor =
-      activation_response->type_processor.get();
-
-  bool initial_sync_done =
-      activation_response->model_type_state.initial_sync_done();
-
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state,
-      /*trigger_initial_sync=*/!initial_sync_done,
       sync_encryption_handler_->GetCryptographer(),
       /*encryption_enabled=*/encrypted_types_.Has(type), passphrase_type_,
-      nudge_handler_, std::move(activation_response->type_processor),
-      cancelation_signal_);
+      nudge_handler_, cancelation_signal_);
 
   // Save a raw pointer and add the worker to our structures.
   ModelTypeWorker* worker_ptr = worker.get();
@@ -94,9 +54,7 @@ void ModelTypeRegistry::ConnectDataType(
   update_handler_map_.insert(std::make_pair(type, worker_ptr));
   commit_contributor_map_.insert(std::make_pair(type, worker_ptr));
 
-  // Initialize Processor -> Worker communication channel.
-  type_processor->ConnectSync(std::make_unique<CommitQueueProxy>(
-      worker_ptr->AsWeakPtr(), base::SequencedTaskRunnerHandle::Get()));
+  worker_ptr->ConnectSync(std::move(activation_response->type_processor));
 }
 
 void ModelTypeRegistry::DisconnectDataType(ModelType type) {
