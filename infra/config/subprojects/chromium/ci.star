@@ -1838,6 +1838,7 @@ ci.chromiumos_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromiumos_builder(
@@ -1851,6 +1852,7 @@ ci.chromiumos_builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 # For Chromebox for meetings(CfM)

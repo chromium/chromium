@@ -868,6 +868,7 @@ try_.chromium_chromiumos_builder(
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_chromiumos_builder(
