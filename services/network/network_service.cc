@@ -481,8 +481,10 @@ void NetworkService::ConfigureStubHostResolver(
 
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
+  // TODO(crbug.com/1203427): Pass the additional query types param through Mojo
+  // from the browser code.
   host_resolver_manager_->SetInsecureDnsClientEnabled(
-      insecure_dns_client_enabled);
+      insecure_dns_client_enabled, true);
 
   // Configure DNS over HTTPS.
   net::DnsConfigOverrides overrides;

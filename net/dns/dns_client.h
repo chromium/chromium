@@ -42,7 +42,9 @@ class NET_EXPORT DnsClient {
   // transactions. If false, insecure transactions should not be created. Will
   // always be false unless SetInsecureEnabled(true) has been called.
   virtual bool CanUseInsecureDnsTransactions() const = 0;
-  virtual void SetInsecureEnabled(bool enabled) = 0;
+  virtual bool CanQueryAdditionalTypesViaInsecureDns() const = 0;
+  virtual void SetInsecureEnabled(bool enabled,
+                                  bool additional_types_enabled) = 0;
 
   // When true, DoH should not be used in AUTOMATIC mode since no DoH servers
   // have a successful probe state.

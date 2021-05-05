@@ -76,7 +76,9 @@ class ContextHostResolverTest : public ::testing::Test,
     dns_client->set_ignore_system_config_changes(true);
     dns_client_ = dns_client.get();
     manager_->SetDnsClientForTesting(std::move(dns_client));
-    manager_->SetInsecureDnsClientEnabled(true);
+    manager_->SetInsecureDnsClientEnabled(
+        /*enabled=*/true,
+        /*additional_dns_types_enabled=*/true);
 
     // Ensure DnsClient is fully usable.
     EXPECT_TRUE(dns_client_->CanUseInsecureDnsTransactions());

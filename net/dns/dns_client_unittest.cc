@@ -80,7 +80,8 @@ class DnsClientTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(DnsClientTest, NoConfig) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
 
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   EXPECT_TRUE(
@@ -95,7 +96,8 @@ TEST_F(DnsClientTest, NoConfig) {
 }
 
 TEST_F(DnsClientTest, InvalidConfig) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   client_->SetSystemConfig(DnsConfig());
 
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
@@ -111,13 +113,15 @@ TEST_F(DnsClientTest, InvalidConfig) {
 }
 
 TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   client_->SetSystemConfig(BasicValidConfig());
 
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   EXPECT_TRUE(
       client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 
   EXPECT_THAT(client_->GetEffectiveConfig(),
@@ -128,7 +132,8 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
 }
 
 TEST_F(DnsClientTest, InsecureNotEnabled) {
-  client_->SetInsecureEnabled(false);
+  client_->SetInsecureEnabled(/*enabled=*/false,
+                              /*additional_types_enabled=*/false);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
 
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
@@ -145,8 +150,22 @@ TEST_F(DnsClientTest, InsecureNotEnabled) {
             ValidConfigWithDoh(false /* doh_only */));
 }
 
+TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/false);
+  client_->SetSystemConfig(BasicValidConfig());
+
+  EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
+  EXPECT_TRUE(
+      client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_FALSE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
 TEST_F(DnsClientTest, UnhandledOptions) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
   config.unhandled_options = true;
   client_->SetSystemConfig(config);
@@ -183,7 +202,8 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
 }
 
 TEST_F(DnsClientTest, DnsOverTlsActive) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
   config.dns_over_tls_active = true;
   client_->SetSystemConfig(config);
@@ -201,7 +221,8 @@ TEST_F(DnsClientTest, DnsOverTlsActive) {
 }
 
 TEST_F(DnsClientTest, AllAllowed) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
   resolve_context_.InvalidateCachesAndPerSessionData(
       client_->GetCurrentSession(), false /* network_change */);
@@ -213,6 +234,7 @@ TEST_F(DnsClientTest, AllAllowed) {
   EXPECT_FALSE(
       client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 
   EXPECT_THAT(client_->GetEffectiveConfig(),
@@ -224,7 +246,8 @@ TEST_F(DnsClientTest, AllAllowed) {
 }
 
 TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
-  client_->SetInsecureEnabled(true);
+  client_->SetInsecureEnabled(/*enabled=*/true,
+                              /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
 
   for (int i = 0; i < DnsClient::kMaxInsecureFallbackFailures; ++i) {
@@ -232,6 +255,7 @@ TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
     EXPECT_TRUE(
         client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
     EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+    EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
     EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 
     client_->IncrementInsecureFallbackFailures();
@@ -241,6 +265,7 @@ TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
   EXPECT_TRUE(
       client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
 
   client_->ClearInsecureFallbackFailures();
@@ -249,6 +274,7 @@ TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
   EXPECT_TRUE(
       client_->FallbackFromSecureTransactionPreferred(&resolve_context_));
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 }
 

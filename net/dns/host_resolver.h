@@ -174,6 +174,10 @@ class NET_EXPORT HostResolver {
     // SetInsecureDnsClientEnabled() for details.
     bool insecure_dns_client_enabled = false;
 
+    // Initial setting for whether additional DNS types (e.g. HTTPS) may be
+    // queried when using the built-in resolver for insecure DNS.
+    bool additional_types_via_insecure_dns_enabled = true;
+
     // Initial configuration overrides for the built-in asynchronous DnsClient.
     // See HostResolverManager::SetDnsConfigOverrides() for details.
     DnsConfigOverrides dns_config_overrides;

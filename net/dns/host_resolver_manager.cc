@@ -86,6 +86,7 @@
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/resolve_context.h"
@@ -1150,13 +1151,16 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       transactions_needed_.push(DnsQueryType::A);
       transactions_needed_.push(DnsQueryType::AAAA);
 
-      // Queue up an INTEGRITY query if we are allowed to.
+      // Queue up an INTEGRITY/HTTPS query if we are allowed to.
       const bool is_httpssvc_experiment_domain =
           httpssvc_domain_cache_.IsExperimental(hostname);
       const bool is_httpssvc_control_domain =
           httpssvc_domain_cache_.IsControl(hostname);
+      const bool can_query_via_insecure =
+          !secure_ && features::kDnsHttpssvcEnableQueryOverInsecure.Get() &&
+          client_->CanQueryAdditionalTypesViaInsecureDns();
       if (base::FeatureList::IsEnabled(features::kDnsHttpssvc) &&
-          (secure_ || features::kDnsHttpssvcEnableQueryOverInsecure.Get()) &&
+          (secure_ || can_query_via_insecure) &&
           (is_httpssvc_experiment_domain || is_httpssvc_control_domain)) {
         httpssvc_metrics_.emplace(
             is_httpssvc_experiment_domain /* expect_intact */);
@@ -1191,6 +1195,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     DnsQueryType type = transactions_needed_.front();
     transactions_needed_.pop();
+
+    DCHECK(type != DnsQueryType::HTTPS || secure_ ||
+           client_->CanQueryAdditionalTypesViaInsecureDns());
 
     // Record how long this transaction has been waiting to be created.
     base::TimeDelta time_queued = tick_clock_->NowTicks() - task_start_time_;
@@ -2541,7 +2548,9 @@ HostResolverManager::HostResolverManager(
 
 #if defined(ENABLE_BUILT_IN_DNS)
   dns_client_ = DnsClient::CreateClient(net_log_);
-  dns_client_->SetInsecureEnabled(options.insecure_dns_client_enabled);
+  dns_client_->SetInsecureEnabled(
+      options.insecure_dns_client_enabled,
+      options.additional_types_via_insecure_dns_enabled);
   dns_client_->SetConfigOverrides(options.dns_config_overrides);
 #else
   DCHECK(options.dns_config_overrides == DnsConfigOverrides());
@@ -2614,17 +2623,30 @@ HostResolverManager::CreateMdnsListener(const HostPortPair& host,
   return listener;
 }
 
-void HostResolverManager::SetInsecureDnsClientEnabled(bool enabled) {
+void HostResolverManager::SetInsecureDnsClientEnabled(
+    bool enabled,
+    bool additional_dns_types_enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!dns_client_)
     return;
 
   bool enabled_before = dns_client_->CanUseInsecureDnsTransactions();
-  dns_client_->SetInsecureEnabled(enabled);
+  bool additional_types_before =
+      enabled_before && dns_client_->CanQueryAdditionalTypesViaInsecureDns();
+  dns_client_->SetInsecureEnabled(enabled, additional_dns_types_enabled);
 
-  if (dns_client_->CanUseInsecureDnsTransactions() != enabled_before)
+  // Abort current tasks if `CanUseInsecureDnsTransactions()` changes or if
+  // insecure transactions are enabled and
+  // `CanQueryAdditionalTypesViaInsecureDns()` changes. Changes to allowing
+  // additional types don't matter if insecure transactions are completely
+  // disabled.
+  if (dns_client_->CanUseInsecureDnsTransactions() != enabled_before ||
+      (dns_client_->CanUseInsecureDnsTransactions() &&
+       dns_client_->CanQueryAdditionalTypesViaInsecureDns() !=
+           additional_types_before)) {
     AbortInsecureDnsTasks(ERR_NETWORK_CHANGED, false /* fallback_only */);
+  }
 }
 
 base::Value HostResolverManager::GetDnsConfigAsValue() const {
@@ -3247,7 +3269,9 @@ void HostResolverManager::CreateTaskSequence(
         if (dns_client_ && dns_client_->GetEffectiveConfig()) {
           bool insecure_allowed =
               dns_client_->CanUseInsecureDnsTransactions() &&
-              !dns_client_->FallbackFromInsecureTransactionPreferred();
+              !dns_client_->FallbackFromInsecureTransactionPreferred() &&
+              (IsAddressType(dns_query_type) ||
+               dns_client_->CanQueryAdditionalTypesViaInsecureDns());
           PushDnsTasks(proc_task_allowed, *out_effective_secure_dns_mode,
                        insecure_allowed, allow_cache, prioritize_local_lookups,
                        resolve_context, out_tasks);
@@ -3268,10 +3292,14 @@ void HostResolverManager::CreateTaskSequence(
       break;
     case HostResolverSource::DNS:
       if (dns_client_ && dns_client_->GetEffectiveConfig()) {
+        bool insecure_allowed =
+            dns_client_->CanUseInsecureDnsTransactions() &&
+            (IsAddressType(dns_query_type) ||
+             dns_client_->CanQueryAdditionalTypesViaInsecureDns());
         PushDnsTasks(false /* proc_task_allowed */,
-                     *out_effective_secure_dns_mode,
-                     dns_client_->CanUseInsecureDnsTransactions(), allow_cache,
-                     prioritize_local_lookups, resolve_context, out_tasks);
+                     *out_effective_secure_dns_mode, insecure_allowed,
+                     allow_cache, prioritize_local_lookups, resolve_context,
+                     out_tasks);
       }
       break;
     case HostResolverSource::MULTICAST_DNS:

@@ -169,7 +169,8 @@ class NET_EXPORT HostResolverManager
   // DnsConfig, a new config is fetched from NetworkChangeNotifier.
   //
   // Setting to |true| has no effect if |ENABLE_BUILT_IN_DNS| not defined.
-  virtual void SetInsecureDnsClientEnabled(bool enabled);
+  virtual void SetInsecureDnsClientEnabled(bool enabled,
+                                           bool additional_dns_types_enabled);
 
   base::Value GetDnsConfigAsValue() const;
 

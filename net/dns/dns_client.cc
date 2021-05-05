@@ -105,8 +105,18 @@ class DnsClientImpl : public DnsClient {
            !config->unhandled_options && !config->dns_over_tls_active;
   }
 
-  void SetInsecureEnabled(bool enabled) override {
+  bool CanQueryAdditionalTypesViaInsecureDns() const override {
+    // Only useful information if insecure DNS is usable, so expect this to
+    // never be called if that is not the case.
+    DCHECK(CanUseInsecureDnsTransactions());
+
+    return can_query_additional_types_via_insecure_;
+  }
+
+  void SetInsecureEnabled(bool enabled,
+                          bool additional_types_enabled) override {
     insecure_enabled_ = enabled;
+    can_query_additional_types_via_insecure_ = additional_types_enabled;
   }
 
   bool FallbackFromSecureTransactionPreferred(
@@ -256,6 +266,7 @@ class DnsClientImpl : public DnsClient {
   }
 
   bool insecure_enabled_ = false;
+  bool can_query_additional_types_via_insecure_ = false;
   int insecure_fallback_failures_ = 0;
 
   base::Optional<DnsConfig> system_config_;
