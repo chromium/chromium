@@ -8,30 +8,43 @@ component("cpp") {
   public = [
     "constants.h",
     "quota_client_callback_wrapper.h",
-    "storage_key.h",
   ]
 
   sources = [
     "constants.cc",
     "quota_client_callback_wrapper.cc",
-    "storage_key.cc",
   ]
 
   public_deps = [
+    ":storage_key",
     "//base",
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/storage/public/mojom",
-    "//url",
   ]
 
   defines = [ "IS_STORAGE_SERVICE_PUBLIC_IMPL" ]
+}
+
+component("storage_key") {
+  output_name = "storage_service_storage_key_support"
+
+  public = [ "storage_key.h" ]
+
+  sources = [ "storage_key.cc" ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
+  defines = [ "IS_STORAGE_SERVICE_STORAGE_KEY_SUPPORT_IMPL" ]
 }
 
 source_set("tests") {
   testonly = true
   sources = [ "storage_key_unittest.cc" ]
   deps = [
-    ":cpp",
+    ":storage_key",
     "//testing/gtest",
   ]
 }

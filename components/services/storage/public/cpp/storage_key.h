@@ -7,12 +7,13 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "url/origin.h"
 
 namespace storage {
 
 // A class representing the key that Storage APIs use to key their storage on.
-class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) StorageKey {
+class COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT) StorageKey {
  public:
   StorageKey() = default;
   explicit StorageKey(const url::Origin& origin) : origin_(origin) {}
@@ -41,15 +42,15 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) StorageKey {
   const url::Origin& origin() const { return origin_; }
 
  private:
-  COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
 
-  COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
   friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
 
   // Allows StorageKey to be used as a key in STL (for example, a std::set or
   // std::map).
-  COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
 
   url::Origin origin_;
