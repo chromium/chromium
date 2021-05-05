@@ -40,33 +40,33 @@ body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
 }
 
 #pan-left {
-  --svg-width: 8px;
-  --svg-height: 10px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 #pan-right {
-  --svg-width: 8px;
-  --svg-height: 10px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 #tilt-up {
-  --svg-width: 12px;
-  --svg-height: 8px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 #tilt-down {
-  --svg-width: 12px;
-  --svg-height: 8px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 #zoom-in {
-  --svg-width: 16px;
-  --svg-height: 16px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 #zoom-out {
-  --svg-width: 16px;
-  --svg-height: 16px;
+  --svg-width: 20px;
+  --svg-height: 20px;
 }
 
 /* Icons. */
