@@ -196,7 +196,7 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
   return true;
 }
 
-void CullRect::ApplyPaintProperties(
+bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& root,
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
@@ -235,8 +235,7 @@ void CullRect::ApplyPaintProperties(
     // Either the transform or the clip of |source| is not an ancestor of
     // |destination|. Map infinite rect from the root.
     *this = Infinite();
-    ApplyPaintProperties(root, root, destination, old_cull_rect);
-    return;
+    return ApplyPaintProperties(root, root, destination, old_cull_rect);
   }
 
   // These are either the source transform/clip or the last scroll
@@ -263,7 +262,7 @@ void CullRect::ApplyPaintProperties(
             PropertyTreeState(*last_transform, *last_clip, effect_root),
             PropertyTreeState(*scroll_translation->UnaliasedParent(), *clip,
                               effect_root)))
-      return;
+      return false;
 
     last_scroll_translation_result =
         ApplyScrollTranslation(root.Transform(), *scroll_translation);
@@ -275,7 +274,7 @@ void CullRect::ApplyPaintProperties(
   if (!ApplyPaintPropertiesWithoutExpansion(
           PropertyTreeState(*last_transform, *last_clip, effect_root),
           destination))
-    return;
+    return false;
 
   // Since the cull rect mapping above can produce extremely large numbers in
   // cases of perspective, try our best to "normalize" the result by ensuring
@@ -323,6 +322,8 @@ void CullRect::ApplyPaintProperties(
   if (expanded && old_cull_rect &&
       !ChangedEnough(*old_cull_rect, expansion_bounds))
     rect_ = old_cull_rect->Rect();
+
+  return expanded;
 }
 
 bool CullRect::ChangedEnough(const CullRect& old_cull_rect,

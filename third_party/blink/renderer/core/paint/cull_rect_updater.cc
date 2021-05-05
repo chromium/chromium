@@ -46,16 +46,6 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
   return true;
 }
 
-bool ShouldProactivelyUpdateCullRect(const PaintLayer& layer) {
-  // If we will repaint anyway, proactively refresh cull rect. A sliding
-  // window (aka hysteresis, see: CullRect::ChangedEnough()) is used to
-  // avoid frequent cull rect updates because they force a repaint (see:
-  // |CullRectUpdater::SetFragmentCullRects|). Proactively updating the cull
-  // rect resets the sliding window which will minimize the need to update
-  // the cull rect again.
-  return layer.SelfOrDescendantNeedsRepaint();
-}
-
 }  // anonymous namespace
 
 CullRectUpdater::CullRectUpdater(PaintLayer& root_layer)
@@ -91,9 +81,15 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
                                         bool force_update_self) {
-  bool should_proactively_update = ShouldProactivelyUpdateCullRect(layer);
+  bool should_proactively_update = ShouldProactivelyUpdate(layer);
   bool force_update_children =
       should_proactively_update || layer.ForcesChildrenCullRectUpdate();
+
+  // This defines the scope of force_proactive_update_ (which may be set by
+  // ComputeFragmentCullRect() and ComputeFragmentContentsCullRect()) to the
+  // subtree.
+  base::AutoReset<bool> reset(&force_proactive_update_,
+                              force_proactive_update_);
 
   if (force_update_self || should_proactively_update ||
       layer.NeedsCullRectUpdate())
@@ -235,10 +231,12 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
     base::Optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |ChangedEnough|) in |ApplyPaintProperties|.
-    if (!ShouldProactivelyUpdateCullRect(layer))
+    if (!ShouldProactivelyUpdate(layer))
       old_cull_rect = fragment.GetCullRect();
-    cull_rect.ApplyPaintProperties(root_state_, parent_state, local_state,
-                                   old_cull_rect);
+    bool expanded = cull_rect.ApplyPaintProperties(root_state_, parent_state,
+                                                   local_state, old_cull_rect);
+    if (expanded && fragment.GetCullRect() != cull_rect)
+      force_proactive_update_ = true;
   }
   return cull_rect;
 }
@@ -254,12 +252,27 @@ CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
     base::Optional<CullRect> old_contents_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |CullRect::ChangedEnough|) in |ApplyPaintProperties|.
-    if (!ShouldProactivelyUpdateCullRect(layer))
+    if (!ShouldProactivelyUpdate(layer))
       old_contents_cull_rect = fragment.GetContentsCullRect();
-    contents_cull_rect.ApplyPaintProperties(
+    bool expanded = contents_cull_rect.ApplyPaintProperties(
         root_state_, local_state, contents_state, old_contents_cull_rect);
+    if (expanded && fragment.GetContentsCullRect() != contents_cull_rect)
+      force_proactive_update_ = true;
   }
   return contents_cull_rect;
+}
+
+bool CullRectUpdater::ShouldProactivelyUpdate(const PaintLayer& layer) const {
+  if (force_proactive_update_)
+    return true;
+
+  // If we will repaint anyway, proactively refresh cull rect. A sliding
+  // window (aka hysteresis, see: CullRect::ChangedEnough()) is used to
+  // avoid frequent cull rect updates because they force a repaint (see:
+  // |CullRectUpdater::SetFragmentCullRects|). Proactively updating the cull
+  // rect resets the sliding window which will minimize the need to update
+  // the cull rect again.
+  return layer.SelfOrDescendantNeedsRepaint();
 }
 
 OverriddenCullRectScope::OverriddenCullRectScope(LocalFrameView& frame_view,

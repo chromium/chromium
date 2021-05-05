@@ -49,9 +49,11 @@ class CORE_EXPORT CullRectUpdater {
   CullRect ComputeFragmentContentsCullRect(PaintLayer&,
                                            const FragmentData& fragment,
                                            const CullRect& cull_rect);
+  bool ShouldProactivelyUpdate(const PaintLayer&) const;
 
   PaintLayer& root_layer_;
   PropertyTreeState root_state_;
+  bool force_proactive_update_ = false;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a

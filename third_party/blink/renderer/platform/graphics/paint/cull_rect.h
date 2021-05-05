@@ -69,7 +69,8 @@ class PLATFORM_EXPORT CullRect {
   // non-scrolling ones). |root| is used to calculate the expansion distance in
   // the local space, to make the expansion distance approximately the same in
   // the root space.
-  void ApplyPaintProperties(const PropertyTreeState& root,
+  // Returns whether the cull rect has been expanded.
+  bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
                             const base::Optional<CullRect>& old_cull_rect);
