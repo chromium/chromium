@@ -6826,6 +6826,23 @@
             ]
         }
     ],
+    "SignInProfileCreationEnterprise": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignInProfileCreationEnterprise"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimplifiedUrlDisplay": [
         {
             "platforms": [
