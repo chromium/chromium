@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/build_time.h"
+#include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -32,6 +33,7 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/hashing.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
@@ -189,6 +191,14 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
   std::string brand_code;
   if (client->GetBrand(&brand_code))
     system_profile->set_brand_code(brand_code);
+
+  // Records 32-bit hashes of the command line keys.
+  const auto command_line_switches =
+      base::CommandLine::ForCurrentProcess()->GetSwitches();
+  for (const auto& command_line_switch : command_line_switches) {
+    system_profile->add_command_line_key_hash(
+        variations::HashName(command_line_switch.first));
+  }
 }
 
 // static

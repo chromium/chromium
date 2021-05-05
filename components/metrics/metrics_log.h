@@ -113,11 +113,11 @@ class MetricsLog {
   // always incrementing for use in measuring time durations.
   static int64_t GetCurrentTime();
 
-  // Record core profile settings into the SystemProfileProto.
+  // Records core profile settings into the SystemProfileProto.
   static void RecordCoreSystemProfile(MetricsServiceClient* client,
                                       SystemProfileProto* system_profile);
 
-  // Record core profile settings into the SystemProfileProto without a client.
+  // Records core profile settings into the SystemProfileProto without a client.
   static void RecordCoreSystemProfile(
       const std::string& version,
       metrics::SystemProfileProto::Channel channel,

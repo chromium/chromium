@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 38
+// Next tag: 39
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -105,6 +105,13 @@ message SystemProfileProto {
   // The locale includes a language code and, possibly, also a country code,
   // e.g. "en-US".
   optional string application_locale = 4;
+
+  // Hashes of command line keys used in the browser session when the MetricsLog
+  // is created. This takes into account the command line switches that were
+  // used when launching the session, as well as any modifications made to them,
+  // for example via CommandLine::AppendSwitch and CommandLine::RemoveSwitch.
+  // Values are the lower 32-bit of SHA1 hash in little-endian.
+  repeated fixed32 command_line_key_hash = 38 [packed = true];
 
   // Information on the user's operating system.
   // Next tag: 8

@@ -14,8 +14,10 @@ package metrics;
 //
 // Next tag: 4
 message StructuredEventProto {
-  // A per-profile, per-client, per-event ID that is used only for structured
-  // metrics.
+  // A per-client, per-profile, per-project ID that is used only for structured
+  // metrics. For projects recorded from Chrome OS's platform2 repository, this
+  // ID is device-wide, not per-profile. The ID is rotated at least every 90
+  // days.
   optional fixed64 profile_event_id = 1;
 
   // The first 8 bytes of the MD5 hash of the event's name as a string. Each
@@ -40,9 +42,9 @@ message StructuredEventProto {
   //
   //          HMAC_SHA256(concat(string, metric_name), event_key)
   //
-  //      The event_key is a per-profile, per-client, per-event secret 32-byte
+  //      The event_key is a per-profile, per-client, per-project secret 32-byte
   //      key used only for signing hashed values for this event. Keys should
-  //      never leave the device, and are rotated at most every 90 days.
+  //      never leave the device, and are rotated at least every 90 days.
   message Metric {
     optional fixed64 name_hash = 1;
     oneof value {

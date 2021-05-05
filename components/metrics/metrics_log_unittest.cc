@@ -148,6 +148,14 @@ TEST_F(MetricsLogTest, BasicRecord) {
   client.set_version_string("bogus version");
   const std::string kClientId = "totally bogus client ID";
   TestingPrefServiceSimple prefs;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // Clears existing command line flags and sets mock flags:
+  // "--mock-flag-1 --mock-flag-2=unused_value"
+  // Hashes of these flags should be populated on the system_profile field.
+  command_line->InitFromArgv(0, nullptr);
+  command_line->AppendSwitch("mock-flag-1");
+  command_line->AppendSwitchASCII("mock-flag-2", "unused_value");
+
   MetricsLog log(kClientId, 137, MetricsLog::ONGOING_LOG, &client);
   log.CloseLog();
 
@@ -171,6 +179,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   system_profile->set_channel(client.GetChannel());
   system_profile->set_application_locale(client.GetApplicationLocale());
   system_profile->set_brand_code(TestMetricsServiceClient::kBrandForTesting);
+  // Hashes of "mock-flag-1" and "mock-flag-2" from SetUpCommandLine.
+  system_profile->add_command_line_key_hash(2578836236);
+  system_profile->add_command_line_key_hash(2867288449);
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
   system_profile->set_is_instrumented_build(true);
