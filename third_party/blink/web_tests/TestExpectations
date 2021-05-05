@@ -7092,3 +7092,4 @@ crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-h
 # Sheriff 2021-05-05
 crbug.com/1205779 [ Win7 ] external/wpt/url/a-element.html [ Failure ]
 crbug.com/1205780 [ Win7 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
+crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
