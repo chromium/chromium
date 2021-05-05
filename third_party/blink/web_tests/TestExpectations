@@ -1284,6 +1284,8 @@ crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failur
 crbug.com/929098 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-change-checkbox.html [ Failure ]
 crbug.com/929098 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-change-checkbox.html [ Pass ]
 
+crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
+
 # color() function not implemented
 crbug.com/1068610 external/wpt/css/css-color/predefined-008.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/predefined-005.html [ Failure ]
@@ -2510,12 +2512,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-will-change/will-change-stacking-context-mask-1.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-fixpos-cb-transform-style-1.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-fixpos-cb-contain-1.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Failure ]
@@ -7098,4 +7094,3 @@ crbug.com/1205780 [ Mac10.14 ] external/wpt/css/mediaqueries/test_media_queries.
 crbug.com/1205780 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure Pass ]
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
-crbug.com/1205801 [ Mac10.14 ] external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
