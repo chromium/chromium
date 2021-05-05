@@ -368,7 +368,6 @@ export class Camera extends View {
    */
   initOpenPTZPanel_() {
     this.openPTZPanel_.addEventListener('click', () => {
-      metrics.sendOpenPTZPanelEvent();
       nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
       highlight(false);
     });

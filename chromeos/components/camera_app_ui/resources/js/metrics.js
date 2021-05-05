@@ -410,10 +410,17 @@ export function sendBarcodeDetectedEvent({contentType}) {
 
 /**
  * Sends the open ptz panel event.
+ * @param {{pan: boolean, tilt: boolean, zoom: boolean}} capabilities
  */
-export function sendOpenPTZPanelEvent() {
-  sendEvent({
-    eventCategory: 'ptz',
-    eventAction: 'open-panel',
-  });
+export function sendOpenPTZPanelEvent(capabilities) {
+  sendEvent(
+      {
+        eventCategory: 'ptz',
+        eventAction: 'open-panel',
+      },
+      new Map([
+        [24, capabilities.pan],
+        [25, capabilities.tilt],
+        [26, capabilities.zoom],
+      ]));
 }

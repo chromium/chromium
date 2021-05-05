@@ -4,6 +4,7 @@
 
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
+import * as metrics from '../metrics.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
@@ -262,10 +263,16 @@ export class PTZPanel extends View {
 
     this.track_ = stream.getVideoTracks()[0];
     const {pan, tilt, zoom} = this.track_.getCapabilities();
+    const capabilities = {
+      pan: pan !== undefined,
+      tilt: tilt !== undefined,
+      zoom: zoom !== undefined,
+    };
+    metrics.sendOpenPTZPanelEvent(capabilities);
 
-    state.set(state.State.HAS_PAN_SUPPORT, pan !== undefined);
-    state.set(state.State.HAS_TILT_SUPPORT, tilt !== undefined);
-    state.set(state.State.HAS_ZOOM_SUPPORT, zoom !== undefined);
+    state.set(state.State.HAS_PAN_SUPPORT, capabilities.pan);
+    state.set(state.State.HAS_TILT_SUPPORT, capabilities.tilt);
+    state.set(state.State.HAS_ZOOM_SUPPORT, capabilities.zoom);
 
     if (pan !== undefined) {
       this.bind_('pan', this.panRight_, this.panLeft_, pan);
