@@ -4,10 +4,13 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace extensions {
 
@@ -33,6 +36,55 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ExtensionBrowserTest::SetUpOnMainThread();
   }
+
+  void RunChromeRuntimeTest(const std::string& action) {
+    ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                                  .AppendASCII("content_script")));
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+    GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+    // 1) Navigate to A.
+    content::RenderFrameHost* rfh_a =
+        ui_test_utils::NavigateToURL(browser(), url_a);
+    content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+    constexpr int kMessagingBucket =
+        (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
+         << 16) +
+        static_cast<int>(
+            back_forward_cache::DisabledReasonId::kExtensionMessaging);
+
+    EXPECT_TRUE(ExecJs(rfh_a, action));
+
+    EXPECT_EQ(0, histogram_tester_.GetBucketCount(
+                     "BackForwardCache.HistoryNavigationOutcome."
+                     "DisabledForRenderFrameHostReason2",
+                     kMessagingBucket));
+    // 2) Navigate to B.
+    ui_test_utils::NavigateToURL(browser(), url_b);
+
+    // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
+    // since it uses the chrome.runtime API.
+    delete_observer_rfh_a.WaitUntilDeleted();
+
+    // 3) Go back to A.
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+    // Validate that the not restored reason is `ExtensionMessaging` due to the
+    // chrome.runtime usage.
+    EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                     "BackForwardCache.HistoryNavigationOutcome."
+                     "DisabledForRenderFrameHostReason2",
+                     kMessagingBucket));
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -236,7 +288,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 2) Navigate to B.
   content::RenderFrameHost* rfh_b =
       ui_test_utils::NavigateToURL(browser(), url_b);
-  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -250,6 +301,40 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 
   // Expect that `rfh_a` is destroyed as it should be cleared from the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+// Test if the chrome.runtime.connect API is called, the page is prevented from
+// entering bfcache.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ChromeRuntimeConnectUsage) {
+  RunChromeRuntimeTest(
+      "chrome.runtime.connect('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');");
+}
+
+// Test if the chrome.runtime.sendMessage API is called, the page is prevented
+// from entering bfcache.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ChromeRuntimeSendMessageUsage) {
+  RunChromeRuntimeTest(
+      "chrome.runtime.sendMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'some "
+      "message');");
+}
+
+// Test if the chrome.runtime.connect API is called, the page is prevented from
+// entering bfcache.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
+    ChromeRuntimeConnectUsage) {
+  RunChromeRuntimeTest(
+      "chrome.runtime.connect('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');");
+
+  // Validate also that the not restored reason is `IsolatedWorldScript` due to
+  // the extension injecting a content script.
+  EXPECT_EQ(
+      1,
+      histogram_tester_.GetBucketCount(
+          "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
+          blink::scheduler::WebSchedulerTrackedFeature::kIsolatedWorldScript));
 }
 
 }  // namespace extensions

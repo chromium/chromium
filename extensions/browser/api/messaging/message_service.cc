@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -107,6 +108,14 @@ const Extension* GetExtensionForNativeAppChannel(
     return nullptr;
   return extension_web_contents_observer->GetExtensionFromFrame(source_rfh,
                                                                 true);
+}
+
+void DisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
+  if (!host)
+    return;
+  content::BackForwardCache::DisableForRenderFrameHost(
+      host, back_forward_cache::DisabledReason(
+                back_forward_cache::DisabledReasonId::kExtensionMessaging));
 }
 
 }  // namespace
@@ -226,6 +235,9 @@ void MessageService::OpenChannelToExtension(
     return;
   BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
+
+  // Disable back forward cache.
+  DisableBackForwardCacheForMessaging(source_render_frame_host);
 
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
@@ -421,6 +433,10 @@ void MessageService::OpenChannelToNativeApp(
 
   content::RenderFrameHost* source_rfh =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
+
+  // Disable back forward cache.
+  DisableBackForwardCacheForMessaging(source_rfh);
+
   std::string error = kReceivingEndDoesntExistError;
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   // NOTE: We're creating |receiver| with nullptr |source_rfh|, which seems to
@@ -485,6 +501,9 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
     opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+
+  // Disable back forward cache.
+  DisableBackForwardCacheForMessaging(receiver_contents->GetMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   std::unique_ptr<MessagePort> receiver =

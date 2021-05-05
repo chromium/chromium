@@ -24,6 +24,7 @@ source_set("messaging") {
   deps = [
     ":native_messaging",
     "//base",
+    "//components/back_forward_cache",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser/api",

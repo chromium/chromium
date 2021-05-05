@@ -33,6 +33,8 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "ModalDialog";
     case DisabledReasonId::kExtensions:
       return "Extensions";
+    case DisabledReasonId::kExtensionMessaging:
+      return "ExtensionMessaging";
     default:
       return "Unknown (default)";
   }

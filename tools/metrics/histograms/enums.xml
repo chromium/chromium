@@ -6711,6 +6711,7 @@ others/histograms.xml -->
   <int value="196618" label="kEmbedder-kPermissionRequestManager"/>
   <int value="196619" label="kEmbedder-kModalDialog"/>
   <int value="196620" label="kEmbedder-kExtensions"/>
+  <int value="196621" label="kEmbedder-kExtensionMessaging"/>
 </enum>
 
 <enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">
@@ -82886,7 +82887,8 @@ Called by update_scheduler_enums.py.-->
   <int value="52" label="WebOTPService"/>
   <int value="53" label="OutstandingNetworkRequestDirectSocket"/>
   <int value="54" label="IsolatedWorldScript"/>
-  <int value="55" label="ExtensionStyleSheet"/>
+  <int value="55" label="InjectedStyleSheet"/>
+  <int value="56" label="MediaSessionImplOnServiceCreated"/>
 </enum>
 
 <enum name="WebShareMethod">
