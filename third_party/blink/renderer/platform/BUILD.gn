@@ -1339,6 +1339,8 @@ component("platform") {
     "peerconnection/rtc_video_decoder_adapter.h",
     "peerconnection/rtc_video_decoder_factory.cc",
     "peerconnection/rtc_video_decoder_factory.h",
+    "peerconnection/rtc_video_decoder_fallback_recorder.cc",
+    "peerconnection/rtc_video_decoder_fallback_recorder.h",
     "peerconnection/rtc_video_decoder_stream_adapter.cc",
     "peerconnection/rtc_video_decoder_stream_adapter.h",
     "peerconnection/rtc_video_encoder.cc",

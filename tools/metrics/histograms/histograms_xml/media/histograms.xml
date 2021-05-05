@@ -3452,10 +3452,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.RTCVideoDecoderError" enum="VideoDecodeAcceleratorError"
-    expires_after="M82">
+<histogram name="Media.RTCVideoDecoderError" enum="MediaStatusCode"
+    expires_after="2021-08-15">
   <owner>posciak@chromium.org</owner>
-  <summary>Counts of video decode errors reported to RTCVideoDecoder.</summary>
+  <owner>liberato@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Counts of video decode errors reported to RTCVideoDecoder, recorded when an
+    error is reportd to RTCVideoDecoder. Also used for DecoderStream. Expired in
+    M83 and re-added in M92.
+  </summary>
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderFallbackReason.{Codecs}"
@@ -3464,6 +3470,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>webrtc-video@google.com</owner>
   <summary>
     The reason for fallback to software decoding for the codec {Codecs}.
+    Reported when a fallback to software decoding occurs.
   </summary>
   <token key="Codecs">
     <variant name="H264" summary=""/>
@@ -3522,6 +3529,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Reinitialization latency of the hardware video decoder that is used in the
     RTC pipeline.
+  </summary>
+</histogram>
+
+<histogram name="Media.RTCVideoDecoderStream.Error.OnFrameReady"
+    enum="MediaStatusCode" expires_after="2021-08-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    This records the media::StatusCode from the RTCVideoDecoderStreamAdapter. It
+    is emitted when the adapter encounters an error during decoding.
   </summary>
 </histogram>
 

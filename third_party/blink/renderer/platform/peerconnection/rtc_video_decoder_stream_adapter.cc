@@ -32,6 +32,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_fallback_recorder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
@@ -361,10 +362,14 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
     if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
       DLOG(ERROR) << __func__ << " multiple spatial layers.";
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
     }
 #else
     DLOG(ERROR) << __func__ << " multiple spatial layers.";
+    RecordRTCVideoDecoderFallbackReason(
+        config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   }
@@ -430,6 +435,9 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // here, to reset the decoder state.  For now, just fail.
     if (has_error_) {
       DLOG(ERROR) << __func__ << " decoding failed.";
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(),
+          RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode);
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
     }
 
@@ -457,6 +465,9 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
                 &RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread,
                 weak_this_));
         DLOG(ERROR) << __func__ << " too many errors / pending buffers.";
+        RecordRTCVideoDecoderFallbackReason(
+            config_.codec(),
+            RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow);
         return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       }
 
@@ -498,8 +509,13 @@ int32_t RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback(
 
   base::AutoLock auto_lock(lock_);
   decode_complete_callback_ = callback;
-  return has_error_ ? WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE
-                    : WEBRTC_VIDEO_CODEC_OK;
+  if (has_error_) {
+    RecordRTCVideoDecoderFallbackReason(
+        config_.codec(),
+        RTCVideoDecoderFallbackReason::kPreviousErrorOnRegisterCallback);
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 int32_t RTCVideoDecoderStreamAdapter::Release() {
@@ -632,9 +648,8 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
       return;
     default:
       DVLOG(2) << "Entering permanent error state";
-      UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderError",
-                                media::VideoDecodeAccelerator::PLATFORM_FAILURE,
-                                media::VideoDecodeAccelerator::ERROR_MAX + 1);
+      base::UmaHistogramSparse("Media.RTCVideoDecoderStream.Error.OnFrameReady",
+                               static_cast<int>(result.code()));
       {
         base::AutoLock auto_lock(lock_);
         has_error_ = true;
@@ -695,9 +710,9 @@ void RTCVideoDecoderStreamAdapter::AttemptRead_Locked() {
   // We don't care if there are any pending decodes; keep a read running even if
   // there aren't any.  This way, we don't have to count correctly.
 
+  pending_read_ = true;
   decoder_stream_->Read(
       base::BindOnce(&RTCVideoDecoderStreamAdapter::OnFrameReady, weak_this_));
-  pending_read_ = true;
 }
 
 bool RTCVideoDecoderStreamAdapter::ShouldReinitializeForSettingHDRColorSpace(
