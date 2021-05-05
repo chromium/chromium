@@ -503,10 +503,14 @@ def execute_telemetry_benchmark(
            'outputing structured test results and perf results output:')
     print traceback.format_exc()
   finally:
-    # Add ignore_errors=True because otherwise rmtree may fail due to leaky
-    # processes of tests are still holding opened handles to files under
-    # |tempfile_dir|. For example, see crbug.com/865896
-    shutil.rmtree(temp_dir, ignore_errors=True)
+    # On swarming bots, don't remove output directory, since Result Sink might
+    # still be uploading files to Result DB. Also, swarming bots automatically
+    # clean up at the end of each task.
+    if 'SWARMING_TASK_ID' not in os.environ:
+      # Add ignore_errors=True because otherwise rmtree may fail due to leaky
+      # processes of tests are still holding opened handles to files under
+      # |tempfile_dir|. For example, see crbug.com/865896
+      shutil.rmtree(temp_dir, ignore_errors=True)
 
   print_duration('executing benchmark %s' % command_generator.benchmark, start)
 
