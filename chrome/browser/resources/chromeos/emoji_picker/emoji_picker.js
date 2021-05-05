@@ -259,8 +259,8 @@ export class EmojiPicker extends PolymerElement {
     const group =
         this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
     group.querySelector('emoji-group')
-        .shadowRoot.querySelector('emoji-button')
-        .focusButton();
+        .shadowRoot.querySelector('#fake-focus-target')
+        .focus();
     group.scrollIntoView();
   }
 

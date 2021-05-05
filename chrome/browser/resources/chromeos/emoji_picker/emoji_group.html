@@ -63,6 +63,10 @@
     border: 2px solid var(--cr-toggle-color);
   }
 
+  #fake-focus-target {
+    position: absolute;
+  }
+
 </style>
 
 <div id="heading" role="heading" aria-level="2" tabindex="0">
@@ -79,6 +83,7 @@
   </button>
   </template>
 <div id="emoji">
+  <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data.emoji]]">
     <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
       variants="[[item.alternates]]" tooltip="[[getTooltipForEmoji(item.base)]]"

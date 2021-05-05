@@ -147,7 +147,7 @@ suite('<emoji-picker>', () => {
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
                                  '[data-group="0"] > emoji-group',
-                                 'emoji-button:nth-child(2)')))
+                                 'emoji-button:nth-child(3)')))
                             .shadowRoot.querySelector('button');
     emojiButton.click();
 
@@ -171,7 +171,7 @@ suite('<emoji-picker>', () => {
         const emojiButton = (await waitForCondition(
                                  () => findInEmojiPicker(
                                      '[data-group="0"] > emoji-group',
-                                     'emoji-button:nth-child(1)')))
+                                     'emoji-button:nth-child(2)')))
                                 .shadowRoot.querySelector('button');
         emojiButton.click();
 
@@ -221,7 +221,7 @@ suite('<emoji-picker>', () => {
       firstEmojiButton = (await waitForCondition(
                               () => findInEmojiPicker(
                                   '[data-group="0"] > emoji-group',
-                                  'emoji-button:nth-child(2)')))
+                                  'emoji-button:nth-child(3)')))
                              .shadowRoot;
 
 
@@ -257,7 +257,7 @@ suite('<emoji-picker>', () => {
       const emojiButton2 = await waitForCondition(
           () =>
               findInEmojiPicker(
-                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(3)')
+                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(4)')
                   .shadowRoot);
 
       // right click on second emoji button
