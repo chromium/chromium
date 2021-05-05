@@ -3209,6 +3209,8 @@ enum WebFeature {
   kHandwritingRecognitionStartDrawing = 3894,
   kHandwritingRecognitionGetPrediction = 3895,
   kWebBluetoothManufacturerDataFilter = 3896,
+  kSanitizerAPIGetConfig = 3897,
+  kSanitizerAPIGetDefaultConfig = 3898,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -10,5 +10,5 @@ dictionary SanitizerConfig {
   sequence<DOMString> dropElements;
   record<DOMString, sequence<DOMString>> allowAttributes;
   record<DOMString, sequence<DOMString>> dropAttributes;
-  boolean allowCustomElements = false;
+  boolean allowCustomElements;
 };

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+  function assert_deep_equals(obj1, obj2) {
+    assert_equals(typeof obj1, typeof obj2);
+    if (typeof obj1 == "string") {
+      assert_equals(obj1, obj2);
+    } else if (typeof obj1 == "boolean") {
+      assert_true(obj1 == obj2);
+    } else if (typeof obj1 == "object") {
+      assert_array_equals(Object.keys(obj1).sort(), Object.keys(obj2).sort());
+      for (const k in Object.keys(obj1))
+        assert_deep_equals(obj1[k], obj2[k]);
+    }
+  }
+
+  test(t => {
+    // Quick sanity test: Test a few default values.
+    assert_in_array("div", Sanitizer.defaultConfig().allowElements);
+    assert_false(Sanitizer.defaultConfig().allowElements.includes("script"));
+    assert_false(Sanitizer.defaultConfig().allowElements.includes("noscript"));
+
+    assert_true("span" in Sanitizer.defaultConfig().allowAttributes);
+    assert_false("onclick" in Sanitizer.defaultConfig().allowAttributes);
+
+    assert_false("dropElements" in Sanitizer.defaultConfig());
+    assert_false("blockElements" in Sanitizer.defaultConfig());
+    assert_false("dropAttributes" in Sanitizer.defaultConfig());
+    assert_false(Sanitizer.defaultConfig().allowCustomElements);
+  }, "SanitizerAPI defaultConfig()");
+
+  test(t => {
+    assert_deep_equals(Sanitizer.defaultConfig(),
+                       new Sanitizer().config());
+  }, "SanitizerAPI config() on default created Sanitizer");
+
+  test(t => {
+    const configs = [{
+      allowElements: ["div", "sPAn", "helloworld"],
+      dropElements: ["xxx"],
+      allowAttributes: { "class": ["*"], "color": ["span", "div"],
+                         "onclick": ["*"] },
+      allowCustomElements: true,
+    },{
+      blockElements: ["table", "tbody", "th", "td"],
+    }, {
+      allowCustomElements: false,
+    }];
+    for (const config of configs)
+      assert_deep_equals(config, new Sanitizer(config).config());
+  }, "SanitizerAPI config() reflects creation config.");
+</script>
+</body>
+</html>

@@ -42,86 +42,67 @@
 
 namespace blink {
 
-Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
-                             const SanitizerConfig* config,
-                             ExceptionState& exception_state) {
-  return MakeGarbageCollected<Sanitizer>(execution_context, config);
+namespace {
+
+bool ConfigIsEmpty(const SanitizerConfig* config) {
+  return !config ||
+         (!config->hasDropElements() && !config->hasBlockElements() &&
+          !config->hasAllowElements() && !config->hasDropAttributes() &&
+          !config->hasAllowAttributes() && !config->hasAllowCustomElements());
 }
 
-Sanitizer::Sanitizer(ExecutionContext* execution_context,
-                     const SanitizerConfig* config)
-    : allow_custom_elements_(config->allowCustomElements()) {
-  bool use_default_config = true;
-  if (config->allowCustomElements()) {
-    use_default_config = false;
-  }
+SanitizerConfig* SanitizerConfigCopy(const SanitizerConfig* config) {
+  if (!config)
+    return nullptr;
 
-  // Format dropElements to uppercase.
-  if (config->hasDropElements()) {
-    ElementFormatter(drop_elements_, config->dropElements());
-    use_default_config = false;
-  }
-
-  // Format blockElements to uppercase.
-  if (config->hasBlockElements()) {
-    ElementFormatter(block_elements_, config->blockElements());
-    use_default_config = false;
-  }
-
-  // Format allowElements to uppercase.
-  if (config->hasAllowElements()) {
-    ElementFormatter(allow_elements_, config->allowElements());
-    use_default_config = false;
-  } else {
-    allow_elements_ = default_allow_elements_;
-  }
-
-  // Format dropAttributes to lowercase.
-  if (config->hasDropAttributes()) {
-    AttrFormatter(drop_attributes_, config->dropAttributes());
-    use_default_config = false;
-  }
-
-  // Format allowAttributes to lowercase.
+  SanitizerConfig* copy = SanitizerConfig::Create();
   if (config->hasAllowAttributes()) {
-    AttrFormatter(allow_attributes_, config->allowAttributes());
-    use_default_config = false;
-  } else {
-    allow_attributes_ = default_allow_attributes_;
+    copy->setAllowAttributes(config->allowAttributes());
+  }
+  if (config->hasAllowCustomElements()) {
+    copy->setAllowCustomElements(config->allowCustomElements());
+  }
+  if (config->hasAllowElements()) {
+    copy->setAllowElements(config->allowElements());
+  }
+  if (config->hasBlockElements()) {
+    copy->setBlockElements(config->blockElements());
+  }
+  if (config->hasDropAttributes()) {
+    copy->setDropAttributes(config->dropAttributes());
+  }
+  if (config->hasDropElements()) {
+    copy->setDropElements(config->dropElements());
+  }
+  return copy;
+}
+
+}  // anonymous namespace
+
+Sanitizer::Sanitizer(ExecutionContext* execution_context,
+                     const SanitizerConfig* config) {
+  // The spec treats an absent config as the default. We'll handle this by
+  // normalizing this here to make sure the config_dictionary_ is nullptr
+  // in these cases, while the config_ will be a copy of the default config.
+  if (ConfigIsEmpty(config)) {
+    config = nullptr;
   }
 
-  if (use_default_config) {
-    // TODO(lyf): Add unit tests for counters.
+  config_ = SanitizerConfigImpl::From(config);
+  config_dictionary_ = SanitizerConfigCopy(config);
+  if (!config_dictionary_) {
     UseCounter::Count(execution_context,
                       WebFeature::kSanitizerAPIDefaultConfiguration);
   }
 }
 
-void Sanitizer::ElementFormatter(HashSet<String>& element_set,
-                                 const Vector<String>& elements) {
-  for (const String& s : elements) {
-    element_set.insert(s.UpperASCII());
-  }
-}
-
-void Sanitizer::AttrFormatter(
-    HashMap<String, Vector<String>>& attr_map,
-    const Vector<std::pair<String, Vector<String>>>& attrs) {
-  for (const std::pair<String, Vector<String>>& pair : attrs) {
-    const String& lower_attr = pair.first.LowerASCII();
-    if (pair.second == kVectorStar || pair.second.Contains("*")) {
-      attr_map.insert(lower_attr, kVectorStar);
-    } else {
-      Vector<String> elements;
-      for (const String& s : pair.second) {
-        elements.push_back(s.UpperASCII());
-      }
-      attr_map.insert(lower_attr, elements);
-    }
-  }
-}
-
 Sanitizer::~Sanitizer() = default;
+
+Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
+                             const SanitizerConfig* config,
+                             ExceptionState& exception_state) {
+  return MakeGarbageCollected<Sanitizer>(execution_context, config);
+}
 
 String Sanitizer::sanitizeToString(ScriptState* script_state,
                                    StringOrDocumentFragmentOrDocument& input,
@@ -229,7 +210,7 @@ DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
       node = DropElement(node, fragment);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
-    } else if (is_custom_element && !allow_custom_elements_) {
+    } else if (is_custom_element && !config_.allow_custom_elements_) {
       // 4. If |kind| is `custom` and if allow_custom_elements_ is unset or set
       // to anything other than `true`, then 'drop'.
       node = DropElement(node, fragment);
@@ -240,17 +221,17 @@ DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
       node = DropElement(node, fragment);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
-    } else if (drop_elements_.Contains(name)) {
+    } else if (config_.drop_elements_.Contains(name)) {
       // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
       node = DropElement(node, fragment);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
-    } else if (block_elements_.Contains(name)) {
+    } else if (config_.block_elements_.Contains(name)) {
       // 6. If |name| is in |config|'s [=element block list=] then 'block'.
       node = BlockElement(node, fragment, exception_state);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
-    } else if (!allow_elements_.Contains(name)) {
+    } else if (!config_.allow_elements_.Contains(name)) {
       // 7. if |name| is not in |config|'s [=element allow list=] then 'block'.
       node = BlockElement(node, fragment, exception_state);
       UseCounter::Count(window->GetExecutionContext(),
@@ -325,8 +306,8 @@ Node* Sanitizer::KeepElement(Node* node,
                              String& node_name,
                              LocalDOMWindow* window) {
   Element* element = To<Element>(node);
-  if (allow_attributes_.at("*").Contains(node_name)) {
-  } else if (drop_attributes_.at("*").Contains(node_name)) {
+  if (config_.allow_attributes_.at("*").Contains(node_name)) {
+  } else if (config_.drop_attributes_.at("*").Contains(node_name)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
@@ -339,12 +320,12 @@ Node* Sanitizer::KeepElement(Node* node,
       bool drop = (baseline_drop_attributes_.Contains(name) &&
                    (baseline_drop_attributes_.at(name) == kVectorStar ||
                     baseline_drop_attributes_.at(name).Contains(node_name))) ||
-                  (drop_attributes_.Contains(name) &&
-                   (drop_attributes_.at(name) == kVectorStar ||
-                    drop_attributes_.at(name).Contains(node_name))) ||
-                  !(allow_attributes_.Contains(name) &&
-                    (allow_attributes_.at(name) == kVectorStar ||
-                     allow_attributes_.at(name).Contains(node_name)));
+                  (config_.drop_attributes_.Contains(name) &&
+                   (config_.drop_attributes_.at(name) == kVectorStar ||
+                    config_.drop_attributes_.at(name).Contains(node_name))) ||
+                  !(config_.allow_attributes_.Contains(name) &&
+                    (config_.allow_attributes_.at(name) == kVectorStar ||
+                     config_.allow_attributes_.at(name).Contains(node_name)));
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.
@@ -384,8 +365,19 @@ Node* Sanitizer::KeepElement(Node* node,
   return node;
 }
 
+SanitizerConfig* Sanitizer::config() const {
+  return SanitizerConfigCopy(config_dictionary_
+                                 ? config_dictionary_.Get()
+                                 : SanitizerConfigImpl::defaultConfig());
+}
+
+SanitizerConfig* Sanitizer::defaultConfig() {
+  return SanitizerConfigCopy(SanitizerConfigImpl::defaultConfig());
+}
+
 void Sanitizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(config_dictionary_);
 }
 
 }  // namespace blink

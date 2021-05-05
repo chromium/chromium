@@ -10,6 +10,8 @@ blink_modules_sources("sanitizer_api") {
   sources = [
     "sanitizer.cc",
     "sanitizer.h",
+    "sanitizer_config_impl.cc",
+    "sanitizer_config_impl.h",
   ]
 }
 
