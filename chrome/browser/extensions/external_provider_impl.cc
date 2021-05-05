@@ -370,8 +370,8 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         extension->FindStringPath(kWebAppMigrationFlag);
     bool is_migrating_to_web_app =
         web_app_migration_flag &&
-        web_app::IsPreinstalledAppInstallFeatureEnabled(
-            *web_app_migration_flag);
+        web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_migration_flag,
+                                                        *profile_);
     bool keep_if_present =
         extension->FindBoolPath(kKeepIfPresent).value_or(false);
     if (keep_if_present || is_migrating_to_web_app) {

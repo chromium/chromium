@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   // Set up pre-migration state.
   {
-    ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_FALSE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
@@ -274,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     base::AutoReset<bool> testing_scope =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
-    ASSERT_TRUE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_TRUE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     // Extension sticks around to be uninstalled by the replacement web app.
@@ -317,7 +319,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   // Revert migration.
   {
-    ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_FALSE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/true);
@@ -340,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     base::HistogramTester histograms;
     base::AutoReset<bool> testing_scope =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
-    ASSERT_TRUE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_TRUE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     extensions::TestExtensionRegistryObserver uninstall_observer(
         extensions::ExtensionRegistry::Get(profile()));
@@ -388,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   // Set up pre-migration state.
   {
-    ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_FALSE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
@@ -422,7 +427,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     base::AutoReset<bool> testing_scope =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
-    ASSERT_TRUE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_TRUE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     // Extension sticks around to be uninstalled by the replacement web app.
@@ -482,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        UserUninstalledExtensionApp) {
   // Set up pre-migration state.
   {
-    ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_FALSE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
@@ -507,7 +514,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     base::AutoReset<bool> testing_scope =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
-    ASSERT_TRUE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_TRUE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     EXPECT_FALSE(IsExtensionAppInstalled());
@@ -540,7 +548,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     base::HistogramTester histograms;
 
-    ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_FALSE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false,
@@ -561,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     base::AutoReset<bool> testing_scope =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
-    ASSERT_TRUE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
+    ASSERT_TRUE(
+        IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
 
     SyncExternalExtensions();
     // Extension sticks around to be uninstalled by the replacement web app.

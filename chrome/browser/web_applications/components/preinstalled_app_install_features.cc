@@ -5,6 +5,8 @@
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace web_app {
 
@@ -24,6 +26,13 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
 
 bool g_always_enabled_for_testing = false;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsMigrationFeature(const base::Feature& feature) {
+  return &feature == &kMigrateDefaultChromeAppToWebAppsGSuite ||
+         &feature == &kMigrateDefaultChromeAppToWebAppsNonGSuite;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 // Enables migration of default installed GSuite apps over to their replacement
@@ -41,6 +50,20 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
+// MigrateDefaultChromeAppToWebAppsNonGSuite flags for managed users.
+// Without this flag enabled managed users will not undergo the default web app
+// migration.
+//
+// Why have a separate flag?
+// Field trials are not able to accurately distinguish managed Chrome OS users.
+// Because admin installed Chrome apps conflict with the default web app
+// migration we need to maintain separate control over the rollout for mananged
+// users.
+const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
+    "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables default installing the Chat web app.
 const base::Feature kDefaultChatWebApp{"DefaultChatWebApp",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
@@ -50,11 +73,22 @@ const base::Feature kDefaultMeetWebApp{"DefaultMeetWebApp",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name) {
+bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
+                                            const Profile& profile) {
   if (g_always_enabled_for_testing)
     return true;
 
   for (const base::Feature* feature : kPreinstalledAppInstallFeatures) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    // See |kAllowDefaultWebAppMigrationForChromeOsManagedUsers| comment above.
+    if (base::FeatureList::IsEnabled(*feature) &&
+        feature->name == feature_name && IsMigrationFeature(*feature) &&
+        profile.GetProfilePolicyConnector()->IsManaged()) {
+      return base::FeatureList::IsEnabled(
+          kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
     if (feature->name == feature_name)
       return base::FeatureList::IsEnabled(*feature);
   }
