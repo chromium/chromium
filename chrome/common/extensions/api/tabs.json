@@ -142,7 +142,7 @@
     ],
     "properties": {
       "MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND": {
-        "value": 1,
+        "value": 2,
         "description": "The maximum number of times that $(ref:captureVisibleTab) can be called per second. $(ref:captureVisibleTab) is expensive and should not be called too often."
       },
       "TAB_ID_NONE": {

@@ -11,7 +11,7 @@
     },
     "properties": {
       "MAX_CAPTURE_VISIBLE_REGION_CALLS_PER_SECOND": {
-        "value": 1,
+        "value": 2,
         "description": "The maximum number of times that $(ref:captureVisibleRegion) can be called per second. $(ref:captureVisibleRegion) is expensive and should not be called too often."
       }
     },
