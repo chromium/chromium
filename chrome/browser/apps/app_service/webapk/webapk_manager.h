@@ -18,6 +18,7 @@ class ApkWebAppService;
 namespace apps {
 
 class AppServiceProxyBase;
+class WebApkInstallQueue;
 
 class WebApkManager : public apps::AppRegistryCache::Observer {
  public:
@@ -41,6 +42,8 @@ class WebApkManager : public apps::AppRegistryCache::Observer {
   apps::AppServiceProxyBase* proxy_;
   ash::ApkWebAppService* apk_service_;
   web_app::AppRegistrar& web_app_registrar_;
+
+  std::unique_ptr<apps::WebApkInstallQueue> install_queue_;
 };
 
 }  // namespace apps

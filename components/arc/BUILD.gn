@@ -388,6 +388,8 @@ static_library("arc_test_support") {
     "test/fake_wake_lock_instance.h",
     "test/fake_wallpaper_instance.cc",
     "test/fake_wallpaper_instance.h",
+    "test/fake_webapk_instance.cc",
+    "test/fake_webapk_instance.h",
     "test/test_browser_context.cc",
     "test/test_browser_context.h",
   ]

@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+[Extensible]
+enum WebApkInstallResult {
+  kSuccess = 0,
+  kErrorUnknown = 1,
+  // Errors while communicating with PlayInstallService.
+  kErrorServiceCommunication = 2,
+  kErrorServiceTimeout = 3,
+  // Errors returned from PlayInstallService directly.
+  kErrorCallerVerificationFailed = 4,
+  kErrorPolicyViolation = 5,
+  kErrorApiDisabled = 6,
+  kErrorUnknownAccount = 7,
+  kErrorResolveNetworkError = 8,
+  kErrorResolveError = 9,
+  kErrorNotGoogleSigned = 10,
+};
+
+// Allows Chrome to install and manage WebAPKs inside ARC.
+// Next method ID: 1
+interface WebApkInstance {
+
+  // Install or update a WebAPK with the given |package_name|.
+  InstallWebApk@0(string package_name,
+                  uint32 version,
+                  string app_name,
+                  string token) =>
+                      (WebApkInstallResult result);
+};

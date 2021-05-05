@@ -2,6 +2,7 @@ include_rules = [
   "+components/services/app_service/app_service_impl.h",
   "+components/services/app_service/public",
   "+components/full_restore",
+  "+components/webapk",
 ]
 
 specific_include_rules = {

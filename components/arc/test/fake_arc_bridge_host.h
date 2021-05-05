@@ -155,6 +155,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojo::PendingRemote<mojom::WakeLockInstance> wakelock_remote) override;
   void OnWallpaperInstanceReady(
       mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) override;
+  void OnWebApkInstanceReady(
+      mojo::PendingRemote<mojom::WebApkInstance> webapk_instance) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakeArcBridgeHost);

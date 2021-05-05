@@ -637,9 +637,6 @@ const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
-
-// Custom WebAPK server URL for the sake of testing.
-const char kWebApkServerUrl[] = "webapk-server-url";
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -809,6 +806,11 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+// Custom WebAPK server URL for the sake of testing.
+const char kWebApkServerUrl[] = "webapk-server-url";
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)

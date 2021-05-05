@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/arc/test/fake_webapk_instance.h"
+
+namespace arc {
+
+FakeWebApkInstance::FakeWebApkInstance() = default;
+
+FakeWebApkInstance::~FakeWebApkInstance() = default;
+
+void FakeWebApkInstance::InstallWebApk(const std::string& package_name,
+                                       uint32_t version,
+                                       const std::string& app_name,
+                                       const std::string& token,
+                                       InstallWebApkCallback callback) {
+  handled_packages_.push_back(package_name);
+  std::move(callback).Run(install_result_);
+}
+}  // namespace arc

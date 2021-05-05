@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/arc_bridge.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_holder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -176,6 +177,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       mojo::PendingRemote<mojom::WakeLockInstance> wake_lock_remote) override;
   void OnWallpaperInstanceReady(
       mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) override;
+  void OnWebApkInstanceReady(
+      mojo::PendingRemote<mojom::WebApkInstance> webapk_remote) override;
 
   size_t GetNumMojoChannelsForTesting() const;
 

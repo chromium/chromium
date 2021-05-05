@@ -71,6 +71,7 @@ if (is_chromeos_ash) {
       "volume_mounter.mojom",
       "wake_lock.mojom",
       "wallpaper.mojom",
+      "webapk.mojom",
     ]
 
     public_deps = [

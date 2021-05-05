@@ -61,10 +61,11 @@ import "components/arc/mojom/voice_interaction_framework.mojom";
 import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
+import "components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 57
+// Next MinVersion: 58
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 162
+// Next method ID: 163
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -298,4 +299,8 @@ interface ArcBridgeHost {
   // Notifies Chrome that the WallpaperInstance interface is ready.
   [MinVersion=18] OnWallpaperInstanceReady@124(
       pending_remote<WallpaperInstance> instance_remote);
+
+  // Notifies Chrome that the WebApkInstance interface is ready.
+  [MinVersion=57] OnWebApkInstanceReady@162(
+      pending_remote<WebApkInstance> instance_ptr);
 };

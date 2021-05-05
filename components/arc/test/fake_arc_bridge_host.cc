@@ -251,4 +251,7 @@ void FakeArcBridgeHost::OnWakeLockInstanceReady(
 void FakeArcBridgeHost::OnWallpaperInstanceReady(
     mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) {}
 
+void FakeArcBridgeHost::OnWebApkInstanceReady(
+    mojo::PendingRemote<mojom::WebApkInstance> wallpaper_remote) {}
+
 }  // namespace arc

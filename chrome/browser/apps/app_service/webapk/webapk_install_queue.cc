@@ -1,0 +1,76 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
+
+#include <utility>
+
+#include "base/bind.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/arc/arc_service_manager.h"
+#include "components/arc/mojom/webapk.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
+
+namespace apps {
+
+WebApkInstallQueue::WebApkInstallQueue(Profile* profile)
+    : profile_(profile), connection_ready_(false) {
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  DCHECK(arc_service_manager);
+  arc_service_manager->arc_bridge_service()->webapk()->AddObserver(this);
+}
+
+WebApkInstallQueue::~WebApkInstallQueue() {
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  if (arc_service_manager) {
+    arc_service_manager->arc_bridge_service()->webapk()->RemoveObserver(this);
+  }
+}
+
+void WebApkInstallQueue::Install(const std::string& app_id) {
+  pending_installs_.push_back(
+      std::make_unique<WebApkInstallTask>(profile_, app_id));
+  PostMaybeStartNext();
+}
+
+void WebApkInstallQueue::PostMaybeStartNext() {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&WebApkInstallQueue::MaybeStartNext,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebApkInstallQueue::MaybeStartNext() {
+  if (pending_installs_.empty() || current_install_ || !connection_ready_) {
+    return;
+  }
+
+  current_install_ = std::move(pending_installs_.front());
+  pending_installs_.pop_front();
+
+  current_install_->Start(base::BindOnce(
+      &WebApkInstallQueue::OnInstallCompleted, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebApkInstallQueue::OnInstallCompleted(bool success) {
+  current_install_.reset();
+  PostMaybeStartNext();
+}
+
+void WebApkInstallQueue::OnConnectionReady() {
+  // Only start installing when WebApkInstance is ready, since installs cannot
+  // complete without it.
+  connection_ready_ = true;
+  PostMaybeStartNext();
+}
+
+void WebApkInstallQueue::OnConnectionClosed() {
+  connection_ready_ = false;
+}
+
+}  // namespace apps

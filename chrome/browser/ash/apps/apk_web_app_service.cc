@@ -57,6 +57,7 @@ const char kIsWebOnlyTwaKey[] = "is_web_only_twa";
 const char kSha256FingerprintKey[] = "sha256_fingerprint";
 constexpr char kLastAppId[] = "last_app_id";
 constexpr char kPinIndex[] = "pin_index";
+constexpr char kGeneratedWebApkPackagePrefix[] = "org.chromium.webapk.";
 
 // Default icon size in pixels to request from ARC for an icon.
 const int kDefaultIconSize = 192;
@@ -250,6 +251,13 @@ void ApkWebAppService::OnPackageInstalled(
     const arc::mojom::ArcPackageInfo& package_info) {
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;
+
+  // Automatically generated WebAPKs have their lifecycle managed by
+  // WebApkManager and do not need to be considered here.
+  if (base::StartsWith(package_info.package_name,
+                       kGeneratedWebApkPackagePrefix)) {
+    return;
+  }
 
   // This method is called when a) new packages are installed, and b) existing
   // packages are updated. In (b), there are two cases to handle: the package

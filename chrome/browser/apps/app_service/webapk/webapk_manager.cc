@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -26,6 +27,7 @@ WebApkManager::WebApkManager(Profile* profile)
   proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
   apk_service_ = ash::ApkWebAppServiceFactory::GetForProfile(profile_);
   DCHECK(apk_service_);
+  install_queue_ = std::make_unique<WebApkInstallQueue>(profile);
 
   Observe(&proxy_->AppRegistryCache());
 }
@@ -74,8 +76,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const apps::AppUpdate& app) {
 }
 
 void WebApkManager::QueueInstall(const apps::AppUpdate& update) {
-  // TODO(crbug.com/1198433): Actually queue the install.
-  VLOG(1) << "Queueing WebAPK install for app: " << update.AppId();
+  install_queue_->Install(update.AppId());
 }
 
 }  // namespace apps

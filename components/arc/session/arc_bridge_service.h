@@ -111,6 +111,7 @@ class WakeLockHost;
 class WakeLockInstance;
 class WallpaperHost;
 class WallpaperInstance;
+class WebApkInstance;
 }  // namespace mojom
 
 // Holds Mojo channels which proxy to ARC side implementation. The actual
@@ -318,6 +319,7 @@ class ArcBridgeService {
   wallpaper() {
     return &wallpaper_;
   }
+  ConnectionHolder<mojom::WebApkInstance>* webapk() { return &webapk_; }
 
  private:
   base::ObserverList<Observer> observer_list_;
@@ -394,6 +396,7 @@ class ArcBridgeService {
       volume_mounter_;
   ConnectionHolder<mojom::WakeLockInstance, mojom::WakeLockHost> wake_lock_;
   ConnectionHolder<mojom::WallpaperInstance, mojom::WallpaperHost> wallpaper_;
+  ConnectionHolder<mojom::WebApkInstance> webapk_;
   DISALLOW_COPY_AND_ASSIGN(ArcBridgeService);
 };
 

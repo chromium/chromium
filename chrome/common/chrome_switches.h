@@ -195,7 +195,6 @@ extern const char kForceShowUpdateMenuBadge[];
 extern const char kForceShowUpdateMenuItemCustomSummary[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
-extern const char kWebApkServerUrl[];
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -257,6 +256,10 @@ extern const char kAllowNaClSocketAPI[];
     defined(OS_WIN)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+extern const char kWebApkServerUrl[];
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
