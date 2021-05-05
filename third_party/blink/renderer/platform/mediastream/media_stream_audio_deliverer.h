@@ -11,6 +11,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_parameters.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -48,6 +50,9 @@ class MediaStreamAudioDeliverer {
     DCHECK(!base::Contains(consumers_, consumer));
     DCHECK(!base::Contains(pending_consumers_, consumer));
     pending_consumers_.push_back(consumer);
+    SendLogMessage(
+        String::Format("%s => (number of consumer: active=%u, pending=%u)",
+                       __func__, consumers_.size(), pending_consumers_.size()));
   }
 
   // Stop delivering audio to |consumer|. Returns true if |consumer| was the
@@ -68,6 +73,9 @@ class MediaStreamAudioDeliverer {
       if (it != pending_consumers_.end())
         pending_consumers_.erase(it);
     }
+    SendLogMessage(
+        String::Format("%s => (number of consumers: active=%u, pending=%u)",
+                       __func__, consumers_.size(), pending_consumers_.size()));
     return had_consumers && consumers_.IsEmpty() &&
            pending_consumers_.IsEmpty();
   }
@@ -93,6 +101,8 @@ class MediaStreamAudioDeliverer {
       base::AutoLock auto_params_lock(params_lock_);
       if (params_.Equals(params))
         return;
+      SendLogMessage(String::Format("%s({params=[%s]})", __func__,
+                                    params.AsHumanReadableString().c_str()));
       params_ = params;
     }
     pending_consumers_.AppendRange(consumers_.begin(), consumers_.end());
@@ -117,6 +127,8 @@ class MediaStreamAudioDeliverer {
       consumers_.AppendRange(pending_consumers_.begin(),
                              pending_consumers_.end());
       pending_consumers_.clear();
+      SendLogMessage(String::Format("%s => (number of active consumers=%u)",
+                                    __func__, consumers_.size()));
     }
 
     // Deliver the audio data to each consumer.
@@ -137,6 +149,13 @@ class MediaStreamAudioDeliverer {
   }
 
  private:
+  void SendLogMessage(const WTF::String& message) {
+    WebRtcLogMessage(String::Format("MSAD::%s [this=0x%" PRIXPTR "]",
+                                    message.Utf8().c_str(),
+                                    reinterpret_cast<uintptr_t>(this))
+                         .Utf8());
+  }
+
   // In debug builds, check that all methods that could cause object graph or
   // data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);

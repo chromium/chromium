@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,7 @@
 #include "media/base/sample_rates.h"
 #include "media/webrtc/audio_processor_controls.h"
 #include "media/webrtc/webrtc_switches.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -95,7 +97,8 @@ std::string GetAudioProcesingPropertiesLogString(
       bool_to_string(properties.goog_experimental_noise_suppression),
       bool_to_string(properties.goog_highpass_filter),
       bool_to_string(properties.goog_experimental_auto_gain_control),
-      bool_to_string(base::FeatureList::IsEnabled(features::kWebRtcHybridAgc)));
+      bool_to_string(
+          base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)));
   return str;
 }
 }  // namespace
@@ -342,6 +345,14 @@ ProcessedLocalAudioSource::GetAudioProcessor() const {
 
 bool ProcessedLocalAudioSource::HasAudioProcessing() const {
   return audio_processor_ && audio_processor_->has_audio_processing();
+}
+
+void ProcessedLocalAudioSource::SetOutputWillBeMuted(bool muted) {
+  if (base::FeatureList::IsEnabled(
+          features::kMinimizeAudioProcessingForUnusedOutput) &&
+      HasAudioProcessing()) {
+    audio_processor_->SetOutputWillBeMuted(muted);
+  }
 }
 
 void ProcessedLocalAudioSource::SetVolume(int volume) {

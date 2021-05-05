@@ -133,6 +133,12 @@ void MediaStreamComponent::AudioSourceProviderImpl::ProvideInput(
   web_audio_source_provider_->ProvideInput(web_audio_data_, frames_to_process);
 }
 
+String MediaStreamComponent::ToString() const {
+  return String::Format(
+      "[id: %s, unique_id: %d, enabled: %s, muted=%s]", Id().Utf8().c_str(),
+      UniqueId(), Enabled() ? "true" : "false", Muted() ? "true" : "false");
+}
+
 void MediaStreamComponent::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
 }

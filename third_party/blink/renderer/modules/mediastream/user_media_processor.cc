@@ -1402,6 +1402,8 @@ UserMediaProcessor::CreateAudioSource(
   if (blink::IsScreenCaptureMediaType(device.type) ||
       !blink::MediaStreamAudioProcessor::WouldModifyAudio(
           audio_processing_properties)) {
+    SendLogMessage(
+        base::StringPrintf("%s => (no audiprocessing is used)", __func__));
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         frame_, device,
         base::OptionalOrNullptr(current_request_info_->audio_capture_settings()
@@ -1412,6 +1414,8 @@ UserMediaProcessor::CreateAudioSource(
 
   // The audio device is not associated with screen capture and also requires
   // processing.
+  SendLogMessage(
+      base::StringPrintf("%s => (audiprocessing is required)", __func__));
   return std::make_unique<blink::ProcessedLocalAudioSource>(
       *frame_, device, stream_controls->disable_local_echo,
       audio_processing_properties,

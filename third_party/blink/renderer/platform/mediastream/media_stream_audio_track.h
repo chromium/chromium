@@ -74,6 +74,8 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   // this track.
   int NumPreferredChannels() const;
 
+  bool IsEnabled() const;
+
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
   virtual void* GetClassIdentifier() const;

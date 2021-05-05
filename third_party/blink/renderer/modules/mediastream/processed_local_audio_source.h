@@ -78,6 +78,11 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   bool HasAudioProcessing() const;
 
+  // Instructs the Audio Processing Module (APM) to reduce its complexity when
+  // |muted| is true. This mode is triggered when all audio tracks are disabled.
+  // The default APM complexity mode is restored when |muted| is set to false.
+  void SetOutputWillBeMuted(bool muted);
+
   const scoped_refptr<blink::MediaStreamAudioLevelCalculator::Level>&
   audio_level() const {
     return level_calculator_.level();

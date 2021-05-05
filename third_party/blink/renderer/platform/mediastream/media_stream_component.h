@@ -103,6 +103,8 @@ class PLATFORM_EXPORT MediaStreamComponent final
   }
   void GetSettings(MediaStreamTrackPlatform::Settings&);
 
+  String ToString() const;
+
   void Trace(Visitor*) const;
 
  private:

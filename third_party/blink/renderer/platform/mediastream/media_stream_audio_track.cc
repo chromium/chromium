@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -87,6 +88,11 @@ void MediaStreamAudioTrack::SetEnabled(bool enabled) {
   deliverer_.GetConsumerList(&sinks_to_notify);
   for (WebMediaStreamAudioSink* sink : sinks_to_notify)
     sink->OnEnabledChanged(enabled);
+}
+
+bool MediaStreamAudioTrack::IsEnabled() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return is_enabled_;
 }
 
 void MediaStreamAudioTrack::SetContentHint(

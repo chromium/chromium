@@ -390,6 +390,11 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroups;
 BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
 
+// Control switch for minimizing processing in the WebRTC APM when all audio
+// tracks are disabled.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kMinimizeAudioProcessingForUnusedOutput;
+
 }  // namespace features
 }  // namespace blink
 

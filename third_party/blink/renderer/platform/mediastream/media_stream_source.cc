@@ -167,7 +167,7 @@ MediaStreamSource::MediaStreamSource(const String& id,
   SendLogMessage(
       String::Format(
           "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
-          "{ready_state=%s}",
+          "{ready_state=%s})",
           id.Utf8().c_str(), StreamTypeToString(type), name.Utf8().c_str(),
           remote, ReadyStateToString(ready_state))
           .Utf8());

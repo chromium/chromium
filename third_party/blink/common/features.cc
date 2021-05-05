@@ -937,5 +937,12 @@ const base::Feature kFledgeInterestGroups{"FledgeInterestGroups",
 const base::Feature kFledgeInterestGroupAPI{"FledgeInterestGroupAPI",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the ability to minimize processing in the WebRTC APM when all audio
+// tracks are disabled. If disabled, the APM in WebRTC will ignore attempts to
+// set it in a low-processing mode when all audio tracks are disabled.
+const base::Feature kMinimizeAudioProcessingForUnusedOutput{
+    "MinimizeAudioProcessingForUnusedOutput",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
