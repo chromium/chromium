@@ -3934,6 +3934,21 @@
             ]
         }
     ],
+    "IOSUMABackgroundSessions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSUMABackgroundSessions"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [
