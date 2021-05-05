@@ -706,8 +706,9 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
     devices_as_list->Append(std::move(device_dictionary));
   }
 
-  bool unlock_keys_changed = !devices_as_list->Equals(
-      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys));
+  bool unlock_keys_changed =
+      *devices_as_list !=
+      *pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   {
     ListPrefUpdate update(pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
     update.Get()->Swap(devices_as_list.get());
