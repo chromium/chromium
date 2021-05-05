@@ -69002,10 +69002,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="SB2DownloadChecks">
   <int value="0" label="URL_CHECKS_TOTAL"/>
-  <int value="1" label="URL_CHECKS_CANCELED"/>
+  <int value="1" label="DEPRECATED_URL_CHECKS_CANCELED"/>
   <int value="2" label="URL_CHECKS_MALWARE"/>
-  <int value="3" label="HASH_CHECKS_TOTAL"/>
-  <int value="4" label="HASH_CHECKS_MALWARE"/>
+  <int value="3" label="DEPRECATED_HASH_CHECKS_TOTAL"/>
+  <int value="4" label="DEPRECATED_HASH_CHECKS_MALWARE"/>
 </enum>
 
 <enum name="SB2FilterLoad">

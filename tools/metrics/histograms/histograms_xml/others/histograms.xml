@@ -13335,19 +13335,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SB2.DownloadChecks" enum="SB2DownloadChecks"
-    expires_after="M77">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2022-05-02">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Records results of SafeBrowsing download check, including both url check and
-    downloaded file hash check.
+    Records results of SafeBrowsing download url check. Warning: this histogram
+    was expired from M78 to M91. Data may be missing.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
-<histogram name="SB2.DownloadUrlCheckDuration" units="ms" expires_after="M77">
-  <owner>vakh@chromium.org</owner>
+<histogram name="SB2.DownloadUrlCheckDuration" units="ms"
+    expires_after="2022-05-02">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>The time it takes for SafeBrowsing to check a download url.</summary>
+  <summary>
+    The time it takes for SafeBrowsing to check a download url. Warning: this
+    histogram was expired from M78 to M91. Data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="SB2.GetHashResponseOrErrorCode"
