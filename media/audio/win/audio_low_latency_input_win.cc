@@ -619,11 +619,10 @@ void WASAPIAudioInputStream::Stop() {
 
   const bool monotonic_timestamps =
       min_timestamp_diff_ >= base::TimeDelta::FromMicroseconds(1);
-  if (!monotonic_timestamps) {
-    SendLogMessage("%s => (ERROR: non-monotonic timestamp sequence)", __func__);
-  }
   base::UmaHistogramBoolean("Media.Audio.Capture.Win.MonotonicTimestamps",
                             monotonic_timestamps);
+  SendLogMessage("%s => (Media.Audio.Capture.Win.MonotonicTimestamps=%s)",
+                 __func__, monotonic_timestamps ? "true" : "false");
 
   started_ = false;
   sink_ = nullptr;
@@ -803,6 +802,8 @@ void WASAPIAudioInputStream::Run() {
 
   record_start_time_ = base::TimeTicks::Now();
   last_capture_time_ = base::TimeTicks();
+  max_timestamp_diff_ = base::TimeDelta::Min();
+  min_timestamp_diff_ = base::TimeDelta::Max();
 
   while (recording && !error) {
     // Wait for a close-down event or a new capture event.
@@ -852,7 +853,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       audio_capture_client_->GetNextPacketSize(&num_frames_in_next_packet);
   if (FAILED(hr)) {
     LOG(ERROR) << "WAIS::" << __func__
-               << " => (ERROR: IAudioCaptureClient::GetNextPacketSize=["
+               << " => (ERROR: 1-IAudioCaptureClient::GetNextPacketSize=["
                << ErrorToString(hr).c_str() << "])";
     return;
   }
@@ -875,6 +876,11 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     if (hr == AUDCLNT_S_BUFFER_EMPTY) {
       DCHECK_EQ(num_frames_to_read, 0u);
       return;
+    }
+    if (hr == AUDCLNT_E_OUT_OF_ORDER) {
+      // A previous IAudioCaptureClient::GetBuffer() call is still in effect.
+      // Release any acquired buffer to be able to try reading a buffer again.
+      audio_capture_client_->ReleaseBuffer(num_frames_to_read);
     }
     if (FAILED(hr)) {
       LOG(ERROR) << "WAIS::" << __func__
@@ -941,11 +947,9 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     }
 
     // Keep track of max and min time difference between two successive time-
-    // stamps. Currently only used for logging purposes.
-    if (last_capture_time_.is_null()) {
-      max_timestamp_diff_ = base::TimeDelta::Min();
-      min_timestamp_diff_ = base::TimeDelta::Max();
-    } else {
+    // stamps. Results are used in Stop() to verify that the time-stamp sequence
+    // was monotonic.
+    if (!last_capture_time_.is_null()) {
       const auto delta_ts = capture_time - last_capture_time_;
       DCHECK_GT(device_position, 0u);
       DCHECK_GT(delta_ts, base::TimeDelta::Min());
@@ -1017,7 +1021,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     hr = audio_capture_client_->GetNextPacketSize(&num_frames_in_next_packet);
     if (FAILED(hr)) {
       LOG(ERROR) << "WAIS::" << __func__
-                 << " => (ERROR: IAudioCaptureClient::GetNextPacketSize=["
+                 << " => (ERROR: 2-IAudioCaptureClient::GetNextPacketSize=["
                  << ErrorToString(hr).c_str() << "])";
       return;
     }
