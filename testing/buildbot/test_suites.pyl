@@ -3716,7 +3716,7 @@
         'telemetry_test_name': 'webgl_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--enable-unsafe-fast-js-calls --use-gl=angle --use-cmd-decoder=passthrough --force_high_performance_gpu',
+          '--extra-browser-args=--enable-unsafe-fast-js-calls --enable-fake-no-alloc-direct-call-for-testing --use-gl=angle --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'mixins': [
           'enable_resultdb',
