@@ -133,15 +133,22 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
 }
 
 void Sequence::ReleaseTaskRunner() {
-  if (!task_runner())
+  recordreplay::Assert("Sequence::ReleaseTaskRunner Start");
+  if (!task_runner()) {
+    recordreplay::Assert("Sequence::ReleaseTaskRunner #1");
     return;
+  }
   if (execution_mode() == TaskSourceExecutionMode::kParallel) {
+    recordreplay::Assert("Sequence::ReleaseTaskRunner #2");
     static_cast<PooledParallelTaskRunner*>(task_runner())
         ->UnregisterSequence(this);
+    recordreplay::Assert("Sequence::ReleaseTaskRunner #3");
   }
   // No member access after this point, releasing |task_runner()| might delete
   // |this|.
+  recordreplay::Assert("Sequence::ReleaseTaskRunner #4");
   task_runner()->Release();
+  recordreplay::Assert("Sequence::ReleaseTaskRunner Done");
 }
 
 Sequence::Sequence(const TaskTraits& traits,
