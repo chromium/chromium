@@ -14,6 +14,7 @@
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "components/shared_highlighting/core/common/text_fragments_utils.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -51,7 +52,7 @@ LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
 
 void LinkToTextMenuObserver::InitMenu(
     const content::ContextMenuParams& params) {
-  highlight_exists_ = params.opened_from_highlight;
+  link_needs_generation_ = !params.selection_text.empty();
   raw_url_ = params.page_url;
   if (params.page_url.has_ref()) {
     GURL::Replacements replacements;
@@ -97,8 +98,8 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
 
   if (command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT) {
-    if (highlight_exists_) {
-      CopyPageURLToClipboard();
+    if (!link_needs_generation_) {
+      ReshareLink();
     } else {
       if (ShouldPreemptivelyGenerateLink()) {
         CopyLinkToClipboard();
@@ -140,7 +141,7 @@ void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
 bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
   return base::FeatureList::IsEnabled(
              shared_highlighting::kPreemptiveLinkToTextGeneration) &&
-         !highlight_exists_;
+         link_needs_generation_;
 }
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {
@@ -209,7 +210,14 @@ void LinkToTextMenuObserver::Timeout() {
   OnRequestLinkGenerationCompleted(std::string());
 }
 
-void LinkToTextMenuObserver::CopyPageURLToClipboard() {
+void LinkToTextMenuObserver::ReshareLink() {
+  GetRemote()->GetExistingSelectors(
+      base::BindOnce(&LinkToTextMenuObserver::OnGetExistingSelectorsComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
+    const std::vector<std::string>& selectors) {
   content::RenderFrameHost* main_frame =
       proxy_->GetWebContents()->GetMainFrame();
 
@@ -220,8 +228,11 @@ void LinkToTextMenuObserver::CopyPageURLToClipboard() {
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint));
-  scw.WriteText(
-      base::UTF8ToUTF16(raw_url_.is_empty() ? std::string() : raw_url_.spec()));
+
+  GURL url_to_share = shared_highlighting::RemoveTextFragments(url_);
+  url_to_share = shared_highlighting::AppendSelectors(url_to_share, selectors);
+
+  scw.WriteText(base::UTF8ToUTF16(url_to_share.spec()));
 }
 
 void LinkToTextMenuObserver::RemoveHighlight() {

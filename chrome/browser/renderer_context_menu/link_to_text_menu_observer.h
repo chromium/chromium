@@ -50,9 +50,14 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Copies the generated link to the user's clipboard.
   void CopyLinkToClipboard();
 
-  // Copies the current URL to the clipboard. Used to reshare an
+  // Make a request to the renderer to retrieve the selector for an
   // existing highlight.
-  void CopyPageURLToClipboard();
+  void ReshareLink();
+
+  // Callback after the request to retrieve an existing selector
+  // is complete.
+  void OnGetExistingSelectorsComplete(
+      const std::vector<std::string>& selectors);
 
   // Removes the highlight from the page and updates the URL.
   void RemoveHighlight();
@@ -67,7 +72,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   RenderViewContextMenuProxy* proxy_;
   GURL url_;
   GURL raw_url_;
-  bool highlight_exists_ = false;
+
+  // True when the context menu was opened with text selected.
+  bool link_needs_generation_ = false;
+
   base::Optional<std::string> generated_link_;
   base::Optional<std::string> generated_selector_for_testing_;
 

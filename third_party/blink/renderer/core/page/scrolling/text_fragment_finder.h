@@ -57,7 +57,9 @@ class CORE_EXPORT TextFragmentFinder
 
   void Trace(Visitor*) const;
 
-  const Member<RangeInFlatTree>& FirstMatch() const { return first_match_; }
+  const RangeInFlatTree* FirstMatch() const { return first_match_.Get(); }
+
+  TextFragmentSelector GetSelector() const { return selector_; }
 
  protected:
   friend class TextFragmentFinderTest;

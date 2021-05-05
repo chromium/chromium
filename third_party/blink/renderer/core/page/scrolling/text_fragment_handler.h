@@ -31,6 +31,9 @@ class CORE_EXPORT TextFragmentHandler final
   // Requests selector for current selection.
   void RequestSelector(RequestSelectorCallback callback) override;
 
+  // Requests selectors for all existing highlights on the page.
+  void GetExistingSelectors(GetExistingSelectorsCallback callback) override;
+
   // Remove all text fragments from the current frame.
   void RemoveFragments() override;
 

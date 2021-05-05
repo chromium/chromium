@@ -108,8 +108,28 @@ GURL AppendFragmentDirectives(const GURL& base_url,
       fragment_strings.push_back(fragment_string);
     }
   }
+  return AppendFragmentDirectives(base_url, fragment_strings);
+}
 
-  std::string fragments_string = base::JoinString(fragment_strings, "&");
+GURL AppendSelectors(const GURL& base_url, std::vector<std::string> selectors) {
+  if (!base_url.is_valid()) {
+    return GURL();
+  }
+
+  std::vector<std::string> fragment_strings;
+  for (std::string& selector : selectors) {
+    if (!selector.empty()) {
+      fragment_strings.push_back(kFragmentParameterName + selector);
+    }
+  }
+
+  return AppendFragmentDirectives(base_url, fragment_strings);
+}
+
+GURL AppendFragmentDirectives(const GURL& base_url,
+                              std::vector<std::string> directives) {
+  std::string fragments_string = base::JoinString(directives, "&");
+
   if (fragments_string.empty()) {
     return base_url;
   }

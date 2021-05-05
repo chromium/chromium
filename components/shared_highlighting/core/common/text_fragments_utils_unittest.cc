@@ -164,5 +164,30 @@ TEST(TextFragmentsUtilsTest, AppendFragmentDirectivesTwoFragments) {
       created_url.spec());
 }
 
+TEST(TextFragmentsUtilsTest,
+     AppendSelectorsURLWithPoundAndExistingFragmentAndAnchor) {
+  GURL base_url("https://www.chromium.org/#SomeAnchor:~:text=some%20value");
+  std::string test_selector("only%20start");
+
+  GURL created_url = AppendSelectors(base_url, {test_selector});
+  EXPECT_EQ(
+      "https://www.chromium.org/"
+      "#SomeAnchor:~:text=only%20start",
+      created_url.spec());
+}
+
+TEST(TextFragmentsUtilsTest, AppendSelectorsTwoFragments) {
+  GURL base_url("https://www.chromium.org");
+  std::string first_test_selector("only start");
+  std::string second_test_selector("only%2C%2D%20start%20%232");
+
+  GURL created_url =
+      AppendSelectors(base_url, {first_test_selector, second_test_selector});
+  EXPECT_EQ(
+      "https://www.chromium.org/"
+      "#:~:text=only%20start&text=only%2C%2D%20start%20%232",
+      created_url.spec());
+}
+
 }  // namespace
 }  // namespace shared_highlighting

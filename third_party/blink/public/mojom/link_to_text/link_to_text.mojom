@@ -22,4 +22,7 @@ interface TextFragmentReceiver {
 
   // Retrieves the text fragments matches from the fragment directive.
   ExtractTextFragmentsMatches() => (array<string> text);
+
+  // Request text fragment selectors for existing highlights.
+  GetExistingSelectors() => (array<string> selectors);
 };

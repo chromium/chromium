@@ -40,6 +40,26 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   GetTextFragmentSelectorGenerator()->RequestSelector(std::move(callback));
 }
 
+void TextFragmentHandler::GetExistingSelectors(
+    GetExistingSelectorsCallback callback) {
+  Vector<String> text_fragment_selectors;
+  TextFragmentAnchor* anchor(
+      static_cast<TextFragmentAnchor*>(GetTextFragmentSelectorGenerator()
+                                           ->GetFrame()
+                                           ->View()
+                                           ->GetFragmentAnchor()));
+
+  if (anchor) {
+    for (auto& finder : anchor->TextFragmentFinders()) {
+      if (finder->FirstMatch()) {
+        text_fragment_selectors.push_back(finder->GetSelector().ToString());
+      }
+    }
+  }
+
+  std::move(callback).Run(text_fragment_selectors);
+}
+
 void TextFragmentHandler::RemoveFragments() {
   DCHECK(
       base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));

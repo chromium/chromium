@@ -251,6 +251,23 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, Blocklist) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest,
+                       SelectionOverlappingHighlightCopiesNewLinkToText) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  params.opened_from_highlight = true;
+  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          LinkToTextMenuObserverTest,
                          ::testing::Values(true, false));
