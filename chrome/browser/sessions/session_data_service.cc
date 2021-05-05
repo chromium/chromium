@@ -5,8 +5,6 @@
 #include "chrome/browser/sessions/session_data_service.h"
 
 #include "base/bind.h"
-#include "chrome/browser/background/background_mode_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
@@ -45,12 +43,9 @@ void SessionDataService::OnBrowserRemoved(Browser* browser) {
     return;
 
   // Clear session data if the last window for a profile has been closed and
-  // closing the last window would normally close Chrome, unless background mode
-  // is active.  Tests don't have a background_mode_manager.
-  if (browser_defaults::kBrowserAliveWithNoWindows ||
-      g_browser_process->background_mode_manager()->IsBackgroundModeActive()) {
+  // closing the last window would normally close Chrome.
+  if (browser_defaults::kBrowserAliveWithNoWindows)
     return;
-  }
 
   // Check for any open windows for the current profile that we aren't tracking.
   for (auto* browser : *BrowserList::GetInstance()) {

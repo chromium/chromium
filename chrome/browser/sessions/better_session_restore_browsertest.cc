@@ -527,10 +527,13 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   // ... but not if the content setting is set to clear on exit.
   CookieSettingsFactory::GetForProfile(new_browser->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
-  // ... unless background mode is active.
+
   EnableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  CheckReloadedPageRestored(new_browser);
+  if (browser_defaults::kBrowserAliveWithNoWindows)
+    CheckReloadedPageRestored(new_browser);
+  else
+    CheckReloadedPageNotRestored(new_browser);
 
   DisableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
@@ -798,10 +801,13 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnBrowserClose) {
   // ... but not if the content setting is set to clear on exit.
   CookieSettingsFactory::GetForProfile(new_browser->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
-  // ... unless background mode is active.
+
   EnableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  NavigateAndCheckStoredData(new_browser, "cookies.html");
+  if (browser_defaults::kBrowserAliveWithNoWindows)
+    NavigateAndCheckStoredData(new_browser, "cookies.html");
+  else
+    StoreDataWithPage(new_browser, "cookies.html");
   DisableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
   if (browser_defaults::kBrowserAliveWithNoWindows)
@@ -846,7 +852,10 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, SessionCookiesBrowserClose) {
   StoreDataWithPage("session_cookies.html");
   EnableBackgroundMode();
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
-  NavigateAndCheckStoredData(new_browser, "session_cookies.html");
+  if (browser_defaults::kBrowserAliveWithNoWindows)
+    NavigateAndCheckStoredData(new_browser, "session_cookies.html");
+  else
+    StoreDataWithPage(new_browser, "session_cookies.html");
   DisableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
   if (browser_defaults::kBrowserAliveWithNoWindows)
