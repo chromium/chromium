@@ -179,6 +179,17 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
         }
       } else if (ThreadSafeMatch(tag_name, html_names::kLinkTag)) {
         simulated_token = kLink;
+
+      } else if (ThreadSafeMatch(tag_name, html_names::kTemplateTag)) {
+        TemplateType template_type = TemplateType::kRegular;
+        if (auto* item = token.GetAttributeItem(html_names::kShadowrootAttr)) {
+          String shadow_mode = item->Value();
+          if (EqualIgnoringASCIICase(shadow_mode, "open") ||
+              EqualIgnoringASCIICase(shadow_mode, "closed")) {
+            template_type = TemplateType::kShadow;
+          }
+        }
+        template_stack_.push_back(template_type);
       } else if (!in_select_insertion_mode_) {
         // If we're in the "in select" insertion mode, all of these tags are
         // ignored, so we shouldn't change the tokenizer state:
@@ -239,6 +250,15 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
       in_select_insertion_mode_ = false;
     if (ThreadSafeMatch(tag_name, html_names::kStyleTag))
       simulated_token = kStyleEnd;
+
+    if (ThreadSafeMatch(tag_name, html_names::kTemplateTag)) {
+      if (!template_stack_.IsEmpty()) {
+        TemplateType type = std::move(template_stack_.back());
+        template_stack_.pop_back();
+        if (type == TemplateType::kShadow)
+          simulated_token = kDeclarativeShadowDOMEnd;
+      }
+    }
   }
   if (token.GetType() == HTMLToken::kStartTag &&
       simulated_token == kOtherToken) {
