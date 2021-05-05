@@ -32,10 +32,13 @@ struct PolicyInfo {
   // Timestamp in milliseconds (javatime)
   // From DMServer when server issued response (Java time)
   int64 timestamp_ms@0;
+
   // PolicyData::DeviceID
   string? device_id@1;
+
   // PolicyData::ServiceAccountIdentity
   string? service_account_email_address@2;
+
   // PolicyData::GaiaId
   int64 service_account_gaia_id@3;
 };
@@ -44,16 +47,22 @@ struct PolicyInfo {
 struct SysInfo {
   // Returns the kernel version
   string kernel_version@0;
+
   // /etc/lsb-release: CHROMEOS_RELEASE_VERSION
   string? release_version@1;
+
   // /etc/lsb-release: CHROMEOS_RELEASE_BUILD_TYPE
   string? release_build_type@2;
+
   // /etc/lsb-release: CHROMEOS_RELEASE_TRACK
   string? release_track@3;
+
   // /etc/lsb-release: CHROMEOS_RELEASE_CHROME_MILESTONE
   string? release_milestone@4;
+
   // The full browser version number
   string? browser_version@5;
-  // Returns the current
+
+  // Returns the current channel name
   string? channel_name@6;
 };

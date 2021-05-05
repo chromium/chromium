@@ -46,3 +46,4 @@ interface MeetDevicesLogger {
   // Adds a |LoggerStateObserver| to monitor |MeetDevicesLogger|'s state.
   AddStateObserver@1(pending_remote<LoggerStateObserver> pending_observer);
 };
+
