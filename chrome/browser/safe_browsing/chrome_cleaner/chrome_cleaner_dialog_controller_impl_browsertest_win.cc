@@ -9,7 +9,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -124,9 +126,10 @@ IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest, AllBrowsersClosed) {
-  std::unique_ptr<ScopedKeepAlive> keep_alive =
-      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::BROWSER,
-                                        KeepAliveRestartOption::DISABLED);
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
 
   CloseAllBrowsers();
   base::RunLoop().RunUntilIdle();
