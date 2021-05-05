@@ -30,9 +30,6 @@ class CastRuntimeService
       public media::CastRuntimeAudioChannelEndpointManager {
  public:
   // Returns current instance of CastRuntimeService in the browser process.
-  // TODO(rwkeane): After dependent repos have implemented this interface,
-  // implement it in public Chromium as-well. Do not implement before then, to
-  // ensure that integration cross-repo remains relatively simple.
   static CastRuntimeService* GetInstance();
 
   CastRuntimeService();

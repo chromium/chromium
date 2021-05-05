@@ -10,8 +10,14 @@ cast_source_set("cast_core") {
     "cast_runtime_service.h",
   ]
 
+  if (!enable_cast_media_runtime) {
+    sources += [ "cast_runtime_service_simple.cc" ]
+  }
+
   deps = [
-    "//chromecast/media/cma/backend/proxy:headers",
+    "//base",
     "//chromecast/service",
   ]
+
+  public_deps = [ "//chromecast/media/cma/backend/proxy:headers" ]
 }
