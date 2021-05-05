@@ -251,8 +251,8 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
       // plus sign, *, *
       /* 41 */ {{0x002B, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_PLUS},
       // plus sign, *, *
-      /* 42 */ {{0x002B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT},
-                VKEY_OEM_PLUS},
+      /* 42 */
+      {{0x002B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_PLUS},
       // plus sign, *, *
       /* 43 */ {{0x002B, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
       // plus sign, *, *
@@ -333,433 +333,437 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
       /* 81 */ {{0x002F, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_4},
       // solidus, *, *
       /* 82 */ {{0x002F, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
+      // solidus, *, *
+      /* 83 */
+      {{0x002F, 0x2460, 0x2461, DomCode::CONTROL_RIGHT}, VKEY_RCONTROL},
       // colon, *, *
-      /* 83 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
+      /* 84 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
       // colon, *, *
-      /* 84 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT5}, VKEY_5},
+      /* 85 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT5}, VKEY_5},
       // colon, *, *
-      /* 85 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
+      /* 86 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
       // colon, *, *
-      /* 86 */ {{0x003A, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_2},
+      /* 87 */ {{0x003A, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_2},
       // semicolon, *, *
-      /* 87 */ {{0x003B, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 88 */ {{0x003B, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // semicolon, *, *
-      /* 88 */ {{0x003B, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
+      /* 89 */ {{0x003B, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
       // semicolon, *, *
-      /* 89 */ {{0x003B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 90 */ {{0x003B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // semicolon, *, *
-      /* 90 */ {{0x003B, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_PERIOD},
+      /* 91 */ {{0x003B, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_PERIOD},
       // semicolon, *, *
-      /* 91 */ {{0x003B, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
+      /* 92 */ {{0x003B, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
       // semicolon, *, *
-      /* 92 */ {{0x003B, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 93 */ {{0x003B, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // semicolon, *, *
-      /* 93 */ {{0x003B, 0x2460, 0x2461, DomCode::US_Q}, VKEY_OEM_1},
+      /* 94 */ {{0x003B, 0x2460, 0x2461, DomCode::US_Q}, VKEY_OEM_1},
       // semicolon, *, *
-      /* 94 */ {{0x003B, 0x2460, 0x2461, DomCode::US_Z}, VKEY_OEM_1},
+      /* 95 */ {{0x003B, 0x2460, 0x2461, DomCode::US_Z}, VKEY_OEM_1},
       // semicolon, *, *
-      /* 95 */ {{0x003B, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 96 */ {{0x003B, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // semicolon, *, *
-      /* 96 */ {{0x003B, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
+      /* 97 */ {{0x003B, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
       // less-than sign, *, *
-      /* 97 */ {{0x003C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 98 */ {{0x003C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // equals sign, percent sign, unmapped
-      /* 98 */ {{0x003D, 0x0025, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
+      /* 99 */ {{0x003D, 0x0025, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
       // equals sign, percent sign, hyphen-minus
-      /* 99 */ {{0x003D, 0x0025, 0x002D, DomCode::MINUS}, VKEY_OEM_MINUS},
+      /* 100 */ {{0x003D, 0x0025, 0x002D, DomCode::MINUS}, VKEY_OEM_MINUS},
       // equals sign, percent sign, *
-      /* 100 */ {{0x003D, 0x0025, 0x2461, DomCode::SLASH}, VKEY_OEM_8},
+      /* 101 */ {{0x003D, 0x0025, 0x2461, DomCode::SLASH}, VKEY_OEM_8},
       // equals sign, plus sign, *
-      /* 101 */ {{0x003D, 0x002B, 0x2461, DomCode::SLASH}, VKEY_OEM_PLUS},
+      /* 102 */ {{0x003D, 0x002B, 0x2461, DomCode::SLASH}, VKEY_OEM_PLUS},
       // equals sign, *, *
-      /* 102 */ {{0x003D, 0x2460, 0x2461, DomCode::BRACKET_RIGHT},
-                 VKEY_OEM_PLUS},
+      /* 103 */
+      {{0x003D, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_PLUS},
       // equals sign, *, *
-      /* 103 */ {{0x003D, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 104 */ {{0x003D, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // equals sign, *, *
-      /* 104 */ {{0x003D, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
+      /* 105 */ {{0x003D, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
       // question mark, *, *
-      /* 105 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
+      /* 106 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
       // question mark, *, *
-      /* 106 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
+      /* 107 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
       // question mark, *, *
-      /* 107 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 108 */ {{0x003F, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // question mark, *, *
-      /* 108 */ {{0x003F, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
+      /* 109 */ {{0x003F, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
       // commercial at, *, *
-      /* 109 */ {{0x0040, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_7},
+      /* 110 */ {{0x0040, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_7},
       // commercial at, *, *
-      /* 110 */ {{0x0040, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 111 */ {{0x0040, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // left square bracket, *, *
-      /* 111 */ {{0x005B, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 112 */ {{0x005B, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // left square bracket, *, *
-      /* 112 */ {{0x005B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 113 */ {{0x005B, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // left square bracket, *, *
-      /* 113 */ {{0x005B, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_OEM_4},
+      /* 114 */ {{0x005B, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_OEM_4},
       // left square bracket, *, *
-      /* 114 */ {{0x005B, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_4},
+      /* 115 */ {{0x005B, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_4},
       // left square bracket, *, *
-      /* 115 */ {{0x005B, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 116 */ {{0x005B, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // reverse solidus, solidus, *
-      /* 116 */ {{0x005C, 0x002F, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_7},
+      /* 117 */ {{0x005C, 0x002F, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_7},
       // reverse solidus, vertical line, digit one
-      /* 117 */ {{0x005C, 0x007C, 0x0031, DomCode::BACKQUOTE}, VKEY_OEM_5},
+      /* 118 */ {{0x005C, 0x007C, 0x0031, DomCode::BACKQUOTE}, VKEY_OEM_5},
       // reverse solidus, vertical line, N cedilla
-      /* 118 */ {{0x005C, 0x007C, 0x0145, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 119 */ {{0x005C, 0x007C, 0x0145, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // reverse solidus, vertical line, *
-      /* 119 */ {{0x005C, 0x007C, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 120 */ {{0x005C, 0x007C, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // reverse solidus, *, *
-      /* 120 */ {{0x005C, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_4},
+      /* 121 */ {{0x005C, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_4},
       // right square bracket, *, *
-      /* 121 */ {{0x005D, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 122 */ {{0x005D, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // right square bracket, *, *
-      /* 122 */ {{0x005D, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 123 */ {{0x005D, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // right square bracket, *, *
-      /* 123 */ {{0x005D, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 124 */ {{0x005D, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // right square bracket, *, *
-      /* 124 */ {{0x005D, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_OEM_6},
+      /* 125 */ {{0x005D, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_OEM_6},
       // right square bracket, *, *
-      /* 125 */ {{0x005D, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_6},
+      /* 126 */ {{0x005D, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_6},
       // low line, *, *
-      /* 126 */ {{0x005F, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 127 */ {{0x005F, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // low line, *, *
-      /* 127 */ {{0x005F, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_MINUS},
+      /* 128 */ {{0x005F, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_MINUS},
       // grave accent, unmapped, *
-      /* 128 */ {{0x0060, 0x0000, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 129 */ {{0x0060, 0x0000, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, unmapped
-      /* 129 */ {{0x0060, 0x007E, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 130 */ {{0x0060, 0x007E, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, digit one
-      /* 130 */ {{0x0060, 0x007E, 0x0031, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 131 */ {{0x0060, 0x007E, 0x0031, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, semicolon
-      /* 131 */ {{0x0060, 0x007E, 0x003B, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 132 */ {{0x0060, 0x007E, 0x003B, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, grave accent
-      /* 132 */ {{0x0060, 0x007E, 0x0060, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 133 */ {{0x0060, 0x007E, 0x0060, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, inverted question mark
-      /* 133 */ {{0x0060, 0x007E, 0x00BF, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 134 */ {{0x0060, 0x007E, 0x00BF, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, tilde, o double acute
-      /* 134 */ {{0x0060, 0x007E, 0x0151, DomCode::BACKQUOTE}, VKEY_OEM_3},
+      /* 135 */ {{0x0060, 0x007E, 0x0151, DomCode::BACKQUOTE}, VKEY_OEM_3},
       // grave accent, not sign, *
-      /* 135 */ {{0x0060, 0x00AC, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_8},
+      /* 136 */ {{0x0060, 0x00AC, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_8},
       // left curly bracket, *, *
-      /* 136 */ {{0x007B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
+      /* 137 */ {{0x007B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
       // vertical line, *, *
-      /* 137 */ {{0x007C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 138 */ {{0x007C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // right curly bracket, *, *
-      /* 138 */ {{0x007D, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_2},
+      /* 139 */ {{0x007D, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_2},
       // tilde, *, *
-      /* 139 */ {{0x007E, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 140 */ {{0x007E, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // inverted exclamation mark, *, *
-      /* 140 */ {{0x00A1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 141 */ {{0x00A1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // section sign, degree sign, *
-      /* 141 */ {{0x00A7, 0x00B0, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_2},
+      /* 142 */ {{0x00A7, 0x00B0, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_2},
       // section sign, vulgar fraction one half, *
-      /* 142 */ {{0x00A7, 0x00BD, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_5},
+      /* 143 */ {{0x00A7, 0x00BD, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_5},
       // section sign, *, *
-      /* 143 */ {{0x00A7, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
+      /* 144 */ {{0x00A7, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
       // section sign, *, *
-      /* 144 */ {{0x00A7, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
+      /* 145 */ {{0x00A7, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
       // section sign, *, *
-      /* 145 */ {{0x00A7, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 146 */ {{0x00A7, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // left-pointing double angle quotation mark, *, *
-      /* 146 */ {{0x00AB, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 147 */ {{0x00AB, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // left-pointing double angle quotation mark, *, *
-      /* 147 */ {{0x00AB, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_6},
+      /* 148 */ {{0x00AB, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_6},
       // soft hyphen, *, *
-      /* 148 */ {{0x00AD, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
+      /* 149 */ {{0x00AD, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
       // degree sign, *, *
-      /* 149 */ {{0x00B0, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_7},
+      /* 150 */ {{0x00B0, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_7},
       // degree sign, *, *
-      /* 150 */ {{0x00B0, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_2},
+      /* 151 */ {{0x00B0, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_2},
       // superscript two, *, *
-      /* 151 */ {{0x00B2, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
+      /* 152 */ {{0x00B2, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
       // micro sign, *, *
-      /* 152 */ {{0x00B5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 153 */ {{0x00B5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // masculine ordinal indicator, *, *
-      /* 153 */ {{0x00BA, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_5},
+      /* 154 */ {{0x00BA, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_OEM_5},
       // masculine ordinal indicator, *, *
-      /* 154 */ {{0x00BA, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 155 */ {{0x00BA, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // right-pointing double angle quotation mark, *, *
-      /* 155 */ {{0x00BB, 0x2460, 0x2461, DomCode::NONE}, VKEY_9},
+      /* 156 */ {{0x00BB, 0x2460, 0x2461, DomCode::NONE}, VKEY_9},
       // vulgar fraction one half, *, *
-      /* 156 */ {{0x00BD, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 157 */ {{0x00BD, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // inverted question mark, *, *
-      /* 157 */ {{0x00BF, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 158 */ {{0x00BF, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // sharp s, *, *
-      /* 158 */ {{0x00DF, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 159 */ {{0x00DF, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // a grave, degree sign, *
-      /* 159 */ {{0x00E0, 0x00B0, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 160 */ {{0x00E0, 0x00B0, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // a grave, a diaeresis, *
-      /* 160 */ {{0x00E0, 0x00E4, 0x2461, DomCode::QUOTE}, VKEY_OEM_5},
+      /* 161 */ {{0x00E0, 0x00E4, 0x2461, DomCode::QUOTE}, VKEY_OEM_5},
       // a grave, *, *
-      /* 161 */ {{0x00E0, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 162 */ {{0x00E0, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // a grave, *, *
-      /* 162 */ {{0x00E0, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
+      /* 163 */ {{0x00E0, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
       // a acute, *, *
-      /* 163 */ {{0x00E1, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 164 */ {{0x00E1, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // a acute, *, *
-      /* 164 */ {{0x00E1, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 165 */ {{0x00E1, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // a circumflex, *, *
-      /* 165 */ {{0x00E2, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 166 */ {{0x00E2, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // a circumflex, *, *
-      /* 166 */ {{0x00E2, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
+      /* 167 */ {{0x00E2, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
       // a diaeresis, A diaeresis, unmapped
-      /* 167 */ {{0x00E4, 0x00C4, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 168 */ {{0x00E4, 0x00C4, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // a diaeresis, A diaeresis, r caron
-      /* 168 */ {{0x00E4, 0x00C4, 0x0159, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 169 */ {{0x00E4, 0x00C4, 0x0159, DomCode::QUOTE}, VKEY_OEM_7},
       // a diaeresis, A diaeresis, S acute
-      /* 169 */ {{0x00E4, 0x00C4, 0x015A, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 170 */ {{0x00E4, 0x00C4, 0x015A, DomCode::QUOTE}, VKEY_OEM_7},
       // a diaeresis, a grave, *
-      /* 170 */ {{0x00E4, 0x00E0, 0x2461, DomCode::QUOTE}, VKEY_OEM_5},
+      /* 171 */ {{0x00E4, 0x00E0, 0x2461, DomCode::QUOTE}, VKEY_OEM_5},
       // a diaeresis, *, *
-      /* 171 */ {{0x00E4, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 172 */ {{0x00E4, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // a ring above, *, *
-      /* 172 */ {{0x00E5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 173 */ {{0x00E5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // ae, *, *
-      /* 173 */ {{0x00E6, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 174 */ {{0x00E6, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // ae, *, *
-      /* 174 */ {{0x00E6, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 175 */ {{0x00E6, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
       // c cedilla, C cedilla, unmapped
-      /* 175 */ {{0x00E7, 0x00C7, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 176 */ {{0x00E7, 0x00C7, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // c cedilla, C cedilla, Thorn
-      /* 176 */ {{0x00E7, 0x00C7, 0x00DE, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 177 */ {{0x00E7, 0x00C7, 0x00DE, DomCode::SEMICOLON}, VKEY_OEM_3},
       // c cedilla, *, *
-      /* 177 */ {{0x00E7, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
+      /* 178 */ {{0x00E7, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
       // c cedilla, *, *
-      /* 178 */ {{0x00E7, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 179 */ {{0x00E7, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // c cedilla, *, *
-      /* 179 */ {{0x00E7, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 180 */ {{0x00E7, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // c cedilla, *, *
-      /* 180 */ {{0x00E7, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_COMMA},
+      /* 181 */ {{0x00E7, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_COMMA},
       // c cedilla, *, *
-      /* 181 */ {{0x00E7, 0x2460, 0x2461, DomCode::DIGIT9}, VKEY_9},
+      /* 182 */ {{0x00E7, 0x2460, 0x2461, DomCode::DIGIT9}, VKEY_9},
       // c cedilla, *, *
-      /* 182 */ {{0x00E7, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 183 */ {{0x00E7, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // e grave, *, *
-      /* 183 */ {{0x00E8, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
+      /* 184 */ {{0x00E8, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
       // e grave, *, *
-      /* 184 */ {{0x00E8, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
+      /* 185 */ {{0x00E8, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
       // e grave, *, *
-      /* 185 */ {{0x00E8, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_3},
+      /* 186 */ {{0x00E8, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_3},
       // e acute, E acute, *
-      /* 186 */ {{0x00E9, 0x00C9, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 187 */ {{0x00E9, 0x00C9, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // e acute, o diaeresis, *
-      /* 187 */ {{0x00E9, 0x00F6, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_7},
+      /* 188 */ {{0x00E9, 0x00F6, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_7},
       // e acute, *, *
-      /* 188 */ {{0x00E9, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
+      /* 189 */ {{0x00E9, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
       // e acute, *, *
-      /* 189 */ {{0x00E9, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
+      /* 190 */ {{0x00E9, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
       // e acute, *, *
-      /* 190 */ {{0x00E9, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
+      /* 191 */ {{0x00E9, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
       // e circumflex, *, *
-      /* 191 */ {{0x00EA, 0x2460, 0x2461, DomCode::NONE}, VKEY_3},
+      /* 192 */ {{0x00EA, 0x2460, 0x2461, DomCode::NONE}, VKEY_3},
       // e diaeresis, *, *
-      /* 192 */ {{0x00EB, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
+      /* 193 */ {{0x00EB, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
       // i grave, *, *
-      /* 193 */ {{0x00EC, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 194 */ {{0x00EC, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // i acute, *, *
-      /* 194 */ {{0x00ED, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_0},
+      /* 195 */ {{0x00ED, 0x2460, 0x2461, DomCode::BACKQUOTE}, VKEY_0},
       // i acute, *, *
-      /* 195 */ {{0x00ED, 0x2460, 0x2461, DomCode::DIGIT9}, VKEY_9},
+      /* 196 */ {{0x00ED, 0x2460, 0x2461, DomCode::DIGIT9}, VKEY_9},
       // i circumflex, *, *
-      /* 196 */ {{0x00EE, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 197 */ {{0x00EE, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // eth, *, *
-      /* 197 */ {{0x00F0, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_6},
+      /* 198 */ {{0x00F0, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_6},
       // eth, *, *
-      /* 198 */ {{0x00F0, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_1},
+      /* 199 */ {{0x00F0, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_1},
       // n tilde, *, *
-      /* 199 */ {{0x00F1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
+      /* 200 */ {{0x00F1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
       // o grave, *, *
-      /* 200 */ {{0x00F2, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
+      /* 201 */ {{0x00F2, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
       // o acute, *, *
-      /* 201 */ {{0x00F3, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 202 */ {{0x00F3, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // o acute, *, *
-      /* 202 */ {{0x00F3, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
+      /* 203 */ {{0x00F3, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
       // o circumflex, *, *
-      /* 203 */ {{0x00F4, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
+      /* 204 */ {{0x00F4, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
       // o circumflex, *, *
-      /* 204 */ {{0x00F4, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 205 */ {{0x00F4, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // o tilde, *, *
-      /* 205 */ {{0x00F5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 206 */ {{0x00F5, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // o diaeresis, O diaeresis, unmapped
-      /* 206 */ {{0x00F6, 0x00D6, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 207 */ {{0x00F6, 0x00D6, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
       // o diaeresis, O diaeresis, T cedilla
-      /* 207 */ {{0x00F6, 0x00D6, 0x0162, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 208 */ {{0x00F6, 0x00D6, 0x0162, DomCode::SEMICOLON}, VKEY_OEM_3},
       // o diaeresis, e acute, *
-      /* 208 */ {{0x00F6, 0x00E9, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_7},
+      /* 209 */ {{0x00F6, 0x00E9, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_7},
       // o diaeresis, *, *
-      /* 209 */ {{0x00F6, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 210 */ {{0x00F6, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // o diaeresis, *, *
-      /* 210 */ {{0x00F6, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_OEM_3},
+      /* 211 */ {{0x00F6, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_OEM_3},
       // o diaeresis, *, *
-      /* 211 */ {{0x00F6, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
+      /* 212 */ {{0x00F6, 0x2460, 0x2461, DomCode::MINUS}, VKEY_OEM_PLUS},
       // division sign, *, *
-      /* 212 */ {{0x00F7, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 213 */ {{0x00F7, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // o stroke, *, *
-      /* 213 */ {{0x00F8, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 214 */ {{0x00F8, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // o stroke, *, *
-      /* 214 */ {{0x00F8, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 215 */ {{0x00F8, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
       // u grave, *, *
-      /* 215 */ {{0x00F9, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
+      /* 216 */ {{0x00F9, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
       // u grave, *, *
-      /* 216 */ {{0x00F9, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_3},
+      /* 217 */ {{0x00F9, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_3},
       // u acute, *, *
-      /* 217 */ {{0x00FA, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 218 */ {{0x00FA, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // u acute, *, *
-      /* 218 */ {{0x00FA, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 219 */ {{0x00FA, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // u diaeresis, U diaeresis, unmapped
-      /* 219 */ {{0x00FC, 0x00DC, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
+      /* 220 */ {{0x00FC, 0x00DC, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
       // u diaeresis, U diaeresis, unmapped
-      /* 220 */ {{0x00FC, 0x00DC, 0x2461, DomCode::MINUS}, VKEY_OEM_2},
+      /* 221 */ {{0x00FC, 0x00DC, 0x2461, DomCode::MINUS}, VKEY_OEM_2},
       // u diaeresis, U diaeresis, L stroke
-      /* 221 */ {{0x00FC, 0x00DC, 0x0141, DomCode::BRACKET_LEFT}, VKEY_OEM_3},
+      /* 222 */ {{0x00FC, 0x00DC, 0x0141, DomCode::BRACKET_LEFT}, VKEY_OEM_3},
       // u diaeresis, e grave, *
-      /* 222 */ {{0x00FC, 0x00E8, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
+      /* 223 */ {{0x00FC, 0x00E8, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_1},
       // u diaeresis, *, *
-      /* 223 */ {{0x00FC, 0x2460, 0x2461, DomCode::US_W}, VKEY_W},
+      /* 224 */ {{0x00FC, 0x2460, 0x2461, DomCode::US_W}, VKEY_W},
       // y acute, *, *
-      /* 224 */ {{0x00FD, 0x2460, 0x2461, DomCode::NONE}, VKEY_7},
+      /* 225 */ {{0x00FD, 0x2460, 0x2461, DomCode::NONE}, VKEY_7},
       // thorn, *, *
-      /* 225 */ {{0x00FE, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_MINUS},
+      /* 226 */ {{0x00FE, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_MINUS},
       // a macron, *, *
-      /* 226 */ {{0x0101, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_8},
+      /* 227 */ {{0x0101, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_8},
       // a breve, *, *
-      /* 227 */ {{0x0103, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 228 */ {{0x0103, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // a breve, *, *
-      /* 228 */ {{0x0103, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
+      /* 229 */ {{0x0103, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
       // a ogonek, *, *
-      /* 229 */ {{0x0105, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
+      /* 230 */ {{0x0105, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
       // a ogonek, *, *
-      /* 230 */ {{0x0105, 0x2460, 0x2461, DomCode::US_Q}, VKEY_Q},
+      /* 231 */ {{0x0105, 0x2460, 0x2461, DomCode::US_Q}, VKEY_Q},
       // a ogonek, *, *
-      /* 231 */ {{0x0105, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 232 */ {{0x0105, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // c acute, *, *
-      /* 232 */ {{0x0107, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
+      /* 233 */ {{0x0107, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
       // c dot above, *, *
-      /* 233 */ {{0x010B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
+      /* 234 */ {{0x010B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
       // c caron, *, *
-      /* 234 */ {{0x010D, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_COMMA},
+      /* 235 */ {{0x010D, 0x2460, 0x2461, DomCode::COMMA}, VKEY_OEM_COMMA},
       // c caron, *, *
-      /* 235 */ {{0x010D, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
+      /* 236 */ {{0x010D, 0x2460, 0x2461, DomCode::DIGIT2}, VKEY_2},
       // c caron, *, *
-      /* 236 */ {{0x010D, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
+      /* 237 */ {{0x010D, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
       // c caron, *, *
-      /* 237 */ {{0x010D, 0x2460, 0x2461, DomCode::US_P}, VKEY_X},
+      /* 238 */ {{0x010D, 0x2460, 0x2461, DomCode::US_P}, VKEY_X},
       // c caron, *, *
-      /* 238 */ {{0x010D, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 239 */ {{0x010D, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // d stroke, *, *
-      /* 239 */ {{0x0111, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
+      /* 240 */ {{0x0111, 0x2460, 0x2461, DomCode::BRACKET_RIGHT}, VKEY_OEM_6},
       // d stroke, *, *
-      /* 240 */ {{0x0111, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
+      /* 241 */ {{0x0111, 0x2460, 0x2461, DomCode::DIGIT0}, VKEY_0},
       // e macron, *, *
-      /* 241 */ {{0x0113, 0x2460, 0x2461, DomCode::NONE}, VKEY_W},
+      /* 242 */ {{0x0113, 0x2460, 0x2461, DomCode::NONE}, VKEY_W},
       // e dot above, *, *
-      /* 242 */ {{0x0117, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
+      /* 243 */ {{0x0117, 0x2460, 0x2461, DomCode::DIGIT4}, VKEY_4},
       // e dot above, *, *
-      /* 243 */ {{0x0117, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
+      /* 244 */ {{0x0117, 0x2460, 0x2461, DomCode::QUOTE}, VKEY_OEM_7},
       // e ogonek, E ogonek, unmapped
-      /* 244 */ {{0x0119, 0x0118, 0x2461, DomCode::SLASH}, VKEY_OEM_MINUS},
+      /* 245 */ {{0x0119, 0x0118, 0x2461, DomCode::SLASH}, VKEY_OEM_MINUS},
       // e ogonek, E ogonek, n
-      /* 245 */ {{0x0119, 0x0118, 0x006E, DomCode::SLASH}, VKEY_OEM_2},
+      /* 246 */ {{0x0119, 0x0118, 0x006E, DomCode::SLASH}, VKEY_OEM_2},
       // e ogonek, *, *
-      /* 246 */ {{0x0119, 0x2460, 0x2461, DomCode::DIGIT3}, VKEY_3},
+      /* 247 */ {{0x0119, 0x2460, 0x2461, DomCode::DIGIT3}, VKEY_3},
       // e caron, *, *
-      /* 247 */ {{0x011B, 0x2460, 0x2461, DomCode::NONE}, VKEY_2},
+      /* 248 */ {{0x011B, 0x2460, 0x2461, DomCode::NONE}, VKEY_2},
       // g breve, *, *
-      /* 248 */ {{0x011F, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 249 */ {{0x011F, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // g dot above, *, *
-      /* 249 */ {{0x0121, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 250 */ {{0x0121, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // h stroke, *, *
-      /* 250 */ {{0x0127, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 251 */ {{0x0127, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // i macron, *, *
-      /* 251 */ {{0x012B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 252 */ {{0x012B, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // i ogonek, I ogonek, unmapped
-      /* 252 */ {{0x012F, 0x012E, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 253 */ {{0x012F, 0x012E, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // i ogonek, *, *
-      /* 253 */ {{0x012F, 0x2460, 0x2461, DomCode::DIGIT5}, VKEY_5},
+      /* 254 */ {{0x012F, 0x2460, 0x2461, DomCode::DIGIT5}, VKEY_5},
       // dotless i, *, *
-      /* 254 */ {{0x0131, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
+      /* 255 */ {{0x0131, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
       // k cedilla, *, *
-      /* 255 */ {{0x0137, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 256 */ {{0x0137, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // l cedilla, *, *
-      /* 256 */ {{0x013C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_2},
+      /* 257 */ {{0x013C, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_2},
       // l caron, *, *
-      /* 257 */ {{0x013E, 0x2460, 0x2461, DomCode::NONE}, VKEY_2},
+      /* 258 */ {{0x013E, 0x2460, 0x2461, DomCode::NONE}, VKEY_2},
       // l stroke, *, *
-      /* 258 */ {{0x0142, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
+      /* 259 */ {{0x0142, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_2},
       // l stroke, *, *
-      /* 259 */ {{0x0142, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 260 */ {{0x0142, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // n cedilla, *, *
-      /* 260 */ {{0x0146, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 261 */ {{0x0146, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // n caron, *, *
-      /* 261 */ {{0x0148, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 262 */ {{0x0148, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // o double acute, *, *
-      /* 262 */ {{0x0151, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 263 */ {{0x0151, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // r caron, *, *
-      /* 263 */ {{0x0159, 0x2460, 0x2461, DomCode::NONE}, VKEY_5},
+      /* 264 */ {{0x0159, 0x2460, 0x2461, DomCode::NONE}, VKEY_5},
       // s cedilla, *, *
-      /* 264 */ {{0x015F, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_PERIOD},
+      /* 265 */ {{0x015F, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_PERIOD},
       // s cedilla, *, *
-      /* 265 */ {{0x015F, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 266 */ {{0x015F, 0x2460, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_1},
       // s caron, *, *
-      /* 266 */ {{0x0161, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 267 */ {{0x0161, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // s caron, *, *
-      /* 267 */ {{0x0161, 0x2460, 0x2461, DomCode::DIGIT3}, VKEY_3},
+      /* 268 */ {{0x0161, 0x2460, 0x2461, DomCode::DIGIT3}, VKEY_3},
       // s caron, *, *
-      /* 268 */ {{0x0161, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
+      /* 269 */ {{0x0161, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
       // s caron, *, *
-      /* 269 */ {{0x0161, 0x2460, 0x2461, DomCode::US_A}, VKEY_OEM_1},
+      /* 270 */ {{0x0161, 0x2460, 0x2461, DomCode::US_A}, VKEY_OEM_1},
       // s caron, *, *
-      /* 270 */ {{0x0161, 0x2460, 0x2461, DomCode::US_F}, VKEY_F},
+      /* 271 */ {{0x0161, 0x2460, 0x2461, DomCode::US_F}, VKEY_F},
       // s caron, *, *
-      /* 271 */ {{0x0161, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_PERIOD},
+      /* 272 */ {{0x0161, 0x2460, 0x2461, DomCode::PERIOD}, VKEY_OEM_PERIOD},
       // t cedilla, *, *
-      /* 272 */ {{0x0163, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
+      /* 273 */ {{0x0163, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_7},
       // t caron, *, *
-      /* 273 */ {{0x0165, 0x2460, 0x2461, DomCode::NONE}, VKEY_5},
+      /* 274 */ {{0x0165, 0x2460, 0x2461, DomCode::NONE}, VKEY_5},
       // u macron, *, *
-      /* 274 */ {{0x016B, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
+      /* 275 */ {{0x016B, 0x2460, 0x2461, DomCode::DIGIT8}, VKEY_8},
       // u macron, *, *
-      /* 275 */ {{0x016B, 0x2460, 0x2461, DomCode::US_Q}, VKEY_Q},
+      /* 276 */ {{0x016B, 0x2460, 0x2461, DomCode::US_Q}, VKEY_Q},
       // u macron, *, *
-      /* 276 */ {{0x016B, 0x2460, 0x2461, DomCode::US_X}, VKEY_X},
+      /* 277 */ {{0x016B, 0x2460, 0x2461, DomCode::US_X}, VKEY_X},
       // u ring above, *, *
-      /* 277 */ {{0x016F, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
+      /* 278 */ {{0x016F, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_1},
       // u double acute, *, *
-      /* 278 */ {{0x0171, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
+      /* 279 */ {{0x0171, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_5},
       // u ogonek, U ogonek, unmapped
-      /* 279 */ {{0x0173, 0x0172, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
+      /* 280 */ {{0x0173, 0x0172, 0x2461, DomCode::SEMICOLON}, VKEY_OEM_3},
       // u ogonek, U ogonek, T cedilla
-      /* 280 */ {{0x0173, 0x0172, 0x0162, DomCode::SEMICOLON}, VKEY_OEM_1},
+      /* 281 */ {{0x0173, 0x0172, 0x0162, DomCode::SEMICOLON}, VKEY_OEM_1},
       // u ogonek, *, *
-      /* 281 */ {{0x0173, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
+      /* 282 */ {{0x0173, 0x2460, 0x2461, DomCode::DIGIT7}, VKEY_7},
       // z dot above, *, *
-      /* 282 */ {{0x017C, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 283 */ {{0x017C, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // z dot above, *, *
-      /* 283 */ {{0x017C, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
+      /* 284 */ {{0x017C, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_OEM_4},
       // z caron, *, *
-      /* 284 */ {{0x017E, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
+      /* 285 */ {{0x017E, 0x2460, 0x2461, DomCode::BACKSLASH}, VKEY_OEM_5},
       // z caron, *, *
-      /* 285 */ {{0x017E, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_Y},
+      /* 286 */ {{0x017E, 0x2460, 0x2461, DomCode::BRACKET_LEFT}, VKEY_Y},
       // z caron, *, *
-      /* 286 */ {{0x017E, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
+      /* 287 */ {{0x017E, 0x2460, 0x2461, DomCode::DIGIT6}, VKEY_6},
       // z caron, *, *
-      /* 287 */ {{0x017E, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
+      /* 288 */ {{0x017E, 0x2460, 0x2461, DomCode::EQUAL}, VKEY_OEM_PLUS},
       // z caron, *, *
-      /* 288 */ {{0x017E, 0x2460, 0x2461, DomCode::US_W}, VKEY_W},
+      /* 289 */ {{0x017E, 0x2460, 0x2461, DomCode::US_W}, VKEY_W},
       // o horn, *, *
-      /* 289 */ {{0x01A1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 290 */ {{0x01A1, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // u horn, *, *
-      /* 290 */ {{0x01B0, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
+      /* 291 */ {{0x01B0, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_4},
       // z stroke, *, *
-      /* 291 */ {{0x01B6, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
+      /* 292 */ {{0x01B6, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_6},
       // schwa, *, *
-      /* 292 */ {{0x0259, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
+      /* 293 */ {{0x0259, 0x2460, 0x2461, DomCode::NONE}, VKEY_OEM_3},
 
       // Simple alphanumeric cases.
-      /* 293 */ {{'a', 'A', '?', DomCode::NONE}, VKEY_A},
-      /* 294 */ {{'z', 'Z', '!', DomCode::NONE}, VKEY_Z},
-      /* 295 */ {{'9', '(', '+', DomCode::NONE}, VKEY_9},
-      /* 296 */ {{'0', ')', '-', DomCode::NONE}, VKEY_0},
+      /* 294 */ {{'a', 'A', '?', DomCode::NONE}, VKEY_A},
+      /* 295 */ {{'z', 'Z', '!', DomCode::NONE}, VKEY_Z},
+      /* 296 */ {{'9', '(', '+', DomCode::NONE}, VKEY_9},
+      /* 297 */ {{'0', ')', '-', DomCode::NONE}, VKEY_0},
+
   };
 
   for (size_t i = 0; i < base::size(kVkeyTestCase); ++i) {

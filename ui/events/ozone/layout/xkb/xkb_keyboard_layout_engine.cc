@@ -188,6 +188,7 @@ const PrintableSubEntry kU002F[] = {
     {DomCode::BACKQUOTE, 0, 0, kAny, kAny, VKEY_OEM_7},
     {DomCode::BACKSLASH, 0, 0, kAny, kAny, VKEY_OEM_5},
     {DomCode::SLASH, 0, 0, kAny, kAny, VKEY_OEM_2},
+    {DomCode::CONTROL_RIGHT, 0, 0, kAny, kAny, VKEY_RCONTROL},
     {DomCode::DIGIT3, 1, 0, 0x0033, kAny, VKEY_3},       // 3
     {DomCode::DIGIT3, 1, 0, 0x003F, kAny, VKEY_OEM_2},   // ?
     {DomCode::DIGIT0, 1, 0, 0x0030, kAny, VKEY_0},       // 0
