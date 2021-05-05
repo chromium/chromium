@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
@@ -137,6 +138,15 @@ public class Starter extends EmptyTabObserver implements UserData {
     @Override
     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
         safeNativeOnInteractabilityChanged(isInteractable);
+    }
+
+    /**
+     * Forces native to re-evaluate the Chrome settings. Integration tests may need to call this to
+     * ensure that programmatic updates to the Chrome settings are received by the native starter.
+     */
+    @VisibleForTesting
+    public void forceSettingsChangeNotificationForTesting() {
+        safeNativeOnInteractabilityChanged(true);
     }
 
     private void safeNativeDetach() {

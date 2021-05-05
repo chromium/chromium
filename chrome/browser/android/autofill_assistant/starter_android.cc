@@ -73,7 +73,7 @@ StarterAndroid::GetTriggerScriptRequestSenderToInject() {
   jlong jtest_service_request_sender_to_inject =
       Java_AutofillAssistantServiceInjector_getServiceRequestSenderToInject(
           base::android::AttachCurrentThread());
-  std::unique_ptr<ServiceRequestSender> test_service_request_sender = nullptr;
+  std::unique_ptr<ServiceRequestSender> test_service_request_sender;
   if (jtest_service_request_sender_to_inject) {
     test_service_request_sender.reset(static_cast<ServiceRequestSender*>(
         reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
@@ -117,13 +117,11 @@ void StarterAndroid::OnInteractabilityChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jboolean is_interactable) {
-  if (!is_interactable || !starter_) {
+  if (!starter_) {
     return;
   }
 
-  // The tab has become interactable again. Users may have adjusted their
-  // settings, so we need to check them again.
-  starter_->CheckSettings();
+  starter_->OnTabInteractabilityChanged(is_interactable);
 }
 
 void StarterAndroid::OnActivityAttachmentChanged(
@@ -248,20 +246,7 @@ void StarterAndroid::Start(
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url);
 
-  starter_->Start(std::move(trigger_context),
-                  base::BindOnce(&StarterAndroid::OnStarterDone,
-                                 weak_ptr_factory_.GetWeakPtr()));
-}
-
-void StarterAndroid::OnStarterDone(
-    bool start_regular_script,
-    GURL url,
-    std::unique_ptr<TriggerContext> trigger_context,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
-  if (!start_regular_script) {
-    return;
-  }
-  StartRegularScript(url, std::move(trigger_context), trigger_script);
+  starter_->Start(std::move(trigger_context));
 }
 
 void StarterAndroid::StartRegularScript(

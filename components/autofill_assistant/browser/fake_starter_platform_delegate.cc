@@ -19,6 +19,16 @@ FakeStarterPlatformDelegate::GetTriggerScriptRequestSenderToInject() {
   return std::move(trigger_script_request_sender_for_test_);
 }
 
+void FakeStarterPlatformDelegate::StartRegularScript(
+    GURL url,
+    std::unique_ptr<TriggerContext> trigger_context,
+    const base::Optional<TriggerScriptProto>& trigger_script) {
+  if (start_regular_script_callback_) {
+    std::move(start_regular_script_callback_)
+        .Run(url, std::move(trigger_context), trigger_script);
+  }
+}
+
 WebsiteLoginManager* FakeStarterPlatformDelegate::GetWebsiteLoginManager()
     const {
   return website_login_manager_;

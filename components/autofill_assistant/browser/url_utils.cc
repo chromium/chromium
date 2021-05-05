@@ -18,12 +18,6 @@ bool IsInSubDomain(const GURL& url, const std::string& domain) {
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 
-std::string GetRegistryControlledDomain(const GURL& signon_realm) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      signon_realm,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
 }  // namespace
 
 namespace autofill_assistant {
@@ -55,14 +49,18 @@ bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {
     return true;
   }
 
-  auto domain1 = GetRegistryControlledDomain(url1);
-  auto domain2 = GetRegistryControlledDomain(url2);
-
+  auto domain1 = GetOrganizationIdentifyingDomain(url1);
+  auto domain2 = GetOrganizationIdentifyingDomain(url2);
   if (domain1.empty() || domain2.empty()) {
     return false;
   }
 
   return url1.scheme() == url2.scheme() && domain1 == domain2;
+}
+
+std::string GetOrganizationIdentifyingDomain(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace url_utils

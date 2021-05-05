@@ -48,6 +48,10 @@ class StarterAndroid : public StarterPlatformDelegate,
   CreateTriggerScriptUiDelegate() override;
   std::unique_ptr<ServiceRequestSender> GetTriggerScriptRequestSenderToInject()
       override;
+  void StartRegularScript(
+      GURL url,
+      std::unique_ptr<TriggerContext> trigger_context,
+      const base::Optional<TriggerScriptProto>& trigger_script) override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
   version_info::Channel GetChannel() const override;
   bool GetFeatureModuleInstalled() const override;
@@ -116,19 +120,6 @@ class StarterAndroid : public StarterPlatformDelegate,
   explicit StarterAndroid(content::WebContents* web_contents);
 
   void CreateJavaDependenciesIfNecessary();
-
-  void OnStarterDone(bool start_regular_script,
-                     GURL url,
-                     std::unique_ptr<TriggerContext> trigger_context,
-                     const base::Optional<TriggerScriptProto>& trigger_script);
-
-  // Start autofill-assistant on |url| using |trigger_context|. This will
-  // create/reuse a ClientAndroid instance which is tied to the WebContents and
-  // thus independent of this starter.
-  void StartRegularScript(
-      GURL url,
-      std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   content::WebContents* web_contents_;

@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/starter.h"
 
+#include <map>
+
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -11,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
@@ -21,6 +25,9 @@
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
+#include "components/autofill_assistant/browser/url_utils.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace autofill_assistant {
 
@@ -62,6 +69,15 @@ std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
       /* disable_auth_if_no_access_token = */ true);
 }
 
+// The heuristic is shared across all instances and initialized on first use. As
+// such, we do not support updating the heuristic while Chrome is running.
+const scoped_refptr<StarterHeuristic> GetOrCreateStarterHeuristic() {
+  static const base::NoDestructor<scoped_refptr<StarterHeuristic>>
+      starter_heuristic(
+          [] { return base::MakeRefCounted<StarterHeuristic>(); }());
+  return *starter_heuristic;
+}
+
 }  // namespace
 
 Starter::Starter(content::WebContents* web_contents,
@@ -71,7 +87,8 @@ Starter::Starter(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents),
       platform_delegate_(platform_delegate),
       ukm_recorder_(ukm_recorder),
-      runtime_manager_(runtime_manager) {
+      runtime_manager_(runtime_manager),
+      starter_heuristic_(GetOrCreateStarterHeuristic()) {
   CheckSettings();
 }
 
@@ -82,7 +99,7 @@ void Starter::DidFinishNavigation(
   // User-initiated navigations during non-trigger-script startups will cancel
   // the startup. This is mostly intended for navigations while the onboarding
   // is being shown.
-  if (pending_callback_ && !navigation_handle->WasServerRedirect() &&
+  if (IsStartupPending() && !navigation_handle->WasServerRedirect() &&
       !trigger_script_coordinator_ &&
       navigation_handle->GetURL() !=
           StartupUtil().ChooseStartupUrlForIntent(*pending_trigger_context_)) {
@@ -91,14 +108,61 @@ void Starter::DidFinishNavigation(
                                 : Metrics::DropOutReason::NAVIGATION,
         pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
             std::string()));
-    CancelPendingStartup();
+    CancelPendingStartup(
+        Metrics::LiteScriptFinishedState::LITE_SCRIPT_CANCELED);
   }
 
-  if (!fetch_trigger_scripts_on_navigation_) {
+  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
+      navigation_handle->WasServerRedirect()) {
     return;
   }
 
-  // TODO(arbesser): fetch trigger scripts when appropriate.
+  MaybeStartImplicitlyForUrl(navigation_handle->GetURL());
+}
+
+void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
+  if (!fetch_trigger_scripts_on_navigation_ || IsStartupPending() ||
+      !url.is_valid()) {
+    return;
+  }
+
+  // Run the heuristic in a separate task.
+  starter_heuristic_->RunHeuristicAsync(
+      url, base::BindOnce(&Starter::OnHeuristicMatch,
+                          weak_ptr_factory_.GetWeakPtr(), url));
+}
+
+void Starter::OnHeuristicMatch(const GURL& url, bool result) {
+  if (!result || IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
+    return;
+  }
+
+  // TODO(arbesser): add new command line switches to allow adding debug script
+  // parameters, like DEBUG_SOCKET_ID
+  Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+          {"ENABLED", "true"},
+          {"START_IMMEDIATELY", "false"},
+          {"REQUEST_TRIGGER_SCRIPT", "true"},
+          {"ORIGINAL_DEEPLINK", url.spec()},
+          {"INTENT", kShoppingAssistedCheckout}}),
+      TriggerContext::Options{/* experiment_ids = */ std::string(),
+                              /* is_cct = */ is_custom_tab_,
+                              /* onboarding_shown = */ false,
+                              /* is_direct_action = */ false,
+                              /* initial_url = */ std::string()}));
+}
+
+bool Starter::IsStartupPending() const {
+  return pending_trigger_context_ != nullptr ||
+         trigger_script_coordinator_ != nullptr;
+}
+
+void Starter::OnTabInteractabilityChanged(bool is_interactable) {
+  CheckSettings();
+  if (trigger_script_coordinator_) {
+    trigger_script_coordinator_->OnTabInteractabilityChanged(is_interactable);
+  }
 }
 
 void Starter::CheckSettings() {
@@ -111,6 +175,8 @@ void Starter::CheckSettings() {
       platform_delegate_->GetMakeSearchesAndBrowsingBetterEnabled();
   bool feature_module_installed =
       platform_delegate_->GetFeatureModuleInstalled();
+  bool prev_fetch_trigger_scripts_on_navigation =
+      fetch_trigger_scripts_on_navigation_;
   fetch_trigger_scripts_on_navigation_ =
       base::FeatureList::IsEnabled(
           features::kAutofillAssistantInChromeTriggering) &&
@@ -118,7 +184,7 @@ void Starter::CheckSettings() {
 
   // If there is a pending startup, re-check that the settings are still
   // allowing the startup to proceed. If not, cancel the startup.
-  if (pending_callback_) {
+  if (IsStartupPending()) {
     StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
         trigger_script_coordinator_ != nullptr
             ? trigger_script_coordinator_->GetTriggerContext()
@@ -135,22 +201,25 @@ void Starter::CheckSettings() {
         }
         // Trigger scripts are not allowed to persist when transitioning from
         // CCT to regular tab.
-        CancelPendingStartup();
+        CancelPendingStartup(Metrics::LiteScriptFinishedState::
+                                 LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED);
         return;
       default:
-        CancelPendingStartup();
+        CancelPendingStartup(Metrics::LiteScriptFinishedState::
+                                 LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
         return;
     }
+  } else if (!prev_fetch_trigger_scripts_on_navigation &&
+             fetch_trigger_scripts_on_navigation_) {
+    MaybeStartImplicitlyForUrl(web_contents()->GetLastCommittedURL());
   }
 }
 
-void Starter::Start(std::unique_ptr<TriggerContext> trigger_context,
-                    StarterResultCallback callback) {
+void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());
-  CancelPendingStartup();
+  CancelPendingStartup(Metrics::LiteScriptFinishedState::LITE_SCRIPT_CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
-  pending_callback_ = std::move(callback);
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAutofillAssistantForceOnboarding) == "true") {
@@ -184,7 +253,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context,
     case StartupMode::MANDATORY_PARAMETERS_MISSING:
     case StartupMode::SETTING_DISABLED:
     case StartupMode::NO_INITIAL_URL:
-      RunCallback(/* start_regular_script = */ false);
+      OnStartDone(/* start_regular_script = */ false);
       return;
     case StartupMode::START_BASE64_TRIGGER_SCRIPT:
     case StartupMode::START_RPC_TRIGGER_SCRIPT:
@@ -194,8 +263,8 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context,
   }
 }
 
-void Starter::CancelPendingStartup() {
-  if (!pending_callback_) {
+void Starter::CancelPendingStartup(Metrics::LiteScriptFinishedState state) {
+  if (!IsStartupPending()) {
     return;
   }
   platform_delegate_->HideOnboarding();
@@ -204,7 +273,10 @@ void Starter::CancelPendingStartup() {
     Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_SHOWN);
     waiting_for_onboarding_ = false;
   }
-  RunCallback(/* start_regular_script = */ false);
+  OnStartDone(/* start_regular_script = */ false);
+  if (trigger_script_coordinator_) {
+    trigger_script_coordinator_->Stop(state);
+  }
   trigger_script_coordinator_.reset();
   pending_trigger_context_.reset();
 }
@@ -234,7 +306,7 @@ void Starter::OnFeatureModuleInstalled(
         Metrics::DropOutReason::DFM_INSTALL_FAILED,
         pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
             std::string()));
-    RunCallback(/* start_regular_script = */ false);
+    OnStartDone(/* start_regular_script = */ false);
     return;
   }
 
@@ -248,7 +320,7 @@ void Starter::OnFeatureModuleInstalled(
       return;
     default:
       DCHECK(false);
-      RunCallback(/* start_regular_script = */ false);
+      OnStartDone(/* start_regular_script = */ false);
       return;
   }
 }
@@ -284,7 +356,7 @@ void Starter::StartTriggerScript() {
     } else {
       // Should never happen.
       DCHECK(false);
-      RunCallback(false);
+      OnStartDone(/* start_regular_script = */ false);
       return;
     }
   }
@@ -315,8 +387,14 @@ void Starter::OnTriggerScriptFinished(
     Metrics::LiteScriptFinishedState state,
     std::unique_ptr<TriggerContext> trigger_context,
     base::Optional<TriggerScriptProto> trigger_script) {
+  // Delete the coordinator asynchronously, to give this notification time to
+  // end gracefully.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Starter::DeleteTriggerScriptCoordinator,
+                                weak_ptr_factory_.GetWeakPtr()));
+
   if (state != Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED) {
-    RunCallback(/* start_regular_script = */ false);
+    OnStartDone(/* start_regular_script = */ false);
     return;
   }
 
@@ -327,7 +405,7 @@ void Starter::OnTriggerScriptFinished(
   // different metric for the result. We need to be careful to only run the
   // regular onboarding if necessary to avoid logging metrics more than once.
   if (platform_delegate_->GetOnboardingAccepted()) {
-    RunCallback(/* start_regular_script = */ true, trigger_script);
+    OnStartDone(/* start_regular_script = */ true, trigger_script);
     return;
   } else {
     MaybeShowOnboarding(trigger_script);
@@ -385,37 +463,35 @@ void Starter::OnOnboardingFinished(
 
   if (result != OnboardingResult::ACCEPTED) {
     runtime_manager_->SetUIState(UIState::kNotShown);
-    RunCallback(/* start_regular_script = */ false);
+    OnStartDone(/* start_regular_script = */ false);
     return;
   }
 
   // Onboarding is the last step before regular startup.
   platform_delegate_->SetOnboardingAccepted(true);
   pending_trigger_context_->SetOnboardingShown(shown);
-  RunCallback(/* start_regular_script = */ true, trigger_script);
+  OnStartDone(/* start_regular_script = */ true, trigger_script);
 }
 
-void Starter::RunCallback(bool start_regular_script,
+void Starter::OnStartDone(bool start_regular_script,
                           base::Optional<TriggerScriptProto> trigger_script) {
-  DCHECK(pending_callback_);
   if (!start_regular_script) {
     // Catch-all to ensure that after a failed startup attempt we no longer
     // register as visible to runtime observers.
     runtime_manager_->SetUIState(UIState::kNotShown);
-
-    pending_trigger_context_ = nullptr;
-    std::move(pending_callback_)
-        .Run(/* start_regular_script = */ false, GURL(), nullptr,
-             base::nullopt);
+    pending_trigger_context_.reset();
     return;
   }
 
   auto startup_url =
       StartupUtil().ChooseStartupUrlForIntent(*pending_trigger_context_);
   DCHECK(startup_url.has_value());
-  std::move(pending_callback_)
-      .Run(/* start_regular_script = */ true, *startup_url,
-           std::move(pending_trigger_context_), trigger_script);
+  platform_delegate_->StartRegularScript(
+      *startup_url, std::move(pending_trigger_context_), trigger_script);
+}
+
+void Starter::DeleteTriggerScriptCoordinator() {
+  trigger_script_coordinator_.reset();
 }
 
 }  // namespace autofill_assistant

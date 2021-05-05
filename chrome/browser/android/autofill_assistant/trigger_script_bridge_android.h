@@ -47,12 +47,6 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   bool OnBackButtonPressed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
 
-  // Called by the UI when the tab's interactability has changed.
-  void OnTabInteractabilityChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jboolean jinteractable);
-
   // Called by the UI when the keyboard was shown or hidden.
   void OnKeyboardVisibilityChanged(
       JNIEnv* env,

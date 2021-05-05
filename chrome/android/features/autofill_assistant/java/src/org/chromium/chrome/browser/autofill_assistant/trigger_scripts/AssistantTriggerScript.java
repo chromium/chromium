@@ -184,11 +184,6 @@ public class AssistantTriggerScript {
     }
 
     @VisibleForTesting
-    public void disableBottomSheetAnimationsForTesting(boolean disable) {
-        mAnimateBottomSheet = !disable;
-    }
-
-    @VisibleForTesting
     public List<AssistantChip> getLeftAlignedChipsForTest() {
         return mLeftAlignedChips;
     }
@@ -225,6 +220,7 @@ public class AssistantTriggerScript {
                 AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         if (AutofillAssistantServiceInjector.hasServiceRequestSenderToInject()) {
             mHeaderModel.set(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING, true);
+            mAnimateBottomSheet = false;
         }
         return mHeaderModel;
     }

@@ -47,7 +47,7 @@ using ::testing::Property;
 using ::testing::WithArg;
 using ::testing::WithArgs;
 
-const char kExampleUrl[] = "https://www.example.com";
+const char kExampleDeeplink[] = "https://www.example.com";
 
 class StarterTest : public content::RenderViewHostTestHarness {
  public:
@@ -55,27 +55,9 @@ class StarterTest : public content::RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
     content::WebContentsTester::For(web_contents())
-        ->NavigateAndCommit(GURL(kExampleUrl));
-    auto mock_trigger_script_ui_delegate =
-        std::make_unique<NiceMock<MockTriggerScriptUiDelegate>>();
-    mock_trigger_script_ui_delegate_ = mock_trigger_script_ui_delegate.get();
-    fake_platform_delegate_.trigger_script_ui_delegate_ =
-        std::move(mock_trigger_script_ui_delegate);
-
-    ON_CALL(*mock_trigger_script_ui_delegate_, Attach)
-        .WillByDefault(WithArg<0>(
-            [&](TriggerScriptCoordinator* trigger_script_coordinator) {
-              trigger_script_coordinator_ = trigger_script_coordinator;
-            }));
-    ON_CALL(*mock_trigger_script_ui_delegate_, Detach).WillByDefault([&]() {
-      trigger_script_coordinator_ = nullptr;
-    });
-    auto mock_trigger_script_service_request_sender =
-        std::make_unique<NiceMock<MockServiceRequestSender>>();
-    mock_trigger_script_service_request_sender_ =
-        mock_trigger_script_service_request_sender.get();
-    fake_platform_delegate_.trigger_script_request_sender_for_test_ =
-        std::move(mock_trigger_script_service_request_sender);
+        ->NavigateAndCommit(GURL(kExampleDeeplink));
+    PrepareTriggerScriptUiDelegate();
+    PrepareTriggerScriptRequestSender();
     fake_platform_delegate_.website_login_manager_ =
         &mock_website_login_manager_;
     ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl)
@@ -112,15 +94,11 @@ class StarterTest : public content::RenderViewHostTestHarness {
     fake_platform_delegate_.onboarding_accepted_ = true;
   }
 
-  // Returns a base64-encoded GetTriggerScriptsResponseProto containing a single
-  // trigger script without any trigger conditions. As such, it will be shown
-  // immediately upon startup.
+  // Returns a base64-encoded trigger script response, as created by
+  // |CreateTriggerScriptResponseForTest|.
   std::string CreateBase64TriggerScriptResponseForTest() {
-    GetTriggerScriptsResponseProto get_trigger_scripts_response;
-    get_trigger_scripts_response.add_trigger_scripts();
-    std::string serialized_get_trigger_scripts_response;
-    get_trigger_scripts_response.SerializeToString(
-        &serialized_get_trigger_scripts_response);
+    std::string serialized_get_trigger_scripts_response =
+        CreateTriggerScriptResponseForTest();
     std::string base64_get_trigger_scripts_response;
     base::Base64UrlEncode(serialized_get_trigger_scripts_response,
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
@@ -128,17 +106,29 @@ class StarterTest : public content::RenderViewHostTestHarness {
     return base64_get_trigger_scripts_response;
   }
 
+  // Returns a serialized GetTriggerScriptsResponseProto containing a single
+  // trigger script without any trigger conditions. As such, it will be shown
+  // immediately upon startup.
+  std::string CreateTriggerScriptResponseForTest() {
+    GetTriggerScriptsResponseProto get_trigger_scripts_response;
+    get_trigger_scripts_response.add_trigger_scripts();
+    std::string serialized_get_trigger_scripts_response;
+    get_trigger_scripts_response.SerializeToString(
+        &serialized_get_trigger_scripts_response);
+    return serialized_get_trigger_scripts_response;
+  }
+
   // Returns true if a specific |state| was recorded for |entry_name| and
   // |metric_name|.
   bool RecordedUkmMetric(base::StringPiece entry_name,
                          base::StringPiece metric_name,
-                         int64_t expected_state) {
+                         int64_t expected_state,
+                         const GURL& source_url) {
     auto entries = ukm_recorder_.GetEntriesByName(entry_name);
     if (entries.size() != 1) {
       return false;
     }
-    ukm_recorder_.ExpectEntrySourceHasUrl(
-        entries[0], web_contents()->GetLastCommittedURL());
+    ukm_recorder_.ExpectEntrySourceHasUrl(entries[0], source_url);
     const int64_t* actual_state =
         ukm_recorder_.GetEntryMetric(entries[0], metric_name);
     return actual_state != nullptr && *actual_state == expected_state;
@@ -149,20 +139,26 @@ class StarterTest : public content::RenderViewHostTestHarness {
     return !ukm_recorder_.GetEntriesByName(entry_name).empty();
   }
 
-  bool UkmLiteScriptStarted(Metrics::LiteScriptStarted state) {
+  bool UkmLiteScriptStarted(Metrics::LiteScriptStarted state,
+                            const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptStarted",
-                             "LiteScriptStarted", static_cast<int64_t>(state));
+                             "LiteScriptStarted", static_cast<int64_t>(state),
+                             source_url);
   }
 
-  bool UkmLiteScriptFinished(Metrics::LiteScriptFinishedState state) {
+  bool UkmLiteScriptFinished(Metrics::LiteScriptFinishedState state,
+                             const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptFinished",
-                             "LiteScriptFinished", static_cast<int64_t>(state));
+                             "LiteScriptFinished", static_cast<int64_t>(state),
+                             source_url);
   }
 
-  bool UkmLiteScriptOnboarding(Metrics::LiteScriptOnboarding result) {
+  bool UkmLiteScriptOnboarding(
+      Metrics::LiteScriptOnboarding result,
+      const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptOnboarding",
                              "LiteScriptOnboarding",
-                             static_cast<int64_t>(result));
+                             static_cast<int64_t>(result), source_url);
   }
 
   bool UkmLiteScriptStarted() {
@@ -192,6 +188,38 @@ class StarterTest : public content::RenderViewHostTestHarness {
     simulator->Commit();
   }
 
+  // Each request sender is only good for one trigger script. This call will
+  // create a new mock and prepare it to be used in the next call.
+  void PrepareTriggerScriptRequestSender() {
+    auto mock_trigger_script_service_request_sender =
+        std::make_unique<NiceMock<MockServiceRequestSender>>();
+    mock_trigger_script_service_request_sender_ =
+        mock_trigger_script_service_request_sender.get();
+    fake_platform_delegate_.trigger_script_request_sender_for_test_ =
+        std::move(mock_trigger_script_service_request_sender);
+  }
+
+  // Each trigger script UI delegate is only good for one trigger script and
+  // must be prepared anew if a test needs to show more than one trigger script.
+  void PrepareTriggerScriptUiDelegate() {
+    auto mock_trigger_script_ui_delegate =
+        std::make_unique<NiceMock<MockTriggerScriptUiDelegate>>();
+    mock_trigger_script_ui_delegate_ = mock_trigger_script_ui_delegate.get();
+    fake_platform_delegate_.trigger_script_ui_delegate_ =
+        std::move(mock_trigger_script_ui_delegate);
+    fake_platform_delegate_.start_regular_script_callback_ =
+        mock_start_regular_script_callback_.Get();
+
+    ON_CALL(*mock_trigger_script_ui_delegate_, Attach)
+        .WillByDefault(WithArg<0>(
+            [&](TriggerScriptCoordinator* trigger_script_coordinator) {
+              trigger_script_coordinator_ = trigger_script_coordinator;
+            }));
+    ON_CALL(*mock_trigger_script_ui_delegate_, Detach).WillByDefault([&]() {
+      trigger_script_coordinator_ = nullptr;
+    });
+  }
+
   NiceMock<MockTriggerScriptUiDelegate>* mock_trigger_script_ui_delegate_ =
       nullptr;
   NiceMock<MockServiceRequestSender>*
@@ -204,18 +232,21 @@ class StarterTest : public content::RenderViewHostTestHarness {
   MockRuntimeManager mock_runtime_manager_;
   std::unique_ptr<Starter> starter_;
   base::HistogramTester histogram_tester_;
-  base::MockCallback<Starter::StarterResultCallback> mock_callback_;
+  base::MockCallback<base::OnceCallback<void(
+      GURL url,
+      std::unique_ptr<TriggerContext> trigger_context,
+      const base::Optional<TriggerScriptProto>& trigger_script)>>
+      mock_start_regular_script_callback_;
 };
 
 TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {
   std::map<std::string, std::string> params = {{"ENABLED", "true"},
                                                {"START_IMMEDIATELY", "true"}};
   TriggerContext::Options options;
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(params), options),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(params), options));
 
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -232,11 +263,10 @@ TEST_F(StarterTest, TriggerScriptFailsWithoutInitialUrl) {
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "abc"}};
   TriggerContext::Options options;
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(params), options),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(params), options));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_NO_INITIAL_URL));
@@ -253,12 +283,11 @@ TEST_F(StarterTest, FailWithoutMandatoryScriptParameter) {
   std::map<std::string, std::string> params = {
       {"START_IMMEDIATELY", "false"}, {"TRIGGER_SCRIPTS_BASE64", "abc"}};
   TriggerContext::Options options;
-  options.initial_url = "https://www.example.com";
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  options.initial_url = kExampleDeeplink;
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(params), options),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(params), options));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_MANDATORY_PARAMETER_MISSING));
@@ -280,11 +309,10 @@ TEST_F(StarterTest, FailWhenFeatureDisabled) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndDisableFeature(
       features::kAutofillAssistantProactiveHelp);
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(params), options),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(params), options));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_FEATURE_DISABLED));
@@ -304,16 +332,14 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ true,
-                                  GURL("https://www.example.com"), _, _))
-      .WillOnce(WithArg<2>([](std::unique_ptr<TriggerContext> trigger_context) {
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL(kExampleDeeplink), _, _))
+      .WillOnce(WithArg<1>([](std::unique_ptr<TriggerContext> trigger_context) {
         EXPECT_THAT(trigger_context->GetOnboardingShown(), Eq(false));
       }));
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
               Eq(0));
@@ -339,16 +365,14 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ true,
-                                  GURL("https://www.example.com"), _, _))
-      .WillOnce(WithArg<2>([](std::unique_ptr<TriggerContext> trigger_context) {
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL(kExampleDeeplink), _, _))
+      .WillOnce(WithArg<1>([](std::unique_ptr<TriggerContext> trigger_context) {
         EXPECT_THAT(trigger_context->GetOnboardingShown(), Eq(true));
       }));
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
               Eq(1));
@@ -369,37 +393,22 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
 
 TEST_F(StarterTest, ForceOnboardingFlagForReturningUsersSucceeds) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.show_onboarding_result_shown_ = true;
-  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  base::MockCallback<base::OnceCallback<void(
+      base::OnceCallback<void(bool, OnboardingResult)>)>>
+      mock_onboarding_callback;
+  fake_platform_delegate_.on_show_onboarding_callback_ =
+      mock_onboarding_callback.Get();
+
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAutofillAssistantForceOnboarding, "true");
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
-  EXPECT_CALL(
-      mock_callback_,
-      Run(/* start_regular_script = */ true, GURL("https://www.example.com"),
-          Pointee(Property(&TriggerContext::GetOnboardingShown, true)), _));
-
+  EXPECT_CALL(mock_onboarding_callback, Run);
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
-
-  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
-              Eq(0));
-  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
-  histogram_tester_.ExpectUniqueSample(
-      "Android.AutofillAssistant.FeatureModuleInstallation",
-      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
-  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
-                                      Metrics::OnBoarding::OB_ACCEPTED, 1u);
-  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
-                                      Metrics::OnBoarding::OB_SHOWN, 1u);
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 }
 
 TEST_F(StarterTest, ForceFirstTimeUserExperienceForReturningUser) {
@@ -440,9 +449,8 @@ TEST_F(StarterTest, ForceFirstTimeUserExperienceForReturningUser) {
   EXPECT_CALL(*mock_trigger_script_ui_delegate_,
               ShowTriggerScript(first_time_user_script->user_interface()));
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 }
 
 TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
@@ -455,12 +463,10 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
               Eq(1));
@@ -488,12 +494,10 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
       {"INTENT", "SHOPPING_ASSISTED_CHECKOUT"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(false));
   EXPECT_FALSE(UkmLiteScriptStarted());
@@ -519,12 +523,11 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
@@ -547,12 +550,11 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
@@ -565,15 +567,6 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
 }
 
 TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
-  // A trigger script without trigger conditions will be shown immediately.
-  GetTriggerScriptsResponseProto get_trigger_scripts_response;
-  get_trigger_scripts_response.add_trigger_scripts()
-      ->mutable_user_interface()
-      ->set_status_message("trigger script");
-  std::string serialized_get_trigger_scripts_response;
-  get_trigger_scripts_response.SerializeToString(
-      &serialized_get_trigger_scripts_response);
-
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   std::map<std::string, std::string> script_parameters = {
@@ -602,18 +595,18 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             ASSERT_TRUE(request.ParseFromString(request_body));
             EXPECT_THAT(request.url(), Eq(GURL("https://www.example.com")));
             std::move(callback).Run(net::HTTP_OK,
-                                    serialized_get_trigger_scripts_response);
+                                    CreateTriggerScriptResponseForTest());
           }));
-  EXPECT_CALL(
-      mock_callback_,
-      Run(/* start_regular_script = */ true, GURL("https://www.example.com"),
-          Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
-          Optional(get_trigger_scripts_response.trigger_scripts(0))));
+  GetTriggerScriptsResponseProto get_trigger_scripts_response;
+  get_trigger_scripts_response.ParseFromString(
+      CreateTriggerScriptResponseForTest());
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL(kExampleDeeplink),
+                  Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
+                  Optional(get_trigger_scripts_response.trigger_scripts(0))));
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_TRUE(UkmLiteScriptStarted(
@@ -640,12 +633,11 @@ TEST_F(StarterTest, Base64TriggerScriptFailsForInvalidBase64) {
       {"TRIGGER_SCRIPTS_BASE64", "#invalid_hashtag"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER));
@@ -671,12 +663,11 @@ TEST_F(StarterTest, Base64TriggerScriptFailsIfProactiveHelpIsDisabled) {
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options()),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
@@ -712,16 +703,13 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
         trigger_script_coordinator_->PerformTriggerScriptAction(
             TriggerScriptProto::ACCEPT);
       });
-  EXPECT_CALL(
-      mock_callback_,
-      Run(/* start_regular_script = */ true, GURL("https://www.example.com"),
-          Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
-          testing::Ne(base::nullopt)));
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL(kExampleDeeplink),
+                  Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
+                  testing::Ne(base::nullopt)));
 
-  starter_->Start(
-      std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(script_parameters), options),
-      mock_callback_.Get());
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_TRUE(UkmLiteScriptStarted(
@@ -749,15 +737,46 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options{}),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
 
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, HideTriggerScript);
   fake_platform_delegate_.is_custom_tab_ = false;
   starter_->CheckSettings();
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER));
+  EXPECT_TRUE(UkmLiteScriptFinished(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED));
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+}
+
+TEST_F(StarterTest, CancelPendingTriggerScriptWhenHandlingNewStartupRequest) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  mock_trigger_script_service_request_sender_ = nullptr;
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript);
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, HideTriggerScript);
+  PrepareTriggerScriptUiDelegate();
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
+  EXPECT_TRUE(UkmLiteScriptFinished(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_CANCELED));
 }
 
 TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
@@ -767,19 +786,17 @@ TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
   fake_platform_delegate_.on_show_onboarding_callback_ =
       base::DoNothing::Once<base::OnceCallback<void(bool, OnboardingResult)>>();
 
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   std::map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options{}),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
 
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.different.com"));
-
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
   EXPECT_FALSE(UkmLiteScriptOnboarding());
@@ -812,12 +829,14 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
         trigger_script_coordinator_->PerformTriggerScriptAction(
             TriggerScriptProto::ACCEPT);
       });
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options{}),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
 
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.different.com"));
+
   EXPECT_TRUE(UkmLiteScriptStarted(
       Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
 
@@ -826,10 +845,12 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
   // TODO(b/185476714): Fix lite script metrics to record for ORIGINAL_DEEPLINK
   // instead of the current URL.
   EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE));
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE,
+      GURL("https://www.different.com")));
   EXPECT_TRUE(UkmLiteScriptOnboarding(
       Metrics::LiteScriptOnboarding::
-          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION));
+          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
+      GURL("https://www.different.com")));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -848,21 +869,19 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options{}),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
 
   // Expect that the onboarding is not interrupted by a redirect to the
   // ORIGINAL_DEEPLINK.
-  EXPECT_CALL(mock_callback_, Run).Times(0);
   SimulateRedirectToUrl(GURL("https://www.example.com"),
                         GURL("http://redirect.example.com"));
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
                                      0u);
 
   // Redirecting to a different URL will cancel the onboarding.
-  EXPECT_CALL(mock_callback_, Run(/* start_regular_script = */ false, _, _, _));
   SimulateRedirectToUrl(GURL("https://www.different.com"),
                         GURL("http://redirect.example.com"));
 
@@ -894,11 +913,10 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
   starter_->Start(std::make_unique<TriggerContext>(
-                      std::make_unique<ScriptParameters>(script_parameters),
-                      TriggerContext::Options{}),
-                  mock_callback_.Get());
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{}));
 
   EXPECT_FALSE(UkmLiteScriptStarted());
   EXPECT_FALSE(UkmLiteScriptFinished());
@@ -908,6 +926,155 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
                                      0u);
+}
+
+TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
+  SetupPlatformDelegateForReturningUser();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInChromeTriggering);
+  starter_->CheckSettings();
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
+              OnSendRequest(
+                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+      .WillOnce(
+          WithArgs<1, 2>([&](const std::string& request_body,
+                             ServiceRequestSender::ResponseCallback& callback) {
+            GetTriggerScriptsRequestProto request;
+            ASSERT_TRUE(request.ParseFromString(request_body));
+            EXPECT_THAT(request.url(),
+                        Eq(GURL("https://www.some-website.com/cart")));
+            std::move(callback).Run(net::HTTP_OK,
+                                    CreateTriggerScriptResponseForTest());
+          }));
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
+      .WillOnce([&]() {
+        ASSERT_TRUE(trigger_script_coordinator_ != nullptr);
+        trigger_script_coordinator_->PerformTriggerScriptAction(
+            TriggerScriptProto::ACCEPT);
+      });
+  EXPECT_CALL(mock_start_regular_script_callback_,
+              Run(GURL("https://www.some-website.com/cart"),
+                  Pointee(Property(&TriggerContext::GetOnboardingShown, false)),
+                  testing::Ne(base::nullopt)));
+
+  // Implicit startup by navigating to an autofill-assistant-enabled site.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.some-website.com/cart"));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
+      GURL("https://www.some-website.com/cart")));
+  EXPECT_TRUE(UkmLiteScriptFinished(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED,
+      GURL("https://www.some-website.com/cart")));
+  EXPECT_TRUE(UkmLiteScriptOnboarding(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,
+      GURL("https://www.some-website.com/cart")));
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST_F(StarterTest, DoNotStartImplicitlyIfSettingDisabled) {
+  SetupPlatformDelegateForReturningUser();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInChromeTriggering);
+  fake_platform_delegate_.proactive_help_enabled_ = false;
+  starter_->CheckSettings();
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.some-website.com/cart"));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.proactive_help_enabled_ = false;
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInChromeTriggering);
+  starter_->CheckSettings();
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.some-website.com/cart"));
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
+              OnSendRequest(
+                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
+                                   CreateTriggerScriptResponseForTest()));
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(1);
+
+  // Implicit startup by enabling proactive help while already on an
+  // autofill-assistant-enabled site.
+  fake_platform_delegate_.proactive_help_enabled_ = true;
+  starter_->CheckSettings();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(UkmLiteScriptStarted(
+      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
+      GURL("https://www.some-website.com/cart")));
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
+  histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
+                                     0u);
+}
+
+TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
+  content::BrowserTaskEnvironment task_environment;
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  content::TestBrowserContext browser_context;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  FakeStarterPlatformDelegate fake_platform_delegate_01;
+  FakeStarterPlatformDelegate fake_platform_delegate_02;
+  MockRuntimeManager mock_runtime_manager;
+
+  auto web_contents_01 = content::WebContentsTester::CreateTestWebContents(
+      &browser_context, nullptr);
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents_01.get());
+  auto web_contents_02 = content::WebContentsTester::CreateTestWebContents(
+      &browser_context, nullptr);
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents_02.get());
+
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInChromeTriggering);
+  Starter starter_01(web_contents_01.get(), &fake_platform_delegate_01,
+                     &ukm_recorder, mock_runtime_manager.GetWeakPtr());
+  Starter starter_02(web_contents_02.get(), &fake_platform_delegate_02,
+                     &ukm_recorder, mock_runtime_manager.GetWeakPtr());
+
+  auto service_request_sender_01 =
+      std::make_unique<NiceMock<MockServiceRequestSender>>();
+  auto* service_request_sender_01_ptr = service_request_sender_01.get();
+  fake_platform_delegate_01.trigger_script_request_sender_for_test_ =
+      std::move(service_request_sender_01);
+  auto service_request_sender_02 =
+      std::make_unique<NiceMock<MockServiceRequestSender>>();
+  auto* service_request_sender_02_ptr = service_request_sender_02.get();
+  fake_platform_delegate_02.trigger_script_request_sender_for_test_ =
+      std::move(service_request_sender_02);
+
+  EXPECT_CALL(*service_request_sender_01_ptr, OnSendRequest).Times(1);
+  EXPECT_CALL(*service_request_sender_02_ptr, OnSendRequest).Times(1);
+  content::WebContentsTester::For(web_contents_01.get())
+      ->NavigateAndCommit(GURL("https://www.some-website.com/cart"));
+  content::WebContentsTester::For(web_contents_02.get())
+      ->NavigateAndCommit(GURL("https://www.some-other-website.com/cart"));
+  task_environment.RunUntilIdle();
 }
 
 }  // namespace

@@ -9,14 +9,12 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.AssistantDependenciesImpl;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -33,7 +31,6 @@ public class AssistantTriggerScriptBridge {
     private final AssistantTriggerScript mTriggerScript;
     private long mNativeBridge;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
-    private ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
     @CalledByNative
     public AssistantTriggerScriptBridge(AssistantDependenciesImpl startupDependencies) {
@@ -70,14 +67,6 @@ public class AssistantTriggerScriptBridge {
                 mStartupDependencies.getBottomInsetProvider());
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
-        mActivityTabObserver =
-                new ActivityTabProvider.ActivityTabTabObserver(
-                        mStartupDependencies.getActivityTabProvider(), true) {
-                    @Override
-                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                        safeNativeOnTabInteractabilityChanged(isInteractable);
-                    }
-                };
     }
 
     /**
@@ -146,7 +135,6 @@ public class AssistantTriggerScriptBridge {
         mTriggerScript.destroy();
         mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
-        mActivityTabObserver.destroy();
     }
 
     private void safeNativeOnTriggerScriptAction(int action) {
@@ -178,13 +166,6 @@ public class AssistantTriggerScriptBridge {
         }
     }
 
-    private void safeNativeOnTabInteractabilityChanged(boolean interactable) {
-        if (mNativeBridge != 0) {
-            AssistantTriggerScriptBridgeJni.get().onTabInteractabilityChanged(
-                    mNativeBridge, AssistantTriggerScriptBridge.this, interactable);
-        }
-    }
-
     @NativeMethods
     interface Natives {
         void onTriggerScriptAction(long nativeTriggerScriptBridgeAndroid,
@@ -195,7 +176,5 @@ public class AssistantTriggerScriptBridge {
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
         void onKeyboardVisibilityChanged(long nativeTriggerScriptBridgeAndroid,
                 AssistantTriggerScriptBridge caller, boolean visible);
-        void onTabInteractabilityChanged(long nativeTriggerScriptBridgeAndroid,
-                AssistantTriggerScriptBridge caller, boolean interactable);
     }
 }

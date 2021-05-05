@@ -22,6 +22,10 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   CreateTriggerScriptUiDelegate() override;
   std::unique_ptr<ServiceRequestSender> GetTriggerScriptRequestSenderToInject()
       override;
+  void StartRegularScript(
+      GURL url,
+      std::unique_ptr<TriggerContext> trigger_context,
+      const base::Optional<TriggerScriptProto>& trigger_script) override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
   version_info::Channel GetChannel() const override;
   bool GetFeatureModuleInstalled() const override;
@@ -63,6 +67,11 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
   bool is_custom_tab_ = true;
+  base::OnceCallback<void(
+      GURL url,
+      std::unique_ptr<TriggerContext> trigger_context,
+      const base::Optional<TriggerScriptProto>& trigger_script)>
+      start_regular_script_callback_;
 
   int num_install_feature_module_called_ = 0;
   int num_show_onboarding_called_ = 0;

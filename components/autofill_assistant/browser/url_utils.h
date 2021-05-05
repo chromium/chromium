@@ -27,6 +27,10 @@ bool IsInDomainOrSubDomain(const GURL& url,
 // false.
 bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2);
 
+// Returns the organization-identifying domain for |url|. Returns the empty
+// string for invalid urls.
+std::string GetOrganizationIdentifyingDomain(const GURL& url);
+
 }  // namespace url_utils
 }  // namespace autofill_assistant
 

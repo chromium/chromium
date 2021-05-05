@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "components/autofill_assistant/browser/starter_heuristic.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
@@ -25,14 +26,6 @@ namespace autofill_assistant {
 // access platform-dependent features.
 class Starter : public content::WebContentsObserver {
  public:
-  // Note: parameters are only valid and not null if |start_regular_script| is
-  // true.
-  using StarterResultCallback = base::OnceCallback<void(
-      bool start_regular_script,
-      GURL url,
-      std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script)>;
-
   explicit Starter(content::WebContents* web_contents,
                    StarterPlatformDelegate* platform_delegate,
                    ukm::UkmRecorder* ukm_recorder,
@@ -47,27 +40,36 @@ class Starter : public content::WebContentsObserver {
   //  - Install feature module if necessary
   //  - Run and wait for trigger script to finish if necessary
   //  - Show onboarding if necessary
-  //  - Invoke |callback| with the result. On success, the caller should start
-  // the regular script. TODO(mcarlen): client startup should also be in
-  // handled here, rather than in the caller.
+  //  - Request the platform_delegate to start the regular script.
+  // TODO(mcarlen): client startup should also be handled here, rather than in
+  // the platform_delegate.
   //
   // Only one call to |Start| can be processed at any time. If this method is
   // called before the previous call has finished, the previous call is
   // cancelled.
-  void Start(std::unique_ptr<TriggerContext> trigger_context,
-             StarterResultCallback callback);
+  void Start(std::unique_ptr<TriggerContext> trigger_context);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // Invoked when the tab interactability has changed.
+  void OnTabInteractabilityChanged(bool is_interactable);
 
   // Re-check settings. This may cancel ongoing startup requests if the required
   // settings are no longer enabled.
   void CheckSettings();
 
  private:
-  // Cancels the currently pending startup request, if any.
-  void CancelPendingStartup();
+  // Starts a flow for |url| if possible. Will fail (do nothing) if the feature
+  // is disabled or if there is already a pending startup.
+  void MaybeStartImplicitlyForUrl(const GURL& url);
+
+  // Cancels the currently pending startup request, if any. If a trigger script
+  // is currently running, this will record |state| as the reason for stopping.
+  // This will also hide any currently shown UI (such as a trigger script or the
+  // onboarding).
+  void CancelPendingStartup(Metrics::LiteScriptFinishedState state);
 
   // Installs the feature module if necessary, otherwise directly invokes
   // |OnFeatureModuleInstalled|.
@@ -100,10 +102,18 @@ class Starter : public content::WebContentsObserver {
                             bool shown,
                             OnboardingResult result);
 
-  // Internal helper to invoke the pending callback.
-  void RunCallback(
+  // Called at the end of each |Start| invocation.
+  void OnStartDone(
       bool start_regular_script,
       base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
+
+  // Called when the heuristic result for |url| is available.
+  void OnHeuristicMatch(const GURL& url, bool result);
+
+  // Returns whether there is a currently pending call to |Start| or not.
+  bool IsStartupPending() const;
+
+  void DeleteTriggerScriptCoordinator();
 
   bool waiting_for_onboarding_ = false;
   bool is_custom_tab_ = false;
@@ -112,8 +122,8 @@ class Starter : public content::WebContentsObserver {
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
   bool fetch_trigger_scripts_on_navigation_ = false;
   std::unique_ptr<TriggerContext> pending_trigger_context_;
-  StarterResultCallback pending_callback_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
+  const scoped_refptr<StarterHeuristic> starter_heuristic_;
   base::WeakPtrFactory<Starter> weak_ptr_factory_{this};
 };
 

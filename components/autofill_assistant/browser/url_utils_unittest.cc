@@ -9,6 +9,8 @@ namespace autofill_assistant {
 namespace url_utils {
 namespace {
 
+using testing::Eq;
+
 TEST(UrlUtilsTest, IsInDomainOrSubDomain) {
   std::vector<std::string> allowed_domains = {"example.com",
                                               "other-example.com"};
@@ -55,6 +57,16 @@ TEST(UrlUtilsTest, IsSamePublicSuffixDomain) {
   EXPECT_FALSE(
       IsSamePublicSuffixDomain(GURL("http://example.com"), GURL("invalid")));
   EXPECT_FALSE(IsSamePublicSuffixDomain(GURL("invalid"), GURL("invalid")));
+}
+
+TEST(UrlUtilsTest, GetOrganizationIdentifyingDomain) {
+  EXPECT_THAT(GetOrganizationIdentifyingDomain(GURL("https://www.example.com")),
+              Eq("example.com"));
+  EXPECT_THAT(
+      GetOrganizationIdentifyingDomain(GURL("https://subdomain.example.com")),
+      Eq("example.com"));
+  EXPECT_THAT(GetOrganizationIdentifyingDomain(GURL("https://example.com")),
+              Eq("example.com"));
 }
 
 }  // namespace

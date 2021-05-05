@@ -277,6 +277,11 @@ class Metrics {
     LITE_SCRIPT_BASE64_DECODING_ERROR = 24,
     // The user rejected the bottom sheet onboarding
     LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED = 25,
+    // Transitioning from CCT to regular tab is currently not supported.
+    LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED = 26,
+    // The current trigger script was canceled. This typically happens when a
+    // new startup request takes precedence.
+    LITE_SCRIPT_CANCELED = 27,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -307,7 +312,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED
+    kMaxValue = LITE_SCRIPT_CANCELED
   };
 
   // The different ways a user who has successfully completed a light script may
@@ -584,6 +589,13 @@ class Metrics {
         break;
       case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SWIPE_DISMISSED:
         out << "LITE_SCRIPT_PROMPT_SWIPE_DISMISSED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED:
+        out << "LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_CANCELED:
+        out << "LITE_SCRIPT_CANCELED";
+        break;
         // Do not add default case to force compilation error for new values.
     }
     return out;

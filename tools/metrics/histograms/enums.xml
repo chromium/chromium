@@ -5048,6 +5048,8 @@ others/histograms.xml -->
   <int value="23" label="Disabled proactive help setting"/>
   <int value="24" label="Base64 decoding error"/>
   <int value="25" label="The user rejected the bottom sheet onboarding"/>
+  <int value="26" label="CCT -&gt; tab not supported"/>
+  <int value="27" label="Canceled"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptOnboarding">

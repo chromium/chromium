@@ -349,6 +349,10 @@ const TriggerContext& TriggerScriptCoordinator::GetTriggerContext() const {
   return *trigger_context_;
 }
 
+const GURL& TriggerScriptCoordinator::GetDeeplink() const {
+  return deeplink_url_;
+}
+
 void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
   bool visible = web_contents_visible_ && web_contents_interactable_;
   if (visible) {

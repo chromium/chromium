@@ -31,6 +31,12 @@ class StarterPlatformDelegate {
   virtual std::unique_ptr<ServiceRequestSender>
   GetTriggerScriptRequestSenderToInject() = 0;
 
+  // Requests the platform delegate to start the regular script.
+  virtual void StartRegularScript(
+      GURL url,
+      std::unique_ptr<TriggerContext> trigger_context,
+      const base::Optional<TriggerScriptProto>& trigger_script) = 0;
+
   // Access to the login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
   // Returns the channel for the installation (canary, dev, beta, stable).

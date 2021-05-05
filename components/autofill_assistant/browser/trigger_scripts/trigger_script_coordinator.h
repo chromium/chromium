@@ -83,6 +83,11 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
                  std::unique_ptr<TriggerContext> trigger_context,
                  base::Optional<TriggerScriptProto> trigger_script)> callback);
 
+  // Stops the currently running trigger script. Hides any currently shown UI
+  // (both trigger script UI and onboarding, if applicable) and returns |state|
+  // as the reason for stopping in the pending callback.
+  void Stop(Metrics::LiteScriptFinishedState state);
+
   // Performs |action|. This is usually invoked by the UI as a result of user
   // interactions.
   void PerformTriggerScriptAction(
@@ -111,6 +116,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // Const access to the trigger context associated with this coordinator.
   const TriggerContext& GetTriggerContext() const;
 
+  // Returns the deeplink that this coordinator was started on.
+  const GURL& GetDeeplink() const;
+
  private:
   friend class TriggerScriptCoordinatorTest;
 
@@ -127,7 +135,6 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void CheckDynamicTriggerConditions();
   void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
   void OnGetTriggerScripts(int http_status, const std::string& response);
-  void Stop(Metrics::LiteScriptFinishedState state);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
   void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
