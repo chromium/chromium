@@ -282,6 +282,20 @@ float MultiBucketWithFree(Allocator* allocator) {
   return timer.LapsPerSecond() * kMultiBucketRounds;
 }
 
+float DirectMapped(Allocator* allocator) {
+  constexpr size_t kSize = 2 * 1000 * 1000;
+
+  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  do {
+    void* cur = allocator->Alloc(kSize);
+    CHECK_NE(cur, nullptr);
+    allocator->Free(cur);
+    timer.NextLap();
+  } while (!timer.HasTimeLimitExpired());
+
+  return timer.LapsPerSecond();
+}
+
 std::unique_ptr<Allocator> CreateAllocator(AllocatorType type) {
   switch (type) {
     case AllocatorType::kSystem:
@@ -305,8 +319,15 @@ void LogResults(int thread_count,
 void RunTest(int thread_count,
              AllocatorType alloc_type,
              float (*test_fn)(Allocator*),
+             float (*noisy_neighbor_fn)(Allocator*),
              const char* story_base_name) {
   auto alloc = CreateAllocator(alloc_type);
+
+  std::unique_ptr<TestLoopThread> noisy_neighbor_thread = nullptr;
+  if (noisy_neighbor_fn) {
+    noisy_neighbor_thread = std::make_unique<TestLoopThread>(
+        BindOnce(noisy_neighbor_fn, Unretained(alloc.get())));
+  }
 
   std::vector<std::unique_ptr<TestLoopThread>> threads;
   for (int i = 0; i < thread_count; ++i) {
@@ -321,6 +342,9 @@ void RunTest(int thread_count,
     min_laps_per_second = std::min(laps_per_second, min_laps_per_second);
     total_laps_per_second += laps_per_second;
   }
+
+  if (noisy_neighbor_thread)
+    noisy_neighbor_thread->Run();
 
   char const* alloc_type_str;
   switch (alloc_type) {
@@ -368,7 +392,7 @@ INSTANTIATE_TEST_SUITE_P(
 #if !defined(MEMORY_CONSTRAINED)
 TEST_P(MemoryAllocationPerfTest, SingleBucket) {
   auto params = GetParam();
-  RunTest(std::get<0>(params), std::get<1>(params), SingleBucket,
+  RunTest(std::get<0>(params), std::get<1>(params), SingleBucket, nullptr,
           "SingleBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
@@ -376,21 +400,36 @@ TEST_P(MemoryAllocationPerfTest, SingleBucket) {
 TEST_P(MemoryAllocationPerfTest, SingleBucketWithFree) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), SingleBucketWithFree,
-          "SingleBucketWithFree");
+          nullptr, "SingleBucketWithFree");
 }
 
 #if !defined(MEMORY_CONSTRAINED)
 TEST_P(MemoryAllocationPerfTest, MultiBucket) {
   auto params = GetParam();
-  RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, "MultiBucket");
+  RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, nullptr,
+          "MultiBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
 TEST_P(MemoryAllocationPerfTest, MultiBucketWithFree) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), MultiBucketWithFree,
-          "MultiBucketWithFree");
+          nullptr, "MultiBucketWithFree");
 }
+
+TEST_P(MemoryAllocationPerfTest, DirectMapped) {
+  auto params = GetParam();
+  RunTest(std::get<0>(params), std::get<1>(params), DirectMapped, nullptr,
+          "DirectMapped");
+}
+
+#if !defined(MEMORY_CONSTRAINED)
+TEST_P(MemoryAllocationPerfTest, MultiBucketWithNoisyNeighbor) {
+  auto params = GetParam();
+  RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, DirectMapped,
+          "MultiBucketWithNoisyNeighbor");
+}
+#endif  // !defined(MEMORY_CONSTRAINED)
 
 }  // namespace
 

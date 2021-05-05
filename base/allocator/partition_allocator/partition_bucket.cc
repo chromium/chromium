@@ -27,10 +27,15 @@ namespace internal {
 namespace {
 
 template <bool thread_safe>
-SlotSpanMetadata<thread_safe>*
-PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
-    EXCLUSIVE_LOCKS_REQUIRED(root->lock_) {
-  bool return_null = flags & PartitionAllocReturnNull;
+SlotSpanMetadata<thread_safe>* PartitionDirectMap(
+    PartitionRoot<thread_safe>* root,
+    int flags,
+    size_t raw_size) {
+  // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
+  // scoped unlocking.
+  root->lock_.AssertAcquired();
+
+  const bool return_null = flags & PartitionAllocReturnNull;
   if (UNLIKELY(raw_size > MaxDirectMapped())) {
     if (return_null)
       return nullptr;
@@ -60,110 +65,134 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
-  size_t slot_size = PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
-  size_t reserved_size = root->GetDirectMapReservedSize(raw_size);
-  size_t map_size =
-      reserved_size -
-      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
-  PA_DCHECK(slot_size <= map_size);
+  PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
+  PartitionPage<thread_safe>* page = nullptr;
 
-  char* ptr = nullptr;
-  // Allocate from GigaCage, if enabled. In this case, use non-BRP pool, because
-  // BackupRefPtr isn't supported in direct maps.
-  bool with_giga_cage = features::IsPartitionAllocGigaCageEnabled();
-  if (with_giga_cage) {
-    ptr = internal::AddressPoolManager::GetInstance()->Reserve(
-        GetNonBRPPool(), nullptr, reserved_size);
-  } else {
-    ptr = reinterpret_cast<char*>(
-        AllocPages(nullptr, reserved_size, kSuperPageAlignment,
-                   PageInaccessible, PageTag::kPartitionAlloc));
-  }
-  if (UNLIKELY(!ptr)) {
-    if (return_null)
-      return nullptr;
-
-    // Crash handling is split on purpose in this function:
-    // - Crashing here likely means that Chrome is out of address space (on 32
-    //   bit platforms), or out of GigaCage space (on 64 bit ones).
-    // - Crashing below would likely mean out of commit charge.
+  {
+    // Getting memory for direct-mapped allocations doesn't interact with the
+    // rest of the allocator, but takes a long time, as it involves several
+    // system calls. With GigaCage, no mmap() (or equivalent) call is made on 64
+    // bit systems, but page permissions are changed with mprotect(), which is a
+    // syscall.
     //
-    // See comment above regarding unlocking,
-    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-    root->OutOfMemory(raw_size);
-    IMMEDIATE_CRASH();  // Not required, kept as documentation.
-  }
+    // These calls are almost always slow (at least a couple us per syscall on a
+    // desktop Linux machine), and they also have a very long latency tail,
+    // possibly from getting descheduled. As a consequence, we should not hold
+    // the lock when performing a syscall. This is not the only problematic
+    // location, but since this one doesn't interact with the rest of the
+    // allocator, we can safely drop and then re-acquire the lock.
+    //
+    // Note that this only affects allocations that are not served out of the
+    // thread cache, but as a simple example the buffer partition in blink is
+    // frequently used for large allocations (e.g. ArrayBuffer), and frequent,
+    // small ones (e.g. WTF::String), and does not have a thread cache.
+    ScopedUnlockGuard<thread_safe> scoped_unlock{root->lock_};
 
-  root->total_size_of_direct_mapped_pages.fetch_add(reserved_size,
-                                                    std::memory_order_relaxed);
+    const size_t slot_size =
+        PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
+    const size_t reserved_size =
+        PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
+    const size_t map_size =
+        reserved_size -
+        PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
+    PA_DCHECK(slot_size <= map_size);
 
-  char* slot = ptr + PartitionPageSize();
-  RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
-                      PageUpdatePermissions);
-  // It is typically possible to map a large range of inaccessible pages, and
-  // this is leveraged in multiple places, including the GigaCage. However, this
-  // doesn't mean that we can commit all this memory.  For the vast majority of
-  // allocations, this just means that we crash in a slightly different places,
-  // but for callers ready to handle failures, we have to return nullptr.
-  // See crbug.com/1187404.
-  //
-  // Note that we didn't check above, because if we cannot even commit a single
-  // page, then this is likely hopeless anyway, and we will crash very soon.
-  bool ok = root->TryRecommitSystemPagesForData(slot, slot_size,
-                                                PageUpdatePermissions);
-  if (!ok) {
+    char* ptr = nullptr;
+    // Allocate from GigaCage, if enabled. In this case, use non-BRP pool,
+    // because BackupRefPtr isn't supported in direct maps.
+    const bool with_giga_cage = features::IsPartitionAllocGigaCageEnabled();
     if (with_giga_cage) {
-      internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          GetNonBRPPool(), ptr, reserved_size);
+      ptr = internal::AddressPoolManager::GetInstance()->Reserve(
+          GetNonBRPPool(), nullptr, reserved_size);
     } else {
-      FreePages(ptr, reserved_size);
+      ptr = reinterpret_cast<char*>(
+          AllocPages(nullptr, reserved_size, kSuperPageAlignment,
+                     PageInaccessible, PageTag::kPartitionAlloc));
+    }
+    if (UNLIKELY(!ptr)) {
+      if (return_null)
+        return nullptr;
+
+      // Crash handling is split on purpose in this function:
+      // - Crashing here likely means that Chrome is out of address space (on 32
+      //   bit platforms), or out of GigaCage space (on 64 bit ones).
+      // - Crashing below would likely mean out of commit charge.
+      root->OutOfMemory(raw_size);
+      IMMEDIATE_CRASH();  // Not required, kept as documentation.
     }
 
-    if (return_null)
-      return nullptr;
+    root->total_size_of_direct_mapped_pages.fetch_add(
+        reserved_size, std::memory_order_relaxed);
 
-    // See comment above.
-    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-    root->OutOfMemory(raw_size);
-    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+    char* const slot = ptr + PartitionPageSize();
+    RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
+                        PageUpdatePermissions);
+    // It is typically possible to map a large range of inaccessible pages, and
+    // this is leveraged in multiple places, including the GigaCage. However,
+    // this doesn't mean that we can commit all this memory.  For the vast
+    // majority of allocations, this just means that we crash in a slightly
+    // different place, but for callers ready to handle failures, we have to
+    // return nullptr. See crbug.com/1187404.
+    //
+    // Note that we didn't check above, because if we cannot even commit a
+    // single page, then this is likely hopeless anyway, and we will crash very
+    // soon.
+    const bool ok = root->TryRecommitSystemPagesForData(slot, slot_size,
+                                                        PageUpdatePermissions);
+    if (!ok) {
+      if (!return_null) {
+        root->OutOfMemory(raw_size);
+        IMMEDIATE_CRASH();  // Not required, kept as documentation.
+      }
+
+      if (with_giga_cage) {
+        internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+            GetNonBRPPool(), ptr, reserved_size);
+      } else {
+        FreePages(ptr, reserved_size);
+      }
+      return nullptr;
+    }
+
+    auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
+        PartitionSuperPageToMetadataArea(ptr));
+    metadata->extent.root = root;
+    // The new structures are all located inside a fresh system page so they
+    // will all be zeroed out. These DCHECKs are for documentation and to assert
+    // our expectations of the kernel.
+    PA_DCHECK(!metadata->extent.super_page_base);
+    PA_DCHECK(!metadata->extent.super_pages_end);
+    PA_DCHECK(!metadata->extent.next);
+    // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket
+    // isn't set up yet to properly assert the slot start.
+    PA_DCHECK(PartitionPage<thread_safe>::FromSlotInnerPtr(slot) ==
+              &metadata->page);
+
+    page = &metadata->page;
+    PA_DCHECK(!page->slot_span_metadata_offset);
+    PA_DCHECK(!page->slot_span_metadata.next_slot_span);
+    PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
+    PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
+    PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
+
+    PA_DCHECK(!metadata->bucket.active_slot_spans_head);
+    PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
+    PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
+    PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
+    PA_DCHECK(!metadata->bucket.num_full_slot_spans);
+    metadata->bucket.slot_size = slot_size;
+
+    new (&page->slot_span_metadata)
+        SlotSpanMetadata<thread_safe>(&metadata->bucket);
+    auto* next_entry = new (slot) PartitionFreelistEntry();
+    page->slot_span_metadata.SetFreelistHead(next_entry);
+
+    map_extent = &metadata->direct_map_extent;
+    map_extent->map_size = map_size;
+    map_extent->bucket = &metadata->bucket;
   }
 
-  auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
-      PartitionSuperPageToMetadataArea(ptr));
-  metadata->extent.root = root;
-  // The new structures are all located inside a fresh system page so they
-  // will all be zeroed out. These DCHECKs are for documentation.
-  PA_DCHECK(!metadata->extent.super_page_base);
-  PA_DCHECK(!metadata->extent.super_pages_end);
-  PA_DCHECK(!metadata->extent.next);
-  // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket isn't
-  // set up yet to properly assert the slot start.
-  PA_DCHECK(PartitionPage<thread_safe>::FromSlotInnerPtr(slot) ==
-            &metadata->page);
-
-  auto* page = &metadata->page;
-  PA_DCHECK(!page->slot_span_metadata_offset);
-  PA_DCHECK(!page->slot_span_metadata.next_slot_span);
-  PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
-  PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
-  PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
-
-  PA_DCHECK(!metadata->bucket.active_slot_spans_head);
-  PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
-  PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
-  PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
-  PA_DCHECK(!metadata->bucket.num_full_slot_spans);
-  metadata->bucket.slot_size = slot_size;
-
-  new (&page->slot_span_metadata)
-      SlotSpanMetadata<thread_safe>(&metadata->bucket);
-  auto* next_entry = new (slot) PartitionFreelistEntry();
-  page->slot_span_metadata.SetFreelistHead(next_entry);
-
-  auto* map_extent = &metadata->direct_map_extent;
-  map_extent->map_size = map_size;
-  map_extent->bucket = &metadata->bucket;
-
+  root->lock_.AssertAcquired();
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list;
   if (map_extent->next_extent)

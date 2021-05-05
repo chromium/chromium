@@ -233,7 +233,7 @@ struct BASE_EXPORT PartitionRoot {
   char* next_partition_page_end = nullptr;
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
-  DirectMapExtent* direct_map_list = nullptr;
+  DirectMapExtent* direct_map_list GUARDED_BY(lock_) = nullptr;
   SlotSpan* global_empty_slot_span_ring[kMaxFreeableSpans] = {};
   int16_t global_empty_slot_span_ring_index = 0;
 
@@ -279,8 +279,7 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE bool TryRecommitSystemPagesForData(
       void* address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PageAccessibilityDisposition accessibility_disposition);
 
   [[noreturn]] NOINLINE void OutOfMemory(size_t size);
 
@@ -401,7 +400,7 @@ struct BASE_EXPORT PartitionRoot {
     return bits::AlignUp(raw_size, SystemPageSize());
   }
 
-  ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t raw_size) {
+  static ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
