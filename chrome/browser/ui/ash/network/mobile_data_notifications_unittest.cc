@@ -19,10 +19,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_connect.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -31,7 +31,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using chromeos::DBusThreadManager;
 using chromeos::LoginState;
 
 namespace {
@@ -71,11 +70,9 @@ class MobileDataNotificationsTest : public testing::Test {
   void SetUp() override {
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
     testing::Test::SetUp();
-    DBusThreadManager::Initialize();
     SetupUserManagerAndProfileManager();
     SetupSystemNotifications();
     AddUserAndSetActive(kTestUserName);
-    chromeos::NetworkHandler::Initialize();
     SetupNetworkShillState();
     base::RunLoop().RunUntilIdle();
     network_connect_delegate_ = std::make_unique<NetworkConnectTestDelegate>();
@@ -87,10 +84,8 @@ class MobileDataNotificationsTest : public testing::Test {
     mobile_data_notifications_.reset();
     chromeos::NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
-    chromeos::NetworkHandler::Shutdown();
     profile_manager_.reset();
     user_manager_enabler_.reset();
-    DBusThreadManager::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -117,7 +112,7 @@ class MobileDataNotificationsTest : public testing::Test {
 
     // Create a cellular device with provider.
     chromeos::ShillDeviceClient::TestInterface* device_test =
-        DBusThreadManager::Get()->GetShillDeviceClient()->GetTestInterface();
+        network_handler_test_helper_.device_test();
     device_test->ClearDevices();
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                            "stub_cellular_device1");
@@ -130,7 +125,7 @@ class MobileDataNotificationsTest : public testing::Test {
 
     // Create a cellular network and activate it.
     chromeos::ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        network_handler_test_helper_.service_test();
     service_test->ClearServices();
     service_test->AddService(kCellularServicePath, kCellularGuid,
                              "cellular1" /* name */, shill::kTypeCellular,
@@ -157,6 +152,7 @@ class MobileDataNotificationsTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;

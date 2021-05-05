@@ -17,11 +17,11 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
@@ -75,10 +75,9 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    shill_clients::InitializeFakes();
-    hermes_clients::InitializeFakes();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+
     SetupDefaultShillState();
-    NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
 
     auto notifier = std::make_unique<NetworkStateNotifier>();
@@ -93,8 +92,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
+    network_handler_test_helper_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -128,11 +126,11 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
   void SetupDefaultShillState() {
     ShillDeviceClient::TestInterface* device_test =
-        ShillDeviceClient::Get()->GetTestInterface();
+        network_handler_test_helper_->device_test();
     device_test->ClearDevices();
 
     ShillServiceClient::TestInterface* service_test =
-        ShillServiceClient::Get()->GetTestInterface();
+        network_handler_test_helper_->service_test();
     service_test->ClearServices();
 
     // Set up Wi-Fi device, and add a single network with a passphrase failure.
@@ -187,6 +185,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   HermesManagerClient::TestInterface* hermes_manager_test_;
   HermesEuiccClient::TestInterface* hermes_euicc_test_;
   ash::TestSystemTrayClient test_system_tray_client_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
 
  private:
