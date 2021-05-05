@@ -330,6 +330,11 @@ bool TranslateInfoBarDelegate::ShouldAutoAlwaysTranslate() {
     return false;
   }
 
+  // Don't trigger for unknown source language.
+  if (source_language_code() == translate::kUnknownLanguageCode) {
+    return false;
+  }
+
   bool always_translate =
       (GetTranslationAcceptedCount() >= GetAutoAlwaysThreshold() &&
        GetTranslationAutoAlwaysCount() < GetMaximumNumberOfAutoAlways());
