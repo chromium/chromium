@@ -144,9 +144,10 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 class CommerceHintAgentTest : public PlatformBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpChromeCartModule,
-        {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
+        {optimization_guide::features::kOptimizationHints});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -522,10 +523,11 @@ IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, DISABLED_Rejected) {
 class CommerceHintProductInfoTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpChromeCartModule,
-        {{"partner-merchant-pattern", "(guitarcenter.com)"},
-         {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"partner-merchant-pattern", "(guitarcenter.com)"},
+           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
+        {optimization_guide::features::kOptimizationHints});
   }
 
  private:
