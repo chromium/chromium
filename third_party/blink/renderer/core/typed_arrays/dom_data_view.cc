@@ -30,8 +30,12 @@ v8::Local<v8::Value> DOMDataView::Wrap(v8::Isolate* isolate,
     return v8::Local<v8::Object>();
   DCHECK(v8_buffer->IsArrayBuffer());
 
-  v8::Local<v8::Object> wrapper = v8::DataView::New(
-      v8_buffer.As<v8::ArrayBuffer>(), byteOffset(), byteLength());
+  v8::Local<v8::Object> wrapper;
+  {
+    v8::Context::Scope context_scope(creation_context->CreationContext());
+    wrapper = v8::DataView::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
+                                byteLength());
+  }
 
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }
@@ -47,8 +51,12 @@ v8::MaybeLocal<v8::Value> DOMDataView::WrapV2(ScriptState* script_state) {
   }
   DCHECK(v8_buffer->IsArrayBuffer());
 
-  v8::Local<v8::Object> wrapper = v8::DataView::New(
-      v8_buffer.As<v8::ArrayBuffer>(), byteOffset(), byteLength());
+  v8::Local<v8::Object> wrapper;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    wrapper = v8::DataView::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
+                                byteLength());
+  }
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
