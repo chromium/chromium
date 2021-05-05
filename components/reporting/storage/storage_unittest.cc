@@ -365,22 +365,16 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   // Helper class for setting up mock client expectations for key delivery.
   class SetKeyDelivery {
    public:
-    explicit SetKeyDelivery(MockUploadClient* client,
-                            test::TestCallbackWaiter* waiter)
-        : client_(client), waiter_(waiter) {}
+    explicit SetKeyDelivery(MockUploadClient* client) : client_(client) {}
 
     ~SetKeyDelivery() {
       EXPECT_CALL(*client_, UploadRecord(_, _, _)).Times(0);
       EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
-      test::TestCallbackWaiter* const waiter =
-          waiter_;  // let pointer outlive SetUp
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
-          .WillOnce(Invoke([waiter] { waiter->Signal(); }));
+      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK()))).Times(1);
     }
 
    private:
     MockUploadClient* const client_;
-    test::TestCallbackWaiter* const waiter_;
   };
 
  private:
@@ -496,6 +490,12 @@ class StorageTest
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
+    // Disallow uploads unless other expectation is set (any later EXPECT_CALL
+    // will take precedence over this one).
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(_, _, NotNull()))
+        .WillRepeatedly(WithoutArgs(Invoke([]() {
+          return Status(error::UNAVAILABLE, "Upload unavailable at this time");
+        })));
     // Encryption is disabled by default.
     ASSERT_FALSE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
@@ -526,18 +526,15 @@ class StorageTest
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module) {
-    test::TestCallbackWaiter waiter;
     if (expect_to_need_key_) {
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
-      waiter.Attach();
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(_, /*need_encryption_key=*/Eq(true), NotNull()))
-          .WillOnce(WithArg<2>(
-              Invoke([&waiter](MockUploadClient* mock_upload_client) {
-                MockUploadClient::SetKeyDelivery client(mock_upload_client,
-                                                        &waiter);
-              })))
+          .WillOnce(WithArg<2>(Invoke([](MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetKeyDelivery client(mock_upload_client);
+            return Status::StatusOK();
+          })))
           .RetiresOnSaturation();
     }
     // Initialize Storage with no key.
@@ -547,7 +544,8 @@ class StorageTest
                                         base::Unretained(this)),
                     encryption_module, e.cb());
     ASSIGN_OR_RETURN(auto storage, e.result());
-    waiter.Wait();
+    // Let asynchronous activity finish.
+    task_environment_.RunUntilIdle();
     if (expect_to_need_key_) {
       // Provision the storage with a key.
       // Key delivery must have been requested above.
@@ -571,7 +569,7 @@ class StorageTest
   }
 
   void ResetTestStorage() {
-    // Let everything ongoing to finish.
+    // Let asynchronous activity finish.
     task_environment_.RunUntilIdle();
     storage_.reset();
     // StorageQueue is destructed on a thread,
@@ -617,8 +615,12 @@ class StorageTest
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
     auto uploader = std::make_unique<MockUploadClient>(
         &last_record_digest_map_, sequenced_task_runner_, decryptor_);
-    set_mock_uploader_expectations_.Call(priority, need_encryption_key,
-                                         uploader.get());
+    const auto status = set_mock_uploader_expectations_.Call(
+        priority, need_encryption_key, uploader.get());
+    if (!status.ok()) {
+      std::move(start_uploader_cb).Run(status);
+      return;
+    }
     std::move(start_uploader_cb).Run(std::move(uploader));
   }
 
@@ -729,8 +731,8 @@ class StorageTest
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits())};
 
-  ::testing::MockFunction<
-      void(Priority, bool /*need_encryption_key*/, MockUploadClient*)>
+  ::testing::NiceMock<::testing::MockFunction<
+      Status(Priority, bool /*need_encryption_key*/, MockUploadClient*)>>
       set_mock_uploader_expectations_;
 };
 
@@ -740,7 +742,6 @@ constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
 
 TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(_, _, NotNull())).Times(0);
   WriteStringOrDie(FAST_BATCH, kData[0]);
   WriteStringOrDie(FAST_BATCH, kData[1]);
   WriteStringOrDie(FAST_BATCH, kData[2]);
@@ -750,10 +751,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 }
 
-// TODO(crbug.com/1196570): Fix flakiness.
-TEST_P(StorageTest, DISABLED_WriteIntoNewStorageReopenAndWriteMore) {
+TEST_P(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(_, _, NotNull())).Times(0);
   WriteStringOrDie(FAST_BATCH, kData[0]);
   WriteStringOrDie(FAST_BATCH, kData[1]);
   WriteStringOrDie(FAST_BATCH, kData[2]);
@@ -783,6 +782,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
                 .Required(0, kData[0])
                 .Required(1, kData[1])
                 .Required(2, kData[2]);
+            return Status::StatusOK();
           })));
 
   // Trigger upload.
@@ -810,6 +810,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
         .WillRepeatedly(WithArgs<0, 2>(
             Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetEmpty client(mock_upload_client);
+              return Status::StatusOK();
             })));
     EXPECT_CALL(
         set_mock_uploader_expectations_,
@@ -820,6 +821,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
+              return Status::StatusOK();
             })));
 
     // Trigger upload with no key update.
@@ -849,7 +851,9 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
                 .Required(3, kMoreData[0])
                 .Required(4, kMoreData[1])
                 .Required(5, kMoreData[2]);
-          })));
+            return Status::StatusOK();
+          })))
+      .RetiresOnSaturation();
 
   // Trigger upload with key update after a long wait.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -882,7 +886,9 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
                 .Required(3, kMoreData[0])
                 .Required(4, kMoreData[1])
                 .Required(5, kMoreData[2]);
-          })));
+            return Status::StatusOK();
+          })))
+      .RetiresOnSaturation();
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -905,14 +911,15 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
                 .Required(0, kData[0])
                 .Required(1, kData[1])
                 .Required(2, kData[2]);
-          })));
+            return Status::StatusOK();
+          })))
+      .RetiresOnSaturation();
 
   // Trigger upload.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
 
-// TODO(crbug.com/1196852): Fix flakiness.
-TEST_P(StorageTest, DISABLED_WriteIntoNewStorageReopenWriteMoreAndFlush) {
+TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
   WriteStringOrDie(MANUAL_BATCH, kData[1]);
@@ -939,7 +946,9 @@ TEST_P(StorageTest, DISABLED_WriteIntoNewStorageReopenWriteMoreAndFlush) {
                 .Required(3, kMoreData[0])
                 .Required(4, kMoreData[1])
                 .Required(5, kMoreData[2]);
-          })));
+            return Status::StatusOK();
+          })))
+      .RetiresOnSaturation();
 
   // Trigger upload.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -964,7 +973,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
 
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -983,7 +994,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1000,7 +1013,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
             [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1023,7 +1038,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
 
@@ -1041,7 +1058,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
 }
@@ -1061,7 +1080,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
             [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[0]);  // Immediately uploads and verifies.
   }
@@ -1076,7 +1097,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0])
                   .Required(1, kData[1]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[1]);  // Immediately uploads and verifies.
   }
@@ -1092,7 +1115,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[2]);  // Immediately uploads and verifies.
   }
@@ -1114,7 +1139,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
             [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[0]);
   }
 
@@ -1128,7 +1155,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0])
                   .Required(1, kData[1]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[1]);
   }
 
@@ -1143,7 +1172,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[2]);
   }
 
@@ -1164,7 +1195,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[0]);
   }
 
@@ -1179,7 +1212,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(2, kData[2])
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[1]);
   }
 
@@ -1195,7 +1230,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[2]);
   }
 }
@@ -1212,7 +1249,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
             [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[0]);
   }
 
@@ -1228,7 +1267,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kData[0])
                   .Required(1, kData[1]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[1]);
   }
 
@@ -1243,6 +1284,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
         .WillRepeatedly(WithArgs<0, 2>(
             Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetEmpty client(mock_upload_client);
+              return Status::StatusOK();
             })));
     EXPECT_CALL(
         set_mock_uploader_expectations_,
@@ -1252,7 +1294,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Required(0, kMoreData[0])
                   .Required(1, kMoreData[1]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
   }
 
@@ -1273,7 +1317,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
               MockUploadClient::SetUp(priority, mock_upload_client, &waiter)
                   .Possible(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[2]);
   }
   WriteStringOrDie(SLOW_BATCH, kMoreData[2]);
@@ -1287,6 +1333,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
         .WillRepeatedly(WithArgs<0, 2>(
             Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetEmpty client(mock_upload_client);
+              return Status::StatusOK();
             })));
     EXPECT_CALL(
         set_mock_uploader_expectations_,
@@ -1296,7 +1343,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
               MockUploadClient::SetUp(SLOW_BATCH, mock_upload_client, &waiter)
                   .Required(1, kMoreData[1])
                   .Required(2, kMoreData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
   }
 }
@@ -1316,7 +1365,9 @@ TEST_P(StorageTest, WriteEncryptFailure) {
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
-          })));
+            return Status::StatusOK();
+          })))
+      .RetiresOnSaturation();
   const Status result = WriteString(FAST_BATCH, "TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
@@ -1341,7 +1392,9 @@ TEST_P(StorageTest, ForceConfirm) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1358,7 +1411,9 @@ TEST_P(StorageTest, ForceConfirm) {
             [&waiter](Priority priority, MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1384,7 +1439,9 @@ TEST_P(StorageTest, ForceConfirm) {
                   .PossibleGap(0, 2)
                   .Possible(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1407,7 +1464,9 @@ TEST_P(StorageTest, ForceConfirm) {
                   .PossibleGap(1, 1)
                   .Possible(1, kData[1])
                   .Required(2, kData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1444,20 +1503,19 @@ TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
   // This time key delivery is to succeed.
   // Set uploader expectations for any queue; expect no records and need
   // key. Make sure no uploads happen, and key is requested.
-  {
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(_, /*need_encryption_key=*/Eq(true), NotNull()))
-        .WillOnce(
-            WithArg<2>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
-              MockUploadClient::SetKeyDelivery client(mock_upload_client,
-                                                      &waiter);
-            })))
-        .RetiresOnSaturation();
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(_, /*need_encryption_key=*/Eq(true), NotNull()))
+      .WillOnce(WithArg<2>(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetKeyDelivery client(mock_upload_client);
+        return Status::StatusOK();
+      })))
+      .RetiresOnSaturation();
 
-    // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-  }
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Let asynchronous activity finish.
+  task_environment_.RunUntilIdle();
 
   // Provision the storage with a key.
   // Key delivery must have been requested above.
@@ -1480,6 +1538,7 @@ TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
+              return Status::StatusOK();
             })))
         .RetiresOnSaturation();
 
@@ -1510,7 +1569,9 @@ TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
                   .Required(3, kMoreData[0])
                   .Required(4, kMoreData[1])
                   .Required(5, kMoreData[2]);
-            })));
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
 
     // Trigger upload.
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));

@@ -144,7 +144,7 @@ StorageQueue::~StorageQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Stop upload timer.
-  upload_timer_.Stop();
+  upload_timer_.AbandonAndStop();
   // Make sure no pending writes is present.
   DCHECK(write_contexts_queue_.empty());
 
@@ -664,6 +664,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
                            base::Unretained(this)),
             storage_queue->sequenced_task_runner_),
         async_start_upload_cb_(storage_queue->async_start_upload_cb_),
+        must_invoke_upload_(
+            EncryptionModuleInterface::is_enabled() &&
+            storage_queue->encryption_module_->need_encryption_key()),
         storage_queue_weakptr_factory_{storage_queue.get()} {
     DCHECK(storage_queue.get());
     DCHECK(async_start_upload_cb_);
@@ -682,26 +685,16 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
     }
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            [](ReadContext* self) {
-              self->async_start_upload_cb_.Run(
-                  base::BindOnce(&ReadContext::ScheduleOnUploaderInstantiated,
-                                 base::Unretained(self)));
-            },
-            base::Unretained(this)));
+    if (!must_invoke_upload_) {
+      PrepareDataFiles();
+      return;
+    }
+
+    InstantiateUploader(
+        base::BindOnce(&ReadContext::PrepareDataFiles, base::Unretained(this)));
   }
 
-  void ScheduleOnUploaderInstantiated(
-      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    Schedule(base::BindOnce(&ReadContext::OnUploaderInstantiated,
-                            base::Unretained(this),
-                            std::move(uploader_result)));
-  }
-
-  void OnUploaderInstantiated(
-      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+  void PrepareDataFiles() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     base::WeakPtr<StorageQueue> storage_queue =
         storage_queue_weakptr_factory_.GetWeakPtr();
@@ -709,16 +702,6 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
     }
-    if (!uploader_result.ok()) {
-      Response(Status(error::FAILED_PRECONDITION,
-                      base::StrCat({"Failed to provide the Uploader, status=",
-                                    uploader_result.status().ToString()})));
-      return;
-    }
-    DCHECK(!uploader_)
-        << "Uploader instantiated more than once for single upload";
-    uploader_ = std::move(uploader_result.ValueOrDie());
-
     // Fill in initial sequencing information to track progress:
     // use minimum of first_sequencing_id_ and first_unconfirmed_sequencing_id_
     // if the latter has been recorded.
@@ -759,6 +742,25 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
     // Register with storage_queue, to make sure selected files are not removed.
     ++(storage_queue->active_read_operations_);
+
+    if (uploader_) {
+      // Uploader already created.
+      BeginUploading();
+      return;
+    }
+
+    InstantiateUploader(
+        base::BindOnce(&ReadContext::BeginUploading, base::Unretained(this)));
+  }
+
+  void BeginUploading() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    base::WeakPtr<StorageQueue> storage_queue =
+        storage_queue_weakptr_factory_.GetWeakPtr();
+    if (!storage_queue) {
+      Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      return;
+    }
 
     // The first <seq.file> pair is the current file now, and we are at its
     // start or ahead of it.
@@ -1038,12 +1040,50 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     // Resume at ScheduleNextRecord.
   }
 
+  void InstantiateUploader(base::OnceCallback<void()> continuation) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](base::OnceCallback<void()> continuation, ReadContext* self) {
+              self->async_start_upload_cb_.Run(base::BindOnce(
+                  &ReadContext::ScheduleOnUploaderInstantiated,
+                  base::Unretained(self), std::move(continuation)));
+            },
+            std::move(continuation), base::Unretained(this)));
+  }
+
+  void ScheduleOnUploaderInstantiated(
+      base::OnceCallback<void()> continuation,
+      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+    Schedule(base::BindOnce(&ReadContext::OnUploaderInstantiated,
+                            base::Unretained(this), std::move(continuation),
+                            std::move(uploader_result)));
+  }
+
+  void OnUploaderInstantiated(
+      base::OnceCallback<void()> continuation,
+      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    if (!uploader_result.ok()) {
+      Response(Status(error::FAILED_PRECONDITION,
+                      base::StrCat({"Failed to provide the Uploader, status=",
+                                    uploader_result.status().ToString()})));
+      return;
+    }
+    DCHECK(!uploader_)
+        << "Uploader instantiated more than once for single upload";
+    uploader_ = std::move(uploader_result.ValueOrDie());
+
+    std::move(continuation).Run();
+  }
+
   // Files that will be read (in order of sequencing ids).
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
   SequencingInformation sequencing_info_;
   uint32_t current_pos_;
   std::map<int64_t, scoped_refptr<SingleFile>>::iterator current_file_;
   const AsyncStartUploaderCb async_start_upload_cb_;
+  const bool must_invoke_upload_;
   std::unique_ptr<UploaderInterface> uploader_;
   base::WeakPtrFactory<StorageQueue> storage_queue_weakptr_factory_;
 
