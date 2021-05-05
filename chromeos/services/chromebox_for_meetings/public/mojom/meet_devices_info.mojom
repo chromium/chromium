@@ -33,7 +33,7 @@ struct PolicyInfo {
   // From DMServer when server issued response (Java time)
   int64 timestamp_ms@0;
 
-  // PolicyData::DeviceID
+  // PolicyData::DirectoryApiId
   string? device_id@1;
 
   // PolicyData::ServiceAccountIdentity
@@ -41,6 +41,9 @@ struct PolicyInfo {
 
   // PolicyData::GaiaId
   int64 service_account_gaia_id@3;
+
+  // PolicyData::DeviceID
+  string? cros_device_id@4;
 };
 
 // Basic system information

@@ -71,14 +71,16 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   }
 
   void UpdatePolicyInfo(int64_t timestamp,
-                        std::string device_id,
+                        std::string directory_api_id,
                         std::string service_account_id,
-                        int64_t gaia_id) {
+                        int64_t gaia_id,
+                        std::string cros_device_id) {
     device_policy_.policy_data().set_timestamp(timestamp);
-    device_policy_.policy_data().set_device_id(device_id);
+    device_policy_.policy_data().set_directory_api_id(directory_api_id);
     device_policy_.policy_data().set_service_account_identity(
         service_account_id);
     device_policy_.policy_data().set_gaia_id(base::NumberToString(gaia_id));
+    device_policy_.policy_data().set_device_id(cros_device_id);
     device_policy_.Build();
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
     ash::DeviceSettingsService::Get()->Load();
@@ -166,19 +168,22 @@ TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
   run_loop.RunUntilIdle();
 
   int64_t timestamp = 10;
-  std::string device_id = "device_id";
+  std::string directory_api_id = "device_id";
   std::string service_account_id = "service_account_id";
   int64_t gaia_id = 20;
-  UpdatePolicyInfo(timestamp, device_id, service_account_id, gaia_id);
+  std::string cros_device_id = "cros_device_id";
+  UpdatePolicyInfo(timestamp, directory_api_id, service_account_id, gaia_id,
+                   cros_device_id);
 
   base::RunLoop mojo_loop;
   details_remote->GetPolicyInfo(
       base::BindLambdaForTesting([&](mojom::PolicyInfoPtr policy_ptr) {
         ASSERT_EQ(timestamp, policy_ptr->timestamp_ms);
-        ASSERT_EQ(device_id, policy_ptr->device_id);
+        ASSERT_EQ(directory_api_id, policy_ptr->device_id);
         ASSERT_EQ(service_account_id,
                   policy_ptr->service_account_email_address);
         ASSERT_EQ(gaia_id, policy_ptr->service_account_gaia_id);
+        ASSERT_EQ(cros_device_id, policy_ptr->cros_device_id);
         mojo_loop.Quit();
       }));
   mojo_loop.Run();
