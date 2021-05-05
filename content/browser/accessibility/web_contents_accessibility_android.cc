@@ -22,6 +22,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
+#include "content/browser/accessibility/touch_passthrough_manager.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -484,16 +485,48 @@ bool WebContentsAccessibilityAndroid::OnHoverEvent(
           ui::MotionEventAndroid::GetAndroidAction(event.GetAction())))
     return false;
 
+  if (!GetRootBrowserAccessibilityManager())
+    return true;
+
+  // Apply the page scale factor to go from device coordinates to
+  // render coordinates.
+  gfx::PointF pointf = event.GetPointPix();
+  pointf.Scale(1 / page_scale_);
+  gfx::Point point = gfx::ToFlooredPoint(pointf);
+
   // |HitTest| sends an IPC to the render process to do the hit testing.
   // The response is handled by HandleHover when it returns.
   // Hover event was consumed by accessibility by now. Return true to
   // stop the event from proceeding.
-  if (event.GetAction() != ui::MotionEvent::Action::HOVER_EXIT &&
-      GetRootBrowserAccessibilityManager()) {
-    gfx::PointF point = event.GetPointPix();
-    point.Scale(1 / page_scale_);
-    GetRootBrowserAccessibilityManager()->HitTest(gfx::ToFlooredPoint(point));
+  if (event.GetAction() != ui::MotionEvent::Action::HOVER_EXIT)
+    GetRootBrowserAccessibilityManager()->HitTest(point);
+
+  if (!GetRootBrowserAccessibilityManager()->touch_passthrough_enabled())
+    return true;
+
+  if (!web_contents_ || !web_contents_->GetMainFrame())
+    return true;
+
+  if (!touch_passthrough_manager_) {
+    touch_passthrough_manager_ = std::make_unique<TouchPassthroughManager>(
+        web_contents_->GetMainFrame());
   }
+
+  switch (event.GetAction()) {
+    case ui::MotionEvent::Action::HOVER_ENTER:
+      touch_passthrough_manager_->OnTouchStart(point);
+      break;
+    case ui::MotionEvent::Action::HOVER_MOVE:
+      touch_passthrough_manager_->OnTouchMove(point);
+      break;
+    case ui::MotionEvent::Action::HOVER_EXIT:
+      touch_passthrough_manager_->OnTouchEnd();
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   return true;
 }
 
