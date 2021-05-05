@@ -18,18 +18,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Enum actions for the IOS.DefaultBrowserFullscreenPromo UMA metric.
-enum IOSDefaultBrowserFullscreenPromoAction {
-  ACTION_BUTTON = 0,
-  CANCEL = 1,
-  REMIND_ME_LATER = 2,
-  kMaxValue = REMIND_ME_LATER,
-};
-
-}  // namespace
-
 @interface DefaultBrowserPromoCoordinator () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate>

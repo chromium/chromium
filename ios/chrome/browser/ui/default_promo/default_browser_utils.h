@@ -16,6 +16,19 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeAllTabs = 3
 };
 
+namespace {
+
+// Enum actions for the IOS.DefaultBrowserFullscreenPromo* UMA metrics. Entries
+// should not be renumbered and numeric values should never be reused.
+enum IOSDefaultBrowserFullscreenPromoAction {
+  ACTION_BUTTON = 0,
+  CANCEL = 1,
+  REMIND_ME_LATER = 2,
+  kMaxValue = REMIND_ME_LATER,
+};
+
+}  // namespace
+
 // UserDefaults key that saves the last time an HTTP(S) link was sent and opened
 // by the app.
 extern NSString* const kLastHTTPURLOpenTime;
