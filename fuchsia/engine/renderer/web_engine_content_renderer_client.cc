@@ -13,6 +13,7 @@
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_view.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/features.h"
 #include "fuchsia/engine/renderer/cast_streaming_demuxer.h"
@@ -23,6 +24,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace {
@@ -138,6 +140,14 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
 
 void WebEngineContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
+  // If this is a top-level frame then it should have a transparent background.
+  // Both the RenderView and WebView should be guaranteed to be non-null, since
+  // the |render_frame| was only just created.
+  if (render_frame->IsMainFrame()) {
+    render_frame->GetRenderView()->GetWebView()->SetBaseBackgroundColor(
+        SK_AlphaTRANSPARENT);
+  }
+
   // Add WebEngine services to the new RenderFrame.
   // The objects' lifetimes are bound to the RenderFrame's lifetime.
   new on_load_script_injector::OnLoadScriptInjector(render_frame);
