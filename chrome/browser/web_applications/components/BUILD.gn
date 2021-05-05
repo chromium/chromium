@@ -305,10 +305,6 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/chromeos" ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
-    deps += [ "//chromeos/crosapi/cpp" ]
-  }
-
   if (is_win) {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
   }

@@ -7,9 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
-#include "components/version_info/channel.h"
 
 namespace web_app {
 
@@ -54,24 +52,6 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables migration of default installed web apps over to their replacement
-// web apps for Chrome OS beta channel users.
-// This flag overrides the value of the kMigrateDefaultChromeAppToWebAppsGSuite
-// and kMigrateDefaultChromeAppToWebAppsNonGSuite for Chrome OS beta users.
-// Dev/canary/stable channels continue to use the above flags.
-// We do this because:
-//  - The Chrome OS migration flags used to be default enabled.
-//  - Chrome OS beta channel got migrated.
-//  - We changed the flags to be default disabled before it went out to stable.
-//  - We want to avoid reverse migrating beta users (it will lose icon positions
-//    in the shelf/launcher).
-//  - Metrics team has advised us to use client side logic instead of a field
-//    trial to maintain beta's migrated state.
-// Note: This will all go away once the migration is complete.
-const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsBeta{
-    "MigrateDefaultChromeAppToWebAppsChromeOsBeta",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables migration of default installed web apps over to their replacement
 // web apps for Chrome OS managed users.
 // This flag overrides the value of the kMigrateDefaultChromeAppToWebAppsGSuite
 // and kMigrateDefaultChromeAppToWebAppsNonGSuite for Chrome OS managed users.
@@ -103,12 +83,6 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
     if (feature->name == feature_name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       if (IsMigrationFeature(*feature)) {
-        // See |kMigrateDefaultChromeAppToWebAppsChromeOsBeta| comment above.
-        if (chrome::GetChannel() == version_info::Channel::BETA) {
-          return base::FeatureList::IsEnabled(
-              kMigrateDefaultChromeAppToWebAppsChromeOsBeta);
-        }
-
         // See |kMigrateDefaultChromeAppToWebAppsChromeOsManaged| comment above.
         if (profile.GetProfilePolicyConnector()->IsManaged()) {
           return base::FeatureList::IsEnabled(
