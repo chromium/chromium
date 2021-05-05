@@ -762,6 +762,7 @@ TEST_P(HTMLMediaElementTest, ContextPaused) {
 }
 
 TEST_P(HTMLMediaElementTest, GcMarkingNoAllocWebTimeRanges) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   auto* thread_state = ThreadState::Current();
   ThreadState::NoAllocationScope no_allocation_scope(thread_state);
   EXPECT_FALSE(thread_state->IsAllocationAllowed());
