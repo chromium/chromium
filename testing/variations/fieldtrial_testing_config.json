@@ -50,6 +50,69 @@
             ]
         }
     ],
+    "AddToHomescreenIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledMessage",
+                    "params": {
+                        "use_message": "true",
+                        "use_text_bubble": "false"
+                    },
+                    "enable_features": [
+                        "AddToHomescreenIPH"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AddToHomescreenMessage": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": ">=0",
+                        "event_1": "name:add_to_homescreen_message_iph_trigger;comparator:==0;window:15;storage:90",
+                        "event_trigger": "name:add_to_homescreen_message_iph_trigger;comparator:<2;window:90;storage:90",
+                        "event_used": "name:add_to_homescreen_dialog_shown;comparator:==0;window:90;storage:90",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_AddToHomescreenMessage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AddToHomescreenTextBubble": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": ">=0",
+                        "event_1": "name:add_to_homescreen_text_bubble_iph_trigger;comparator:==0;window:15;storage:90",
+                        "event_trigger": "name:add_to_homescreen_text_bubble_iph_trigger;comparator:<2;window:90;storage:90",
+                        "event_used": "name:add_to_homescreen_dialog_shown;comparator:==0;window:90;storage:90",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_AddToHomescreenTextBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "AmpBackgroundTab": [
         {
             "platforms": [
