@@ -392,8 +392,7 @@ SyncServiceCrypto::GetEncryptionObserverProxy() {
 
 ModelTypeSet SyncServiceCrypto::GetEncryptedDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_.encrypted_types.Has(PASSWORDS));
-  DCHECK(state_.encrypted_types.Has(WIFI_CONFIGURATIONS));
+  DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   // We may be called during the setup process before we're
   // initialized. In this case, we default to the sensitive types.
   return state_.encrypted_types;
@@ -526,8 +525,7 @@ void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
            << ModelTypeSetToString(state_.encrypted_types)
            << " (encrypt everything is set to "
            << (state_.encrypt_everything ? "true" : "false") << ")";
-  DCHECK(state_.encrypted_types.Has(PASSWORDS));
-  DCHECK(state_.encrypted_types.Has(WIFI_CONFIGURATIONS));
+  DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
 
   delegate_->CryptoStateChanged();
 }

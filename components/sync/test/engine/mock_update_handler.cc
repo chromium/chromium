@@ -30,13 +30,12 @@ const sync_pb::DataTypeContext& MockUpdateHandler::GetDataTypeContext() const {
   return kEmptyDataTypeContext;
 }
 
-SyncerError MockUpdateHandler::ProcessGetUpdatesResponse(
+void MockUpdateHandler::ProcessGetUpdatesResponse(
     const sync_pb::DataTypeProgressMarker& progress_marker,
     const sync_pb::DataTypeContext& mutated_context,
     const SyncEntityList& applicable_updates,
     StatusController* status) {
   progress_marker_.CopyFrom(progress_marker);
-  return SyncerError(SyncerError::SYNCER_OK);
 }
 
 void MockUpdateHandler::ApplyUpdates(StatusController* status) {

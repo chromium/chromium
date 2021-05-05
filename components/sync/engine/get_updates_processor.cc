@@ -5,8 +5,10 @@
 #include "components/sync/engine/get_updates_processor.h"
 
 #include <stddef.h>
+#include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -347,12 +349,9 @@ SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
       context.CopyFrom(gu_response.context_mutations(context_iter->second));
 
     if (update_handler_iter != update_handler_map_->end()) {
-      SyncerError result =
-          update_handler_iter->second->ProcessGetUpdatesResponse(
-              gu_response.new_progress_marker(progress_marker_iter->second),
-              context, updates_iter->second, status_controller);
-      if (result.value() != SyncerError::SYNCER_OK)
-        return result;
+      update_handler_iter->second->ProcessGetUpdatesResponse(
+          gu_response.new_progress_marker(progress_marker_iter->second),
+          context, updates_iter->second, status_controller);
     } else {
       DLOG(WARNING) << "Ignoring received updates of a type we can't handle.  "
                     << "Type is: " << ModelTypeToString(type);

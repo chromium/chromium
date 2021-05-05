@@ -126,7 +126,7 @@ class ModelTypeWorker : public UpdateHandler,
   bool IsInitialSyncEnded() const override;
   const sync_pb::DataTypeProgressMarker& GetDownloadProgress() const override;
   const sync_pb::DataTypeContext& GetDataTypeContext() const override;
-  SyncerError ProcessGetUpdatesResponse(
+  void ProcessGetUpdatesResponse(
       const sync_pb::DataTypeProgressMarker& progress_marker,
       const sync_pb::DataTypeContext& mutated_context,
       const SyncEntityList& applicable_updates,
@@ -139,10 +139,6 @@ class ModelTypeWorker : public UpdateHandler,
   // CommitContributor implementation.
   std::unique_ptr<CommitContribution> GetContribution(
       size_t max_entries) override;
-
-  // An alternative way to drive sending data to the processor, that should be
-  // called when a new encryption mechanism is ready.
-  void EncryptionAcceptedMaybeApplyUpdates();
 
   // Public for testing.
   // Returns true if this type should stop communicating because of outstanding
@@ -167,8 +163,14 @@ class ModelTypeWorker : public UpdateHandler,
     int gu_responses_while_should_have_been_known = 0;
   };
 
-  // Helper function to actually send |pending_updates_| to the processor.
-  void ApplyPendingUpdates();
+  // Sends |pending_updates_| and |model_type_state_| to the processor if there
+  // are no encryption pendencies and initial sync is done. This is called in
+  // ApplyUpdates() during a GetUpdates cycle, but also if the processor must be
+  // informed of a new encryption key, or the worker just managed to decrypt
+  // some pending updates.
+  // If initial sync isn't done yet, the first ApplyUpdates() will take care of
+  // pushing the data in such cases instead (the processor relies on this).
+  void SendPendingUpdatesToProcessorIfReady();
 
   // Returns true if this type has successfully fetched all available updates
   // from the server at least once. Our state may or may not be stale, but at

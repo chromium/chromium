@@ -15,7 +15,9 @@ class NudgeHandler {
   NudgeHandler() = default;
   virtual ~NudgeHandler() = default;
 
+  // Schedules initial sync for |type| and returns.
   virtual void NudgeForInitialDownload(ModelType type) = 0;
+  // Schedules a commit for |type| and returns.
   virtual void NudgeForCommit(ModelType type) = 0;
 };
 

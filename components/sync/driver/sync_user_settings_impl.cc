@@ -270,7 +270,7 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
     return true;
   const ModelTypeSet preferred_types = GetPreferredDataTypes();
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
-  DCHECK(encrypted_types.Has(PASSWORDS));
+  DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   return !Intersection(preferred_types, encrypted_types).Empty();
 }
 

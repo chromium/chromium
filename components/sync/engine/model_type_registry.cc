@@ -147,23 +147,11 @@ void ModelTypeRegistry::OnPassphraseRequired(
     const KeyDerivationParams& key_derivation_params,
     const sync_pb::EncryptedData& pending_keys) {}
 
-void ModelTypeRegistry::OnPassphraseAccepted() {
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->EncryptionAcceptedMaybeApplyUpdates();
-    }
-  }
-}
+void ModelTypeRegistry::OnPassphraseAccepted() {}
 
 void ModelTypeRegistry::OnTrustedVaultKeyRequired() {}
 
-void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->EncryptionAcceptedMaybeApplyUpdates();
-    }
-  }
-}
+void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
 void ModelTypeRegistry::OnBootstrapTokenUpdated(
     const std::string& bootstrap_token,

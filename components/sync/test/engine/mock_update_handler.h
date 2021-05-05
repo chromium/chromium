@@ -21,7 +21,7 @@ class MockUpdateHandler : public UpdateHandler {
   bool IsInitialSyncEnded() const override;
   const sync_pb::DataTypeProgressMarker& GetDownloadProgress() const override;
   const sync_pb::DataTypeContext& GetDataTypeContext() const override;
-  SyncerError ProcessGetUpdatesResponse(
+  void ProcessGetUpdatesResponse(
       const sync_pb::DataTypeProgressMarker& progress_marker,
       const sync_pb::DataTypeContext& mutated_context,
       const SyncEntityList& applicable_updates,

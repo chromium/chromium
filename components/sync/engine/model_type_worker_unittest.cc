@@ -184,24 +184,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
     worker_->ConnectSync(std::move(processor));
   }
 
-  // If the type isn't encrypted yet, makes the cryptographer available to the
-  // worker and marks the type as encrypted. Otherwise, just notifies a change
-  // in the cryptographer state.
-  void EnableEncryptionOrNotify() {
-    if (!worker()) {
-      // No worker to notify, just ensure |is_encrypted_type_| is true.
-      is_encrypted_type_ = true;
-      return;
-    }
-
-    if (is_encrypted_type_) {
-      worker()->OnCryptographerChange();
-    } else {
-      is_encrypted_type_ = true;
-      worker()->EnableEncryption();
-    }
-  }
-
   // Mimic a Nigori update with a keybag that cannot be decrypted, which means
   // the cryptographer becomes unusable (no default key until the issue gets
   // resolved, via DecryptPendingKey()).
@@ -233,12 +215,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
     cryptographer_.AddEncryptionKey(last_key_name);
     cryptographer_.SelectDefaultEncryptionKey(last_key_name);
 
-    if (!worker()) {
-      return;
-    }
-    worker()->OnCryptographerChange();
-    if (is_encrypted_type_) {
-      worker()->EncryptionAcceptedMaybeApplyUpdates();
+    if (worker()) {
+      worker()->OnCryptographerChange();
     }
   }
 
@@ -441,7 +419,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
   FakeCryptographer cryptographer_;
 
   // Determines whether |worker_| has access to the cryptographer or not.
-  // Can be set to true via EnableEncryptionOrNotify().
   bool is_encrypted_type_ = false;
 
   // The number of encryption keys known to the cryptographer. Keys are

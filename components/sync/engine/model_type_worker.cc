@@ -185,7 +185,7 @@ ModelTypeWorker::ModelTypeWorker(
       passphrase_type_(passphrase_type),
       min_gu_responses_to_ignore_key_(kMinGuResponsesToIgnoreKey) {
   DCHECK(cryptographer_);
-  DCHECK(type_ != PASSWORDS || encryption_enabled_);
+  DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
   if (!CommitOnlyTypes().Has(GetModelType())) {
     DCHECK_EQ(type, GetModelTypeFromSpecificsFieldNumber(
@@ -223,14 +223,14 @@ void ModelTypeWorker::ConnectSync(
 
   // |model_type_state_| might have an outdated encryption key name, e.g.
   // because |cryptographer_| was updated before this worker was constructed.
-  // OnCryptographerChange() and EncryptionAcceptedMaybeApplyUpdates() might
-  // never be called, so update the key manually here and push it to the
-  // processor. Only push if initial sync is done, otherwise this violates some
-  // of the processor assumptions; if initial sync isn't done, the now-updated
-  // key will be pushed on the first ApplyUpdates() call anyway.
+  // OnCryptographerChange() might never be called, so update the key manually
+  // here and push it to the processor. Only push if initial sync is done,
+  // otherwise this violates some of the processor assumptions; if initial sync
+  // isn't done, the now-updated key will be pushed on the first ApplyUpdates()
+  // call anyway.
   bool had_outdated_key_name = UpdateTypeEncryptionKeyName();
   if (had_outdated_key_name && model_type_state_.initial_sync_done()) {
-    ApplyPendingUpdates();
+    SendPendingUpdatesToProcessorIfReady();
   }
 }
 
@@ -241,15 +241,33 @@ ModelType ModelTypeWorker::GetModelType() const {
 
 void ModelTypeWorker::EnableEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (encryption_enabled_) {
+    // No-op.
+    return;
+  }
+
   encryption_enabled_ = true;
-  UpdateTypeEncryptionKeyName();
+  // UpdateTypeEncryptionKeyName() might return false if the cryptographer does
+  // not have a default key yet.
+  if (UpdateTypeEncryptionKeyName()) {
+    // Push the new key name to the processor.
+    SendPendingUpdatesToProcessorIfReady();
+  }
 }
 
 void ModelTypeWorker::OnCryptographerChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateTypeEncryptionKeyName();
-  // Always try to decrypt, regardless of |encryption_enabled_|.
+  // Always try to decrypt, regardless of |encryption_enabled_|. This might
+  // add some elements to |pending_updates_|.
   DecryptStoredEntities();
+  bool had_oudated_key_name = UpdateTypeEncryptionKeyName();
+  if (had_oudated_key_name || !pending_updates_.empty()) {
+    // Push the newly decrypted updates and/or the new key name to the
+    // processor.
+    SendPendingUpdatesToProcessorIfReady();
+  }
+  // If the worker couldn't commit before due to BlockForEncryption(), this
+  // might now be resolved. The call is a no-op if there's nothing to commit.
   NudgeIfReadyToCommit();
 }
 
@@ -258,7 +276,6 @@ void ModelTypeWorker::UpdatePassphraseType(PassphraseType type) {
   passphrase_type_ = type;
 }
 
-// UpdateHandler implementation.
 bool ModelTypeWorker::IsInitialSyncEnded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_type_state_.initial_sync_done();
@@ -275,7 +292,7 @@ const sync_pb::DataTypeContext& ModelTypeWorker::GetDataTypeContext() const {
   return model_type_state_.type_context();
 }
 
-SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
+void ModelTypeWorker::ProcessGetUpdatesResponse(
     const sync_pb::DataTypeProgressMarker& progress_marker,
     const sync_pb::DataTypeContext& mutated_context,
     const SyncEntityList& applicable_updates,
@@ -363,8 +380,6 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
       MaybeDropPendingUpdatesEncryptedWith(key_and_info.first);
     }
   }
-
-  return SyncerError(SyncerError::SYNCER_OK);
 }
 
 // static
@@ -451,39 +466,25 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
   // Indicate to the processor that the initial download is done. The initial
   // sync technically isn't done yet but by the time this value is persisted to
   // disk on the model thread it will be.
-  //
-  // This should be mostly relevant for the call from ApplyUpdates(), but in
-  // rare cases we may end up receiving initial updates outside configuration
-  // cycles (e.g. polling cycles).
   model_type_state_.set_initial_sync_done(true);
   // Download cycle is done, pass all updates to the processor.
-  ApplyPendingUpdates();
+  SendPendingUpdatesToProcessorIfReady();
 }
 
-void ModelTypeWorker::EncryptionAcceptedMaybeApplyUpdates() {
-  // TODO(crbug.com/1109221): Consider always trying to apply updates in
-  // EnableEncryption() and OnCryptographerChange() instead of having this
-  // method. If so, the enable_encryption argument in the constructor can be
-  // replaced with an immediate call to EnableEncryption() without losing the
-  // edge case ApplyUpdates() in the constructor body.
-  DCHECK(encryption_enabled_);
-  DCHECK(cryptographer_->CanEncrypt());
-
-  // Only push the encryption to the processor if we're already connected.
-  // Otherwise this information can wait for the initial sync's first apply.
-  if (model_type_state_.initial_sync_done()) {
-    // Reuse ApplyUpdates(...) to get its DCHECKs as well.
-    ApplyUpdates(nullptr);
-  }
-}
-
-void ModelTypeWorker::ApplyPendingUpdates() {
+void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DCHECK(model_type_processor_);
+
+  if (!model_type_state_.initial_sync_done()) {
+    return;
+  }
 
   if (BlockForEncryption()) {
     return;
   }
 
+  DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
+  DCHECK(!encryption_enabled_ ||
+         !model_type_state_.encryption_key_name().empty());
   DCHECK(entries_pending_decryption_.empty());
 
   DVLOG(1) << ModelTypeToString(type_) << ": "
@@ -518,11 +519,10 @@ void ModelTypeWorker::NudgeIfReadyToCommit() {
   // existing behaviour. But perhaps there is no need to nudge for commit if all
   // known changes are already in flight.
   if (has_local_changes_state_ != kNoNudgedLocalChanges && CanCommitItems()) {
-    nudge_handler_->NudgeForCommit(GetModelType());
+    nudge_handler_->NudgeForCommit(type_);
   }
 }
 
-// CommitContributor implementation.
 std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     size_t max_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -570,14 +570,18 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
   }
 
+  DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
+  DCHECK(!encryption_enabled_ ||
+         (model_type_state_.encryption_key_name() ==
+          cryptographer_->GetDefaultEncryptionKeyName()));
   return std::make_unique<CommitContributionImpl>(
-      GetModelType(), model_type_state_.type_context(), std::move(response),
+      type_, model_type_state_.type_context(), std::move(response),
       base::BindOnce(&ModelTypeWorker::OnCommitResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
       encryption_enabled_ ? cryptographer_ : nullptr, passphrase_type_,
-      CommitOnlyTypes().Has(GetModelType()));
+      CommitOnlyTypes().Has(type_));
 }
 
 bool ModelTypeWorker::HasLocalChangesForTest() const {

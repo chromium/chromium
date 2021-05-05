@@ -46,10 +46,7 @@ class UpdateHandler {
   //
   // In this context, "applicable_updates" means the set of updates belonging to
   // this type.
-  //
-  // Returns SYNCER_OK if the all data was processed successfully, a syncer
-  // error otherwise.
-  virtual SyncerError ProcessGetUpdatesResponse(
+  virtual void ProcessGetUpdatesResponse(
       const sync_pb::DataTypeProgressMarker& progress_marker,
       const sync_pb::DataTypeContext& mutated_context,
       const SyncEntityList& applicable_updates,
