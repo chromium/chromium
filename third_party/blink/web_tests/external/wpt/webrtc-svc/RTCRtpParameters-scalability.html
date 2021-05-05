@@ -5,6 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/webrtc/dictionary-helper.js"></script>
 <script src="/webrtc/RTCRtpParameters-helper.js"></script>
+<script src="/webrtc/RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
@@ -17,6 +18,36 @@
     const { encodings } = param;
     assert_equals(encodings.length, 1);
     return encodings[0];
+  }
+
+  const capabilities = RTCRtpSender.getCapabilities('video');
+  let index = 0;
+  for (const codec of capabilities.codecs) {
+    if ('scalabilityModes' in codec && codec.scalabilityModes.length > 0) {
+      for (const scalabilityMode of codec.scalabilityModes) {
+        promise_test(async t => {
+          const v = document.createElement('video');
+          v.autoplay = true;
+          const pc1 = new RTCPeerConnection();
+          const pc2 = new RTCPeerConnection();
+          t.add_cleanup(() => pc1.close());
+          t.add_cleanup(() => pc2.close());
+          const stream1 = await getNoiseStream({ video: { signal: 100 , width: 60, height: 60} });
+          const [track1] = stream1.getTracks();
+          t.add_cleanup(() => track1.stop());
+          const transceiver = pc1.addTransceiver(track1, {
+            sendEncodings: [{ scalabilityMode: scalabilityMode }],
+          });
+          transceiver.setCodecPreferences([codec]);
+          const haveTrackEvent = new Promise(r => pc2.ontrack = r);
+          exchangeIceCandidates(pc1, pc2);
+          await exchangeOfferAnswer(pc1, pc2);
+          v.srcObject = new MediaStream([(await haveTrackEvent).track]);
+          await new Promise(r => v.onloadedmetadata = r);
+          await detectSignal(t, v, 100);
+        }, `[${index++}] ${codec.mimeType} - ${scalabilityMode} should produce valid video content`);
+      }
+    }
   }
 
   promise_test(async t => {

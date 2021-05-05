@@ -353,6 +353,7 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     } else if (encoding->scalabilityMode() == "L1T3") {
       webrtc_encoding.num_temporal_layers = 3;
     }
+    webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
   }
   webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
   return webrtc_encoding;
@@ -757,11 +758,35 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
       }
       codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
     }
-    if (rtc_codec.mime_type() == "video/VP8" ||
-        rtc_codec.mime_type() == "video/VP9") {
+    if (rtc_codec.mime_type() == "video/VP8") {
       Vector<String> modes;
       modes.push_back("L1T2");
       modes.push_back("L1T3");
+      codec->setScalabilityModes(modes);
+    } else if (rtc_codec.mime_type() == "video/VP9") {
+      auto profile_id = rtc_codec.parameters.find("profile-id");
+      if (profile_id == rtc_codec.parameters.end() ||
+          profile_id->second != "2") {
+        Vector<String> modes;
+        modes.push_back("L1T2");
+        modes.push_back("L1T3");
+        codec->setScalabilityModes(modes);
+      }
+    } else if (rtc_codec.mime_type() == "video/AV1" ||
+               rtc_codec.mime_type() == "video/AV1X") {
+      Vector<String> modes;
+      modes.push_back("L1T2");
+      modes.push_back("L1T3");
+      modes.push_back("L2T1");
+      modes.push_back("L2T1h");
+      modes.push_back("L2T1_KEY");
+      modes.push_back("L2T2");
+      modes.push_back("L2T2_KEY");
+      modes.push_back("L2T2_KEY_SHIFT");
+      modes.push_back("L3T1");
+      modes.push_back("L3T3");
+      modes.push_back("L3T3_KEY");
+      modes.push_back("S2T1");
       codec->setScalabilityModes(modes);
     }
     codecs.push_back(codec);
