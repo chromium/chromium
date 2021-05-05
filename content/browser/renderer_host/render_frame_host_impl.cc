@@ -54,6 +54,7 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -241,6 +242,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -8596,6 +8598,14 @@ void RenderFrameHostImpl::GetFontAccessManager(
       ->GetFontAccessManager()
       ->BindReceiver(FontAccessManagerImpl::BindingContext(
                          GetLastCommittedOrigin(), GetGlobalFrameRoutingId()),
+                     std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindComputePressureHost(
+    mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
+  static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
+      ->GetComputePressureManager()
+      ->BindReceiver(GetLastCommittedOrigin(), GetGlobalFrameRoutingId(),
                      std::move(receiver));
 }
 

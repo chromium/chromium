@@ -48,6 +48,7 @@
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/cookie_store/cookie_store_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1328,6 +1329,7 @@ void StoragePartitionImpl::Initialize(
   }
 
   font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
+  compute_pressure_manager_ = ComputePressureManager::Create();
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1595,6 +1597,11 @@ FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupStorage() {
   DCHECK(initialized_);
   return interest_group_manager_.get();
+}
+
+ComputePressureManager* StoragePartitionImpl::GetComputePressureManager() {
+  DCHECK(initialized_);
+  return compute_pressure_manager_.get();
 }
 
 ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {

@@ -1,0 +1,107 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Represents availability of compute resources.
+struct ComputePressureState {
+  // Average utilization of all CPU cores.
+  //
+  // Values use a scale from 0.0 (no utilization) to 1.0 (100% utilization).
+  double cpu_utilization;
+
+  // Average normalized clock speed over all CPU cores.
+  //
+  // The normalized clock speed for each CPU core uses a piecewise-linear scale
+  // from 0.0 (minimum clock speed) to 0.5 (base clock speed) to 1.0 (maximum
+  // clock-speed).
+  double cpu_speed;
+};
+
+// Specifies a quantization scheme for the data in a ComputePressureState.
+//
+// Each array of thresholds subdivides the interval [0.0, 1.0]. The array must
+// not contain the 0.0 and 1.0 values, as they are implied. For example, the
+// array {0.2, 0.5, 0.8} specifies the sub-intervals [0.0, 0.2], [0.2, 0.5],
+// [0.5, 0.8], and [0.8, 1.0]. The thresholds in an array must be sorted.
+//
+// A value is quantized by replacing it with the center of the interval that it
+// falls in. For example, a CPU utilization quantizing scheme that matches the
+// example above would report a CPU utilization value of 0.51 as 0.65. This is
+// because 0.51 falls in the sub-interval [0.5, 0.8], and the center of that
+// interval is 0.65, the average of 0.5 and 0.8.
+struct ComputePressureQuantization {
+  array<double> cpu_utilization_thresholds;
+  array<double> cpu_speed_thresholds;
+};
+
+// The maximum size of ComputePressureQuantization.cpu_utilization_thresholds.
+const int32 kMaxComputePressureCpuUtilizationThresholds = 3;
+
+// The maximum size of ComputePressureQuantization.cpu_speed_thresholds.
+const int32 kMaxComputePressureCpuSpeedThresholds = 1;
+
+// Implemented by renderers to receive compute pressure info from the browser.
+//
+// The values in the ComputePressureState reported to the renderer are always
+// quantized according to a ComputePressureQuantization scheme.
+interface ComputePressureObserver {
+  // Called in the following circumstances.
+  //
+  // 1. Once after an observer is created.
+  // 2. When the (quantized) compute pressure state differs from the previously
+  //    reported state.
+  //
+  // Updates to an observer are rate-limited. Observers that belong to visible
+  // pages receive updates at most once a second, while other observers are
+  // limited to at most one update in 10 seconds.
+  OnUpdate(ComputePressureState state);
+};
+
+// Result of ComputePressureManager.AddObserver().
+enum ComputePressureStatus {
+  kOk,
+
+  // The underlying platform does not report compute pressure information.
+  //
+  // For example, this is reported on Linux if Chrome cannot access /proc.
+  kNotSupported,
+
+  // The renderer is not allowed access to the feature.
+  //
+  // This is only reported in conditions that the renderer process cannot check.
+  // Renderers that attempt to access the feature when they know they shouldn't
+  // will be terminated.
+  kSecurityError,
+};
+
+// Origin-scoped access to the browser-side Compute Pressure API implementation.
+//
+// The interface is implemented in the browser and consumed by renderers. The
+// interface is only accessible to frames (and not workers).  Each frame that
+// accesses the API creates a separate connection.
+interface ComputePressureHost {
+  // Subscribes to updates on the device's compute pressure state.
+  //
+  // The reported state will be quantized according to the `quantization`
+  // scheme. `quantization` must be a valid quantization scheme.
+  //
+  // `observer` is active (eligible for notifications) as soon as AddObserver()
+  // completes. Observation is stopped by disconnecting the mojo pipe.
+  //
+  // All active observers belonging to an origin use the same `quantization`
+  // scheme. If `quantization` differs from the scheme used by active observers
+  // belonging to the same origin, the conflict is resolved by stopping all the
+  // origin's pre-existing active observers. In other words, after AddObserver()
+  // completes, the newly created observer will be the only active observer.
+  //
+  // This method is only accessible to frames served from the same
+  // origin as the top-level frame, in secure contexts. The same-origin frame
+  // requirement is stricter than the usual first-party, and is necessary so
+  // sites can't use iframes and postMessage() to use observers with different
+  // quantization schemes.
+  AddObserver(pending_remote<ComputePressureObserver> observer,
+              ComputePressureQuantization quantization)
+      => (ComputePressureStatus status);
+};

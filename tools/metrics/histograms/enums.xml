@@ -32391,6 +32391,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3896" label="WebBluetoothManufacturerDataFilter"/>
   <int value="3897" label="SanitizerAPIGetConfig"/>
   <int value="3898" label="SanitizerAPIGetDefaultConfig"/>
+  <int value="3899" label="ComputePressureObserver_Constructor"/>
+  <int value="3900" label="ComputePressureObserver_Observe"/>
+  <int value="3901" label="ComputePressureObserver_Stop"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

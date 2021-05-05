@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/oyiptong/compute-pressure/
+[
+    Exposed=Window,
+    RuntimeEnabled=ComputePressure,
+    SecureContext
+] interface ComputePressureObserver {
+  [
+    CallWith=ScriptState, RaisesException,
+    MeasureAs=ComputePressureObserver_Constructor
+  ] constructor(ComputePressureUpdateCallback callback,
+                optional ComputePressureObserverOptions options = {});
+
+  [
+    CallWith=ScriptState,
+    MeasureAs=ComputePressureObserver_Observe,
+    RaisesException
+  ] Promise<void> observe();
+
+  [CallWith=ScriptState, MeasureAs=ComputePressureObserver_Stop] void stop();
+};

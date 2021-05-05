@@ -242,6 +242,11 @@
     "args": ["--enable-features=FontAccess,FontAccessPersistent"]
   },
   {
+    "prefix": "compute-pressure",
+    "bases": ["external/wpt/compute-pressure"],
+    "args": ["--enable-features=ComputePressure"]
+  },
+  {
     "prefix": "highdpi-threaded",
     "bases": ["external/wpt/css/css-paint-api/hidpi"],
     "args": ["--force-device-scale-factor=2",

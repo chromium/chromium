@@ -79,6 +79,7 @@ namespace content {
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class ConversionManagerImpl;
+class ComputePressureManager;
 class CookieStoreContext;
 class FontAccessContext;
 class GeneratedCodeCacheContext;
@@ -226,6 +227,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   ConversionManagerImpl* GetConversionManager();
   FontAccessManagerImpl* GetFontAccessManager();
   InterestGroupManager* GetInterestGroupStorage();
+  ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
 
   // blink::mojom::DomStorage interface.
@@ -561,6 +563,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
   std::unique_ptr<InterestGroupManager> interest_group_manager_;
+
+  // TODO(crbug.com/1205695): ComputePressureManager should live elsewher. The
+  //                          Compute Pressure API does not store data.
+  std::unique_ptr<ComputePressureManager> compute_pressure_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The
