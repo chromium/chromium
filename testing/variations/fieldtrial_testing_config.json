@@ -6543,21 +6543,6 @@
             ]
         }
     ],
-    "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingPerProfileNetworkContexts": [
         {
             "platforms": [
@@ -6590,6 +6575,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingRealTimeUrlLookupEnabledWithToken"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingRealTimeUrlLookupReferrerChain": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20200422",
+                    "params": {
+                        "SafeBrowsingRealTimeUrlLookupReferrerLengthParam": "2"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingRealTimeUrlLookupReferrerChain"
                     ]
                 }
             ]
