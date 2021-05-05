@@ -87,7 +87,7 @@ void LogListSearchResultState(ListSearchResultState state) {
 }  // namespace
 
 HelpAppResult::HelpAppResult(Profile* profile, const gfx::ImageSkia& icon)
-    : profile_(profile) {
+    : profile_(profile), url_path_(""), help_app_content_id_("") {
   DCHECK(profile_);
   set_id(kHelpAppUpdatesResult);
   SetTitle(l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP));
@@ -107,7 +107,9 @@ HelpAppResult::HelpAppResult(
     const chromeos::help_app::mojom::SearchResultPtr& result,
     const gfx::ImageSkia& icon,
     const std::u16string& query)
-    : profile_(profile), url_path_(result->url_path_with_parameters) {
+    : profile_(profile),
+      url_path_(result->url_path_with_parameters),
+      help_app_content_id_(result->id) {
   DCHECK(profile_);
   set_id(chromeos::kChromeUIHelpAppURL + url_path_);
   set_relevance(relevance);
@@ -148,6 +150,10 @@ void HelpAppResult::Open(int event_flags) {
   web_app::LaunchSystemWebAppAsync(
       profile_, web_app::SystemAppType::HELP, params,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
+  // This is a google-internal histogram. If changing this, also change the
+  // corresponding histograms file.
+  base::UmaHistogramSparse("Discover.LauncherSearch.ContentLaunched",
+                           base::PersistentHash(help_app_content_id_));
 }
 
 HelpAppProvider::HelpAppProvider(Profile* profile)

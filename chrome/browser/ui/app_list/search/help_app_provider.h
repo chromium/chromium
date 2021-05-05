@@ -60,6 +60,7 @@ class HelpAppResult : public ChromeSearchResult {
  private:
   Profile* const profile_;
   const std::string url_path_;
+  const std::string help_app_content_id_;
 };
 
 // Provides results from the Help App based on the search query. Also provides

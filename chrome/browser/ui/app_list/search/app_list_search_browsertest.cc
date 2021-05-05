@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -40,6 +42,7 @@
 #include "chromeos/components/help_app_ui/search/search_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 
 namespace app_list {
 
@@ -207,8 +210,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   // Add some searchable content to the help app search handler.
   std::vector<chromeos::help_app::mojom::SearchConceptPtr> search_concepts;
   auto concept = chromeos::help_app::mojom::SearchConcept::New(
-      /*id=*/"test-help-app-id",
-      /*title=*/u"Title of help app result",
+      /*id=*/"6318213",
+      /*title=*/u"Fix connection problems",
       /*main_category=*/u"Help",
       /*tags=*/std::vector<std::u16string>{u"verycomplicatedsearchquery"},
       /*url_path_with_parameters=*/"help/id/test",
@@ -237,11 +240,36 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
     result = FindResult("chrome://help-app/help/id/test");
   }
 
-  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Title of help app result");
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Fix connection problems");
   EXPECT_EQ(base::UTF16ToASCII(result->details()), "Help");
   // No priority for position.
   EXPECT_EQ(result->position_priority(), 0);
   EXPECT_EQ(result->display_type(), DisplayType::kList);
+
+  // Open the search result. This should open the help app at the expected url
+  // and log a metric indicating what content was launched.
+  const size_t num_browsers = chrome::GetTotalBrowserCount();
+  const GURL expected_url("chrome://help-app/help/id/test");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  base::HistogramTester histogram_tester;
+
+  GetClient()->OpenSearchResult(
+      result->id(), /*event_flags=*/0,
+      ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+      ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
+      /*launch_as_default=*/false);
+  navigation_observer.Wait();
+
+  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, chrome::FindLastActive()
+                              ->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetVisibleURL());
+  // -20424143 is the hash of the content id. This hash value can be found in
+  // the enum in the google-internal histogram file.
+  histogram_tester.ExpectUniqueSample("Discover.LauncherSearch.ContentLaunched",
+                                      -20424143, 1);
 }
 
 // Test that Help App shows up normally even when suggestion chip should show.
