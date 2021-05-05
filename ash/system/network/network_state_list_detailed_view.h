@@ -28,6 +28,7 @@ namespace tray {
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
+    chromeos::network_config::mojom::ActivationStateType activation_state,
     bool is_connectable);
 
 // Exported for tests.

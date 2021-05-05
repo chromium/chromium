@@ -33,6 +33,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/widget/widget.h"
 
+using chromeos::network_config::mojom::ActivationStateType;
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStateType;
@@ -96,13 +97,26 @@ void LogUserNetworkEvent(const NetworkStateProperties& network) {
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
+    chromeos::network_config::mojom::ActivationStateType activation_state,
     bool connectable) {
   // Network can be connected to if the network is not connected and:
   // * The network is connectable or
-  // * The active user is primary and the network is configurable
-  return connection_state == ConnectionStateType::kNotConnected &&
-         (connectable ||
-          (!IsSecondaryUser() && NetworkTypeIsConfigurable(type)));
+  // * The active user is primary and the network is configurable or
+  // * The network is cellular and activated
+  if (connection_state != ConnectionStateType::kNotConnected) {
+    return false;
+  }
+  if (connectable) {
+    return true;
+  }
+  if (!IsSecondaryUser() && NetworkTypeIsConfigurable(type)) {
+    return true;
+  }
+  if (type == NetworkType::kCellular &&
+      activation_state == ActivationStateType::kActivated) {
+    return true;
+  }
+  return false;
 }
 
 // A bubble which displays network info.
@@ -294,8 +308,12 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
     return;
   }
 
-  if (network && CanNetworkConnect(network->connection_state, network->type,
-                                   network->connectable)) {
+  if (network && CanNetworkConnect(
+                     network->connection_state, network->type,
+                     network->type == NetworkType::kCellular
+                         ? network->type_state->get_cellular()->activation_state
+                         : ActivationStateType::kUnknown,
+                     network->connectable)) {
     Shell::Get()->metrics()->RecordUserMetricsAction(
         list_type_ == LIST_TYPE_VPN
             ? UMA_STATUS_AREA_CONNECT_TO_VPN
