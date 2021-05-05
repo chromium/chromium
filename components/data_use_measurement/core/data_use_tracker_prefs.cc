@@ -17,6 +17,8 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
+#include "base/value_iterators.h"
 #include "build/build_config.h"
 #include "components/data_use_measurement/core/data_use_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -78,7 +80,8 @@ void DataUseTrackerPrefs::RemoveExpiredEntriesForPref(
     base::Time key_date;
     if (base::Time::FromUTCString(it.first.c_str(), &key_date) &&
         key_date > last_date) {
-      user_pref_new_dict.Set(it.first, it.second.CreateDeepCopy());
+      user_pref_new_dict.Set(it.first,
+                             base::Value::ToUniquePtrValue(it.second.Clone()));
     }
   }
   pref_service_->Set(pref_name, user_pref_new_dict);
