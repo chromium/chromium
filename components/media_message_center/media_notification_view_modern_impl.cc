@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "components/media_message_center/media_artwork_view.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
@@ -71,45 +72,7 @@ constexpr gfx::Size kPlayPauseButtonSize = {32, 32};
 constexpr int kMediaButtonIconSize = 14;
 constexpr int kPlayPauseIconSize = 20;
 constexpr int kMediaButtonBorderThickness = 1;
-
-// An image view with a rounded rectangle vignette
-class MediaArtworkView : public views::ImageView {
- public:
-  METADATA_HEADER(MediaArtworkView);
-  explicit MediaArtworkView(float corner_radius)
-      : corner_radius_(corner_radius) {}
-
-  void SetVignetteColor(const SkColor& vignette_color) {
-    if (vignette_color_ == vignette_color)
-      return;
-    vignette_color_ = vignette_color;
-    OnPropertyChanged(&vignette_color_, views::kPropertyEffectsPaint);
-  }
-  SkColor GetVignetteColor() const { return vignette_color_; }
-
-  // ImageView
-  void OnPaint(gfx::Canvas* canvas) override;
-
- private:
-  SkColor vignette_color_ = gfx::kPlaceholderColor;
-  float corner_radius_;
-};
-
-BEGIN_METADATA(MediaArtworkView, views::ImageView)
-ADD_PROPERTY_METADATA(SkColor, VignetteColor)
-END_METADATA
-
-void MediaArtworkView::OnPaint(gfx::Canvas* canvas) {
-  views::ImageView::OnPaint(canvas);
-  auto path = SkPath().addRoundRect(RectToSkRect(GetLocalBounds()),
-                                    corner_radius_, corner_radius_);
-  path.toggleInverseFillType();
-  cc::PaintFlags paint_flags;
-  paint_flags.setStyle(cc::PaintFlags::kFill_Style);
-  paint_flags.setAntiAlias(true);
-  paint_flags.setColor(vignette_color_);
-  canvas->DrawPath(path, paint_flags);
-}
+constexpr gfx::Size kFaviconSize = {20, 20};
 
 void RecordMetadataHistogram(
     MediaNotificationViewModernImpl::Metadata metadata) {
@@ -372,10 +335,6 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
       auto artwork_container = std::make_unique<views::View>();
       artwork_container->SetPreferredSize(kArtworkSize);
 
-      // The artwork container will become visible once artwork has been set in
-      // UpdateWithMediaArtwork
-      artwork_container->SetVisible(false);
-
       auto* artwork_container_layout = artwork_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
@@ -385,8 +344,8 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
           views::BoxLayout::CrossAxisAlignment::kCenter);
 
       {
-        auto artwork =
-            std::make_unique<MediaArtworkView>(kArtworkVignetteCornerRadius);
+        auto artwork = std::make_unique<MediaArtworkView>(
+            kArtworkVignetteCornerRadius, kArtworkSize, kFaviconSize);
         artwork_ = artwork_container->AddChildView(std::move(artwork));
       }
 
@@ -578,14 +537,8 @@ void MediaNotificationViewModernImpl::UpdateWithMediaArtwork(
   GetMediaNotificationBackground()->UpdateArtwork(image);
 
   UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, !image.isNull());
-
-  if (!image.isNull())
-    artwork_container_->SetVisible(true);
-
   artwork_->SetImage(image);
   artwork_->SetPreferredSize(kArtworkSize);
-  artwork_->SetVignetteColor(
-      GetMediaNotificationBackground()->GetBackgroundColor(*this));
 
   UpdateForegroundColor();
 
@@ -600,6 +553,8 @@ void MediaNotificationViewModernImpl::UpdateWithFavicon(
     const gfx::ImageSkia& icon) {
   GetMediaNotificationBackground()->UpdateFavicon(icon);
 
+  artwork_->SetFavicon(icon);
+  artwork_->SetPreferredSize(kArtworkSize);
   UpdateForegroundColor();
   SchedulePaint();
 }
@@ -655,6 +610,9 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
       GetMediaNotificationBackground()->GetForegroundColor(*this);
   const SkColor disabled_icon_color =
       SkColorSetA(foreground, gfx::kDisabledControlAlpha);
+
+  artwork_->SetBackgroundColor(disabled_icon_color);
+  artwork_->SetVignetteColor(background);
 
   progress_->SetForegroundColor(foreground);
   progress_->SetBackgroundColor(disabled_icon_color);

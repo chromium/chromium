@@ -4,6 +4,8 @@
 
 component("media_message_center") {
   sources = [
+    "media_artwork_view.cc",
+    "media_artwork_view.h",
     "media_controls_progress_view.cc",
     "media_controls_progress_view.h",
     "media_notification_background.h",

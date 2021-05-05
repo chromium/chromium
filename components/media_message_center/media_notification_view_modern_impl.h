@@ -24,10 +24,10 @@ class Button;
 namespace media_message_center {
 
 namespace {
-class MediaArtworkView;
 class MediaButton;
 }  // anonymous namespace
 
+class MediaArtworkView;
 class MediaControlsProgressView;
 class MediaNotificationBackground;
 class MediaNotificationContainer;
