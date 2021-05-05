@@ -2098,12 +2098,12 @@
   {
     "name": "enable-migrate-default-chrome-app-to-web-apps-gsuite",
     "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 94
   },
   {
     "name": "enable-migrate-default-chrome-app-to-web-apps-non-gsuite",
     "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 94
   },
   {
     "name": "enable-nacl",
