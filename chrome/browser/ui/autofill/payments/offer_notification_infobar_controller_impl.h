@@ -12,6 +12,8 @@
 
 namespace autofill {
 
+struct AutofillOfferData;
+
 // Per-tab controller to control the offer notification infobar displayed on
 // mobile.
 class OfferNotificationInfoBarControllerImpl {
@@ -27,9 +29,7 @@ class OfferNotificationInfoBarControllerImpl {
 
   // Show the infobar unless it was already shown in the same tab with the same
   // origin.
-  void ShowIfNecessary(const std::vector<GURL>& origins_to_display_infobar,
-                       const GURL& offer_details_url,
-                       const CreditCard* card);
+  void ShowIfNecessary(const AutofillOfferData* offer, const CreditCard* card);
 
  private:
   content::WebContents* web_contents_;

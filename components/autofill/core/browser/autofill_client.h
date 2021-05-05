@@ -72,6 +72,7 @@ class PersonalDataManager;
 class StrikeDatabase;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
+struct AutofillOfferData;
 struct Suggestion;
 
 namespace payments {
@@ -515,14 +516,9 @@ class AutofillClient : public RiskDataLoader {
   // Will show a bubble or infobar indicating that the current web domain has an
   // eligible offer or reward if no other notification bubble is currently
   // visible. See bubble controller for details. The bubble is sticky over a set
-  // of domains given in |domains_to_display_bubble|. The bubble displays the
-  // information of the |card| if the offer is card-related. On mobile, the
-  // bubble also shows the |offer_details_url| as a link which has more
-  // information about the offer.
+  // of domains given in the offer.
   virtual void ShowOfferNotificationIfApplicable(
-      const std::vector<GURL>& domains_to_display_bubble,
-      const GURL& offer_details_url,
-      const CreditCard* card);
+      const AutofillOfferData* offer);
 
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();

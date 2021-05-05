@@ -159,11 +159,11 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetCreditCardCloudTokenData(
       WebDataServiceConsumer* consumer);
 
-  // Initiates the request for credit card offer data. The method
+  // Initiates the request for autofill offer data. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the offer data included in the argument |result|. The
   // consumer owns the data.
-  WebDataServiceBase::Handle GetCreditCardOffers(
+  WebDataServiceBase::Handle GetAutofillOffers(
       WebDataServiceConsumer* consumer);
 
   void ClearAllServerData();

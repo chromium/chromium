@@ -44,8 +44,13 @@ void OfferNotificationBubbleViewsTestBase::OnBubbleShown() {
 }
 
 std::unique_ptr<AutofillOfferData>
-OfferNotificationBubbleViewsTestBase::CreateOfferDataWithDomains(
+OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
     const std::vector<GURL>& domains) {
+  auto card = std::make_unique<CreditCard>();
+  card->set_instrument_id(kCreditCardInstrumentId);
+  personal_data_->AddServerCreditCardForTest(std::move(card));
+  personal_data_->NotifyPersonalDataObserver();
+
   std::unique_ptr<AutofillOfferData> offer_data_entry =
       std::make_unique<AutofillOfferData>();
   offer_data_entry->offer_id = 4444;
@@ -60,13 +65,34 @@ OfferNotificationBubbleViewsTestBase::CreateOfferDataWithDomains(
   return offer_data_entry;
 }
 
-void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
+std::unique_ptr<AutofillOfferData>
+OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
+    const std::vector<GURL>& domains) {
+  std::unique_ptr<AutofillOfferData> offer_data_entry =
+      std::make_unique<AutofillOfferData>();
+  offer_data_entry->offer_id = 5555;
+  offer_data_entry->expiry =
+      AutofillClock::Now() + base::TimeDelta::FromDays(2);
+  offer_data_entry->merchant_domain = {};
+  for (auto url : domains)
+    offer_data_entry->merchant_domain.emplace_back(url.GetOrigin());
+  offer_data_entry->offer_details_url = GURL("https://www.google.com/");
+  offer_data_entry->promo_code = "5PCTOFFSHOES";
+  offer_data_entry->display_strings.value_prop_text =
+      "5% off on shoes. Up to $50.";
+  offer_data_entry->display_strings.see_details_text = "See details";
+  offer_data_entry->display_strings.usage_instructions_text =
+      "Click the promo code field at checkout to autofill it.";
+
+  return offer_data_entry;
+}
+
+void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
     const std::vector<GURL>& domains) {
   personal_data_->ClearAllServerData();
-  personal_data_->AddOfferDataForTest(CreateOfferDataWithDomains(domains));
-  auto card = std::make_unique<CreditCard>();
-  card->set_instrument_id(kCreditCardInstrumentId);
-  personal_data_->AddServerCreditCardForTest(std::move(card));
+  // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
+  personal_data_->AddOfferDataForTest(
+      CreateCardLinkedOfferDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();
 }
 

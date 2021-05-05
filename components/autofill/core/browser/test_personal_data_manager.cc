@@ -340,7 +340,7 @@ void TestPersonalDataManager::AddCloudTokenData(
   NotifyPersonalDataObserver();
 }
 
-void TestPersonalDataManager::AddCreditCardOfferData(
+void TestPersonalDataManager::AddAutofillOfferData(
     const AutofillOfferData& offer_data) {
   std::unique_ptr<AutofillOfferData> data =
       std::make_unique<AutofillOfferData>(offer_data);

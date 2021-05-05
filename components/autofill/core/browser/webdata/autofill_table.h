@@ -612,9 +612,9 @@ class AutofillTable : public WebDatabaseTable,
 
   // |autofill_offer_data| must include all existing offers, since table will
   // be completely overwritten.
-  void SetCreditCardOffers(
+  void SetAutofillOffers(
       const std::vector<AutofillOfferData>& autofill_offer_data);
-  bool GetCreditCardOffers(
+  bool GetAutofillOffers(
       std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data);
 
   // Adds |upi_id| to the saved UPI IDs.

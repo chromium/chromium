@@ -7,6 +7,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -19,7 +20,6 @@
 namespace autofill {
 
 const char kHostName[] = "example.com";
-const char kOfferDetailsURL[] = "http://pay.google.com";
 
 class OfferNotificationInfoBarControllerImplBrowserTest
     : public AndroidBrowserTest {
@@ -53,9 +53,17 @@ class OfferNotificationInfoBarControllerImplBrowserTest
         infobar->delegate());
   }
 
-  void ShowOfferNotificationInfoBar(const std::vector<GURL>& origins) {
-    offer_notification_infobar_controller_->ShowIfNecessary(
-        origins, GURL(kOfferDetailsURL), &card_);
+  void ShowOfferNotificationInfoBar(const AutofillOfferData* offer) {
+    offer_notification_infobar_controller_->ShowIfNecessary(offer, &card_);
+  }
+
+  AutofillOfferData CreateTestOfferWithOrigins(
+      const std::vector<GURL>& merchant_origins) {
+    // Only adding what the tests need to pass. Feel free to add more populated
+    // fields as necessary.
+    AutofillOfferData offer;
+    offer.merchant_domain = merchant_origins;
+    return offer;
   }
 
   void VerifyInfoBarShownCount(int count) {
@@ -101,7 +109,9 @@ class OfferNotificationInfoBarControllerImplBrowserTest
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarOnlyOncePerDomain) {
-  ShowOfferNotificationInfoBar({GetInitialUrl().GetOrigin()});
+  AutofillOfferData offer =
+      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+  ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown and logged.
   infobars::InfoBar* infobar = GetInfoBar();
   ASSERT_TRUE(infobar);
@@ -114,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
   GURL secondURL =
       embedded_test_server()->GetURL(kHostName, "/simple_page.html");
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(), secondURL));
-  ShowOfferNotificationInfoBar({secondURL.GetOrigin()});
+  ShowOfferNotificationInfoBar(&offer);
 
   // Verify that the infobar was not shown again because it has already been
   // shown for this domain.
@@ -130,7 +140,9 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarAndAccept) {
-  ShowOfferNotificationInfoBar({GetInitialUrl().GetOrigin()});
+  AutofillOfferData offer =
+      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+  ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown.
   infobars::InfoBar* infobar = GetInfoBar();
   ASSERT_TRUE(infobar);
@@ -149,7 +161,9 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        ShowInfobarAndClose) {
-  ShowOfferNotificationInfoBar({GetInitialUrl().GetOrigin()});
+  AutofillOfferData offer =
+      CreateTestOfferWithOrigins({GetInitialUrl().GetOrigin()});
+  ShowOfferNotificationInfoBar(&offer);
   // Verify that the infobar was shown.
   infobars::InfoBar* infobar = GetInfoBar();
   ASSERT_TRUE(infobar);

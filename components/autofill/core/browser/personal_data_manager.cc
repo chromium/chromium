@@ -1161,8 +1161,7 @@ PersonalDataManager::GetCreditCardCloudTokenData() const {
   return result;
 }
 
-std::vector<AutofillOfferData*> PersonalDataManager::GetCreditCardOffers()
-    const {
+std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
   if (!IsAutofillWalletImportEnabled())
     return {};
 
@@ -1179,7 +1178,7 @@ void PersonalDataManager::Refresh() {
   LoadCreditCardCloudTokenData();
   LoadPaymentsCustomerData();
   LoadUpiIds();
-  LoadCreditCardOffers();
+  LoadAutofillOffers();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -1691,14 +1690,14 @@ void PersonalDataManager::LoadUpiIds() {
       database_helper_->GetLocalDatabase()->GetAllUpiIds(this);
 }
 
-void PersonalDataManager::LoadCreditCardOffers() {
+void PersonalDataManager::LoadAutofillOffers() {
   if (!database_helper_->GetServerDatabase())
     return;
 
   CancelPendingServerQuery(&pending_offer_data_query_);
 
   pending_offer_data_query_ =
-      database_helper_->GetServerDatabase()->GetCreditCardOffers(this);
+      database_helper_->GetServerDatabase()->GetAutofillOffers(this);
 }
 
 void PersonalDataManager::CancelPendingLocalQuery(

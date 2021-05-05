@@ -35,7 +35,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   void ShowBubbleAndVerify() {
     NavigateTo(chrome::kChromeUINewTabURL);
     // Set the initial origin that the bubble will be displayed on.
-    SetUpOfferDataWithDomains(
+    SetUpCardLinkedOfferDataWithDomains(
         {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.example.com/first");
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   };
 
   // Set the initial origin that the bubble will be displayed on.
-  SetUpOfferDataWithDomains(
+  SetUpCardLinkedOfferDataWithDomains(
       {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
 
   for (const auto& test_case : test_cases) {

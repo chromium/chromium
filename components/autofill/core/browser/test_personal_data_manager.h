@@ -93,7 +93,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void AddCloudTokenData(const CreditCardCloudTokenData& cloud_token_data);
 
   // Adds offer data to |autofill_offer_data_|.
-  void AddCreditCardOfferData(const AutofillOfferData& offer_data);
+  void AddAutofillOfferData(const AutofillOfferData& offer_data);
 
   // Sets a local/server card's nickname based on the provided |guid|.
   void SetNicknameForCardWithGUID(const char* guid,

@@ -254,7 +254,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
 TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
   // Create one offer data in the client table.
   AutofillOfferData old_data = test::GetCardLinkedOfferData1();
-  table()->SetCreditCardOffers({old_data});
+  table()->SetAutofillOffers({old_data});
 
   // Create a different one on the server.
   AutofillOfferSpecifics offer_specifics;
@@ -275,7 +275,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
 TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
   // Create one offer data in the client table.
   AutofillOfferData client_data = test::GetCardLinkedOfferData1();
-  table()->SetCreditCardOffers({client_data});
+  table()->SetAutofillOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
@@ -310,7 +310,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_LogDataValidity) {
 TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
   // Create one offer data in the client table.
   AutofillOfferData client_data = test::GetCardLinkedOfferData1();
-  table()->SetCreditCardOffers({client_data});
+  table()->SetAutofillOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
@@ -329,7 +329,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
 TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_KeepAllData) {
   // Create one offer data in the client table.
   AutofillOfferData client_data = test::GetCardLinkedOfferData1();
-  table()->SetCreditCardOffers({client_data});
+  table()->SetAutofillOffers({client_data});
 
   // We do not write to DB at all, so we should not commit any changes.
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);

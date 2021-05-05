@@ -58,7 +58,7 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
   }
 
   AutofillOfferManager::OffersMap eligible_offers_map =
-      CreateOffersMap(last_committed_url_origin);
+      CreateCardLinkedOffersMap(last_committed_url_origin);
 
   // Update |offer_label| for each suggestion.
   for (auto& suggestion : suggestions) {
@@ -91,46 +91,19 @@ bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
          eligible_merchant_domains_.count(last_committed_url.GetOrigin());
 }
 
-std::tuple<std::vector<GURL>, GURL, CreditCard*>
-AutofillOfferManager::GetEligibleDomainsAndCardForOfferForUrl(
+AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_url) {
-  std::vector<GURL> linked_domains;
-  std::vector<AutofillOfferData*> offers =
-      personal_data_->GetCreditCardOffers();
-  CreditCard* card = nullptr;
-  // Initialize to an empty url.
-  GURL offer_details_url = GURL();
-
-  // Check which offer is eligible on current domain, then return the full set
-  // of domains for that offer.
-  for (auto* offer : offers) {
+  for (AutofillOfferData* offer : personal_data_->GetAutofillOffers()) {
     if (IsOfferEligible(*offer, last_committed_url.GetOrigin())) {
-      for (auto& domain : offer->merchant_domain) {
-        linked_domains.emplace_back(domain);
-      }
-      // Pick first card in the vector. The UI shows only one card's
-      // information.
-      card = offer->eligible_instrument_id.empty()
-                 ? nullptr
-                 : personal_data_->GetCreditCardByInstrumentId(
-                       offer->eligible_instrument_id[0]);
-      offer_details_url = GURL(offer->offer_details_url);
-      break;
+      return offer;
     }
   }
-
-  // Remove duplicates in domains.
-  base::ranges::sort(linked_domains);
-  linked_domains.erase(base::ranges::unique(linked_domains),
-                       linked_domains.end());
-
-  return std::make_tuple(linked_domains, offer_details_url, card);
+  return nullptr;
 }
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   eligible_merchant_domains_.clear();
-  std::vector<AutofillOfferData*> offers =
-      personal_data_->GetCreditCardOffers();
+  std::vector<AutofillOfferData*> offers = personal_data_->GetAutofillOffers();
 
   for (auto* offer : offers) {
     for (auto& domain : offer->merchant_domain) {
@@ -139,17 +112,20 @@ void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   }
 }
 
-AutofillOfferManager::OffersMap AutofillOfferManager::CreateOffersMap(
+AutofillOfferManager::OffersMap AutofillOfferManager::CreateCardLinkedOffersMap(
     const GURL& last_committed_url_origin) const {
   AutofillOfferManager::OffersMap offers_map;
 
-  std::vector<AutofillOfferData*> offers =
-      personal_data_->GetCreditCardOffers();
+  std::vector<AutofillOfferData*> offers = personal_data_->GetAutofillOffers();
   std::vector<CreditCard*> cards = personal_data_->GetCreditCards();
 
   for (auto* offer : offers) {
     // Ensure the offer is valid.
     if (!IsOfferEligible(*offer, last_committed_url_origin)) {
+      continue;
+    }
+    // Ensure the offer is a card-linked offer.
+    if (!offer->IsCardLinkedOffer()) {
       continue;
     }
 

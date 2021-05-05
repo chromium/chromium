@@ -22,8 +22,6 @@
 
 namespace autofill {
 
-class CreditCard;
-
 // Manages all Autofill related offers. One per frame; owned by the
 // BrowserAutofillManager.
 class AutofillOfferManager : public KeyedService,
@@ -47,23 +45,23 @@ class AutofillOfferManager : public KeyedService,
   // Returns true only if the domain of |last_committed_url| has an offer.
   bool IsUrlEligible(const GURL& last_committed_url);
 
-  // Returns the set of domains and the card linked to a specific offer that
-  // contains the domain of |last_committed_url|. Also return the
-  // offer_details_url which redirects to a GPay surface with more details about
-  // the offer.
-  std::tuple<std::vector<GURL>, GURL, CreditCard*>
-  GetEligibleDomainsAndCardForOfferForUrl(const GURL& last_committed_url);
+  // Returns the offer that contains the domain of |last_committed_url|.
+  AutofillOfferData* GetOfferForUrl(const GURL& last_committed_url);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillOfferManagerTest,
+      CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers);
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
 
   // Queries |personal_data_| to reset the elements of
   // |eligible_merchant_domains_|
   void UpdateEligibleMerchantDomains();
 
-  // Creates a mapping from Suggestion Backend ID's to eligible Credit Card
-  // Offers.
-  OffersMap CreateOffersMap(const GURL& last_committed_url_origin) const;
+  // Creates a mapping from Suggestion Backend ID's to eligible card-linked
+  // offers.
+  OffersMap CreateCardLinkedOffersMap(
+      const GURL& last_committed_url_origin) const;
 
   PersonalDataManager* personal_data_;
   std::set<GURL> eligible_merchant_domains_ = {};

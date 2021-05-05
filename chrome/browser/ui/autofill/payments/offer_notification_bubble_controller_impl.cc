@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,18 +105,20 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
-    const std::vector<GURL>& origins_to_display_bubble,
+    const AutofillOfferData* offer,
     const CreditCard* card) {
+  DCHECK(offer);
   // If icon/bubble is already visible, that means we have already shown a
   // notification for this page.
   if (IsIconVisible() || bubble_view())
     return;
 
   origins_to_display_bubble_.clear();
-  for (auto origin : origins_to_display_bubble)
+  for (auto origin : offer->merchant_domain)
     origins_to_display_bubble_.emplace_back(origin);
 
-  card_ = *card;
+  if (card)
+    card_ = *card;
 
   is_user_gesture_ = false;
   Show();

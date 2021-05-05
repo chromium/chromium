@@ -3722,11 +3722,11 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   autofill_offer_data.push_back(credit_card_offer_2);
   autofill_offer_data.push_back(credit_card_offer_3);
 
-  table_->SetCreditCardOffers(autofill_offer_data);
+  table_->SetAutofillOffers(autofill_offer_data);
 
   std::vector<std::unique_ptr<AutofillOfferData>> output_offer_data;
 
-  EXPECT_TRUE(table_->GetCreditCardOffers(&output_offer_data));
+  EXPECT_TRUE(table_->GetAutofillOffers(&output_offer_data));
   EXPECT_EQ(autofill_offer_data.size(), output_offer_data.size());
 
   for (const auto& data : autofill_offer_data) {

@@ -280,11 +280,11 @@ WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardCloudTokenData(
       consumer);
 }
 
-WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardOffers(
+WebDataServiceBase::Handle AutofillWebDataService::GetAutofillOffers(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCardOffers,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillOffers,
                      autofill_backend_),
       consumer);
 }

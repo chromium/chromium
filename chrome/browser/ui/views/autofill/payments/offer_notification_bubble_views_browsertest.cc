@@ -31,7 +31,7 @@ class OfferNotificationBubbleViewsBrowserTest
 // is invalid (does not have a linked card).
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        InvalidOfferData) {
-  auto offer_data = CreateOfferDataWithDomains(
+  auto offer_data = CreateCardLinkedOfferDataWithDomains(
       {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
   offer_data->eligible_instrument_id.clear();
   personal_data()->AddOfferDataForTest(std::move(offer_data));
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
-  SetUpOfferDataWithDomains(
+  SetUpCardLinkedOfferDataWithDomains(
       {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
 
   NavigateTo(chrome::kChromeUINewTabURL);
@@ -55,6 +55,21 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
 
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+// Tests that the offer notification bubble will not be shown for a promo code
+// offer.
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
+                       PromoCodeOffer) {
+  auto offer_data = CreatePromoCodeOfferDataWithDomains(
+      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+  personal_data()->AddOfferDataForTest(std::move(offer_data));
+  personal_data()->NotifyPersonalDataObserver();
+
+  // Neither icon nor bubble should be visible.
+  NavigateTo("https://www.example.com/first/");
+  EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 

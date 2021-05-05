@@ -90,6 +90,21 @@ class AutofillOfferManagerTest : public testing::Test {
     return offer_data;
   }
 
+  AutofillOfferData CreatePromoCodeOffer(std::vector<GURL> domains = {
+                                             GURL(kTestUrl)}) {
+    AutofillOfferData offer_data;
+    offer_data.offer_id = 5555;
+    offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
+    offer_data.merchant_domain = std::move(domains);
+    offer_data.offer_details_url = GURL(kOfferDetailsUrl);
+    offer_data.promo_code = "5PCTOFFSHOES";
+    offer_data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+    offer_data.display_strings.see_details_text = "See details";
+    offer_data.display_strings.usage_instructions_text =
+        "Click the promo code field at checkout to autofill it.";
+    return offer_data;
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -102,7 +117,7 @@ class AutofillOfferManagerTest : public testing::Test {
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
   CreditCard card = CreateCreditCard(kTestGuid);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(card, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
@@ -116,7 +131,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {
   CreditCard card = CreateCreditCard(kTestGuid);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(card, "5%", /*expired=*/true));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
@@ -129,7 +144,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_WrongUrl) {
   CreditCard card = CreateCreditCard(kTestGuid);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(card, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
@@ -145,7 +160,7 @@ TEST_F(AutofillOfferManagerTest,
   CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
   CreditCard cardWithOffer =
       CreateCreditCard(kTestGuid2, "4111111111111111", 100);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(cardWithOffer, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
@@ -170,7 +185,7 @@ TEST_F(AutofillOfferManagerTest,
   CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
   CreditCard cardWithOffer =
       CreateCreditCard(kTestGuid2, "4111111111111111", 100);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(cardWithOffer, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
@@ -191,9 +206,9 @@ TEST_F(AutofillOfferManagerTest,
        UpdateSuggestionsWithOffer_SuggestionsNotSortedIfAllCardsHaveOffers) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(card1, "5%"));
-  personal_data_manager_.AddCreditCardOfferData(
+  personal_data_manager_.AddAutofillOfferData(
       CreateCreditCardOfferForCard(card2, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
@@ -209,10 +224,10 @@ TEST_F(AutofillOfferManagerTest,
 TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
-  personal_data_manager_.AddCreditCardOfferData(CreateCreditCardOfferForCard(
+  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
       card1, "5%", /*expired=*/false,
       {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
-  personal_data_manager_.AddCreditCardOfferData(CreateCreditCardOfferForCard(
+  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
       card2, "10%", /*expired=*/false, {GURL("http://maps.google.com")}));
   autofill_offer_manager_->UpdateEligibleMerchantDomains();
 
@@ -224,66 +239,63 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
       autofill_offer_manager_->IsUrlEligible(GURL("http://maps.google.com")));
 }
 
-TEST_F(AutofillOfferManagerTest,
-       GetEligibleDomainsAndCardForOfferForUrl_ReturnNothingWhenFindNoMatch) {
+TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  personal_data_manager_.AddCreditCardOfferData(CreateCreditCardOfferForCard(
+  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
       card1, "5%", /*expired=*/false,
       {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
 
-  auto result =
-      autofill_offer_manager_->GetEligibleDomainsAndCardForOfferForUrl(
-          GURL("http://www.example.com"));
-  EXPECT_EQ(0U, std::get<0>(result).size());
-  EXPECT_EQ(GURL(), std::get<1>(result));
-  EXPECT_EQ(nullptr, std::get<2>(result));
+  AutofillOfferData* result =
+      autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
+  EXPECT_EQ(nullptr, result);
 }
 
 TEST_F(AutofillOfferManagerTest,
-       GetEligibleDomainsAndCardForOfferForUrl_ReturnCorrectSetWhenFindMatch) {
+       GetOfferForUrl_ReturnCorrectOfferWhenFindMatch) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
 
-  personal_data_manager_.AddCreditCardOfferData(CreateCreditCardOfferForCard(
+  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
       card1, "5%", /*expired=*/false,
       /*domains=*/
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
-  personal_data_manager_.AddCreditCardOfferData(CreateCreditCardOfferForCard(
-      card2, "5%", /*expired=*/false,
+      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
+  AutofillOfferData offer2 = CreateCreditCardOfferForCard(
+      card2, "10%", /*expired=*/false,
       /*domains=*/
-      {GURL("http://www.example.com"), GURL("http://www.example2.com")}));
+      {GURL("http://www.example.com"), GURL("http://www.example2.com")});
+  personal_data_manager_.AddAutofillOfferData(offer1);
+  personal_data_manager_.AddAutofillOfferData(offer2);
 
-  auto result =
-      autofill_offer_manager_->GetEligibleDomainsAndCardForOfferForUrl(
-          GURL("http://www.example.com"));
-  std::vector<GURL> eligible_domain = std::get<0>(result);
-  EXPECT_EQ(2U, eligible_domain.size());
-  EXPECT_NE(eligible_domain.end(),
-            std::find(eligible_domain.begin(), eligible_domain.end(),
-                      GURL("http://www.example.com")));
-  EXPECT_NE(eligible_domain.end(),
-            std::find(eligible_domain.begin(), eligible_domain.end(),
-                      GURL("http://www.example2.com")));
-  EXPECT_EQ(GURL(kOfferDetailsUrl), std::get<1>(result));
-  EXPECT_EQ(101, std::get<2>(result)->instrument_id());
+  AutofillOfferData* result =
+      autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
+  EXPECT_EQ(offer2, *result);
 }
 
-TEST_F(
-    AutofillOfferManagerTest,
-    GetEligibleDomainsAndCardForOfferForUrl_ReturnNoCardWhenFindNoMatchedCardData) {
+TEST_F(AutofillOfferManagerTest,
+       CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  AutofillOfferData offer_data1 = CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
-  offer_data1.eligible_instrument_id.clear();
-  personal_data_manager_.AddCreditCardOfferData(offer_data1);
+  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
 
-  auto result =
-      autofill_offer_manager_->GetEligibleDomainsAndCardForOfferForUrl(
-          GURL("http://www.google.com"));
-  EXPECT_EQ(2U, std::get<0>(result).size());
-  EXPECT_EQ(GURL(kOfferDetailsUrl), std::get<1>(result));
-  EXPECT_EQ(nullptr, std::get<2>(result));
+  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
+      card1, "5%", /*expired=*/false,
+      /*domains=*/
+      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
+  AutofillOfferData offer2 = CreateCreditCardOfferForCard(
+      card2, "10%", /*expired=*/false,
+      /*domains=*/
+      {GURL("http://www.example.com"), GURL("http://www.example2.com")});
+  AutofillOfferData offer3 =
+      CreatePromoCodeOffer(/*domains=*/
+                           {GURL("http://www.example.com"),
+                            GURL("http://www.example2.com")});
+  personal_data_manager_.AddAutofillOfferData(offer1);
+  personal_data_manager_.AddAutofillOfferData(offer2);
+  personal_data_manager_.AddAutofillOfferData(offer3);
+
+  auto result = autofill_offer_manager_->CreateCardLinkedOffersMap(
+      GURL("http://www.example.com"));
+  EXPECT_EQ(result.size(), 1UL);
+  EXPECT_EQ(*result[card2.guid()], offer2);
 }
 
 }  // namespace autofill

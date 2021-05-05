@@ -650,20 +650,33 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
 }
 
 void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
-    const std::vector<GURL>& domains_to_display_bubble,
-    const GURL& offer_details_url,
-    const CreditCard* card) {
+    const AutofillOfferData* offer) {
+  if (!offer)
+    return;
+
+  // Ensure the card for a card-linked offer is successfully on the device.
+  CreditCard* card =
+      offer->eligible_instrument_id.empty()
+          ? nullptr
+          : GetPersonalDataManager()->GetCreditCardByInstrumentId(
+                offer->eligible_instrument_id[0]);
+  if (offer->IsCardLinkedOffer() && !card)
+    return;
+
+  // TODO(crbug.com/1203811): Promo code offers should eventually show offer
+  //                          details in their own format as well.
+  if (!offer->IsCardLinkedOffer())
+    return;
+
 #if defined(OS_ANDROID)
   std::unique_ptr<OfferNotificationInfoBarControllerImpl> controller =
       std::make_unique<OfferNotificationInfoBarControllerImpl>(web_contents());
-  controller->ShowIfNecessary(domains_to_display_bubble, offer_details_url,
-                              card);
+  controller->ShowIfNecessary(offer, card);
 #else
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(domains_to_display_bubble,
-                                                card);
+  controller->ShowOfferNotificationIfApplicable(offer, card);
 #endif
 }
 

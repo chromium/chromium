@@ -14,6 +14,8 @@
 
 namespace autofill {
 
+struct AutofillOfferData;
+
 // Implementation of per-tab class to control the offer notification bubble and
 // Omnibox icon.
 class OfferNotificationBubbleControllerImpl
@@ -44,13 +46,11 @@ class OfferNotificationBubbleControllerImpl
   bool IsIconVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
 
-  // Displays an offer notification on current page. Populates the value for
-  // |origins_to_display_bubble_|, since the bubble and icon are sticky over a
-  // given set of origins. For a card linked offer, The information of the
-  // |card| will be displayed in the bubble.
-  void ShowOfferNotificationIfApplicable(
-      const std::vector<GURL>& origins_to_display_bubble,
-      const CreditCard* card);
+  // Displays an offer notification for the given |offer| on the current page.
+  // The information of the |card|, if present, will be displayed in the bubble
+  // for a card-linked offer.
+  void ShowOfferNotificationIfApplicable(const AutofillOfferData* offer,
+                                         const CreditCard* card);
 
   // Called when user clicks on omnibox icon.
   void ReshowBubble();

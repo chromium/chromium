@@ -276,8 +276,8 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData()
       const;
 
-  // Returns the credit card offer data.
-  virtual std::vector<AutofillOfferData*> GetCreditCardOffers() const;
+  // Returns autofill offer data, including card-linked and promo code offers.
+  virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
 
   // Updates the validity states of |profiles| according to server validity map.
   void UpdateProfilesServerValidityMapsIfNeeded(
@@ -559,8 +559,8 @@ class PersonalDataManager : public KeyedService,
   // Loads the saved UPI IDs from the web database.
   virtual void LoadUpiIds();
 
-  // Loads the offer data from the web database.
-  virtual void LoadCreditCardOffers();
+  // Loads the autofill offer data from the web database.
+  virtual void LoadAutofillOffers();
 
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.

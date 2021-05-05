@@ -44,6 +44,12 @@ struct AutofillOfferData {
   // result of first found difference.
   int Compare(const AutofillOfferData& other_offer_data) const;
 
+  // Returns true if the current offer is a card-linked offer.
+  bool IsCardLinkedOffer() const;
+
+  // Returns true if the current offer is a promo code offer.
+  bool IsPromoCodeOffer() const;
+
   // The unique server ID for this offer data.
   int64_t offer_id;
 

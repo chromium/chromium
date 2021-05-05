@@ -580,7 +580,7 @@ void AutofillMetricsTest::AddMaskedServerCreditCardWithOffer(
   offer_data.merchant_domain = {url};
   offer_data.eligible_instrument_id = {
       masked_server_credit_card.instrument_id()};
-  personal_data_->AddCreditCardOfferData(offer_data);
+  personal_data_->AddAutofillOfferData(offer_data);
   personal_data_->Refresh();
 }
 

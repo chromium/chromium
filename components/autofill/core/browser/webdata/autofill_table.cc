@@ -2116,7 +2116,7 @@ bool AutofillTable::GetPaymentsCustomerData(
   return s.Succeeded();
 }
 
-void AutofillTable::SetCreditCardOffers(
+void AutofillTable::SetAutofillOffers(
     const std::vector<AutofillOfferData>& autofill_offer_data) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
@@ -2189,7 +2189,7 @@ void AutofillTable::SetCreditCardOffers(
   transaction.Commit();
 }
 
-bool AutofillTable::GetCreditCardOffers(
+bool AutofillTable::GetAutofillOffers(
     std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data) {
   autofill_offer_data->clear();
 

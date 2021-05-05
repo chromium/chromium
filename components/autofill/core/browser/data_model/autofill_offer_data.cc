@@ -93,4 +93,14 @@ int AutofillOfferData::Compare(
   return 0;
 }
 
+bool AutofillOfferData::IsCardLinkedOffer() const {
+  // Card-linked offers have at least one |eligible_instrument_id|.
+  return !eligible_instrument_id.empty();
+}
+
+bool AutofillOfferData::IsPromoCodeOffer() const {
+  // Promo code offers have the promo code field populated.
+  return !promo_code.empty();
+}
+
 }  // namespace autofill
