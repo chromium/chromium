@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
+#include "extensions/common/api/requirements.h"
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/extension.h"
@@ -213,7 +214,7 @@ const char* const kSafeManifestEntries[] = {
     "plugins",
 
     // Stated 3D/WebGL requirements of an app.
-    emk::kRequirements,
+    ext_api::requirements::ManifestKeys::kRequirements,
 
     // Execute some pages in a separate sandbox.  (Note: Using string literal
     // since extensions::manifest_keys only has constants for sub-keys.)

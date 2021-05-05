@@ -17,11 +17,11 @@ namespace extensions {
 
 // Declared requirements for the extension.
 struct RequirementsInfo : public Extension::ManifestData {
-  explicit RequirementsInfo(const Manifest* manifest);
+  RequirementsInfo();
   ~RequirementsInfo() override;
 
-  bool webgl;
-  bool window_shape;
+  bool webgl = false;
+  bool window_shape = false;
 
   static const RequirementsInfo& GetRequirements(const Extension* extension);
 };

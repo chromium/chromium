@@ -154,7 +154,8 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
   EXPECT_TRUE(extension.get()) << manifest.name();
   EXPECT_EQ(std::string(), error) << manifest.name();
   EXPECT_EQ(1u, extension->install_warnings().size());
-  EXPECT_EQ(expected_warning, extension->install_warnings()[0].message);
+  if (extension->install_warnings().size() == 1)
+    EXPECT_EQ(expected_warning, extension->install_warnings()[0].message);
   return extension;
 }
 

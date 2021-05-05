@@ -62,6 +62,7 @@ extensions_manifest_only_schema_files_ = [
   "content_scripts.idl",
   "extensions_manifest_types.json",
   "incognito.json",
+  "requirements.json",
   "shared_module.idl",
   "web_accessible_resources.idl",
   "web_accessible_resources_mv2.idl",

@@ -123,7 +123,6 @@ const char kPublicKey[] = "key";
 const char kRemoveButton[] = "remove_button";
 const char kReplacementAndroidApp[] = "replacement_android_app";
 const char kReplacementWebApp[] = "replacement_web_app";
-const char kRequirements[] = "requirements";
 const char kSandboxedPages[] = "sandbox.pages";
 const char kSandboxedPagesCSP[] = "sandbox.content_security_policy";
 const char kSettingsOverride[] = "chrome_settings_overrides";
@@ -553,10 +552,6 @@ const char kInvalidReplacementAndroidApp[] =
     "Invalid value for 'replacement_android_app'";
 const char kInvalidReplacementWebApp[] =
     "Invalid value for 'replacement_web_app'.";
-const char kInvalidRequirement[] =
-    "Invalid value for requirement \"*\"";
-const char kInvalidRequirements[] =
-    "Invalid value for 'requirements'";
 const char kInvalidRulesetID[] =
     "'*.*': Invalid 'id' specified for Ruleset at index *. The ID must be "
     "non-empty, unique and must not start with '_'.";
