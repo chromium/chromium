@@ -50,7 +50,7 @@ class QuotaInternalsProxy
   friend class QuotaInternalsHandler;
 
   typedef storage::QuotaManager::QuotaTableEntries QuotaTableEntries;
-  typedef storage::QuotaManager::OriginInfoTableEntries OriginInfoTableEntries;
+  typedef storage::QuotaManager::BucketTableEntries BucketTableEntries;
 
   virtual ~QuotaInternalsProxy();
 
@@ -67,7 +67,7 @@ class QuotaInternalsProxy
                          int64_t usage,
                          int64_t unlimited_usage);
   void DidDumpQuotaTable(const QuotaTableEntries& entries);
-  void DidDumpOriginInfoTable(const OriginInfoTableEntries& entries);
+  void DidDumpBucketTable(const BucketTableEntries& entries);
   void DidGetHostUsage(const std::string& host,
                        blink::mojom::StorageType type,
                        int64_t usage,

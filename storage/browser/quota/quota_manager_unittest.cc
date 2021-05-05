@@ -89,7 +89,7 @@ class QuotaManagerImplTest : public testing::Test {
  protected:
   using QuotaTableEntry = QuotaManagerImpl::QuotaTableEntry;
   using QuotaTableEntries = QuotaManagerImpl::QuotaTableEntries;
-  using OriginInfoTableEntries = QuotaManagerImpl::OriginInfoTableEntries;
+  using BucketTableEntries = QuotaManagerImpl::BucketTableEntries;
 
  public:
   QuotaManagerImplTest() : mock_time_counter_(0) {}
@@ -142,7 +142,7 @@ class QuotaManagerImplTest : public testing::Test {
 
   // TODO(crbug.com/1163009): Remove this method and replace all calls with
   //                          CreateAndRegisterClient() after all QuotaClients
-  //                          have been mojofied
+  //                          have been mojofied.
   MockQuotaClient* CreateAndRegisterLegacyClient(
       base::span<const MockOriginData> mock_data,
       QuotaClientType client_type,
@@ -365,11 +365,10 @@ class QuotaManagerImplTest : public testing::Test {
         &QuotaManagerImplTest::DidDumpQuotaTable, weak_factory_.GetWeakPtr()));
   }
 
-  void DumpOriginInfoTable() {
-    origin_info_entries_.clear();
-    quota_manager_impl_->DumpOriginInfoTable(
-        base::BindOnce(&QuotaManagerImplTest::DidDumpOriginInfoTable,
-                       weak_factory_.GetWeakPtr()));
+  void DumpBucketTable() {
+    bucket_entries_.clear();
+    quota_manager_impl_->DumpBucketTable(base::BindOnce(
+        &QuotaManagerImplTest::DidDumpBucketTable, weak_factory_.GetWeakPtr()));
   }
 
   void DidGetUsageInfo(UsageInfoEntries entries) {
@@ -457,8 +456,8 @@ class QuotaManagerImplTest : public testing::Test {
     quota_entries_ = entries;
   }
 
-  void DidDumpOriginInfoTable(const OriginInfoTableEntries& entries) {
-    origin_info_entries_ = entries;
+  void DidDumpBucketTable(const BucketTableEntries& entries) {
+    bucket_entries_ = entries;
   }
 
   void GetUsage_WithModifyTestBody(const StorageType type);
@@ -520,9 +519,7 @@ class QuotaManagerImplTest : public testing::Test {
   }
   StorageType modified_origins_type() const { return modified_origins_type_; }
   const QuotaTableEntries& quota_entries() const { return quota_entries_; }
-  const OriginInfoTableEntries& origin_info_entries() const {
-    return origin_info_entries_;
-  }
+  const BucketTableEntries& bucket_entries() const { return bucket_entries_; }
   const QuotaSettings& settings() const { return settings_; }
   base::FilePath profile_path() const { return data_dir_.GetPath(); }
   int status_callback_count() const { return status_callback_count_; }
@@ -560,7 +557,7 @@ class QuotaManagerImplTest : public testing::Test {
   std::set<url::Origin> modified_origins_;
   StorageType modified_origins_type_;
   QuotaTableEntries quota_entries_;
-  OriginInfoTableEntries origin_info_entries_;
+  BucketTableEntries bucket_entries_;
   QuotaSettings settings_;
   int status_callback_count_;
 
@@ -1692,10 +1689,10 @@ TEST_F(QuotaManagerImplTest, EvictOriginData) {
   EvictOriginData(ToOrigin("http://foo.com/"), kTemp);
   task_environment_.RunUntilIdle();
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type == kTemp)
       EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
   }
@@ -1817,11 +1814,11 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataWithDeletionError) {
     EXPECT_EQ(QuotaStatusCode::kErrorInvalidModification, status());
   }
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
   bool found_origin_in_database = false;
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type == kTemp && entry.origin == ToOrigin("http://foo.com/")) {
       found_origin_in_database = true;
       break;
@@ -1994,10 +1991,10 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
 
   EXPECT_EQ(3, status_callback_count());
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type != kTemp)
       continue;
 
@@ -2079,10 +2076,10 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
 
   EXPECT_EQ(2, status_callback_count());
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type != kTemp)
       continue;
 
@@ -2185,10 +2182,10 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultiple) {
 
   EXPECT_EQ(3, status_callback_count());
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type != kTemp)
       continue;
 
@@ -2277,10 +2274,10 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultipleClientsDifferentTypes) {
 
   EXPECT_EQ(2, status_callback_count());
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
-  for (const auto& entry : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     if (entry.type != kPerm)
       continue;
 
@@ -2531,7 +2528,7 @@ TEST_F(QuotaManagerImplTest, DumpQuotaTable) {
   EXPECT_TRUE(entries.empty());
 }
 
-TEST_F(QuotaManagerImplTest, DumpOriginInfoTable) {
+TEST_F(QuotaManagerImplTest, DumpBucketTable) {
   using std::make_pair;
 
   quota_manager_impl()->NotifyStorageAccessed(ToOrigin("http://example.com/"),
@@ -2542,7 +2539,7 @@ TEST_F(QuotaManagerImplTest, DumpOriginInfoTable) {
                                               kPerm, base::Time::Now());
   task_environment_.RunUntilIdle();
 
-  DumpOriginInfoTable();
+  DumpBucketTable();
   task_environment_.RunUntilIdle();
 
   using TypedOrigin = std::pair<GURL, StorageType>;
@@ -2553,14 +2550,14 @@ TEST_F(QuotaManagerImplTest, DumpOriginInfoTable) {
   };
   std::set<Entry> entries(kEntries, kEntries + base::size(kEntries));
 
-  for (const auto& origin_info : origin_info_entries()) {
+  for (const auto& entry : bucket_entries()) {
     SCOPED_TRACE(testing::Message()
-                 << "host = " << origin_info.origin << ", "
-                 << "type = " << static_cast<int>(origin_info.type) << ", "
-                 << "used_count = " << origin_info.used_count);
-    EXPECT_EQ(1u, entries.erase(make_pair(
-                      make_pair(origin_info.origin.GetURL(), origin_info.type),
-                      origin_info.used_count)));
+                 << "host = " << entry.origin << ", "
+                 << "type = " << static_cast<int>(entry.type) << ", "
+                 << "use_count = " << entry.use_count);
+    EXPECT_EQ(1u, entries.erase(
+                      make_pair(make_pair(entry.origin.GetURL(), entry.type),
+                                entry.use_count)));
   }
   EXPECT_TRUE(entries.empty());
 }

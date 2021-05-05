@@ -127,14 +127,14 @@ bool DeleteOriginInfoOnDBThread(const url::Origin& origin,
   base::Time now = base::Time::Now();
 
   if (is_eviction) {
-    QuotaDatabase::OriginInfoTableEntry entry;
+    QuotaDatabase::BucketTableEntry entry;
     database->GetOriginInfo(origin, type, &entry);
     UMA_HISTOGRAM_COUNTS_1M(
         QuotaManagerImpl::kEvictedOriginAccessedCountHistogram,
-        entry.used_count);
+        entry.use_count);
     UMA_HISTOGRAM_COUNTS_1000(
         QuotaManagerImpl::kEvictedOriginDaysSinceAccessHistogram,
-        (now - entry.last_access_time).InDays());
+        (now - entry.last_accessed).InDays());
   }
 
   if (!database->DeleteOriginInfo(origin, type))
@@ -869,20 +869,20 @@ class QuotaManagerImpl::DumpQuotaTableHelper {
 // goes out of scope, the object is deleted.
 // This class is not thread-safe because there can be races when entries_ is
 // modified.
-class QuotaManagerImpl::DumpOriginInfoTableHelper {
+class QuotaManagerImpl::DumpBucketTableHelper {
  public:
-  bool DumpOriginInfoTableOnDBThread(QuotaDatabase* database) {
+  bool DumpBucketTableOnDBThread(QuotaDatabase* database) {
     DCHECK(database);
-    return database->DumpOriginInfoTable(base::BindRepeating(
-        &DumpOriginInfoTableHelper::AppendEntry, base::Unretained(this)));
+    return database->DumpBucketTable(base::BindRepeating(
+        &DumpBucketTableHelper::AppendEntry, base::Unretained(this)));
   }
 
-  void DidDumpOriginInfoTable(const base::WeakPtr<QuotaManagerImpl>& manager,
-                              DumpOriginInfoTableCallback callback,
-                              bool success) {
+  void DidDumpBucketTable(const base::WeakPtr<QuotaManagerImpl>& manager,
+                          DumpBucketTableCallback callback,
+                          bool success) {
     if (!manager) {
       // The operation was aborted.
-      std::move(callback).Run(OriginInfoTableEntries());
+      std::move(callback).Run(BucketTableEntries());
       return;
     }
     manager->DidDatabaseWork(success);
@@ -890,12 +890,12 @@ class QuotaManagerImpl::DumpOriginInfoTableHelper {
   }
 
  private:
-  bool AppendEntry(const OriginInfoTableEntry& entry) {
+  bool AppendEntry(const BucketTableEntry& entry) {
     entries_.push_back(entry);
     return true;
   }
 
-  OriginInfoTableEntries entries_;
+  BucketTableEntries entries_;
 };
 
 // QuotaManagerImpl -----------------------------------------------------------
@@ -1462,15 +1462,14 @@ void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
                      std::move(callback)));
 }
 
-void QuotaManagerImpl::DumpOriginInfoTable(
-    DumpOriginInfoTableCallback callback) {
+void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DumpOriginInfoTableHelper* helper = new DumpOriginInfoTableHelper;
+  DumpBucketTableHelper* helper = new DumpBucketTableHelper;
   PostTaskAndReplyWithResultForDBThread(
       FROM_HERE,
-      base::BindOnce(&DumpOriginInfoTableHelper::DumpOriginInfoTableOnDBThread,
+      base::BindOnce(&DumpBucketTableHelper::DumpBucketTableOnDBThread,
                      base::Unretained(helper)),
-      base::BindOnce(&DumpOriginInfoTableHelper::DidDumpOriginInfoTable,
+      base::BindOnce(&DumpBucketTableHelper::DidDumpBucketTable,
                      base::Owned(helper), weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -1683,14 +1682,14 @@ void QuotaManagerImpl::DidGetPersistentGlobalUsageForHistogram(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UMA_HISTOGRAM_MBYTES("Quota.GlobalUsageOfPersistentStorage", usage);
 
-  // We DumpOriginInfoTable last to ensure the trackers caches are loaded.
-  DumpOriginInfoTable(
-      base::BindOnce(&QuotaManagerImpl::DidDumpOriginInfoTableForHistogram,
+  // We DumpBucketTable last to ensure the trackers caches are loaded.
+  DumpBucketTable(
+      base::BindOnce(&QuotaManagerImpl::DidDumpBucketTableForHistogram,
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaManagerImpl::DidDumpOriginInfoTableForHistogram(
-    const OriginInfoTableEntries& entries) {
+void QuotaManagerImpl::DidDumpBucketTableForHistogram(
+    const BucketTableEntries& entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<url::Origin, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedOriginsUsage();
@@ -1705,8 +1704,8 @@ void QuotaManagerImpl::DidDumpOriginInfoTableForHistogram(
     if (it == usage_map.end() || it->second == 0)
       continue;
 
-    base::TimeDelta age = now - std::max(info.last_access_time,
-                                         info.last_modified_time);
+    base::TimeDelta age =
+        now - std::max(info.last_accessed, info.last_modified);
     UMA_HISTOGRAM_COUNTS_1000("Quota.AgeOfOriginInDays", age.InDays());
 
     int64_t kilobytes = std::max(it->second / INT64_C(1024), INT64_C(1));

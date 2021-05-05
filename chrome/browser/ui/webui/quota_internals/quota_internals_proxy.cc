@@ -57,9 +57,8 @@ void QuotaInternalsProxy::RequestInfo(
   quota_manager_->DumpQuotaTable(base::BindOnce(
       &QuotaInternalsProxy::DidDumpQuotaTable, weak_factory_.GetWeakPtr()));
 
-  quota_manager_->DumpOriginInfoTable(
-      base::BindOnce(&QuotaInternalsProxy::DidDumpOriginInfoTable,
-                     weak_factory_.GetWeakPtr()));
+  quota_manager_->DumpBucketTable(base::BindOnce(
+      &QuotaInternalsProxy::DidDumpBucketTable, weak_factory_.GetWeakPtr()));
 
   std::map<std::string, std::string> stats = quota_manager_->GetStatistics();
   ReportStatistics(stats);
@@ -139,16 +138,16 @@ void QuotaInternalsProxy::DidDumpQuotaTable(const QuotaTableEntries& entries) {
   ReportPerHostInfo(host_info);
 }
 
-void QuotaInternalsProxy::DidDumpOriginInfoTable(
-    const OriginInfoTableEntries& entries) {
+void QuotaInternalsProxy::DidDumpBucketTable(
+    const BucketTableEntries& entries) {
   std::vector<PerOriginStorageInfo> origin_info;
   origin_info.reserve(entries.size());
 
   for (const auto& entry : entries) {
     PerOriginStorageInfo info(entry.origin.GetURL(), entry.type);
-    info.set_used_count(entry.used_count);
-    info.set_last_access_time(entry.last_access_time);
-    info.set_last_modified_time(entry.last_modified_time);
+    info.set_used_count(entry.use_count);
+    info.set_last_access_time(entry.last_accessed);
+    info.set_last_modified_time(entry.last_modified);
 
     origin_info.push_back(info);
   }

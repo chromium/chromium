@@ -348,7 +348,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class HostDataDeleter;
   class GetModifiedSinceHelper;
   class DumpQuotaTableHelper;
-  class DumpOriginInfoTableHelper;
+  class DumpBucketTableHelper;
   class StorageCleanupHelper;
 
   struct QuotaOverride {
@@ -365,16 +365,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   };
 
   using QuotaTableEntry = QuotaDatabase::QuotaTableEntry;
-  using OriginInfoTableEntry = QuotaDatabase::OriginInfoTableEntry;
+  using BucketTableEntry = QuotaDatabase::BucketTableEntry;
   using QuotaTableEntries = std::vector<QuotaTableEntry>;
-  using OriginInfoTableEntries = std::vector<OriginInfoTableEntry>;
+  using BucketTableEntries = std::vector<BucketTableEntry>;
 
   using QuotaSettingsCallback = base::OnceCallback<void(const QuotaSettings&)>;
 
   using DumpQuotaTableCallback =
       base::OnceCallback<void(const QuotaTableEntries&)>;
-  using DumpOriginInfoTableCallback =
-      base::OnceCallback<void(const OriginInfoTableEntries&)>;
+  using DumpBucketTableCallback =
+      base::OnceCallback<void(const BucketTableEntries&)>;
 
   // The values returned total_space, available_space.
   using StorageCapacityCallback = base::OnceCallback<void(int64_t, int64_t)>;
@@ -422,7 +422,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::set<url::Origin> GetCachedOrigins(blink::mojom::StorageType type);
 
   void DumpQuotaTable(DumpQuotaTableCallback callback);
-  void DumpOriginInfoTable(DumpOriginInfoTableCallback callback);
+  void DumpBucketTable(DumpBucketTableCallback callback);
 
   void DeleteOriginDataInternal(const url::Origin& origin,
                                 blink::mojom::StorageType type,
@@ -446,8 +446,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                          int64_t available_space);
   void DidGetPersistentGlobalUsageForHistogram(int64_t usage,
                                                int64_t unlimited_usage);
-  void DidDumpOriginInfoTableForHistogram(
-      const OriginInfoTableEntries& entries);
+  void DidDumpBucketTableForHistogram(const BucketTableEntries& entries);
 
   std::set<url::Origin> GetEvictionOriginExceptions();
   void DidGetEvictionOrigin(GetOriginCallback callback,

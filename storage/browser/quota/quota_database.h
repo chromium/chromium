@@ -19,7 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 
 namespace sql {
@@ -31,25 +31,33 @@ namespace storage {
 
 class SpecialStoragePolicy;
 
-// Stores all origin scoped quota managed data and metadata.
+// Stores all quota managed origin bucket data and metadata.
 //
 // Instances are owned by QuotaManagerImpl. There is one instance per
 // QuotaManagerImpl instance. All the methods of this class, except the
 // constructor, must called on the DB thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
-  struct COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfoTableEntry {
-    OriginInfoTableEntry();
-    OriginInfoTableEntry(const url::Origin& origin,
-                         blink::mojom::StorageType type,
-                         int used_count,
-                         const base::Time& last_access_time,
-                         const base::Time& last_modified_time);
+  struct COMPONENT_EXPORT(STORAGE_BROWSER) BucketTableEntry {
+    BucketTableEntry();
+    BucketTableEntry(int64_t bucket_id,
+                     url::Origin origin,
+                     blink::mojom::StorageType type,
+                     std::string name,
+                     int use_count,
+                     const base::Time& last_accessed,
+                     const base::Time& last_modified);
+
+    BucketTableEntry(const BucketTableEntry&);
+    BucketTableEntry& operator=(const BucketTableEntry&);
+
+    int64_t bucket_id = -1;
     url::Origin origin;
-    blink::mojom::StorageType type;
-    int used_count;
-    base::Time last_access_time;
-    base::Time last_modified_time;
+    blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
+    std::string name;
+    int use_count = 0;
+    base::Time last_accessed;
+    base::Time last_modified;
   };
 
   // If 'path' is empty, an in memory database will be used.
@@ -67,16 +75,26 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                     int64_t quota);
   bool DeleteHostQuota(const std::string& host, blink::mojom::StorageType type);
 
+  // TODO(crbug.com/1202167): Remove once all usages have updated to use
+  // SetBucketLastAccessTime.
   bool SetOriginLastAccessTime(const url::Origin& origin,
                                blink::mojom::StorageType type,
-                               base::Time last_access_time);
+                               base::Time last_accessed);
 
+  // Called by QuotaClient implementers to update when the bucket was last
+  // accessed.
+  bool SetBucketLastAccessTime(int64_t bucket_id, base::Time last_accessed);
+
+  // TODO(crbug.com/1202167): Remove once all usages have updated to use
+  // SetBucketLastModifiedTime.
   bool SetOriginLastModifiedTime(const url::Origin& origin,
                                  blink::mojom::StorageType type,
-                                 base::Time last_modified_time);
+                                 base::Time last_modified);
 
-  // Gets the time |origin| was last evicted. Returns whether the record could
-  // be found.
+  // Called by QuotaClient implementers to update when the bucket was last
+  // modified.
+  bool SetBucketLastModifiedTime(int64_t bucket_id, base::Time last_modified);
+
   bool GetOriginLastEvictionTime(const url::Origin& origin,
                                  blink::mojom::StorageType type,
                                  base::Time* last_eviction_time);
@@ -89,35 +107,64 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool DeleteOriginLastEvictionTime(const url::Origin& origin,
                                     blink::mojom::StorageType type);
 
-  // Register initial |origins| info |type| to the database.
+  // Register initial `origins` info `type` to the database.
   // This method is assumed to be called only after the installation or
   // the database schema reset.
   bool RegisterInitialOriginInfo(const std::set<url::Origin>& origins,
                                  blink::mojom::StorageType type);
 
-  // Gets the OriginInfoTableEntry for |origin|. Returns whether the record
-  // could be found.
+  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
+  // GetBucketInfo. Gets the BucketTableEntry for `origin`. Returns whether the
+  // record for an origin's default bucket could be found.
   bool GetOriginInfo(const url::Origin& origin,
                      blink::mojom::StorageType type,
-                     OriginInfoTableEntry* entry);
+                     BucketTableEntry* entry);
 
+  // Gets the table entry for `bucket`. Returns whether the record for an
+  // origin bucket can be found.
+  bool GetBucketInfo(int64_t bucket_id, BucketTableEntry* entry);
+
+  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
+  // DeleteBucketInfo. Deletes the default bucket for `origin`.
   bool DeleteOriginInfo(const url::Origin& origin,
                         blink::mojom::StorageType type);
 
-  // Sets |origin| to the least recently used origin of origins not included
-  // in |exceptions| and not granted the special unlimited storage right.
-  // It returns false when it failed in accessing the database.
-  // |origin| is set to nullopt when there is no matching origin.
+  // Deletes the specified bucket.
+  bool DeleteBucketInfo(int64_t bucket_id);
+
+  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
+  // GetLRUBucket. Sets `origin` to the least recently used origin of origins
+  // not included in `exceptions` and not granted the special unlimited storage
+  // right. Returns false when it fails in accessing the database.
+  // `origin` is set to nullopt when there is no matching origin.
+  // This is limited to the origin's default bucket.
   bool GetLRUOrigin(blink::mojom::StorageType type,
                     const std::set<url::Origin>& exceptions,
                     SpecialStoragePolicy* special_storage_policy,
                     base::Optional<url::Origin>* origin);
 
-  // Populates |origins| with the ones that have been modified since
-  // the |begin| and until the |end|. Returns whether the
-  // operation succeeded.
+  // Sets `bucket_id` to the least recently used bucket from origins not
+  // included in `exceptions` and not granted special unlimited storage right.
+  // Returns false when it fails in accessing the database. `bucket_id` is
+  // set to nullopt when there is no matching bucket.
+  bool GetLRUBucket(blink::mojom::StorageType type,
+                    const std::set<url::Origin>& exceptions,
+                    SpecialStoragePolicy* special_storage_policy,
+                    base::Optional<int64_t>* bucket_id);
+
+  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
+  // GetBucketsModifiedBetween. Populates `origins` with the ones that have had
+  // their default bucket modified since the `begin` and until the `end`.
+  // Returns whether the operation succeeded.
   bool GetOriginsModifiedBetween(blink::mojom::StorageType type,
                                  std::set<url::Origin>* origins,
+                                 base::Time begin,
+                                 base::Time end);
+
+  // Populates `bucket_ids` with the buckets that have been modified since the
+  // `begin` and until the `end`. Returns whether the operation succeeded.
+  bool GetBucketsModifiedBetween(blink::mojom::StorageType type,
+                                 std::set<int64_t>* bucket_ids,
                                  base::Time begin,
                                  base::Time end);
 
@@ -134,15 +181,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                     blink::mojom::StorageType type,
                     int64_t quota);
     std::string host;
-    blink::mojom::StorageType type;
-    int64_t quota;
+    blink::mojom::StorageType type{blink::mojom::StorageType::kUnknown};
+    int64_t quota{0};
   };
   friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
       const QuotaTableEntry& lhs,
       const QuotaTableEntry& rhs);
   friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
-      const OriginInfoTableEntry& lhs,
-      const OriginInfoTableEntry& rhs);
+      const BucketTableEntry& lhs,
+      const BucketTableEntry& rhs);
 
   // Structures used for CreateSchema.
   struct TableSchema {
@@ -158,10 +205,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   using QuotaTableCallback =
       base::RepeatingCallback<bool(const QuotaTableEntry&)>;
-  using OriginInfoTableCallback =
-      base::RepeatingCallback<bool(const OriginInfoTableEntry&)>;
-
-  struct QuotaTableImporter;
+  using BucketTableCallback =
+      base::RepeatingCallback<bool(const BucketTableEntry&)>;
 
   // For long-running transactions support.  We always keep a transaction open
   // so that multiple transactions can be batched.  They are flushed
@@ -178,19 +223,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                 blink::mojom::StorageType type,
                                 int64_t quota);
 
-  static bool CreateSchema(sql::Database* database,
-                           sql::MetaTable* meta_table,
-                           int schema_version,
-                           int compatible_version,
-                           const TableSchema* tables,
-                           size_t tables_size,
-                           const IndexSchema* indexes,
-                           size_t indexes_size);
+  bool CreateSchema();
+  bool CreateTable(const TableSchema& table);
+  bool CreateIndex(const IndexSchema& index);
 
-  // |callback| may return false to stop reading data.
+  // `callback` may return false to stop reading data.
   bool DumpQuotaTable(const QuotaTableCallback& callback);
-  bool DumpOriginInfoTable(const OriginInfoTableCallback& callback);
-
+  bool DumpBucketTable(const BucketTableCallback& callback);
 
   const base::FilePath db_file_path_;
 
@@ -202,10 +241,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   base::OneShotTimer timer_;
 
   friend class QuotaDatabaseTest;
+  friend class QuotaDatabaseMigrations;
+  friend class QuotaDatabaseMigrationsTest;
   friend class QuotaManagerImpl;
 
+  static const char kDefaultBucket[];
   static const TableSchema kTables[];
+  static const size_t kTableCount;
   static const IndexSchema kIndexes[];
+  static const size_t kIndexCount;
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(QuotaDatabase);

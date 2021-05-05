@@ -14,14 +14,15 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "storage/browser/quota/quota_database_migrations.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 
 using blink::mojom::StorageType;
@@ -29,90 +30,97 @@ using blink::mojom::StorageType;
 namespace storage {
 namespace {
 
+// Version number of the database schema.
+//
+// We support migrating the database schema from versions that are at most 2
+// years old. Older versions are unsupported, and will cause the database to get
+// razed.
+//
+// Version 1 - 2011-03-17 - http://crrev.com/78521 (unsupported)
+// Version 2 - 2010-04-25 - http://crrev.com/82847 (unsupported)
+// Version 3 - 2011-07-08 - http://crrev.com/91835 (unsupported)
+// Version 4 - 2011-10-17 - http://crrev.com/105822 (unsupported)
+// Version 5 - 2015-10-19 - https://crrev.com/354932
+// Version 6 - 2021-04-27 - https://crrev.com/c/2757450
+const int kQuotaDatabaseCurrentSchemaVersion = 6;
+const int kQuotaDatabaseCompatibleVersion = 6;
+
 // Definitions for database schema.
-
-const int kQuotaDatabaseCurrentSchemaVersion = 5;
-const int kQuotaDatabaseCompatibleVersion = 2;
-
-const char kHostQuotaTable[] = "HostQuotaTable";
-const char kOriginInfoTable[] = "OriginInfoTable";
-const char kEvictionInfoTable[] = "EvictionInfoTable";
+const char kHostQuotaTable[] = "quota";
+const char kBucketTable[] = "buckets";
+const char kEvictionInfoTable[] = "eviction_info";
 const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
 
 const int kCommitIntervalMs = 30000;
 
 }  // anonymous namespace
 
+// static
+const char QuotaDatabase::kDefaultBucket[] = "default";
+
 const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
     {kHostQuotaTable,
      "(host TEXT NOT NULL,"
      " type INTEGER NOT NULL,"
-     " quota INTEGER DEFAULT 0,"
-     " UNIQUE(host, type))"},
-    {kOriginInfoTable,
-     "(origin TEXT NOT NULL,"
+     " quota INTEGER NOT NULL,"
+     " PRIMARY KEY(host, type))"
+     " WITHOUT ROWID"},
+    {kBucketTable,
+     "(id INTEGER PRIMARY KEY,"
+     " origin TEXT NOT NULL,"
      " type INTEGER NOT NULL,"
-     " used_count INTEGER DEFAULT 0,"
-     " last_access_time INTEGER DEFAULT 0,"
-     " last_modified_time INTEGER DEFAULT 0,"
-     " UNIQUE(origin, type))"},
+     " name TEXT NOT NULL,"
+     " use_count INTEGER NOT NULL,"
+     " last_accessed INTEGER NOT NULL,"
+     " last_modified INTEGER NOT NULL,"
+     " expiration INTEGER NOT NULL,"
+     " quota INTEGER NOT NULL)"},
     {kEvictionInfoTable,
      "(origin TEXT NOT NULL,"
      " type INTEGER NOT NULL,"
-     " last_eviction_time INTEGER DEFAULT 0,"
-     " UNIQUE(origin, type))"}};
+     " last_eviction_time INTEGER NOT NULL,"
+     " PRIMARY KEY(origin, type))"}};
+const size_t QuotaDatabase::kTableCount = base::size(QuotaDatabase::kTables);
 
 // static
 const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
-  { "HostIndex",
-    kHostQuotaTable,
-    "(host)",
-    false },
-  { "OriginInfoIndex",
-    kOriginInfoTable,
-    "(origin)",
-    false },
-  { "OriginLastAccessTimeIndex",
-    kOriginInfoTable,
-    "(last_access_time)",
-    false },
-  { "OriginLastModifiedTimeIndex",
-    kOriginInfoTable,
-    "(last_modified_time)",
-    false },
+    {"buckets_by_storage_key", kBucketTable, "(origin, type, name)", true},
+    {"buckets_by_last_accessed", kBucketTable, "(type, last_accessed)", false},
+    {"buckets_by_last_modified", kBucketTable, "(type, last_modified)", false},
+    {"buckets_by_expiration", kBucketTable, "(expiration)", false},
 };
-
-struct QuotaDatabase::QuotaTableImporter {
-  bool Append(const QuotaTableEntry& entry) {
-    entries.push_back(entry);
-    return true;
-  }
-  std::vector<QuotaTableEntry> entries;
-};
+const size_t QuotaDatabase::kIndexCount = base::size(QuotaDatabase::kIndexes);
 
 // Clang requires explicit out-of-line constructors for them.
-QuotaDatabase::QuotaTableEntry::QuotaTableEntry()
-    : type(StorageType::kUnknown), quota(0) {}
+QuotaDatabase::QuotaTableEntry::QuotaTableEntry() = default;
 
 QuotaDatabase::QuotaTableEntry::QuotaTableEntry(const std::string& host,
                                                 StorageType type,
                                                 int64_t quota)
     : host(host), type(type), quota(quota) {}
 
-QuotaDatabase::OriginInfoTableEntry::OriginInfoTableEntry()
-    : type(StorageType::kUnknown), used_count(0) {}
+QuotaDatabase::BucketTableEntry::BucketTableEntry() = default;
 
-QuotaDatabase::OriginInfoTableEntry::OriginInfoTableEntry(
-    const url::Origin& origin,
+QuotaDatabase::BucketTableEntry::BucketTableEntry(const BucketTableEntry&) =
+    default;
+QuotaDatabase::BucketTableEntry& QuotaDatabase::BucketTableEntry::operator=(
+    const QuotaDatabase::BucketTableEntry&) = default;
+
+QuotaDatabase::BucketTableEntry::BucketTableEntry(
+    const int64_t bucket_id,
+    url::Origin origin,
     StorageType type,
-    int used_count,
-    const base::Time& last_access_time,
-    const base::Time& last_modified_time)
-    : origin(origin),
+    std::string name,
+    int use_count,
+    const base::Time& last_accessed,
+    const base::Time& last_modified)
+    : bucket_id(bucket_id),
+      origin(std::move(origin)),
       type(type),
-      used_count(used_count),
-      last_access_time(last_access_time),
-      last_modified_time(last_modified_time) {}
+      name(std::move(name)),
+      use_count(use_count),
+      last_accessed(last_accessed),
+      last_modified(last_modified) {}
 
 // QuotaDatabase ------------------------------------------------------------
 QuotaDatabase::QuotaDatabase(const base::FilePath& path)
@@ -137,11 +145,8 @@ bool QuotaDatabase::GetHostQuota(const std::string& host,
   if (!LazyOpen(false))
     return false;
 
-  const char* kSql =
-      "SELECT quota"
-      " FROM HostQuotaTable"
-      " WHERE host = ? AND type = ?";
-
+  static constexpr char kSql[] =
+      "SELECT quota FROM quota WHERE host = ? AND type = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, host);
   statement.BindInt(1, static_cast<int>(type));
@@ -170,34 +175,74 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
 
 bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
                                             StorageType type,
-                                            base::Time last_access_time) {
+                                            base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyOpen(true))
     return false;
 
   sql::Statement statement;
 
-  OriginInfoTableEntry entry;
+  BucketTableEntry entry;
   if (GetOriginInfo(origin, type, &entry)) {
-    ++entry.used_count;
-    const char* kSql =
-        "UPDATE OriginInfoTable"
-        " SET used_count = ?, last_access_time = ?"
-        " WHERE origin = ? AND type = ?";
+    ++entry.use_count;
+    static constexpr char kSql[] =
+        // clang-format off
+        "UPDATE buckets "
+          "SET use_count = ?, last_accessed = ? "
+          "WHERE origin = ? AND type = ? AND name = ?";
+    // clang-format on
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   } else  {
-    entry.used_count = 1;
-    const char* kSql =
-        "INSERT INTO OriginInfoTable"
-        " (used_count, last_access_time, origin, type, last_modified_time)"
-        " VALUES (?, ?, ?, ?, ?)";
+    entry.use_count = 1;
+    // INSERT statement column ordering matches UPDATE statement above for
+    // reuse of binding values.
+    static constexpr char kSql[] =
+        // clang-format off
+        "INSERT INTO buckets("
+            "use_count,"
+            "last_accessed,"
+            "origin,"
+            "type,"
+            "name,"
+            "last_modified,"
+            "expiration,"
+            "quota) "
+          "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+    // clang-format on
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindTime(4, last_access_time);
+    statement.BindTime(5, last_accessed);
+    statement.BindTime(6, base::Time::Max());
   }
-  statement.BindInt(0, entry.used_count);
-  statement.BindTime(1, last_access_time);
+  statement.BindInt(0, entry.use_count);
+  statement.BindTime(1, last_accessed);
   statement.BindString(2, origin.GetURL().spec());
   statement.BindInt(3, static_cast<int>(type));
+  statement.BindString(4, kDefaultBucket);
+
+  if (!statement.Run())
+    return false;
+
+  ScheduleCommit();
+  return true;
+}
+
+bool QuotaDatabase::SetBucketLastAccessTime(const int64_t bucket_id,
+                                            base::Time last_accessed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyOpen(true))
+    return false;
+
+  BucketTableEntry entry;
+  if (!GetBucketInfo(bucket_id, &entry))
+    return false;
+
+  ++entry.use_count;
+  static constexpr char kSql[] =
+      "UPDATE buckets SET use_count = ?, last_accessed = ? WHERE id = ?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt(0, entry.use_count);
+  statement.BindTime(1, last_accessed);
+  statement.BindInt64(2, bucket_id);
 
   if (!statement.Run())
     return false;
@@ -208,31 +253,68 @@ bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
 
 bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
                                               StorageType type,
-                                              base::Time last_modified_time) {
+                                              base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyOpen(true))
     return false;
 
   sql::Statement statement;
 
-  OriginInfoTableEntry entry;
+  BucketTableEntry entry;
   if (GetOriginInfo(origin, type, &entry)) {
-    const char* kSql =
-        "UPDATE OriginInfoTable"
-        " SET last_modified_time = ?"
-        " WHERE origin = ? AND type = ?";
+    static constexpr char kSql[] =
+        // clang-format off
+        "UPDATE buckets "
+          "SET last_modified = ? "
+          "WHERE origin = ? AND type = ? AND name = ?";
+    // clang-format on
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   } else {
-    const char* kSql =
-        "INSERT INTO OriginInfoTable"
-        " (last_modified_time, origin, type, last_access_time)  VALUES (?, ?, ?, ?)";
+    static constexpr char kSql[] =
+        // clang-format off
+        "INSERT INTO buckets("
+            "last_modified,"
+            "origin,"
+            "type,"
+            "name,"
+            "last_accessed,"
+            "use_count,"
+            "expiration,"
+            "quota) "
+          "VALUES (?, ?, ?, ?, ?, 0, ?, 0)";
+    // clang-format on
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindTime(3, last_modified_time);
+    statement.BindTime(4, last_modified);
+    statement.BindTime(5, base::Time::Max());
   }
-  statement.BindTime(0, last_modified_time);
+  statement.BindTime(0, last_modified);
 
   statement.BindString(1, origin.GetURL().spec());
   statement.BindInt(2, static_cast<int>(type));
+  statement.BindString(3, kDefaultBucket);
+
+  if (!statement.Run())
+    return false;
+
+  ScheduleCommit();
+  return true;
+}
+
+bool QuotaDatabase::SetBucketLastModifiedTime(const int64_t bucket_id,
+                                              base::Time last_modified) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyOpen(true))
+    return false;
+
+  BucketTableEntry entry;
+  if (!GetBucketInfo(bucket_id, &entry))
+    return false;
+
+  static constexpr char kSql[] =
+      "UPDATE buckets SET last_modified = ? WHERE id = ?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindTime(0, last_modified);
+  statement.BindInt64(1, bucket_id);
 
   if (!statement.Run())
     return false;
@@ -243,17 +325,18 @@ bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
 
 bool QuotaDatabase::GetOriginLastEvictionTime(const url::Origin& origin,
                                               StorageType type,
-                                              base::Time* last_modified_time) {
+                                              base::Time* last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(last_modified_time);
+  DCHECK(last_modified);
   if (!LazyOpen(false))
     return false;
 
-  static const char kSql[] =
-      "SELECT last_eviction_time"
-      " FROM EvictionInfoTable"
-      " WHERE origin = ? AND type = ?";
-
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT last_eviction_time "
+        "FROM eviction_info "
+        "WHERE origin = ? AND type = ?";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
@@ -261,23 +344,24 @@ bool QuotaDatabase::GetOriginLastEvictionTime(const url::Origin& origin,
   if (!statement.Step())
     return false;
 
-  *last_modified_time = statement.ColumnTime(0);
+  *last_modified = statement.ColumnTime(0);
   return true;
 }
 
 bool QuotaDatabase::SetOriginLastEvictionTime(const url::Origin& origin,
                                               StorageType type,
-                                              base::Time last_modified_time) {
+                                              base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyOpen(true))
     return false;
 
-  static const char kSql[] =
-      "INSERT OR REPLACE INTO EvictionInfoTable"
-      " (last_eviction_time, origin, type)"
-      " VALUES (?, ?, ?)";
+  static constexpr char kSql[] =
+      // clang-format off
+      "INSERT OR REPLACE INTO eviction_info(last_eviction_time, origin, type) "
+        "VALUES (?, ?, ?)";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindTime(0, last_modified_time);
+  statement.BindTime(0, last_modified);
   statement.BindString(1, origin.GetURL().spec());
   statement.BindInt(2, static_cast<int>(type));
 
@@ -294,10 +378,8 @@ bool QuotaDatabase::DeleteOriginLastEvictionTime(const url::Origin& origin,
   if (!LazyOpen(false))
     return false;
 
-  static const char kSql[] =
-      "DELETE FROM EvictionInfoTable"
-      " WHERE origin = ? AND type = ?";
-
+  static constexpr char kSql[] =
+      "DELETE FROM eviction_info WHERE origin = ? AND type = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
@@ -317,12 +399,24 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
     return false;
 
   for (const auto& origin : origins) {
-    const char* kSql =
-        "INSERT OR IGNORE INTO OriginInfoTable"
-        " (origin, type) VALUES (?, ?)";
+    static constexpr char kSql[] =
+        // clang-format off
+        "INSERT OR IGNORE INTO buckets("
+            "origin,"
+            "type,"
+            "name,"
+            "use_count,"
+            "last_accessed,"
+            "last_modified,"
+            "expiration,"
+            "quota) "
+          "VALUES (?, ?, ?, 0, 0, 0, ?, 0)";
+    // clang-format on
     sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
     statement.BindString(0, origin.GetURL().spec());
     statement.BindInt(1, static_cast<int>(type));
+    statement.BindString(2, kDefaultBucket);
+    statement.BindTime(3, base::Time::Max());
 
     if (!statement.Run())
       return false;
@@ -334,27 +428,66 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
 
 bool QuotaDatabase::GetOriginInfo(const url::Origin& origin,
                                   StorageType type,
-                                  QuotaDatabase::OriginInfoTableEntry* entry) {
+                                  QuotaDatabase::BucketTableEntry* entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyOpen(false))
     return false;
 
-  const char* kSql =
-      "SELECT * FROM OriginInfoTable"
-      " WHERE origin = ? AND type = ?";
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "use_count,"
+          "last_accessed,"
+          "last_modified "
+        "FROM buckets "
+        "WHERE origin = ? AND type = ? AND name = ?";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
+  statement.BindString(2, kDefaultBucket);
 
   if (!statement.Step())
     return false;
 
   // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-  *entry = OriginInfoTableEntry(
-      url::Origin::Create(GURL(statement.ColumnString(0))),
-      static_cast<StorageType>(statement.ColumnInt(1)), statement.ColumnInt(2),
-      statement.ColumnTime(3), statement.ColumnTime(4));
+  *entry = BucketTableEntry(statement.ColumnInt64(0), origin, type,
+                            kDefaultBucket, statement.ColumnInt(1),
+                            statement.ColumnTime(2), statement.ColumnTime(3));
+  return true;
+}
 
+bool QuotaDatabase::GetBucketInfo(const int64_t bucket_id,
+                                  QuotaDatabase::BucketTableEntry* entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyOpen(false))
+    return false;
+
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT "
+          "origin,"
+          "type,"
+          "name,"
+          "use_count,"
+          "last_accessed,"
+          "last_modified "
+        "FROM buckets "
+        "WHERE id = ?";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, bucket_id);
+
+  if (!statement.Step())
+    return false;
+
+  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+  *entry = BucketTableEntry(
+      bucket_id, url::Origin::Create(GURL(statement.ColumnString(0))),
+      static_cast<StorageType>(statement.ColumnInt(1)),
+      statement.ColumnString(2), statement.ColumnInt(3),
+      statement.ColumnTime(4), statement.ColumnTime(5));
   return true;
 }
 
@@ -364,10 +497,8 @@ bool QuotaDatabase::DeleteHostQuota(
   if (!LazyOpen(false))
     return false;
 
-  const char* kSql =
-      "DELETE FROM HostQuotaTable"
-      " WHERE host = ? AND type = ?";
-
+  static constexpr char kSql[] =
+      "DELETE FROM quota WHERE host = ? AND type = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, host);
   statement.BindInt(1, static_cast<int>(type));
@@ -385,13 +516,28 @@ bool QuotaDatabase::DeleteOriginInfo(const url::Origin& origin,
   if (!LazyOpen(false))
     return false;
 
-  const char* kSql =
-      "DELETE FROM OriginInfoTable"
-      " WHERE origin = ? AND type = ?";
-
+  static constexpr char kSql[] =
+      "DELETE FROM buckets WHERE origin = ? AND type = ? AND name = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
+  statement.BindString(2, kDefaultBucket);
+
+  if (!statement.Run())
+    return false;
+
+  ScheduleCommit();
+  return true;
+}
+
+bool QuotaDatabase::DeleteBucketInfo(const int64_t bucket_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyOpen(false))
+    return false;
+
+  static constexpr char kSql[] = "DELETE FROM buckets WHERE id = ?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, bucket_id);
 
   if (!statement.Run())
     return false;
@@ -409,13 +555,16 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
   if (!LazyOpen(false))
     return false;
 
-  static const char kSql[] =
-      "SELECT origin FROM OriginInfoTable"
-      " WHERE type = ?"
-      " ORDER BY last_access_time ASC";
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT origin FROM buckets "
+        "WHERE type = ? AND name = ? "
+        "ORDER BY last_accessed";
+  // clang-format on
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(type));
+  statement.BindString(1, kDefaultBucket);
 
   while (statement.Step()) {
     url::Origin read_origin =
@@ -437,6 +586,48 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
   return statement.Succeeded();
 }
 
+bool QuotaDatabase::GetLRUBucket(StorageType type,
+                                 const std::set<url::Origin>& exceptions,
+                                 SpecialStoragePolicy* special_storage_policy,
+                                 base::Optional<int64_t>* bucket_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(bucket_id);
+  if (!LazyOpen(false))
+    return false;
+
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT id, origin FROM buckets "
+        "WHERE type = ? "
+        "ORDER BY last_accessed";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt(0, static_cast<int>(type));
+
+  while (statement.Step()) {
+    int64_t read_bucket_id = statement.ColumnInt64(0);
+    url::Origin read_origin =
+        url::Origin::Create(GURL(statement.ColumnString(1)));
+    if (base::Contains(exceptions, read_origin))
+      continue;
+
+    // TODO(crbug/1176774): Once BucketTable holds bucket durability info,
+    // add logic to allow durable buckets to also bypass eviction.
+    if (special_storage_policy &&
+        (special_storage_policy->IsStorageDurable(read_origin.GetURL()) ||
+         special_storage_policy->IsStorageUnlimited(read_origin.GetURL()))) {
+      continue;
+    }
+
+    *bucket_id = read_bucket_id;
+    return true;
+  }
+
+  bucket_id->reset();
+  return statement.Succeeded();
+}
+
 bool QuotaDatabase::GetOriginsModifiedBetween(StorageType type,
                                               std::set<url::Origin>* origins,
                                               base::Time begin,
@@ -446,29 +637,53 @@ bool QuotaDatabase::GetOriginsModifiedBetween(StorageType type,
   if (!LazyOpen(false))
     return false;
 
-  DCHECK(!begin.is_max() && end != base::Time());
-  static constexpr char kSqlQuerySince[] =
-      "SELECT origin FROM OriginInfoTable"
-      " WHERE type = ? AND last_modified_time >= ?";
+  DCHECK(!begin.is_max());
+  DCHECK(end != base::Time());
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT origin FROM buckets "
+        "WHERE type = ? AND name = ?"
+        "AND last_modified >= ? AND last_modified < ?";
+  // clang-format on
 
-  static constexpr char kSqlQueryBetween[] =
-      "SELECT origin FROM OriginInfoTable"
-      " WHERE type = ? AND last_modified_time >= ? AND last_modified_time < ?";
-
-  sql::Statement statement;
-  if (end.is_max()) {
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSqlQuerySince));
-  } else {
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSqlQueryBetween));
-  }
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(type));
-  statement.BindTime(1, begin);
-  if (!end.is_max())
-    statement.BindTime(2, end);
+  statement.BindString(1, kDefaultBucket);
+  statement.BindTime(2, begin);
+  statement.BindTime(3, end);
 
   origins->clear();
   while (statement.Step())
     origins->insert(url::Origin::Create(GURL(statement.ColumnString(0))));
+
+  return statement.Succeeded();
+}
+
+bool QuotaDatabase::GetBucketsModifiedBetween(StorageType type,
+                                              std::set<int64_t>* bucket_ids,
+                                              base::Time begin,
+                                              base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(bucket_ids);
+  if (!LazyOpen(false))
+    return false;
+
+  DCHECK(!begin.is_max());
+  DCHECK(end != base::Time());
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT id FROM buckets "
+        "WHERE type = ? AND last_modified >= ? AND last_modified < ?";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt(0, static_cast<int>(type));
+  statement.BindTime(1, begin);
+  statement.BindTime(2, end);
+
+  bucket_ids->clear();
+  while (statement.Step())
+    bucket_ids->insert(statement.ColumnInt64(0));
 
   return statement.Succeeded();
 }
@@ -564,13 +779,8 @@ bool QuotaDatabase::LazyOpen(bool create_if_needed) {
 
 bool QuotaDatabase::EnsureDatabaseVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static const size_t kTableCount = base::size(kTables);
-  static const size_t kIndexCount = base::size(kIndexes);
   if (!sql::MetaTable::DoesTableExist(db_.get()))
-    return CreateSchema(db_.get(), meta_table_.get(),
-                        kQuotaDatabaseCurrentSchemaVersion,
-                        kQuotaDatabaseCompatibleVersion, kTables, kTableCount,
-                        kIndexes, kIndexCount);
+    return CreateSchema();
 
   if (!meta_table_->Init(db_.get(), kQuotaDatabaseCurrentSchemaVersion,
                          kQuotaDatabaseCompatibleVersion))
@@ -583,64 +793,69 @@ bool QuotaDatabase::EnsureDatabaseVersion() {
   }
 
   if (meta_table_->GetVersionNumber() < kQuotaDatabaseCurrentSchemaVersion) {
-    if (!UpgradeSchema(meta_table_->GetVersionNumber()))
+    if (!QuotaDatabaseMigrations::UpgradeSchema(*this))
       return ResetSchema();
   }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   DCHECK(sql::MetaTable::DoesTableExist(db_.get()));
-  for (size_t i = 0; i < kTableCount; ++i) {
-    DCHECK(db_->DoesTableExist(kTables[i].table_name));
-  }
+  for (const TableSchema& table : kTables)
+    DCHECK(db_->DoesTableExist(table.table_name));
 #endif
 
   return true;
 }
 
-// static
-bool QuotaDatabase::CreateSchema(sql::Database* database,
-                                 sql::MetaTable* meta_table,
-                                 int schema_version,
-                                 int compatible_version,
-                                 const TableSchema* tables,
-                                 size_t tables_size,
-                                 const IndexSchema* indexes,
-                                 size_t indexes_size) {
+bool QuotaDatabase::CreateSchema() {
   // TODO(kinuko): Factor out the common code to create databases.
-  sql::Transaction transaction(database);
+  sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return false;
 
-  if (!meta_table->Init(database, schema_version, compatible_version))
+  if (!meta_table_->Init(db_.get(), kQuotaDatabaseCurrentSchemaVersion,
+                         kQuotaDatabaseCompatibleVersion)) {
     return false;
-
-  for (size_t i = 0; i < tables_size; ++i) {
-    std::string sql("CREATE TABLE ");
-    sql += tables[i].table_name;
-    sql += tables[i].columns;
-    if (!database->Execute(sql.c_str())) {
-      VLOG(1) << "Failed to execute " << sql;
-      return false;
-    }
   }
 
-  for (size_t i = 0; i < indexes_size; ++i) {
-    std::string sql;
-    if (indexes[i].unique)
-      sql += "CREATE UNIQUE INDEX ";
-    else
-      sql += "CREATE INDEX ";
-    sql += indexes[i].index_name;
-    sql += " ON ";
-    sql += indexes[i].table_name;
-    sql += indexes[i].columns;
-    if (!database->Execute(sql.c_str())) {
-      VLOG(1) << "Failed to execute " << sql;
+  for (const TableSchema& table : kTables) {
+    if (!CreateTable(table))
       return false;
-    }
+  }
+
+  for (const IndexSchema& index : kIndexes) {
+    if (!CreateIndex(index))
+      return false;
   }
 
   return transaction.Commit();
+}
+
+bool QuotaDatabase::CreateTable(const TableSchema& table) {
+  std::string sql("CREATE TABLE ");
+  sql += table.table_name;
+  sql += table.columns;
+  if (!db_->Execute(sql.c_str())) {
+    VLOG(1) << "Failed to execute " << sql;
+    return false;
+  }
+  return true;
+}
+
+bool QuotaDatabase::CreateIndex(const IndexSchema& index) {
+  std::string sql;
+  if (index.unique)
+    sql += "CREATE UNIQUE INDEX ";
+  else
+    sql += "CREATE INDEX ";
+  sql += index.index_name;
+  sql += " ON ";
+  sql += index.table_name;
+  sql += index.columns;
+  if (!db_->Execute(sql.c_str())) {
+    VLOG(1) << "Failed to execute " << sql;
+    return false;
+  }
+  return true;
 }
 
 bool QuotaDatabase::ResetSchema() {
@@ -664,57 +879,16 @@ bool QuotaDatabase::ResetSchema() {
   return LazyOpen(true);
 }
 
-bool QuotaDatabase::UpgradeSchema(int current_version) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(0, db_->transaction_nesting());
-
-  if (current_version == 2) {
-    QuotaTableImporter importer;
-    if (!DumpQuotaTable(base::BindRepeating(&QuotaTableImporter::Append,
-                                            base::Unretained(&importer)))) {
-      return false;
-    }
-    ResetSchema();
-
-    sql::Transaction transaction(db_.get());
-    if (!transaction.Begin())
-      return false;
-    for (const auto& entry : importer.entries) {
-      if (!InsertOrReplaceHostQuota(entry.host, entry.type, entry.quota))
-        return false;
-    }
-    return transaction.Commit();
-  } else if (current_version < 5) {
-    sql::Transaction transaction(db_.get());
-    if (!transaction.Begin())
-      return false;
-
-    const QuotaDatabase::TableSchema& eviction_table_schema = kTables[2];
-    DCHECK_EQ(strcmp(kEvictionInfoTable, eviction_table_schema.table_name), 0);
-
-    std::string sql("CREATE TABLE ");
-    sql += eviction_table_schema.table_name;
-    sql += eviction_table_schema.columns;
-    if (!db_->Execute(sql.c_str())) {
-      VLOG(1) << "Failed to execute " << sql;
-      return false;
-    }
-
-    meta_table_->SetVersionNumber(5);
-    return transaction.Commit();
-  }
-  return false;
-}
-
 bool QuotaDatabase::InsertOrReplaceHostQuota(const std::string& host,
                                              StorageType type,
                                              int64_t quota) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_.get());
-  const char* kSql =
-      "INSERT OR REPLACE INTO HostQuotaTable"
-      " (quota, host, type)"
-      " VALUES (?, ?, ?)";
+  static constexpr char kSql[] =
+      // clang-format off
+      "INSERT OR REPLACE INTO quota(quota, host, type)"
+        "VALUES (?, ?, ?)";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt64(0, quota);
   statement.BindString(1, host);
@@ -727,7 +901,7 @@ bool QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
   if (!LazyOpen(true))
     return false;
 
-  const char* kSql = "SELECT * FROM HostQuotaTable";
+  static constexpr char kSql[] = "SELECT * FROM quota";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
@@ -743,22 +917,32 @@ bool QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
   return statement.Succeeded();
 }
 
-bool QuotaDatabase::DumpOriginInfoTable(
-    const OriginInfoTableCallback& callback) {
+bool QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyOpen(true))
     return false;
 
-  const char* kSql = "SELECT * FROM OriginInfoTable";
+  static constexpr char kSql[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "origin,"
+          "type,"
+          "name,"
+          "use_count,"
+          "last_accessed,"
+          "last_modified "
+        "FROM buckets";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
-    OriginInfoTableEntry entry(
-        url::Origin::Create(GURL(statement.ColumnString(0))),
-        static_cast<StorageType>(statement.ColumnInt(1)),
-        statement.ColumnInt(2), statement.ColumnTime(3),
-        statement.ColumnTime(4));
+    BucketTableEntry entry(statement.ColumnInt64(0),
+                           url::Origin::Create(GURL(statement.ColumnString(1))),
+                           static_cast<StorageType>(statement.ColumnInt(2)),
+                           statement.ColumnString(3), statement.ColumnInt(4),
+                           statement.ColumnTime(5), statement.ColumnTime(6));
 
     if (!callback.Run(entry))
       return true;
@@ -773,10 +957,10 @@ bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,
          std::tie(rhs.host, rhs.type, rhs.quota);
 }
 
-bool operator<(const QuotaDatabase::OriginInfoTableEntry& lhs,
-               const QuotaDatabase::OriginInfoTableEntry& rhs) {
-  return std::tie(lhs.origin, lhs.type, lhs.used_count, lhs.last_access_time) <
-         std::tie(rhs.origin, rhs.type, rhs.used_count, rhs.last_access_time);
+bool operator<(const QuotaDatabase::BucketTableEntry& lhs,
+               const QuotaDatabase::BucketTableEntry& rhs) {
+  return std::tie(lhs.origin, lhs.type, lhs.use_count, lhs.last_accessed) <
+         std::tie(rhs.origin, rhs.type, rhs.use_count, rhs.last_accessed);
 }
 
 }  // namespace storage
