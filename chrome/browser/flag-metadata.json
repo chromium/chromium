@@ -1446,7 +1446,7 @@
   {
     "name": "enable-autofill-upi-vpa",
     "owners": [ "cfroussios" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 98
   },
   {
     "name": "enable-background-blur",
