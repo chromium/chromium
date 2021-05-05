@@ -44,6 +44,8 @@ struct EVENTS_BASE_EXPORT PointerDetails {
 
   bool operator==(const PointerDetails& other) const;
 
+  std::string ToString() const;
+
   // The type of pointer device.
   EventPointerType pointer_type = EventPointerType::kUnknown;
 

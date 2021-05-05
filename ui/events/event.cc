@@ -759,13 +759,19 @@ void TouchEvent::UpdateForRootTransform(
     const gfx::Transform& inverted_local_transform) {
   LocatedEvent::UpdateForRootTransform(inverted_root_transform,
                                        inverted_local_transform);
-  gfx::DecomposedTransform decomp;
-  bool success = gfx::DecomposeTransform(&decomp, inverted_root_transform);
-  DCHECK(success);
-  if (decomp.scale[0])
-    pointer_details_.radius_x *= decomp.scale[0];
-  if (decomp.scale[1])
-    pointer_details_.radius_y *= decomp.scale[1];
+
+  // We could create a vector and then rely on Transform::TransformVector , but
+  // that ends up creating a 4 dimensional vector and applying a 4 dim
+  // transform. Really what we're looking at is only in the (x,y) plane, and
+  // given that we can run this relatively frequently we will inline execute the
+  // matrix here.
+  const auto& matrix = inverted_root_transform.matrix();
+  const double new_x = fabs(pointer_details_.radius_x * matrix.get(0, 0) +
+                            pointer_details_.radius_y * matrix.get(0, 1));
+  const double new_y = fabs(pointer_details_.radius_x * matrix.get(1, 0) +
+                            pointer_details_.radius_y * matrix.get(1, 1));
+  pointer_details_.radius_x = new_x;
+  pointer_details_.radius_y = new_y;
 }
 
 void TouchEvent::DisableSynchronousHandling() {

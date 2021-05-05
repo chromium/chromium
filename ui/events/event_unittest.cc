@@ -671,6 +671,8 @@ TEST(EventTest, UpdateForRootTransformation) {
   gfx::Transform identity_transform;
   const gfx::Point location(10, 10);
   const gfx::Point root_location(20, 20);
+  const gfx::PointF f_location(10, 10);
+  const gfx::PointF f_root_location(20, 20);
 
   // A mouse event that is untargeted should reset the root location when
   // transformed. Though the events start out with different locations and
@@ -682,6 +684,67 @@ TEST(EventTest, UpdateForRootTransformation) {
   EXPECT_EQ(location, untargeted.root_location());
 
   ui::test::TestEventTarget target;
+
+  // A touch event should behave the same way as others.
+  {
+    PointerDetails pointer_details(EventPointerType::kTouch, 0 /* pointer id */,
+                                   3, 4, 50, 0 /* twist */, 0, 0);
+    ui::TouchEvent targeted(ET_TOUCH_PRESSED, f_location, f_root_location,
+                            EventTimeForNow(), pointer_details);
+    targeted.UpdateForRootTransform(identity_transform, identity_transform);
+    EXPECT_EQ(location, targeted.location());
+    EXPECT_EQ(location, targeted.root_location());
+    EXPECT_EQ(pointer_details, targeted.pointer_details());
+  }
+
+  // A touch event should scale the same way as others.
+  {
+    // Targeted event with 2x and 3x scales.
+    gfx::Transform transform2x;
+    transform2x.Scale(2, 2);
+    gfx::Transform transform3x;
+    transform3x.Scale(3, 3);
+    PointerDetails pointer_details(EventPointerType::kTouch, 0 /* pointer id */,
+                                   3, 4, 50, 0 /* twist */, 0, 0);
+    ui::TouchEvent targeted(ET_TOUCH_PRESSED, f_location, f_root_location,
+                            EventTimeForNow(), pointer_details);
+    targeted.UpdateForRootTransform(transform2x, transform3x);
+    auto updated_location = ScalePoint(f_location, 2.0f);
+    EXPECT_EQ(updated_location, targeted.location_f());
+    EXPECT_EQ(updated_location, targeted.root_location_f());
+    auto updated_pointer_details(pointer_details);
+    updated_pointer_details.radius_x *= 2;
+    updated_pointer_details.radius_y *= 2;
+    EXPECT_EQ(updated_pointer_details, targeted.pointer_details())
+        << " orig: " << pointer_details.ToString() << " vs "
+        << targeted.pointer_details().ToString();
+  }
+
+  // A touch event should rotate appropriately.
+  {
+    // Rotate by 90 degrees, then scale by a half or 0.75 (depending on axis),
+    // and then offset by 720/1080. Note that the offset should have no impact
+    // on vectors, i.e. radius.
+    // The scale happens after rotation, so x should be 0.75 * the y.
+    gfx::Transform rotate90;
+    rotate90.Rotate(90.0f);
+    rotate90.Translate(gfx::Vector2dF(720.0f, 1080.0f));
+    rotate90.Scale(0.5, 0.75);
+    gfx::Transform transform3x;
+    transform3x.Scale(3, 3);
+    PointerDetails pointer_details(EventPointerType::kTouch, 0 /* pointer id */,
+                                   3, 4, 50, 0 /* twist */, 0, 0);
+    ui::TouchEvent targeted(ET_TOUCH_PRESSED, f_location, f_root_location,
+                            EventTimeForNow(), pointer_details);
+    Event::DispatcherApi(&targeted).set_target(&target);
+    targeted.UpdateForRootTransform(rotate90, transform3x);
+    auto updated_pointer_details(pointer_details);
+    updated_pointer_details.radius_x = pointer_details.radius_y * 0.75;
+    updated_pointer_details.radius_y = pointer_details.radius_x * 0.5;
+    EXPECT_EQ(updated_pointer_details, targeted.pointer_details())
+        << " orig: " << updated_pointer_details.ToString() << " vs "
+        << targeted.pointer_details().ToString();
+  }
 
   // A mouse event that is targeted should not set the root location to the
   // local location. They start with different locations and should stay
