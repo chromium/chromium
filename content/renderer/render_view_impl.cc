@@ -124,8 +124,6 @@ void RenderViewImpl::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(RenderThread::IsMainThread());
 
-  agent_scheduling_group_.AddRoute(routing_id_, this);
-
   WebFrame* opener_frame = nullptr;
   if (params->opener_frame_token)
     opener_frame = WebFrame::FromFrameToken(params->opener_frame_token.value());
@@ -183,7 +181,6 @@ RenderViewImpl::~RenderViewImpl() {
   DCHECK(destroying_);  // Always deleted through Destroy().
 
   g_routing_id_view_map.Get().erase(routing_id_);
-  agent_scheduling_group_.RemoveRoute(routing_id_);
 
 #ifndef NDEBUG
   // Make sure we are no longer referenced by the ViewMap or RoutingIDViewMap.
@@ -267,12 +264,6 @@ void RenderViewImpl::SendFrameStateUpdates() {
       frame->SendUpdateState();
   }
   frames_with_pending_state_.clear();
-}
-
-// IPC::Listener -------------------------------------------------------------
-
-bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
-  return false;
 }
 
 // blink::WebViewClient ------------------------------------------------------
@@ -539,14 +530,6 @@ bool RenderViewImpl::CanUpdateLayout() {
 }
 
 // RenderView implementation ---------------------------------------------------
-
-bool RenderViewImpl::Send(IPC::Message* message) {
-  // No messages sent through RenderView come without a routing id, yay. Let's
-  // keep that up.
-  CHECK_NE(message->routing_id(), MSG_ROUTING_NONE);
-
-  return agent_scheduling_group_.Send(message);
-}
 
 RenderFrameImpl* RenderViewImpl::GetMainRenderFrame() {
   return main_render_frame_;

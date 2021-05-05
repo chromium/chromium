@@ -81,7 +81,6 @@ class CreateViewParams;
 // the owner of it. Thus a tab may have multiple RenderViewImpls, one for the
 // main frame, and one for each other frame tree generated.
 class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
-                                      public IPC::Listener,
                                       public RenderView {
  public:
   // Creates a new RenderView. Note that if the original opener has been closed,
@@ -145,9 +144,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // Returns the current instance of blink::RendererPreferences.
   const blink::RendererPreferences& GetRendererPreferences() const;
 
-  // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& msg) override;
-
   // blink::WebViewClient implementation --------------------------------------
 
   blink::WebView* CreateView(
@@ -170,7 +166,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // RenderView implementation -------------------------------------------------
 
-  bool Send(IPC::Message* message) override;
   RenderFrameImpl* GetMainRenderFrame() override;
   int GetRoutingID() override;
   blink::WebView* GetWebView() override;
