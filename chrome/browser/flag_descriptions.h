@@ -1451,11 +1451,14 @@ extern const char kTraceUploadUrlChoiceEmloading[];
 extern const char kTraceUploadUrlChoiceQa[];
 extern const char kTraceUploadUrlChoiceTesting[];
 
+extern const char kTranslateBubbleUIName[];
+extern const char kTranslateBubbleUIDescription[];
+
 extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
-extern const char kTranslateBubbleUIName[];
-extern const char kTranslateBubbleUIDescription[];
+extern const char kTranslateIntentName[];
+extern const char kTranslateIntentDescription[];
 
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];

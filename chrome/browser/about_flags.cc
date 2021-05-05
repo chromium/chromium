@@ -3204,6 +3204,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(language::kOverrideTranslateTriggerInIndia,
                                     kTranslateForceTriggerOnEnglishVariations,
                                     "OverrideTranslateTriggerInIndia")},
+    {"translate-intent", flag_descriptions::kTranslateIntentName,
+     flag_descriptions::kTranslateIntentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(language::kTranslateIntent)},
 #endif  // OS_ANDROID
 
     {"override-language-prefs-for-href-translate",

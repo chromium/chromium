@@ -44329,6 +44329,7 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
+  <int value="-2094897448" label="TranslateIntent:disabled"/>
   <int value="-2093047873"
       label="AbusiveOriginNotificationPermissionRevocation:enabled"/>
   <int value="-2092067251" label="NativeFilesystemAPI:disabled"/>
@@ -48396,6 +48397,7 @@ from previous Chrome versions.
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
   <int value="1429923065" label="enable-media-internals:enabled"/>
+  <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>

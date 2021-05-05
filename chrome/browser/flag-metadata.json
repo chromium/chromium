@@ -5053,6 +5053,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "translate-intent",
+    "owners": [ "jds", "basiaz", "chrome-language@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "treat-unsafe-downloads-as-active-content",
     "owners": [ "jdeblasio", "cthomp" ],
     "expiry_milestone": 89
