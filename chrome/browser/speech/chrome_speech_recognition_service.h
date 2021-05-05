@@ -39,6 +39,11 @@ class ChromeSpeechRecognitionService
   // media::mojom::SpeechRecognitionServiceClient
   void OnNetworkServiceDisconnect() override;
 
+ protected:
+  // A flag indicating whether to use the Speech On-Device API (SODA) for speech
+  // recognition.
+  const bool enable_soda_;
+
  private:
   // Launches the speech recognition service in a sandboxed utility process.
   void LaunchIfNotRunning();
@@ -48,10 +53,6 @@ class ChromeSpeechRecognitionService
 
   // The browser context associated with the keyed service.
   content::BrowserContext* const context_;
-
-  // A flag indicating whether to use the Speech On-Device API (SODA) for speech
-  // recognition.
-  const bool enable_soda_;
 
   // The remote to the speech recognition service. The browser will not launch a
   // new speech recognition service process if this remote is already bound.

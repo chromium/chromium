@@ -24,9 +24,8 @@ constexpr base::TimeDelta kIdleProcessTimeout = base::TimeDelta::FromSeconds(5);
 
 ChromeSpeechRecognitionService::ChromeSpeechRecognitionService(
     content::BrowserContext* context)
-    : context_(context),
-      enable_soda_(
-          base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {}
+    : enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
+      context_(context) {}
 
 ChromeSpeechRecognitionService::~ChromeSpeechRecognitionService() = default;
 
@@ -69,12 +68,15 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   DCHECK(profile_prefs);
   DCHECK(global_prefs);
 
-  auto binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
-  auto config_path =
-      ChromeSpeechRecognitionService::GetSodaConfigPath(profile_prefs);
-  if (enable_soda_ && (binary_path.empty() || config_path.empty())) {
-    LOG(ERROR) << "Unable to find SODA files on the device.";
-    return;
+  base::FilePath binary_path, config_path;
+  if (enable_soda_) {
+    binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
+    config_path =
+        ChromeSpeechRecognitionService::GetSodaConfigPath(profile_prefs);
+    if (binary_path.empty() || config_path.empty()) {
+      LOG(ERROR) << "Unable to find SODA files on the device.";
+      return;
+    }
   }
 
   content::ServiceProcessHost::Launch(

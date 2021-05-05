@@ -16,9 +16,7 @@ namespace speech {
 
 CrosSpeechRecognitionService::CrosSpeechRecognitionService(
     content::BrowserContext* context)
-    : ChromeSpeechRecognitionService(context),
-      enable_soda_(
-          base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {}
+    : ChromeSpeechRecognitionService(context) {}
 
 CrosSpeechRecognitionService::~CrosSpeechRecognitionService() {}
 
