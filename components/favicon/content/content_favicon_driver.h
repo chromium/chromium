@@ -10,7 +10,9 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/favicon/core/favicon_driver_impl.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -30,16 +32,12 @@ class ContentFaviconDriver
  public:
   ~ContentFaviconDriver() override;
 
-  // Returns the current tab's favicon URLs. If this is empty,
-  // DidUpdateFaviconURL has not yet been called for the current navigation.
-  std::vector<blink::mojom::FaviconURL> favicon_urls() const {
-    return favicon_urls_.value_or(std::vector<blink::mojom::FaviconURL>());
-  }
-
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;
   GURL GetActiveURL() override;
+
+  GURL GetManifestURL(content::RenderFrameHost* rfh);
 
  protected:
   ContentFaviconDriver(content::WebContents* web_contents,
@@ -47,6 +45,25 @@ class ContentFaviconDriver
 
  private:
   friend class content::WebContentsUserData<ContentFaviconDriver>;
+
+  // TODO(crbug.com/1205018): these two classes are current used to ensure that
+  // we disregard manifest URL updates that arrive prior to onload firing.
+  struct DocumentManifestData
+      : public content::RenderDocumentHostUserData<DocumentManifestData> {
+    explicit DocumentManifestData(content::RenderFrameHost* rfh);
+    ~DocumentManifestData() override;
+    RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+    bool has_manifest_url = false;
+  };
+
+  struct NavigationManifestData
+      : public content::NavigationHandleUserData<NavigationManifestData> {
+    explicit NavigationManifestData(
+        content::NavigationHandle& navigation_handle);
+    ~NavigationManifestData() override;
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+    bool has_manifest_url = false;
+  };
 
   // Callback when a manifest is downloaded.
   void OnDidDownloadManifest(ManifestDownloadCallback callback,
@@ -80,15 +97,8 @@ class ContentFaviconDriver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
 
-  bool document_on_load_completed_;
   GURL bypass_cache_page_url_;
-  // nullopt until the actual list is reported via DidUpdateFaviconURL().
-  base::Optional<std::vector<blink::mojom::FaviconURL>> favicon_urls_;
-  // Web Manifest URL or empty URL if none.
-  GURL manifest_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

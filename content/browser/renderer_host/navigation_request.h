@@ -282,6 +282,7 @@ class CONTENT_EXPORT NavigationRequest
   SiteInstanceImpl* GetSourceSiteInstance() override;
   bool IsInMainFrame() override;
   bool IsInPrimaryMainFrame() override;
+  bool IsPrerenderedPageActivation() override;
   bool IsRendererInitiated() override;
   bool IsSameOrigin() override;
   bool WasServerRedirect() override;
@@ -849,11 +850,6 @@ class CONTENT_EXPORT NavigationRequest
   // |commit_params_|, which is always set to the first destination URL for this
   // navigation.
   const GURL& GetOriginalRequestURL();
-
-  // Prerender2:
-  // Returns true if this navigation will activate a prerendered page. It is
-  // only meaningful to call this after BeginNavigation().
-  bool IsPrerenderedPageActivation() const;
 
   // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
   // adds a const qualifier.

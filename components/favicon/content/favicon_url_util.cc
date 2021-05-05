@@ -32,14 +32,14 @@ favicon_base::IconType IconTypeFromContentIconType(
 }  // namespace
 
 FaviconURL FaviconURLFromContentFaviconURL(
-    const blink::mojom::FaviconURL& favicon_url) {
-  return FaviconURL(favicon_url.icon_url,
-                    IconTypeFromContentIconType(favicon_url.icon_type),
-                    favicon_url.icon_sizes);
+    const blink::mojom::FaviconURLPtr& favicon_url) {
+  return FaviconURL(favicon_url->icon_url,
+                    IconTypeFromContentIconType(favicon_url->icon_type),
+                    favicon_url->icon_sizes);
 }
 
 std::vector<FaviconURL> FaviconURLsFromContentFaviconURLs(
-    const std::vector<blink::mojom::FaviconURL>& favicon_urls) {
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
   std::vector<FaviconURL> result;
   result.reserve(favicon_urls.size());
   std::transform(favicon_urls.begin(), favicon_urls.end(),

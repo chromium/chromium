@@ -13,6 +13,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -221,6 +222,61 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   ASSERT_NE(new_frame->policy_container_host(), nullptr);
   EXPECT_EQ(new_frame->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kNever);
+}
+
+TEST_F(RenderFrameHostImplTest, FaviconURLsSet) {
+  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  const auto kFavicon =
+      blink::mojom::FaviconURL(GURL("https://example.com/favicon.ico"),
+                               blink::mojom::FaviconIconType::kFavicon, {});
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateBrowserInitiated(GURL("https://example.com"),
+                                                  contents());
+  ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
+  navigation->SetTransition(transition);
+  navigation->Commit();
+  EXPECT_EQ(0u, contents()->GetFaviconURLs().size());
+
+  std::vector<blink::mojom::FaviconURLPtr> one_favicon_url;
+  one_favicon_url.push_back(blink::mojom::FaviconURL::New(kFavicon));
+  main_rfh->UpdateFaviconURL(std::move(one_favicon_url));
+  EXPECT_EQ(1u, contents()->GetFaviconURLs().size());
+
+  std::vector<blink::mojom::FaviconURLPtr> two_favicon_urls;
+  two_favicon_urls.push_back(blink::mojom::FaviconURL::New(kFavicon));
+  two_favicon_urls.push_back(blink::mojom::FaviconURL::New(kFavicon));
+  main_rfh->UpdateFaviconURL(std::move(two_favicon_urls));
+  EXPECT_EQ(2u, contents()->GetFaviconURLs().size());
+
+  std::vector<blink::mojom::FaviconURLPtr> another_one_favicon_url;
+  another_one_favicon_url.push_back(blink::mojom::FaviconURL::New(kFavicon));
+  main_rfh->UpdateFaviconURL(std::move(another_one_favicon_url));
+  EXPECT_EQ(1u, contents()->GetFaviconURLs().size());
+}
+
+TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
+  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL("https://example.com/favicon.ico"),
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateBrowserInitiated(GURL("https://example.com"),
+                                                  contents());
+  ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
+  navigation->SetTransition(transition);
+  navigation->Commit();
+
+  EXPECT_EQ(0u, contents()->GetFaviconURLs().size());
+  main_rfh->UpdateFaviconURL(std::move(favicon_urls));
+  EXPECT_EQ(1u, contents()->GetFaviconURLs().size());
+
+  navigation = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/navigation.html"), contents());
+  navigation->SetTransition(transition);
+  navigation->Commit();
+  EXPECT_EQ(0u, contents()->GetFaviconURLs().size());
 }
 
 }  // namespace content

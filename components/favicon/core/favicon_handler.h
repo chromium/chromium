@@ -263,7 +263,6 @@ class FaviconHandler {
   // - A mapping is known to exist (reflected by |notification_icon_type_|).
   // - All download attempts returned 404s OR no relevant candidate was
   //   provided (as per |icon_types_|).
-  // - The corresponding feature is enabled (currently behind variations).
   void MaybeDeleteFaviconMappings();
 
   // Notifies |driver_| that FaviconHandler found an icon which matches the

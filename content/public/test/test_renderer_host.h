@@ -133,6 +133,10 @@ class RenderFrameHostTester {
 
   // Get a count of the total number of heavy ad issues reported.
   virtual int GetHeavyAdIssueCount(HeavyAdIssueType type) = 0;
+
+  // Simulates the receipt of a manifest URL.
+  virtual void SimulateManifestURLUpdate(
+      const base::Optional<GURL>& manifest_url) = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.

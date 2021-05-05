@@ -5687,6 +5687,11 @@ bool NavigationRequest::IsInPrimaryMainFrame() {
          frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrimary;
 }
 
+bool NavigationRequest::IsPrerenderedPageActivation() {
+  CHECK_GE(state_, WILL_START_REQUEST);
+  return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
+}
+
 int NavigationRequest::GetFrameTreeNodeId() {
   return frame_tree_node()->frame_tree_node_id();
 }
@@ -6372,17 +6377,13 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
   }
 }
 
-bool NavigationRequest::IsPrerenderedPageActivation() const {
-  CHECK_GE(state_, WILL_START_REQUEST);
-  return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
-}
-
 bool NavigationRequest::IsServedFromBackForwardCache() const {
   return rfh_restored_from_back_forward_cache_ != nullptr;
 }
 
 bool NavigationRequest::IsPageActivation() const {
-  return IsPrerenderedPageActivation() || IsServedFromBackForwardCache();
+  return const_cast<NavigationRequest*>(this)->IsPrerenderedPageActivation() ||
+         IsServedFromBackForwardCache();
 }
 
 std::unique_ptr<NavigationEntryImpl>

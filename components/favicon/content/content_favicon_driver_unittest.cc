@@ -28,9 +28,9 @@
 namespace favicon {
 namespace {
 
+using testing::_;
 using testing::Return;
 using testing::SizeIs;
-using testing::_;
 
 void TestFetchFaviconForPage(
     content::WebContents* web_contents,
@@ -50,6 +50,7 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
   const std::vector<SkBitmap> kEmptyIcons;
   const GURL kPageURL = GURL("http://www.google.com/");
   const GURL kIconURL = GURL("http://www.google.com/favicon.ico");
+  const GURL kFakeManifestURL = GURL("http://www.google.com/manifest.json");
 
   ContentFaviconDriverTest() {
     ON_CALL(favicon_service_, UpdateFaviconMappingsAndFetch(_, _, _, _, _, _))
@@ -103,6 +104,48 @@ TEST_F(ContentFaviconDriverTest, ShouldCauseImageDownload) {
       kIconURL, 200, kEmptyIcons, kEmptyIconSizes));
 }
 
+// Ensures that we do not consider a manifest URL if it arrives before the
+// onload handler has fired.
+// TODO(crbug.com/1205018): This may not necessarily the desired behavior, but
+// this test will prevent unintentional behavioral changes until the issue is
+// resolved.
+TEST_F(ContentFaviconDriverTest, IgnoreManifestURLBeforeOnLoad) {
+  ContentFaviconDriver* favicon_driver =
+      ContentFaviconDriver::FromWebContents(web_contents());
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      kPageURL, web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  base::Optional<GURL> manifest_url = kFakeManifestURL;
+  auto* rfh_tester =
+      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  rfh_tester->SimulateManifestURLUpdate(manifest_url);
+  static_cast<content::WebContentsObserver*>(favicon_driver)
+      ->DidUpdateWebManifestURL(web_contents()->GetMainFrame(), manifest_url);
+  EXPECT_EQ(GURL(),
+            favicon_driver->GetManifestURL(web_contents()->GetMainFrame()));
+}
+
+// Ensures that we use a manifest URL if it arrives after the onload handler
+// has fired. See crbug.com/1205018 for details.
+TEST_F(ContentFaviconDriverTest, UseManifestURLAFterOnLoad) {
+  ContentFaviconDriver* favicon_driver =
+      ContentFaviconDriver::FromWebContents(web_contents());
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      kPageURL, web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  navigation->StopLoading();
+  base::Optional<GURL> manifest_url = kFakeManifestURL;
+  auto* rfh_tester =
+      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  rfh_tester->SimulateManifestURLUpdate(manifest_url);
+  static_cast<content::WebContentsObserver*>(favicon_driver)
+      ->DidUpdateWebManifestURL(web_contents()->GetMainFrame(), manifest_url);
+  EXPECT_EQ(kFakeManifestURL,
+            favicon_driver->GetManifestURL(web_contents()->GetMainFrame()));
+}
+
 // Test that no download is initiated when DocumentOnLoadCompletedInMainFrame()
 // is not triggered (e.g. user stopped an ongoing page load).
 TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
@@ -120,9 +163,6 @@ TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kIconURL));
-
-  // Nevertheless, we expect the list exposed via favicon_urls().
-  EXPECT_THAT(favicon_driver->favicon_urls(), SizeIs(1));
 }
 
 // Test that Favicon is not requested repeatedly during the same session if
@@ -153,25 +193,6 @@ TEST_F(ContentFaviconDriverTest, ShouldDownloadSecondIfFirstUnavailable) {
   // Verify a  download request is pending for the second image.
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kIconURL));
   EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kOtherIconURL));
-}
-
-// Test that ContentFaviconDriver ignores updated favicon URLs if there is no
-// last committed entry. This occurs when script is injected in about:blank.
-// See crbug.com/520759 for more details
-TEST_F(ContentFaviconDriverTest, FaviconUpdateNoLastCommittedEntry) {
-  ASSERT_EQ(nullptr, web_contents()->GetController().GetLastCommittedEntry());
-
-  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
-  favicon_urls.push_back(blink::mojom::FaviconURL::New(
-      GURL("http://www.google.ca/favicon.ico"),
-      blink::mojom::FaviconIconType::kFavicon, kEmptyIconSizes));
-  favicon::ContentFaviconDriver* driver =
-      favicon::ContentFaviconDriver::FromWebContents(web_contents());
-  static_cast<content::WebContentsObserver*>(driver)->DidUpdateFaviconURL(
-      web_contents()->GetMainFrame(), favicon_urls);
-
-  // Test that ContentFaviconDriver ignored the favicon url update.
-  EXPECT_TRUE(driver->favicon_urls().empty());
 }
 
 using ContentFaviconDriverTestNoFaviconService =

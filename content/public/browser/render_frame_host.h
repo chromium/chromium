@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
@@ -69,7 +70,7 @@ class PendingReceiver;
 namespace net {
 class IsolationInfo;
 class NetworkIsolationKey;
-}
+}  // namespace net
 
 namespace network {
 namespace mojom {
@@ -854,10 +855,23 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void EnableWebRtcEventLogOutput(int lid, int output_period_ms) = 0;
   virtual void DisableWebRtcEventLogOutput(int lid) = 0;
 
+  // Return true if onload has been executed in the renderer in the main frame.
+  virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
+
+  // The GURL for the document's web application manifest. If called on a
+  // subframe, returns the value from the corresponding main frame.  See
+  // https://w3c.github.io/manifest/#web-application-manifest
+  virtual const GURL& ManifestURL() = 0;
+
+  // Returns the raw list of favicon candidates as reported to observers via
+  // since the last navigation start. If called on a subframe, returns the
+  // value from the corresponding main frame.
+  virtual const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;
-  RenderFrameHost() {}
+  RenderFrameHost() = default;
 };
 
 }  // namespace content

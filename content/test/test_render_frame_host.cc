@@ -223,6 +223,11 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
   }
 }
 
+void TestRenderFrameHost::SimulateManifestURLUpdate(
+    const base::Optional<GURL>& manifest_url) {
+  UpdateManifestURL(manifest_url);
+}
+
 void TestRenderFrameHost::SendNavigate(int nav_entry_id,
                                        bool did_create_new_entry,
                                        const GURL& url) {
