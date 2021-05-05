@@ -535,6 +535,10 @@ const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
 const base::Feature kOsFeedback{"OsFeedback",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether the device supports on-device speech recognition.
+const base::Feature kOnDeviceSpeechRecognition{
+    "OnDeviceSpeechRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",

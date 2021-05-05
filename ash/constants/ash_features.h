@@ -231,6 +231,8 @@ extern const base::Feature kNoteTakingForEnabledWebApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kOnDeviceSpeechRecognition;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNewOobeLayout;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsFeedback;

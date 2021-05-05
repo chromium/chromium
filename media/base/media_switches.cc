@@ -13,6 +13,10 @@
 #include "base/cpu.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace switches {
 
 // Allow users to specify a custom buffer size for debugging purpose.
@@ -868,6 +872,12 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 bool IsLiveCaptionFeatureEnabled() {
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Some Chrome OS devices do not support on-device speech.
+  if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
+    return false;
+#endif
 
 #if defined(OS_LINUX)
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {

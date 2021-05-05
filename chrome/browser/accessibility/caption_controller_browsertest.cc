@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/caption_controller.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/ranges/ranges.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,7 +31,23 @@
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace captions {
+
+namespace {
+// Chrome OS requires an additional feature flag to enable Live Caption.
+std::vector<base::Feature> RequiredFeatureFlags() {
+  std::vector<base::Feature> features = {media::kLiveCaption,
+                                         media::kUseSodaForLiveCaption};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  features.push_back(ash::features::kOnDeviceSpeechRecognition);
+#endif
+  return features;
+}
+}  // namespace
 
 // Blocks until a new profile is created.
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
@@ -60,8 +77,7 @@ class CaptionControllerTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest overrides:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kUseSodaForLiveCaption}, {});
+    scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
     InProcessBrowserTest::SetUp();
   }
 

@@ -395,6 +395,10 @@ source_set("base") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+
   if (media_use_libvpx) {
     deps += [ "//third_party/libvpx" ]
   }
