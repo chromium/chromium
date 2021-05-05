@@ -37,6 +37,9 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
@@ -48,6 +51,27 @@ class Layer;
 }
 
 namespace blink {
+
+namespace {
+// This factory is used to defer binding of the InterfacePtr to the compositor
+// thread.
+class UkmRecorderFactoryImpl : public cc::UkmRecorderFactory {
+ public:
+  UkmRecorderFactoryImpl() = default;
+  ~UkmRecorderFactoryImpl() override = default;
+
+  // This method gets called on the compositor thread.
+  std::unique_ptr<ukm::UkmRecorder> CreateRecorder() override {
+    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+
+    // Calling these methods on the compositor thread are thread safe.
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        recorder.InitWithNewPipeAndPassReceiver());
+    return std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+  }
+};
+
+}  // namespace
 
 LayerTreeView::LayerTreeView(LayerTreeViewDelegate* delegate,
                              scheduler::WebThreadScheduler* scheduler)
@@ -64,7 +88,6 @@ void LayerTreeView::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
     cc::TaskGraphRunner* task_graph_runner,
-    std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     gfx::RenderingPipeline* main_thread_pipeline,
     gfx::RenderingPipeline* compositor_thread_pipeline) {
   DCHECK(delegate_);
@@ -78,7 +101,7 @@ void LayerTreeView::Initialize(
   params.main_task_runner = std::move(main_thread);
   params.mutator_host = animation_host_.get();
   params.dark_mode_filter = dark_mode_filter_.get();
-  params.ukm_recorder_factory = std::move(ukm_recorder_factory);
+  params.ukm_recorder_factory = std::make_unique<UkmRecorderFactoryImpl>();
   params.main_thread_pipeline = main_thread_pipeline;
   params.compositor_thread_pipeline = compositor_thread_pipeline;
   if (base::ThreadPoolInstance::Get()) {

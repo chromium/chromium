@@ -29,7 +29,6 @@ class LayerTreeHost;
 class LayerTreeSettings;
 class RenderFrameMetadataObserver;
 class TaskGraphRunner;
-class UkmRecorderFactory;
 }  // namespace cc
 
 namespace gfx {
@@ -61,7 +60,6 @@ class PLATFORM_EXPORT LayerTreeView
                   scoped_refptr<base::SingleThreadTaskRunner> main_thread,
                   scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
                   cc::TaskGraphRunner* task_graph_runner,
-                  std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
                   gfx::RenderingPipeline* main_thread_pipeline,
                   gfx::RenderingPipeline* compositor_thread_pipeline);
 

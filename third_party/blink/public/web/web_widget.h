@@ -60,7 +60,6 @@ namespace cc {
 class LayerTreeHost;
 class LayerTreeSettings;
 class TaskGraphRunner;
-class UkmRecorderFactory;
 }
 
 namespace ui {
@@ -93,7 +92,6 @@ class WebWidget {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_info,
-      std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings,
       gfx::RenderingPipeline* main_thread_pipeline,
       gfx::RenderingPipeline* compositor_thread_pipeline) = 0;

@@ -26,18 +26,8 @@ bool FakeCompositorDependencies::IsUseZoomForDSFEnabled() {
   return use_zoom_for_dsf_;
 }
 
-blink::scheduler::WebThreadScheduler*
-FakeCompositorDependencies::GetWebMainThreadScheduler() {
-  return &main_thread_scheduler_;
-}
-
 cc::TaskGraphRunner* FakeCompositorDependencies::GetTaskGraphRunner() {
   return &task_graph_runner_;
-}
-
-std::unique_ptr<cc::UkmRecorderFactory>
-FakeCompositorDependencies::CreateUkmRecorderFactory() {
-  return std::make_unique<cc::TestUkmRecorderFactory>();
 }
 
 gfx::RenderingPipeline* FakeCompositorDependencies::GetMainThreadPipeline() {

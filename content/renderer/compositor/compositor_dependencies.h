@@ -17,14 +17,7 @@
 
 namespace cc {
 class TaskGraphRunner;
-class UkmRecorderFactory;
 }  // namespace cc
-
-namespace blink {
-namespace scheduler {
-class WebThreadScheduler;
-}
-}  // namespace blink
 
 namespace gfx {
 class RenderingPipeline;
@@ -35,10 +28,7 @@ namespace content {
 class CONTENT_EXPORT CompositorDependencies {
  public:
   virtual bool IsUseZoomForDSFEnabled() = 0;
-  virtual blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() = 0;
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
-  virtual std::unique_ptr<cc::UkmRecorderFactory>
-  CreateUkmRecorderFactory() = 0;
   virtual gfx::RenderingPipeline* GetMainThreadPipeline() = 0;
   virtual gfx::RenderingPipeline* GetCompositorThreadPipeline() = 0;
 

@@ -176,7 +176,6 @@ void WidgetBase::InitializeCompositing(
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
     const ScreenInfos& screen_infos,
-    std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
@@ -207,8 +206,7 @@ void WidgetBase::InitializeCompositing(
       compositing_thread_scheduler
           ? compositing_thread_scheduler->DefaultTaskRunner()
           : nullptr,
-      task_graph_runner, std::move(ukm_recorder_factory), main_thread_pipeline,
-      compositor_thread_pipeline);
+      task_graph_runner, main_thread_pipeline, compositor_thread_pipeline);
 
   FrameWidget* frame_widget = client_->FrameWidget();
 

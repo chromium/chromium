@@ -32,7 +32,6 @@ class AnimationHost;
 class LayerTreeHost;
 class LayerTreeSettings;
 class TaskGraphRunner;
-class UkmRecorderFactory;
 }  // namespace cc
 
 namespace gfx {
@@ -92,7 +91,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
       const ScreenInfos& screen_infos,
-      std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,

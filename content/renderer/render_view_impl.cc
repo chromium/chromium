@@ -445,7 +445,6 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   popup->InitializeCompositing(agent_scheduling_group_.agent_group_scheduler(),
                                compositor_deps_->GetTaskGraphRunner(),
                                opener_widget->GetOriginalScreenInfos(),
-                               compositor_deps_->CreateUkmRecorderFactory(),
                                /*settings=*/nullptr,
                                compositor_deps_->GetMainThreadPipeline(),
                                compositor_deps_->GetCompositorThreadPipeline());

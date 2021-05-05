@@ -5,6 +5,7 @@ include_rules = [
     "+cc",
     "+components/viz/client",
     "+components/viz/common",
+    "+services/metrics/public/cpp/mojo_ukm_recorder.h",
 ]
 
 specific_include_rules = {
