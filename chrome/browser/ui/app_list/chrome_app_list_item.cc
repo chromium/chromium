@@ -169,15 +169,14 @@ void ChromeAppListItem::SetDefaultPositionIfApplicable(
 void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
+  metadata_->badge_color =
+      ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(id(),
+                                                                          icon);
+
   AppListModelUpdater* updater = model_updater();
   if (updater) {
     updater->SetItemIcon(id(), metadata_->icon);
-
-    // Calculate and set the notification badge color.
-    SkColor current_badge_color =
-        ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
-            id(), icon);
-    updater->SetNotificationBadgeColor(id(), current_badge_color);
+    updater->SetNotificationBadgeColor(id(), metadata_->badge_color);
   }
 }
 

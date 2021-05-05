@@ -61,10 +61,7 @@ const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
 }
 
 void AppListItem::SetNotificationBadgeColor(const SkColor color) {
-  if (notification_badge_color_ == color)
-    return;
-
-  notification_badge_color_ = color;
+  metadata_->badge_color = color;
   for (auto& observer : observers_) {
     observer.ItemBadgeColorChanged();
   }

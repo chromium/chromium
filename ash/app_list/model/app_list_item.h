@@ -95,7 +95,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool has_notification_badge() const { return has_notification_badge_; }
 
-  SkColor notification_badge_color() const { return notification_badge_color_; }
+  SkColor notification_badge_color() const { return metadata_->badge_color; }
 
   void UpdateNotificationBadgeForTesting(bool has_badge) {
     UpdateNotificationBadge(has_badge);
@@ -157,9 +157,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   // Whether this item currently has a notification badge that should be shown.
   bool has_notification_badge_ = false;
-
-  // The color for the notification badge displayed over the app icon.
-  SkColor notification_badge_color_ = SK_ColorWHITE;
 
   base::ObserverList<AppListItemObserver> observers_;
 
