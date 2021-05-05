@@ -250,7 +250,7 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
   // It is possible that |screen_update| is an empty instance if fatal errors
   // happened during the fetch.
   if (screen_update.next_topics.empty()) {
-    LOG(WARNING) << "The screen update has no topics.";
+    DVLOG(2) << "The screen update has no topics.";
 
     fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     ScheduleFetchTopics(/*backoff=*/true);

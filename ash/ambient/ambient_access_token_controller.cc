@@ -84,10 +84,13 @@ void AmbientAccessTokenController::AccessTokenRefreshed(
 
   if (gaia_id.empty() || access_token.empty()) {
     refresh_token_retry_backoff_.InformOfRequest(/*succeeded=*/false);
-    if (refresh_token_retry_backoff_.failure_count() <= kMaxRetries)
+    if (refresh_token_retry_backoff_.failure_count() <= kMaxRetries) {
+      LOG(WARNING) << "Unable to refresh access token. Retrying..";
       RetryRefreshAccessToken();
-    else
+    } else {
+      LOG(ERROR) << "Unable to refresh access token. All retries attempted.";
       NotifyAccessTokenRefreshed();
+    }
 
     return;
   }

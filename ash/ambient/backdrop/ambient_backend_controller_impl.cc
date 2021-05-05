@@ -329,9 +329,9 @@ class BackdropURLLoader {
       response_code = simple_loader_->ResponseInfo()->headers->response_code();
     }
 
-    LOG(ERROR) << "Downloading Backdrop proto failed with error code: "
-               << response_code << " with network error"
-               << simple_loader_->NetError();
+    DVLOG(2) << "Downloading Backdrop proto failed with error code: "
+             << response_code << " with network error"
+             << simple_loader_->NetError();
     simple_loader_.reset();
     std::move(callback).Run(std::make_unique<std::string>());
     return;
@@ -457,7 +457,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     const std::string& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
-    LOG(ERROR) << "Failed to fetch access token";
+    DVLOG(2) << "Failed to fetch access token";
     // Returns an empty instance to indicate the failure.
     std::move(callback).Run(ash::ScreenUpdate());
     return;
@@ -607,7 +607,7 @@ void AmbientBackendControllerImpl::FetchSettingPreviewInternal(
     const std::string& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
-    LOG(ERROR) << "Failed to fetch access token";
+    DVLOG(2) << "Failed to fetch access token";
     // Returns an empty instance to indicate the failure.
     std::move(callback).Run(/*preview_urls=*/{});
     return;
@@ -650,7 +650,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
     const std::string& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
-    LOG(ERROR) << "Failed to fetch access token";
+    DVLOG(2) << "Failed to fetch access token";
     // Returns an empty instance to indicate the failure.
     std::move(callback).Run(ash::PersonalAlbums());
     return;
