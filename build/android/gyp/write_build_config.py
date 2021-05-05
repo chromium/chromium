@@ -678,6 +678,10 @@ def DepsOfType(wanted_type, configs):
   return [c for c in configs if c['type'] == wanted_type]
 
 
+def DepPathsOfType(wanted_type, config_paths):
+  return [p for p in config_paths if GetDepConfig(p)['type'] == wanted_type]
+
+
 def GetAllDepsConfigsInOrder(deps_config_paths, filter_func=None):
   def GetDeps(path):
     config = GetDepConfig(path)
@@ -808,17 +812,22 @@ def _MergeAssets(all_assets):
   return create_list(compressed), create_list(uncompressed), locale_paks
 
 
-def _ResolveGroups(configs):
+def _ResolveGroups(config_paths):
   """Returns a list of configs with all groups inlined."""
-  ret = list(configs)
+  ret = list(config_paths)
+  ret_set = set(config_paths)
   while True:
-    groups = DepsOfType('group', ret)
-    if not groups:
+    group_paths = DepPathsOfType('group', ret)
+    if not group_paths:
       return ret
-    for config in groups:
-      index = ret.index(config)
-      expanded_configs = [GetDepConfig(p) for p in config['deps_configs']]
-      ret[index:index + 1] = expanded_configs
+    for group_path in group_paths:
+      index = ret.index(group_path)
+      expanded_config_paths = []
+      for deps_config_path in GetDepConfig(group_path)['deps_configs']:
+        if not deps_config_path in ret_set:
+          expanded_config_paths.append(deps_config_path)
+      ret[index:index + 1] = expanded_config_paths
+      ret_set.update(expanded_config_paths)
 
 
 def _DepsFromPaths(dep_paths,
@@ -872,10 +881,11 @@ def _DepsFromPathsWithFilters(dep_paths, blocklist=None, allowlist=None):
   about (i.e. we wish to prune all other branches that do not start from one of
   these).
   """
-  configs = [GetDepConfig(p) for p in dep_paths]
-  groups = DepsOfType('group', configs)
-  configs = _ResolveGroups(configs)
-  configs += groups
+  group_paths = DepPathsOfType('group', dep_paths)
+  config_paths = dep_paths
+  if group_paths:
+    config_paths = _ResolveGroups(dep_paths) + group_paths
+  configs = [GetDepConfig(p) for p in config_paths]
   if blocklist:
     configs = [c for c in configs if c['type'] not in blocklist]
   if allowlist:
