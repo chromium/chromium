@@ -65,6 +65,7 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
                                       bool success,
                                       std::vector<CartDB::KeyAndValue> res) {
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  bool show_discount = cart_service_->IsCartDiscountEnabled();
   for (CartDB::KeyAndValue proto_pair : res) {
     auto cart = chrome_cart::mojom::MerchantCart::New();
     cart->merchant = std::move(proto_pair.second.merchant());
@@ -75,8 +76,10 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
       for (std::string image_url : proto_pair.second.product_image_urls()) {
         cart->product_image_urls.emplace_back(std::move(image_url));
       }
-      cart->discount_text =
-          std::move(proto_pair.second.discount_info().discount_text());
+      if (show_discount) {
+        cart->discount_text =
+            std::move(proto_pair.second.discount_info().discount_text());
+      }
     }
     carts.push_back(std::move(cart));
   }
