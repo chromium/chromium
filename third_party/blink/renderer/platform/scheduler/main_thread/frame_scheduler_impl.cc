@@ -937,10 +937,10 @@ SchedulingLifecycleState FrameSchedulerImpl::CalculateLifecycleState(
   return SchedulingLifecycleState::kNotThrottled;
 }
 
-void FrameSchedulerImpl::OnFirstContentfulPaint() {
+void FrameSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
   waiting_for_contentful_paint_ = false;
-  if (GetFrameType() == FrameScheduler::FrameType::kMainFrame)
-    main_thread_scheduler_->OnMainFramePaint();
+  DCHECK_EQ(GetFrameType(), FrameScheduler::FrameType::kMainFrame);
+  main_thread_scheduler_->OnMainFramePaint();
 }
 
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {

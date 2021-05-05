@@ -122,7 +122,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       const WTF::String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
 
-  void OnFirstContentfulPaint() override;
+  void OnFirstContentfulPaintInMainFrame() override;
   void OnFirstMeaningfulPaint() override;
   void OnLoad() override;
   bool IsWaitingForContentfulPaint() const;

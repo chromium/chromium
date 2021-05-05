@@ -252,7 +252,7 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
     frame->GetDocument()->Fetcher()->MarkFirstContentfulPaint();
 
   if (frame->GetFrameScheduler())
-    frame->GetFrameScheduler()->OnFirstContentfulPaint();
+    frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
 
   if (auto* mf_checker = frame->View()->GetMobileFriendlinessChecker())
     mf_checker->NotifyFirstContentfulPaint();

@@ -1605,7 +1605,7 @@ TEST_F(LowPriorityHiddenFrameDuringLoadingExperimentTest,
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   // Hidden Frame Task Queues.
@@ -1698,7 +1698,7 @@ TEST_F(LowPrioritySubFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   // Sub-Frame Task Queues.
@@ -1794,7 +1794,7 @@ TEST_F(LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest,
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   // Sub-Frame Task Queues.
@@ -1889,7 +1889,7 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
@@ -1927,7 +1927,6 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
 
 TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
        MainFrameQueuesPriorities) {
-  frame_scheduler_->OnFirstContentfulPaint();
   frame_scheduler_->OnFirstMeaningfulPaint();
 
   frame_scheduler_ =
@@ -1935,7 +1934,7 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
                            FrameScheduler::FrameType::kMainFrame);
 
   // Main thread is in the loading use case.
-  frame_scheduler_->OnFirstContentfulPaint();
+  frame_scheduler_->OnFirstContentfulPaintInMainFrame();
 
   // Main Frame Task Queues.
   EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
@@ -2047,7 +2046,7 @@ TEST_F(LowPriorityAdFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
@@ -2160,7 +2159,7 @@ TEST_F(BestEffortPriorityAdFrameDuringLoadingExperimentTest,
       CreateFrameScheduler(page_scheduler_.get(),
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
@@ -2266,7 +2265,7 @@ TEST_F(ResourceFetchPriorityExperimentOnlyWhenLoadingTest, DidChangePriority) {
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Main thread scheduler is in the loading use case.
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   handle = GetResourceLoadingTaskRunnerHandleImpl();
@@ -2357,7 +2356,7 @@ TEST_F(LowPriorityCrossOriginTaskDuringLoadingExperimentTest,
                            frame_scheduler_delegate_.get(), nullptr,
                            FrameScheduler::FrameType::kMainFrame);
 
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
@@ -2913,7 +2912,7 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
   EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(2);
 
   main_frame_scheduler->OnFirstMeaningfulPaint();
-  main_frame_scheduler->OnFirstContentfulPaint();
+  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
 
   main_frame_scheduler = nullptr;
   page_scheduler = nullptr;
@@ -2935,7 +2934,6 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
   EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
 
   subframe_scheduler->OnFirstMeaningfulPaint();
-  subframe_scheduler->OnFirstContentfulPaint();
 
   subframe_scheduler = nullptr;
   page_scheduler = nullptr;

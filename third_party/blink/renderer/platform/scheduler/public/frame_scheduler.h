@@ -161,8 +161,8 @@ class FrameScheduler : public FrameOrWorkerScheduler {
                                         NavigationType navigation_type) = 0;
 
   // Tells the scheduler that the first contentful paint has occurred for this
-  // frame.
-  virtual void OnFirstContentfulPaint() = 0;
+  // frame. Only for main frames.
+  virtual void OnFirstContentfulPaintInMainFrame() = 0;
 
   // Tells the scheduler that the first meaningful paint has occurred for this
   // frame.
