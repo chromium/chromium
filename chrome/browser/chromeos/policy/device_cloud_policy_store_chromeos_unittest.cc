@@ -85,6 +85,8 @@ class DeviceCloudPolicyStoreChromeOSTest : public ash::DeviceSettingsTestBase {
   void ExpectFailure(CloudPolicyStore::Status expected_status) {
     EXPECT_EQ(expected_status, store_->status());
     EXPECT_TRUE(store_->is_initialized());
+    EXPECT_EQ(!install_attributes_->IsEnterpriseManaged(),
+              store_->first_policies_loaded());
     EXPECT_FALSE(store_->has_policy());
     EXPECT_FALSE(store_->is_managed());
     EXPECT_EQ(std::string(), store_->policy_signature_public_key());
@@ -93,6 +95,7 @@ class DeviceCloudPolicyStoreChromeOSTest : public ash::DeviceSettingsTestBase {
   void ExpectSuccess() {
     EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
     EXPECT_TRUE(store_->is_initialized());
+    EXPECT_TRUE(store_->first_policies_loaded());
     EXPECT_TRUE(store_->has_policy());
     EXPECT_TRUE(store_->is_managed());
     EXPECT_TRUE(store_->policy());

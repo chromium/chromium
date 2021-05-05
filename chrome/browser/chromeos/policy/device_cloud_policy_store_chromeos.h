@@ -60,6 +60,9 @@ class DeviceCloudPolicyStoreChromeOS
   void DeviceSettingsUpdated() override;
   void OnDeviceSettingsServiceShutdown() override;
 
+  // CloudPolicyStore:
+  void UpdateFirstPoliciesLoaded() override;
+
  private:
   // Create a validator for |policy| with basic device policy configuration and
   // OnPolicyStored() as the completion callback.

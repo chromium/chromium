@@ -170,6 +170,9 @@ class POLICY_EXPORT CloudPolicyStore {
   void NotifyStoreLoaded();
   void NotifyStoreError();
 
+  // Updates whether or not the first policies were loaded.
+  virtual void UpdateFirstPoliciesLoaded();
+
   // Assert non-concurrent usage in debug builds.
   SEQUENCE_CHECKER(sequence_checker_);
 

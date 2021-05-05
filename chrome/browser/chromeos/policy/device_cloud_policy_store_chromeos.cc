@@ -285,4 +285,10 @@ void DeviceCloudPolicyStoreChromeOS::CheckDMToken() {
   }
 }
 
+void DeviceCloudPolicyStoreChromeOS::UpdateFirstPoliciesLoaded() {
+  CloudPolicyStore::UpdateFirstPoliciesLoaded();
+  // Mark policies as loaded if we don't expect any policies to be loaded.
+  first_policies_loaded_ |= !install_attributes_->IsEnterpriseManaged();
+}
+
 }  // namespace policy
