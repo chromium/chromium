@@ -58,6 +58,10 @@ const base::Feature kWebViewMeasureScreenCoverage{
 const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables package name logging for the most popular WebView embedders.
+const base::Feature kWebViewPackageNameLogging{
+    "WebViewPackageNameLogging", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Restricts all of WebView's out-of-process renderer threads to use only LITTLE
 // cores on big.LITTLE architectures when the power mode is idle.
 const base::Feature kWebViewPowerSchedulerThrottleIdle{
