@@ -12,6 +12,10 @@ namespace power_scheduler {
 
 TEST(PowerModeArbiterTest, SingleVote) {
   PowerModeArbiter arbiter;
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+
+  // Clear the initial kCharging vote.
+  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
 
   std::unique_ptr<PowerModeVoter> voter1 = arbiter.NewVoter("voter1");
@@ -29,6 +33,12 @@ TEST(PowerModeArbiterTest, SingleVote) {
 
 TEST(PowerModeArbiterTest, MultipleVotes) {
   PowerModeArbiter arbiter;
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+
+  // Clear the initial kCharging vote.
+  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
 
   std::unique_ptr<PowerModeVoter> voter1 = arbiter.NewVoter("voter1");
@@ -119,6 +129,9 @@ TEST(PowerModeArbiterTest, Observer) {
   PowerModeArbiter arbiter;
   MockObserver observer;
 
+  // Clear the initial kCharging vote.
+  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
+
   // Observer is notified of initial mode right away.
   EXPECT_CALL(observer, OnPowerModeChanged(PowerMode::kIdle, PowerMode::kIdle));
 
@@ -163,6 +176,12 @@ TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   env.AdvanceClock(target_time - env.NowTicks());
 
   PowerModeArbiter arbiter;
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+
+  // Clear the initial kCharging vote.
+  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
   // Add a fake observer to enable reset tasks.
   FakeObserver observer;
   arbiter.AddObserver(&observer);
@@ -261,6 +280,12 @@ TEST(PowerModeArbiterTest, ObserverEnablesResetTasks) {
   env.AdvanceClock(target_time - env.NowTicks());
 
   PowerModeArbiter arbiter;
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+
+  // Clear the initial kCharging vote.
+  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
   FakeObserver observer;
   base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
 

@@ -66,8 +66,8 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   // pool is available.
   void OnThreadPoolAvailable();
 
-  // Returns the currently active PowerMode. Public for testing.
   PowerMode GetActiveModeForTesting();
+  void SetOnBatteryPowerForTesting(bool on_battery_power);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ResetVoteAfterTimeout);
