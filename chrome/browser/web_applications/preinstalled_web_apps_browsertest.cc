@@ -41,11 +41,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
 
   auto& provider = *WebAppProvider::Get(browser()->profile());
 
-  struct Expectation {
+  struct OfflineOnlyExpectation {
     const char* app_id;
     const char* install_url;
     const char* launch_url;
-  } kExpectations[] = {
+  } kOfflineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {
@@ -86,7 +86,22 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     },
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
-  size_t kExpectedCount = sizeof(kExpectations) / sizeof(kExpectations[0]);
+  size_t kOfflineOnlyExpectedCount =
+      sizeof(kOfflineOnlyExpectations) / sizeof(kOfflineOnlyExpectations[0]);
+
+  struct OnlineOnlyExpectation {
+    const char* install_url;
+  } kOnlineOnlyExpectations[] = {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    {
+        "https://mail.google.com/chat/download?usp=chrome_default",
+    },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  };
+  size_t kOnlineOnlyExpectedCount =
+      sizeof(kOnlineOnlyExpectations) / sizeof(kOnlineOnlyExpectations[0]);
 
   base::RunLoop run_loop;
   provider.preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
@@ -94,11 +109,17 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                   install_results,
               std::map<GURL, bool> uninstall_results) {
-            EXPECT_EQ(install_results.size(), kExpectedCount);
+            EXPECT_EQ(install_results.size(),
+                      kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
 
-            for (const Expectation& expectation : kExpectations) {
+            for (const auto& expectation : kOfflineOnlyExpectations) {
               EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
                         InstallResultCode::kSuccessOfflineOnlyInstall);
+            }
+
+            for (const auto& expectation : kOnlineOnlyExpectations) {
+              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                        InstallResultCode::kInstallURLLoadFailed);
             }
 
             EXPECT_EQ(uninstall_results.size(), 0u);
@@ -107,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           }));
   run_loop.Run();
 
-  for (const Expectation& expectation : kExpectations) {
+  for (const auto& expectation : kOfflineOnlyExpectations) {
     EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
               GURL(expectation.launch_url));
   }

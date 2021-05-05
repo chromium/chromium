@@ -44,6 +44,8 @@ source_set("preinstalled_web_apps") {
       sources += [
         "google_calendar.cc",
         "google_calendar.h",
+        "google_chat.cc",
+        "google_chat.h",
       ]
     }
 
