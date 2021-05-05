@@ -188,13 +188,13 @@ class IdentityPrefTransformer : public PrefTransformerInterface {
       const base::Value* extension_pref,
       std::string* error,
       bool* bad_message) override {
-    return extension_pref->CreateDeepCopy();
+    return base::Value::ToUniquePtrValue(extension_pref->Clone());
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
       const base::Value* browser_pref,
       bool is_incognito_profile) override {
-    return browser_pref->CreateDeepCopy();
+    return base::Value::ToUniquePtrValue(browser_pref->Clone());
   }
 };
 
@@ -492,7 +492,8 @@ void PreferenceAPIBase::SetExtensionControlledPref(
                                                   extension_id,
                                                   scope_string);
     auto preference = update.Create();
-    preference->SetWithoutPathExpansion(pref_key, value.CreateDeepCopy());
+    preference->SetWithoutPathExpansion(
+        pref_key, base::Value::ToUniquePtrValue(value.Clone()));
   }
   extension_pref_value_map()->SetExtensionPref(extension_id, pref_key, scope,
                                                std::move(value));
