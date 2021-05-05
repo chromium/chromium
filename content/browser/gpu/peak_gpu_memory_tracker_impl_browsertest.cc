@@ -129,7 +129,6 @@ class TestGpuService : public viz::mojom::GpuService {
   void Crash() override {}
   void Hang() override {}
   void ThrowJavaException() override {}
-  void Stop(StopCallback callback) override {}
 
   base::RepeatingClosure quit_closure_;
 };

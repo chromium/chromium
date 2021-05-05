@@ -19,7 +19,6 @@ namespace content {
 CONTENT_EXPORT const gpu::GpuPreferences GetGpuPreferencesFromCommandLine();
 
 // Kills the GPU process with a normal termination status.
-// TODO(crbug.com/1095977): Combine with StopGpuProcess
 CONTENT_EXPORT void KillGpuProcess();
 
 CONTENT_EXPORT gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory();

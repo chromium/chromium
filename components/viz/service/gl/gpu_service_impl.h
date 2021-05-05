@@ -87,18 +87,17 @@ enum class ExitCode {
 class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                                           public mojom::GpuService {
  public:
-  GpuServiceImpl(
-      const gpu::GPUInfo& gpu_info,
-      std::unique_ptr<gpu::GpuWatchdogThread> watchdog,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
-      const gpu::GpuPreferences& gpu_preferences,
-      const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-      const base::Optional<gpu::GpuFeatureInfo>&
-          gpu_feature_info_for_hardware_gpu,
-      const gfx::GpuExtraInfo& gpu_extra_info,
-      gpu::VulkanImplementation* vulkan_implementation,
-      base::OnceCallback<void(base::Optional<ExitCode>)> exit_callback);
+  GpuServiceImpl(const gpu::GPUInfo& gpu_info,
+                 std::unique_ptr<gpu::GpuWatchdogThread> watchdog,
+                 scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+                 const gpu::GpuFeatureInfo& gpu_feature_info,
+                 const gpu::GpuPreferences& gpu_preferences,
+                 const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+                 const base::Optional<gpu::GpuFeatureInfo>&
+                     gpu_feature_info_for_hardware_gpu,
+                 const gfx::GpuExtraInfo& gpu_extra_info,
+                 gpu::VulkanImplementation* vulkan_implementation,
+                 base::OnceCallback<void(ExitCode)> exit_callback);
 
   ~GpuServiceImpl() override;
 
@@ -200,7 +199,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void Crash() override;
   void Hang() override;
   void ThrowJavaException() override;
-  void Stop(StopCallback callback) override;
 
   // gpu::GpuChannelManagerDelegate:
   void RegisterDisplayContext(gpu::DisplayContext* display_context) override;
@@ -221,6 +219,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void StoreShaderToDisk(int client_id,
                          const std::string& key,
                          const std::string& shader) override;
+  // Attempts to atomically shut down the process but only if not running in
+  // host process. An error message will be logged.
   void MaybeExitOnContextLost() override;
   bool IsExiting() const override;
   gpu::Scheduler* GetGpuScheduler() override;
@@ -350,10 +350,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void GetPeakMemoryUsageOnMainThread(uint32_t sequence_num,
                                       GetPeakMemoryUsageCallback callback);
 
-  // Attempts to cleanly exit the process but only if not running in host
-  // process. If |for_context_loss| is true an error message will be logged.
-  void MaybeExit(bool for_context_loss);
-
   // Update overlay info and HDR status on the GPU process and send the updated
   // info back to the browser process if there is a change.
 #if defined(OS_WIN)
@@ -414,7 +410,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   base::WaitableEvent* shutdown_event_ = nullptr;
 
   // Callback that safely exits GPU process.
-  base::OnceCallback<void(base::Optional<ExitCode>)> exit_callback_;
+  base::OnceCallback<void(ExitCode)> exit_callback_;
   base::AtomicFlag is_exiting_;
 
   // Used for performing hardware decode acceleration of images. This is shared

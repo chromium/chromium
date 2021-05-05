@@ -222,8 +222,6 @@ class TestGpuService : public mojom::GpuService {
 
   void ThrowJavaException() override {}
 
-  void Stop(StopCallback callback) override {}
-
  private:
   base::OnceClosure connection_error_handler_;
 

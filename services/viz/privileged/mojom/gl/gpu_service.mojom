@@ -178,5 +178,4 @@ interface GpuService {
   Crash();
   Hang();
   ThrowJavaException();
-  Stop() => ();
 };

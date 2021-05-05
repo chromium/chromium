@@ -331,7 +331,7 @@ GpuServiceImpl::GpuServiceImpl(
         gpu_feature_info_for_hardware_gpu,
     const gfx::GpuExtraInfo& gpu_extra_info,
     gpu::VulkanImplementation* vulkan_implementation,
-    base::OnceCallback<void(base::Optional<ExitCode>)> exit_callback)
+    base::OnceCallback<void(ExitCode)> exit_callback)
     : main_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_runner_(std::move(io_runner)),
       watchdog_thread_(std::move(watchdog_thread)),
@@ -912,7 +912,19 @@ void GpuServiceImpl::StoreShaderToDisk(int client_id,
 }
 
 void GpuServiceImpl::MaybeExitOnContextLost() {
-  MaybeExit(true);
+  DCHECK(main_runner_->BelongsToCurrentThread());
+
+  // We can't restart the GPU process when running in the host process.
+  if (in_host_process())
+    return;
+
+  if (IsExiting() || !exit_callback_)
+    return;
+
+  LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
+                "from errors. GPU process will restart shortly.";
+  is_exiting_.Set();
+  std::move(exit_callback_).Run(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST);
 }
 
 bool GpuServiceImpl::IsExiting() const {
@@ -1180,13 +1192,6 @@ void GpuServiceImpl::ThrowJavaException() {
 #endif
 }
 
-void GpuServiceImpl::Stop(StopCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&GpuServiceImpl::MaybeExit, weak_ptr_, false),
-      std::move(callback));
-}
-
 void GpuServiceImpl::StartPeakMemoryMonitorOnMainThread(uint32_t sequence_num) {
   gpu_channel_manager_->StartPeakMemoryMonitor(sequence_num);
 }
@@ -1200,31 +1205,6 @@ void GpuServiceImpl::GetPeakMemoryUsageOnMainThread(
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), peak_memory,
                                       std::move(allocation_per_source)));
-}
-
-void GpuServiceImpl::MaybeExit(bool for_context_loss) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-
-  // We can't restart the GPU process when running in the host process.
-  if (in_host_process())
-    return;
-
-  if (IsExiting() || !exit_callback_)
-    return;
-
-  if (for_context_loss) {
-    LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
-                  "from errors. GPU process will restart shortly.";
-  }
-  is_exiting_.Set();
-  // For the unsandboxed GPU info collection process used for info collection,
-  // if we exit immediately, then the reply message could be lost. That's why
-  // the |exit_callback_| takes the boolean argument.
-  if (for_context_loss)
-    std::move(exit_callback_)
-        .Run(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST);
-  else
-    std::move(exit_callback_).Run(base::nullopt);
 }
 
 gpu::Scheduler* GpuServiceImpl::GetGpuScheduler() {
