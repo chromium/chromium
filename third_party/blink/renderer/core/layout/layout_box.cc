@@ -3461,8 +3461,9 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // If the display-lock blocked child layout, then we don't clear child needs
   // layout bits. However, we can still use the cached result, since we will
   // re-layout when unlocking.
+  bool is_blocked_by_display_lock = ChildLayoutBlockedByDisplayLock();
   bool child_needs_layout_unless_locked =
-      !ChildLayoutBlockedByDisplayLock() &&
+      !is_blocked_by_display_lock &&
       (PosChildNeedsLayout() || NormalChildNeedsLayout());
 
   const NGPhysicalBoxFragment& physical_fragment =
@@ -3636,9 +3637,9 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
 
   // For example, for elements with a transform change we can re-use the cached
   // result but we still need to recalculate the layout overflow.
-  if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
-      use_layout_cache_slot && NeedsLayoutOverflowRecalc() &&
-      !ChildLayoutBlockedByDisplayLock()) {
+  if (use_layout_cache_slot && !is_blocked_by_display_lock &&
+      NeedsLayoutOverflowRecalc() &&
+      RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled()) {
 #if DCHECK_IS_ON()
     const NGLayoutResult* cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
