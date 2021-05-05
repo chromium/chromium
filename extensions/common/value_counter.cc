@@ -33,7 +33,7 @@ ValueCounter::~ValueCounter() {
 
 bool ValueCounter::Add(const base::Value& value) {
   for (auto& entry : entries_) {
-    if (entry.value.Equals(&value)) {
+    if (entry.value == value) {
       ++entry.count;
       return false;
     }
@@ -44,7 +44,7 @@ bool ValueCounter::Add(const base::Value& value) {
 
 bool ValueCounter::Remove(const base::Value& value) {
   for (auto it = entries_.begin(); it != entries_.end(); ++it) {
-    if (it->value.Equals(&value)) {
+    if (it->value == value) {
       if (--it->count == 0) {
         std::swap(*it, entries_.back());
         entries_.pop_back();

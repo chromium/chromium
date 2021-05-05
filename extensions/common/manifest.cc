@@ -384,7 +384,7 @@ bool Manifest::GetPathOfType(const std::string& path,
 }
 
 bool Manifest::EqualsForTesting(const Manifest& other) const {
-  return value_->Equals(other.value()) && location_ == other.location_ &&
+  return *value_ == *other.value() && location_ == other.location_ &&
          extension_id_ == other.extension_id_;
 }
 

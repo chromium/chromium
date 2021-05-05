@@ -24,7 +24,7 @@ bool ManifestPermission::Contains(const ManifestPermission* rhs) const {
 }
 
 bool ManifestPermission::Equal(const ManifestPermission* rhs) const {
-  return ToValue()->Equals(rhs->ToValue().get());
+  return *ToValue() == *rhs->ToValue();
 }
 
 void ManifestPermission::Write(base::Pickle* m) const {
