@@ -180,6 +180,41 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    public void testReplaceWithoutReloading(boolean useMojo) throws Throwable {
+        mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
+            public void method() {
+                mTestController.setStringValue("object 1");
+            }
+        }, "testObject");
+        mActivityTestRule.executeJavaScript("testObject.method()");
+        Assert.assertEquals("object 1", mTestController.waitForStringValue());
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                mActivityTestRule.getJavascriptInjector(useMojo).addPossiblyUnsafeInterface(
+                        new Object() {
+                            @JavascriptInterface
+                            public void method() {
+                                mTestController.setStringValue("object 2");
+                            }
+                        },
+                        "testObject", null);
+            }
+        });
+        mActivityTestRule.executeJavaScript("testObject.method()");
+        // should still return object 1 as the page hasn't reloaded
+        Assert.assertEquals("object 1", mTestController.waitForStringValue());
+        mActivityTestRule.synchronousPageReload();
+        mActivityTestRule.executeJavaScript("testObject.method()");
+        Assert.assertEquals("object 2", mTestController.waitForStringValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testRemovalNotReflectedUntilReload(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
