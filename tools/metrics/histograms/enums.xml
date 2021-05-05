@@ -34175,6 +34175,9 @@ Called by update_permissions_policy_enum.py.-->
   <summary>Stages of the first run experience.</summary>
   <int value="0" label="Start First Run"/>
   <int value="1" label="Complete First Run"/>
+  <int value="2" label="Show sync screen"/>
+  <int value="3" label="Close sync screen with sync"/>
+  <int value="4" label="Close sync screen without sync"/>
 </enum>
 
 <enum name="FirstUserActionType">

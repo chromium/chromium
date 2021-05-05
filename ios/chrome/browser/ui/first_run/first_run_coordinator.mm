@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
@@ -83,10 +84,10 @@
 #pragma mark - Helper
 
 // Presents the screen of certain |type|.
-- (void)presentScreen:(NSNumber*)type {
+- (void)presentScreen:(FirstRunScreenType)type {
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
-  if ([type isEqualToNumber:@(kFirstRunCompleted)]) {
+  if (type == kFirstRunCompleted) {
     [self.delegate willFinishPresentingScreens];
     return;
   }
@@ -95,8 +96,9 @@
 }
 
 // Creates a screen coordinator according to |type|.
-- (ChromeCoordinator*)createChildCoordinatorWithScreenType:(NSNumber*)type {
-  switch ([type integerValue]) {
+- (ChromeCoordinator*)createChildCoordinatorWithScreenType:
+    (FirstRunScreenType)type {
+  switch (type) {
     case kWelcomeAndConsent:
       return [[WelcomeScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -115,6 +117,9 @@
     case kDefaultBrowserPromo:
       // TODO (crbug.com/1189807): Create the default browser screen.
       return nil;
+    case kFirstRunCompleted:
+      NOTREACHED() << "Reaches kFirstRunCompleted unexpectedly.";
+      break;
   }
   return nil;
 }

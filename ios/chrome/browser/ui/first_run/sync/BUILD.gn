@@ -13,9 +13,17 @@ source_set("sync") {
   deps = [
     ":sync_ui",
     "//base:base",
+    "//components/consent_auditor",
+    "//components/unified_consent",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/public/provider/chrome/browser/signin",
   ]
   frameworks = [ "UIKit.framework" ]
 }

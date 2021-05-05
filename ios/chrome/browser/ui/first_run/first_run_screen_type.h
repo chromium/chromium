@@ -11,7 +11,6 @@ typedef NS_ENUM(NSInteger, FirstRunScreenType) {
   kSignIn,
   kSync,
   kDefaultBrowserPromo,
-  kLocation,
   // It isn't a screen, but a signal that no more screen should be
   // presented.
   kFirstRunCompleted,

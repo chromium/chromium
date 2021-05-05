@@ -81,8 +81,14 @@ enum FirstRunStage {
   kStart,
   // The first run experience has completed.
   kComplete,
+  // Sync screen is shown.
+  kSyncScreenStart,
+  // Sync screen is closed with sync.
+  kSyncScreenCompletionWithSync,
+  // Sync screen is closed without sync.
+  kSyncScreenCompletionWithoutSync,
   // Max value of the first run experience stages.
-  kMaxValue = kComplete,
+  kMaxValue = kSyncScreenCompletionWithoutSync,
 };
 
 }  // namespace first_run
