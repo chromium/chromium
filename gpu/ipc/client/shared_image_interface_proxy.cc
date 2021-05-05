@@ -171,7 +171,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   GpuChannelMsg_CreateGMBSharedImage_Params params;
   params.mailbox = mailbox;
   params.handle = gpu_memory_buffer->CloneHandle();
-  params.size = gpu_memory_buffer->GetSize();
+  params.size = gpu_memory_buffer->GetSizeOfPlane(plane);
   params.format = gpu_memory_buffer->GetFormat();
   params.plane = plane;
   params.color_space = color_space;

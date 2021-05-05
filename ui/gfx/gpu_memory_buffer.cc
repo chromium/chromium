@@ -65,6 +65,18 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   return handle;
 }
 
+Size GpuMemoryBuffer::GetSizeOfPlane(gfx::BufferPlane plane) const {
+  switch (plane) {
+    case gfx::BufferPlane::DEFAULT:
+    case gfx::BufferPlane::Y:
+      return GetSize();
+    case gfx::BufferPlane::UV:
+    case gfx::BufferPlane::U:
+    case gfx::BufferPlane::V:
+      return ScaleToFlooredSize(GetSize(), 0.5);
+  }
+}
+
 void GpuMemoryBuffer::SetColorSpace(const ColorSpace& color_space) {}
 
 void GpuMemoryBuffer::SetHDRMetadata(const HDRMetadata& hdr_metadata) {}

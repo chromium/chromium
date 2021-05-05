@@ -102,11 +102,14 @@ class GFX_EXPORT GpuMemoryBuffer {
   // after this has been called.
   virtual void Unmap() = 0;
 
-  // Returns the size for the buffer.
+  // Returns the size in pixels of the first plane of the buffer.
   virtual Size GetSize() const = 0;
 
   // Returns the format for the buffer.
   virtual BufferFormat GetFormat() const = 0;
+
+  // Returns the size in pixels of the specified plane.
+  Size GetSizeOfPlane(gfx::BufferPlane plane) const;
 
   // Fills the stride in bytes for each plane of the buffer. The stride of
   // plane K is stored at index K-1 of the |stride| array.
