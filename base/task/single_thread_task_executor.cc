@@ -38,8 +38,8 @@ SingleThreadTaskExecutor::SingleThreadTaskExecutor(
 
 SingleThreadTaskExecutor::~SingleThreadTaskExecutor() = default;
 
-scoped_refptr<SingleThreadTaskRunner> SingleThreadTaskExecutor::task_runner()
-    const {
+const scoped_refptr<SingleThreadTaskRunner>&
+SingleThreadTaskExecutor::task_runner() const {
   return default_task_queue_->task_runner();
 }
 

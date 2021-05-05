@@ -387,29 +387,41 @@ void RecursiveFuncWin(scoped_refptr<SingleThreadTaskRunner> task_runner,
 
 #endif  // defined(OS_WIN)
 
-void PostNTasksThenQuit(TimeTicks begin_ticks,
-                        TimeTicks last_post_ticks,
-                        int posts_remaining,
-                        OnceClosure on_done) {
+void Post128KTasksThenQuit(SingleThreadTaskRunner* executor_task_runner,
+                           TimeTicks begin_ticks,
+                           TimeTicks last_post_ticks,
+                           TimeDelta slowest_delay,
+                           OnceClosure on_done,
+                           int num_posts_done = 0) {
+  const int kNumTimes = 128000;
+
   // Tasks should be running on a decent heart beat. Some platforms/bots however
-  // have a hard time posting+running *all* tasks before test timeout, allow
-  // those platforms to pass anyways so long as they kept a decent heartbeat up
-  // to that point.
+  // have a hard time posting+running *all* tasks before test timeout, add
+  // detailed logging for diagnosis where this flakes.
   const auto now = TimeTicks::Now();
-  EXPECT_LT(now - last_post_ticks, TestTimeouts::tiny_timeout());
-  if (posts_remaining == 0 ||
-      now - begin_ticks >= TestTimeouts::action_max_timeout()) {
-    if (posts_remaining > 0) {
-      LOG(ERROR) << "Slow test environment, bailing out early with "
-                 << posts_remaining << " tasks to go.";
-    }
+  const auto scheduling_delay = now - last_post_ticks;
+  if (scheduling_delay > slowest_delay)
+    slowest_delay = scheduling_delay;
+
+  if (num_posts_done == kNumTimes) {
+    std::move(on_done).Run();
+    return;
+  } else if (now - begin_ticks >= TestTimeouts::action_max_timeout()) {
+    ADD_FAILURE() << "Couldn't run all tasks."
+                  << "\nNumber of tasks remaining: "
+                  << kNumTimes - num_posts_done
+                  << "\nSlowest scheduling delay: " << slowest_delay
+                  << "\nAverage per task: "
+                  << (now - begin_ticks) / num_posts_done;
     std::move(on_done).Run();
     return;
   }
 
-  ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, BindOnce(&PostNTasksThenQuit, begin_ticks, now,
-                          posts_remaining - 1, std::move(on_done)));
+  executor_task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(&Post128KTasksThenQuit, Unretained(executor_task_runner),
+               begin_ticks, now, slowest_delay, std::move(on_done),
+               num_posts_done + 1));
 }
 
 #if defined(OS_WIN)
@@ -1278,19 +1290,20 @@ TEST_P(SingleThreadTaskExecutorTypedTest, RunLoopQuitOrderAfter) {
 // On Linux, the pipe buffer size is 64KiB by default. The bug caused one byte
 // accumulated in the pipe per two posts, so we should repeat 128K times to
 // reproduce the bug.
-//
-// Some platforms+bots are flakily unable to run that many tasks before test
-// timeout (see crbug.com/810077 and crbug.com/1188497). This test will bail
-// early and pass in those situations as long as it was able to keep a decent
-// heartbeat between tasks.
-TEST_P(SingleThreadTaskExecutorTypedTest, RecursivePostsDoNotFloodPipe) {
-  const int kNumTimes = 1 << 17;
+#if defined(OS_CHROMEOS)
+// TODO(crbug.com/1188497): This test is unreasonably slow on CrOS and flakily
+// times out (100x slower than other platforms which take < 1s to complete
+// it).
+#define MAYBE_RecursivePostsDoNotFloodPipe DISABLED_RecursivePostsDoNotFloodPipe
+#else
+#define MAYBE_RecursivePostsDoNotFloodPipe RecursivePostsDoNotFloodPipe
+#endif
+TEST_P(SingleThreadTaskExecutorTypedTest, MAYBE_RecursivePostsDoNotFloodPipe) {
   SingleThreadTaskExecutor executor(GetParam());
   const auto begin_ticks = TimeTicks::Now();
   RunLoop run_loop;
-  executor.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&PostNTasksThenQuit, begin_ticks, begin_ticks,
-                          kNumTimes - 1, run_loop.QuitClosure()));
+  Post128KTasksThenQuit(executor.task_runner().get(), begin_ticks, begin_ticks,
+                        TimeDelta(), run_loop.QuitClosure());
   run_loop.Run();
 }
 

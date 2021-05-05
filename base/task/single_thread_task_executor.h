@@ -40,7 +40,7 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   // if called.
   ~SingleThreadTaskExecutor();
 
-  scoped_refptr<SingleThreadTaskRunner> task_runner() const;
+  const scoped_refptr<SingleThreadTaskRunner>& task_runner() const;
 
   MessagePumpType type() const { return type_; }
 
