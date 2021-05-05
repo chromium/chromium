@@ -47,6 +47,7 @@ namespace {
 using mojom::DragOperation;
 using ::testing::_;
 using ::testing::Mock;
+using ::testing::Values;
 
 constexpr char kSampleTextForDragAndDrop[] =
     "This is a sample text for drag-and-drop.";
@@ -753,10 +754,12 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandDataDragControllerTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

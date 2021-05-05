@@ -31,12 +31,6 @@ struct wl_display;
 struct wl_event_loop;
 struct wl_resource;
 
-// TODO(crbug.com/1204670): Remove once all tests switch to wl::ServerConfig.
-namespace ui {
-const uint32_t kXdgShellV6 = 6;
-const uint32_t kXdgShellStable = 7;
-}  // namespace ui
-
 namespace wl {
 
 struct DisplayDeleter {
@@ -48,14 +42,6 @@ enum class ShellVersion { kV6, kStable };
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 
 struct ServerConfig {
-  // TODO(crbug.com/1204670): Remove this implicit constructor once all tests
-  // switch to ServerConfig parameter.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  ServerConfig(uint32_t xdg_shell_version)
-      : shell_version(xdg_shell_version == ui::kXdgShellV6
-                          ? ShellVersion::kV6
-                          : ShellVersion::kStable) {}
-
   ShellVersion shell_version = ShellVersion::kStable;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;

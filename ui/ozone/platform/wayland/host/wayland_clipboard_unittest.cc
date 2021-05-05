@@ -31,6 +31,7 @@
 
 using testing::_;
 using testing::Mock;
+using testing::Values;
 
 namespace ui {
 
@@ -253,10 +254,12 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandClipboardTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandClipboardTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

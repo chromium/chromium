@@ -16,15 +16,11 @@
 
 namespace ui {
 
-namespace {
-constexpr uint32_t kXdgVersionStable = 7;
-}
-
 TEST(WaylandConnectionTest, Ping) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
-  ASSERT_TRUE(server.Start(kXdgVersionStable));
+  ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
   connection.event_source()->UseSingleThreadedPollingForTesting();

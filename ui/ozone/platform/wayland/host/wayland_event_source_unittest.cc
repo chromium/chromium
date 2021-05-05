@@ -13,6 +13,7 @@
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
 using ::testing::_;
+using ::testing::Values;
 
 namespace ui {
 
@@ -110,9 +111,11 @@ TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandEventSourceTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandEventSourceTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

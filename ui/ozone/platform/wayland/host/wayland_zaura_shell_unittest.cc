@@ -17,7 +17,6 @@ namespace ui {
 
 namespace {
 
-constexpr uint32_t kXdgVersionStable = 7;
 constexpr uint32_t kZAuraShellVersion = 14;
 
 }  // namespace
@@ -26,7 +25,7 @@ TEST(WaylandZauraShellTest, Foo) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
-  ASSERT_TRUE(server.Start(kXdgVersionStable));
+  ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
   wl::GlobalObject zaura_shell_obj(
       &zaura_shell_interface, nullptr /* implementation */, kZAuraShellVersion);
   zaura_shell_obj.Initialize(server.display());

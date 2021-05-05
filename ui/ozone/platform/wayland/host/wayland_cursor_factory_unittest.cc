@@ -15,6 +15,8 @@
 
 namespace ui {
 
+using ::testing::Values;
+
 namespace {
 
 // Overrides WaylandCursorFactory::GetCursorFromTheme() to pretend that cursors
@@ -128,10 +130,12 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandCursorFactoryTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandCursorFactoryTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

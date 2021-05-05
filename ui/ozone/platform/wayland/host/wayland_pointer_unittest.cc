@@ -29,6 +29,7 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::Ne;
 using ::testing::SaveArg;
+using ::testing::Values;
 
 namespace ui {
 
@@ -540,9 +541,11 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandPointerTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandPointerTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

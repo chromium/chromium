@@ -12,6 +12,8 @@
 
 namespace ui {
 
+using ::testing::Values;
+
 namespace {
 
 constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
@@ -230,10 +232,12 @@ TEST_P(WaylandWindowManagerTest, GetAllWindows) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowManagerTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandWindowManagerTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui
