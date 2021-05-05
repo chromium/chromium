@@ -31,6 +31,9 @@ class UserImageSyncObserver;
 // There is an instance of this class for each user in the system.
 class UserImageManager {
  public:
+  // Converts `image_index` to UMA histogram value.
+  static int ImageIndexToHistogramIndex(int image_index);
+
   // Registers user image manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

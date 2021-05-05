@@ -50,32 +50,16 @@ namespace ash {
 
 namespace {
 
-// Delay betweeen user login and attempt to update user's profile data.
+// Delay between user login and attempt to update user's profile data.
 const int kProfileDataDownloadDelaySec = 10;
 
-// Interval betweeen retries to update user's profile data.
+// Interval between retries to update user's profile data.
 const int kProfileDataDownloadRetryIntervalSec = 300;
 
-// Delay betweeen subsequent profile refresh attempts (24 hrs).
+// Delay between subsequent profile refresh attempts (24 hrs).
 const int kProfileRefreshIntervalSec = 24 * 3600;
 
 static bool g_ignore_profile_data_download_delay_ = false;
-
-// Converts `image_index` to UMA histogram value.
-int ImageIndexToHistogramIndex(int image_index) {
-  switch (image_index) {
-    case user_manager::User::USER_IMAGE_EXTERNAL:
-      return default_user_image::kHistogramImageExternal;
-    case user_manager::User::USER_IMAGE_PROFILE:
-      return default_user_image::kHistogramImageFromProfile;
-    default:
-      // Create a gap in histogram values for
-      // [kHistogramImageExternal and kHistogramImageFromProfile] block to fit.
-      if (image_index < default_user_image::kHistogramImageExternal)
-        return image_index;
-      return image_index + default_user_image::kHistogramSpecialImagesCount;
-  }
-}
 
 // Saves `image_bytes` at `image_path`, and delete the old file at
 // `old_image_path` if needed.
@@ -129,6 +113,22 @@ const char UserImageManagerImpl::kUserImageProperties[] = "user_image_info";
 const char UserImageManagerImpl::kImagePathNodeName[] = "path";
 const char UserImageManagerImpl::kImageIndexNodeName[] = "index";
 const char UserImageManagerImpl::kImageURLNodeName[] = "url";
+
+// static
+int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
+  switch (image_index) {
+    case user_manager::User::USER_IMAGE_EXTERNAL:
+      return default_user_image::kHistogramImageExternal;
+    case user_manager::User::USER_IMAGE_PROFILE:
+      return default_user_image::kHistogramImageFromProfile;
+    default:
+      // Create a gap in histogram values for
+      // [kHistogramImageExternal and kHistogramImageFromProfile] block to fit.
+      if (image_index < default_user_image::kHistogramImageExternal)
+        return image_index;
+      return image_index + default_user_image::kHistogramSpecialImagesCount;
+  }
+}
 
 // static
 void UserImageManager::RegisterPrefs(PrefRegistrySimple* registry) {
