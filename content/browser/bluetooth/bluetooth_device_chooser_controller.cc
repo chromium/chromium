@@ -30,6 +30,7 @@
 
 using device::BluetoothUUID;
 using UUIDSet = device::BluetoothDevice::UUIDSet;
+using ManufacturerDataMap = device::BluetoothDevice::ManufacturerDataMap;
 using blink::mojom::WebBluetoothResult;
 
 namespace {
@@ -88,6 +89,10 @@ int64_t BluetoothDeviceChooserController::scan_duration_ = 60;
 
 namespace {
 
+#if DCHECK_IS_ON()
+void LogRequestDeviceOptions(
+    const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options) {}
+#else
 void LogRequestDeviceOptions(
     const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options) {
   DVLOG(1) << "requestDevice called with the following filters: ";
@@ -106,17 +111,37 @@ void LogRequestDeviceOptions(
       DVLOG(1) << "Name Prefix: " << filter->name_prefix.value();
 
     if (filter->services) {
-      DVLOG(1) << "Services: ";
-      DVLOG(1) << "\t[";
+      base::Value services_list(base::Value::Type::LIST);
       for (const auto& service : filter->services.value())
-        DVLOG(1) << "\t\t" << service.canonical_value();
-      DVLOG(1) << "\t]";
+        services_list.Append(service.canonical_value());
+      DVLOG(1) << "Services: " << services_list;
+    }
+
+    if (filter->manufacturer_data) {
+      base::Value manufacturer_data_list(base::Value::Type::LIST);
+      for (const auto& manufacturer_data : filter->manufacturer_data.value()) {
+        base::Value filter_data_list(base::Value::Type::LIST);
+        base::Value filter_mask_list(base::Value::Type::LIST);
+        for (const auto& data_filter : manufacturer_data.second) {
+          filter_data_list.Append(base::Value(data_filter->data));
+          filter_mask_list.Append(base::Value(data_filter->mask));
+        }
+        base::Value data_filter_dict(base::Value::Type::DICTIONARY);
+        data_filter_dict.SetKey("Company Identifier",
+                                base::Value(manufacturer_data.first->id));
+        data_filter_dict.SetKey("Data", std::move(filter_data_list));
+        data_filter_dict.SetKey("Mask", std::move(filter_mask_list));
+        manufacturer_data_list.Append(std::move(data_filter_dict));
+      }
+      DVLOG(1) << "Manufacturer Data: " << manufacturer_data_list;
     }
   }
 }
+#endif
 
 bool MatchesFilter(const std::string* device_name,
                    const UUIDSet& device_uuids,
+                   const ManufacturerDataMap& device_manufacturer_data,
                    const blink::mojom::WebBluetoothLeScanFilterPtr& filter) {
   if (filter->name) {
     if (device_name == nullptr)
@@ -141,17 +166,41 @@ bool MatchesFilter(const std::string* device_name,
     }
   }
 
+  if (filter->manufacturer_data) {
+    for (const auto& filter_data : filter->manufacturer_data.value()) {
+      // Check the company identifier.
+      auto it = device_manufacturer_data.find(filter_data.first->id);
+      if (it == device_manufacturer_data.end())
+        return false;
+      // Check data filter size is less than device manufacturer data size.
+      const auto& device_data = it->second;
+      if (filter_data.second.size() > device_data.size())
+        return false;
+      // For each bit in mask, check the corresponding bit in device
+      // manufacturer data is equal to the corresponding bit in expected data.
+      size_t i = 0;
+      for (const auto& filter_byte : filter_data.second) {
+        if ((filter_byte->mask & filter_byte->data) !=
+            (filter_byte->mask & device_data.at(i++))) {
+          return false;
+        }
+      }
+    }
+  }
+
   return true;
 }
 
 bool MatchesFilters(
     const std::string* device_name,
     const UUIDSet& device_uuids,
+    const ManufacturerDataMap& device_manufacturer_data,
     const base::Optional<
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
   DCHECK(HasValidFilter(filters));
   for (const auto& filter : filters.value()) {
-    if (MatchesFilter(device_name, device_uuids, filter)) {
+    if (MatchesFilter(device_name, device_uuids, device_manufacturer_data,
+                      filter)) {
       return true;
     }
   }
@@ -292,7 +341,8 @@ void BluetoothDeviceChooserController::AddFilteredDevice(
   if (chooser_.get()) {
     if (options_->accept_all_devices ||
         MatchesFilters(device_name ? &device_name.value() : nullptr,
-                       device.GetUUIDs(), options_->filters)) {
+                       device.GetUUIDs(), device.GetManufacturerData(),
+                       options_->filters)) {
       base::Optional<int8_t> rssi = device.GetInquiryRSSI();
       std::string device_id = device.GetAddress();
       device_ids_.insert(device_id);

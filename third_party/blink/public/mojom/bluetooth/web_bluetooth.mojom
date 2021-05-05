@@ -101,10 +101,34 @@ enum WebBluetoothResult {
   SCANNING_BLOCKED,
 };
 
+// To match a filter, a Bluetooth device must:
+// - support all the UUIDs in the services list if that member is present,
+// - have a name equal to name if that member is present,
+// - have a name starting with name_prefix if that member is present,
+// - advertise manufacturer data matching all of the values in
+//   manufacturer_data if that member is present.
 struct WebBluetoothLeScanFilter {
   array<bluetooth.mojom.UUID>? services;
   string? name;
   string? name_prefix;
+  map<WebBluetoothCompany, array<WebBluetoothDataFilter>>? manufacturer_data;
+};
+
+// A Bluetooth company identifier is a unique number assigned by the Bluetooth
+// SIG to member companies. This struct is currently required in
+// WebBluetoothLeScanFilter because WTF::HashMap doesn't allow integer keys of 0
+// and -1, 0xffff being -1 in a uint16t. See crbug.com/1204960
+struct WebBluetoothCompany {
+  uint16 id;
+};
+
+// This struct is used as elements of an array to filter Bluetooth device data
+// such as manufacturer data and service data. Bluetooth device data matches
+// if for each bit in mask, the corresponding bit in Bluetooth device data is
+// equal to the corresponding bit in |data|.
+struct WebBluetoothDataFilter {
+  uint8 data;
+  uint8 mask;
 };
 
 struct WebBluetoothRequestDeviceOptions {

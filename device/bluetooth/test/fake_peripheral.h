@@ -42,6 +42,10 @@ class FakePeripheral : public device::BluetoothDevice {
   // BluetoothDevice::GetUUIDs().
   void SetServiceUUIDs(UUIDSet service_uuids);
 
+  // Updates the peripheral's Manufacturer Data that are returned by
+  // BluetoothDevice::GetManufacturerData().
+  void SetManufacturerData(ManufacturerDataMap manufacturer_data);
+
   // If |code| is kHCISuccess calls a pending success callback for
   // CreateGattConnection. Otherwise calls a pending error callback
   // with the ConnectErrorCode corresponding to |code|.

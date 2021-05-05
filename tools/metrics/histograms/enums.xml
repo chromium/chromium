@@ -32378,6 +32378,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3893" label="HandwritingRecognitionQuerySupport"/>
   <int value="3894" label="HandwritingRecognitionStartDrawing"/>
   <int value="3895" label="HandwritingRecognitionGetPrediction"/>
+  <int value="3896" label="WebBluetoothManufacturerDataFilter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

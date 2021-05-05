@@ -555,6 +555,9 @@ class WebTestBluetoothAdapterProvider {
   //   - Generic Access (0x1800)
   //   - Glucose UUID (0x1808)
   //   - Tx Power (0x1804)
+  // Manufacturer Data added:
+  //   - 0x0001 : { 1, 2 }
+  //   - 0x0002 : { 3, 4 }
   // Services added:
   // None.
   static std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>

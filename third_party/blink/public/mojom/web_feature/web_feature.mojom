@@ -3208,6 +3208,7 @@ enum WebFeature {
   kHandwritingRecognitionQuerySupport = 3893,
   kHandwritingRecognitionStartDrawing = 3894,
   kHandwritingRecognitionGetPrediction = 3895,
+  kWebBluetoothManufacturerDataFilter = 3896,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

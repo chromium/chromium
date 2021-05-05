@@ -1373,7 +1373,11 @@ WebTestBluetoothAdapterProvider::GetGlucoseDevice(
   uuids.push_back(BluetoothUUID(kGlucoseServiceUUID));
   uuids.push_back(BluetoothUUID(kTxPowerServiceUUID));
 
-  return GetBaseDevice(adapter, "Glucose Device", uuids, makeMACAddress(0x2));
+  auto device =
+      GetBaseDevice(adapter, "Glucose Device", uuids, makeMACAddress(0x2));
+  device->SetManufacturerData({{0x0001, {1, 2}}, {0x0002, {3, 4}}});
+
+  return device;
 }
 
 // static

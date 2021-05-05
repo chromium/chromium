@@ -17,7 +17,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_le_scan_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_manufacturer_data_filter_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_request_device_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -36,7 +38,9 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -71,8 +75,8 @@ static void CanonicalizeFilter(
     const BluetoothLEScanFilterInit* filter,
     mojom::blink::WebBluetoothLeScanFilterPtr& canonicalized_filter,
     ExceptionState& exception_state) {
-  if (!(filter->hasServices() || filter->hasName() ||
-        filter->hasNamePrefix())) {
+  if (!(filter->hasServices() || filter->hasName() || filter->hasNamePrefix() ||
+        filter->hasManufacturerData())) {
     exception_state.ThrowTypeError(
         "A filter must restrict the devices in some way.");
     return;
@@ -111,16 +115,78 @@ static void CanonicalizeFilter(
     }
     if (filter->namePrefix().length() == 0) {
       exception_state.ThrowTypeError(
-          "'namePrefix', if present, must me non-empty.");
+          "'namePrefix', if present, must be non-empty.");
       return;
     }
     canonicalized_filter->name_prefix = filter->namePrefix();
+  }
+
+  if (filter->hasManufacturerData()) {
+    if (filter->manufacturerData().size() == 0) {
+      exception_state.ThrowTypeError(
+          "'manufacturerData', if present, must be non-empty.");
+      return;
+    }
+    canonicalized_filter->manufacturer_data.emplace();
+    for (const auto& manufacturer_data : filter->manufacturerData()) {
+      DOMArrayPiece mask_buffer = manufacturer_data->mask();
+      DOMArrayPiece data_prefix_buffer = manufacturer_data->dataPrefix();
+      if (manufacturer_data->hasMask()) {
+        if (mask_buffer.IsDetached()) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "'mask' value buffer has been detached.");
+          return;
+        }
+
+        if (!manufacturer_data->hasDataPrefix()) {
+          exception_state.ThrowTypeError(
+              "'dataPrefix' must be non-empty when 'mask' is present.");
+          return;
+        }
+
+        if (data_prefix_buffer.ByteLength() != mask_buffer.ByteLength()) {
+          exception_state.ThrowTypeError(
+              "'mask' size must be equal to 'dataPrefix' size.");
+          return;
+        }
+      }
+
+      Vector<mojom::blink::WebBluetoothDataFilterPtr> data_filters_vector;
+      if (manufacturer_data->hasDataPrefix()) {
+        if (data_prefix_buffer.IsDetached()) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "'dataPrefix' value buffer has been detached.");
+          return;
+        }
+
+        // Iterate by index here since we're iterating through two arrays.
+        for (wtf_size_t i = 0; i < data_prefix_buffer.ByteLength(); ++i) {
+          uint8_t data = data_prefix_buffer.Bytes()[i];
+          uint8_t mask =
+              manufacturer_data->hasMask() ? mask_buffer.Bytes()[i] : 0xff;
+          data_filters_vector.push_back(
+              mojom::blink::WebBluetoothDataFilter::New(data, mask));
+        }
+      }
+
+      auto company = mojom::blink::WebBluetoothCompany::New();
+      company->id = manufacturer_data->companyIdentifier();
+      auto result = canonicalized_filter->manufacturer_data->insert(
+          std::move(company), std::move(data_filters_vector));
+      if (!result.is_new_entry) {
+        exception_state.ThrowTypeError("'companyIdentifier' must be unique.");
+        return;
+      }
+    }
   }
 }
 
 static void ConvertRequestDeviceOptions(
     const RequestDeviceOptions* options,
     mojom::blink::WebBluetoothRequestDeviceOptionsPtr& result,
+    ExecutionContext* execution_context,
     ExceptionState& exception_state) {
   if (!(options->hasFilters() ^ options->acceptAllDevices())) {
     exception_state.ThrowTypeError(
@@ -147,6 +213,11 @@ static void ConvertRequestDeviceOptions(
 
       if (exception_state.HadException())
         return;
+
+      if (canonicalized_filter->manufacturer_data) {
+        UseCounter::Count(execution_context,
+                          WebFeature::kWebBluetoothManufacturerDataFilter);
+      }
 
       result->filters->push_back(std::move(canonicalized_filter));
     }
@@ -275,7 +346,8 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
   // In order to convert the arguments from service names and aliases to just
   // UUIDs, do the following substeps:
   auto device_options = mojom::blink::WebBluetoothRequestDeviceOptions::New();
-  ConvertRequestDeviceOptions(options, device_options, exception_state);
+  ConvertRequestDeviceOptions(options, device_options, GetExecutionContext(),
+                              exception_state);
 
   if (exception_state.HadException())
     return ScriptPromise();

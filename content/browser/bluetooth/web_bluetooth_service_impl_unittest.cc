@@ -259,8 +259,8 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness {
     base::Optional<std::vector<device::BluetoothUUID>> services;
     services.emplace();
     services->push_back(device::BluetoothUUID(kBatteryServiceUUIDString));
-    return blink::mojom::WebBluetoothLeScanFilter::New(services, name,
-                                                       name_prefix);
+    return blink::mojom::WebBluetoothLeScanFilter::New(
+        services, name, name_prefix, /*manufacturer_data=*/base::nullopt);
   }
 
   blink::mojom::WebBluetoothResult RequestScanningStartAndSimulatePromptEvent(
@@ -272,7 +272,9 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness {
     client_impl->BindReceiver(client.InitWithNewEndpointAndPassReceiver());
     auto options = blink::mojom::WebBluetoothRequestLEScanOptions::New();
     options->filters.emplace();
-    auto filter_ptr = blink::mojom::WebBluetoothLeScanFilter::New(filter);
+    auto filter_ptr = blink::mojom::WebBluetoothLeScanFilter::New(
+        filter.services, filter.name, filter.name_prefix,
+        /*manufacturer_data=*/base::nullopt);
     options->filters->push_back(std::move(filter_ptr));
 
     // Use two RunLoops to guarantee the order of operations for this test.
@@ -351,8 +353,7 @@ TEST_F(WebBluetoothServiceImplTest, ClearStateDuringRequestScanningStart) {
 
   auto options = blink::mojom::WebBluetoothRequestLEScanOptions::New();
   options->filters.emplace();
-  auto filter_ptr = blink::mojom::WebBluetoothLeScanFilter::New(*filter);
-  options->filters->push_back(std::move(filter_ptr));
+  options->filters->push_back(std::move(filter));
 
   // Use two RunLoops to guarantee the order of operations for this test.
   // |callback_loop| guarantees that RequestScanningStartCallback has finished

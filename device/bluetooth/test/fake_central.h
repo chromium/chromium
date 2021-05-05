@@ -37,6 +37,7 @@ class FakeCentral final : public mojom::FakeCentral,
   void SimulatePreconnectedPeripheral(
       const std::string& address,
       const std::string& name,
+      const base::flat_map<uint16_t, std::vector<uint8_t>>& manufacturer_data,
       const std::vector<device::BluetoothUUID>& known_service_uuids,
       SimulatePreconnectedPeripheralCallback callback) override;
   void SimulateAdvertisementReceived(

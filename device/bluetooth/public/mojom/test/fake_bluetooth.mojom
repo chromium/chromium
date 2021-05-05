@@ -150,6 +150,7 @@ interface FakeCentral {
   // the connection alive.
   SimulatePreconnectedPeripheral(string address,
                                  string name,
+                                 map<uint16, array<uint8>> manufacturer_data,
                                  array<UUID> known_service_uuids) => ();
 
   // Simulates an advertisement packet described in |result| being received by

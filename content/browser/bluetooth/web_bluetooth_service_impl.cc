@@ -128,7 +128,13 @@ constexpr size_t kMaxLengthForDeviceName = 248;
 
 bool IsValidFilter(const blink::mojom::WebBluetoothLeScanFilterPtr& filter) {
   // At least one member needs to be present.
-  if (!filter->name && !filter->name_prefix && !filter->services)
+  if (!filter->name && !filter->name_prefix && !filter->services &&
+      !filter->manufacturer_data) {
+    return false;
+  }
+
+  // The |services| should not be empty.
+  if (filter->services && filter->services->empty())
     return false;
 
   // The renderer will never send a |name| or a |name_prefix| longer than
@@ -140,8 +146,12 @@ bool IsValidFilter(const blink::mojom::WebBluetoothLeScanFilterPtr& filter) {
       filter->name_prefix->size() > kMaxLengthForDeviceName)
     return false;
 
-  // The |name_prefix| should not be empty
+  // The |name_prefix| should not be empty.
   if (filter->name_prefix && filter->name_prefix->empty())
+    return false;
+
+  // The |manufacturer_data| should not be empty.
+  if (filter->manufacturer_data && filter->manufacturer_data->empty())
     return false;
 
   return true;

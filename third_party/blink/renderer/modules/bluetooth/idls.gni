@@ -19,8 +19,10 @@ modules_idl_files = [
 
 modules_dictionary_idl_files = [
   "bluetooth_advertising_event_init.idl",
+  "bluetooth_data_filter_init.idl",
   "bluetooth_le_scan_filter_init.idl",
   "bluetooth_le_scan_options.idl",
+  "bluetooth_manufacturer_data_filter_init.idl",
   "request_device_options.idl",
   "watch_advertisements_options.idl",
 ]

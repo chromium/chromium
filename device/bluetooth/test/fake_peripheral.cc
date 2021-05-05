@@ -54,6 +54,11 @@ void FakePeripheral::SetServiceUUIDs(UUIDSet service_uuids) {
   device_uuids_.ReplaceServiceUUIDs(gatt_services);
 }
 
+void FakePeripheral::SetManufacturerData(
+    ManufacturerDataMap manufacturer_data) {
+  manufacturer_data_ = std::move(manufacturer_data);
+}
+
 void FakePeripheral::SetNextGATTConnectionResponse(uint16_t code) {
   DCHECK(!next_connection_response_);
   DCHECK(create_gatt_connection_error_callbacks_.empty());

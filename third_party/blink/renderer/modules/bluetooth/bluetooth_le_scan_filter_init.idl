@@ -8,5 +8,6 @@ dictionary BluetoothLEScanFilterInit {
     sequence<BluetoothServiceUUID> services;
     DOMString name;
     DOMString namePrefix;
-    // TODO(crbug.com/707635): Support manufacturerData and serviceData filters.
+    [RuntimeEnabled=WebBluetoothManufacturerDataFilter] sequence<BluetoothManufacturerDataFilterInit> manufacturerData;
+    // TODO(crbug.com/707635): Support serviceData filter.
 };

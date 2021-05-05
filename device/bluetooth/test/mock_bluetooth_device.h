@@ -151,6 +151,12 @@ class MockBluetoothDevice : public BluetoothDevice {
 
   void AddUUID(const BluetoothUUID& uuid) { uuids_.insert(uuid); }
 
+  // Updates the device's Manufacturer Data that are returned by
+  // BluetoothDevice::GetManufacturerData().
+  void SetManufacturerData(ManufacturerDataMap manufacturer_data) {
+    manufacturer_data_ = std::move(manufacturer_data);
+  }
+
   // Functions to save and run callbacks from this device. Useful when
   // trying to run callbacks in response to other actions e.g. run a read
   // value callback in response to a connection request.
