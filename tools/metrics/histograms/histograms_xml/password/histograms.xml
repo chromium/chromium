@@ -520,54 +520,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationBackend.FetchSize" units="facets"
-    expires_after="M90">
-  <owner>engedy@chromium.org</owner>
+    expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     The number of facets for which affiliation information was requested in a
-    network fetch. Recorded for each network fetch.
+    network fetch. Recorded for each network fetch. Warning: this histogram was
+    expired from M90 to M92; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationBackend.FirstFetchDelay" units="ms"
-    expires_after="M90">
-  <owner>engedy@chromium.org</owner>
+    expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     The time elapsed between creation of the AffiliationBackend and the first
-    time it needed to issue a network fetch.
+    time it needed to issue a network fetch. Warning: this histogram was expired
+    from M90 to M92; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationBackend.SubsequentFetchDelay"
-    units="ms" expires_after="M90">
-  <owner>engedy@chromium.org</owner>
+    units="ms" expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     The elapsed time between subsequent network fetches. Recorded whenever the
     AffiliationBackend initiated a network fetch, regardless of success or
-    failure.
+    failure. Warning: this histogram was expired from M90 to M92; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchErrorCode"
-    enum="NetErrorCodes" expires_after="M90">
-  <owner>engedy@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     The network error code, as reported by the underlying URLFetcher. Recorded
     only for each network fetch that failed due to network/server errors.
+    Warning: this histogram was expired from M90 to M92; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchHttpResponseCode"
-    enum="HttpResponseCode" expires_after="M90">
-  <owner>engedy@chromium.org</owner>
+    enum="HttpResponseCode" expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     The HTTP response code, as reported by the underlying URLFetcher. Recorded
     only for each network fetch that failed due to network/server errors.
+    Warning: this histogram was expired from M90 to M92; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchResult"
-    enum="AffiliationFetchResult" expires_after="2021-09-19">
-  <owner>engedy@chromium.org</owner>
+    enum="AffiliationFetchResult" expires_after="M96">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Whether the network fetch succeeded, failed due to network/server errors, or
     contained malformed data. Recorded for each network fetch.
