@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -35,6 +36,21 @@ NSString* const kSendTabToSelfModalCancelButton =
 // Accessibility identifier of the Modal Cancel Button.
 NSString* const kSendTabToSelfModalSendButton =
     @"kSendTabToSelfModalSendButton";
+
+// Per histograms.xml this records whether the user has clicked the item when it
+// is shown.
+const char kClickResultHistogramName[] = "SendTabToSelf.ShareMenu.ClickResult";
+
+// TODO(crbug.com/970886): Move to a directory accessible on all platforms.
+// State of the send tab to self option in the context menu.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SendTabToSelfClickResult {
+  kShowItem = 0,
+  kClickItem = 1,
+  kShowDeviceList = 2,
+  kMaxValue = kShowDeviceList,
+};
 
 }  // namespace
 
@@ -206,6 +222,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Helpers
 
 - (void)sendTabWhenPressed:(UIButton*)sender {
+  base::UmaHistogramEnumeration(kClickResultHistogramName,
+                                SendTabToSelfClickResult::kClickItem);
   [self.delegate sendTabToTargetDeviceCacheGUID:self.selectedItem.cacheGuid
                                targetDeviceName:self.selectedItem.text];
   [self.delegate dismissViewControllerAnimated:YES completion:nil];
