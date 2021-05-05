@@ -83,6 +83,7 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 // value.
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
+constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
 
 // gtk_shell1 exposes request_focus() since version 3.  Below that, it is not
 // interesting for us, although it provides some shell integration that might be
@@ -578,7 +579,8 @@ void WaylandConnection::Global(void* data,
     connection->zaura_shell_ =
         std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
   } else if (!connection->wayland_zwp_pointer_gestures_ &&
-             (strcmp(interface, "zwp_pointer_gestures_v1") == 0)) {
+             strcmp(interface, "zwp_pointer_gestures_v1") == 0 &&
+             version >= kMinZwpPointerGesturesVersion) {
     auto zwp_pointer_gestures_v1 =
         wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, version);
     if (!zwp_pointer_gestures_v1) {
