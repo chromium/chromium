@@ -1443,7 +1443,7 @@
      ]
     ],
     "imperative-slot-api-crash.html": [
-     "ca444778e313aaab73d2ba5925b35e201ce110a1",
+     "b029689211f57f355974130fba51d1ea0cebbbcf",
      [
       null,
       {}
@@ -45893,6 +45893,19 @@
         [
          [
           "/css/compositing/mix-blend-mode/reference/mix-blend-mode-parent-with-text-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mix-blend-mode-rotated-clip.html": [
+       "9e915ac3cca49d127104e43a7fc50fa734eb9da1",
+       [
+        null,
+        [
+         [
+          "/css/compositing/mix-blend-mode/reference/mix-blend-mode-rotated-clip-ref.html",
           "=="
          ]
         ],
@@ -133108,32 +133121,6 @@
        {}
       ]
      ],
-     "3d-rendering-context-and-abspos.html": [
-      "c5eef46b5e800bcb411b2aed9c65534b8e3e1bc8",
-      [
-       null,
-       [
-        [
-         "/css/css-transforms/reference/green.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "3d-rendering-context-and-fixpos.html": [
-      "e763e8b703ca7582fb8756f00c5faff47c7db408",
-      [
-       null,
-       [
-        [
-         "/css/css-transforms/reference/green.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "3d-rendering-context-and-z-ordering-001.html": [
       "d07c59a5db229cd1ed1ee9a429ea7656cd18d3e5",
       [
@@ -148758,6 +148745,19 @@
        [
         [
          "/css/css-will-change/will-change-transform-add-content-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "will-change-transform-huge-offset-scrolled.html": [
+      "506ac67f0c876740ce8b4529de4abe18a194db05",
+      [
+       null,
+       [
+        [
+         "/css/css-will-change/will-change-transform-huge-offset-scrolled-ref.html",
          "=="
         ]
        ],
@@ -193256,6 +193256,10 @@
         "275105c5dbb03cf1b82eb058e856d53b129ecbe9",
         []
        ],
+       "mix-blend-mode-rotated-clip-ref.html": [
+        "377ed7c879fd8ec15ff660da617294bc119206e0",
+        []
+       ],
        "mix-blend-mode-script-ref.html": [
         "b18ed6cd3c83d98495ab7c46ccb90fc593c3ad49",
         []
@@ -223208,6 +223212,10 @@
      ],
      "will-change-transform-add-content-ref.html": [
       "edbeaa7b69290ea2514dc85e0e3f47bd8247735e",
+      []
+     ],
+     "will-change-transform-huge-offset-scrolled-ref.html": [
+      "c2af258e11161654a109d030596cfcca1f96a4d9",
       []
      ],
      "will-change-transform-image-ref.html": [
@@ -314513,7 +314521,7 @@
        ]
       ],
       "colspan-redistribution.html": [
-       "e440728e1004bc952a5725bc50206b316a8e7450",
+       "2797a1e6894ed28387af24669e238c743d53787a",
        [
         null,
         {}
@@ -431472,14 +431480,14 @@
      ]
     ],
     "imperative-slot-api-slotchange.html": [
-     "dd9ebbd3f849b3262a01139d6acfbbfc6ade87a6",
+     "1aa6a786760f81fdd37628fe6863717a4cfa7cb8",
      [
       null,
       {}
      ]
     ],
     "imperative-slot-api.html": [
-     "54b22632d11547f33b4d08ef9f51c8ef52380baf",
+     "8133d7e8ebe5e2c90ddd893ffd0b60552ba9c5f1",
      [
       null,
       {}
@@ -450824,7 +450832,7 @@
        ]
       ],
       "audioparam-setValueCurve-exceptions.html": [
-       "37062993f9dc8d90e2d418c842b30e20517bd21d",
+       "ed0c15fb9b3bdf5a9c79e48f97949b21ac05a952",
        [
         null,
         {}
@@ -451921,6 +451929,13 @@
         {}
        ]
       ],
+      "pannernode-setposition-throws.html": [
+       "2053411943719d647ac0f17ac71d0beb742102c9",
+       [
+        null,
+        {}
+       ]
+      ],
       "test-pannernode-automation.html": [
        "ce474b10b5122eaf40b8b6d1af874ad7ec9bff70",
        [
@@ -452458,7 +452473,7 @@
      ]
     ],
     "image-decoder.any.js": [
-     "2bbc6238d0a6bf8454cf693ae3369ee657f0fb48",
+     "1912e63f8c7c06786eb8b368796d65243de02f36",
      [
       "webcodecs/image-decoder.any.html",
       {
