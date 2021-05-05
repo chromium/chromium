@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/ios/browser/autofill_switches.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -57,7 +58,6 @@
 #include "components/ukm/ios/features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/chrome_switches.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #include "ios/chrome/browser/policy/policy_features.h"
@@ -474,7 +474,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCollectionsCardPresentationStyle)},
     {"ios-breadcrumbs", flag_descriptions::kLogBreadcrumbsName,
      flag_descriptions::kLogBreadcrumbsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kLogBreadcrumbs)},
+     FEATURE_VALUE_TYPE(breadcrumbs::kLogBreadcrumbs)},
     {"ios-synthetic-crash-reports",
      flag_descriptions::kSyntheticCrashReportsForUteName,
      flag_descriptions::kSyntheticCrashReportsForUteDescription,

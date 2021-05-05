@@ -22,6 +22,14 @@ source_set("core") {
   ]
 }
 
+source_set("feature_flags") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [

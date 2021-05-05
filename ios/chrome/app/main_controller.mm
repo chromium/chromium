@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/crl_set_remover.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -57,7 +58,6 @@
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
@@ -514,7 +514,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self initializeBrowserState:chromeBrowserState];
   self.appState.mainBrowserState = chromeBrowserState;
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     [self startLoggingBreadcrumbs];
   }
 
@@ -696,7 +696,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [_spotlightManager shutdown];
   _spotlightManager = nil;
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     if (self.appState.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
       breadcrumbs::BreadcrumbManagerKeyedService* service =
           BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(

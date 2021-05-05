@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -43,7 +44,6 @@
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
@@ -3004,7 +3004,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
       nullptr;
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     breadcrumbs::BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             mainBrowserState->GetOffTheRecordChromeBrowserState());
@@ -3030,7 +3030,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [sceneController incognitoBrowserStateCreated];
   }
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     breadcrumbs::BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             mainBrowserState->GetOffTheRecordChromeBrowserState());
@@ -3052,7 +3052,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     BreadcrumbManagerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
         ->SetLoggingEnabled(false);
   }

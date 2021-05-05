@@ -44,11 +44,11 @@ source_set("main") {
 
   deps = [
     "//base",
+    "//components/breadcrumbs/core:feature_flags",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/app_launcher",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report/breadcrumbs",
-    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/infobars/overlays/browser_agent:browser_agent_util",
     "//ios/chrome/browser/metrics:metrics_browser_agent",

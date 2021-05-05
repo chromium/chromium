@@ -24,6 +24,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -52,7 +53,6 @@
 #include "ios/chrome/browser/component_updater/ios_component_updater_configurator.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
@@ -173,7 +173,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
                                    GetSharedURLLoaderFactory());
   }
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>();
     application_breadcrumbs_logger_ =
         std::make_unique<ApplicationBreadcrumbsLogger>(

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #include "components/history/core/browser/top_sites.h"
@@ -26,7 +27,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -134,7 +134,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     FontSizeTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
