@@ -44,7 +44,7 @@ TestWaylandServerThread::~TestWaylandServerThread() {
   Stop();
 }
 
-bool TestWaylandServerThread::Start(uint32_t shell_version) {
+bool TestWaylandServerThread::Start(const ServerConfig& config) {
   display_.reset(wl_display_create());
   if (!display_)
     return false;
@@ -72,14 +72,12 @@ bool TestWaylandServerThread::Start(uint32_t shell_version) {
     return false;
   if (!seat_.Initialize(display_.get()))
     return false;
-  if (shell_version == 6) {
+  if (config.shell_version == ShellVersion::kV6) {
     if (!zxdg_shell_v6_.Initialize(display_.get()))
       return false;
-  } else if (shell_version == 7) {
+  } else {
     if (!xdg_shell_.Initialize(display_.get()))
       return false;
-  } else {
-    NOTREACHED() << "Unsupported shell version: " << shell_version;
   }
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;

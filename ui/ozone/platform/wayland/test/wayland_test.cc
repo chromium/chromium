@@ -133,7 +133,7 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
   // surfaces send other data like states, heights and widths.
   // Please note that toplevel surfaces may not exist if the surface was created
   // for the popup role.
-  if (GetParam() == kXdgShellV6) {
+  if (GetParam().shell_version == wl::ShellVersion::kV6) {
     if (xdg_surface->xdg_toplevel()) {
       zxdg_toplevel_v6_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                       width, height, states);

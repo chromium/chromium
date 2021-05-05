@@ -7,6 +7,7 @@
 
 #include <wayland-server-core.h>
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -30,10 +31,34 @@ struct wl_display;
 struct wl_event_loop;
 struct wl_resource;
 
+// TODO(crbug.com/1204670): Remove once all tests switch to wl::ServerConfig.
+namespace ui {
+const uint32_t kXdgShellV6 = 6;
+const uint32_t kXdgShellStable = 7;
+}  // namespace ui
+
 namespace wl {
 
 struct DisplayDeleter {
   void operator()(wl_display* display);
+};
+
+// Server configuration related enums and structs.
+enum class ShellVersion { kV6, kStable };
+enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
+
+struct ServerConfig {
+  // TODO(crbug.com/1204670): Remove this implicit constructor once all tests
+  // switch to ServerConfig parameter.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ServerConfig(uint32_t xdg_shell_version)
+      : shell_version(xdg_shell_version == ui::kXdgShellV6
+                          ? ShellVersion::kV6
+                          : ShellVersion::kStable) {}
+
+  ShellVersion shell_version = ShellVersion::kStable;
+  PrimarySelectionProtocol primary_selection_protocol =
+      PrimarySelectionProtocol::kNone;
 };
 
 class TestWaylandServerThread : public base::Thread,
@@ -51,7 +76,7 @@ class TestWaylandServerThread : public base::Thread,
   // wl_display_connect).
   // Instantiates an xdg_shell of version |shell_version|; versions 6 and 7
   // (stable) are supported.
-  bool Start(uint32_t shell_version);
+  bool Start(const ServerConfig& config);
 
   // Pauses the server thread when it becomes idle.
   void Pause();
