@@ -157,10 +157,11 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
 void NGGridBlockTrackCollection::SetSpecifiedTracks(
     const NGGridTrackList* explicit_tracks,
     const NGGridTrackList* implicit_tracks,
-    wtf_size_t start_offset,
-    wtf_size_t auto_repetitions) {
-  DCHECK_NE(nullptr, explicit_tracks);
-  DCHECK_NE(nullptr, implicit_tracks);
+    const wtf_size_t start_offset,
+    const wtf_size_t auto_repetitions,
+    const wtf_size_t named_grid_area_track_count) {
+  DCHECK(explicit_tracks && implicit_tracks);
+
   // The implicit track list should have only one repeater, if any.
   DCHECK_LE(implicit_tracks->RepeaterCount(), 1u);
   DCHECK_NE(kInvalidRangeIndex, auto_repetitions);
@@ -181,6 +182,21 @@ void NGGridBlockTrackCollection::SetSpecifiedTracks(
     start_lines_.push_back(current_repeater_start_line);
     current_repeater_start_line += repeater_track_count;
     end_lines_.push_back(current_repeater_start_line);
+  }
+
+  // There is a special scenario where named grid areas can be specified through
+  // the "grid-template" property with no specified explicit grid; such case is
+  // tricky because the computed value of "grid-template-columns" is expected to
+  // return the computed size of columns from the named grid areas.
+  //
+  // In order to guarantee that such columns are included, if the last repeater
+  // from the explicit grid ended before the end of the named grid area, add an
+  // extra repeater to fulfill the named grid area's span.
+  const wtf_size_t named_grid_area_end_line =
+      start_offset + named_grid_area_track_count;
+  if (current_repeater_start_line < named_grid_area_end_line) {
+    start_lines_.push_back(current_repeater_start_line);
+    end_lines_.push_back(named_grid_area_end_line);
   }
 }
 

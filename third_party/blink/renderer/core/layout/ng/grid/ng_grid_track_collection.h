@@ -107,8 +107,9 @@ class CORE_EXPORT NGGridBlockTrackCollection
   // Sets the specified, implicit tracks, along with a given auto repeat value.
   void SetSpecifiedTracks(const NGGridTrackList* explicit_tracks,
                           const NGGridTrackList* implicit_tracks,
-                          wtf_size_t start_offset,
-                          wtf_size_t auto_repetitions);
+                          const wtf_size_t start_offset,
+                          const wtf_size_t auto_repetitions,
+                          const wtf_size_t named_grid_area_track_count);
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |track_number|, and a range will end at |track_number| + |span_length|
   void EnsureTrackCoverage(wtf_size_t track_number, wtf_size_t span_length);

@@ -1353,10 +1353,15 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
             (track_direction == kForColumns)
                 ? grid_style.GridAutoColumns().NGTrackList()
                 : grid_style.GridAutoRows().NGTrackList();
+        const wtf_size_t named_grid_area_track_count =
+            (track_direction == kForColumns)
+                ? grid_style.NamedGridAreaColumnCount()
+                : grid_style.NamedGridAreaRowCount();
 
         track_collection->SetSpecifiedTracks(
             &template_track_list, &auto_track_list, start_offset,
-            grid_placement->AutoRepetitions(track_collection->Direction()));
+            grid_placement->AutoRepetitions(track_direction),
+            named_grid_area_track_count);
         EnsureTrackCoverageForGridItems(*grid_items, track_collection);
         track_collection->FinalizeRanges(start_offset);
       };

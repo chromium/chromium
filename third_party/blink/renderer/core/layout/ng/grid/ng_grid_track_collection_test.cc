@@ -194,7 +194,8 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollection) {
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 3);
+                                      /* auto_repeat_count */ 3,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.FinalizeRanges(/* start_offset */ 0);
 
   NGGridTrackCollectionBase::RangeRepeatIterator iterator(&block_collection,
@@ -217,7 +218,8 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionCollapsed) {
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 3);
+                                      /* auto_repeat_count */ 3,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.FinalizeRanges(/* start_offset */ 0);
 
   NGGridTrackCollectionBase::RangeRepeatIterator iterator(&block_collection,
@@ -246,7 +248,8 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 3);
+                                      /* auto_repeat_count */ 3,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.EnsureTrackCoverage(3, 40);
   block_collection.EnsureTrackCoverage(3, 40);
   block_collection.FinalizeRanges(/* start_offset */ 0);
@@ -342,7 +345,8 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 0);
+                                      /* auto_repeat_count */ 0,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.FinalizeRanges(/* start_offset */ 0);
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
       block_collection, /* is_content_box_size_defined */ false);
@@ -397,7 +401,8 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 5);
+                                      /* auto_repeat_count */ 5,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.EnsureTrackCoverage(2, 4);
   block_collection.EnsureTrackCoverage(12, 4);
   block_collection.EnsureTrackCoverage(17, 3);
@@ -514,7 +519,8 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 0);
+                                      /* auto_repeat_count */ 0,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.EnsureTrackCoverage(2, 13);
   block_collection.EnsureTrackCoverage(23, 2);
   block_collection.FinalizeRanges(/* start_offset */ 0);
@@ -590,7 +596,8 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridBlockTrackCollection block_collection;
   block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
                                       /* start_offset */ 0,
-                                      /* auto_repeat_count */ 0);
+                                      /* auto_repeat_count */ 0,
+                                      /* named_grid_area_track_count */ 0);
   block_collection.EnsureTrackCoverage(1, 2);
   block_collection.EnsureTrackCoverage(7, 4);
   block_collection.FinalizeRanges(/* start_offset */ 0);
