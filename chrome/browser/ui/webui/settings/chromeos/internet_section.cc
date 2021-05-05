@@ -760,6 +760,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_SUBTITLE},
       {"eSimRenameProfileInputCharacterCount",
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_CHARACTER_COUNT},
+      {"eSimRenameProfileDoneBtnA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_RENAME_DONE_BUTTON_A11Y_LABEL},
       {"eSimRenameProfileInputA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_INPUT_A11Y_LABEL},
       {"eSimRenameProfileDialogError",

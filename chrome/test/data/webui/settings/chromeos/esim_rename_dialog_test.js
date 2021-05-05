@@ -13,6 +13,7 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 suite('EsimRenameDialog', function() {
@@ -38,7 +39,11 @@ suite('EsimRenameDialog', function() {
     esimRenameDialog.networkState = response.result;
     document.body.appendChild(esimRenameDialog);
     assertTrue(!!esimRenameDialog);
-    Polymer.dom.flush();
+    await flushAsync();
+    assertEquals(
+        esimRenameDialog.$$('#eSimprofileName')
+            .shadowRoot.querySelector('input'),
+        getDeepActiveElement());
   }
 
   /**
@@ -91,7 +96,7 @@ suite('EsimRenameDialog', function() {
     eSimManagerRemote.addEuiccForTest(1);
     addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
     await flushAsync();
-    init();
+    await init();
 
     return flushAsync().then(async () => {
       const inputBox = esimRenameDialog.$$('#eSimprofileName');
@@ -149,7 +154,7 @@ suite('EsimRenameDialog', function() {
     eSimManagerRemote.addEuiccForTest(1);
     addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
     await flushAsync();
-    init();
+    await init();
 
     return flushAsync().then(async () => {
       const inputBox = esimRenameDialog.$$('#eSimprofileName');
@@ -222,7 +227,7 @@ suite('EsimRenameDialog', function() {
     eSimManagerRemote.addEuiccForTest(1);
     addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
     await flushAsync();
-    init();
+    await init();
 
     await flushAsync();
     const inputBox = esimRenameDialog.$$('#eSimprofileName');

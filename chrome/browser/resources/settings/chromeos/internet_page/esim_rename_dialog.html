@@ -79,6 +79,7 @@
                 spellcheck="false"
                 disabled="[[isRenameInProgress_]]"
                 invalid="[[isInputInvalid_]]"
+                aria-label="[[i18n('eSimRenameProfileDialogLabel')]]"
                 aria-description="[[i18n('eSimRenameProfileInputA11yLabel',
                     MAX_INPUT_LENGTH)]]"
                 error-message="[[i18n('eSimRenameProfileInputA11yLabel',
@@ -94,7 +95,7 @@
             </div>
           </div>
         </template>
-        <div id="errorMessage" hidden$="[[!errorMessage_]]">
+        <div id="errorMessage" aria-live="polite" hidden$="[[!errorMessage_]]">
           [[errorMessage_]]
         </div>
       </div>
@@ -110,6 +111,8 @@
         <cr-button id="done"
             on-click="onRenameDialogDoneTap_"
             disabled="[[isRenameInProgress_]]"
+            aria-label$="[[getDoneBtnA11yLabel_(esimProfileName_)]]"
+            aria-describedby="warningMessage"
             class="action-button">
           $i18n{eSimRenameProfileDialogDone}
         </cr-button>

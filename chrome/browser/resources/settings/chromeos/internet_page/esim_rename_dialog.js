@@ -87,6 +87,10 @@ Polymer({
       this.errorMessage_ = this.i18n('eSimRenameProfileDialogError');
     }
     this.esimProfileName_ = this.networkState.name;
+
+    if (!this.errorMessage_) {
+      this.$$('#eSimprofileName').focus();
+    }
   },
 
   /**
@@ -193,4 +197,12 @@ Polymer({
             /*locales=*/ undefined, {minimumIntegerDigits: 2}),
         MAX_INPUT_LENGTH.toLocaleString());
   },
+
+  /**
+   * @param {string} esimProfileName
+   * @returns {string}
+   */
+  getDoneBtnA11yLabel_(esimProfileName) {
+    return this.i18n('eSimRenameProfileDoneBtnA11yLabel', esimProfileName);
+  }
 });
