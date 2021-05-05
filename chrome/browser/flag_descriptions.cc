@@ -753,6 +753,12 @@ const char kDesktopPWAsFlashAppNameInsteadOfOriginDescription[] =
     "Replaces the origin flash with an app name flash when launching a web app "
     "window.";
 
+const char kDesktopPWAsNotificationIconAndTitleName[] =
+    "Desktop PWAs improvements in notification icon and title";
+const char kDesktopPWAsNotificationIconAndTitleDescription[] =
+    "Replaces the websites origin and the Chrome icon with the web app's name "
+    "and app icon in notifications.";
+
 const char kDesktopPWAsLinkCapturingName[] =
     "Desktop PWA declarative link capturing";
 const char kDesktopPWAsLinkCapturingDescription[] =

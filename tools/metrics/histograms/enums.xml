@@ -45747,6 +45747,7 @@ from previous Chrome versions.
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
+  <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899393472" label="enable-new-app-menu-icon"/>
   <int value="-899334103" label="disable-fast-text-autosizing"/>
@@ -46912,6 +46913,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
+  <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
   <int value="146229312" label="WebPaymentsExperimentalFeatures:enabled"/>
   <int value="146553675" label="BookmarkBottomSheet:disabled"/>
   <int value="147342055" label="ChromeHomeClearUrlOnOpen:disabled"/>

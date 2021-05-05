@@ -285,6 +285,11 @@ const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
     "DesktopPWAsFlashAppNameInsteadOfOrigin",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Replaces the origin text flash and the icon in web app notifications with
+// the name of the app and the icon of the app.
+const base::Feature kDesktopPWAsNotificationIconAndTitle{
+    "DesktopPWAsNotificationIconAndTitle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 const base::Feature kDesktopPWAsRunOnOsLogin {
   "DesktopPWAsRunOnOsLogin",
