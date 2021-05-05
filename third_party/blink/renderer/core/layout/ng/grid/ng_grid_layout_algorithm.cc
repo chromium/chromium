@@ -1522,8 +1522,11 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
       // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
       DCHECK(!track_size.FitContentTrackBreadth().HasPercentage() ||
              available_size != kIndefiniteSize);
-      current_set.SetFitContentLimit(MinimumValueForLength(
-          track_size.FitContentTrackBreadth().length(), available_size));
+
+      LayoutUnit fit_content_argument = MinimumValueForLength(
+          track_size.FitContentTrackBreadth().length(), available_size);
+      current_set.SetFitContentLimit(fit_content_argument *
+                                     current_set.TrackCount());
     }
 
     if (track_size.HasFixedMinTrackBreadth()) {
@@ -1744,8 +1747,13 @@ LayoutUnit GrowthPotentialForSet(
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForMaxContentMinimums: {
       LayoutUnit growth_limit = set.GrowthLimit();
-      return (growth_limit == kIndefiniteSize) ? kIndefiniteSize
-                                               : growth_limit - set.BaseSize();
+      if (growth_limit == kIndefiniteSize)
+        return kIndefiniteSize;
+
+      LayoutUnit increased_base_size =
+          set.BaseSize() + set.ItemIncurredIncrease();
+      DCHECK_LE(increased_base_size, growth_limit);
+      return growth_limit - increased_base_size;
     }
     case GridItemContributionType::kForIntrinsicMaximums:
     case GridItemContributionType::kForMaxContentMaximums: {
@@ -1765,8 +1773,9 @@ LayoutUnit GrowthPotentialForSet(
       // argument, after which it is treated as having a fixed sizing function
       // of that argument (with a growth potential of zero).
       if (fit_content_limit != kIndefiniteSize) {
-        LayoutUnit growth_potential =
-            fit_content_limit - DefiniteGrowthLimit(set);
+        LayoutUnit growth_potential = fit_content_limit -
+                                      DefiniteGrowthLimit(set) -
+                                      set.ItemIncurredIncrease();
         return growth_potential.ClampNegativeToZero();
       }
       // Otherwise, this set has infinite growth potential.
@@ -3296,4 +3305,5 @@ NGGridData::TrackCollectionGeometry NGGridLayoutAlgorithm::ConvertSetGeometry(
   }
   return set_data;
 }
+
 }  // namespace blink
