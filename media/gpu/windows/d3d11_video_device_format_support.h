@@ -6,7 +6,6 @@
 #define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DEVICE_FORMAT_SUPPORT_H_
 
 #include <d3d11_1.h>
-#include <vector>
 
 #include "base/optional.h"
 #include "media/base/media_log.h"

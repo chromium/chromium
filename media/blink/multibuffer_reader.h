@@ -7,10 +7,6 @@
 
 #include <stdint.h>
 
-#include <limits>
-#include <map>
-#include <set>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/media_blink_export.h"

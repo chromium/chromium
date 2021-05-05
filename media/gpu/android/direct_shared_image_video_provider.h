@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 #define MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"

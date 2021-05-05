@@ -5,9 +5,6 @@
 #ifndef MEDIA_LEARNING_IMPL_LOOKUP_TABLE_TRAINER_H_
 #define MEDIA_LEARNING_IMPL_LOOKUP_TABLE_TRAINER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "media/learning/common/learning_task.h"

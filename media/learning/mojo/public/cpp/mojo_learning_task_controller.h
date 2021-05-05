@@ -5,8 +5,6 @@
 #ifndef MEDIA_LEARNING_MOJO_PUBLIC_CPP_MOJO_LEARNING_TASK_CONTROLLER_H_
 #define MEDIA_LEARNING_MOJO_PUBLIC_CPP_MOJO_LEARNING_TASK_CONTROLLER_H_
 
-#include <utility>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "media/learning/common/learning_task_controller.h"

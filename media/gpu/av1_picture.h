@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_AV1_PICTURE_H_
 #define MEDIA_GPU_AV1_PICTURE_H_
 
-#include <memory>
-
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/libgav1/src/src/utils/types.h"

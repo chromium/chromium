@@ -5,8 +5,6 @@
 #ifndef MEDIA_AUDIO_AUDIO_THREAD_IMPL_H_
 #define MEDIA_AUDIO_AUDIO_THREAD_IMPL_H_
 
-#include <memory>
-
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"

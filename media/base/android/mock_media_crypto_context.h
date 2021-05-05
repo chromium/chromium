@@ -5,8 +5,6 @@
 #ifndef MEDIA_BASE_ANDROID_MOCK_MEDIA_CRYPTO_CONTEXT_H_
 #define MEDIA_BASE_ANDROID_MOCK_MEDIA_CRYPTO_CONTEXT_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/cdm_context.h"

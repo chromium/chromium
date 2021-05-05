@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"

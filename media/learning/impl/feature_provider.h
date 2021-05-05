@@ -5,9 +5,6 @@
 #ifndef MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 #define MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 
-#include <map>
-#include <string>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"

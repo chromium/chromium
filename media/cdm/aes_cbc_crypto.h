@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "media/base/media_export.h"

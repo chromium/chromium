@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_VIDEO_DECODE_STATS_RECORDER_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"

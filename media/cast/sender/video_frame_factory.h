@@ -5,8 +5,6 @@
 #ifndef MEDIA_CAST_SENDER_VIDEO_FRAME_FACTORY_H_
 #define MEDIA_CAST_SENDER_VIDEO_FRAME_FACTORY_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 
 namespace gfx {

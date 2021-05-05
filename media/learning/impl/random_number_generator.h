@@ -6,7 +6,6 @@
 #define MEDIA_LEARNING_IMPL_RANDOM_NUMBER_GENERATOR_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/component_export.h"
 #include "base/macros.h"

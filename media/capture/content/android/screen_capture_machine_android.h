@@ -6,7 +6,6 @@
 #define MEDIA_CAPTURE_CONTENT_ANDROID_SCREEN_CAPTURE_MACHINE_ANDROID_H_
 
 #include <jni.h>
-#include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"

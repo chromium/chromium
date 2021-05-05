@@ -5,8 +5,6 @@
 #ifndef MEDIA_MOJO_MOJOM_PIPELINE_STATUS_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_PIPELINE_STATUS_MOJOM_TRAITS_H_
 
-#include <string>
-
 #include "media/base/pipeline_status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 

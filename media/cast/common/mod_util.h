@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_COMMON_MOD_UTIL_H_
 #define MEDIA_CAST_COMMON_MOD_UTIL_H_
 
-#include <map>
 #include "base/check.h"
 
 namespace media {

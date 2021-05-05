@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/time/time.h"
 #include "media/blink/media_blink_export.h"
 

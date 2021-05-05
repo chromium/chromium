@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 #define MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 
-#include <memory>
-
 #include "base/unguessable_token.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"

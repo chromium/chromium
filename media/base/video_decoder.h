@@ -5,8 +5,6 @@
 #ifndef MEDIA_BASE_VIDEO_DECODER_H_
 #define MEDIA_BASE_VIDEO_DECODER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/decode_status.h"

@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VP8_ACCELERATOR_LEGACY_H_
 #define MEDIA_GPU_V4L2_V4L2_VP8_ACCELERATOR_LEGACY_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/vp8_decoder.h"

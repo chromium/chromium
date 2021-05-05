@@ -5,8 +5,6 @@
 #ifndef MEDIA_CAST_TEST_SKEWED_SINGLE_THREAD_TASK_RUNNER_H_
 #define MEDIA_CAST_TEST_SKEWED_SINGLE_THREAD_TASK_RUNNER_H_
 
-#include <map>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"

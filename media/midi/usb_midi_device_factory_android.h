@@ -6,7 +6,6 @@
 #define MEDIA_MIDI_USB_MIDI_DEVICE_FACTORY_ANDROID_H_
 
 #include <jni.h>
-#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"

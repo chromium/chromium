@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_LEGACY_H_
 #define MEDIA_GPU_V4L2_V4L2_VP9_ACCELERATOR_LEGACY_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

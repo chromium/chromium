@@ -8,9 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
-#include <string>
-
 #include "base/big_endian.h"
 #include "base/macros.h"
 #include "media/cast/net/cast_transport_config.h"

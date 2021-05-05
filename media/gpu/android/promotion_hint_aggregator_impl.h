@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 #define MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

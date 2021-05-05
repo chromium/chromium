@@ -5,8 +5,6 @@
 #ifndef MEDIA_AUDIO_AUDIO_SOURCE_PARAMETERS_H_
 #define MEDIA_AUDIO_AUDIO_SOURCE_PARAMETERS_H_
 
-#include <string>
-
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_processing.h"
