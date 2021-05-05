@@ -40,10 +40,9 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   // Convert |policy| to a dictionary value. Only include mandatory policies
   // for now.
   base::DictionaryValue current_policy;
-  for (auto it = policy.begin(); it != policy.end(); ++it) {
-    if (it->second.level == policy::POLICY_LEVEL_MANDATORY) {
-      current_policy.SetWithoutPathExpansion(
-          it->first, it->second.value()->CreateDeepCopy());
+  for (const auto& it : policy) {
+    if (it.second.level == policy::POLICY_LEVEL_MANDATORY) {
+      current_policy.SetKey(it.first, it.second.value()->Clone());
     }
   }
 
