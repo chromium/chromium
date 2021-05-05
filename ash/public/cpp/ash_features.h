@@ -172,15 +172,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kWindowsFollowCursor;
 // Enables notifications to be shown within context menus.
 ASH_PUBLIC_EXPORT extern const base::Feature kNotificationsInContextMenu;
 
-// Enables the productivity feature that aims to reduce context switching by
-// enabling users to collect content and transfer or access it later.
-ASH_PUBLIC_EXPORT extern const base::Feature kTemporaryHoldingSpace;
-
 // Enables ARC integration with the productivity feature that aims to reduce
 // context switching by enabling users to collect content and transfer or access
-// it later. Note that this flag has no effect w/o `kTemporaryHoldingSpace`.
-ASH_PUBLIC_EXPORT extern const base::Feature
-    kTemporaryHoldingSpaceArcIntegration;
+// it later.
+ASH_PUBLIC_EXPORT extern const base::Feature kHoldingSpaceArcIntegration;
 
 // Enables dragging an unpinned open app to pinned app side to pin.
 ASH_PUBLIC_EXPORT extern const base::Feature kDragUnpinnedAppToPin;
@@ -261,9 +256,7 @@ ASH_PUBLIC_EXPORT bool IsDisplayAlignmentAssistanceEnabled();
 
 ASH_PUBLIC_EXPORT bool IsNotificationsInContextMenuEnabled();
 
-ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceEnabled();
-
-ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceArcIntegrationEnabled();
+ASH_PUBLIC_EXPORT bool IsHoldingSpaceArcIntegrationEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 

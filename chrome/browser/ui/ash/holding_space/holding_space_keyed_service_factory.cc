@@ -29,7 +29,7 @@ HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "HoldingSpaceService",
           BrowserContextDependencyManager::GetInstance()) {
-  if (features::IsTemporaryHoldingSpaceArcIntegrationEnabled())
+  if (features::IsHoldingSpaceArcIntegrationEnabled())
     DependsOn(arc::ArcIntentHelperBridge::GetFactory());
   DependsOn(chromeos::FileChangeServiceFactory::GetInstance());
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
@@ -57,9 +57,6 @@ HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
 
 KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!features::IsTemporaryHoldingSpaceEnabled())
-    return nullptr;
-
   Profile* const profile = Profile::FromBrowserContext(context);
   DCHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord());
 

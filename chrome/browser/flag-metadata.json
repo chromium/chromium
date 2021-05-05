@@ -1919,16 +1919,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "enable-holding-space",
-    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "enable-holding-space-previews",
-    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-hosted-app-quit-notification",
     "owners": [ "ccameron" ],
     "expiry_milestone": 77

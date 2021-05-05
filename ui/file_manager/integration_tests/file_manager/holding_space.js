@@ -4,22 +4,10 @@
 'use strict';
 
 /**
- * Tests that the holding space welcome banner is hidden when the feature is
- * disabled.
+ * Tests that the holding space welcome banner appears and that it can be
+ * dismissed.
  */
-testcase.holdingSpaceWelcomeBannerWithFeatureDisabled = async () => {
-  // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-
-  // Check: the holding space welcome banner should be hidden.
-  await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
-};
-
-/**
- * Tests that the holding space welcome banner appears when the feature is
- * enabled and that it can be dismissed.
- */
-testcase.holdingSpaceWelcomeBannerWithFeatureEnabled = async () => {
+testcase.holdingSpaceWelcomeBanner = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 

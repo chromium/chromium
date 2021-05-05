@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -1078,8 +1077,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolean(
       "FILTERS_IN_RECENTS_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecents));
-  dict->SetBoolean("HOLDING_SPACE_ENABLED",
-                   ash::features::IsTemporaryHoldingSpaceEnabled());
   dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));

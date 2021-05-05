@@ -143,11 +143,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableHoldingSpace(bool enable) {
-    options.enable_holding_space = enable;
-    return *this;
-  }
-
   TestCase& DisableJsModules() {
     options.enable_js_modules = false;
     return *this;
@@ -705,21 +700,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("holdingSpaceWelcomeBannerWithFeatureDisabled")
-            .EnableHoldingSpace(false),
-        TestCase("holdingSpaceWelcomeBannerWithFeatureEnabled")
-            .EnableHoldingSpace(true),
-        TestCase("holdingSpaceWelcomeBannerWontShowAfterBeingDismissed")
-            .EnableHoldingSpace(true),
-        TestCase("holdingSpaceWelcomeBannerWontShowAfterReachingLimit")
-            .EnableHoldingSpace(true),
+        TestCase("holdingSpaceWelcomeBanner"),
+        TestCase("holdingSpaceWelcomeBannerWontShowAfterBeingDismissed"),
+        TestCase("holdingSpaceWelcomeBannerWontShowAfterReachingLimit"),
         TestCase("holdingSpaceWelcomeBannerWontShowForModalDialogs")
-            .EnableHoldingSpace(true)
             .WithBrowser(),
-        TestCase("holdingSpaceWelcomeBannerWontShowOnDrive")
-            .EnableHoldingSpace(true),
-        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
-            .EnableHoldingSpace(true)));
+        TestCase("holdingSpaceWelcomeBannerWontShowOnDrive"),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */

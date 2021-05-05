@@ -102,10 +102,8 @@ void StatusAreaWidget::Initialize() {
       std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
   AddTrayButton(overflow_button_tray_.get());
 
-  if (features::IsTemporaryHoldingSpaceEnabled()) {
-    holding_space_tray_ = std::make_unique<HoldingSpaceTray>(shelf_);
-    AddTrayButton(holding_space_tray_.get());
-  }
+  holding_space_tray_ = std::make_unique<HoldingSpaceTray>(shelf_);
+  AddTrayButton(holding_space_tray_.get());
 
   logout_button_tray_ = std::make_unique<LogoutButtonTray>(shelf_);
   AddTrayButton(logout_button_tray_.get());

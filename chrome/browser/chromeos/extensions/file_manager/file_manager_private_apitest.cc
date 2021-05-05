@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/path_service.h"
@@ -355,25 +354,6 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   file_manager::EventRouter* event_router_ = nullptr;
 };
 
-// Parameterize by whether holding space feature is enabled.
-class FileManagerPrivateHoldingSpaceApiTest
-    : public FileManagerPrivateApiTest,
-      public testing::WithParamInterface<bool> {
- public:
-  FileManagerPrivateHoldingSpaceApiTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kTemporaryHoldingSpace, GetParam());
-  }
-  ~FileManagerPrivateHoldingSpaceApiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(HoldingSpaceEnabled,
-                         FileManagerPrivateHoldingSpaceApiTest,
-                         testing::Bool());
-
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
   using chromeos::file_system_provider::IconSet;
   profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive, true);
@@ -618,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
   EXPECT_TRUE(response_helper.GetResponse());
 }
 
-IN_PROC_BROWSER_TEST_P(FileManagerPrivateHoldingSpaceApiTest, HoldingSpace) {
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, HoldingSpace) {
   const base::FilePath test_dir = temp_dir_.GetPath();
   AddLocalFileSystem(browser()->profile(), test_dir);
 
@@ -635,14 +615,8 @@ IN_PROC_BROWSER_TEST_P(FileManagerPrivateHoldingSpaceApiTest, HoldingSpace) {
     ASSERT_TRUE(video_file.IsValid());
   }
 
-  if (GetParam()) {
-    EXPECT_TRUE(RunExtensionTest({.name = "file_browser/holding_space"},
-                                 {.load_as_component = true}));
-  } else {
-    EXPECT_TRUE(
-        RunExtensionTest({.name = "file_browser/holding_space_disabled"},
-                         {.load_as_component = true}));
-  }
+  EXPECT_TRUE(RunExtensionTest({.name = "file_browser/holding_space"},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {

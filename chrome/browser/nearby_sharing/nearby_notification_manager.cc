@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -883,15 +882,12 @@ void NearbyNotificationManager::ShowIncomingSuccess(
       NotificationHandler::Type::NEARBY_SHARE, notification,
       /*metadata=*/nullptr);
 
-  if (ash::features::IsTemporaryHoldingSpaceEnabled()) {
-    ash::HoldingSpaceKeyedService* holding_space_keyed_service =
-        ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-            profile_);
-    if (holding_space_keyed_service) {
-      for (const auto& file : share_target.file_attachments) {
-        if (file.file_path().has_value())
-          holding_space_keyed_service->AddNearbyShare(file.file_path().value());
-      }
+  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile_);
+  if (holding_space_keyed_service) {
+    for (const auto& file : share_target.file_attachments) {
+      if (file.file_path().has_value())
+        holding_space_keyed_service->AddNearbyShare(file.file_path().value());
     }
   }
 }

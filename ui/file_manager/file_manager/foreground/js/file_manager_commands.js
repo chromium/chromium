@@ -1918,12 +1918,6 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
   canExecute(event, fileManager) {
     const command = event.command;
 
-    if (!HoldingSpaceUtil.isFeatureEnabled()) {
-      event.canExecute = false;
-      command.setHidden(true);
-      return;
-    }
-
     const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
     const currentRootType = fileManager.directoryModel.getCurrentRootType();
     if (!util.isRecentRootType(currentRootType)) {

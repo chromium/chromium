@@ -285,7 +285,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   HoldingSpaceKeyedServiceTest()
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
-    scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
 
@@ -461,8 +460,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   user_manager::ScopedUserManager user_manager_enabler_;
   testing::NiceMock<MockDownloadManager> download_manager_;
   arc::ArcServiceManager arc_service_manager_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
@@ -1692,7 +1689,7 @@ class HoldingSpaceKeyedServiceArcIntegrationTest
  public:
   HoldingSpaceKeyedServiceArcIntegrationTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kTemporaryHoldingSpaceArcIntegration);
+        features::kHoldingSpaceArcIntegration);
   }
 
  private:

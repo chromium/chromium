@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -21,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -287,10 +285,7 @@ class HoldingSpaceKeyedServiceBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<FileSystemType> {
  public:
-  HoldingSpaceKeyedServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kTemporaryHoldingSpace);
-  }
+  HoldingSpaceKeyedServiceBrowserTest() = default;
 
   // InProcessBrowserTest:
   bool SetUpUserDataDirectory() override {
@@ -377,8 +372,6 @@ class HoldingSpaceKeyedServiceBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // List of files paths that are created by default by the test suite.
   std::vector<base::FilePath> predefined_test_files_;
 

@@ -1054,8 +1054,7 @@ void Shell::Init(
   }
 
   // `HoldingSpaceController` must be instantiated before the shelf.
-  if (features::IsTemporaryHoldingSpaceEnabled())
-    holding_space_controller_ = std::make_unique<HoldingSpaceController>();
+  holding_space_controller_ = std::make_unique<HoldingSpaceController>();
 
   shelf_config_ = std::make_unique<ShelfConfig>();
   shelf_controller_ = std::make_unique<ShelfController>();

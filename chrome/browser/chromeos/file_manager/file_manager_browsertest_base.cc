@@ -1717,12 +1717,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
-  if (options.enable_holding_space) {
-    enabled_features.push_back(ash::features::kTemporaryHoldingSpace);
-  } else {
-    disabled_features.push_back(ash::features::kTemporaryHoldingSpace);
-  }
-
   if (options.enable_js_modules) {
     enabled_features.push_back(chromeos::features::kFilesJsModules);
   } else {

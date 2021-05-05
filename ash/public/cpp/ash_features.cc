@@ -126,11 +126,8 @@ const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
 const base::Feature kNotificationsInContextMenu{
     "NotificationsInContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kTemporaryHoldingSpace{"TemporaryHoldingSpace",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kTemporaryHoldingSpaceArcIntegration{
-    "TemporaryHoldingSpaceArcIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kHoldingSpaceArcIntegration{
+    "HoldingSpaceArcIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -298,13 +295,8 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
-bool IsTemporaryHoldingSpaceEnabled() {
-  return base::FeatureList::IsEnabled(kTemporaryHoldingSpace);
-}
-
-bool IsTemporaryHoldingSpaceArcIntegrationEnabled() {
-  return IsTemporaryHoldingSpaceEnabled() &&
-         base::FeatureList::IsEnabled(kTemporaryHoldingSpaceArcIntegration);
+bool IsHoldingSpaceArcIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceArcIntegration);
 }
 
 bool IsDragUnpinnedAppToPinEnabled() {

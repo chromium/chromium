@@ -1319,7 +1319,6 @@ js_library("holding_space_util") {
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
   ]
 }
 

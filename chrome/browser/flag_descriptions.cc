@@ -4535,14 +4535,6 @@ const char kHideArcMediaNotificationsDescription[] =
     "Hides media notifications for ARC apps. Requires "
     "#enable-media-session-notifications to be enabled.";
 
-const char kHoldingSpaceName[] =
-    "Quick access to screenshots, downloads, and files";
-const char kHoldingSpaceDescription[] =
-    "Enables quick access to screenshots, downloads, and important files which "
-    "aims to increase productivity by saving time. When enabled, access recent "
-    "screenshots and downloads from the shelf. Pin important files with the "
-    "Files App context menu to keep them one click away.";
-
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";

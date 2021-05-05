@@ -366,7 +366,6 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    * @private
    */
   prepareAndShowHoldingSpaceWelcomeBanner_() {
-    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.showHoldingSpaceWelcomeBanner_(true);
 
     // Do not recreate the banner.
@@ -411,6 +410,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
 
     const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
     const dismiss = util.createChild(buttonGroup, 'text-button', 'cr-button');
+    dismiss.id = 'holding-space-welcome-dismiss';
     dismiss.setAttribute('aria-label', str('HOLDING_SPACE_WELCOME_DISMISS'));
     dismiss.textContent = str('HOLDING_SPACE_WELCOME_DISMISS');
     dismiss.tabIndex = 0;
@@ -623,7 +623,6 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    * @private
    */
   closeHoldingSpaceWelcomeBanner_() {
-    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.cleanupHoldingSpaceWelcomeBanner_();
 
     // Stop showing the welcome banner.
@@ -685,10 +684,6 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    * @private
    */
   async maybeShowHoldingSpaceWelcomeBanner_() {
-    if (!HoldingSpaceUtil.isFeatureEnabled()) {
-      return;
-    }
-
     await this.ready_;
 
     if (!this.showWelcome_) {
@@ -921,8 +916,6 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    * @private
    */
   showHoldingSpaceWelcomeBanner_(show) {
-    assert(HoldingSpaceUtil.isFeatureEnabled());
-
     const /** boolean */ hidden = !show;
     if (this.holdingSpaceWelcomeBanner_.hasAttribute('hidden') == hidden) {
       return;
@@ -1098,7 +1091,6 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    * @private
    */
   cleanupHoldingSpaceWelcomeBanner_() {
-    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.showHoldingSpaceWelcomeBanner_(false);
   }
 

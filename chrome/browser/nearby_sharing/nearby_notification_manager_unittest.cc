@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -1324,8 +1323,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   NearbyFilesHoldingSpaceTest()
       : session_controller_(std::make_unique<TestSessionController>()),
         user_manager_(new ash::FakeChromeUserManager) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kNearbySharing, ash::features::kTemporaryHoldingSpace}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
 
     holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();

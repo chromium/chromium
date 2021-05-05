@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
 #include "base/base64.h"
@@ -545,7 +544,7 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
       ->Display(NotificationHandler::Type::TRANSIENT, *notification,
                 /*metadata=*/nullptr);
 
-  if (success && ash::features::IsTemporaryHoldingSpaceEnabled()) {
+  if (success) {
     ash::HoldingSpaceKeyedServiceFactory::GetInstance()
         ->GetService(GetProfile())
         ->AddScreenshot(screenshot_path);

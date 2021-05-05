@@ -12,7 +12,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -929,11 +928,9 @@ void CaptureModeController::OnImageFileSaved(
   CopyImageToClipboard(image);
   ShowPreviewNotification(path, image, CaptureModeType::kImage);
 
-  if (features::IsTemporaryHoldingSpaceEnabled()) {
-    HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
-    if (client)  // May be `nullptr` in tests.
-      client->AddScreenshot(path);
-  }
+  HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+  if (client)  // May be `nullptr` in tests.
+    client->AddScreenshot(path);
 }
 
 void CaptureModeController::OnVideoFileStatus(bool success) {
@@ -960,11 +957,9 @@ void CaptureModeController::OnVideoFileSaved(
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
 
-    if (features::IsTemporaryHoldingSpaceEnabled()) {
-      HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
-      if (client)  // May be `nullptr` in tests.
-        client->AddScreenRecording(current_video_file_path_);
-    }
+    HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+    if (client)  // May be `nullptr` in tests.
+      client->AddScreenRecording(current_video_file_path_);
   }
 
   if (!on_file_saved_callback_.is_null())

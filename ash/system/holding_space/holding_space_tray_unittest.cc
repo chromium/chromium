@@ -8,7 +8,6 @@
 #include <deque>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -35,7 +34,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -272,9 +270,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 class HoldingSpaceTrayTest : public AshTestBase {
  public:
-  HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
-  }
+  HoldingSpaceTrayTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -413,7 +409,6 @@ class HoldingSpaceTrayTest : public AshTestBase {
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
   testing::NiceMock<MockHoldingSpaceClient> holding_space_client_;
   HoldingSpaceModel holding_space_model_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------

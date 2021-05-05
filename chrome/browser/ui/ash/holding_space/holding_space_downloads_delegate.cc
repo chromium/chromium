@@ -38,7 +38,7 @@ void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
 
 void HoldingSpaceDownloadsDelegate::Init() {
   // ARC downloads.
-  if (features::IsTemporaryHoldingSpaceArcIntegrationEnabled()) {
+  if (features::IsHoldingSpaceArcIntegrationEnabled()) {
     // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
     // is not allowed to use ARC, e.g. if the `profile()` is OTR.
     auto* const arc_intent_helper_bridge =
@@ -67,7 +67,7 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
 void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
     const base::FilePath& relative_path,
     const std::string& owner_package_name) {
-  DCHECK(features::IsTemporaryHoldingSpaceArcIntegrationEnabled());
+  DCHECK(features::IsHoldingSpaceArcIntegrationEnabled());
   if (is_restoring_persistence())
     return;
 
