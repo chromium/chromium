@@ -1725,7 +1725,9 @@ void PaymentRequest::DispatchPaymentRequestUpdateEvent(
                                              FROM_HERE);
 
   event_target->DispatchEvent(*event);
-  if (!event->is_waiting_for_update()) {
+  // Check whether the execution context still exists, because DispatchEvent()
+  // could have destroyed it.
+  if (GetExecutionContext() && !event->is_waiting_for_update()) {
     // DispatchEvent runs synchronously. The method is_waiting_for_update()
     // returns false if the merchant did not call event.updateWith() within the
     // event handler, which is optional, so the renderer sends a message to the

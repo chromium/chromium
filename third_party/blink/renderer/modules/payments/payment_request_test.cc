@@ -4,13 +4,17 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -593,6 +597,48 @@ TEST(PaymentRequestTest, DetailsIdIsSet) {
       scope.GetExceptionState());
 
   EXPECT_EQ("my_payment_id", request->id());
+}
+
+// An event listener that owns a page and destroys it when the event is invoked.
+class PageDeleter final : public NativeEventListener {
+ public:
+  PageDeleter()
+      : holder_(V8TestingScope::CreateDummyPageHolder(
+            KURL("https://www.example.com"))) {}
+  ~PageDeleter() override = default;
+
+  // NativeEventListener:
+  void Invoke(ExecutionContext*, Event*) override { holder_.reset(); }
+
+  DummyPageHolder* page() { return holder_.get(); }
+
+ private:
+  std::unique_ptr<DummyPageHolder> holder_;
+};
+
+TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
+  PageDeleter* page_deleter = MakeGarbageCollected<PageDeleter>();
+  LocalFrame& frame = page_deleter->page()->GetFrame();
+  v8::HandleScope handle_scope(ToIsolate(&frame));
+  ScriptState* script_state = ScriptState::From(
+      ToV8ContextEvenIfDetached(&frame, DOMWrapperWorld::MainWorld()));
+  v8::Local<v8::Context> context(script_state->GetContext());
+  v8::Context::Scope context_scope(context);
+  MockFunctionScope funcs(script_state);
+
+  HeapVector<Member<PaymentMethodData>> method_data =
+      BuildPaymentMethodDataForTest();
+  PaymentRequest* request = PaymentRequest::Create(
+      ExecutionContext::From(script_state), method_data,
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  request->setOnpaymentmethodchange(page_deleter);
+  request->show(script_state, ASSERT_NO_EXCEPTION)
+      .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+
+  // Trigger the event listener that deletes the execution context.
+  static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
+      ->OnPaymentMethodChange(method_data.front()->supportedMethod(),
+                              /*stringified_details=*/"{}");
 }
 
 }  // namespace
