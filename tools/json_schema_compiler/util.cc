@@ -94,14 +94,14 @@ bool PopulateItem(const base::Value& from,
 }
 
 bool PopulateItem(const base::Value& from, std::unique_ptr<base::Value>* out) {
-  *out = from.CreateDeepCopy();
+  *out = base::Value::ToUniquePtrValue(from.Clone());
   return true;
 }
 
 bool PopulateItem(const base::Value& from,
                   std::unique_ptr<base::Value>* out,
                   std::u16string* error) {
-  *out = from.CreateDeepCopy();
+  *out = base::Value::ToUniquePtrValue(from.Clone());
   return true;
 }
 
@@ -146,7 +146,7 @@ void AddItemToList(const std::vector<uint8_t>& from, base::ListValue* out) {
 
 void AddItemToList(const std::unique_ptr<base::Value>& from,
                    base::ListValue* out) {
-  out->Append(from->CreateDeepCopy());
+  out->Append(from->Clone());
 }
 
 void AddItemToList(const std::unique_ptr<base::DictionaryValue>& from,
