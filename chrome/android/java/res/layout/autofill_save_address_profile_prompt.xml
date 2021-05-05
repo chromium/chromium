@@ -13,6 +13,7 @@
       android:layout_width="48dp"
       android:layout_height="48dp"
       android:layout_alignParentEnd="true"
+      android:layout_marginEnd="8dp"
       android:padding="12dp"
       android:background="?attr/selectableItemBackground"
       android:contentDescription="@string/payments_edit_address"

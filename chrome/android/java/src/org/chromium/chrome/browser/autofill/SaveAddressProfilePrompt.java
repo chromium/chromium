@@ -129,7 +129,8 @@ public class SaveAddressProfilePrompt {
     }
 
     /**
-     * Displays the details in case an existing address to be updated.
+     * Displays the details in case an existing address to be updated. If oldDetails are empty, only
+     * newDetails are shown.
      *
      * @param subtitle the text to display below the title.
      * @param oldDetails details in the existing profile that differ.
@@ -137,8 +138,8 @@ public class SaveAddressProfilePrompt {
      */
     @CalledByNative
     private void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
-        // TODO(crbug.com/1167061): Properly handle the case when oldDetails is empty.
         ((TextView) mDialogView.findViewById(R.id.subtitle)).setText(subtitle);
+        showHeaders(!TextUtils.isEmpty(oldDetails));
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_old), oldDetails);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_new), newDetails);
     }
@@ -180,5 +181,12 @@ public class SaveAddressProfilePrompt {
             textView.setVisibility(View.VISIBLE);
             textView.setText(text);
         }
+    }
+
+    private void showHeaders(boolean show) {
+        mDialogView.findViewById(R.id.header_new).setVisibility(show ? View.VISIBLE : View.GONE);
+        mDialogView.findViewById(R.id.header_old).setVisibility(show ? View.VISIBLE : View.GONE);
+        mDialogView.findViewById(R.id.no_header_space)
+                .setVisibility(show ? View.GONE : View.VISIBLE);
     }
 }
