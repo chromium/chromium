@@ -6039,8 +6039,10 @@ crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-top-left-selection-posit
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-zoom150-bottom-edge-no-nan.html [ Pass Crash ]
 crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Pass Crash ]
 
-# SwANGLE issue
+# SwANGLE issues
 crbug.com/1204234 [ Linux ] css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
+crbug.com/1204234 [ Linux ] external/wpt/webxr/light-estimation/xrWebGLBinding_getReflectionCubeMap.https.html [ Failure ]
+crbug.com/1204234 [ Linux ] external/wpt/webxr/xrWebGLLayer_opaque_framebuffer_stencil.https.html [ Failure ]
 
 # Upcoming DevTools change
 crbug.com/1006759 http/tests/devtools/profiler/cpu-profiler-save-load.js [ Pass Failure Timeout ]
