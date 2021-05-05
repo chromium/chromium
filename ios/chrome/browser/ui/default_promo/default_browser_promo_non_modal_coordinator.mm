@@ -120,7 +120,13 @@
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
-  // No-op.
+  if (userInitiated) {
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    DefaultBrowserSceneAgent* agent =
+        [DefaultBrowserSceneAgent agentFromScene:sceneState];
+    [agent.nonModalScheduler logUserDismissedPromo];
+  }
 }
 
 - (void)infobarWasDismissed {

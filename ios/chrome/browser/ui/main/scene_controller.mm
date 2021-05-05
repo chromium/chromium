@@ -967,7 +967,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (!firstRun && self.sceneState.appState.initStage > InitStageSafeMode &&
       postOpeningAction == NO_ACTION &&
       !self.sceneState.appState.postCrashLaunch &&
-      !IsChromeLikelyDefaultBrowser() && !UserInFullscreenPromoCooldown()) {
+      !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown()) {
     // Show the Default Browser promo UI if the user's past behavior fits
     // the categorization of potentially interested users or if the user is
     // signed in. Do not show if it is determined that Chrome is already the

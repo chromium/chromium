@@ -45,6 +45,9 @@ class WebStateList;
 // Handles the user performing the promo action.
 - (void)logUserPerformedPromoAction;
 
+// Handles the user manually dismissing the promo.
+- (void)logUserDismissedPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_

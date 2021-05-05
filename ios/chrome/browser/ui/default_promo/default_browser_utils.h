@@ -101,11 +101,18 @@ bool HasUserInteractedWithFullscreenPromoBefore();
 // previously. Returns false otherwise.
 bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 
+// Returns the number of times the user has seen and interacted with the
+// non-modal promo before.
+int UserInteractionWithNonModalPromoCount();
+
 // Logs that the user has interacted with the Fullscreen Promo.
 void LogUserInteractionWithFullscreenPromo();
 
 // Logs that the user has interacted with a Tailored Fullscreen Promo.
 void LogUserInteractionWithTailoredFullscreenPromo();
+
+// Logs that the user has interacted with a Non-Modals Promo.
+void LogUserInteractionWithNonModalPromo();
 
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
@@ -121,8 +128,8 @@ bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 // true, this type of promo will be ignored.
 DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 
-// Return YES if the user has seen a fullscreen promo recently, and shouldn't
+// Return YES if the user has seen a promo recently, and shouldn't
 // see another one.
-BOOL UserInFullscreenPromoCooldown();
+BOOL UserInPromoCooldown();
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

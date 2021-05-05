@@ -41,8 +41,10 @@ NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
 // Key for NSUserDefaults containing an NSDate indicating the last time a user
-// interacted with ANY fullscreen promo.
-NSString* const kLastTimeUserInteractedWithFullscreenPromo =
+// interacted with ANY promo. The string value is kept from when the promos
+// first launched to avoid changing the behavior for users that have already
+// seen the promo.
+NSString* const kLastTimeUserInteractedWithPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
 
 // Key for NSUserDefaults containing a bool indicating if the user has
@@ -54,6 +56,11 @@ NSString* const kUserHasInteractedWithFullscreenPromo =
 // previously interacted with a tailored fullscreen promo.
 NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
     @"userHasInteractedWithTailoredFullscreenPromo";
+
+// Key for NSUserDefaults containing an int indicating the number of times the
+// user has interacted with a non-modal promo.
+NSString* const kUserInteractedWithNonModalPromoCount =
+    @"userInteractedWithNonModalPromoCount";
 
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
@@ -248,11 +255,16 @@ bool HasUserInteractedWithTailoredFullscreenPromoBefore() {
       boolForKey:kUserHasInteractedWithTailoredFullscreenPromo];
 }
 
+int UserInteractionWithNonModalPromoCount() {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  return [standardDefaults integerForKey:kUserInteractedWithNonModalPromoCount];
+}
+
 void LogUserInteractionWithFullscreenPromo() {
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   [standardDefaults setBool:YES forKey:kUserHasInteractedWithFullscreenPromo];
   [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithFullscreenPromo];
+                       forKey:kLastTimeUserInteractedWithPromo];
 
   if (IsInRemindMeLaterGroup()) {
     // Clear any possible Remind Me Later timestamp saved.
@@ -265,7 +277,17 @@ void LogUserInteractionWithTailoredFullscreenPromo() {
   [standardDefaults setBool:YES
                      forKey:kUserHasInteractedWithTailoredFullscreenPromo];
   [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithFullscreenPromo];
+                       forKey:kLastTimeUserInteractedWithPromo];
+}
+
+void LogUserInteractionWithNonModalPromo() {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  int currentInteractionCount =
+      [standardDefaults integerForKey:kUserInteractedWithNonModalPromoCount];
+  [standardDefaults setInteger:currentInteractionCount + 1
+                        forKey:kUserInteractedWithNonModalPromoCount];
+  [standardDefaults setObject:[NSDate date]
+                       forKey:kLastTimeUserInteractedWithPromo];
 }
 
 bool IsChromeLikelyDefaultBrowser() {
@@ -329,10 +351,10 @@ DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromoType) {
   return mostRecentType;
 }
 
-BOOL UserInFullscreenPromoCooldown() {
+BOOL UserInPromoCooldown() {
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastFullscreenInteraction = ObjCCast<NSDate>([standardDefaults
-      objectForKey:kLastTimeUserInteractedWithFullscreenPromo]);
+  NSDate* lastFullscreenInteraction = ObjCCast<NSDate>(
+      [standardDefaults objectForKey:kLastTimeUserInteractedWithPromo]);
   if (lastFullscreenInteraction) {
     NSDate* coolDownDate =
         [NSDate dateWithTimeIntervalSinceNow:-kFullscreenPromoCoolDown];

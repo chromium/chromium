@@ -123,11 +123,11 @@ TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
     return;
   }
   LogUserInteractionWithFullscreenPromo();
-  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+  EXPECT_TRUE(UserInPromoCooldown());
 
   ClearUserDefaults();
   LogUserInteractionWithTailoredFullscreenPromo();
-  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+  EXPECT_TRUE(UserInPromoCooldown());
 }
 
 // Tests no 2 tailored promos are not shown.

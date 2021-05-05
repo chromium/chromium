@@ -27,6 +27,14 @@ namespace {
 // This should allow any initial overlays to be presented first.
 const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 
+// Number of times to show the promo to a user.
+const int kPromoShownTimesLimit = 2;
+
+bool PromoCanBeDisplayed() {
+  return !UserInPromoCooldown() &&
+         UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
+}
+
 }  // namespace
 
 @interface DefaultBrowserPromoNonModalScheduler () <WebStateListObserving,
@@ -95,6 +103,7 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 }
 
 - (void)logUserPerformedPromoAction {
+  LogUserInteractionWithNonModalPromo();
   if (NonModalPromosInstructionsEnabled()) {
     id<ApplicationSettingsCommands> handler =
         HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
@@ -106,6 +115,10 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
                                        options:{}
                              completionHandler:nil];
   }
+}
+
+- (void)logUserDismissedPromo {
+  LogUserInteractionWithNonModalPromo();
 }
 
 - (void)dismissPromoAnimated:(BOOL)animated {
@@ -183,7 +196,7 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 #pragma mark - Timer Management
 
 - (void)startShowPromoTimer {
-  if (self.promoIsShowing || self.showPromoTimer) {
+  if (!PromoCanBeDisplayed() || self.promoIsShowing || self.showPromoTimer) {
     return;
   }
   self.showPromoTimer =
@@ -200,7 +213,7 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 }
 
 - (void)showPromoTimerFinished {
-  if (self.promoIsShowing) {
+  if (!PromoCanBeDisplayed() || self.promoIsShowing) {
     return;
   }
   self.showPromoTimer = nil;
@@ -228,7 +241,10 @@ const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
 
 - (void)dismissPromoTimerFinished {
   self.dismissPromoTimer = nil;
-  [self.handler dismissDefaultBrowserNonModalPromoAnimated:YES];
+  if (self.promoIsShowing) {
+    LogUserInteractionWithNonModalPromo();
+    [self.handler dismissDefaultBrowserNonModalPromoAnimated:YES];
+  }
 }
 
 @end
