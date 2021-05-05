@@ -491,6 +491,8 @@ public abstract class ChromeFeatureList {
             "UpdateNotificationSchedulingIntegration";
     public static final String UPDATE_NOTIFICATION_IMMEDIATE_SHOW_OPTION =
             "UpdateNotificationScheduleServiceImmediateShowOption";
+    public static final String UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO =
+            "UpdateHistoryEntryPointsInIncognito";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_NOTIFICATION_COMPAT_BUILDER = "UseNotificationCompatBuilder";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";

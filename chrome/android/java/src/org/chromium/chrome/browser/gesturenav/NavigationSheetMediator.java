@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -37,6 +38,8 @@ import java.util.Set;
  * Mediator class for navigation sheet.
  */
 class NavigationSheetMediator {
+    private static final String INCOGNITO_HISTORY_ENTRIES_FLAG =
+            ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO;
     private final ClickListener mClickListener;
     private final FaviconHelper mFaviconHelper;
     private final RoundedIconGenerator mIconGenerator;
@@ -44,7 +47,9 @@ class NavigationSheetMediator {
     private final ModelList mModelList;
     private final Drawable mHistoryIcon;
     private final Drawable mDefaultIcon;
+    private final Drawable mIncognitoIcon;
     private final String mNewTabText;
+    private final String mNewIncognitoTabText;
     private final Profile mProfile;
 
     private NavigationHistory mHistory;
@@ -88,7 +93,10 @@ class NavigationSheetMediator {
                 context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color);
         mDefaultIcon = TintedDrawable.constructTintedDrawable(
                 context, R.drawable.ic_chrome, R.color.default_icon_color);
+        mIncognitoIcon = TintedDrawable.constructTintedDrawable(
+                context, R.drawable.incognito_small, R.color.default_icon_color);
         mNewTabText = context.getResources().getString(R.string.menu_new_tab);
+        mNewIncognitoTabText = context.getResources().getString(R.string.menu_new_incognito_tab);
     }
 
     /**
@@ -143,7 +151,7 @@ class NavigationSheetMediator {
                 Drawable drawable;
                 if (favicon == null) {
                     drawable = UrlUtilities.isNTPUrl(pageUrl)
-                            ? mDefaultIcon
+                            ? getNTPIcon()
                             : new BitmapDrawable(mIconGenerator.generateIconForUrl(pageUrl));
                 } else {
                     drawable = new BitmapDrawable(favicon);
@@ -155,9 +163,23 @@ class NavigationSheetMediator {
 
     private String getEntryText(NavigationEntry entry) {
         String entryText = entry.getTitle();
-        if (UrlUtilities.isNTPUrl(entry.getUrl())) entryText = mNewTabText;
+        if (UrlUtilities.isNTPUrl(entry.getUrl())) entryText = getNTPText();
         if (TextUtils.isEmpty(entryText)) entryText = entry.getVirtualUrl().getSpec();
         if (TextUtils.isEmpty(entryText)) entryText = entry.getUrl().getSpec();
         return entryText;
+    }
+
+    private Drawable getNTPIcon() {
+        return mProfile.isOffTheRecord()
+                        && ChromeFeatureList.isEnabled(INCOGNITO_HISTORY_ENTRIES_FLAG)
+                ? mIncognitoIcon
+                : mDefaultIcon;
+    }
+
+    private String getNTPText() {
+        return mProfile.isOffTheRecord()
+                        && ChromeFeatureList.isEnabled(INCOGNITO_HISTORY_ENTRIES_FLAG)
+                ? mNewIncognitoTabText
+                : mNewTabText;
     }
 }

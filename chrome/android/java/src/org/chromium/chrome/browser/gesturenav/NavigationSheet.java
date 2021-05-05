@@ -21,10 +21,11 @@ public interface NavigationSheet {
      */
     interface Delegate {
         /**
-         * @param {@code true} if the requested history is of forward navigation.
+         * @param forward {@code true} if the requested history is of forward navigation.
+         * @param isOffTheRecord {@code true} if the history is called from incognito mode.
          * @return {@link NavigationHistory} object.
          */
-        NavigationHistory getHistory(boolean forward);
+        NavigationHistory getHistory(boolean forward, boolean isOffTheRecord);
 
         /**
          * Navigates to the page associated with the given index.
