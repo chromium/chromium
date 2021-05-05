@@ -252,6 +252,9 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<ExtensionTestMessageListener> app_window_loaded_listener_;
   std::unique_ptr<TerminationObserver> termination_observer_;
 
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+
  private:
   FakeCWS fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
@@ -261,9 +264,6 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
   EmbeddedTestServerSetupMixin embedded_test_server_setup_{
       &mixin_host_, embedded_test_server()};
   LoginManagerMixin login_manager_{&mixin_host_, {}};
-
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DISALLOW_COPY_AND_ASSIGN(AutoLaunchedKioskTest);
 };
@@ -303,6 +303,38 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
   EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
 
   ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
+}
+
+class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
+ public:
+  AutoLaunchedKioskEphemeralUsersTest() = default;
+  ~AutoLaunchedKioskEphemeralUsersTest() override = default;
+
+  // AutoLaunchedKioskTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    AutoLaunchedKioskTest::SetUpInProcessBrowserTestFixture();
+    std::unique_ptr<chromeos::ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskEphemeralUsersTest, Launches) {
+  // Set up default network connections, so tests think the device is online.
+  DBusThreadManager::Get()
+      ->GetShillManagerClient()
+      ->GetTestInterface()
+      ->SetupDefaultEnvironment();
+
+  // Check that policy flags have not been lost.
+  ExpectCommandLineHasDefaultPolicySwitches(
+      *base::CommandLine::ForCurrentProcess());
+
+  EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
+
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
 }
 
 // Used to test app auto-launch flow when the launched app is not kiosk enabled.

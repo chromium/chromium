@@ -25,6 +25,7 @@
 -All/WizardControllerDeviceStateExplicitRequirementTest.*
 -All/WizardControllerUpdateAfterCompletedOobeTest.*
 -AppDownloadingScreenTest.*
+-AutoLaunchedKioskEphemeralUsersTest.*
 -ArcTermsOfServiceScreenTest.*
 -AssistantOptInFlowTest.*
 -AutoEnrollmentLocalPolicyServer.*
