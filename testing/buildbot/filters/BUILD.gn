@@ -63,8 +63,8 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter",
     "//testing/buildbot/filters/code_coverage.browser_tests.filter",
-    "//testing/buildbot/filters/lacros.browser_tests.filter",
     "//testing/buildbot/filters/linux_bionic.browser_tests.filter",
+    "//testing/buildbot/filters/linux-lacros.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
     "//testing/buildbot/filters/pixel_browser_tests.filter",
@@ -104,7 +104,7 @@ source_set("components_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_11.components_unittests.filter",
-    "//testing/buildbot/filters/lacros.components_unittests.filter",
+    "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
   ]
 }
 
@@ -120,7 +120,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/cast-linux.content_browsertests.filter",
     "//testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
     "//testing/buildbot/filters/gpu.skiarenderer_vulkan_content_browsertests.filter",
-    "//testing/buildbot/filters/lacros.content_browsertests.filter",
+    "//testing/buildbot/filters/linux-lacros.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
     "//testing/buildbot/filters/vulkan.content_browsertests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter",
@@ -160,7 +160,7 @@ source_set("sync_integration_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/e2e.sync_integration_tests.filter",
-    "//testing/buildbot/filters/lacros.sync_integration_tests.filter",
+    "//testing/buildbot/filters/linux-lacros.sync_integration_tests.filter",
   ]
 }
 
@@ -194,7 +194,7 @@ source_set("interactive_ui_tests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/lacros.interactive_ui_tests.filter",
+    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
     "//testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter",
   ]
 }
@@ -241,7 +241,7 @@ source_set("unit_tests_filters") {
   data = [
     "//testing/buildbot/filters/android.asan.unit_tests.filter",
     "//testing/buildbot/filters/bfcache.unit_tests.filter",
-    "//testing/buildbot/filters/lacros.unit_tests.filter",
+    "//testing/buildbot/filters/linux-lacros.unit_tests.filter",
     "//testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter",
   ]
 }
