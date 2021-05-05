@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
-#include "components/autofill/core/browser/payments/strike_database_integrator_base.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 
 namespace autofill {
 
@@ -17,7 +17,7 @@ namespace autofill {
 // authentication for card unmasking.
 class FidoAuthenticationStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  FidoAuthenticationStrikeDatabase(StrikeDatabase* strike_database);
+  explicit FidoAuthenticationStrikeDatabase(StrikeDatabase* strike_database);
   ~FidoAuthenticationStrikeDatabase() override;
 
   // Strikes to add when user declines opt-in offer.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments/strike_database_integrator_test_strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_test_strike_database.h"
 
 #include <utility>
 #include <vector>
@@ -23,7 +23,7 @@ namespace autofill {
 
 class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
  public:
-  StrikeDatabaseIntegratorTestStrikeDatabaseTest() {}
+  StrikeDatabaseIntegratorTestStrikeDatabaseTest() = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

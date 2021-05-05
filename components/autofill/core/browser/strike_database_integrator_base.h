@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_BASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_BASE_H_
 
 #include <stdint.h>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
+#include "components/autofill/core/browser/strike_database.h"
 
 namespace autofill {
 
@@ -21,7 +21,7 @@ static const char kSharedId[] = "shared_id";
 // be loaded once per browser session.
 class StrikeDatabaseIntegratorBase {
  public:
-  StrikeDatabaseIntegratorBase(StrikeDatabase* strike_database);
+  explicit StrikeDatabaseIntegratorBase(StrikeDatabase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
   // Returns whether or not strike count for |id| has reached the strike limit
@@ -109,4 +109,4 @@ class StrikeDatabaseIntegratorBase {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_BASE_H_

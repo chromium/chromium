@@ -8,15 +8,15 @@
 #include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
-#include "components/autofill/core/browser/payments/strike_database_integrator_base.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 
 namespace autofill {
 
 // Implementation of StrikeDatabaseIntegratorBase for local card migrations.
 class LocalCardMigrationStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  LocalCardMigrationStrikeDatabase(StrikeDatabase* strike_database);
+  explicit LocalCardMigrationStrikeDatabase(StrikeDatabase* strike_database);
   ~LocalCardMigrationStrikeDatabase() override;
 
   // Strikes to remove when user adds new local card.

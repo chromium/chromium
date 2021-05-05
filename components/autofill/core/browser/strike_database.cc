@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments/strike_database.h"
+#include "components/autofill/core/browser/strike_database.h"
 
 #include <algorithm>
 #include <string>
@@ -49,7 +49,7 @@ StrikeDatabase::StrikeDatabase(
 StrikeDatabase::~StrikeDatabase() = default;
 
 int StrikeDatabase::AddStrikes(int strikes_increase, const std::string& key) {
-  DCHECK(strikes_increase > 0);
+  DCHECK_GT(strikes_increase, 0);
   int num_strikes =
       strike_map_cache_.count(key)  // Cache has entry for |key|.
           ? strike_map_cache_[key].num_strikes() + strikes_increase

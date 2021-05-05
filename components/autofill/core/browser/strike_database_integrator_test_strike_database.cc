@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments/strike_database_integrator_test_strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_test_strike_database.h"
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 

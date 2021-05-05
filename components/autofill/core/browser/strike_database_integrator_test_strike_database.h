@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
 
 #include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
-#include "components/autofill/core/browser/payments/strike_database_integrator_base.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 
 namespace autofill {
 
@@ -41,4 +41,4 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_
