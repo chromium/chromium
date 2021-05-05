@@ -140,12 +140,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             assert mSheetContent == null;
             createWebContents(profile);
             mSheetObserver = new EmptyBottomSheetObserver() {
-                private int mCloseReason;
-
                 @Override
                 public void onSheetContentChanged(BottomSheetContent newContent) {
                     if (newContent != mSheetContent) {
-                        mMetrics.recordMetricsForClosed(mCloseReason);
                         mPeeked = false;
                         destroyWebContents();
                     }
@@ -176,13 +173,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                             }
                             break;
                     }
-                }
-
-                @Override
-                public void onSheetClosed(int reason) {
-                    // "Closed" actually means "Peek" for bottom sheet. Save the reason to
-                    // log when the sheet goes to hidden state. See http://crbug.com/986310.
-                    mCloseReason = reason;
                 }
 
                 @Override

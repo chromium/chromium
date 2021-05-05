@@ -5185,6 +5185,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
     enum="BottomSheet.StateChangeReason" expires_after="M92">
+  <obsolete>
+    Deprecated as of 05/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -5195,6 +5198,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="EphemeralTab.CloseReason"
     enum="OverlayPanel.StateChangeReason" expires_after="M92">
+  <obsolete>
+    Deprecated as of 05/2021
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>

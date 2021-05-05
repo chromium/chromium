@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
 /**
  * Metrics util class for ephemeral tab.
@@ -53,21 +52,19 @@ public class EphemeralTabMetrics {
     }
 
     /** Records metrics when the panel has been closed. */
-    public void recordMetricsForClosed(@StateChangeReason int stateChangeReason) {
+    private void recordMetricsForClosed() {
         if (!mIsVisible) return;
 
         finishPeekTimer();
         finishOpenTimer();
         RecordHistogram.recordBooleanHistogram("EphemeralTab.CtrPeek", mIsViewed);
         RecordHistogram.recordBooleanHistogram("EphemeralTab.Ctr", mDidRecordFirstOpen);
-        RecordHistogram.recordEnumeratedHistogram("EphemeralTab.BottomSheet.CloseReason",
-                stateChangeReason, StateChangeReason.MAX_VALUE + 1);
         reset();
     }
 
     /** Records a user action that promotes the ephemeral tab to a full tab. */
     public void recordOpenInNewTab() {
-        recordMetricsForClosed(StateChangeReason.PROMOTE_TAB);
+        recordMetricsForClosed();
         RecordUserAction.record("EphemeralTab.OpenInNewTab");
     }
 
