@@ -128,11 +128,11 @@ TEST_F(GCMUnregistrationRequestTest, RequestDataPassedToFetcher) {
   headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(kLoginHeader, auth_tokenizer.token());
+  EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token_piece());
 
   std::map<std::string, std::string> expected_pairs;
   expected_pairs["app"] = kAppId;
@@ -338,11 +338,11 @@ TEST_F(InstaceIDDeleteTokenRequestTest, RequestDataPassedToFetcher) {
   headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(kLoginHeader, auth_tokenizer.token());
+  EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token_piece());
 
   std::map<std::string, std::string> expected_pairs;
   expected_pairs["gmsv"] = base::NumberToString(kGCMVersion);
