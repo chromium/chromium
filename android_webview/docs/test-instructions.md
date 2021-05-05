@@ -87,19 +87,29 @@ $ adb logcat
 
 ### Layout tests and page cycler tests
 
-WebView's layout tests and page cycler tests exercise the WebView installed on
-the system, instrumenting the WebView shell (`system_webview_shell_apk`,
-`org.chromium.webview_shell`). These test cases are defined in
+WebView's layout tests and page cycler tests exercise the **WebView installed on
+the system** and instrument the [system WebView shell app](webview-shell.md)
+(`system_webview_shell_apk`). These test cases are defined in
 `//android_webview/tools/system_webview_shell/`.
 
+*** note
+**Important:** because these tests run against the WebView installed on the
+system, both these test targets automatically compile and install
+`system_webview_apk` and switch the WebView provider. This means you need to
+configure this target to be compatible with your system by following the
+[full build instructions](build-instructions.md).
+
+**Note:** we do not currently support running these tests on the emulator due to
+signing key mismatches with the preinstalled WebView shell
+(https://crbug.com/1205665 tracks supporting this).
+***
+
 ```sh
-# Build
+# Build (this also compiles system_webview_shell_apk and system_webview_apk)
 $ autoninja -C out/Default system_webview_shell_layout_test_apk
 
-# Install the desired WebView APK
-...
-
-# Run layout tests (installs WebView shell):
+# Run layout tests (installs the test APK, WebView shell, and
+# system_webview_apk, and also switches your WebView provider)
 $ out/Default/bin/run_system_webview_shell_layout_test_apk
 
 # Print both Java and C++ log messages to the console (optional):
