@@ -41,6 +41,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
                         wl_resource* output_resource);
   ~WaylandDisplayHandler() override;
   void AddObserver(WaylandDisplayObserver* observer);
+  int64_t id() const;
 
   // Overridden from display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

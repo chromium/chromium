@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v1" version="32">
+  <interface name="zcr_remote_shell_v1" version="33">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -212,7 +212,7 @@
 
     <event name="workspace_info" since="20">
       <description summary="area of remote shell in pixels">
-	Sends display information such as size, work area and its related information.
+	[Deprecated] Sends display information such as size, work area and its related information.
 	Each series of "workspace_info" events must be terminated by a "configure" event.
       </description>
       <arg name="display_id_hi" type="uint"/>
@@ -294,7 +294,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v1" version="31">
+  <interface name="zcr_remote_surface_v1" version="33">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -757,7 +757,7 @@
 
     <event name="bounds_changed" since="10">
       <description summary="The compositor requested to change the bounds">
-	The compositor requested to change its
+	[Deprecated] The compositor requested to change its
 	bounds. "bounds_change_reason" specifies the cause of the
 	bounds change. The client may apply the different move/resize
 	strategy depending on the reason.
@@ -1008,7 +1008,7 @@
 
     <request name="set_bounds" since="18">
       <description summary="set window bounds">
-	Set the "visible bounds" of a window from the user's perspective.
+	[Deprecated] Set the "visible bounds" of a window from the user's perspective.
 	Client-side decorations often have invisible portions like drop shadows
 	which should be ignored for the purposes of aligning, placing and
 	constraining windows.
@@ -1142,6 +1142,61 @@
           time wl_surface.commit of the corresponding wl_surface is called.
       </description>
     </request>
+
+    <!-- Version 33 additions -->
+
+    <event name="bounds_changed_in_output" since="33">
+      <description summary="The compositor requested to change the bounds">
+	The compositor requested to change its
+	bounds. "bounds_change_reason" specifies the cause of the
+	bounds change. The client may apply the different move/resize
+	strategy depending on the reason.
+
+	The "output" specifies the wayland output in which the suface should live.
+
+	The client responds with set_window_geometry request, with the
+	bounds it is resized to (this may be different from the bounds
+	requested).
+
+	The client may ignore move request depending on the state,
+	e.g, if it becomes resizable or other constrants.
+      </description>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="bounds_change_reason" type="uint"/>
+    </event>
+
+    <request name="set_bounds_in_output" since="33">
+      <description summary="set window bounds">
+	Set the "visible bounds" of a window from the user's perspective.
+	Client-side decorations often have invisible portions like drop shadows
+	which should be ignored for the purposes of aligning, placing and
+	constraining windows.
+
+	The bounds are double buffered, and will be applied at the
+	time wl_surface.commit of the corresponding wl_surface is called.
+
+	Once the bounds are set, it is not possible to unset them, and they will
+	remain the same until set_bounds is called again, even if a new sub-
+	surface or buffer is attached.
+
+	If never set, the value is the surface content bounds. This updates
+	dynamically on every commit.
+
+	The bounds are relative to the given display. If the display is invalid,
+	they are assumed to be relative to the primary display.
+
+	The width and height must be greater than zero.
+      </description>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
   </interface>
 
   <interface name="zcr_notification_surface_v1" version="16">
@@ -1166,7 +1221,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_input_method_surface_v1" version="18">
+  <interface name="zcr_input_method_surface_v1" version="33">
     <description summary="An input method window">
       An interface that may be implemented by a wl_surface to host IME contents.
     </description>
@@ -1181,7 +1236,7 @@
 
     <request name="set_bounds" since="18">
       <description summary="set window bounds">
-	Set the "visible bounds" of a window from the user's perspective.
+	[Deprecated] Set the "visible bounds" of a window from the user's perspective.
 
 	The bounds are double buffered, and will be applied at the
 	time wl_surface.commit of the corresponding wl_surface is called.
@@ -1205,9 +1260,37 @@
       <arg name="width" type="int"/>
       <arg name="height" type="int"/>
     </request>
+
+    <!-- Version 33 additions -->
+
+    <request name="set_bounds_in_output" since="33">
+      <description summary="set window bounds">
+	Set the "visible bounds" of a window from the user's perspective.
+
+	The bounds are double buffered, and will be applied at the
+	time wl_surface.commit of the corresponding wl_surface is called.
+
+	Once the bounds are set, it is not possible to unset them, and they will
+	remain the same until set_bounds is called again, even if a new sub-
+	surface or buffer is attached.
+
+	If never set, the value is the surface content bounds. This updates
+	dynamically on every commit.
+
+	The bounds are relative to the given display. If the display is invalid,
+	they are assumed to be relative to the primary display.
+
+	The width and height must be greater than zero.
+      </description>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
   </interface>
 
-  <interface name="zcr_toast_surface_v1" version="28">
+  <interface name="zcr_toast_surface_v1" version="33">
     <description summary="A toast window">
       An interface that may be implemented by a wl_surface to host
       toast contents.
@@ -1221,7 +1304,7 @@
 
     <request name="set_position">
       <description summary="set toast bounds position">
-	Set the position of bounds of a window from the user's perspective.
+	[Deprecated] Set the position of bounds of a window from the user's perspective.
 
 	The bounds are double buffered, and will be applied at the
 	time wl_surface.commit of the corresponding wl_surface is called.
@@ -1243,7 +1326,7 @@
 
     <request name="set_size">
       <description summary="set toast bounds size">
-	Set the size of bounds of a window from the user's perspective.
+	[Deprecated] Set the size of bounds of a window from the user's perspective.
 
 	The bounds are double buffered, and will be applied at the
 	time wl_surface.commit of the corresponding wl_surface is called.
@@ -1257,6 +1340,31 @@
 
 	The width and height must be greater than zero.
       </description>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
+
+    <!-- Version 33 additions -->
+
+    <request name="set_bounds_in_output" since="33">
+      <description summary="set toast bounds position">
+	Set the bounds of a toast window from the user's perspective.
+
+	The bounds are double buffered, and will be applied at the
+	time wl_surface.commit of the corresponding wl_surface is called.
+
+	Once the bounds are set, it is not possible to unset them, and they will
+	remain the same until set_bounds is called again, even if a new sub-
+	surface or buffer is attached.
+
+	If never set, the compositor will determine the toast position.
+
+	The bounds are relative to the given display. If the display is invalid,
+	they are assumed to be relative to the primary display.
+      </description>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
       <arg name="width" type="int"/>
       <arg name="height" type="int"/>
     </request>
@@ -1276,7 +1384,7 @@
 
     <event name="display_id" since="29">
       <description summary="the identifier for the display">
-	Sends the display identifier used by the server for the display.
+	[Deprecated] Sends the display identifier used by the server for the display.
       </description>
       <arg name="display_id_hi" type="uint"/>
       <arg name="display_id_lo" type="uint"/>

@@ -55,6 +55,11 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   }
 }
 
+int64_t WaylandDisplayHandler::id() const {
+  DCHECK(output_);
+  return output_->id();
+}
+
 void WaylandDisplayHandler::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {

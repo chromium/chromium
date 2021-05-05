@@ -200,9 +200,15 @@ Server::Server(Display* display) : display_(display) {
                    bind_keyboard_configuration);
   wl_global_create(wl_display_.get(), &zcr_notification_shell_v1_interface, 1,
                    display_, bind_notification_shell);
+
+  remote_shell_data_ = std::make_unique<WaylandRemoteShellData>(
+      display_,
+      WaylandRemoteShellData::OutputResourceProvider(base::BindRepeating(
+          &Server::GetOutputResource, base::Unretained(this))));
   wl_global_create(wl_display_.get(), &zcr_remote_shell_v1_interface,
-                   zcr_remote_shell_v1_interface.version, display_,
-                   bind_remote_shell);
+                   zcr_remote_shell_v1_interface.version,
+                   remote_shell_data_.get(), bind_remote_shell);
+
   wl_global_create(wl_display_.get(), &zcr_stylus_tools_v1_interface, 1,
                    display_, bind_stylus_tools);
   wl_global_create(wl_display_.get(),

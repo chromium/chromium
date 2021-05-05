@@ -662,6 +662,20 @@ void remote_surface_unset_resize_lock(wl_client* client,
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLock(false);
 }
 
+void remote_surface_set_bounds_in_output(wl_client* client,
+                                         wl_resource* resource,
+                                         wl_resource* output_resource,
+                                         int32_t x,
+                                         int32_t y,
+                                         int32_t width,
+                                         int32_t height) {
+  WaylandDisplayHandler* display_handler =
+      GetUserDataAs<WaylandDisplayHandler>(output_resource);
+  // Bounds are set in pixels, and should not be scaled.
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetBounds(
+      display_handler->id(), gfx::Rect(x, y, width, height));
+}
+
 const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
     remote_surface_destroy,
     remote_surface_set_app_id,
@@ -713,7 +727,9 @@ const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
     remote_surface_unset_pip_original_window,
     remote_surface_set_system_gesture_exclusion,
     remote_surface_set_resize_lock,
-    remote_surface_unset_resize_lock};
+    remote_surface_unset_resize_lock,
+    remote_surface_set_bounds_in_output,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // notification_surface_interface:
@@ -752,9 +768,25 @@ void input_method_surface_set_bounds(wl_client* client,
       gfx::Rect(x, y, width, height));
 }
 
+void input_method_surface_set_bounds_in_output(wl_client* client,
+                                               wl_resource* resource,
+                                               wl_resource* output_resource,
+                                               int32_t x,
+                                               int32_t y,
+                                               int32_t width,
+                                               int32_t height) {
+  WaylandDisplayHandler* display_handler =
+      GetUserDataAs<WaylandDisplayHandler>(output_resource);
+  GetUserDataAs<InputMethodSurface>(resource)->SetBounds(
+      display_handler->id(), gfx::Rect(x, y, width, height));
+}
+
 const struct zcr_input_method_surface_v1_interface
-    input_method_surface_implementation = {input_method_surface_destroy,
-                                           input_method_surface_set_bounds};
+    input_method_surface_implementation = {
+        input_method_surface_destroy,
+        input_method_surface_set_bounds,
+        input_method_surface_set_bounds_in_output,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // toast_surface_interface:
@@ -782,10 +814,24 @@ void toast_surface_set_size(wl_client* client,
       gfx::Size(width, height));
 }
 
+void toast_surface_set_bounds_in_output(wl_client* client,
+                                        wl_resource* resource,
+                                        wl_resource* output_resource,
+                                        int32_t x,
+                                        int32_t y,
+                                        int32_t width,
+                                        int32_t height) {
+  WaylandDisplayHandler* display_handler =
+      GetUserDataAs<WaylandDisplayHandler>(output_resource);
+  GetUserDataAs<ToastSurface>(resource)->SetBounds(
+      display_handler->id(), gfx::Rect(x, y, width, height));
+}
+
 const struct zcr_toast_surface_v1_interface toast_surface_implementation = {
     toast_surface_destroy,
     toast_surface_set_position,
     toast_surface_set_size,
+    toast_surface_set_bounds_in_output,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -887,8 +933,13 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 class WaylandRemoteShell : public ash::TabletModeObserver,
                            public display::DisplayObserver {
  public:
-  WaylandRemoteShell(Display* display, wl_resource* remote_shell_resource)
-      : display_(display), remote_shell_resource_(remote_shell_resource) {
+  using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;
+  WaylandRemoteShell(Display* display,
+                     wl_resource* remote_shell_resource,
+                     OutputResourceProvider output_provider)
+      : display_(display),
+        remote_shell_resource_(remote_shell_resource),
+        output_provider_(output_provider) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
     display::Screen::GetScreen()->AddObserver(this);
@@ -1298,6 +1349,13 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         static_cast<uint32_t>(display_id), bounds_in_display.x(),
         bounds_in_display.y(), bounds_in_display.width(),
         bounds_in_display.height(), reason);
+    if (wl_resource_get_version(resource) >=
+        ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGED_IN_OUTPUT_SINCE_VERSION) {
+      zcr_remote_surface_v1_send_bounds_changed_in_output(
+          resource, output_provider_.Run(display_id), bounds_in_display.x(),
+          bounds_in_display.y(), bounds_in_display.width(),
+          bounds_in_display.height(), reason);
+    }
   }
 
   void OnRemoteSurfaceStateChanged(wl_resource* resource,
@@ -1385,6 +1443,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   // The remote shell resource associated with observer.
   wl_resource* const remote_shell_resource_;
+
+  // Callback to get the wl_output resource for a given display_id.
+  OutputResourceProvider const output_provider_;
 
   // When true, the compositor should use the default_device_scale_factor to
   // undo the scaling on the client buffers. When false, the compositor should
@@ -1586,6 +1647,12 @@ const struct zcr_remote_shell_v1_interface remote_shell_implementation = {
 
 }  // namespace
 
+WaylandRemoteShellData::WaylandRemoteShellData(
+    Display* display,
+    OutputResourceProvider output_provider)
+    : display(display), output_provider(output_provider) {}
+WaylandRemoteShellData::~WaylandRemoteShellData() {}
+
 void bind_remote_shell(wl_client* client,
                        void* data,
                        uint32_t version,
@@ -1594,9 +1661,12 @@ void bind_remote_shell(wl_client* client,
       client, &zcr_remote_shell_v1_interface,
       std::min<uint32_t>(version, zcr_remote_shell_v1_interface.version), id);
 
-  SetImplementation(resource, &remote_shell_implementation,
-                    std::make_unique<WaylandRemoteShell>(
-                        static_cast<Display*>(data), resource));
+  auto* remote_shell_data = static_cast<WaylandRemoteShellData*>(data);
+  SetImplementation(
+      resource, &remote_shell_implementation,
+      std::make_unique<WaylandRemoteShell>(
+          remote_shell_data->display, resource,
+          base::BindRepeating(remote_shell_data->output_provider, client)));
 }
 
 gfx::Insets GetWorkAreaInsetsInPixel(const display::Display& display,
