@@ -72,6 +72,15 @@ class StrikeDatabase : public KeyedService {
   // ProtoDatabase.
   void ClearStrikes(const std::string& key);
 
+  // Returns all strike keys for |project_prefix|.
+  // The returned keys still contain the |project_prefix|.
+  std::vector<std::string> GetAllStrikeKeysForProject(
+      const std::string& project_prefix);
+
+  // Removes database entry for keys in |keys_to_remove| from in-memory cache
+  // and the underlying ProtoDatabase.
+  void ClearStrikesForKeys(const std::vector<std::string>& keys_to_remove);
+
   // Removes all database entries from in-memory cache and underlying
   // ProtoDatabase for the whole project.
   void ClearAllStrikesForProject(const std::string& project_prefix);
@@ -136,6 +145,11 @@ class StrikeDatabase : public KeyedService {
   // ProtoDatabase.
   virtual void ClearAllProtoStrikesForKey(
       const std::string& key,
+      const ClearStrikesCallback& outer_callback);
+
+  // Same as |ClearAllProtoStrikesForKey()| but for a vector of |keys|.
+  virtual void ClearAllProtoStrikesForKeys(
+      const std::vector<std::string>& keys,
       const ClearStrikesCallback& outer_callback);
 
   // Passes success status and StrikeData entry for |key| to |inner_callback|.

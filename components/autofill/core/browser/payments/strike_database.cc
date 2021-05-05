@@ -46,7 +46,7 @@ StrikeDatabase::StrikeDatabase(
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-StrikeDatabase::~StrikeDatabase() {}
+StrikeDatabase::~StrikeDatabase() = default;
 
 int StrikeDatabase::AddStrikes(int strikes_increase, const std::string& key) {
   DCHECK(strikes_increase > 0);
@@ -76,16 +76,28 @@ void StrikeDatabase::ClearStrikes(const std::string& key) {
   ClearAllProtoStrikesForKey(key, base::DoNothing());
 }
 
-void StrikeDatabase::ClearAllStrikesForProject(
+std::vector<std::string> StrikeDatabase::GetAllStrikeKeysForProject(
     const std::string& project_prefix) {
-  std::vector<std::string> keys_to_delete;
+  std::vector<std::string> project_keys;
   for (std::pair<std::string, StrikeData> entry : strike_map_cache_) {
     if (entry.first.find(project_prefix) == 0) {
-      keys_to_delete.push_back(entry.first);
+      project_keys.push_back(entry.first);
     }
   }
-  for (std::string key : keys_to_delete)
-    ClearStrikes(key);
+  return project_keys;
+}
+
+void StrikeDatabase::ClearAllStrikesForProject(
+    const std::string& project_prefix) {
+  ClearStrikesForKeys(GetAllStrikeKeysForProject(project_prefix));
+}
+
+void StrikeDatabase::ClearStrikesForKeys(
+    const std::vector<std::string>& keys_to_remove) {
+  for (const auto& key : keys_to_remove) {
+    strike_map_cache_.erase(key);
+  }
+  ClearAllProtoStrikesForKeys(keys_to_remove, base::DoNothing());
 }
 
 void StrikeDatabase::ClearAllStrikes() {
@@ -161,8 +173,8 @@ void StrikeDatabase::ClearAllProtoStrikes(
       outer_callback);
 }
 
-void StrikeDatabase::ClearAllProtoStrikesForKey(
-    const std::string& key,
+void StrikeDatabase::ClearAllProtoStrikesForKeys(
+    const std::vector<std::string>& keys,
     const ClearStrikesCallback& outer_callback) {
   if (!database_initialized_) {
     outer_callback.Run(false);
@@ -170,11 +182,18 @@ void StrikeDatabase::ClearAllProtoStrikesForKey(
   }
   std::unique_ptr<std::vector<std::string>> keys_to_remove(
       new std::vector<std::string>());
-  keys_to_remove->push_back(key);
+  *keys_to_remove = keys;
   db_->UpdateEntries(
       /*entries_to_save=*/std::make_unique<
           leveldb_proto::ProtoDatabase<StrikeData>::KeyEntryVector>(),
       /*keys_to_remove=*/std::move(keys_to_remove), outer_callback);
+}
+
+void StrikeDatabase::ClearAllProtoStrikesForKey(
+    const std::string& key,
+    const ClearStrikesCallback& outer_callback) {
+  std::vector<std::string> keys_to_delete({key});
+  ClearAllProtoStrikesForKeys(keys_to_delete, outer_callback);
 }
 
 void StrikeDatabase::GetProtoStrikeData(const std::string& key,

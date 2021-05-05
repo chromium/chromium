@@ -57,7 +57,7 @@ class TestStrikeDatabase : public StrikeDatabase {
 // ProtoDatabase.
 class StrikeDatabaseTest : public ::testing::Test {
  public:
-  StrikeDatabaseTest() {}
+  StrikeDatabaseTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -114,6 +114,20 @@ class StrikeDatabaseTest : public ::testing::Test {
     run_loop.Run();
   }
 
+  void OnClearAllProtoStrikesForKeys(base::RepeatingClosure run_loop_closure,
+                                     bool success) {
+    run_loop_closure.Run();
+  }
+
+  void ClearAllProtoStrikesForKeys(const std::vector<std::string>& keys) {
+    base::RunLoop run_loop;
+    strike_database_->ClearAllProtoStrikesForKeys(
+        keys,
+        base::BindRepeating(&StrikeDatabaseTest::OnClearAllProtoStrikesForKeys,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   void OnClearAllProtoStrikes(base::RepeatingClosure run_loop_closure,
                               bool success) {
     run_loop_closure.Run();
@@ -152,7 +166,7 @@ TEST_F(StrikeDatabaseTest, GetStrikeForNonZeroStrikesTest) {
   std::vector<std::pair<std::string, StrikeData>> entries;
   StrikeData data;
   data.set_num_strikes(3);
-  entries.push_back(std::make_pair(key, data));
+  entries.emplace_back(key, data);
   AddProtoEntries(entries);
 
   int strikes = GetProtoStrikes(key);
@@ -172,7 +186,7 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForNonZeroStrikesTest) {
   std::vector<std::pair<std::string, StrikeData>> entries;
   StrikeData data;
   data.set_num_strikes(3);
-  entries.push_back(std::make_pair(key, data));
+  entries.emplace_back(key, data);
   AddProtoEntries(entries);
 
   int strikes = GetProtoStrikes(key);
@@ -180,6 +194,30 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForNonZeroStrikesTest) {
   ClearAllProtoStrikesForKey(key);
   strikes = GetProtoStrikes(key);
   EXPECT_EQ(0, strikes);
+}
+
+TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesTest) {
+  // Set up database with 3 pre-existing strikes for three different keys.
+  const std::string key1 = "12345";
+  const std::string key2 = "67890";
+  const std::string key3 = "99000";
+  std::vector<std::pair<std::string, StrikeData>> entries;
+  StrikeData data;
+  data.set_num_strikes(3);
+  entries.emplace_back(key1, data);
+  entries.emplace_back(key2, data);
+  entries.emplace_back(key3, data);
+  AddProtoEntries(entries);
+
+  EXPECT_EQ(3, GetProtoStrikes(key1));
+  EXPECT_EQ(3, GetProtoStrikes(key2));
+  EXPECT_EQ(3, GetProtoStrikes(key3));
+  std::vector<std::string> keys_to_clear({key1, key2});
+  ClearAllProtoStrikesForKeys(keys_to_clear);
+  EXPECT_EQ(0, GetProtoStrikes(key1));
+  EXPECT_EQ(0, GetProtoStrikes(key2));
+  // The strikes for the third key should not have been reset.
+  EXPECT_EQ(3, GetProtoStrikes(key3));
 }
 
 TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesEntriesTest) {
@@ -190,10 +228,10 @@ TEST_F(StrikeDatabaseTest, ClearStrikesForMultipleNonZeroStrikesEntriesTest) {
   std::vector<std::pair<std::string, StrikeData>> entries;
   StrikeData data1;
   data1.set_num_strikes(3);
-  entries.push_back(std::make_pair(key1, data1));
+  entries.emplace_back(key1, data1);
   StrikeData data2;
   data2.set_num_strikes(5);
-  entries.push_back(std::make_pair(key2, data2));
+  entries.emplace_back(key2, data2);
   AddProtoEntries(entries);
 
   int strikes = GetProtoStrikes(key1);
@@ -226,6 +264,39 @@ TEST_F(StrikeDatabaseTest, ClearAllProtoStrikesTest) {
   ClearAllProtoStrikes();
   EXPECT_EQ(0, GetProtoStrikes(key1));
   EXPECT_EQ(0, GetProtoStrikes(key2));
+}
+
+TEST_F(StrikeDatabaseTest, GetAllStrikeKeysForProject) {
+  const std::string key1 = "project_12345";
+  const std::string key2 = "project_13579";
+  const std::string key3 = "otherproject_13579";
+  strike_database_->AddStrikes(1, key1);
+  strike_database_->AddStrikes(2, key2);
+  strike_database_->AddStrikes(2, key3);
+  std::vector<std::string> expected_keys({key1, key2});
+  EXPECT_EQ(strike_database_->GetAllStrikeKeysForProject("project"),
+            expected_keys);
+  expected_keys = {key3};
+  EXPECT_EQ(strike_database_->GetAllStrikeKeysForProject("otherproject"),
+            expected_keys);
+  ClearAllProtoStrikes();
+}
+
+TEST_F(StrikeDatabaseTest, ClearStrikesForKeys) {
+  const std::string key1 = "project_12345";
+  const std::string key2 = "project_13579";
+  const std::string key3 = "otherproject_13579";
+  strike_database_->AddStrikes(1, key1);
+  strike_database_->AddStrikes(2, key2);
+  strike_database_->AddStrikes(2, key3);
+  strike_database_->ClearStrikesForKeys(std::vector<std::string>({key1, key2}));
+  std::vector<std::string> expected_keys({});
+  EXPECT_EQ(strike_database_->GetAllStrikeKeysForProject("project"),
+            expected_keys);
+  expected_keys.emplace_back(key3);
+  EXPECT_EQ(strike_database_->GetAllStrikeKeysForProject("otherproject"),
+            expected_keys);
+  ClearAllProtoStrikes();
 }
 
 }  // namespace autofill
