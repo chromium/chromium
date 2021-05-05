@@ -140,7 +140,7 @@ class CORE_EXPORT V8ScriptRunner final {
                                                 ExecutionContext*,
                                                 v8::Local<v8::Value> receiver,
                                                 int argc,
-                                                v8::Local<v8::Value> info[],
+                                                v8::Local<v8::Value> argv[],
                                                 v8::Isolate*);
 
   // https://html.spec.whatwg.org/C/#run-a-module-script

@@ -651,7 +651,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     ExecutionContext* context,
     v8::Local<v8::Value> receiver,
     int argc,
-    v8::Local<v8::Value> args[],
+    v8::Local<v8::Value> argv[],
     v8::Isolate* isolate) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
@@ -688,7 +688,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
 
   probe::CallFunction probe(context, function, depth);
   v8::MaybeLocal<v8::Value> result =
-      function->Call(isolate->GetCurrentContext(), receiver, argc, args);
+      function->Call(isolate->GetCurrentContext(), receiver, argc, argv);
   CHECK(!isolate->IsDead());
 
   if (!depth)
