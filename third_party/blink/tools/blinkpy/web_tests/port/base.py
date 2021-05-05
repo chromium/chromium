@@ -844,11 +844,8 @@ class Port(object):
         baseline_path = self.expected_filename(test_name, '.txt')
         if not self._filesystem.exists(baseline_path):
             return None
-        if six.PY2:
-            text = self._filesystem.read_binary_file(baseline_path)
-        else:
-            text = self._filesystem.read_text_file(baseline_path)
-        return text.replace('\r\n', '\n')
+        text = self._filesystem.read_binary_file(baseline_path)
+        return text.replace(b'\r\n', b'\n')
 
     def reference_files(self, test_name):
         """Returns a list of expectation (== or !=) and filename pairs"""
@@ -1830,11 +1827,9 @@ class Port(object):
     def output_contains_sanitizer_messages(self, output):
         if not output:
             return None
-        if 'AddressSanitizer' in output:
-            return 'AddressSanitizer'
-        if 'MemorySanitizer' in output:
-            return 'MemorySanitizer'
-        return None
+        if (b'AddressSanitizer' in output) or (b'MemorySanitizer' in output):
+            return True
+        return False
 
     def _get_crash_log(self, name, pid, stdout, stderr, newer_than):
         if self.output_contains_sanitizer_messages(stderr):
@@ -1866,20 +1861,21 @@ class Port(object):
 
         # We require stdout and stderr to be bytestrings, not character strings.
         if stdout:
-            assert isinstance(stdout, basestring)
             stdout_lines = stdout.decode('utf8', 'replace').splitlines()
         else:
             stdout_lines = [u'<empty>']
+
         if stderr:
-            assert isinstance(stderr, basestring)
             stderr_lines = stderr.decode('utf8', 'replace').splitlines()
         else:
             stderr_lines = [u'<empty>']
 
-        return (stderr, 'crash log for %s (pid %s):\n%s\n%s\n' %
-                (name_str, pid_str, '\n'.join(
-                    ('STDOUT: ' + l) for l in stdout_lines), '\n'.join(
-                        ('STDERR: ' + l) for l in stderr_lines)),
+        return (stderr,
+                ('crash log for %s (pid %s):\n%s\n%s\n' %
+                 (name_str, pid_str, '\n'.join(
+                     ('STDOUT: ' + l) for l in stdout_lines), '\n'.join(
+                         ('STDERR: ' + l)
+                         for l in stderr_lines))).encode('utf8', 'replace'),
                 self._get_crash_site(stderr_lines))
 
     def _get_crash_site(self, stderr_lines):

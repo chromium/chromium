@@ -30,6 +30,7 @@ import base64
 import logging
 import re
 import shlex
+import six
 import time
 
 from blinkpy.common.system import path
@@ -195,7 +196,7 @@ class Driver(object):
         # stderr output, as well as if we've seen #EOF on this driver instance.
         # FIXME: We should probably remove _read_first_block and _read_optional_image_block and
         # instead scope these locally in run_test.
-        self.error_from_test = str()
+        self.error_from_test = bytearray()
         self.err_seen_eof = False
         self._server_process = None
         self._current_cmd_line = None
@@ -228,14 +229,14 @@ class Driver(object):
         stdin_deadline = start_time + int(driver_input.timeout) / 2000.0
         self.start(driver_input.args, stdin_deadline)
         test_begin_time = time.time()
-        self.error_from_test = str()
+        self.error_from_test = bytearray()
         self.err_seen_eof = False
 
         test_command = self._command_from_driver_input(driver_input)
         server_process_command = self._server_process.cmd()
 
         deadline = test_begin_time + int(driver_input.timeout) / 1000.0
-        self._server_process.write(test_command.encode("utf8", "replace"))
+        self._server_process.write(test_command.encode('utf8', 'replace'))
         # First block is either text or audio
         text, audio = self._read_first_block(deadline)
         # The second (optional) block is image data.
@@ -250,8 +251,8 @@ class Driver(object):
             sanitizer = self._port.output_contains_sanitizer_messages(
                 self.error_from_test)
             if sanitizer:
-                self.error_from_test = 'OUTPUT CONTAINS "' + sanitizer + \
-                    '", so we are treating this test as if it crashed, even though it did not.\n\n' + self.error_from_test
+                self.error_from_test = 'OUTPUT CONTAINS "sanitizer",' + \
+                    ' so we are treating this test as if it crashed, even though it did not.\n\n' + self.error_from_test
                 crashed = True
                 self._crashed_process_name = 'unknown process name'
                 self._crashed_pid = 0
@@ -288,8 +289,11 @@ class Driver(object):
                 if self.error_from_test:
                     crash_log += '\nstdout:\n%s\nstderr:\n%s\n' % (
                         text, self.error_from_test)
-        command = "%s %s" % (" ".join(server_process_command), test_command)
-
+        command = ("%s %s" %
+                   (" ".join(server_process_command), test_command)).encode(
+                       'ascii', 'replace')
+        if actual_image_hash:
+            actual_image_hash = actual_image_hash.decode('utf8', 'replace')
         return DriverOutput(text,
                             image,
                             actual_image_hash,
@@ -463,11 +467,11 @@ class Driver(object):
         if wait_for_ready:
             deadline = time.time() + DRIVER_START_TIMEOUT_SECS
             if not self._wait_for_server_process_output(
-                    self._server_process, deadline, '#READY'):
+                    self._server_process, deadline, b'#READY'):
                 _log.error('%s took too long to startup.' % server_name)
 
     def _wait_for_server_process_output(self, server_process, deadline, text):
-        output = ''
+        output = b''
         line = server_process.read_stdout_line(deadline)
         output += server_process.pop_all_buffered_stderr()
         while (not server_process.timed_out
@@ -577,7 +581,6 @@ class Driver(object):
             command = self.test_to_uri(driver_input.test_name)
         else:
             command = self._port.abspath_for_test(driver_input.test_name)
-
         # ' is the separator between arguments.
         if self._port.supports_per_test_timeout():
             command += "'--timeout'%s" % driver_input.timeout
@@ -592,14 +595,14 @@ class Driver(object):
             self._measurements['Malloc'] = float(block.malloc)
         if block.js_heap:
             self._measurements['JSHeap'] = float(block.js_heap)
-        if block.content_type == 'audio/wav':
+        if block.content_type == b'audio/wav':
             return (None, block.decoded_content)
         return (block.decoded_content, None)
 
     def _read_optional_image_block(self, deadline):
         # returns (image, actual_image_hash)
         block = self._read_block(deadline, wait_for_stderr_eof=True)
-        if block.content and block.content_type == 'image/png':
+        if block.content and block.content_type == b'image/png':
             return (block.decoded_content, block.content_hash)
         return (None, block.content_hash)
 
@@ -619,24 +622,24 @@ class Driver(object):
         return False
 
     def _process_stdout_line(self, block, line):
-        if (self._read_header(block, line, 'Content-Type: ', 'content_type')
-                or self._read_header(block, line,
-                                     'Content-Transfer-Encoding: ', 'encoding')
-                or self._read_header(block, line, 'Content-Length: ',
+        if (self._read_header(block, line, b'Content-Type: ', 'content_type')
+                or self._read_header(
+                    block, line, b'Content-Transfer-Encoding: ', 'encoding')
+                or self._read_header(block, line, b'Content-Length: ',
                                      '_content_length', int) or
-                self._read_header(block, line, 'ActualHash: ', 'content_hash')
-                or self._read_header(block, line, 'DumpMalloc: ', 'malloc')
-                or self._read_header(block, line, 'DumpJSHeap: ', 'js_heap')
-                or self._read_header(block, line, 'StdinPath', 'stdin_path')):
+                self._read_header(block, line, b'ActualHash: ', 'content_hash')
+                or self._read_header(block, line, b'DumpMalloc: ', 'malloc')
+                or self._read_header(block, line, b'DumpJSHeap: ', 'js_heap')
+                or self._read_header(block, line, b'StdinPath', 'stdin_path')):
             return
         # Note, we're not reading ExpectedHash: here, but we could.
         # If the line wasn't a header, we just append it to the content.
         block.content += line
 
     def _strip_eof(self, line):
-        if line and line.endswith('#EOF\n'):
+        if line and line.endswith(b'#EOF\n'):
             return line[:-5], True
-        if line and line.endswith('#EOF\r\n'):
+        if line and line.endswith(b'#EOF\r\n'):
             _log.error('Got a CRLF-terminated #EOF - this is a driver bug.')
             return line[:-6], True
         return line, False
@@ -668,7 +671,6 @@ class Driver(object):
             if err_line:
                 assert not self.err_seen_eof
                 err_line, self.err_seen_eof = self._strip_eof(err_line)
-
             if out_line:
                 if out_line[-1] != '\n':
                     _log.error(
@@ -689,9 +691,10 @@ class Driver(object):
                             block.content_type, self._server_process.name())
 
             if err_line:
-                if self._check_for_driver_crash(err_line):
+                if self._check_for_driver_crash(
+                        err_line.decode('utf8', 'replace')):
                     break
-                if self._check_for_leak(err_line):
+                if self._check_for_leak(err_line.decode('utf8', 'replace')):
                     break
                 self.error_from_test += err_line
 
@@ -707,7 +710,12 @@ class ContentBlock(object):
         self._content_length = None
         # Content is treated as binary data even though the text output is usually UTF-8.
         # FIXME: Should be bytearray() once we require Python 2.6.
-        self.content = str()
+        # TODO(crbug/1197331): Keeping PY2 as str() for now, as diffing modules
+        # need to be looked into for PY3 unified_diff.py and html_diff.py
+        if six.PY2:
+            self.content = str()
+        else:
+            self.content = bytearray()
         self.decoded_content = None
         self.malloc = None
         self.js_heap = None

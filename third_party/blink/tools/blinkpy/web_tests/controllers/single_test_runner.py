@@ -180,6 +180,12 @@ class SingleTestRunner(object):
             pid=driver_output.pid,
             crash_site=driver_output.crash_site)
 
+    def _convert_to_str(self, data):
+        if data:
+            return data.decode('utf8', 'replace')
+        else:
+            return ''
+
     def _update_or_add_new_baselines(self, driver_output, failures):
         """Updates or adds new baselines for the test if necessary."""
         if (test_failures.has_failure_type(test_failures.FailureTimeout,
@@ -198,7 +204,7 @@ class SingleTestRunner(object):
         #    Note that the created baseline might be redundant, but users can
         #    optimize them later with optimize-baselines.
         if self._is_all_pass_testharness_text_not_needing_baseline(
-                driver_output.text):
+                self._convert_to_str(driver_output.text)):
             driver_output.text = None
         self._save_baseline_data(
             driver_output.text, '.txt',
@@ -409,13 +415,14 @@ class SingleTestRunner(object):
 
         if driver_output.text:
             if self._is_all_pass_testharness_text_not_needing_baseline(
-                    driver_output.text):
+                    self._convert_to_str(driver_output.text)):
                 if self._report_extra_baseline(
                         driver_output, '.txt',
                         'is a all-pass testharness test'):
                     # TODO(wangxianzhu): Make this a failure.
                     pass
-            elif testharness_results.is_testharness_output(driver_output.text):
+            elif testharness_results.is_testharness_output(
+                    self._convert_to_str(driver_output.text)):
                 # We only need -expected.txt for a testharness test when we
                 # expect it to fail or produce additional console output (when
                 # -expected.txt is optional), so don't report missing
@@ -472,10 +479,11 @@ class SingleTestRunner(object):
         if expected_driver_output.text:
             # Will compare text if there is expected text.
             return False, []
-        if not testharness_results.is_testharness_output(driver_output.text):
+        if not testharness_results.is_testharness_output(
+                self._convert_to_str(driver_output.text)):
             return False, []
         if not testharness_results.is_testharness_output_passing(
-                driver_output.text):
+                self._convert_to_str(driver_output.text)):
             return True, [
                 test_failures.FailureTestHarnessAssertion(
                     driver_output, expected_driver_output)
@@ -489,10 +497,12 @@ class SingleTestRunner(object):
         return text and '{\n  "layers": [' in text
 
     def _compare_text(self, expected_driver_output, driver_output):
-        expected_text = expected_driver_output.text
-        actual_text = driver_output.text
-        if not expected_text or not actual_text:
+
+        if not expected_driver_output.text or not driver_output.text:
             return []
+
+        expected_text = expected_driver_output.text.decode('utf8', 'replace')
+        actual_text = driver_output.text.decode('utf8', 'replace')
 
         normalized_actual_text = self._get_normalized_output_text(actual_text)
         # Assuming expected_text is already normalized.
@@ -635,7 +645,6 @@ class SingleTestRunner(object):
         # failures if needed.
         compare_text_failures = self._compare_output(expected_text_output,
                                                      test_output)
-
         # If the test crashed, or timed out,  or a leak was detected, there's no point
         # in running the reference at all. This can save a lot of execution time if we
         # have a lot of crashes or timeouts.
@@ -659,7 +668,6 @@ class SingleTestRunner(object):
         reference_test_names = []
         reftest_failures = []
         args = self._port.args_for_test(self._test_name)
-
         # sort self._reference_files to put mismatch tests first
         for expectation, reference_filename in sorted(self._reference_files):
             reference_test_name = self._port.relative_test_filename(

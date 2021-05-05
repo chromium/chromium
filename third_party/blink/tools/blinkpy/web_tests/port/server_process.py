@@ -120,8 +120,14 @@ class ServerProcess(object):
                 self._proc.stderr = None
 
         self._proc = None
-        self._output = str()  # bytesarray() once we require Python 2.6
-        self._error = str()  # bytesarray() once we require Python 2.6
+        # TODO(crbug/1197331): Keeping output in PY2 as str() for now as
+        # diffing modules(unified_diff.py and html_diff.py) need to be looked
+        # into for PY3.
+        if six.PY2:
+            self._output = str()
+        else:
+            self._output = bytearray()
+        self._error = bytearray()
         self._crashed = False
         self.timed_out = False
 
@@ -191,19 +197,23 @@ class ServerProcess(object):
         try:
             self._log_data(' IN', bytes)
             self._proc.stdin.write(bytes)
+            # TODO(crbug/)In PY3 select.select to get the stdout/stderr
+            # file-descriptors times out without this flush.
+            # Revisit to see if this can be avoided.
+            self._proc.stdin.flush()
         except IOError:
             self.stop(0.0)
             # stop() calls _reset(), so we have to set crashed to True after calling stop().
             self._crashed = True
 
     def _pop_stdout_line_if_ready(self):
-        index_after_newline = self._output.find('\n') + 1
+        index_after_newline = self._output.find(b'\n') + 1
         if index_after_newline > 0:
             return self._pop_output_bytes(index_after_newline)
         return None
 
     def _pop_stderr_line_if_ready(self):
-        index_after_newline = self._error.find('\n') + 1
+        index_after_newline = self._error.find(b'\n') + 1
         if index_after_newline > 0:
             return self._pop_error_bytes(index_after_newline)
         return None
@@ -308,11 +318,6 @@ class ServerProcess(object):
                                                   or self._proc.poll()):
                     self._crashed = True
                 self._log_data('OUT', data)
-                if six.PY3:
-                    # TODO(crbug/1197331): Decode only for PY3 for now.
-                    # In PY2, decoding here causes html_diff.py->html_diff
-                    # to fail an assert.
-                    data = data.decode("utf-8", errors="replace")
                 self._output += data
 
             if err_fd in read_fds:
@@ -321,11 +326,6 @@ class ServerProcess(object):
                                                   or self._proc.poll()):
                     self._crashed = True
                 self._log_data('ERR', data)
-                if six.PY3:
-                    # TODO(crbug/1197331): Decode only for PY3 for now.
-                    # In PY2, decoding here causes error string encoding issues
-                    # while writing from test_failures.py
-                    data = data.decode("utf-8", errors="replace")
                 self._error += data
         except IOError:
             # We can ignore the IOErrors because we will detect if the
