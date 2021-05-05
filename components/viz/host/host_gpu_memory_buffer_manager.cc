@@ -197,8 +197,12 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
         std::make_pair(buffer_handle.id, buffer_info));
   }
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(buffer_handle)));
+  if (call_sync) {
+    std::move(callback).Run(std::move(buffer_handle));
+  } else {
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                                     std::move(buffer_handle)));
+  }
 }
 
 bool HostGpuMemoryBufferManager::IsNativeGpuMemoryBufferConfiguration(
@@ -226,10 +230,7 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   DCHECK(runs_on_ui_thread_ || !task_runner_->BelongsToCurrentThread());
-
-  bool call_sync = runs_on_ui_thread_ &&
-                   task_runner_->BelongsToCurrentThread() &&
-                   CreateBufferUsesGpuService(format, usage);
+  bool call_sync = runs_on_ui_thread_ && task_runner_->BelongsToCurrentThread();
 
   // A refcounted wrapper around a bool so that if the thread waiting on a
   // PostTask to the main thread is quit due to shutdown and the task runs
@@ -255,7 +256,7 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       &HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer,
       base::Unretained(this), id, client_id_, size, format, usage,
       surface_handle, std::move(reply_callback), call_sync);
-  if (runs_on_ui_thread_ && task_runner_->BelongsToCurrentThread()) {
+  if (call_sync) {
     std::move(allocate_callback).Run();
   } else {
     task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
