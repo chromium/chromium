@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -865,7 +866,8 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
   base::DictionaryValue::Iterator it(*columns_settings_);
   while (!it.IsAtEnd()) {
-    dict_update->Set(it.key(), it.value().CreateDeepCopy());
+    dict_update->Set(it.key(),
+                     base::Value::ToUniquePtrValue(it.value().Clone()));
     it.Advance();
   }
 
