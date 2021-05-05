@@ -62,7 +62,6 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     const extensions::Extension* app,
     base::OnceCallback<void(bool)> close_callback)
     : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
@@ -86,6 +85,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     base::OnceCallback<void(bool)> close_callback)
     : profile_(profile), close_callback_(std::move(close_callback)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
