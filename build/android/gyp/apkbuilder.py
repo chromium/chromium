@@ -350,6 +350,7 @@ def main(args):
   # Included via .build_config, so need to write it to depfile.
   depfile_deps.extend(x[0] for x in assets)
   depfile_deps.extend(x[0] for x in uncompressed_assets)
+  depfile_deps.append(options.resource_apk)
 
   # Bundle modules have a structure similar to APKs, except that resources
   # are compiled in protobuf format (instead of binary xml), and that some
