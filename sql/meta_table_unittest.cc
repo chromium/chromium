@@ -10,36 +10,22 @@
 #include "base/files/scoped_temp_dir.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/sql_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace sql {
 
 namespace {
 
-class SQLMetaTableTest : public testing::Test {
- public:
-  ~SQLMetaTableTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(
-        db_.Open(temp_dir_.GetPath().AppendASCII("meta_table_test.sqlite")));
-  }
-
- protected:
-  base::ScopedTempDir temp_dir_;
-  Database db_;
-};
+using SQLMetaTableTest = sql::SQLTestBase;
 
 TEST_F(SQLMetaTableTest, DoesTableExist) {
-  EXPECT_FALSE(MetaTable::DoesTableExist(&db_));
+  EXPECT_FALSE(sql::MetaTable::DoesTableExist(&db()));
 
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
   }
 
-  EXPECT_TRUE(MetaTable::DoesTableExist(&db_));
+  EXPECT_TRUE(sql::MetaTable::DoesTableExist(&db()));
 }
 
 TEST_F(SQLMetaTableTest, RazeIfDeprecated) {
@@ -48,45 +34,45 @@ TEST_F(SQLMetaTableTest, RazeIfDeprecated) {
 
   // Setup a current database.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersion, kVersion));
-    EXPECT_TRUE(db_.Execute("CREATE TABLE t(c)"));
-    EXPECT_TRUE(db_.DoesTableExist("t"));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kVersion, kVersion));
+    EXPECT_TRUE(db().Execute("CREATE TABLE t(c)"));
+    EXPECT_TRUE(db().DoesTableExist("t"));
   }
 
   // Table should should still exist if the database version is new enough.
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
+  sql::MetaTable::RazeIfDeprecated(&db(), kDeprecatedVersion);
+  EXPECT_TRUE(db().DoesTableExist("t"));
 
   // TODO(shess): It may make sense to Raze() if meta isn't present or
   // version isn't present.  See meta_table.h TODO on RazeIfDeprecated().
 
   // Table should still exist if the version is not available.
-  EXPECT_TRUE(db_.Execute("DELETE FROM meta WHERE key = 'version'"));
+  EXPECT_TRUE(db().Execute("DELETE FROM meta WHERE key = 'version'"));
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersion, kVersion));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kVersion, kVersion));
     EXPECT_EQ(0, meta_table.GetVersionNumber());
   }
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
+  sql::MetaTable::RazeIfDeprecated(&db(), kDeprecatedVersion);
+  EXPECT_TRUE(db().DoesTableExist("t"));
 
   // Table should still exist if meta table is missing.
-  EXPECT_TRUE(db_.Execute("DROP TABLE meta"));
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_TRUE(db_.DoesTableExist("t"));
+  EXPECT_TRUE(db().Execute("DROP TABLE meta"));
+  sql::MetaTable::RazeIfDeprecated(&db(), kDeprecatedVersion);
+  EXPECT_TRUE(db().DoesTableExist("t"));
 
   // Setup meta with deprecated version.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kDeprecatedVersion, kDeprecatedVersion));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kDeprecatedVersion, kDeprecatedVersion));
   }
 
   // Deprecation check should remove the table.
-  EXPECT_TRUE(db_.DoesTableExist("t"));
-  MetaTable::RazeIfDeprecated(&db_, kDeprecatedVersion);
-  EXPECT_FALSE(MetaTable::DoesTableExist(&db_));
-  EXPECT_FALSE(db_.DoesTableExist("t"));
+  EXPECT_TRUE(db().DoesTableExist("t"));
+  sql::MetaTable::RazeIfDeprecated(&db(), kDeprecatedVersion);
+  EXPECT_FALSE(sql::MetaTable::DoesTableExist(&db()));
+  EXPECT_FALSE(db().DoesTableExist("t"));
 }
 
 TEST_F(SQLMetaTableTest, VersionNumber) {
@@ -101,16 +87,16 @@ TEST_F(SQLMetaTableTest, VersionNumber) {
 
   // First Init() sets the version info as expected.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersionFirst, kCompatVersionFirst));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kVersionFirst, kCompatVersionFirst));
     EXPECT_EQ(kVersionFirst, meta_table.GetVersionNumber());
     EXPECT_EQ(kCompatVersionFirst, meta_table.GetCompatibleVersionNumber());
   }
 
   // Second Init() does not change the version info.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersionSecond, kCompatVersionSecond));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kVersionSecond, kCompatVersionSecond));
     EXPECT_EQ(kVersionFirst, meta_table.GetVersionNumber());
     EXPECT_EQ(kCompatVersionFirst, meta_table.GetCompatibleVersionNumber());
 
@@ -120,8 +106,8 @@ TEST_F(SQLMetaTableTest, VersionNumber) {
 
   // Version info from Set*() calls is seen.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, kVersionThird, kCompatVersionThird));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), kVersionThird, kCompatVersionThird));
     EXPECT_EQ(kVersionSecond, meta_table.GetVersionNumber());
     EXPECT_EQ(kCompatVersionSecond, meta_table.GetCompatibleVersionNumber());
   }
@@ -134,8 +120,8 @@ TEST_F(SQLMetaTableTest, StringValue) {
 
   // Initially, the value isn't there until set.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     std::string value;
     EXPECT_FALSE(meta_table.GetValue(kKey, &value));
@@ -147,8 +133,8 @@ TEST_F(SQLMetaTableTest, StringValue) {
 
   // Value is persistent across different instances.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     std::string value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -159,8 +145,8 @@ TEST_F(SQLMetaTableTest, StringValue) {
 
   // Existing value was successfully changed.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     std::string value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -175,8 +161,8 @@ TEST_F(SQLMetaTableTest, IntValue) {
 
   // Initially, the value isn't there until set.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int value;
     EXPECT_FALSE(meta_table.GetValue(kKey, &value));
@@ -188,8 +174,8 @@ TEST_F(SQLMetaTableTest, IntValue) {
 
   // Value is persistent across different instances.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -200,8 +186,8 @@ TEST_F(SQLMetaTableTest, IntValue) {
 
   // Existing value was successfully changed.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -216,8 +202,8 @@ TEST_F(SQLMetaTableTest, Int64Value) {
 
   // Initially, the value isn't there until set.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int64_t value;
     EXPECT_FALSE(meta_table.GetValue(kKey, &value));
@@ -229,8 +215,8 @@ TEST_F(SQLMetaTableTest, Int64Value) {
 
   // Value is persistent across different instances.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int64_t value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -241,8 +227,8 @@ TEST_F(SQLMetaTableTest, Int64Value) {
 
   // Existing value was successfully changed.
   {
-    MetaTable meta_table;
-    EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
     int64_t value;
     EXPECT_TRUE(meta_table.GetValue(kKey, &value));
@@ -254,8 +240,8 @@ TEST_F(SQLMetaTableTest, DeleteKey) {
   static const char kKey[] = "String Key";
   const std::string kValue("String Value");
 
-  MetaTable meta_table;
-  EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+  sql::MetaTable meta_table;
+  EXPECT_TRUE(meta_table.Init(&db(), 1, 1));
 
   // Value isn't present.
   std::string value;
@@ -272,5 +258,3 @@ TEST_F(SQLMetaTableTest, DeleteKey) {
 }
 
 }  // namespace
-
-}  // namespace sql
