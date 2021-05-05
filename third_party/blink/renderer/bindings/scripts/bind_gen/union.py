@@ -12,6 +12,8 @@ from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
 from .code_node import ListNode
+from .code_node import SequenceNode
+from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
 from .code_node import TextNode
@@ -193,6 +195,7 @@ def make_factory_methods(cg_context):
 
     S = SymbolNode
     T = TextNode
+    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
 
     func_decl = CxxFuncDeclNode(name="Create",
                                 arg_decls=[
@@ -220,9 +223,10 @@ def make_factory_methods(cg_context):
         "exception_state": "exception_state",
     })
 
-    # Create an instance from v8::Value based on the overload resolution
-    # algorithm.
-    # https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+    # Create an instance from v8::Value based on the conversion algorithm.
+    #
+    # 3.2.24. Union types
+    # https://heycam.github.io/webidl/#es-union
 
     union_members = cg_context.union_members
     member = None  # Will be a found member in union_members.
@@ -239,7 +243,10 @@ def make_factory_methods(cg_context):
                 return member
         return None
 
-    def dispatch_if(cond_text, value_symbol=None):
+    def dispatch_if(cond_text, value_symbol=None, target_node=body):
+        assert isinstance(cond_text, str) or cond_text is True
+        assert value_symbol is None or isinstance(value_symbol, SymbolNode)
+        assert isinstance(target_node, SequenceNode)
         scope_node = SymbolScopeNode(
             [T("return MakeGarbageCollected<${class_name}>(${blink_value});")])
         if not value_symbol:
@@ -250,17 +257,26 @@ def make_factory_methods(cg_context):
                 error_exit_return_statement="return nullptr;")
         scope_node.register_code_symbol(value_symbol)
         if cond_text is True:
-            body.append(CxxBlockNode(body=scope_node))
+            target_node.append(CxxBlockNode(body=scope_node))
         else:
-            body.append(CxxUnlikelyIfNode(cond=cond_text, body=scope_node))
+            target_node.append(
+                CxxUnlikelyIfNode(cond=cond_text, body=scope_node))
 
-    # 12.3. if V is null or undefined, ...
+    # 2. If the union type includes a nullable type and V is null or undefined,
+    #   ...
     member = find_by_member(lambda m: m.is_null)
     if member:
         dispatch_if("${v8_value}->IsNullOrUndefined()",
                     S("blink_value", "auto&& ${blink_value} = nullptr;"))
 
-    # 12.4. if V is a platform object, ...
+    # 4. If V is null or undefined, then:
+    # 4.1. If types includes a dictionary type, ...
+    member = find_by_type(lambda t: t.is_dictionary)
+    if member:
+        dispatch_if("${v8_value}->IsNullOrUndefined()")
+
+    # 5. If V is a platform object, then:
+    # 5.1. If types includes an interface type that V implements, ...
     interface_members = filter(
         lambda member: member.idl_type and member.idl_type.is_interface,
         union_members)
@@ -278,8 +294,9 @@ def make_factory_methods(cg_context):
             _format("{}::HasInstance(${isolate}, ${v8_value})",
                     v8_bridge_name))
 
-    # 12.5. if Type(V) is Object, V has an [[ArrayBufferData]] internal
-    #   slot, ...
+    # 6. If Type(V) is Object and V has an [[ArrayBufferData]] internal slot,
+    #   then:
+    # 6.1. If types includes ArrayBuffer, ...
     member = find_by_type(lambda t: t.is_array_buffer)
     if member:
         dispatch_if("${v8_value}->IsArrayBuffer() || "
@@ -290,12 +307,16 @@ def make_factory_methods(cg_context):
     if member:
         dispatch_if("${v8_value}->IsArrayBufferView()")
 
-    # 12.6. if Type(V) is Object, V has a [[DataView]] internal slot, ...
+    # 7. If Type(V) is Object and V has a [[DataView]] internal slot, then:
+    # 7.1. If types includes DataView, ...
     member = find_by_type(lambda t: t.is_data_view)
     if member:
         dispatch_if("${v8_value}->IsDataView()")
 
-    # 12.7. if Type(V) is Object, V has a [[TypedArrayName]] internal slot, ...
+    # 8. If Type(V) is Object and V has a [[TypedArrayName]] internal slot,
+    #   then:
+    # 8.1. If types includes a typed array type whose name is the value of V's
+    #   [[TypedArrayName]] internal slot, ...
     typed_array_types = ("Int8Array", "Int16Array", "Int32Array", "Uint8Array",
                          "Uint16Array", "Uint32Array", "Uint8ClampedArray",
                          "Float32Array", "Float64Array")
@@ -304,46 +325,88 @@ def make_factory_methods(cg_context):
         if member:
             dispatch_if(_format("${v8_value}->Is{}()", typed_array_type))
 
-    # 12.8. if IsCallable(V) is true, ...
+    # 9. If IsCallable(V) is true, then:
+    # 9.1. If types includes a callback function type, ...
     member = find_by_type(lambda t: t.is_callback_function)
     if member:
         dispatch_if("${v8_value}->IsFunction()")
 
-    # 12.9. if Type(V) is Object and ... @@iterator ...
+    # 10. If Type(V) is Object, then:
+    # 10.1. If types includes a sequence type, ...
+    # 10.2. If types includes a frozen array type, ...
     member = find_by_type(lambda t: t.is_sequence or t.is_frozen_array)
     if member:
-        dispatch_if("${v8_value}->IsArray() || "  # Excessive optimization
-                    "bindings::IsEsIterableObject"
-                    "(${isolate}, ${v8_value}, ${exception_state})")
-        body.append(
-            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
-                              body=T("return nullptr;")))
+        # TODO(crbug.com/715122): Excessive optimization
+        dispatch_if("${v8_value}->IsArray()")
 
-    # 12.10. if Type(V) is Object and ...
-    member = find_by_type(lambda t: t.is_callback_interface or t.is_dictionary
-                          or t.is_record or t.is_object)
+        # Create an IDL sequence from an iterable object.
+        scope_node = SymbolScopeNode()
+        body.append(
+            CxxUnlikelyIfNode(cond="${v8_value}->IsObject()", body=scope_node))
+        scope_node.extend([
+            T("ScriptIterator script_iterator = ScriptIterator::FromIterable("
+              "${isolate}, ${v8_value}.As<v8::Object>(), "
+              "${exception_state});"),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              body=T("return nullptr;")),
+        ])
+
+        def blink_value_from_iterator(union_member):
+            def symbol_definition_constructor(symbol_node):
+                node = SymbolDefinitionNode(symbol_node)
+                node.extend([
+                    F(
+                        "auto&& ${blink_value} = "
+                        "bindings::CreateIDLSequenceFromIterator<{}>("
+                        "${isolate}, std::move(script_iterator), "
+                        "${exception_state});",
+                        native_value_tag(
+                            union_member.idl_type.unwrap().element_type)),
+                    CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                                      body=T("return nullptr;")),
+                ])
+                return node
+
+            return symbol_definition_constructor
+
+        dispatch_if(
+            "!script_iterator.IsNull()",
+            S("blink_value",
+              definition_constructor=blink_value_from_iterator(member)),
+            target_node=scope_node)
+
+    # 10. If Type(V) is Object, then:
+    # 10.3. If types includes a dictionary type, ...
+    # 10.4. If types includes a record type, ...
+    # 10.5. If types includes a callback interface type, ...
+    # 10.6. If types includes object, ...
+    member = find_by_type(lambda t: t.is_dictionary or t.is_record or t.
+                          is_callback_interface or t.is_object)
     if member:
         dispatch_if("${v8_value}->IsObject()")
 
-    # 12.11. if Type(V) is Boolean and ...
+    # 11. If Type(V) is Boolean, then:
+    # 11.1. If types includes boolean, ...
     member = find_by_type(lambda t: t.is_boolean)
     if member:
         dispatch_if("${v8_value}->IsBoolean()")
 
-    # 12.12. if Type(V) is Number and ...
+    # 12. If Type(V) is Number, then:
+    # 12.1. If types includes a numeric type, ...
     member = find_by_type(lambda t: t.is_numeric)
     if member:
         dispatch_if("${v8_value}->IsNumber()")
 
-    # 12.13. if there is an entry in S that has ... a string type ...
-    # 12.14. if there is an entry in S that has ... a numeric type ...
-    # 12.15. if there is an entry in S that has ... boolean ...
+    # 14. If types includes a string type, ...
+    # 16. If types includes a numeric type, ...
+    # 17. If types includes boolean, ...
     member = (find_by_type(lambda t: t.is_enumeration or t.is_string)
               or find_by_type(lambda t: t.is_numeric)
               or find_by_type(lambda t: t.is_boolean))
     if member:
         dispatch_if(True)
     else:
+        # 19. Throw a TypeError.
         body.append(
             T("${exception_state}.ThrowTypeError("
               "ExceptionMessages::ValueNotOfType("
