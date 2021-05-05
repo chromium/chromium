@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -36,6 +35,8 @@ class FileSystemURL;
 }  // namespace storage
 
 namespace ash {
+
+class HoldingSpaceKeyedServiceDelegate;
 
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
@@ -72,9 +73,12 @@ class HoldingSpaceKeyedService : public KeyedService,
   std::vector<GURL> GetPinnedFiles() const;
 
   // Adds a download item of the specified `type` backed by the provided
-  // absolute file path. Note that `type` must refer to a download type.
+  // absolute file path.
+  // NOTE: `type` must refer to a download type.
+  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   void AddDownload(HoldingSpaceItem::Type type,
-                   const base::FilePath& download_path);
+                   const base::FilePath& download_path,
+                   const base::Optional<float>& progress = 1.f);
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
@@ -96,8 +100,13 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Adds an item of the specified `type` backed by the provided absolute
   // `file_path` to the holding space model.
+  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   void AddItemOfType(HoldingSpaceItem::Type type,
-                     const base::FilePath& file_path);
+                     const base::FilePath& file_path,
+                     const base::Optional<float>& progress = base::nullopt);
+
+  // Returns the `profile_` associated with this service.
+  Profile* profile() { return profile_; }
 
   const HoldingSpaceClient* client_for_testing() const {
     return &holding_space_client_;

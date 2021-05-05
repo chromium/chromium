@@ -119,9 +119,9 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 // HoldingSpaceFileSystemDelegate ----------------------------------------------
 
 HoldingSpaceFileSystemDelegate::HoldingSpaceFileSystemDelegate(
-    Profile* profile,
+    HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
-    : HoldingSpaceKeyedServiceDelegate(profile, model),
+    : HoldingSpaceKeyedServiceDelegate(service, model),
       file_system_watcher_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -41,7 +41,8 @@ class HoldingSpaceFileSystemDelegate
       public drivefs::DriveFsHostObserver,
       public file_manager::VolumeManagerObserver {
  public:
-  HoldingSpaceFileSystemDelegate(Profile* profile, HoldingSpaceModel* model);
+  HoldingSpaceFileSystemDelegate(HoldingSpaceKeyedService* service,
+                                 HoldingSpaceModel* model);
   HoldingSpaceFileSystemDelegate(const HoldingSpaceFileSystemDelegate&) =
       delete;
   HoldingSpaceFileSystemDelegate& operator=(

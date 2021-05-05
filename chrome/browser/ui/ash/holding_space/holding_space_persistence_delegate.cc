@@ -33,14 +33,12 @@ bool ShouldIgnoreItem(Profile* profile, const HoldingSpaceItem* item) {
 constexpr char HoldingSpacePersistenceDelegate::kPersistencePath[];
 
 HoldingSpacePersistenceDelegate::HoldingSpacePersistenceDelegate(
-    Profile* profile,
+    HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model,
     ThumbnailLoader* thumbnail_loader,
-    ItemRestoredCallback item_restored_callback,
     PersistenceRestoredCallback persistence_restored_callback)
-    : HoldingSpaceKeyedServiceDelegate(profile, model),
+    : HoldingSpaceKeyedServiceDelegate(service, model),
       thumbnail_loader_(thumbnail_loader),
-      item_restored_callback_(item_restored_callback),
       persistence_restored_callback_(std::move(persistence_restored_callback)) {
 }
 
@@ -59,6 +57,7 @@ void HoldingSpacePersistenceDelegate::Init() {
   RestoreModelFromPersistence();
 }
 
+// TODO(crbug.com/1184438): Do not persist in-progress `items`.
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   if (is_restoring_persistence())
@@ -87,6 +86,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
   });
 }
 
+// TODO(crbug.com/1184438): Persist `items` no longer in-progress.
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   if (is_restoring_persistence())
@@ -125,10 +125,11 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
             base::Value::AsDictionaryValue(persisted_holding_space_item),
             base::BindOnce(&holding_space_util::ResolveImage,
                            base::Unretained(thumbnail_loader_)));
-    if (ShouldIgnoreItem(profile(), holding_space_item.get()))
-      continue;
-    item_restored_callback_.Run(std::move(holding_space_item));
+
+    if (!ShouldIgnoreItem(profile(), holding_space_item.get()))
+      service()->AddItem(std::move(holding_space_item));
   }
+
   // Notify completion of persistence restoration.
   std::move(persistence_restored_callback_).Run();
 }
