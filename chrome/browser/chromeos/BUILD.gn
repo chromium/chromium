@@ -2358,6 +2358,8 @@ source_set("chromeos") {
     "input_method/suggestion_handler_interface.h",
     "input_method/suggestions_collector.cc",
     "input_method/suggestions_collector.h",
+    "input_method/suggestions_service_client.cc",
+    "input_method/suggestions_service_client.h",
     "input_method/suggestions_source.h",
     "input_method/tts_handler.cc",
     "input_method/tts_handler.h",

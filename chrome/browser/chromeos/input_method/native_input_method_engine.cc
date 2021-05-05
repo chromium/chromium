@@ -15,6 +15,7 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
+#include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -167,9 +168,15 @@ void NativeInputMethodEngine::Initialize(
       std::make_unique<AutocorrectManager>(this);
   autocorrect_manager_ = autocorrect_manager.get();
 
+  auto suggestions_service_client =
+      base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
+          ? std::make_unique<SuggestionsServiceClient>()
+          : nullptr;
+
   auto suggestions_collector =
       base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
-          ? std::make_unique<SuggestionsCollector>(assistive_suggester_)
+          ? std::make_unique<SuggestionsCollector>(
+                assistive_suggester_, std::move(suggestions_service_client))
           : nullptr;
 
   chrome_keyboard_controller_client_observer_.Observe(

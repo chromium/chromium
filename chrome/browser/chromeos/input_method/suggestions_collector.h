@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_SUGGESTIONS_COLLECTOR_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_SUGGESTIONS_COLLECTOR_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
@@ -18,7 +19,11 @@ namespace chromeos {
 class SuggestionsCollector {
  public:
   // `assistive_suggester` must exist for the lifetime of this instance.
-  explicit SuggestionsCollector(SuggestionsSource* assistive_suggester);
+  SuggestionsCollector(
+      SuggestionsSource* assistive_suggester,
+      std::unique_ptr<AsyncSuggestionsSource> suggestions_service_client);
+
+  ~SuggestionsCollector();
 
   using GatherSuggestionsCallback =
       base::OnceCallback<void(ime::mojom::SuggestionsResponsePtr)>;
@@ -28,8 +33,18 @@ class SuggestionsCollector {
                          GatherSuggestionsCallback callback);
 
  private:
+  // Called when suggestions have been returned from the injected
+  // SuggestionsRequestor.
+  void OnSuggestionsGathered(
+      GatherSuggestionsCallback callback,
+      const std::vector<ime::TextSuggestion>& assistive_suggestions,
+      const std::vector<ime::TextSuggestion>& system_suggestions);
+
   // Not owned by this class
   SuggestionsSource* assistive_suggester_;
+
+  // Client used to request suggestions from the system
+  std::unique_ptr<AsyncSuggestionsSource> suggestions_service_client_;
 };
 
 }  // namespace chromeos
