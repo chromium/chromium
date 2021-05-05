@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -20,6 +19,7 @@
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/onc/onc_constants.h"
@@ -66,24 +66,14 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   void SetUp() override {
     ApiUnitTest::SetUp();
 
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::NetworkHandler::Initialize();
-
     chromeos::LoginState::Initialize();
     chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
         chromeos::LoginState::LOGGED_IN_ACTIVE,
         chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP, kUserHash);
-
-    chromeos::DBusThreadManager* dbus_manager =
-        chromeos::DBusThreadManager::Get();
-    profile_test_ = dbus_manager->GetShillProfileClient()->GetTestInterface();
-    service_test_ = dbus_manager->GetShillServiceClient()->GetTestInterface();
-    device_test_ = dbus_manager->GetShillDeviceClient()->GetTestInterface();
-
     base::RunLoop().RunUntilIdle();
 
-    device_test_->ClearDevices();
-    service_test_->ClearServices();
+    device_test()->ClearDevices();
+    service_test()->ClearServices();
 
     SetUpNetworks();
     SetUpNetworkPolicy();
@@ -92,54 +82,52 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     chromeos::LoginState::Shutdown();
 
     ApiUnitTest::TearDown();
   }
 
   void SetUpNetworks() {
-    profile_test_->AddProfile(kUserProfilePath, kUserHash);
-    profile_test_->AddProfile(
+    profile_test()->AddProfile(kUserProfilePath, kUserHash);
+    profile_test()->AddProfile(
         chromeos::ShillProfileClient::GetSharedProfilePath(), "");
 
-    device_test_->AddDevice(kWifiDevicePath, shill::kTypeWifi, "wifi_device1");
+    device_test()->AddDevice(kWifiDevicePath, shill::kTypeWifi, "wifi_device1");
 
-    service_test_->AddService(kSharedWifiServicePath, kSharedWifiGuid,
-                              kSharedWifiName, shill::kTypeWifi,
-                              shill::kStateOnline, true /* visible */);
-    service_test_->SetServiceProperty(kSharedWifiServicePath,
-                                      shill::kDeviceProperty,
-                                      base::Value(kWifiDevicePath));
-    service_test_->SetServiceProperty(kSharedWifiServicePath,
-                                      shill::kSecurityClassProperty,
-                                      base::Value("psk"));
-    service_test_->SetServiceProperty(kSharedWifiServicePath,
-                                      shill::kPriorityProperty, base::Value(2));
-    service_test_->SetServiceProperty(
+    service_test()->AddService(kSharedWifiServicePath, kSharedWifiGuid,
+                               kSharedWifiName, shill::kTypeWifi,
+                               shill::kStateOnline, true /* visible */);
+    service_test()->SetServiceProperty(kSharedWifiServicePath,
+                                       shill::kDeviceProperty,
+                                       base::Value(kWifiDevicePath));
+    service_test()->SetServiceProperty(kSharedWifiServicePath,
+                                       shill::kSecurityClassProperty,
+                                       base::Value("psk"));
+    service_test()->SetServiceProperty(
+        kSharedWifiServicePath, shill::kPriorityProperty, base::Value(2));
+    service_test()->SetServiceProperty(
         kSharedWifiServicePath, shill::kProfileProperty,
         base::Value(chromeos::ShillProfileClient::GetSharedProfilePath()));
-    profile_test_->AddService(
+    profile_test()->AddService(
         chromeos::ShillProfileClient::GetSharedProfilePath(),
         kSharedWifiServicePath);
 
-    service_test_->AddService(kPrivateWifiServicePath, kPrivateWifiGuid,
-                              kPrivateWifiName, shill::kTypeWifi,
-                              shill::kStateOnline, true /* visible */);
-    service_test_->SetServiceProperty(kPrivateWifiServicePath,
-                                      shill::kDeviceProperty,
-                                      base::Value(kWifiDevicePath));
-    service_test_->SetServiceProperty(kPrivateWifiServicePath,
-                                      shill::kSecurityClassProperty,
-                                      base::Value("psk"));
-    service_test_->SetServiceProperty(kPrivateWifiServicePath,
-                                      shill::kPriorityProperty, base::Value(2));
+    service_test()->AddService(kPrivateWifiServicePath, kPrivateWifiGuid,
+                               kPrivateWifiName, shill::kTypeWifi,
+                               shill::kStateOnline, true /* visible */);
+    service_test()->SetServiceProperty(kPrivateWifiServicePath,
+                                       shill::kDeviceProperty,
+                                       base::Value(kWifiDevicePath));
+    service_test()->SetServiceProperty(kPrivateWifiServicePath,
+                                       shill::kSecurityClassProperty,
+                                       base::Value("psk"));
+    service_test()->SetServiceProperty(
+        kPrivateWifiServicePath, shill::kPriorityProperty, base::Value(2));
 
-    service_test_->SetServiceProperty(kPrivateWifiServicePath,
-                                      shill::kProfileProperty,
-                                      base::Value(kUserProfilePath));
-    profile_test_->AddService(kUserProfilePath, kPrivateWifiServicePath);
+    service_test()->SetServiceProperty(kPrivateWifiServicePath,
+                                       shill::kProfileProperty,
+                                       base::Value(kUserProfilePath));
+    profile_test()->AddService(kUserProfilePath, kPrivateWifiServicePath);
   }
 
   void SetUpNetworkPolicy() {
@@ -191,14 +179,14 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   void SetDeviceProperty(const std::string& device_path,
                          const std::string& name,
                          const base::Value& value) {
-    device_test_->SetDeviceProperty(device_path, name, value,
-                                    /*notify_changed=*/false);
+    device_test()->SetDeviceProperty(device_path, name, value,
+                                     /*notify_changed=*/false);
   }
 
   void SetUpCellular() {
     // Add a Cellular GSM Device.
-    device_test_->AddDevice(kCellularDevicePath, shill::kTypeCellular,
-                            "stub_cellular_device1");
+    device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
+                             "stub_cellular_device1");
 
     base::DictionaryValue home_provider;
     home_provider.SetString("name", "Cellular1_Provider");
@@ -236,31 +224,31 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     SetDeviceProperty(kCellularDevicePath, shill::kCellularApnListProperty,
                       *apn_list);
 
-    service_test_->AddService(kCellularServicePath, kCellularGuid,
-                              kCellularName, shill::kTypeCellular,
-                              shill::kStateOnline, true /* visible */);
-    service_test_->SetServiceProperty(
+    service_test()->AddService(kCellularServicePath, kCellularGuid,
+                               kCellularName, shill::kTypeCellular,
+                               shill::kStateOnline, true /* visible */);
+    service_test()->SetServiceProperty(
         kCellularServicePath, shill::kAutoConnectProperty, base::Value(true));
-    service_test_->SetServiceProperty(
+    service_test()->SetServiceProperty(
         kCellularServicePath, shill::kNetworkTechnologyProperty,
         base::Value(shill::kNetworkTechnologyGsm));
-    service_test_->SetServiceProperty(kCellularServicePath,
-                                      shill::kRoamingStateProperty,
-                                      base::Value(shill::kRoamingStateHome));
-    service_test_->SetServiceProperty(kCellularServicePath,
-                                      shill::kCellularApnProperty, *apn);
-    service_test_->SetServiceProperty(
+    service_test()->SetServiceProperty(kCellularServicePath,
+                                       shill::kRoamingStateProperty,
+                                       base::Value(shill::kRoamingStateHome));
+    service_test()->SetServiceProperty(kCellularServicePath,
+                                       shill::kCellularApnProperty, *apn);
+    service_test()->SetServiceProperty(
         kCellularServicePath, shill::kCellularLastGoodApnProperty, *apn);
 
-    profile_test_->AddService(kUserProfilePath, kCellularServicePath);
+    profile_test()->AddService(kUserProfilePath, kCellularServicePath);
 
     base::RunLoop().RunUntilIdle();
   }
 
   void AddSharedNetworkToUserProfile(const std::string& service_path) {
-    service_test_->SetServiceProperty(service_path, shill::kProfileProperty,
-                                      base::Value(kUserProfilePath));
-    profile_test_->AddService(kUserProfilePath, service_path);
+    service_test()->SetServiceProperty(service_path, shill::kProfileProperty,
+                                       base::Value(kUserProfilePath));
+    profile_test()->AddService(kUserProfilePath, service_path);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -276,7 +264,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
   bool GetServiceProfile(const std::string& service_path,
                          std::string* profile_path) {
-    return profile_test_->GetService(service_path, profile_path).is_dict();
+    return profile_test()->GetService(service_path, profile_path).is_dict();
   }
 
   std::unique_ptr<base::DictionaryValue> GetNetworkProperties(
@@ -346,10 +334,18 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return ui_data->GetString("user_settings." + key, value);
   }
 
+  chromeos::ShillServiceClient::TestInterface* service_test() {
+    return network_handler_test_helper_.service_test();
+  }
+  chromeos::ShillDeviceClient::TestInterface* device_test() {
+    return network_handler_test_helper_.device_test();
+  }
+  chromeos::ShillProfileClient::TestInterface* profile_test() {
+    return network_handler_test_helper_.profile_test();
+  }
+
  private:
-  chromeos::ShillProfileClient::TestInterface* profile_test_;
-  chromeos::ShillServiceClient::TestInterface* service_test_;
-  chromeos::ShillDeviceClient::TestInterface* device_test_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
