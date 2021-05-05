@@ -47,6 +47,10 @@
 #include "ui/views/window/custom_frame_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if defined(OS_LINUX)
+#include "ui/views/linux_ui/linux_ui.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -1646,6 +1650,13 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
           features::kInheritNativeThemeFromParentWidget) &&
       parent_)
     return parent_->GetNativeTheme();
+
+#if defined(OS_LINUX)
+  if (const views::LinuxUI* linux_ui = views::LinuxUI::instance()) {
+    if (auto* native_theme = linux_ui->GetNativeTheme(GetNativeWindow()))
+      return native_theme;
+  }
+#endif
 
   return ui::NativeTheme::GetInstanceForNativeUi();
 }

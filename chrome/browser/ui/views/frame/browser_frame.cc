@@ -46,7 +46,6 @@
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/display/screen.h"
-#include "ui/views/linux_ui/linux_ui.h"
 #endif
 
 namespace {
@@ -354,12 +353,6 @@ void BrowserFrame::SelectNativeTheme() {
       native_theme = ui::NativeTheme::GetInstanceForDarkUI();
     }
   }
-
-#if defined(OS_LINUX) || defined(IS_CHROMEOS_LACROS)
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui)
-    native_theme = linux_ui->GetNativeTheme(GetNativeWindow());
-#endif
 
   SetNativeTheme(native_theme);
 }
