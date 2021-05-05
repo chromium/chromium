@@ -49,11 +49,11 @@ namespace {
 const base::FeatureParam<bool> kTreatSilentBlockListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
     "TreatSilentBlockListAsAllowlist",
-    false);
+    true);
 const base::FeatureParam<std::string> kSilentBlockExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "SilentBlockExtensionList",
-    "silently_blocked_for_testing");
+    "silently_unblocked_for_testing");
 
 const base::FeatureParam<bool> kTreatBlockListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
@@ -62,17 +62,17 @@ const base::FeatureParam<bool> kTreatBlockListAsAllowlist(
 const base::FeatureParam<std::string> kBlockExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "BlockExtensionList",
-    "exe,scr,msi,vb,dmg,pkg,crx,gz,gzip,zip,bz2,rar,7z,tar");
+    "");
 
 // Note: this is an allowlist, so acts as a catch-all.
 const base::FeatureParam<bool> kTreatWarnListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
     "TreatWarnListAsAllowlist",
-    true);
+    false);
 const base::FeatureParam<std::string> kWarnExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "WarnExtensionList",
-    "dont_warn_for_testing");
+    "");
 
 // Map the string file extension to the corresponding histogram enum.
 InsecureDownloadExtensions GetExtensionEnumFromString(

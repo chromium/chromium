@@ -916,9 +916,9 @@ const base::Feature kThirdPartyModulesBlocking{
 #endif
 
 // Disable downloads of unsafe file types over insecure transports if initiated
-// from a secure page
+// from a secure page. As of M89, mixed downloads are blocked on all platforms.
 const base::Feature kTreatUnsafeDownloadsAsActive{
-    "TreatUnsafeDownloadsAsActive", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TreatUnsafeDownloadsAsActive", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable uploading of a zip archive of system logs instead of individual files.
