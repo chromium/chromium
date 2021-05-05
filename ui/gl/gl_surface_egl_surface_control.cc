@@ -396,8 +396,33 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     gfx::RectF scaled_rect =
         gfx::ScaleRect(crop_rect, buffer_size.width(), buffer_size.height());
 
-    gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
     gfx::Rect dst = bounds_rect;
+    gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
+
+    // When the video is being scrolled offscreen DisplayCompositor will crop it
+    // to only visible portion and adjust crop_rect accordingly. When the video
+    // is smaller than the surface is can lead to the crop rect being less than
+    // a pixel in size. This adjusts the crop rect size to at least 1 pixel as
+    // we want to stretch last visible pixel line/column in this case.
+    // Note: We will do it even if crop_rect width/height is exact 0.0f. In
+    // reality this should never happen and there is no way to display video
+    // with empty crop rect, so display compositor should not request this.
+
+    if (src.width() == 0) {
+      src.set_width(1);
+      if (src.right() > buffer_size.width())
+        src.set_x(buffer_size.width() - 1);
+    }
+    if (src.height() == 0) {
+      src.set_height(1);
+      if (src.bottom() > buffer_size.height())
+        src.set_y(buffer_size.height() - 1);
+    }
+
+    // When display compositor rounds up destination rect to integer coordinates
+    // it becomes slightly bigger. After we adjust source rect accordingly, it
+    // can become larger then a buffer so we clip it here. See crbug.com/1083412
+    src.Intersect(gfx::Rect(buffer_size));
 
     if (uninitialized || surface_state.src != src || surface_state.dst != dst ||
         surface_state.transform != transform) {
