@@ -559,8 +559,7 @@
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher;
 
 // Returns the matcher for the Activity View header.
-+ (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
-                                           title:(NSString*)pageTitle;
++ (id<GREYMatcher>)activityViewHeaderWithTitle:(NSString*)pageTitle;
 
 // Returns a matcher for the button to trigger password generation on manual
 // fallback.

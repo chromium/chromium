@@ -290,8 +290,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey
-      verifyShareActionWithURL:_URL1
-                     pageTitle:[NSString stringWithUTF8String:kTitle1]];
+      verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
 }
 
 #pragma mark - Tab Grid Item Context Menu
@@ -312,8 +311,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey
-      verifyShareActionWithURL:_URL1
-                     pageTitle:[NSString stringWithUTF8String:kTitle1]];
+      verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
 }
 
 // Tests the Add to Reading list action on a tab grid item's context menu.
