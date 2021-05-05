@@ -2089,10 +2089,12 @@ bool ChromeContentBrowserClient::ShouldDisableSiteIsolation() {
 
 std::vector<std::string>
 ChromeContentBrowserClient::GetAdditionalSiteIsolationModes() {
+  std::vector<std::string> modes;
   if (site_isolation::SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled())
-    return {"Isolate Password Sites"};
-  else
-    return {};
+    modes.push_back("Password Sites");
+  if (site_isolation::SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled())
+    modes.push_back("Logged-in Sites");
+  return modes;
 }
 
 void ChromeContentBrowserClient::PersistIsolatedOrigin(

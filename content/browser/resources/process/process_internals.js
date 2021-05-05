@@ -215,7 +215,7 @@ function loadIsolatedOriginInfo() {
 
     $('user-triggered-isolated-origins').textContent =
         'The following origins are isolated because you previously typed a ' +
-        'password into these sites (' + originCount + ' total). ' +
+        'password or logged in on these sites (' + originCount + ' total). ' +
         'Clear cookies or history to wipe this list; this takes effect ' +
         'after a restart.';
 
@@ -227,6 +227,27 @@ function loadIsolatedOriginInfo() {
     }
 
     $('user-triggered-isolated-origins').appendChild(list);
+  });
+
+  pageHandler.getWebTriggeredIsolatedOrigins().then((response) => {
+    const originCount = response.isolatedOrigins.length;
+    if (!originCount) {
+      return;
+    }
+
+    $('web-triggered-isolated-origins').textContent =
+        'The following origins are isolated based on runtime heuristics ' +
+        'triggered directly by web pages, such as Cross-Origin-Opener-Policy ' +
+        'headers. This list is cleared after a restart.';
+
+    const list = document.createElement('ul');
+    for (const origin of response.isolatedOrigins) {
+      const item = document.createElement('li');
+      item.textContent = origin;
+      list.appendChild(item);
+    }
+
+    $('web-triggered-isolated-origins').appendChild(list);
   });
 
   // Retrieve global isolated origins and insert them into a separate list if

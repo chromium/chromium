@@ -26,6 +26,8 @@ class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
   void GetIsolationMode(GetIsolationModeCallback callback) override;
   void GetUserTriggeredIsolatedOrigins(
       GetUserTriggeredIsolatedOriginsCallback callback) override;
+  void GetWebTriggeredIsolatedOrigins(
+      GetWebTriggeredIsolatedOriginsCallback callback) override;
   void GetGloballyIsolatedOrigins(
       GetGloballyIsolatedOriginsCallback callback) override;
   void GetAllWebContentsInfo(GetAllWebContentsInfoCallback callback) override;
