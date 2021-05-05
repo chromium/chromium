@@ -100,6 +100,22 @@
         clip: rect(0, 0, 0, 0);
         position: fixed;
       }
+
+      #searchHistoryTextBox {
+        background-color: var(--google-grey-50);
+        border: 1px solid var(--google-grey-200);
+        border-radius: 4px;
+        margin-top: 12px;
+        padding: 12px;
+      }
+
+      /* dark mode */
+      @media (prefers-color-scheme: dark) {
+        #searchHistoryTextBox {
+          background-color: rgba(0, 0, 0, .3);
+          border-color: transparent;
+        }
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
@@ -164,7 +180,7 @@
             </settings-checkbox>
             <div id="searchHistoryTextBox"
                 hidden="[[!shouldShowSearchHistoryLabel_]]">
-                $i18nRaw{clearSearchHistorySummarySignedIn}
+              $i18nRaw{clearSearchHistorySummarySignedIn}
             </div>
           </div>
           <div id="advanced-tab">
