@@ -3024,8 +3024,6 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
 }
 
 TEST_F(StyleEngineTest, AtPropertyUseCount) {
-  ScopedCSSVariables2AtPropertyForTest scoped_feature(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       body { --x: No @property rule here; }
@@ -3071,8 +3069,6 @@ TEST_F(StyleEngineTest, MediaQueryAffectedByViewportSanityCheck) {
 }
 
 TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {
-  ScopedCSSVariables2AtPropertyForTest scoped_feature(true);
-
   EXPECT_FALSE(GetDocument().GetPropertyRegistry());
   PropertyRegistration::RemoveDeclaredProperties(GetDocument());
   EXPECT_FALSE(GetDocument().GetPropertyRegistry());

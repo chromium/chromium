@@ -913,9 +913,6 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     return nullptr;
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  if (!RuntimeEnabledFeatures::CSSVariables2AtPropertyEnabled())
-    return nullptr;
-
   const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
   if (!prelude.AtEnd())
     return nullptr;

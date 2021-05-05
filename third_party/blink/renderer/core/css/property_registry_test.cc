@@ -5,16 +5,12 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class PropertyRegistryTest : public PageTestBase,
-                             private ScopedCSSVariables2AtPropertyForTest {
+class PropertyRegistryTest : public PageTestBase {
  public:
-  PropertyRegistryTest() : ScopedCSSVariables2AtPropertyForTest(true) {}
-
   PropertyRegistry& Registry() {
     return GetDocument().EnsurePropertyRegistry();
   }

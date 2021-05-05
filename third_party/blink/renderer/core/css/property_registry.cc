@@ -15,7 +15,6 @@ void PropertyRegistry::RegisterProperty(const AtomicString& name,
 
 void PropertyRegistry::DeclareProperty(const AtomicString& name,
                                        PropertyRegistration& registration) {
-  DCHECK(RuntimeEnabledFeatures::CSSVariables2AtPropertyEnabled());
   declared_properties_.Set(name, &registration);
   version_++;
 }

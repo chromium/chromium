@@ -5586,19 +5586,16 @@
       name: "syntax",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSVariables2AtProperty",
     },
     {
       name: "initial-value",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSVariables2AtProperty",
     },
     {
       name: "inherits",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSVariables2AtProperty",
     },
     {
       name: "source",

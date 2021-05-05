@@ -692,11 +692,6 @@
       name: "CSSTargetTextPseudoElement",
       status: "stable",
     },
-    // Support for @property rules.
-    {
-      name: "CSSVariables2AtProperty",
-      status: "stable",
-    },
     // Support for registered custom properties with <image> syntax.
     {
       name: "CSSVariables2ImageValues",

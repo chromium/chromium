@@ -158,8 +158,6 @@ TEST(CSSParserImplTest, AtPageOffsets) {
 }
 
 TEST(CSSParserImplTest, AtPropertyOffsets) {
-  ScopedCSSVariables2AtPropertyForTest scoped_feature(true);
-
   String sheet_text = "@property --test { }";
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);

@@ -78,8 +78,6 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
 }
 
 TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
-  ScopedCSSVariables2AtPropertyForTest scoped_feature(true);
-
   auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
       @property --foo {
         syntax: "<length>";
