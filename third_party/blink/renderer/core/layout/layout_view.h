@@ -284,7 +284,11 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
     NOT_DESTROYED();
     needs_marker_counter_update_ = true;
   }
-  void UpdateMarkersAndCountersAfterStyleChange();
+
+  // Update generated markers and counters after style and layout tree update.
+  // container - The container for container queries, otherwise nullptr.
+  void UpdateMarkersAndCountersAfterStyleChange(
+      LayoutObject* container = nullptr);
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;

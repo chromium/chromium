@@ -1999,7 +1999,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     // styles.
     GetStyleResolver().PropagateStyleToViewport();
   }
-  GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
+  GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange(
+      container.GetLayoutObject());
 }
 
 void StyleEngine::RecalcStyle(StyleRecalcChange change,
