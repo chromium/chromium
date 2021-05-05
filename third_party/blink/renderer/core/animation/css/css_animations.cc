@@ -486,8 +486,10 @@ AnimationTimeline* ComputeTimeline(Element* element,
       if (timeline->Matches(options))
         return existing_timeline;
     }
-    if (auto* timeline = CreateCSSScrollTimeline(element, std::move(options)))
+    if (auto* timeline = CreateCSSScrollTimeline(element, std::move(options))) {
+      document.GetDocumentAnimations().CacheCSSScrollTimeline(*timeline);
       return timeline;
+    }
   }
   return nullptr;
 }

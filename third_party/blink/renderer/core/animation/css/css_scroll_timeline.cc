@@ -223,7 +223,6 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
       rule_(options.rule_) {
   DCHECK(options.IsValid());
   DCHECK(rule_);
-  document->GetDocumentAnimations().CacheCSSScrollTimeline(*this);
 }
 
 const AtomicString& CSSScrollTimeline::Name() const {
