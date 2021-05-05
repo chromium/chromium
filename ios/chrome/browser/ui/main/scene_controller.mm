@@ -378,107 +378,99 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.sceneState.presentingModalOverlay) {
     return;
   }
-  if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      // Handle URL opening from
-      // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
-      for (UIOpenURLContext* context in self.sceneState.connectionOptions
-               .URLContexts) {
-        URLOpenerParams* params =
-            [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
-        [self openTabFromLaunchWithParams:params
-                       startupInformation:self.sceneState.appState
-                                              .startupInformation
-                                 appState:self.sceneState.appState];
-      }
-      if (self.sceneState.connectionOptions.shortcutItem) {
-        [UserActivityHandler
-            performActionForShortcutItem:self.sceneState.connectionOptions
-                                             .shortcutItem
-                       completionHandler:nil
-                               tabOpener:self
-                   connectionInformation:self
-                      startupInformation:self.sceneState.appState
-                                             .startupInformation
-                       interfaceProvider:self.interfaceProvider];
-      }
 
-      // See if this scene launched as part of a multiwindow URL opening.
-      // If so, load that URL (this also creates a new tab to load the URL
-      // in). No other UI will show in this case.
-      NSUserActivity* activityWithCompletion;
-      for (NSUserActivity* activity in self.sceneState.connectionOptions
-               .userActivities) {
-        if (ActivityIsURLLoad(activity)) {
-          UrlLoadParams params = LoadParamsFromActivity(activity);
-          ApplicationMode mode = params.in_incognito
-                                     ? ApplicationMode::INCOGNITO
-                                     : ApplicationMode::NORMAL;
-          [self openOrReuseTabInMode:mode
-                   withUrlLoadParams:params
-                 tabOpenedCompletion:nil];
-        } else if (ActivityIsTabMove(activity)) {
-          NSString* tabID = GetTabIDFromActivity(activity);
-          MoveTabToBrowser(tabID, self.mainInterface.browser,
-                           /*destination_tab_index=*/0);
-        } else if (!activityWithCompletion) {
-          // Completion involves user interaction.
-          // Only one can be triggered.
-          activityWithCompletion = activity;
-        }
-      }
-      if (activityWithCompletion) {
-        // This function is called when the scene is activated (or unblocked).
-        // Consider the scene as still not active at this point as the handling
-        // of startup parameters is not yet done (and will be later in this
-        // function).
-        [UserActivityHandler
-             continueUserActivity:activityWithCompletion
-              applicationIsActive:NO
-                        tabOpener:self
-            connectionInformation:self
-               startupInformation:self.sceneState.appState.startupInformation
-                     browserState:self.currentInterface.browserState];
-      }
-      self.sceneState.connectionOptions = nil;
+  if (!base::ios::IsSceneStartupSupported()) {
+    return;
+  }
+
+  if (@available(iOS 13, *)) {
+    // Handle URL opening from
+    // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
+    for (UIOpenURLContext* context in self.sceneState.connectionOptions
+             .URLContexts) {
+      URLOpenerParams* params =
+          [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
+      [self openTabFromLaunchWithParams:params
+                     startupInformation:self.sceneState.appState
+                                            .startupInformation
+                               appState:self.sceneState.appState];
     }
-
-    if (self.startupParameters) {
-      if ([self isIncognitoForced]) {
-        [self.startupParameters
-            setUnexpectedMode:!self.startupParameters.launchInIncognito];
-        // When only incognito mode is available.
-        [self.startupParameters setLaunchInIncognito:YES];
-      } else if ([self isIncognitoDisabled]) {
-        [self.startupParameters
-            setUnexpectedMode:self.startupParameters.launchInIncognito];
-        // When incognito mode is disabled.
-        [self.startupParameters setLaunchInIncognito:NO];
-      }
-
+    if (self.sceneState.connectionOptions.shortcutItem) {
       [UserActivityHandler
-          handleStartupParametersWithTabOpener:self
-                         connectionInformation:self
-                            startupInformation:self.sceneState.appState
-                                                   .startupInformation
-                                  browserState:self.currentInterface
-                                                   .browserState];
-
-      // Show a toast if the browser is opened in an unexpected mode.
-      if (self.startupParameters.isUnexpectedMode) {
-        [self showToastWhenOpenExternalIntentInUnexpectedMode];
-      }
+          performActionForShortcutItem:self.sceneState.connectionOptions
+                                           .shortcutItem
+                     completionHandler:nil
+                             tabOpener:self
+                 connectionInformation:self
+                    startupInformation:self.sceneState.appState
+                                           .startupInformation
+                     interfaceProvider:self.interfaceProvider];
     }
 
-  } else {
-    NSDictionary* launchOptions =
-        self.sceneState.appState.startupInformation.launchOptions;
-    URLOpenerParams* params =
-        [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
-    [self
-        openTabFromLaunchWithParams:params
-                 startupInformation:self.sceneState.appState.startupInformation
-                           appState:self.sceneState.appState];
+    // See if this scene launched as part of a multiwindow URL opening.
+    // If so, load that URL (this also creates a new tab to load the URL
+    // in). No other UI will show in this case.
+    NSUserActivity* activityWithCompletion;
+    for (NSUserActivity* activity in self.sceneState.connectionOptions
+             .userActivities) {
+      if (ActivityIsURLLoad(activity)) {
+        UrlLoadParams params = LoadParamsFromActivity(activity);
+        ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
+                                                   : ApplicationMode::NORMAL;
+        [self openOrReuseTabInMode:mode
+                 withUrlLoadParams:params
+               tabOpenedCompletion:nil];
+      } else if (ActivityIsTabMove(activity)) {
+        NSString* tabID = GetTabIDFromActivity(activity);
+        MoveTabToBrowser(tabID, self.mainInterface.browser,
+                         /*destination_tab_index=*/0);
+      } else if (!activityWithCompletion) {
+        // Completion involves user interaction.
+        // Only one can be triggered.
+        activityWithCompletion = activity;
+      }
+    }
+    if (activityWithCompletion) {
+      // This function is called when the scene is activated (or unblocked).
+      // Consider the scene as still not active at this point as the handling
+      // of startup parameters is not yet done (and will be later in this
+      // function).
+      [UserActivityHandler
+           continueUserActivity:activityWithCompletion
+            applicationIsActive:NO
+                      tabOpener:self
+          connectionInformation:self
+             startupInformation:self.sceneState.appState.startupInformation
+                   browserState:self.currentInterface.browserState];
+    }
+    self.sceneState.connectionOptions = nil;
+  }
+
+  if (self.startupParameters) {
+    if ([self isIncognitoForced]) {
+      [self.startupParameters
+          setUnexpectedMode:!self.startupParameters.launchInIncognito];
+      // When only incognito mode is available.
+      [self.startupParameters setLaunchInIncognito:YES];
+    } else if ([self isIncognitoDisabled]) {
+      [self.startupParameters
+          setUnexpectedMode:self.startupParameters.launchInIncognito];
+      // When incognito mode is disabled.
+      [self.startupParameters setLaunchInIncognito:NO];
+    }
+
+    [UserActivityHandler
+        handleStartupParametersWithTabOpener:self
+                       connectionInformation:self
+                          startupInformation:self.sceneState.appState
+                                                 .startupInformation
+                                browserState:self.currentInterface
+                                                 .browserState];
+
+    // Show a toast if the browser is opened in an unexpected mode.
+    if (self.startupParameters.isUnexpectedMode) {
+      [self showToastWhenOpenExternalIntentInUnexpectedMode];
+    }
   }
 }
 
