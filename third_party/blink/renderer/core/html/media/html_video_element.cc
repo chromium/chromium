@@ -553,7 +553,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
                                          /*allow_zero_copy_images=*/true,
                                          resource_provider_.get(),
                                          video_renderer, dest_rect);
-  image->SetOriginClean(!WouldTaintOrigin());
+  if (image)
+    image->SetOriginClean(!WouldTaintOrigin());
   return image;
 }
 
