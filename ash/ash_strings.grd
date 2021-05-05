@@ -628,7 +628,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED" desc="The accessible text used when the mic gain button is in the muted state.">
         Mic is muted.
       </message>
-
+      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_OFF" desc="The text in the toast that shows up when the mic is muted using a physical key or shortcut.">
+        Microphone is off
+      </message>
+      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_ON" desc="The text in the toast that shows up when the mic is unmuted using a physical key or shortcut.">
+        Microphone is on
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_VOLUME" desc="The accessible text for the toggle volume muted button in the tray.">
         Toggle Volume. <ph name="STATE_TEXT">$1<ex>Volume is muted</ex></ph>
       </message>

@@ -7,6 +7,7 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 
@@ -15,6 +16,7 @@ class MicGainSliderController;
 class MicGainSliderView : public UnifiedSliderView,
                           public CrasAudioHandler::AudioObserver {
  public:
+  explicit MicGainSliderView(MicGainSliderController* controller);
   MicGainSliderView(MicGainSliderController* controller,
                     uint64_t device_id,
                     bool internal);
@@ -32,6 +34,8 @@ class MicGainSliderView : public UnifiedSliderView,
 
  private:
   void Update(bool by_user);
+
+  views::Label* toast_label_ = nullptr;
 
   // device id for the input device tied to this slider.
   const uint64_t device_id_;

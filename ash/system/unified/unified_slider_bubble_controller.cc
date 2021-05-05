@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/keyboard_brightness/unified_keyboard_brightness_slider_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -95,6 +96,10 @@ void UnifiedSliderBubbleController::OnOutputNodeVolumeChanged(uint64_t node_id,
 
 void UnifiedSliderBubbleController::OnOutputMuteChanged(bool mute_on) {
   ShowBubble(SLIDER_TYPE_VOLUME);
+}
+
+void UnifiedSliderBubbleController::OnInputMuteChanged(bool mute_on) {
+  ShowBubble(SLIDER_TYPE_MIC);
 }
 
 void UnifiedSliderBubbleController::OnDisplayBrightnessChanged(bool by_user) {
@@ -215,6 +220,8 @@ void UnifiedSliderBubbleController::CreateSliderController() {
           std::make_unique<UnifiedKeyboardBrightnessSliderController>(
               tray_->model());
       return;
+    case SLIDER_TYPE_MIC:
+      slider_controller_ = std::make_unique<MicGainSliderController>();
   }
 }
 

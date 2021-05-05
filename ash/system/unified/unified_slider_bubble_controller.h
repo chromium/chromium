@@ -30,7 +30,8 @@ class ASH_EXPORT UnifiedSliderBubbleController
   enum SliderType {
     SLIDER_TYPE_VOLUME = 0,
     SLIDER_TYPE_DISPLAY_BRIGHTNESS,
-    SLIDER_TYPE_KEYBOARD_BRIGHTNESS
+    SLIDER_TYPE_KEYBOARD_BRIGHTNESS,
+    SLIDER_TYPE_MIC
   };
 
   explicit UnifiedSliderBubbleController(UnifiedSystemTray* tray);
@@ -53,6 +54,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
+  void OnInputMuteChanged(bool mute_on) override;
 
   // UnifiedSystemTrayModel::Observer:
   void OnDisplayBrightnessChanged(bool by_user) override;

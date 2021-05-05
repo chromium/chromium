@@ -36,7 +36,7 @@ void MicGainSliderController::SetMapDeviceSliderCallbackForTest(
 }
 
 views::View* MicGainSliderController::CreateView() {
-  return nullptr;
+  return new MicGainSliderView(this);
 }
 
 void MicGainSliderController::SliderValueChanged(

@@ -4,15 +4,34 @@
 
 #include "ash/system/audio/mic_gain_slider_view.h"
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
-#include "components/vector_icons/vector_icons.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
+
+MicGainSliderView::MicGainSliderView(MicGainSliderController* controller)
+    : UnifiedSliderView(
+          base::BindRepeating(&MicGainSliderController::SliderButtonPressed,
+                              base::Unretained(controller)),
+          controller,
+          kImeMenuMicrophoneIcon,
+          IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
+      device_id_(CrasAudioHandler::Get()->GetPrimaryActiveInputNode()),
+      internal_(false) {
+  CrasAudioHandler::Get()->AddAudioObserver(this);
+
+  toast_label_ = AddChildView(std::make_unique<views::Label>());
+  TrayPopupUtils::SetLabelFontList(toast_label_,
+                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
+  slider()->SetVisible(false);
+}
 
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
                                      uint64_t device_id,
@@ -63,6 +82,12 @@ void MicGainSliderView::Update(bool by_user) {
   SetVisible(true);
   bool is_muted = audio_handler->IsInputMuted();
   float level = audio_handler->GetInputGainPercent() / 100.f;
+
+  if (toast_label_) {
+    toast_label_->SetText(
+        l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
+                                           : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
+  }
   // To indicate that the volume is muted, set the volume slider to the minimal
   // visual style.
   slider()->SetRenderingStyle(
