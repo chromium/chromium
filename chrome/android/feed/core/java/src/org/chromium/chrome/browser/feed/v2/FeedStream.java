@@ -573,6 +573,9 @@ public class FeedStream implements Stream {
             notifyContentChange();
         }
 
+        // Dismiss bottomsheet if any is shown.
+        dismissBottomSheet();
+
         mContentManager.setHandlers(new HashMap<>());
         mContentManager = null;
 
