@@ -582,7 +582,7 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
   if (dialog_model()->cable_should_suggest_usb()) {
     return l10n_util::GetStringFUTF16(
         IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
-        GetRelyingPartyIdString(dialog_model()), std::u16string());
+        GetRelyingPartyIdString(dialog_model()));
   }
 
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
