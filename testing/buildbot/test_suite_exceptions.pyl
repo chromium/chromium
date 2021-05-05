@@ -2385,12 +2385,8 @@
     },
   },
   'ozone_unittests_amd64-generic': {
-    'remove_from': [
-      # TODO(crbug.com/1204231): Re-enable.
-      'lacros-amd64-generic-rel',
-    ],
     'modifications': {
-      'lacros-amd64-generic-rel-fyi': {
+      'lacros-amd64-generic-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/device-lacros.ozone_unittests.filter',
         ],
