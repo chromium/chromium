@@ -12,7 +12,8 @@ namespace content {
 
 class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
  public:
-  MockIdpNetworkRequestManager(const GURL& provider, RenderFrameHost* host);
+  MockIdpNetworkRequestManager(const GURL& provider,
+                               const url::Origin& relaying_party_origin);
 
   ~MockIdpNetworkRequestManager() override;
 

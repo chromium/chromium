@@ -6,135 +6,256 @@
 
 #include <array>
 #include <string>
+#include <tuple>
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
+using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
+using AccountsRequestCallback =
+    content::IdpNetworkRequestManager::AccountsRequestCallback;
 
 namespace content {
 
 namespace {
 
-base::Value CreateTestAccount(const std::string& sub) {
-  base::Value::DictStorage storage;
-  storage.emplace("sub", sub);
-  storage.emplace("email", "email@idp.test");
-  storage.emplace("name", "Ken R. Example");
-  storage.emplace("given_name", "Ken");
-  storage.emplace("picture", "https://idp.test/profile");
+const char kTestIdpUrl[] = "https://idp.test";
+const char kTestRpUrl[] = "https://rp.test";
+const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 
-  return base::Value(storage);
-}
+class IdpNetworkRequestManagerTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    manager_ = std::make_unique<IdpNetworkRequestManager>(
+        GURL(kTestIdpUrl), url::Origin::Create(GURL(kTestRpUrl)),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
+  }
 
-TEST(AccountsParseTest, EmptyAccounts) {
-  base::ListValue empty_list;
-  AccountList parsed_accounts;
-  EXPECT_TRUE(
-      IdpNetworkRequestManager::ParseAccounts(&empty_list, parsed_accounts));
-  EXPECT_TRUE(parsed_accounts.empty());
-}
+  void TearDown() override { manager_.reset(); }
 
-TEST(AccountsParseTest, SingleAccount) {
-  base::Value::ListStorage accounts;
-  accounts.emplace_back(CreateTestAccount("1234"));
-  base::Value single_account_value(accounts);
-  AccountList parsed_accounts;
-  EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&single_account_value,
-                                                      parsed_accounts));
-  EXPECT_EQ(1UL, parsed_accounts.size());
-  EXPECT_EQ("1234", parsed_accounts[0].sub);
-}
+  std::tuple<AccountsResponse, AccountList>
+  SendAccountsRequestAndWaitForResponse(const char* test_accounts) {
+    GURL accounts_endpoint(kTestAccountsEndpoint);
+    test_url_loader_factory().AddResponse(accounts_endpoint.spec(),
+                                          test_accounts);
 
-TEST(AccountsParseTest, MultipleAccounts) {
-  base::Value::ListStorage accounts;
-  accounts.emplace_back(CreateTestAccount("1234"));
-  accounts.emplace_back(CreateTestAccount("5678"));
-  base::Value single_account_value(accounts);
-  AccountList parsed_accounts;
-  EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&single_account_value,
-                                                      parsed_accounts));
-  EXPECT_EQ(2UL, parsed_accounts.size());
-  EXPECT_EQ("1234", parsed_accounts[0].sub);
-  EXPECT_EQ("5678", parsed_accounts[1].sub);
-}
-
-TEST(AccountsParseTest, OptionalFields) {
-  auto account = CreateTestAccount("1234");
-  account.RemoveKey("given_name");
-  account.RemoveKey("family_name");
-  account.RemoveKey("picture");
-  // given_name and picture are optional
-  base::Value::ListStorage accounts;
-  accounts.emplace_back(std::move(account));
-  base::Value single_account_value(accounts);
-
-  AccountList parsed_accounts;
-  EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&single_account_value,
-                                                      parsed_accounts));
-  EXPECT_EQ(1UL, parsed_accounts.size());
-  EXPECT_EQ("1234", parsed_accounts[0].sub);
-}
-
-TEST(AccountsParseTest, RequiredFields) {
-  auto TestAccountWithMissingField = [](const std::string& removed_key) {
-    auto account = CreateTestAccount("1234");
-    account.RemoveKey(removed_key);
-    base::Value::ListStorage accounts;
-    accounts.emplace_back(std::move(account));
-    return base::Value(accounts);
-  };
-
-  {
-    auto account_value = TestAccountWithMissingField("sub");
+    base::RunLoop run_loop;
+    AccountsResponse parsed_accounts_response;
     AccountList parsed_accounts;
-    EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&account_value,
-                                                        parsed_accounts));
-    EXPECT_TRUE(parsed_accounts.empty());
+    auto callback = base::BindLambdaForTesting(
+        [&](AccountsResponse response, const AccountList& accounts) {
+          parsed_accounts_response = response;
+          parsed_accounts = accounts;
+          run_loop.Quit();
+        });
+    manager().SendAccountsRequest(accounts_endpoint, std::move(callback));
+    run_loop.Run();
+
+    return {parsed_accounts_response, parsed_accounts};
+  }
+
+  IdpNetworkRequestManager& manager() { return *manager_; }
+
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<IdpNetworkRequestManager> manager_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+};
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
+  const auto* test_empty_account_json = R"({
+  "accounts" : []
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_empty_account_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_TRUE(accounts.empty());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
+  const auto* test_single_account_json = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "given_name": "Ken",
+      "picture": "https://idp.test/profile/1"
+    }
+  ]
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_single_account_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(1UL, accounts.size());
+  EXPECT_EQ("1234", accounts[0].sub);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "given_name": "Ken",
+      "picture": "https://idp.test/profile/1"
+    },
+    {
+      "sub" : "5678",
+      "email": "sam@idp.test",
+      "name": "Sam G. Test",
+      "given_name": "Sam",
+      "picture": "https://idp.test/profile/2"
+    }
+  ]
+  })";
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(2UL, accounts.size());
+  EXPECT_EQ("1234", accounts[0].sub);
+  EXPECT_EQ("5678", accounts[1].sub);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
+  // given_name and picture fields are optional
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ]
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ("1234", accounts[0].sub);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
+  {
+    const auto* test_accounts_missing_sub_json = R"({"accounts" : [{
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }]})";
+    AccountsResponse accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_accounts_missing_sub_json);
+
+    EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+    EXPECT_TRUE(accounts.empty());
   }
   {
-    auto account_value = TestAccountWithMissingField("email");
-    AccountList parsed_accounts;
-    EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&account_value,
-                                                        parsed_accounts));
-    EXPECT_TRUE(parsed_accounts.empty());
+    const auto* test_accounts_missing_email_json = R"({"accounts" : [{
+      "sub" : "1234",
+      "name": "Ken R. Example"
+    }]})";
+    AccountsResponse accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_accounts_missing_email_json);
+
+    EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+    EXPECT_TRUE(accounts.empty());
   }
   {
-    auto account_value = TestAccountWithMissingField("name");
-    AccountList parsed_accounts;
-    EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&account_value,
-                                                        parsed_accounts));
-    EXPECT_TRUE(parsed_accounts.empty());
+    const auto* test_accounts_missing_name_json = R"({"accounts" : [{
+      "sub" : "1234",
+      "email": "ken@idp.test"
+    }]})";
+    AccountsResponse accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_accounts_missing_name_json);
+
+    EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+    EXPECT_TRUE(accounts.empty());
   }
 }
 
-TEST(AccountsParseTest, Unicode) {
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
   auto TestAccountWithKeyValue = [](const std::string& key,
                                     const std::string& value) {
-    auto account = CreateTestAccount("1234");
-    account.SetStringKey(key, value);
-    base::Value::ListStorage accounts;
-    accounts.emplace_back(std::move(account));
-    return base::Value(accounts);
+    const auto* json = R"({
+     "accounts" : [
+        {
+          "sub" : "1234",
+          "email": "ken@idp.test",
+          "%s": "%s"
+        }
+      ]
+    })";
+    return base::StringPrintf(json, key.c_str(), value.c_str());
   };
 
   std::array<std::string, 3> test_values{"ascii", "🦖", "مجید"};
 
   for (auto& test_value : test_values) {
-    const auto& account_value = TestAccountWithKeyValue("name", test_value);
-    AccountList parsed_accounts;
-    EXPECT_TRUE(IdpNetworkRequestManager::ParseAccounts(&account_value,
-                                                        parsed_accounts));
-    EXPECT_EQ(1UL, parsed_accounts.size());
-    EXPECT_EQ(test_value, parsed_accounts[0].name);
+    const auto& accounts_json = TestAccountWithKeyValue("name", test_value);
+
+    AccountsResponse accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
+
+    EXPECT_EQ(1UL, accounts.size());
+    EXPECT_EQ(test_value, accounts[0].name);
   }
 }
 
-TEST(AccountsParseTest, InvalidAccounts) {
-  const base::DictionaryValue dictionary_value;
-  AccountList parsed_accounts;
-  EXPECT_FALSE(IdpNetworkRequestManager::ParseAccounts(&dictionary_value,
-                                                       parsed_accounts));
-  EXPECT_TRUE(parsed_accounts.empty());
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountInvalid) {
+  const auto* test_invalid_account_json = "{}";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
+
+  EXPECT_EQ(AccountsResponse::kInvalidResponseError, accounts_response);
+  EXPECT_TRUE(accounts.empty());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
+  const auto* test_invalid_account_json = "malformed_json";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
+
+  EXPECT_EQ(AccountsResponse::kInvalidResponseError, accounts_response);
+  EXPECT_TRUE(accounts.empty());
 }
 
 }  // namespace

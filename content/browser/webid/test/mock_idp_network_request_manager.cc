@@ -8,8 +8,8 @@ namespace content {
 
 MockIdpNetworkRequestManager::MockIdpNetworkRequestManager(
     const GURL& provider,
-    RenderFrameHost* host)
-    : IdpNetworkRequestManager(provider, host) {}
+    const url::Origin& relying_party)
+    : IdpNetworkRequestManager(provider, relying_party, nullptr) {}
 
 MockIdpNetworkRequestManager::~MockIdpNetworkRequestManager() = default;
 

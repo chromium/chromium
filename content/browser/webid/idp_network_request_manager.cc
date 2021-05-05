@@ -79,11 +79,6 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
-scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
-    content::RenderFrameHost* host) {
-  return host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
-}
-
 std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
     GURL target_url,
     url::Origin initiator) {
@@ -123,6 +118,24 @@ base::Optional<content::IdentityRequestAccount> ParseAccount(
                                          picture ? *picture : "");
 }
 
+// Parses accounts from given Value. Returns true if parse is successful and
+// adds parsed accounts to the |account_list|.
+bool ParseAccounts(const base::Value* accounts,
+                   IdpNetworkRequestManager::AccountList& account_list) {
+  if (!accounts->is_list())
+    return false;
+
+  for (auto& account : accounts->GetList()) {
+    if (!account.is_dict())
+      return false;
+
+    auto parsed_account = ParseAccount(account);
+    if (parsed_account)
+      account_list.push_back(parsed_account.value());
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -136,12 +149,20 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   if (!network::IsOriginPotentiallyTrustworthy(url::Origin::Create(provider)))
     return nullptr;
 
-  return std::make_unique<IdpNetworkRequestManager>(provider, host);
+  // Use the browser process URL loader factory because it has cross-origin
+  // read blocking disabled.
+  return std::make_unique<IdpNetworkRequestManager>(
+      provider, host->GetLastCommittedOrigin(),
+      host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess());
 }
 
-IdpNetworkRequestManager::IdpNetworkRequestManager(const GURL& provider,
-                                                   RenderFrameHost* host)
-    : provider_(provider), render_frame_host_(host) {}
+IdpNetworkRequestManager::IdpNetworkRequestManager(
+    const GURL& provider,
+    const url::Origin& relying_party_origin,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
+    : provider_(provider),
+      relying_party_origin_(relying_party_origin),
+      loader_factory_(loader_factory) {}
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
@@ -174,8 +195,7 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
   // this bypasses CORB. Ensure there is a test added.
   // https://crbug.com/1155312.
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
-  resource_request->request_initiator =
-      render_frame_host_->GetLastCommittedOrigin();
+  resource_request->request_initiator = relying_party_origin_;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
@@ -184,12 +204,8 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 
-  // Use the browser process URL loader factory because it has cross-origin
-  // read blocking disabled.
-  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
-
   url_loader_->DownloadToString(
-      loader_factory.get(),
+      loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnWellKnownLoaded,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
@@ -214,17 +230,14 @@ void IdpNetworkRequestManager::SendSigninRequest(
   // TODO: Should this be a POST, rather than a GET using query parameters?
   // https://crbug.com/1141125.
   GURL target_url = GURL(signin_url.spec() + "?" + encoded_request);
-  auto resource_request = CreateCredentialedResourceRequest(
-      target_url, render_frame_host_->GetLastCommittedOrigin());
+  auto resource_request =
+      CreateCredentialedResourceRequest(target_url, relying_party_origin_);
   auto traffic_annotation = CreateTrafficAnnotation();
   // TODO(kenrb): Make this not send cookies. https://crbug.com/1141125.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
-
-  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
-
   url_loader_->DownloadToString(
-      loader_factory.get(),
+      loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnSigninRequestResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
@@ -237,8 +250,8 @@ void IdpNetworkRequestManager::SendAccountsRequest(
   DCHECK(!accounts_request_callback_);
   accounts_request_callback_ = std::move(callback);
 
-  auto resource_request = CreateCredentialedResourceRequest(
-      accounts_url, render_frame_host_->GetLastCommittedOrigin());
+  auto resource_request =
+      CreateCredentialedResourceRequest(accounts_url, relying_party_origin_);
   // Use ReferrerPolicy::NO_REFERRER for this request so that relying party
   // identity is not exposed to the Identity provider via referror.
   resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
@@ -247,10 +260,8 @@ void IdpNetworkRequestManager::SendAccountsRequest(
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 
-  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
-
   url_loader_->DownloadToString(
-      loader_factory.get(),
+      loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
@@ -295,8 +306,8 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
     return;
   }
 
-  auto resource_request = CreateCredentialedResourceRequest(
-      token_url, render_frame_host_->GetLastCommittedOrigin());
+  auto resource_request =
+      CreateCredentialedResourceRequest(token_url, relying_party_origin_);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                       kJSONMimeType);
@@ -307,10 +318,8 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
                                                  traffic_annotation);
   url_loader_->AttachStringForUpload(token_request_body, kJSONMimeType);
 
-  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
-
   url_loader_->DownloadToString(
-      loader_factory.get(),
+      loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnTokenRequestResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
@@ -325,8 +334,8 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
 
   logout_callback_ = std::move(callback);
 
-  auto resource_request = CreateCredentialedResourceRequest(
-      logout_url, render_frame_host_->GetLastCommittedOrigin());
+  auto resource_request =
+      CreateCredentialedResourceRequest(logout_url, relying_party_origin_);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "*/*");
 
   auto traffic_annotation = CreateTrafficAnnotation();
@@ -334,31 +343,11 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 
-  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
-
   url_loader_->DownloadToString(
-      loader_factory.get(),
+      loader_factory_.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnLogoutCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
-}
-
-// static
-bool IdpNetworkRequestManager::ParseAccounts(
-    const base::Value* accounts,
-    IdpNetworkRequestManager::AccountList& account_list) {
-  if (!accounts->is_list())
-    return false;
-
-  for (auto& account : accounts->GetList()) {
-    if (!account.is_dict())
-      return false;
-
-    auto parsed_account = ParseAccount(account);
-    if (parsed_account)
-      account_list.push_back(parsed_account.value());
-  }
-  return true;
 }
 
 void IdpNetworkRequestManager::OnWellKnownLoaded(

@@ -42,6 +42,7 @@ namespace content {
 
 namespace {
 
+constexpr char kRpTestOrigin[] = "https://rp.example";
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kIdpEndpoint[] = "https://idp.example/webid";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
@@ -362,8 +363,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     auth_request_impl_ = std::make_unique<FederatedAuthRequestImpl>(
         main_rfh(), request_remote_.BindNewPipeAndPassReceiver());
     mock_request_manager_ =
-        std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(provider,
-                                                                 main_rfh());
+        std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(
+            provider, url::Origin::Create(GURL(kRpTestOrigin)));
     mock_dialog_controller_ =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
 

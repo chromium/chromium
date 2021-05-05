@@ -13,7 +13,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -108,7 +110,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       const GURL& provider,
       RenderFrameHost* host);
 
-  IdpNetworkRequestManager(const GURL& provider, RenderFrameHost* host);
+  IdpNetworkRequestManager(
+      const GURL& provider,
+      const url::Origin& relying_party,
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   virtual ~IdpNetworkRequestManager();
 
@@ -136,15 +141,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
-  // Parses accounts from given Value. Returns true if parse is successful and
-  // adds parsed accounts to the |account_list|.
-  // TODO(majidvp): Make this function private and update tests to test the
-  // actual public interface of this class rather than its implementation
-  // details such as this.
-  static bool ParseAccounts(
-      const base::Value* accounts,
-      IdpNetworkRequestManager::AccountList& account_list);
-
  private:
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
   void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
@@ -159,7 +155,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // URL of the Identity Provider.
   GURL provider_;
 
-  RenderFrameHost* render_frame_host_;
+  url::Origin relying_party_origin_;
+
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   FetchWellKnownCallback idp_well_known_callback_;
   SigninRequestCallback signin_request_callback_;
