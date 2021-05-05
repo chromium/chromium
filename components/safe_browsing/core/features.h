@@ -40,6 +40,9 @@ extern const base::Feature kClientSideDetectionForAndroid;
 // Desktop.
 extern const base::Feature kClientSideDetectionModelVersion;
 
+// Determines the tag to pass to Omaha to get a client side detection model.
+extern const base::Feature kClientSideDetectionModelTag;
+
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 

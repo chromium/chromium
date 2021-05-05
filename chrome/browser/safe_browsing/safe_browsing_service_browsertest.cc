@@ -1230,22 +1230,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       EnablesClientSidePhishingModelAtStartup) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates a signin profile with Standard Protection enabled. In
-  // order to test what happens when Standard Protection is enabled/disabled for
-  // all users, we need to disable Standard Protection for this profile.
-  SetStandardProtectionPref(
-      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile()->GetPrefs(),
-      false);
-#endif
-  SetStandardProtectionPref(browser()->profile()->GetPrefs(), false);
-  EXPECT_FALSE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  SetStandardProtectionPref(browser()->profile()->GetPrefs(), true);
-  EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // END: These tests use SafeBrowsingService::Client to directly interact with
 // SafeBrowsingService.

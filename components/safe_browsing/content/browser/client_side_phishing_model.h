@@ -12,10 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace safe_browsing {
 
 struct ClientSidePhishingModelSingletonTrait;
@@ -33,28 +29,20 @@ class ClientSidePhishingModel {
 
   static ClientSidePhishingModel* GetInstance();  // Singleton
 
-  // Register a callback to be notified whenever the model changes.
+  // Register a callback to be notified whenever the model changes. All
+  // notifications will occur on the UI thread.
   base::CallbackListSubscription RegisterCallback(
       base::RepeatingCallback<void()> callback);
 
-  // Start loading the model with the given |url_loader_factory|
-  void Start(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-  // Cancel any pending model fetches.
-  void Stop();
-
-  // Returns whether we are currently actively fetching the model.
+  // Returns whether we currently have a model.
   bool IsEnabled() const;
 
   // Returns the model string, as a serialized protobuf.
   std::string GetModelStr() const;
 
-  // Returns the model name.
-  std::string GetModelName() const;
-
-  // Returns the status of the most recent model fetch, or MODEL_NEVER_FETCHED
-  // if we have done no fetches.
-  ModelLoader::ClientModelStatus GetLastModelStatus() const;
+  // Updates the internal model string, when one is received from a component
+  // update.
+  void PopulateFromDynamicUpdate(const std::string& model_str);
 
   // Overrides the model string for use in tests.
   void SetModelStrForTesting(const std::string& model_str);
@@ -64,18 +52,14 @@ class ClientSidePhishingModel {
 
   ClientSidePhishingModel();
 
-  // Callback when a new model proto has been fetched by |model_loader_|
-  void ModelUpdatedCallback();
+  void NotifyCallbacksOnUI();
 
   // The list of callbacks to notify when a new model is ready. Protected by
-  // lock_.
+  // lock_. Will always be notified on the UI thread.
   base::RepeatingCallbackList<void()> callbacks_;
 
-  // Fetches the ClientSideModel over the network. Protected by lock_.
-  std::unique_ptr<ModelLoader> model_loader_;
-
-  // Fake model string used in testing. Protected by lock_.
-  std::string overridden_model_str_;
+  // Model string. Protected by lock_.
+  std::string model_str_;
 
   mutable base::Lock lock_;
 

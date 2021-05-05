@@ -280,6 +280,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The counts for malware verdicts given by server side model.</summary>
 </histogram>
 
+<histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
+    enum="BooleanReady" expires_after="2022-03-08">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    When a renderer-side classification returns the error
+    &quot;CLASSIFIER_NOT_READY&quot;, this histogram is logged with whether or
+    not the browser process had a valid model. This can help to identify
+    problems distributing the model from browser process to the renderers.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.CacheDetectsPhishing"
     enum="BooleanIsPhishing" expires_after="2021-09-17">
   <owner>drubery@chromium.org</owner>
@@ -326,7 +338,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.ClassifierNotReadyReason"
-    enum="SBClientPhishingClientModelStatus" expires_after="2021-10-31">
+    enum="SBClientPhishingClientModelStatus" expires_after="2021-08-29">
+  <obsolete>
+    Removed in 05-2021 and replaced with
+    SBClientPhishing.BrowserReadyOnClassifierNotReady.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -450,6 +466,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     to a non-allowlisted site)
 
     This metric is used to populate a dashboard on go/crsb-site.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
+    enum="BooleanSuccess" expires_after="2022-03-08">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a dynamic update is successful or not. This is logged when a
+    new model is pushed (rare), or on each startup.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ModelDynamicUpdateVersion"
+    units="client phishing model version" expires_after="2022-03-08">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the model version on a successful dynamic update. This is logged
+    when a new model is pushed (rare), or on each startup.
   </summary>
 </histogram>
 

@@ -346,9 +346,6 @@ void SafeBrowsingService::Start() {
               GetURLLoaderFactory()),
           std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
               g_browser_process->shared_url_loader_factory())));
-
-  ClientSidePhishingModel::GetInstance()->Start(
-      g_browser_process->shared_url_loader_factory());
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
@@ -357,7 +354,6 @@ void SafeBrowsingService::Stop(bool shutdown) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingService::StopOnIOThread, this, shutdown));
-  ClientSidePhishingModel::GetInstance()->Stop();
 }
 
 void SafeBrowsingService::OnProfileAdded(Profile* profile) {

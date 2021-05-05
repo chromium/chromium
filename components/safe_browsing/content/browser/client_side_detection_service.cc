@@ -209,8 +209,6 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   }
 
   // Fill in metadata about which model we used.
-  request->set_model_filename(
-      ClientSidePhishingModel::GetInstance()->GetModelName());
   *request->mutable_population() = delegate_->GetUserPopulation();
 
   std::string request_data;

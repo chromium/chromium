@@ -14,6 +14,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/autofill_regex_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
+#include "chrome/browser/component_updater/client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
@@ -186,6 +187,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
 
   RegisterAutofillRegexComponent(cus);
+
+  RegisterClientSidePhishingComponent(cus);
 }
 
 }  // namespace component_updater

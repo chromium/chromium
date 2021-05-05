@@ -433,9 +433,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingDetectorResult",
                                 result);
   if (result == mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY) {
-    base::UmaHistogramEnumeration(
-        "SBClientPhishing.ClassifierNotReadyReason",
-        ClientSidePhishingModel::GetInstance()->GetLastModelStatus());
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.BrowserReadyOnClassifierNotReady",
+        ClientSidePhishingModel::GetInstance()->IsEnabled());
   }
   if (result != mojom::PhishingDetectorResult::SUCCESS)
     return;

@@ -5,11 +5,14 @@
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/post_task.h"
+#include "components/safe_browsing/core/proto/client_model.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
-
-const int ClientSidePhishingModel::kInitialClientModelFetchDelayMs = 10000;
 
 using base::AutoLock;
 
@@ -41,60 +44,46 @@ base::CallbackListSubscription ClientSidePhishingModel::RegisterCallback(
   return callbacks_.Add(std::move(callback));
 }
 
-void ClientSidePhishingModel::Start(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  AutoLock lock(lock_);
-  model_loader_ = std::make_unique<ModelLoader>(
-      base::BindRepeating(&ClientSidePhishingModel::ModelUpdatedCallback,
-                          base::Unretained(this)),
-      url_loader_factory,
-      /*extended_reporting=*/false);
-
-  // Refresh the models when the service is enabled.  This can happen when
-  // either of the preferences are toggled, or early during startup if
-  // safe browsing is already enabled. In a lot of cases the model will be
-  // in the cache so it  won't actually be fetched from the network.
-  // We delay the first model fetches to avoid slowing down browser startup.
-  model_loader_->ScheduleFetch(kInitialClientModelFetchDelayMs);
-}
-
-void ClientSidePhishingModel::Stop() {
-  AutoLock lock(lock_);
-  if (model_loader_) {
-    model_loader_->CancelFetcher();
-  }
-  model_loader_ = nullptr;
-}
-
 bool ClientSidePhishingModel::IsEnabled() const {
-  return model_loader_.get();
+  return !model_str_.empty();
 }
 
 std::string ClientSidePhishingModel::GetModelStr() const {
-  if (!overridden_model_str_.empty())
-    return overridden_model_str_;
-  return model_loader_ ? model_loader_->model_str() : "";
+  return model_str_;
 }
 
-std::string ClientSidePhishingModel::GetModelName() const {
-  return model_loader_ ? model_loader_->name() : "";
+void ClientSidePhishingModel::PopulateFromDynamicUpdate(
+    const std::string& model_str) {
+  AutoLock lock(lock_);
+
+  ClientSideModel model_proto;
+  bool can_parse = model_proto.ParseFromString(model_str);
+  base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
+                            can_parse);
+
+  if (can_parse) {
+    // At time of writing, versions go up to 25. We set a max version of 100 to
+    // give some room.
+    const int kMaxVersion = 100;
+    base::UmaHistogramExactLinear("SBClientPhishing.ModelDynamicUpdateVersion",
+                                  model_proto.version(), kMaxVersion + 1);
+    model_str_ = model_str;
+    // Unretained is safe because this is a singleton.
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                                  base::Unretained(this)));
+  }
 }
 
-ModelLoader::ClientModelStatus ClientSidePhishingModel::GetLastModelStatus()
-    const {
-  return model_loader_ ? model_loader_->last_client_model_status()
-                       : ModelLoader::MODEL_NEVER_FETCHED;
+void ClientSidePhishingModel::NotifyCallbacksOnUI() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  callbacks_.Notify();
 }
 
 void ClientSidePhishingModel::SetModelStrForTesting(
     const std::string& model_str) {
   AutoLock lock(lock_);
-  overridden_model_str_ = model_str;
-}
-
-void ClientSidePhishingModel::ModelUpdatedCallback() {
-  AutoLock lock(lock_);
-  callbacks_.Notify();
+  model_str_ = model_str;
 }
 
 }  // namespace safe_browsing
