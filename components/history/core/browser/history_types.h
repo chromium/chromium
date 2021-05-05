@@ -317,7 +317,7 @@ struct MostVisitedURL {
 
 // FilteredURL -----------------------------------------------------------------
 
-// Holds the per-URL information of the filterd url query.
+// Holds the per-URL information of the filtered url query.
 struct FilteredURL {
   struct ExtendedInfo {
     ExtendedInfo();
@@ -662,6 +662,8 @@ enum class UrlsModifiedReason {
   kAndroidDb,
 };
 
+// Clusters --------------------------------------------------------------------
+
 // Context signals about a page visit collected during the page lifetime.
 // This struct encapsulates data that's shared between UKM and the on-device
 // storage for `HistoryCluster` metadata, recorded to both when the page
@@ -724,20 +726,11 @@ struct ClusterVisit {
 struct ClusterVisitRow {
   ClusterVisitRow() = default;
   explicit ClusterVisitRow(const ClusterVisit& cluster_visit)
-      : ClusterVisitRow(0,
-                        cluster_visit.url_row.id(),
-                        cluster_visit.visit_row.visit_id,
+      : ClusterVisitRow(cluster_visit.visit_row.visit_id,
                         cluster_visit.context_signals) {}
-  ClusterVisitRow(const int64_t cluster_visit_id,
-                  const URLID url_id,
-                  const VisitID visit_id,
+  ClusterVisitRow(const VisitID visit_id,
                   const ClusterVisitContextSignals& context_signals)
-      : cluster_visit_id(cluster_visit_id),
-        url_id(url_id),
-        visit_id(visit_id),
-        context_signals(context_signals) {}
-  int64_t cluster_visit_id;
-  URLID url_id;
+      : visit_id(visit_id), context_signals(context_signals) {}
   VisitID visit_id;
   ClusterVisitContextSignals context_signals;
 };

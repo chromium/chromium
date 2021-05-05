@@ -1421,13 +1421,10 @@ void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
 
 void HistoryBackend::AddClusterVisit(const ClusterVisitRow& row) {
   TRACE_EVENT0("browser", "HistoryBackend::AddClusterVisit");
-  DCHECK(row.url_id && row.visit_id);
-  URLRow url_row;
+  DCHECK(row.visit_id);
   VisitRow visit_row;
-  if (!db_ || !db_->GetURLRow(row.url_id, &url_row) ||
-      !db_->GetRowForVisit(row.visit_id, &visit_row)) {
+  if (!db_ || !db_->GetRowForVisit(row.visit_id, &visit_row))
     return;
-  }
   db_->AddClusterVisit(row);
   ScheduleCommit();
 }
@@ -1441,11 +1438,11 @@ std::vector<ClusterVisit> HistoryBackend::GetClusterVisits(int max_results) {
   for (const auto& row : db_->GetClusterVisits(max_results)) {
     URLRow url_row;
     VisitRow visit_row;
-    if (db_->GetURLRow(row.url_id, &url_row) &&
-        db_->GetRowForVisit(row.visit_id, &visit_row)) {
+    if (db_->GetRowForVisit(row.visit_id, &visit_row) &&
+        db_->GetURLRow(visit_row.url_id, &url_row)) {
       cluster_visits.push_back({url_row, visit_row, row.context_signals});
     } else {
-      db_->DeleteClusterVisit(row.cluster_visit_id);
+      db_->DeleteClusterVisit(row.visit_id);
       deleted_any_visits = true;
     }
   }

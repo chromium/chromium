@@ -37,7 +37,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 44;
+const int kCurrentVersionNumber = 45;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -115,9 +115,8 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   // Prime the cache.
   db_.Preload();
 
-  // Create the tables and indices.
-  // NOTE: If you add something here, also add it to
-  //       RecreateAllButStarAndURLTables.
+  // Create the tables and indices. If you add something here, also add it to
+  // `RecreateAllTablesButURL()`.
   if (!meta_table_.Init(&db_, GetCurrentVersion(), kCompatibleVersionNumber))
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
@@ -643,6 +642,12 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   if (cur_version == 43) {
     if (!CanMigrateFlocAllowed() || !MigrateFlocAllowedToAnnotationsTable())
       return LogMigrationFailure(43);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 44) {
+    MigrateReplaceClusterVisitsTable();
     cur_version++;
     meta_table_.SetVersionNumber(cur_version);
   }

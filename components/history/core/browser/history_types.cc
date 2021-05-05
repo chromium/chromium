@@ -15,7 +15,7 @@ namespace history {
 
 // VisitRow --------------------------------------------------------------------
 
-VisitRow::VisitRow() {}
+VisitRow::VisitRow() = default;
 
 VisitRow::VisitRow(URLID arg_url_id,
                    base::Time arg_visit_time,
@@ -31,14 +31,13 @@ VisitRow::VisitRow(URLID arg_url_id,
       segment_id(arg_segment_id),
       incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score) {}
 
-VisitRow::~VisitRow() {
-}
+VisitRow::~VisitRow() = default;
 
 // QueryResults ----------------------------------------------------------------
 
-QueryResults::QueryResults() {}
+QueryResults::QueryResults() = default;
 
-QueryResults::~QueryResults() {}
+QueryResults::~QueryResults() = default;
 
 QueryResults::QueryResults(QueryResults&& other) noexcept {
   Swap(&other);
@@ -102,7 +101,7 @@ void QueryResults::DeleteRange(size_t begin, size_t end) {
   // exclusive, while ours is inclusive, hence the +1).
   results_.erase(results_.begin() + begin, results_.begin() + end + 1);
 
-  // Delete the indicies referencing the deleted entries.
+  // Delete the indices referencing the deleted entries.
   for (const auto& url : urls_modified) {
     auto found = url_to_results_.find(url);
     if (found == url_to_results_.end()) {
@@ -114,7 +113,7 @@ void QueryResults::DeleteRange(size_t begin, size_t end) {
     for (int match = 0; match < static_cast<int>(found->second->size());
          match++) {
       if (found->second[match] >= begin && found->second[match] <= end) {
-        // Remove this referece from the list.
+        // Remove this reference from the list.
         found->second->erase(found->second->begin() + match);
         match--;
       }
@@ -145,18 +144,18 @@ void QueryResults::AddURLUsageAtIndex(const GURL& url, size_t index) {
 }
 
 void QueryResults::AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta) {
-  for (auto i = url_to_results_.begin(); i != url_to_results_.end(); ++i) {
-    for (size_t match = 0; match < i->second->size(); match++) {
-      size_t match_index = i->second[match];
+  for (auto& url_to_result : url_to_results_) {
+    for (size_t match = 0; match < url_to_result.second->size(); match++) {
+      size_t match_index = url_to_result.second[match];
       if (match_index >= begin && match_index <= end)
-        i->second[match] += delta;
+        url_to_result.second[match] += delta;
     }
   }
 }
 
 // QueryOptions ----------------------------------------------------------------
 
-QueryOptions::QueryOptions() {}
+QueryOptions::QueryOptions() = default;
 
 void QueryOptions::SetRecentDayRange(int days_ago) {
   end_time = base::Time::Now();
@@ -192,7 +191,7 @@ QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
 
 // MostVisitedURL --------------------------------------------------------------
 
-MostVisitedURL::MostVisitedURL() {}
+MostVisitedURL::MostVisitedURL() = default;
 
 MostVisitedURL::MostVisitedURL(const GURL& url, const std::u16string& title)
     : url(url), title(title) {}
@@ -207,7 +206,7 @@ MostVisitedURL& MostVisitedURL::operator=(const MostVisitedURL&) = default;
 
 // FilteredURL -----------------------------------------------------------------
 
-FilteredURL::FilteredURL() {}
+FilteredURL::FilteredURL() = default;
 
 FilteredURL::FilteredURL(const PageUsageData& page_data)
     : url(page_data.GetURL()),
@@ -217,7 +216,7 @@ FilteredURL::FilteredURL(const PageUsageData& page_data)
 
 FilteredURL::FilteredURL(FilteredURL&& other) noexcept = default;
 
-FilteredURL::~FilteredURL() {}
+FilteredURL::~FilteredURL() = default;
 
 // FilteredURL::ExtendedInfo ---------------------------------------------------
 
@@ -225,11 +224,11 @@ FilteredURL::ExtendedInfo::ExtendedInfo() = default;
 
 // TopSitesDelta --------------------------------------------------------------
 
-TopSitesDelta::TopSitesDelta() {}
+TopSitesDelta::TopSitesDelta() = default;
 
 TopSitesDelta::TopSitesDelta(const TopSitesDelta& other) = default;
 
-TopSitesDelta::~TopSitesDelta() {}
+TopSitesDelta::~TopSitesDelta() = default;
 
 // HistoryAddPageArgs ---------------------------------------------------------
 
@@ -277,24 +276,22 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;
 
-HistoryAddPageArgs::~HistoryAddPageArgs() {}
+HistoryAddPageArgs::~HistoryAddPageArgs() = default;
 
 // DomainMetricSet ------------------------------------------------------------
 
-DomainMetricSet::DomainMetricSet() {}
+DomainMetricSet::DomainMetricSet() = default;
 DomainMetricSet::DomainMetricSet(const DomainMetricSet&) = default;
-DomainMetricSet::~DomainMetricSet() {}
+DomainMetricSet::~DomainMetricSet() = default;
 DomainMetricSet& DomainMetricSet::operator=(const DomainMetricSet&) = default;
 
 // ExpireHistoryArgs ----------------------------------------------------------
 
-ExpireHistoryArgs::ExpireHistoryArgs() {
-}
+ExpireHistoryArgs::ExpireHistoryArgs() = default;
 
 ExpireHistoryArgs::ExpireHistoryArgs(const ExpireHistoryArgs& other) = default;
 
-ExpireHistoryArgs::~ExpireHistoryArgs() {
-}
+ExpireHistoryArgs::~ExpireHistoryArgs() = default;
 
 void ExpireHistoryArgs::SetTimeRangeForOneDay(base::Time time) {
   begin_time = time.LocalMidnight();

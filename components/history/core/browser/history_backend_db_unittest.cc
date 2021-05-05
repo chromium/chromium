@@ -1894,6 +1894,66 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   }
 }
 
+TEST_F(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(44));
+
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertVisitStatement[] =
+      "INSERT INTO visits "
+      "(id, url, visit_time) VALUES (?, ?, ?)";
+
+  const char kInsertAnnotationsStatement[] =
+      "INSERT INTO cluster_visits "
+      "(cluster_visit_id, url_id, visit_id, "
+      "cluster_visit_context_signal_bitmask, duration_since_last_visit, "
+      "page_end_reason) "
+      "VALUES (?, ?, ?, ?, ?, ?)";
+
+  // Add a row to `visits` table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+    s.BindInt64(0, 1);
+    s.BindInt64(1, 1);
+    s.BindTime(2, base::Time::Now());
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Add a row to the `cluster_visits` table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+    s.BindInt64(0, 1);
+    s.BindInt64(1, 1);
+    s.BindInt64(2, 1);
+    s.BindInt64(3, 0);
+    s.BindInt64(4, 0);
+    s.BindInt(5, 0);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 45);
+
+  // Confirm the old `cluster_visits` table no longer exists.
+  ASSERT_FALSE(db.DoesTableExist("cluster_visits"));
+
+  // Confirm the new `context_annotations` exists.
+  ASSERT_TRUE(db.DoesTableExist("context_annotations"));
+
+  // Check `context_annotations` is empty.
+  {
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM content_annotations"));
+    EXPECT_TRUE(s.Step());
+    EXPECT_EQ(s.ColumnInt64(0), 0u);
+    EXPECT_FALSE(s.Step());
+  }
+}
+
 // Tests that the migration code correctly replaces the lower_term column in the
 // keyword search terms table which normalized_term which contains the
 // normalized search term during migration to version 42.

@@ -180,6 +180,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/history/history.41.sql",
     "//components/test/data/history/history.42.sql",
     "//components/test/data/history/history.43.sql",
+    "//components/test/data/history/history.44.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
     "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",

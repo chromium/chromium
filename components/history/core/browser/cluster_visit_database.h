@@ -20,6 +20,7 @@ namespace history {
 // databases, as this joins with the visit table and could be thought of as
 // inheriting from VisitDatabase. However, this inheritance is not explicit as
 // things would get too complicated and have multiple inheritance.
+// TODO(manukh) Merge with VisitAnnotationsDatabase.
 class ClusterVisitDatabase {
  public:
   // Must call InitClusterVisitTable() before using to make sure the database is
@@ -36,7 +37,7 @@ class ClusterVisitDatabase {
   void AddClusterVisit(const ClusterVisitRow& row);
 
   // Delete a `ClusterVisitRow` from the table.
-  void DeleteClusterVisit(int64_t cluster_visit_id);
+  void DeleteClusterVisit(VisitID visit_id);
 
   // Get the `max_results` most recent `ClusterVisitRow`s.
   std::vector<ClusterVisitRow> GetClusterVisits(int max_results);
@@ -48,6 +49,12 @@ class ClusterVisitDatabase {
   // Called by the derived classes on initialization to make sure the tables
   // and indices are properly set up. Must be called before anything else.
   bool InitClusterVisitTable();
+
+  // Replaces `cluster_visits` with `context_annotations`. Besides the name
+  // change, the new table drops 2 columns: cluster_visit_id (obsolete) and
+  // url_id (redundant); and renames 1 column:
+  // cluster_visit_context_signal_bitmask to context_annotation_flags.
+  bool MigrateReplaceClusterVisitsTable();
 };
 
 }  // namespace history

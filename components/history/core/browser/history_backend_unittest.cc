@@ -3188,32 +3188,26 @@ TEST_F(HistoryBackendTest, ClusterVisits) {
             (std::pair<URLID, VisitID>{2, 2}));
   EXPECT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 3}));
-  backend_->AddClusterVisit({0, 1, 1, {true}});
-  backend_->AddClusterVisit({0, 1, 3, {false}});
-  backend_->AddClusterVisit({0, 2, 2, {true}});
+  backend_->AddClusterVisit({1, {true}});
+  backend_->AddClusterVisit({3, {false}});
+  backend_->AddClusterVisit({2, {true}});
   EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
 
-  // Cluster visits should have URL & visit IDs
-  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, 0, 4, {true}}));
-  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, 3, 0, {true}}));
+  // Cluster visits should have a visit IDs.
+  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, {true}}));
   EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
 
-  // Cluster visits without an associated URL or visit should not be added.
-  backend_->AddClusterVisit({0, 3, 1, {true}});
-  backend_->AddClusterVisit({0, 1, 4, {true}});
+  // Cluster visits without an associated visit should not be added.
+  backend_->AddClusterVisit({4, {true}});
   EXPECT_EQ(add_url_and_visit("http://3.com/"),
             (std::pair<URLID, VisitID>{3, 4}));
   EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
 
-  // Cluster visits associated with a removed URL or visit should not be added.
+  // Cluster visits associated with a removed visit should not be added.
   EXPECT_EQ(add_url_and_visit("http://4.com/"),
             (std::pair<URLID, VisitID>{4, 5}));
-  EXPECT_EQ(add_url_and_visit("http://5.com/"),
-            (std::pair<URLID, VisitID>{5, 6}));
-  delete_url(4);
-  delete_visit(6);
-  backend_->AddClusterVisit({0, 4, 1, {true}});
-  backend_->AddClusterVisit({0, 1, 6, {true}});
+  delete_visit(5);
+  backend_->AddClusterVisit({5, {true}});
   EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
 
   // Verify only the correct cluster visits are retrieved ordered recent visits

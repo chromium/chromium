@@ -13,6 +13,8 @@ class Database;
 
 namespace history {
 
+struct VisitContentAnnotations;
+
 // Holds annotations made for a user's visits.
 class VisitAnnotationsDatabase {
  public:

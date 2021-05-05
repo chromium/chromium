@@ -86,12 +86,11 @@ ClusterVisitContextSignals ConstructContextSignalsWithFlags(
 // Convenience to construct a `ClusterVisitRow`. Assumes the visit values are
 // bound starting at index 0.
 ClusterVisitRow StatementToVisitRow(const sql::Statement& statement) {
-  return {statement.ColumnInt64(0), statement.ColumnInt64(1),
-          statement.ColumnInt64(2),
+  return {statement.ColumnInt64(0),
           ConstructContextSignalsWithFlags(
-              statement.ColumnInt64(3),
-              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(4)),
-              statement.ColumnInt(5))};
+              statement.ColumnInt64(1),
+              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
+              statement.ColumnInt(3))};
 }
 
 // Like `StatementToVisitRow()` but for multiple rows.
@@ -107,31 +106,24 @@ std::vector<ClusterVisitRow> StatementToVisitRowVector(
 
 }  // namespace
 
-// Columns, in order, excluding `cluster_visit_id`.
-#define HISTORY_CLUSTER_VISIT_ROW_FIELDS_WITHOUT_ID           \
-  " url_id, visit_id, cluster_visit_context_signal_bitmask, " \
-  "duration_since_last_visit, page_end_reason "
-
-// Columns, in order, including `cluster_visit_id`.
-#define HISTORY_CLUSTER_VISIT_ROW_FIELDS \
-  " cluster_visit_id," HISTORY_CLUSTER_VISIT_ROW_FIELDS_WITHOUT_ID
+// Columns, in order.
+#define HISTORY_CLUSTER_VISIT_ROW_FIELDS                             \
+  " visit_id, context_annotation_flags, duration_since_last_visit, " \
+  "page_end_reason "
 
 ClusterVisitDatabase::ClusterVisitDatabase() = default;
 
 ClusterVisitDatabase::~ClusterVisitDatabase() = default;
 
 bool ClusterVisitDatabase::InitClusterVisitTable() {
-  if (!GetDB().DoesTableExist("cluster_visits")) {
+  if (!GetDB().DoesTableExist("context_annotations")) {
     // See `ClusterVisitRow` and `ClusterVisitContextSignals` for details about
     // these fields.
-    if (!GetDB().Execute(
-            "CREATE TABLE cluster_visits("
-            "cluster_visit_id INTEGER PRIMARY KEY,"
-            "url_id INTEGER NOT NULL,"
-            "visit_id INTEGER NOT NULL,"
-            "cluster_visit_context_signal_bitmask INTEGER NOT NULL,"
-            "duration_since_last_visit INTEGER NOT NULL,"
-            "page_end_reason INTEGER NOT NULL)")) {
+    if (!GetDB().Execute("CREATE TABLE context_annotations("
+                         "visit_id INTEGER PRIMARY KEY,"
+                         "context_annotation_flags INTEGER DEFAULT 0 NOT NULL,"
+                         "duration_since_last_visit INTEGER,"
+                         "page_end_reason INTEGER)")) {
       return false;
     }
   }
@@ -140,35 +132,34 @@ bool ClusterVisitDatabase::InitClusterVisitTable() {
 }
 
 bool ClusterVisitDatabase::DropClusterVisitTable() {
-  return GetDB().Execute("DROP TABLE cluster_visits");
+  return GetDB().Execute("DROP TABLE context_annotations");
 }
 
 void ClusterVisitDatabase::AddClusterVisit(const ClusterVisitRow& row) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT INTO cluster_visits (" HISTORY_CLUSTER_VISIT_ROW_FIELDS_WITHOUT_ID
-      ") VALUES (?, ?, ?, ?, ?)"));
-  statement.BindInt64(0, row.url_id);
-  statement.BindInt64(1, row.visit_id);
-  statement.BindInt64(2, ContextSignalsToFlags(row.context_signals));
+      "INSERT INTO context_annotations (" HISTORY_CLUSTER_VISIT_ROW_FIELDS
+      ") VALUES (?, ?, ?, ?)"));
+  statement.BindInt64(0, row.visit_id);
+  statement.BindInt64(1, ContextSignalsToFlags(row.context_signals));
   statement.BindInt64(
-      3, row.context_signals.duration_since_last_visit.InMicroseconds());
-  statement.BindInt(4, row.context_signals.page_end_reason);
+      2, row.context_signals.duration_since_last_visit.InMicroseconds());
+  statement.BindInt(3, row.context_signals.page_end_reason);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute cluster visit insert statement:  "
-             << "url_id = " << row.url_id << ", visit_id = " << row.visit_id;
+             << "visit_id = " << row.visit_id;
   }
 }
 
-void ClusterVisitDatabase::DeleteClusterVisit(int64_t cluster_visit_id) {
+void ClusterVisitDatabase::DeleteClusterVisit(VisitID visit_id) {
   sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM cluster_visits WHERE cluster_visit_id = ?"));
-  statement.BindInt64(0, cluster_visit_id);
+      SQL_FROM_HERE, "DELETE FROM context_annotations WHERE visit_id = ?"));
+  statement.BindInt64(0, visit_id);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute cluster visit delete statement:  "
-             << "cluster_visit_id = " << cluster_visit_id;
+             << "visit_id = " << visit_id;
   }
 }
 
@@ -176,12 +167,19 @@ std::vector<ClusterVisitRow> ClusterVisitDatabase::GetClusterVisits(
     int max_results) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "SELECT" HISTORY_CLUSTER_VISIT_ROW_FIELDS
-                     "FROM cluster_visits "
+                     "FROM context_annotations "
                      "JOIN visits ON visit_id = visits.id "
                      "ORDER BY visits.visit_time DESC "
                      "LIMIT ?"));
   statement.BindInt64(0, max_results);
   return StatementToVisitRowVector(statement);
+}
+
+bool ClusterVisitDatabase::MigrateReplaceClusterVisitsTable() {
+  // We don't need to actually copy values from the previous table; it's only
+  // rolled out behind a flag.
+  return !GetDB().DoesTableExist("cluster_visits") ||
+         GetDB().Execute("DROP TABLE cluster_visits");
 }
 
 }  // namespace history

@@ -189,7 +189,7 @@ class HistoryDatabase : public DownloadDatabase,
 
   // Makes sure the version is up to date, updating if necessary. If the
   // database is too old to migrate, the user will be notified. Returns
-  // sql::INIT_OK iff  the DB is up to date and ready for use.
+  // sql::INIT_OK iff the DB is up to date and ready for use.
   //
   // This assumes it is called from the init function inside a transaction. It
   // may commit the transaction and start a new one if migration requires it.
