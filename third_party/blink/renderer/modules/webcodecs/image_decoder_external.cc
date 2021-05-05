@@ -91,6 +91,10 @@ void ImageDecoderExternal::DecodeRequest::Trace(Visitor* visitor) const {
   visitor->Trace(exception);
 }
 
+bool ImageDecoderExternal::DecodeRequest::IsFinal() const {
+  return result || exception || range_error_message;
+}
+
 // static
 ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
                                                     String type) {
@@ -429,7 +433,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     }
 
     // Ignore already submitted requests and those already satisfied.
-    if (request->pending || request->exception || request->result)
+    if (request->pending || request->IsFinal())
       continue;
 
     if (!data_complete_) {
@@ -455,11 +459,9 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
                                   decode_weak_factory_.GetWeakPtr()));
   }
 
-  auto* new_end =
-      std::stable_partition(pending_decodes_.begin(), pending_decodes_.end(),
-                            [](const auto& request) {
-                              return !request->result && !request->exception;
-                            });
+  auto* new_end = std::stable_partition(
+      pending_decodes_.begin(), pending_decodes_.end(),
+      [](const auto& request) { return !request->IsFinal(); });
 
   // Copy completed requests to a new local vector to avoid reentrancy issues
   // when resolving and rejecting the promises.
@@ -470,10 +472,15 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 
   // Note: Promise resolution may invoke calls into this class.
   for (auto& request : completed_decodes) {
-    if (request->exception)
+    if (request->exception) {
       request->resolver->Reject(request->exception);
-    else
+    } else if (request->range_error_message) {
+      ScriptState::Scope scope(script_state_);
+      request->resolver->Reject(V8ThrowException::CreateRangeError(
+          script_state_->GetIsolate(), *request->range_error_message));
+    } else {
       request->resolver->Resolve(request->result);
+    }
   }
 }
 
@@ -495,13 +502,12 @@ void ImageDecoderExternal::OnDecodeReady(
 
   request->pending = false;
   if (result->status == ImageDecoderCore::Status::kIndexError) {
-    request->exception = MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kIndexSizeError,
+    request->range_error_message =
         ExceptionMessages::IndexOutsideRange<uint32_t>(
             "frame index", request->frame_index, 0,
             ExceptionMessages::kInclusiveBound,
             tracks_->selectedTrack().value()->frameCount(),
-            ExceptionMessages::kExclusiveBound));
+            ExceptionMessages::kExclusiveBound);
     MaybeSatisfyPendingDecodes();
     return;
   }
@@ -512,11 +518,10 @@ void ImageDecoderExternal::OnDecodeReady(
     // Once we're data complete, if no further image can be decoded, we should
     // reject the decode() since it can't be satisfied.
     if (data_complete_) {
-      request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kIndexSizeError,
-          String::Format("Unexpected end of image. Request for frame index %d "
-                         "can't be satisfied.",
-                         request->frame_index));
+      request->range_error_message = String::Format(
+          "Unexpected end of image. Request for frame index %d "
+          "can't be satisfied.",
+          request->frame_index);
     }
 
     MaybeSatisfyPendingDecodes();

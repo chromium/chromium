@@ -189,11 +189,11 @@ promise_test(t => {
         })
         .then(buffer => {
           let decoder = new ImageDecoder({data: buffer, type: 'image/png'});
-          return promise_rejects_dom(
-              t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
+          return promise_rejects_js(
+              t, RangeError, decoder.decode({frameIndex: 1}));
         });
   });
-}, 'Test out of range index returns IndexSizeError');
+}, 'Test out of range index returns RangeError');
 
 promise_test(t => {
   var decoder;
@@ -214,11 +214,11 @@ promise_test(t => {
           // Queue two decodes to ensure index verification and decoding are
           // properly ordered.
           p1 = decoder.decode({frameIndex: 0});
-          return promise_rejects_dom(
-              t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
+          return promise_rejects_js(
+              t, RangeError, decoder.decode({frameIndex: 1}));
         })
         .then(_ => {
-          return promise_rejects_dom(t, 'IndexSizeError', p1);
+          return promise_rejects_js(t, RangeError, p1);
         })
   });
 }, 'Test partial decoding without a frame results in an error');

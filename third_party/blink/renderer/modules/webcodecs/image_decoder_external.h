@@ -135,11 +135,12 @@ class MODULES_EXPORT ImageDecoderExternal final
   bool construction_succeeded_ = false;
 
   // Pending decode() requests.
-  struct DecodeRequest : public GarbageCollected<DecodeRequest> {
+  struct DecodeRequest final : public GarbageCollected<DecodeRequest> {
     DecodeRequest(ScriptPromiseResolver* resolver,
                   uint32_t frame_index,
                   bool complete_frames_only);
     void Trace(Visitor*) const;
+    bool IsFinal() const;
 
     Member<ScriptPromiseResolver> resolver;
     uint32_t frame_index;
@@ -147,6 +148,8 @@ class MODULES_EXPORT ImageDecoderExternal final
     bool pending = false;
     base::Optional<size_t> bytes_read_index;
     Member<ImageDecodeResult> result;
+
+    base::Optional<String> range_error_message;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
