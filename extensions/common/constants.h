@@ -217,11 +217,20 @@ extern const char kGMailAppId[];
 // The extension id of the demo Google Docs application.
 extern const char kGoogleDocsDemoAppId[];
 
+// The extension id of the Google Docs PWA.
+extern const char kGoogleDocsPwaAppId[];
+
 // The extension id of the Google Drive application.
 extern const char kGoogleDriveAppId[];
 
+// The extension id of the Google Meet PWA.
+extern const char kGoogleMeetPwaAppId[];
+
 // The extension id of the demo Google Sheets application.
 extern const char kGoogleSheetsDemoAppId[];
+
+// The extension id of the Google Sheets PWA.
+extern const char kGoogleSheetsPwaAppId[];
 
 // The extension id of the demo Google Slides application.
 extern const char kGoogleSlidesDemoAppId[];
@@ -234,6 +243,18 @@ extern const char kYoutubeAppId[];
 
 // The extension id of the Youtube PWA.
 extern const char kYoutubePwaAppId[];
+
+// The extension id of the Spotify PWA.
+extern const char kSpotifyAppId[];
+
+// The extension id of the BeFunky PWA.
+extern const char kBeFunkyAppId[];
+
+// The extension id of the Clipchamp PWA.
+extern const char kClipchampAppId[];
+
+// The extension id of the GeForce NOW PWA.
+extern const char kGeForceNowAppId[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.
