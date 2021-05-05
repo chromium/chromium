@@ -231,34 +231,6 @@ suite('InternetSubpage', function() {
           deepLinkElement, getDeepActiveElement(),
           'Add cellular button should be focused for settingId=26.');
     });
-    test(
-        'Device inhibited disables toggle and shows banner', async () => {
-          initSubpage(true);
-          const mojom = chromeos.networkConfig.mojom;
-          mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
-          setNetworksForTest(mojom.NetworkType.kCellular, [
-            OncMojo.getDefaultNetworkState(
-                mojom.NetworkType.kCellular, 'cellular1'),
-          ]);
-          internetSubpage.deviceState = {
-            type: mojom.NetworkType.kCellular,
-            deviceState: mojom.DeviceStateType.kEnabled,
-            inhibitReason: mojom.InhibitReason.kInstallingProfile
-          };
-          internetSubpage.globalPolicy = {
-            allowOnlyPolicyNetworksToConnect: false,
-          };
-
-          await flushAsync();
-
-          const deviceEnabledButton =
-              internetSubpage.$$('#deviceEnabledButton');
-          assertTrue(!!deviceEnabledButton);
-          assertTrue(deviceEnabledButton.disabled);
-
-          const cellularBanner = internetSubpage.$$('cellular-banner');
-          assertTrue(!!cellularBanner);
-        });
 
     test(
         'Tether plus Cellular with updatedCellularActivationUi false',

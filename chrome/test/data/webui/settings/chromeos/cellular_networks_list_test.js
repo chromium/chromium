@@ -407,4 +407,32 @@ suite('CellularNetworksList', function() {
     await flushAsync();
     assertTrue(esimLocalizedLink.linkDisabled);
   });
+
+  test('Show inhibited subtext and spinner when inhibited', async () => {
+    eSimManagerRemote.addEuiccForTest(0);
+    init();
+    cellularNetworkList.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
+    };
+    addESimSlot();
+
+    await flushAsync();
+
+    const inhibitedSubtext = cellularNetworkList.$$('#inhibitedSubtext');
+    const inhibitedSpinner = cellularNetworkList.$$('#inhibitedSpinner');
+    assertTrue(inhibitedSubtext.hidden);
+    assertFalse(inhibitedSpinner.active);
+
+    cellularNetworkList.cellularDeviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile
+    };
+    addESimSlot();
+    await flushAsync();
+    assertFalse(inhibitedSubtext.hidden);
+    assertTrue(inhibitedSpinner.active);
+  });
 });

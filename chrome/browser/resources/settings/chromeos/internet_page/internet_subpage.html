@@ -35,6 +35,11 @@
         min-height: var(--settings-row-min-height);
       }
 
+      #cellularNetworkList {
+        /* No extra margin-top when displaying the cellular network list. */
+        margin-top: calc(-1*var(--cr-section-vertical-margin));
+      }
+
       /* Set padding on children instead of the container itself to ensure that
          separator lines can fill the entire width of the page. */
       #networkListDiv > * {
@@ -97,10 +102,6 @@
         padding-inline-start: 0;
       }
     </style>
-    <template is="dom-if" restamp
-        if="[[isDeviceInhibited_(deviceState, deviceState.inhibitReason)]]">
-      <cellular-banner device-state="[[deviceState]]"></cellular-banner>
-    </template>
     <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
       <div class="settings-box first">
         <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"

@@ -488,4 +488,32 @@ Polymer({
   getAddEsimButton() {
     return /** @type {?CrIconButtonElement} */ (this.$$('#addESimButton'));
   },
+
+  /**
+   * @return {string} Inhibited subtext message.
+   * @private
+   */
+  getInhibitedSubtextMessage_() {
+    if (!this.cellularDeviceState) {
+      return '';
+    }
+
+    const mojom = chromeos.networkConfig.mojom.InhibitReason;
+    const inhibitReason = this.cellularDeviceState.inhibitReason;
+
+    switch (inhibitReason) {
+      case mojom.kInstallingProfile:
+        return this.i18n('cellularNetworkInstallingProfile');
+      case mojom.kRenamingProfile:
+        return this.i18n('cellularNetworkRenamingProfile');
+      case mojom.kRemovingProfile:
+        return this.i18n('cellularNetworkRemovingProfile');
+      case mojom.kConnectingToProfile:
+        return this.i18n('cellularNetworkConnectingToProfile');
+      case mojom.kRefreshingProfileList:
+        return this.i18n('cellularNetworRefreshingProfileListProfile');
+    }
+
+    return '';
+  },
 });
