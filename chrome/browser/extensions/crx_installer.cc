@@ -380,7 +380,7 @@ base::Optional<CrxInstallError> CrxInstaller::AllowInstall(
         valid = true;
       }
     } else {
-      valid = expected_manifest_->Equals(original_manifest_.get());
+      valid = *expected_manifest_ == *original_manifest_;
       if (!valid && expected_manifest_check_level_ ==
           WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
         std::string error;
