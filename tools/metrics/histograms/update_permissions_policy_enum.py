@@ -25,7 +25,7 @@ if __name__ == '__main__':
                 'permissions_policy_feature.mojom'
   UpdateHistogramEnum(histogram_enum_name='FeaturePolicyFeature',
                       source_enum_path=source_file,
-                      start_marker='^enum FeaturePolicyFeature {',
+                      start_marker='^enum PermissionsPolicyFeature {',
                       end_marker='^};',
                       strip_k_prefix=True,
                       calling_script=os.path.basename(__file__))
