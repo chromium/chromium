@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
 
@@ -70,6 +71,16 @@ public class MediaNotificationController {
             "org.chromium.components.browser_ui.media.ACTION_SEEK_FORWARD";
     public static final String ACTION_SEEK_BACKWARD =
             "MediaNotificationmanager.ListenerService.SEEK_BACKWARD";
+
+    // TODO(xingliu): These must match NotificationUmaTracker's action id. Remove these when
+    // notification code is modularized.
+    public static final int MEDIA_ACTION_PLAY = 17;
+    public static final int MEDIA_ACTION_PAUSE = 18;
+    public static final int MEDIA_ACTION_STOP = 19;
+    public static final int MEDIA_ACTION_PREVIOUS_TRACK = 20;
+    public static final int MEDIA_ACTION_NEXT_TRACK = 21;
+    public static final int MEDIA_ACTION_SEEK_FORWARD = 22;
+    public static final int MEDIA_ACTION_SEEK_BACKWARD = 23;
 
     // Overrides N detection. The production code will use |null|, which uses the Android version
     // code. Otherwise, |isRunningAtLeastN()| will return whatever value is set.
@@ -251,9 +262,9 @@ public class MediaNotificationController {
         return true;
     }
 
-    private PendingIntent createPendingIntent(String action) {
+    private PendingIntentProvider createPendingIntent(String action) {
         Intent intent = mDelegate.createServiceIntent().setAction(action);
-        return PendingIntent.getService(getContext(), 0, intent,
+        return PendingIntentProvider.getService(getContext(), 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
@@ -278,10 +289,15 @@ public class MediaNotificationController {
         /** The intent string to be fired when this media button is clicked. */
         public String intentString;
 
-        public MediaButtonInfo(int buttonResId, int descriptionResId, String intentString) {
+        /** The ID to identify the notification button. */
+        public int buttonId;
+
+        public MediaButtonInfo(
+                int buttonResId, int descriptionResId, String intentString, int buttonId) {
             this.iconResId = buttonResId;
             this.descriptionResId = descriptionResId;
             this.intentString = intentString;
+            this.buttonId = buttonId;
         }
     }
 
@@ -313,25 +329,29 @@ public class MediaNotificationController {
 
         mActionToButtonInfo.put(MediaSessionAction.PLAY,
                 new MediaButtonInfo(R.drawable.ic_play_arrow_white_36dp,
-                        R.string.accessibility_play, ACTION_PLAY));
+                        R.string.accessibility_play, ACTION_PLAY, MEDIA_ACTION_PLAY));
         mActionToButtonInfo.put(MediaSessionAction.PAUSE,
                 new MediaButtonInfo(R.drawable.ic_pause_white_36dp, R.string.accessibility_pause,
-                        ACTION_PAUSE));
+                        ACTION_PAUSE, MEDIA_ACTION_PAUSE));
         mActionToButtonInfo.put(MediaSessionAction.STOP,
-                new MediaButtonInfo(
-                        R.drawable.ic_stop_white_36dp, R.string.accessibility_stop, ACTION_STOP));
+                new MediaButtonInfo(R.drawable.ic_stop_white_36dp, R.string.accessibility_stop,
+                        ACTION_STOP, MEDIA_ACTION_STOP));
         mActionToButtonInfo.put(MediaSessionAction.PREVIOUS_TRACK,
                 new MediaButtonInfo(R.drawable.ic_skip_previous_white_36dp,
-                        R.string.accessibility_previous_track, ACTION_PREVIOUS_TRACK));
+                        R.string.accessibility_previous_track, ACTION_PREVIOUS_TRACK,
+                        MEDIA_ACTION_PREVIOUS_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.NEXT_TRACK,
                 new MediaButtonInfo(R.drawable.ic_skip_next_white_36dp,
-                        R.string.accessibility_next_track, ACTION_NEXT_TRACK));
+                        R.string.accessibility_next_track, ACTION_NEXT_TRACK,
+                        MEDIA_ACTION_NEXT_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_FORWARD,
                 new MediaButtonInfo(R.drawable.ic_fast_forward_white_36dp,
-                        R.string.accessibility_seek_forward, ACTION_SEEK_FORWARD));
+                        R.string.accessibility_seek_forward, ACTION_SEEK_FORWARD,
+                        MEDIA_ACTION_SEEK_FORWARD));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_BACKWARD,
                 new MediaButtonInfo(R.drawable.ic_fast_rewind_white_36dp,
-                        R.string.accessibility_seek_backward, ACTION_SEEK_BACKWARD));
+                        R.string.accessibility_seek_backward, ACTION_SEEK_BACKWARD,
+                        MEDIA_ACTION_SEEK_BACKWARD));
 
         mThrottler = new Throttler(this);
     }
@@ -612,7 +632,7 @@ public class MediaNotificationController {
         // The intent will currently only be null when using a custom tab.
         // TODO(avayvod) work out what we should do in this case. See https://crbug.com/585395.
         if (mMediaNotificationInfo.contentIntent != null) {
-            mNotificationBuilder.setContentIntent(PendingIntent.getActivity(getContext(),
+            mNotificationBuilder.setContentIntent(PendingIntentProvider.getActivity(getContext(),
                     mMediaNotificationInfo.instanceId, mMediaNotificationInfo.contentIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT));
             // Set FLAG_UPDATE_CURRENT so that the intent extras is updated, otherwise the
@@ -760,7 +780,7 @@ public class MediaNotificationController {
             MediaButtonInfo buttonInfo = mActionToButtonInfo.get(action);
             builder.addAction(buttonInfo.iconResId,
                     getContext().getResources().getString(buttonInfo.descriptionResId),
-                    createPendingIntent(buttonInfo.intentString));
+                    createPendingIntent(buttonInfo.intentString), buttonInfo.buttonId);
         }
 
         // Only apply MediaStyle when NotificationInfo supports play/pause.

@@ -147,7 +147,16 @@ public class NotificationUmaTracker {
         // "Cancel" button in auto fetch offline page notification.
         int AUTO_FETCH_CANCEL = 16;
 
-        int NUM_ENTRIES = 17;
+        // Media notification buttons.
+        int MEDIA_ACTION_PLAY = 17;
+        int MEDIA_ACTION_PAUSE = 18;
+        int MEDIA_ACTION_STOP = 19;
+        int MEDIA_ACTION_PREVIOUS_TRACK = 20;
+        int MEDIA_ACTION_NEXT_TRACK = 21;
+        int MEDIA_ACTION_SEEK_FORWARD = 22;
+        int MEDIA_ACTION_SEEK_BACKWARD = 23;
+
+        int NUM_ENTRIES = 24;
     }
 
     private static class LazyHolder {
