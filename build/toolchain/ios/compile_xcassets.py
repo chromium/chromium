@@ -2,12 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
-import os
-import re
-import subprocess
-import sys
-import tempfile
 """Wrapper around actool to compile assets catalog.
 
 The script compile_xcassets.py is a wrapper around actool to compile
@@ -21,6 +15,14 @@ not a warning or error message, and fails if filtered output is not
 empty. This should to treat all warnings as error until actool has
 an option to fail with non-zero error code when there are warnings.
 """
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
 
 # Pattern matching a section header in the output of actool.
 SECTION_HEADER = re.compile('^/\\* ([^ ]*) \\*/$')
@@ -60,6 +62,15 @@ def IsSpuriousMessage(line):
     if match is not None:
       return True
   return False
+
+
+def FixAbsolutePathInLine(line, relative_paths):
+  """Fix absolute paths present in |line| to relative paths."""
+  absolute_path = line.split(':')[0]
+  relative_path = relative_paths.get(absolute_path, absolute_path)
+  if absolute_path == relative_path:
+    return line
+  return relative_path + line[len(absolute_path):]
 
 
 def FilterCompilerOutput(compiler_output, relative_paths):
@@ -102,14 +113,12 @@ def FilterCompilerOutput(compiler_output, relative_paths):
     if current_section and current_section != NOTICE_SECTION:
       if IsSpuriousMessage(line):
         continue
-      absolute_path = line.split(':')[0]
-      relative_path = relative_paths.get(absolute_path, absolute_path)
-      if absolute_path != relative_path:
-        line = relative_path + line[len(absolute_path):]
       if not data_in_section:
         data_in_section = True
         filtered_output.append('/* %s */\n' % current_section)
-      filtered_output.append(line + '\n')
+
+      fixed_line = FixAbsolutePathInLine(line, relative_paths)
+      filtered_output.append(fixed_line + '\n')
 
   return ''.join(filtered_output)
 
@@ -168,7 +177,7 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
 
       command.extend([ACTOOL_FLAG_FOR_ASSET_TYPE[asset_type], asset_name])
 
-  # Always ask actool to generate a partial Info.plist file. If not path
+  # Always ask actool to generate a partial Info.plist file. If no path
   # has been given by the caller, use a temporary file name.
   temporary_file = None
   if not partial_info_plist:
@@ -202,10 +211,21 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
                                stderr=subprocess.STDOUT)
     stdout, _ = process.communicate()
 
-    # Filter the output to remove all garbarge and to fix the paths.
-    stdout = FilterCompilerOutput(stdout.decode('UTF-8'), relative_paths)
+    # If the invocation of `actool` failed, copy all the compiler output to
+    # the standard error stream and exit. See https://crbug.com/1205775 for
+    # example of compilation that failed with no error message due to filter.
+    if process.returncode:
+      for line in stdout.splitlines():
+        fixed_line = FixAbsolutePathInLine(line, relative_paths)
+        sys.stderr.write(fixed_line + '\n')
+      sys.exit(1)
 
-    if process.returncode or stdout:
+    # Filter the output to remove all garbage and to fix the paths. If the
+    # output is not empty after filtering, then report the compilation as a
+    # failure (as some version of `actool` report error to stdout, yet exit
+    # with an return code of zero).
+    stdout = FilterCompilerOutput(stdout.decode('UTF-8'), relative_paths)
+    if stdout:
       sys.stderr.write(stdout)
       sys.exit(1)
 
@@ -251,6 +271,12 @@ def Main():
     sys.stderr.write('output should be path to compiled asset catalog, not '
                      'to the containing bundle: %s\n' % (args.output, ))
     sys.exit(1)
+
+  if os.path.exists(args.output):
+    if os.path.isfile(args.output):
+      os.unlink(args.output)
+    else:
+      shutil.rmtree(args.output)
 
   CompileAssetCatalog(args.output, args.platform, args.product_type,
                       args.minimum_deployment_target, args.inputs,
