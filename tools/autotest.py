@@ -347,13 +347,18 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
   return (test_targets, used_cache)
 
 
-def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
+def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
+                   no_try_android_wrappers):
+
   for target in targets:
+
     # Look for the Android wrapper script first.
     path = os.path.join(out_dir, 'bin', f'run_{target}')
-    if not os.path.isfile(path):
-      # Otherwise, use the Desktop target which is an executable.
+    if no_try_android_wrappers or not os.path.isfile(path):
+      # If the wrapper is not found or disabled use the Desktop target
+      # which is an executable.
       path = os.path.join(out_dir, target)
+
     cmd = [path, f'--gtest_filter={gtest_filter}'] + extra_args
     print('Running test: ' + ' '.join(cmd))
     if not dry_run:
@@ -411,6 +416,10 @@ def main():
       '-n',
       action='store_true',
       help='Print ninja and test run commands without executing them.')
+  parser.add_argument(
+      '--no-try-android-wrappers',
+      action='store_true',
+      help='Do not try to use Android test wrappers to run tests.')
   parser.add_argument('file',
                       metavar='FILE_NAME',
                       help='test suite file (eg. FooTest.java)')
@@ -461,7 +470,8 @@ def main():
   else:  # cache still valid, quit if the build failed
     if not build_ok: sys.exit(1)
 
-  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run)
+  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run,
+                 args.no_try_android_wrappers)
 
 
 if __name__ == '__main__':
