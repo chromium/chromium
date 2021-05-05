@@ -352,6 +352,7 @@ absl_source_set("cord_test_helpers") {
     ":cord",
     ":cord_internal",
     ":strings",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 
@@ -365,6 +366,7 @@ absl_source_set("cordz_test_helpers") {
     ":cordz_sample_token",
     ":cordz_statistics",
     ":cordz_update_tracker",
+    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/googletest:gtest",

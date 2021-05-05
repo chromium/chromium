@@ -98,15 +98,22 @@ using TestParams = std::vector<TestParam>;
 // Matcher validating when mutable copies are required / performed.
 MATCHER_P2(EqIfPrivate, param, rep,
            absl::StrCat("Equal 0x", absl::Hex(rep), " if private")) {
-  return param.refcount_is_one ? arg == rep : arg != rep;
+  return param.refcount_is_one ? arg == rep : true;
 }
 
 // Matcher validating when mutable copies are required / performed.
 MATCHER_P2(EqIfPrivateAndCapacity, param, rep,
            absl::StrCat("Equal 0x", absl::Hex(rep),
                         " if private and capacity")) {
-  return (param.refcount_is_one && param.with_capacity) ? arg == rep
-                                                        : arg != rep;
+  return (param.refcount_is_one && param.with_capacity) ? arg == rep : true;
+}
+
+// Matcher validating a shared ring was re-allocated. Should only be used for
+// tests doing exactly one update as subsequent updates could return the
+// original (freed and re-used) pointer.
+MATCHER_P2(NeIfShared, param, rep,
+           absl::StrCat("Not equal 0x", absl::Hex(rep), " if shared")) {
+  return param.refcount_is_one ? true : arg != rep;
 }
 
 MATCHER_P2(EqIfInputPrivate, param, rep, "Equal if input is private") {
@@ -518,6 +525,7 @@ TEST_P(CordRingCreateTest, CreateFromRing) {
   CordRepRing* result = NeedsUnref(CordRepRing::Create(ring));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAreArray(kFoxFlats));
 }
 
@@ -655,6 +663,7 @@ TEST_P(CordRingBuildTest, AppendFlat) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, MakeFlat(str2)));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(result->length, Eq(str1.size() + str2.size()));
   EXPECT_THAT(ToFlats(result), ElementsAre(str1, str2));
 }
@@ -666,6 +675,7 @@ TEST_P(CordRingBuildTest, PrependFlat) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, MakeFlat(str2)));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(result->length, Eq(str1.size() + str2.size()));
   EXPECT_THAT(ToFlats(result), ElementsAre(str2, str1));
 }
@@ -677,6 +687,7 @@ TEST_P(CordRingBuildTest, AppendString) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, str2));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(result->length, Eq(str1.size() + str2.size()));
   EXPECT_THAT(ToFlats(result), ElementsAre(str1, str2));
 }
@@ -689,6 +700,7 @@ TEST_P(CordRingBuildTest, AppendStringHavingExtra) {
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result->length, Eq(str1.size() + str2.size()));
   EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
 }
 
 TEST_P(CordRingBuildTest, AppendStringHavingPartialExtra) {
@@ -710,6 +722,7 @@ TEST_P(CordRingBuildTest, AppendStringHavingPartialExtra) {
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result->length, Eq(str1.size() + str2.size()));
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   if (GetParam().refcount_is_one) {
     EXPECT_THAT(ToFlats(result), ElementsAre(StrCat(str1, str1a), str2a));
   } else {
@@ -725,6 +738,7 @@ TEST_P(CordRingBuildTest, AppendStringHavingExtraInSubstring) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, str2));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(result->length, Eq(4 + str2.size()));
   if (GetParam().refcount_is_one) {
     EXPECT_THAT(ToFlats(result), ElementsAre(StrCat("1234", str2)));
@@ -758,6 +772,7 @@ TEST_P(CordRingBuildTest, AppendStringHavingSharedExtra) {
     CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, str2));
     ASSERT_THAT(result, IsValidRingBuffer());
     EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+    EXPECT_THAT(result, NeIfShared(GetParam(), ring));
     EXPECT_THAT(result->length, Eq(4 + str2.size()));
     EXPECT_THAT(ToFlats(result), ElementsAre("1234", str2));
 
@@ -802,6 +817,7 @@ TEST_P(CordRingBuildTest, PrependStringHavingExtra) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, str2));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(result->length, Eq(4 + str2.size()));
   if (GetParam().refcount_is_one) {
     EXPECT_THAT(ToFlats(result), ElementsAre(StrCat(str2, "1234")));
@@ -833,6 +849,7 @@ TEST_P(CordRingBuildTest, PrependStringHavingSharedExtra) {
     ASSERT_THAT(result, IsValidRingBuffer());
     EXPECT_THAT(result->length, Eq(str1a.size() + str2.size()));
     EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+    EXPECT_THAT(result, NeIfShared(GetParam(), ring));
     EXPECT_THAT(ToFlats(result), ElementsAre(str2, str1a));
     CordRep::Unref(shared_type == 1 ? flat1 : flat);
   }
@@ -920,6 +937,7 @@ TEST_P(CordRingSubTest, SubRing) {
       result = NeedsUnref(CordRepRing::SubRing(ring, offset, len));
       ASSERT_THAT(result, IsValidRingBuffer());
       ASSERT_THAT(result, EqIfPrivate(GetParam(), ring));
+      ASSERT_THAT(result, NeIfShared(GetParam(), ring));
       ASSERT_THAT(ToString(result), Eq(all.substr(offset, len)));
     }
   }
@@ -945,6 +963,7 @@ TEST_P(CordRingSubTest, SubRingFromLargeExternal) {
       result = NeedsUnref(CordRepRing::SubRing(ring, offset, len));
       ASSERT_THAT(result, IsValidRingBuffer());
       ASSERT_THAT(result, EqIfPrivate(GetParam(), ring));
+      ASSERT_THAT(result, NeIfShared(GetParam(), ring));
       auto str = ToString(result);
       ASSERT_THAT(str, SizeIs(len));
       ASSERT_THAT(str, Eq(all.substr(offset, len)));
@@ -966,6 +985,7 @@ TEST_P(CordRingSubTest, RemovePrefix) {
     result = NeedsUnref(CordRepRing::RemovePrefix(ring, len));
     ASSERT_THAT(result, IsValidRingBuffer());
     EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+    ASSERT_THAT(result, NeIfShared(GetParam(), ring));
     EXPECT_THAT(ToString(result), Eq(all.substr(len)));
   }
 }
@@ -996,8 +1016,9 @@ TEST_P(CordRingSubTest, RemoveSuffix) {
     ring = RefIfShared(FromFlats(flats, composition));
     result = NeedsUnref(CordRepRing::RemoveSuffix(ring, len));
     ASSERT_THAT(result, IsValidRingBuffer());
-    EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
-    EXPECT_THAT(ToString(result), Eq(all.substr(0, all.size() - len)));
+    ASSERT_THAT(result, EqIfPrivate(GetParam(), ring));
+    ASSERT_THAT(result, NeIfShared(GetParam(), ring));
+    ASSERT_THAT(ToString(result), Eq(all.substr(0, all.size() - len)));
   }
 }
 
@@ -1010,6 +1031,7 @@ TEST_P(CordRingSubTest, AppendRing) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, child));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivate(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAreArray(kFoxFlats));
 }
 
@@ -1023,6 +1045,7 @@ TEST_P(CordRingBuildInputTest, AppendRingWithFlatOffset) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("Head", "brown ", "fox ", "jumps ",
                                            "over ", "the ", "lazy ", "dog"));
 }
@@ -1037,6 +1060,7 @@ TEST_P(CordRingBuildInputTest, AppendRingWithBrokenOffset) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result),
               ElementsAre("Head", "umps ", "over ", "the ", "lazy ", "dog"));
 }
@@ -1051,6 +1075,7 @@ TEST_P(CordRingBuildInputTest, AppendRingWithFlatLength) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("Head", "The ", "quick ", "brown ",
                                            "fox ", "jumps ", "over ", "the "));
 }
@@ -1065,6 +1090,7 @@ TEST_P(CordRingBuildTest, AppendRingWithBrokenFlatLength) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("Head", "The ", "quick ", "brown ",
                                            "fox ", "jumps ", "ov"));
 }
@@ -1079,6 +1105,7 @@ TEST_P(CordRingBuildTest, AppendRingMiddlePiece) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result),
               ElementsAre("Head", "ck ", "brown ", "fox ", "jum"));
 }
@@ -1093,6 +1120,7 @@ TEST_P(CordRingBuildTest, AppendRingSinglePiece) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("Head", "row"));
 }
 
@@ -1110,6 +1138,7 @@ TEST_P(CordRingBuildInputTest, AppendRingSinglePieceWithPrefix) {
   CordRepRing* result = NeedsUnref(CordRepRing::Append(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("Prepend", "Head", "row"));
 }
 
@@ -1123,6 +1152,7 @@ TEST_P(CordRingBuildInputTest, PrependRing) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, child));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAreArray(kFoxFlats));
 }
 
@@ -1136,6 +1166,7 @@ TEST_P(CordRingBuildInputTest, PrependRingWithFlatOffset) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("brown ", "fox ", "jumps ", "over ",
                                            "the ", "lazy ", "dog", "Tail"));
 }
@@ -1149,6 +1180,7 @@ TEST_P(CordRingBuildInputTest, PrependRingWithBrokenOffset) {
   CordRep* stripped = RefIfInputSharedIndirect(RemovePrefix(21, child));
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result),
               ElementsAre("umps ", "over ", "the ", "lazy ", "dog", "Tail"));
 }
@@ -1163,6 +1195,7 @@ TEST_P(CordRingBuildInputTest, PrependRingWithFlatLength) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("The ", "quick ", "brown ", "fox ",
                                            "jumps ", "over ", "the ", "Tail"));
 }
@@ -1177,6 +1210,7 @@ TEST_P(CordRingBuildInputTest, PrependRingWithBrokenFlatLength) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("The ", "quick ", "brown ", "fox ",
                                            "jumps ", "ov", "Tail"));
 }
@@ -1192,6 +1226,7 @@ TEST_P(CordRingBuildInputTest, PrependRingMiddlePiece) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result),
               ElementsAre("ck ", "brown ", "fox ", "jum", "Tail"));
 }
@@ -1206,6 +1241,7 @@ TEST_P(CordRingBuildInputTest, PrependRingSinglePiece) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("row", "Tail"));
 }
 
@@ -1222,6 +1258,7 @@ TEST_P(CordRingBuildInputTest, PrependRingSinglePieceWithPrefix) {
   CordRepRing* result = NeedsUnref(CordRepRing::Prepend(ring, stripped));
   ASSERT_THAT(result, IsValidRingBuffer());
   EXPECT_THAT(result, EqIfPrivateAndCapacity(GetParam(), ring));
+  EXPECT_THAT(result, NeIfShared(GetParam(), ring));
   EXPECT_THAT(ToFlats(result), ElementsAre("row", "Prepend", "Tail"));
 }
 

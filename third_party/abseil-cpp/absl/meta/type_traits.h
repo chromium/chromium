@@ -634,7 +634,7 @@ using underlying_type_t = typename std::underlying_type<T>::type;
 
 namespace type_traits_internal {
 
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
 // std::result_of is deprecated (C++17) or removed (C++20)
 template<typename> struct result_of;
 template<typename F, typename... Args>

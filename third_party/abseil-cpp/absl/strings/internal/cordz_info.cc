@@ -126,13 +126,6 @@ void CordzInfo::Track() {
 }
 
 void CordzInfo::Untrack() {
-  {
-    // TODO(b/117940323): change this to assuming ownership instead once all
-    // Cord logic is properly keeping `rep_` in sync with the Cord root rep.
-    absl::MutexLock lock(&mutex_);
-    rep_ = nullptr;
-  }
-
   ODRCheck();
   {
     SpinLockHolder l(&list_->mutex);
@@ -153,6 +146,20 @@ void CordzInfo::Untrack() {
       ABSL_ASSERT(head == this);
       list_->head.store(next, std::memory_order_release);
     }
+  }
+
+  // We can no longer be discovered: perform a fast path check if we are not
+  // listed on any delete queue, so we can directly delete this instance.
+  if (SafeToDelete()) {
+    UnsafeSetCordRep(nullptr);
+    delete this;
+    return;
+  }
+
+  // We are likely part of a snapshot, extend the life of the CordRep
+  {
+    absl::MutexLock lock(&mutex_);
+    if (rep_) CordRep::Ref(rep_);
   }
   CordzHandle::Delete(this);
 }

@@ -529,6 +529,7 @@ cc_library(
         ":cord",
         ":cord_internal",
         ":strings",
+        "//absl/base:config",
     ],
 )
 
@@ -544,6 +545,7 @@ cc_library(
         ":cordz_sample_token",
         ":cordz_statistics",
         ":cordz_update_tracker",
+        ":strings",
         "//absl/base:config",
         "//absl/base:core_headers",
         "@com_google_googletest//:gtest",

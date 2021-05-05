@@ -52,6 +52,7 @@ TEST(CordzHandleTest, CordzHandleCreateDelete) {
   bool deleted = false;
   auto* handle = new CordzHandleDeleteTracker(&deleted);
   EXPECT_FALSE(handle->is_snapshot());
+  EXPECT_TRUE(handle->SafeToDelete());
   EXPECT_THAT(DeleteQueue(), SizeIs(0));
 
   CordzHandle::Delete(handle);
@@ -62,6 +63,7 @@ TEST(CordzHandleTest, CordzHandleCreateDelete) {
 TEST(CordzHandleTest, CordzSnapshotCreateDelete) {
   auto* snapshot = new CordzSnapshot();
   EXPECT_TRUE(snapshot->is_snapshot());
+  EXPECT_TRUE(snapshot->SafeToDelete());
   EXPECT_THAT(DeleteQueue(), ElementsAre(snapshot));
   delete snapshot;
   EXPECT_THAT(DeleteQueue(), SizeIs(0));
@@ -71,10 +73,12 @@ TEST(CordzHandleTest, CordzHandleCreateDeleteWithSnapshot) {
   bool deleted = false;
   auto* snapshot = new CordzSnapshot();
   auto* handle = new CordzHandleDeleteTracker(&deleted);
+  EXPECT_FALSE(handle->SafeToDelete());
 
   CordzHandle::Delete(handle);
   EXPECT_THAT(DeleteQueue(), ElementsAre(handle, snapshot));
   EXPECT_FALSE(deleted);
+  EXPECT_FALSE(handle->SafeToDelete());
 
   delete snapshot;
   EXPECT_THAT(DeleteQueue(), SizeIs(0));
@@ -219,8 +223,8 @@ TEST(CordzHandleTest, MultiThreaded) {
           if (safe_to_inspect.size() > max_safe_to_inspect) {
             max_safe_to_inspect = safe_to_inspect.size();
           }
+          CordzHandle::Delete(old_handle);
         }
-        CordzHandle::Delete(old_handle);
       }
 
       // Confirm that the test did *something*. This check will be satisfied as
@@ -234,9 +238,10 @@ TEST(CordzHandleTest, MultiThreaded) {
       // Have each thread attempt to clean up everything. Some thread will be
       // the last to reach this cleanup code, and it will be guaranteed to clean
       // up everything because nothing remains to create new handles.
-      for (size_t i = 0; i < handles.size(); i++) {
-        CordzHandle* handle = handles[i].exchange(nullptr);
-        CordzHandle::Delete(handle);
+      for (auto& h : handles) {
+        if (CordzHandle* handle = h.exchange(nullptr)) {
+          CordzHandle::Delete(handle);
+        }
       }
   });
   }

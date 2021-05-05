@@ -141,7 +141,8 @@ function(absl_cc_library)
   endif()
 
   # Generate a pkg-config file for every library:
-  if(_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
+  if((_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
+     AND ABSL_ENABLE_INSTALL)
     if(NOT ABSL_CC_LIB_TESTONLY)
       if(absl_VERSION)
         set(PC_VERSION "${absl_VERSION}")

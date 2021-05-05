@@ -38,6 +38,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Ne;
+using ::testing::SizeIs;
 
 // Used test values
 auto constexpr kUnknownMethod = CordzUpdateTracker::kUnknown;
@@ -78,10 +79,19 @@ TEST(CordzInfoTest, UntrackCord) {
   CordzInfo::TrackCord(data.data, kTrackCordMethod);
   CordzInfo* info = data.data.cordz_info();
 
+  info->Untrack();
+  EXPECT_THAT(DeleteQueue(), SizeIs(0));
+}
+
+TEST(CordzInfoTest, UntrackCordWithSnapshot) {
+  TestCordData data;
+  CordzInfo::TrackCord(data.data, kTrackCordMethod);
+  CordzInfo* info = data.data.cordz_info();
+
   CordzSnapshot snapshot;
   info->Untrack();
   EXPECT_THAT(CordzInfo::Head(CordzSnapshot()), Eq(nullptr));
-  EXPECT_THAT(info->GetCordRepForTesting(), Eq(nullptr));
+  EXPECT_THAT(info->GetCordRepForTesting(), Eq(data.rep.rep));
   EXPECT_THAT(DeleteQueue(), ElementsAre(info, &snapshot));
 }
 
@@ -111,6 +121,18 @@ TEST(CordzInfoTest, SetCordRepNullUntracksCordOnUnlock) {
 
   info->Unlock();
   EXPECT_THAT(CordzInfo::Head(CordzSnapshot()), Eq(nullptr));
+}
+
+TEST(CordzInfoTest, RefCordRep) {
+  TestCordData data;
+  CordzInfo::TrackCord(data.data, kTrackCordMethod);
+  CordzInfo* info = data.data.cordz_info();
+
+  size_t refcount = data.rep.rep->refcount.Get();
+  EXPECT_THAT(info->RefCordRep(), Eq(data.rep.rep));
+  EXPECT_THAT(data.rep.rep->refcount.Get(), Eq(refcount + 1));
+  CordRep::Unref(data.rep.rep);
+  info->Untrack();
 }
 
 #if GTEST_HAS_DEATH_TEST

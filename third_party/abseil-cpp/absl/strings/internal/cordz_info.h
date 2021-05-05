@@ -110,7 +110,7 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // Asserts that this CordzInfo instance is locked.
   void AssertHeld() ABSL_ASSERT_EXCLUSIVE_LOCK(mutex_);
 
-  // Updates the `rep' property of this instance. This methods is invoked by
+  // Updates the `rep` property of this instance. This methods is invoked by
   // Cord logic each time the root node of a sampled Cord changes, and before
   // the old root reference count is deleted. This guarantees that collection
   // code can always safely take a reference on the tracked cord.
@@ -118,6 +118,11 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // TODO(b/117940323): annotate with ABSL_EXCLUSIVE_LOCKS_REQUIRED once all
   // Cord code is in a state where this can be proven true by the compiler.
   void SetCordRep(CordRep* rep);
+
+  // Returns the current `rep` property of this instance with a reference
+  // added, or null if this instance represents a cord that has since been
+  // deleted or untracked.
+  CordRep* RefCordRep() const ABSL_LOCKS_EXCLUDED(mutex_);
 
   // Returns the current value of `rep_` for testing purposes only.
   CordRep* GetCordRepForTesting() const ABSL_NO_THREAD_SAFETY_ANALYSIS {
@@ -148,6 +153,9 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   }
 
  private:
+  using SpinLock = absl::base_internal::SpinLock;
+  using SpinLockHolder = ::absl::base_internal::SpinLockHolder;
+
   // Global cordz info list. CordzInfo stores a pointer to the global list
   // instance to harden against ODR violations.
   struct List {
@@ -155,7 +163,7 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
         : mutex(absl::kConstInit,
                 absl::base_internal::SCHEDULE_COOPERATIVE_AND_KERNEL) {}
 
-    absl::base_internal::SpinLock mutex;
+    SpinLock mutex;
     std::atomic<CordzInfo*> head ABSL_GUARDED_BY(mutex){nullptr};
   };
 
@@ -164,6 +172,9 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   explicit CordzInfo(CordRep* rep, const CordzInfo* src,
                      MethodIdentifier method);
   ~CordzInfo() override;
+
+  // Sets `rep_` without holding a lock.
+  void UnsafeSetCordRep(CordRep* rep) ABSL_NO_THREAD_SAFETY_ANALYSIS;
 
   void Track();
 
@@ -242,6 +253,13 @@ inline void CordzInfo::SetCordRep(CordRep* rep) {
   if (rep) {
     size_.store(rep->length);
   }
+}
+
+inline void CordzInfo::UnsafeSetCordRep(CordRep* rep) { rep_ = rep; }
+
+inline CordRep* CordzInfo::RefCordRep() const ABSL_LOCKS_EXCLUDED(mutex_) {
+  MutexLock lock(&mutex_);
+  return rep_ ? CordRep::Ref(rep_) : nullptr;
 }
 
 }  // namespace cord_internal

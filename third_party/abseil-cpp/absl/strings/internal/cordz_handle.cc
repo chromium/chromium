@@ -68,11 +68,16 @@ CordzHandle::~CordzHandle() {
   }
 }
 
+bool CordzHandle::SafeToDelete() const {
+  return is_snapshot_ || queue_->IsEmpty();
+}
+
 void CordzHandle::Delete(CordzHandle* handle) {
+  assert(handle);
   if (handle) {
     handle->ODRCheck();
     Queue* const queue = handle->queue_;
-    if (!handle->is_snapshot_ && !queue->IsEmpty()) {
+    if (!handle->SafeToDelete()) {
       SpinLockHolder lock(&queue->mutex);
       CordzHandle* dq_tail = queue->dq_tail.load(std::memory_order_acquire);
       if (dq_tail != nullptr) {

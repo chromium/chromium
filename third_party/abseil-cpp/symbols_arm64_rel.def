@@ -1,6 +1,5 @@
 EXPORTS
     ??$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
-    ??$?4V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QEAAAEAV01@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ??$?MUsecond_tag@detail@cctz@time_internal@absl@@U01234@@detail@cctz@time_internal@absl@@YA_NAEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@0123@0@Z
     ??$?RW4LogSeverity@absl@@AEBQEBDHAEAPEBD@?$AtomicHook@P6AXW4LogSeverity@absl@@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@base_internal@absl@@QEBAX$$QEAW4LogSeverity@2@AEBQEBD$$QEAHAEAPEBD@Z
     ??$AddRing@$00@CordRepRing@cord_internal@absl@@CAPEAV012@PEAV012@0_K1@Z
@@ -62,7 +61,6 @@ EXPORTS
     ??$GenericCompare@HVstring_view@absl@@@absl@@YAHAEBVCord@0@AEBVstring_view@0@_K@Z
     ??$GenericCompare@_NVCord@absl@@@absl@@YA_NAEBVCord@0@0_K@Z
     ??$GenericCompare@_NVstring_view@absl@@@absl@@YA_NAEBVCord@0@AEBVstring_view@0@_K@Z
-    ??$NewExternalRep@UStringReleaser@?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@@cord_internal@absl@@YAPEAUCordRep@01@Vstring_view@1@$$QEAUStringReleaser@?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@1@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@@Z
     ??$ParseFloat@$09@strings_internal@absl@@YA?AUParsedFloat@01@PEBD0W4chars_format@1@@Z
     ??$ParseFloat@$0BA@@strings_internal@absl@@YA?AUParsedFloat@01@PEBD0W4chars_format@1@@Z
     ??$ParseFormatString@UParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@@str_format_internal@absl@@YA_NVstring_view@1@UParsedFormatConsumer@ParsedFormatBase@01@@Z
@@ -108,7 +106,7 @@ EXPORTS
     ??0Condition@absl@@AEAA@XZ
     ??0Condition@absl@@QEAA@P6A_NPEAX@Z0@Z
     ??0Condition@absl@@QEAA@PEB_N@Z
-    ??0Cord@absl@@QEAA@Vstring_view@1@@Z
+    ??0Cord@absl@@AEAA@Vstring_view@1@W4MethodIdentifier@CordzUpdateTracker@cord_internal@1@@Z
     ??0CordzHandle@cord_internal@absl@@IEAA@_N@Z
     ??0CordzInfo@cord_internal@absl@@AEAA@PEAUCordRep@12@PEBV012@W4MethodIdentifier@CordzUpdateTracker@12@@Z
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
@@ -225,6 +223,7 @@ EXPORTS
     ?AssertHeld@Mutex@absl@@QEBAXXZ
     ?AssertNotHeld@Mutex@absl@@QEBAXXZ
     ?AssertReaderHeld@Mutex@absl@@QEBAXXZ
+    ?AssignLargeString@Cord@absl@@AEAAAEAV12@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AEAAXAEBV123@@Z
     ?At@TimeZone@absl@@QEBA?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QEBA?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
@@ -600,7 +599,6 @@ EXPORTS
     ?RegisterMutexTracer@absl@@YAXP6AXPEBDPEBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPEBX_J@Z@Z
     ?RegisterSymbolizer@absl@@YAXP6A_NPEBXPEADH@Z@Z
-    ?Release@?$CordRepExternalImpl@UStringReleaser@?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@@cord_internal@absl@@SAXPEAUCordRepExternal@23@@Z
     ?Release@ReleasableMutexLock@absl@@QEAAXXZ
     ?Remove@CondVar@absl@@AEAAXPEAUPerThreadSynch@base_internal@2@@Z
     ?RemoveEdge@GraphCycles@synchronization_internal@absl@@QEAAXUGraphId@23@0@Z
@@ -613,6 +611,7 @@ EXPORTS
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NAEBV?$duration@_JV?$ratio@$00$00@__1@std@@@chrono@__1@std@@@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Rethrow@variant_internal@absl@@YAXXZ
+    ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
     ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@PEA_J@Z
     ?Seek@CordRepRingReader@cord_internal@absl@@QEAA?AVstring_view@3@_K@Z
@@ -750,7 +749,6 @@ EXPORTS
     ?Unregister@HashtablezSampler@container_internal@absl@@QEAAXPEAUHashtablezInfo@23@@Z
     ?UnsampleSlow@container_internal@absl@@YAXPEAUHashtablezInfo@12@@Z
     ?Untrack@CordzInfo@cord_internal@absl@@QEAAXXZ
-    ?UpdateCordzStatisticsSlow@InlineRep@Cord@absl@@QEAAXXZ
     ?UpdateStackTrace@GraphCycles@synchronization_internal@absl@@QEAAXUGraphId@23@HP6AHPEAPEAXH@Z@Z
     ?Utf8SafeCEscape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@@Z
     ?Utf8SafeCHexEscape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@@Z
@@ -854,7 +852,6 @@ EXPORTS
     ?safe_strtou32_base@numbers_internal@absl@@YA_NVstring_view@2@PEAIH@Z
     ?safe_strtou64_base@numbers_internal@absl@@YA_NVstring_view@2@PEA_KH@Z
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
-    ?set_tree@InlineRep@Cord@absl@@QEAAXPEAUCordRep@cord_internal@3@@Z
     ?shallow_subcords_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
     ?shrink_to_fit@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAAXXZ
     ?size@?$BigUnsigned@$03@strings_internal@absl@@QEBAHXZ
