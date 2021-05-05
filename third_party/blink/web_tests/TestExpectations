@@ -6843,7 +6843,7 @@ crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomp
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Pass Failure ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Pass Failure ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Pass Failure ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Pass Timeout ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Pass Failure Timeout ]
 
 # Expect failure for unimplemented canvas color object input
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
@@ -7101,5 +7101,8 @@ crbug.com/1093041 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createIma
 crbug.com/1146560 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-05-04
-crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Failure ]
-crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Failure ]
+crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
+crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Timeout ]
+crbug.com/1205673 [ Linux ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/large-actual-column-count.html [ Pass Timeout ]
+crbug.com/1205673 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Pass Timeout ]
+crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Pass Failure ]
