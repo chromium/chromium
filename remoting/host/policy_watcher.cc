@@ -313,7 +313,7 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
   while (!iter.IsAtEnd()) {
     base::Value* old_policy;
     if (!(effective_policies_->Get(iter.key(), &old_policy) &&
-          old_policy->Equals(&iter.value()))) {
+          *old_policy == iter.value())) {
       changed_policies->Set(
           iter.key(), base::Value::ToUniquePtrValue(iter.value().Clone()));
     }
