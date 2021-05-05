@@ -827,6 +827,85 @@ template <>
 struct NativeValueTraits<IDLNullable<IDLPromise>>;
 
 // Sequence types
+
+namespace bindings {
+
+// Fast case: we're iterating over an Array that adheres to
+// %ArrayIteratorPrototype%'s protocol.
+template <typename T>
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+CreateIDLSequenceFromV8Array(v8::Isolate* isolate,
+                             v8::Local<v8::Array> v8_array,
+                             ExceptionState& exception_state) {
+  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  const uint32_t length = v8_array->Length();
+  if (length > NativeValueTraits<IDLSequence<T>>::ImplType::MaxCapacity()) {
+    exception_state.ThrowRangeError("Array length exceeds supported limit.");
+    return {};
+  }
+
+  typename NativeValueTraits<IDLSequence<T>>::ImplType result;
+  result.ReserveInitialCapacity(length);
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::TryCatch try_block(isolate);
+  // Array length may change if array is mutated during iteration.
+  for (uint32_t i = 0; i < v8_array->Length(); ++i) {
+    v8::Local<v8::Value> v8_element;
+    if (!v8_array->Get(current_context, i).ToLocal(&v8_element)) {
+      exception_state.RethrowV8Exception(try_block.Exception());
+      return {};
+    }
+    // 3.4. Initialize Si to the result of converting nextItem to an IDL value
+    //   of type T.
+    auto&& element =
+        NativeValueTraits<T>::NativeValue(isolate, v8_element, exception_state);
+    if (exception_state.HadException())
+      return {};
+    result.push_back(std::move(element));
+  }
+  // 3.2. If next is false, then return an IDL sequence value of type
+  //   sequence<T> of length i, where the value of the element at index j is Sj.
+  return result;
+}
+
+// Slow case: follow WebIDL's "Creating a sequence from an iterable" steps to
+// iterate through each element.
+template <typename T>
+typename NativeValueTraits<IDLSequence<T>>::ImplType
+CreateIDLSequenceFromIterator(v8::Isolate* isolate,
+                              ScriptIterator script_iterator,
+                              ExceptionState& exception_state) {
+  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  ExecutionContext* execution_context =
+      ToExecutionContext(isolate->GetCurrentContext());
+  typename NativeValueTraits<IDLSequence<T>>::ImplType result;
+  // 3. Repeat:
+  while (script_iterator.Next(execution_context, exception_state)) {
+    // 3.1. Let next be ? IteratorStep(iter).
+    DCHECK(!exception_state.HadException());
+    // 3.3. Let nextItem be ? IteratorValue(next).
+    //
+    // The value should already be non-empty, as guaranteed by the call to
+    // Next() and the |exception_state| check above.
+    v8::Local<v8::Value> v8_element =
+        script_iterator.GetValue().ToLocalChecked();
+    // 3.4. Initialize Si to the result of converting nextItem to an IDL value
+    //   of type T.
+    auto&& element =
+        NativeValueTraits<T>::NativeValue(isolate, v8_element, exception_state);
+    if (exception_state.HadException())
+      return {};
+    result.push_back(std::move(element));
+  }
+  if (exception_state.HadException())
+    return {};
+  // 3.2. If next is false, then return an IDL sequence value of type
+  //   sequence<T> of length i, where the value of the element at index j is Sj.
+  return result;
+}
+
+}  // namespace bindings
+
 template <typename T>
 struct NativeValueTraits<IDLSequence<T>>
     : public NativeValueTraitsBase<IDLSequence<T>> {
@@ -837,6 +916,15 @@ struct NativeValueTraits<IDLSequence<T>>
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> value,
                               ExceptionState& exception_state) {
+    // TODO(https://crbug.com/715122): Checking for IsArray() may not be
+    // enough. Other engines also prefer regular array iteration over a custom
+    // @@iterator when the latter is defined, but it is not clear if this is a
+    // valid optimization.
+    if (value->IsArray()) {
+      return bindings::CreateIDLSequenceFromV8Array<T>(
+          isolate, value.As<v8::Array>(), exception_state);
+    }
+
     // 1. If Type(V) is not Object, throw a TypeError.
     if (!value->IsObject()) {
       exception_state.ThrowTypeError(
@@ -844,36 +932,22 @@ struct NativeValueTraits<IDLSequence<T>>
       return ImplType();
     }
 
-    ImplType result;
-    // TODO(https://crbug.com/715122): Checking for IsArray() may not be
-    // enough. Other engines also prefer regular array iteration over a custom
-    // @@iterator when the latter is defined, but it is not clear if this is a
-    // valid optimization.
-    if (value->IsArray()) {
-      ConvertSequenceFast(isolate, value.As<v8::Array>(), exception_state,
-                          result);
-    } else {
-      // 2. Let method be ? GetMethod(V, @@iterator).
-      // 3. If method is undefined, throw a TypeError.
-      // 4. Return the result of creating a sequence from V and method.
-      auto script_iterator = ScriptIterator::FromIterable(
-          isolate, value.As<v8::Object>(), exception_state);
-      if (exception_state.HadException())
-        return ImplType();
-      if (script_iterator.IsNull()) {
-        // A null ScriptIterator with an empty |exception_state| means the
-        // object is lacking a callable @@iterator property.
-        exception_state.ThrowTypeError(
-            "The object must have a callable @@iterator property.");
-        return ImplType();
-      }
-      ConvertSequenceSlow(isolate, std::move(script_iterator), exception_state,
-                          result);
-    }
-
+    // 2. Let method be ? GetMethod(V, @@iterator).
+    // 3. If method is undefined, throw a TypeError.
+    // 4. Return the result of creating a sequence from V and method.
+    auto script_iterator = ScriptIterator::FromIterable(
+        isolate, value.As<v8::Object>(), exception_state);
     if (exception_state.HadException())
       return ImplType();
-    return result;
+    if (script_iterator.IsNull()) {
+      // A null ScriptIterator with an empty |exception_state| means the
+      // object is lacking a callable @@iterator property.
+      exception_state.ThrowTypeError(
+          "The object must have a callable @@iterator property.");
+      return ImplType();
+    }
+    return bindings::CreateIDLSequenceFromIterator<T>(
+        isolate, std::move(script_iterator), exception_state);
   }
 
   // https://heycam.github.io/webidl/#es-sequence
@@ -883,74 +957,8 @@ struct NativeValueTraits<IDLSequence<T>>
                               ScriptIterator script_iterator,
                               ExceptionState& exception_state) {
     DCHECK(!script_iterator.IsNull());
-    ImplType result;
-    ConvertSequenceSlow(isolate, std::move(script_iterator), exception_state,
-                        result);
-    return result;
-  }
-
- private:
-  // Fast case: we're interating over an Array that adheres to
-  // %ArrayIteratorPrototype%'s protocol.
-  static void ConvertSequenceFast(v8::Isolate* isolate,
-                                  v8::Local<v8::Array> v8_array,
-                                  ExceptionState& exception_state,
-                                  ImplType& result) {
-    const uint32_t length = v8_array->Length();
-    if (length > ImplType::MaxCapacity()) {
-      exception_state.ThrowRangeError("Array length exceeds supported limit.");
-      return;
-    }
-    result.ReserveInitialCapacity(length);
-    v8::TryCatch block(isolate);
-    // Array length may change if array is mutated during iteration.
-    for (uint32_t i = 0; i < v8_array->Length(); ++i) {
-      v8::Local<v8::Value> element;
-      if (!v8_array->Get(isolate->GetCurrentContext(), i).ToLocal(&element)) {
-        exception_state.RethrowV8Exception(block.Exception());
-        return;
-      }
-      result.push_back(
-          NativeValueTraits<T>::NativeValue(isolate, element, exception_state));
-      if (exception_state.HadException())
-        return;
-    }
-  }
-
-  // Slow case: follow WebIDL's "Creating a sequence from an iterable" steps to
-  // iterate through each element.
-  static void ConvertSequenceSlow(v8::Isolate* isolate,
-                                  ScriptIterator script_iterator,
-                                  ExceptionState& exception_state,
-                                  ImplType& result) {
-    // https://heycam.github.io/webidl/#create-sequence-from-iterable
-    // 2. Initialize i to be 0.
-    // 3. Repeat:
-    ExecutionContext* execution_context =
-        ToExecutionContext(isolate->GetCurrentContext());
-    while (script_iterator.Next(execution_context, exception_state)) {
-      // 3.1. Let next be ? IteratorStep(iter).
-      // 3.2. If next is false, then return an IDL sequence value of type
-      //      sequence<T> of length i, where the value of the element at index
-      //      j is Sj.
-      // 3.3. Let nextItem be ? IteratorValue(next).
-      if (exception_state.HadException())
-        return;
-
-      // The value should already be non-empty, as guaranteed by the call to
-      // Next() and the |exception_state| check above.
-      v8::Local<v8::Value> element =
-          script_iterator.GetValue().ToLocalChecked();
-      DCHECK(!element.IsEmpty());
-
-      // 3.4. Initialize Si to the result of converting nextItem to an IDL
-      //      value of type T.
-      // 3.5. Set i to i + 1.
-      result.push_back(
-          NativeValueTraits<T>::NativeValue(isolate, element, exception_state));
-      if (exception_state.HadException())
-        return;
-    }
+    return bindings::CreateIDLSequenceFromIterator<T>(
+        isolate, std::move(script_iterator), exception_state);
   }
 };
 
