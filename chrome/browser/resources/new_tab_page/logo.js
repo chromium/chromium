@@ -10,8 +10,9 @@ import './doodle_share_dialog.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {I18nBehavior} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
@@ -19,8 +20,13 @@ import {WindowProxy} from './window_proxy.js';
 /** @type {number} */
 const SHARE_BUTTON_SIZE_PX = 26;
 
-// Shows the Google logo or a doodle if available.
-class LogoElement extends PolymerElement {
+/**
+ * Shows the Google logo or a doodle if available.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class LogoElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-logo';
   }

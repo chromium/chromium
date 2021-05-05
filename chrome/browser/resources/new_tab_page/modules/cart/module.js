@@ -10,10 +10,9 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
+import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {$$} from '../../utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 

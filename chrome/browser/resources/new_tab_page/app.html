@@ -307,16 +307,16 @@
            button in container to enfore solid background color. -->
       <div id="customizeButtonContainer">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
-            title="$i18n{customizeThisPage}">
+            title="[[i18n('customizeThisPage')]]">
           <div id="customizeIcon"></div>
           <div id="customizeText" hidden$="[[showBackgroundImage_]]">
-            $i18n{customizeButton}
+            [[i18n('customizeButton')]]
           </div>
         </cr-button>
       </div>
       <div id="themeAttribution"
           hidden$="[[!theme_.backgroundImage.attributionUrl]]">
-        <div>$i18n{themeCreatedBy}</div>
+        <div>[[i18n('themeCreatedBy')]]</div>
         <img src="[[theme_.backgroundImage.attributionUrl.url]]"><img>
       </div>
     </template>

@@ -164,7 +164,7 @@
 </style>
 <div id="backgroundsDisabled" hidden$="[[!customBackgroundDisabledByPolicy_]]">
   <div id="backgroundsDisabledIcon"></div>
-  <div id="backgroundsDisabledTitle">$i18n{customBackgroundDisabled}</div>
+  <div id="backgroundsDisabledTitle">[[i18n('customBackgroundDisabled')]]</div>
 </div>
 <cr-grid id="collections" columns="3" hidden="[[!showBackgroundSelection_]]">
   <div id="uploadFromDevice" class="tile" role="button"
@@ -174,7 +174,7 @@
       </div>
       <div id="uploadFromDeviceImage">
         <div id="uploadIcon"></div>
-        <div class="label">$i18n{uploadFromDevice}</div>
+        <div class="label">[[i18n('uploadFromDevice')]]</div>
       </div>
       <div class="selected-circle"></div>
       <div class="selected-check"></div>
@@ -190,7 +190,7 @@
       <div class="selected-circle"></div>
       <div class="selected-check"></div>
     </div>
-    <div class="label">$i18n{noBackground}</div>
+    <div class="label">[[i18n('noBackground')]]</div>
   </div>
   <dom-repeat id="collectionsRepeat" items="[[collections_]]">
     <template>

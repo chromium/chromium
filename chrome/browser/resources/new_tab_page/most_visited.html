@@ -207,10 +207,10 @@
           on-click="onTileClick_" on-keydown="onTileKeyDown_"
           query-tile$="[[item.isQueryTile]]">
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-            title="$i18n{moreActions}" on-click="onTileActionButtonClick_"
+            title="[[i18n('moreActions')]]" on-click="onTileActionButtonClick_"
             tabindex="0" hidden$="[[!customLinksEnabled_]]"></cr-icon-button>
         <cr-icon-button id="removeButton" class="icon-clear"
-            title="$i18n{linkRemove}" on-click="onTileRemoveButtonClick_"
+            title="[[i18n('linkRemove')]]" on-click="onTileRemoveButtonClick_"
             tabindex="0" hidden$="[[customLinksEnabled_]]"></cr-icon-button>
         <div class="tile-icon">
           <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"
@@ -230,15 +230,15 @@
       <div id="addShortcutIcon" draggable="false"></div>
     </div>
     <div class="tile-title">
-      <span>$i18n{addLinkTitle}</span>
+      <span>[[i18n('addLinkTitle')]]</span>
     </div>
   </cr-button>
   <cr-dialog id="dialog" on-close="onDialogClose_">
     <div slot="title">[[dialogTitle_]]</div>
     <div slot="body">
-      <cr-input id="dialogInputName" label="$i18n{nameField}"
+      <cr-input id="dialogInputName" label="[[i18n('nameField')]]"
           value="{{dialogTileTitle_}}" spellcheck="false" autofocus></cr-input>
-      <cr-input id="dialogInputUrl" label="$i18n{urlField}"
+      <cr-input id="dialogInputUrl" label="[[i18n('urlField')]]"
           value="{{dialogTileUrl_}}" invalid="[[dialogTileUrlInvalid_]]"
           error-message="[[dialogTileUrlError_]]" spellcheck="false" type="url"
           on-blur="onDialogTileUrlBlur_">
@@ -246,20 +246,20 @@
     </div>
     <div slot="button-container">
       <cr-button class="cancel-button" on-click="onDialogCancel_">
-        $i18n{linkCancel}
+        [[i18n('linkCancel')]]
       </cr-button>
       <cr-button class="action-button" on-click="onSave_"
           disabled$="[[dialogSaveDisabled_]]">
-        $i18n{linkDone}
+        [[i18n('linkDone')]]
       </cr-button>
     </div>
   </cr-dialog>
   <cr-action-menu id="actionMenu">
     <button id="actionMenuEdit" class="dropdown-item" on-click="onEdit_">
-      $i18n{editLinkTitle}
+      [[i18n('editLinkTitle')]]
     </button>
     <button id="actionMenuRemove" class="dropdown-item" on-click="onRemove_">
-      $i18n{linkRemove}
+      [[i18n('linkRemove')]]
     </button>
   </cr-action-menu>
 </div>
@@ -267,9 +267,9 @@
   <div>[[toastContent_]]</div>
   <dom-if if="[[showToastButtons_]]">
     <template>
-      <cr-button id="undo" aria-label="$i18n{undoDescription}"
+      <cr-button id="undo" aria-label="[[i18n('undoDescription')]]"
           on-click="onUndoClick_">
-        $i18n{undo}
+        [[i18n('undo')]]
       </cr-button>
       <cr-button id="restore"
           aria-label$="[[getRestoreButtonText_(customLinksEnabled_)]]"

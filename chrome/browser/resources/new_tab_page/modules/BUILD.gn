@@ -60,6 +60,7 @@ js_library("module_wrapper") {
 
 js_library("module_header") {
   deps = [
+    "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -74,6 +75,7 @@ js_library("module_registry") {
 
 js_library("info_dialog") {
   deps = [
+    "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",

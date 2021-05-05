@@ -158,6 +158,7 @@ js_library("mini_page") {
 
 js_library("customize_shortcuts") {
   deps = [
+    ":i18n_setup",
     ":mini_page",
     ":new_tab_page_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -211,6 +212,7 @@ js_library("iframe") {
 js_library("logo") {
   deps = [
     ":doodle_share_dialog",
+    ":i18n_setup",
     ":new_tab_page_proxy",
     ":window_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -220,6 +222,7 @@ js_library("logo") {
 
 js_library("doodle_share_dialog") {
   deps = [
+    ":i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -241,7 +244,10 @@ js_library("img") {
 }
 
 js_library("i18n_setup") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
 html_to_js("web_components_local") {

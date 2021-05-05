@@ -7,9 +7,9 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from './i18n_setup.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -182,8 +182,13 @@ function getErrorTimeout(error) {
   }
 }
 
-// Overlay that lats the user perform voice searches.
-class VoiceSearchOverlayElement extends PolymerElement {
+/**
+ * Overlay that lats the user perform voice searches.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class VoiceSearchOverlayElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-voice-search-overlay';
   }

@@ -9,12 +9,18 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {I18nBehavior} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-/** Element that lets the user configure shortcut settings. */
-class CustomizeShortcutsElement extends PolymerElement {
+/**
+ * Element that lets the user configure shortcut settings.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class CustomizeShortcutsElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-customize-shortcuts';
   }

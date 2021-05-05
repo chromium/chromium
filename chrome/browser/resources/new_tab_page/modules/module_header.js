@@ -4,11 +4,17 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @fileoverview Element that displays a header inside a module. */
+import {I18nBehavior} from '../i18n_setup.js';
 
-export class ModuleHeaderElement extends PolymerElement {
+/**
+ * Element that displays a header inside a module.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+export class ModuleHeaderElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-module-header';
   }

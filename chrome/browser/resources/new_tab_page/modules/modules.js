@@ -9,17 +9,22 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {$$} from '../utils.js';
 
 import {Module} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 
-/** Container for the NTP modules. */
-export class ModulesElement extends PolymerElement {
+/**
+ * Container for the NTP modules.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+export class ModulesElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-modules';
   }

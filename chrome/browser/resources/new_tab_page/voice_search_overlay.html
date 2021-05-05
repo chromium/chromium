@@ -179,17 +179,17 @@
     on-keydown="onOverlayKeydown_">
   <!-- Purely exists to capture focus upon opening the dialog. -->
   <div tabindex="-1"></div>
-  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
+  <cr-icon-button id="closeButton" class="icon-clear" title="[[i18n('close')]]">
   </cr-icon-button>
   <div id="content">
     <iron-selector id="texts" selected="[[getText_(state_)]]"
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
       <div text="none"></div>
-      <div text="waiting">$i18n{waiting}</div>
+      <div text="waiting">[[i18n('waiting')]]</div>
       <div text="speak" class="display-stack">
-        <div id="speak">$i18n{speak}</div>
-        <div id="listening">$i18n{listening}</div>
+        <div id="speak">[[i18n('speak')]]</div>
+        <div id="listening">[[i18n('listening')]]</div>
       </div>
       <div text="result" aria-hidden="true">
         <span id="finalResult">[[finalResult_]]</span>
@@ -198,28 +198,28 @@
       <div text="error">
         <iron-pages id="errors" selected="[[getErrorText_(error_)]]"
             attr-for-selected="error" fallback-selection="other">
-          <span error="no-speech">$i18n{noVoice}</span>
-          <span error="audio-capture">$i18n{audioError}</span>
-          <span error="network">$i18n{networkError}</span>
-          <span error="not-allowed">$i18n{permissionError}</span>
-          <span error="language-not-supported">$i18n{languageError}</span>
-          <span error="no-match">$i18n{noTranslation}</span>
-          <span error="other">$i18n{otherError}</span>
+          <span error="no-speech">[[i18n('noVoice')]]</span>
+          <span error="audio-capture">[[i18n('audioError')]]</span>
+          <span error="network">[[i18n('networkError')]]</span>
+          <span error="not-allowed">[[i18n('permissionError')]]</span>
+          <span error="language-not-supported">[[i18n('languageError')]]</span>
+          <span error="no-match">[[i18n('noTranslation')]]</span>
+          <span error="other">[[i18n('otherError')]]</span>
         </iron-pages>
         <iron-pages id="errorLinks" selected="[[getErrorLink_(error_)]]"
             attr-for-selected="link" fallback-selection="none">
           <span link="none"></span>
           <a link="learn-more" target="_blank" href="[[helpUrl_]]"
               on-click="onLearnMoreClick_" on-keydown="onLinkKeydown_"><!--
-            -->$i18n{learnMore}
+            -->[[i18n('learnMore')]]
           </a>
           <a link="details" target="_blank" href="[[helpUrl_]]"
               on-keydown="onLinkKeydown_"><!--
-            -->$i18n{details}
+            -->[[i18n('details')]]
           </a>
           <a link="try-again" id="retryLink" href="#"
               on-click="onTryAgainClick_" on-keydown="onLinkKeydown_"><!--
-            -->$i18n{tryAgain}
+            -->[[i18n('tryAgain')]]
           </a>
         </iron-pages>
       </div>

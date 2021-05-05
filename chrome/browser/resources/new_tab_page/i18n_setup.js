@@ -3,4 +3,6 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+
+export {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 export {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

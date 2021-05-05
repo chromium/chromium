@@ -72,7 +72,7 @@
                                   'modulesDriveSentence')]]"
     show-info-button on-info-button-click="onInfoButtonClick_"
     on-disable-button-click="onDisableButtonClick_">
-  $i18n{modulesDriveTitle}
+  [[i18n('modulesDriveTitle')]]
 </ntp-module-header>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
@@ -93,6 +93,7 @@
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>
-    <ntp-info-dialog>$i18nRaw{modulesDriveInfo}</ntp-info-dialog>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
+    </ntp-info-dialog>
   </template>
 </cr-lazy-render>

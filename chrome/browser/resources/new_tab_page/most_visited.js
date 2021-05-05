@@ -18,9 +18,9 @@ import {isMac} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from './i18n_setup.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -86,7 +86,12 @@ function normalizeUrl(urlString) {
   return null;
 }
 
-class MostVisitedElement extends PolymerElement {
+/**
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class MostVisitedElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-most-visited';
   }

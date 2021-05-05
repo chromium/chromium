@@ -10,15 +10,20 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from './i18n_setup.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-/** Element that lets the user configure modules settings. */
-class CustomizeModulesElement extends PolymerElement {
+/**
+ * Element that lets the user configure modules settings.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class CustomizeModulesElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-customize-modules';
   }

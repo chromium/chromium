@@ -56,26 +56,26 @@
   </div>
   <div slot="body">
     <div id="buttons">
-      <cr-button id="facebookButton" title="$i18n{facebook}"
+      <cr-button id="facebookButton" title="[[i18n('facebook')]]"
           on-click="onFacebookClick_">
       </cr-button>
-      <cr-button id="twitterButton" title="$i18n{twitter}"
+      <cr-button id="twitterButton" title="[[i18n('twitter')]]"
           on-click="onTwitterClick_">
       </cr-button>
-      <cr-button id="emailButton" title="$i18n{email}"
+      <cr-button id="emailButton" title="[[i18n('email')]]"
           on-click="onEmailClick_">
       </cr-button>
     </div>
-    <cr-input readonly label="$i18n{doodleLink}" id="url"
+    <cr-input readonly label="[[i18n('doodleLink')]]" id="url"
         value="[[url.url]]">
-      <cr-icon-button id="copyButton" slot="suffix" title="$i18n{copyLink}"
+      <cr-icon-button id="copyButton" slot="suffix" title="[[i18n('copyLink')]]"
           on-click="onCopyClick_">
       </cr-icon-button>
     </cr-input>
   </div>
   <div slot="button-container">
     <cr-button id="doneButton" class="action-button" on-click="onCloseClick_">
-      $i18n{doneButton}
+      [[i18n('doneButton')]]
     </cr-button>
   </div>
 </cr-dialog>

@@ -58,11 +58,11 @@
   </template>
   <div id="headerSpacer"></div>
   <template is="dom-if" if="[[showInfoButton]]">
-    <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
+    <cr-icon-button id="infoButton" title="[[i18n('moduleInfoButtonTitle')]]"
         on-click="onInfoButtonClick_">
     </cr-icon-button>
   </template>
-  <cr-icon-button id="menuButton" title="$i18n{moreActions}"
+  <cr-icon-button id="menuButton" title="[[i18n('moreActions')]]"
       class="icon-more-vert" on-click="onMenuButtonClick_">
   </cr-icon-button>
 </div>
@@ -82,6 +82,6 @@
   </button>
   <button id="customizeButton" class="dropdown-item"
       on-click="onCustomizeButtonClick_">
-    $i18n{modulesCustomizeButtonText}
+    [[i18n('modulesCustomizeButtonText')]]
   </button>
 </cr-action-menu>

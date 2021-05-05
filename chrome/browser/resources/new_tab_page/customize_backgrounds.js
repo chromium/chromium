@@ -7,14 +7,19 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './mini_page.js';
 import './iframe.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
-import {loadTimeData} from './i18n_setup.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-/** Element that lets the user configure the background. */
-class CustomizeBackgroundsElement extends PolymerElement {
+/**
+ * Element that lets the user configure the background.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class CustomizeBackgroundsElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-customize-backgrounds';
   }

@@ -14,18 +14,21 @@ import './customize_shortcuts.js';
 import './customize_modules.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
-import {loadTimeData} from './i18n_setup.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 
 /**
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
+ * @polymer
+ * @extends {PolymerElement}
  */
-class CustomizeDialogElement extends PolymerElement {
+class CustomizeDialogElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-customize-dialog';
   }
