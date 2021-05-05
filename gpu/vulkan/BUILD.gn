@@ -146,13 +146,12 @@ if (enable_vulkan) {
 
       data_deps += [ "//third_party/fuchsia-sdk:vulkan_base" ]
 
-      # VulkanInstance enables validation layer in Debug builds and when DCHECKs
-      # are enabled in Release builds. In these cases the validation layer
-      # libraries and configs need to be included in the generated Fuchsia
-      # package.
-      if (is_debug || dcheck_always_on) {
-        data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
-      }
+      # TODO(fxbug.dev/73208): Vulkan validation is disabled temporarily.
+      # Re-enable once Vulkan is updated.
+      #
+      # if (is_debug || dcheck_always_on) {
+      #   data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
+      # }
     }
   }
 
