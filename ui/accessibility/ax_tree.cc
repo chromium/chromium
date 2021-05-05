@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -941,6 +942,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // tree is still in a stable and unchanged state.
   if (!ComputePendingChanges(update, &update_state))
     return false;
+
+  // Log unserialize perf after early returns.
+  SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.Tree.Unserialize");
 
   // Notify observers of subtrees and nodes that are about to be destroyed or
   // reparented, this must be done before applying any updates to the tree.

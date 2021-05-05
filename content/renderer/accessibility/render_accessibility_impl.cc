@@ -18,6 +18,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1046,6 +1047,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     last_ukm_url_ = document.CanonicalUrlForSharing().GetString().Utf8();
     slowest_serialization_time_ = elapsed_time_ms;
   }
+  // Also log the time taken in this function to track serialization
+  // performance.
+  UMA_HISTOGRAM_TIMES(
+      "Accessibility.Performance.SendPendingAccessibilityEvents",
+      elapsed_time_ms);
 
   if (ukm_timer_->Elapsed() >= kMinUKMDelay)
     MaybeSendUKM();

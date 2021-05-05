@@ -1921,6 +1921,9 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     return;
   }
 
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Accessibility.Performance.ProcessDeferredAccessibilityEvents");
+
   // Destroy and recreate any objects which are no longer valid, for example
   // they used AXNodeObject and now must be an AXLayoutObject, or vice-versa.
   // Also fires children changed on the parent of these nodes.

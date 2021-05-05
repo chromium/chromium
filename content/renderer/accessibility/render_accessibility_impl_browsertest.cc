@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1456,6 +1457,9 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
 
   // No URL-keyed metrics should be fired initially.
   EXPECT_EQ(0, ukm_recorder()->calls());
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 0);
 
   // No URL-keyed metrics should be fired after we send one event.
   WebDocument document = GetMainFrame()->GetDocument();
@@ -1464,6 +1468,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
   EXPECT_EQ(0, ukm_recorder()->calls());
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 1);
 
   // No URL-keyed metrics should be fired even after an event that takes
   // 300 ms, but we should now have something to send.
@@ -1473,6 +1479,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
   EXPECT_EQ(0, ukm_recorder()->calls());
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 2);
 
   // After 1000 seconds have passed, the next time we send an event we should
   // send URL-keyed metrics.
@@ -1481,6 +1489,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
   EXPECT_EQ(1, ukm_recorder()->calls());
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 3);
 
   // Send another event that takes a long (simulated) time to serialize.
   // This must be >= kMinSerializationTimeToSendInMS
@@ -1488,6 +1498,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.SendPendingAccessibilityEvents", 4);
 
   // We shouldn't have a new call to the UKM recorder yet, not enough
   // time has elapsed.

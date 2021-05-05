@@ -411,6 +411,9 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   initial_state.nodes[2].id = 3;
   AXTree tree(initial_state);
 
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
+
   // This should fail because we delete a subtree rooted at id=2
   // but never update it.
   AXTreeUpdate update;
@@ -422,6 +425,8 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kPendingNodes, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 2);
 }
 
 TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
@@ -431,6 +436,9 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
   AXTree tree(initial_state);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
 
   // This should fail because we add a new child to the root node
   // but never update it.
@@ -443,6 +451,8 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kPendingNodes, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 2);
 }
 
 TEST(AXTreeTest, DuplicateChildIdFails) {
@@ -452,6 +462,9 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
   AXTree tree(initial_state);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
 
   // This should fail because a child id appears twice.
   AXTreeUpdate update;
@@ -465,6 +478,8 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kDuplicateChild, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
 }
 
 TEST(AXTreeTest, InvalidReparentingFails) {
@@ -479,6 +494,9 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   initial_state.nodes[2].id = 3;
 
   AXTree tree(initial_state);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
 
   // This should fail because node 3 is reparented from node 2 to node 1
   // without deleting node 1's subtree first.
@@ -495,6 +513,8 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kReparent, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.Tree.Unserialize", 1);
 }
 
 TEST(AXTreeTest, NoReparentingOfRootIfNoNewRoot) {
