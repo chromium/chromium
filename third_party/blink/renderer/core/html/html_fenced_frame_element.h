@@ -24,6 +24,28 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLElement {
  public:
   explicit HTMLFencedFrameElement(Document& document);
   ~HTMLFencedFrameElement() override;
+
+  // HTMLElement overrides.
+  bool IsHTMLFencedFrameElement() const final { return true; }
+};
+
+// Type casting. Custom since adoption could lead to an HTMLFencedFrameElement
+// ending up in a document that doesn't have the Fenced Frame origin trial
+// enabled, which would result in creation of an HTMLUnknownElement with the
+// "fencedframe" tag name. We can't support casting those elements to
+// HTMLFencedFrameElements because they are not fenced frame elements.
+// TODO(crbug.com/1123606): Remove these custom helpers when the origin trial is
+// over.
+template <>
+struct DowncastTraits<HTMLFencedFrameElement> {
+  static bool AllowFrom(const HTMLElement& element) {
+    return element.IsHTMLFencedFrameElement();
+  }
+  static bool AllowFrom(const Node& node) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(node))
+      return html_element->IsHTMLFencedFrameElement();
+    return false;
+  }
 };
 
 }  // namespace blink

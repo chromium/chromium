@@ -108,6 +108,9 @@ class CORE_EXPORT HTMLElement : public Element {
   bool HasDirectionAuto() const;
 
   virtual bool IsHTMLBodyElement() const { return false; }
+  // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame
+  // origin trial is over.
+  virtual bool IsHTMLFencedFrameElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
   virtual bool IsHTMLPortalElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
