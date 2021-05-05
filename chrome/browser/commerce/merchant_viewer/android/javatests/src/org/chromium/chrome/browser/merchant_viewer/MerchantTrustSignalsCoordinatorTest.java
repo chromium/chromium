@@ -39,6 +39,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -73,6 +74,7 @@ import java.util.concurrent.TimeUnit;
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
 @DisableIf.Device(type = {UiDisableIf.TABLET})
+@DisabledTest(message = "crbug.com/1205485")
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
