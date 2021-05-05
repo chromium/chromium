@@ -136,7 +136,6 @@
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
-#import "ios/chrome/browser/ui/toolbar/fullscreen/legacy_toolbar_ui_updater.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
@@ -356,7 +355,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      SigninPresenter,
                                      SnapshotGeneratorDelegate,
                                      TabStripPresentation,
-                                     ToolbarHeightProviderForFullscreen,
                                      UIGestureRecognizerDelegate,
                                      URLLoadingObserver,
                                      ViewRevealingAnimatee,
@@ -428,8 +426,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
 
-  // The toolbar UI updater for the toolbar managed by |_toolbarCoordinator|.
-  LegacyToolbarUIUpdater* _toolbarUIUpdater;
+  // Toolbar state that broadcasts changes to min and max heights.
+  ToolbarUIState* _toolbarUIState;
 
   // The main content UI updater for the content displayed by this BVC.
   MainContentUIStateUpdater* _mainContentUIUpdater;
@@ -936,12 +934,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
   if (_broadcasting) {
-    _toolbarUIUpdater = [[LegacyToolbarUIUpdater alloc]
-        initWithToolbarUI:[[ToolbarUIState alloc] init]
-             toolbarOwner:self
-             webStateList:self.browser->GetWebStateList()];
-    [_toolbarUIUpdater startUpdating];
-    StartBroadcastingToolbarUI(_toolbarUIUpdater.toolbarUI, broadcaster);
+    _toolbarUIState = [[ToolbarUIState alloc] init];
+    StartBroadcastingToolbarUI(_toolbarUIState, broadcaster);
 
     _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
         initWithState:[[MainContentUIState alloc] init]];
@@ -956,9 +950,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   } else {
     StopBroadcastingToolbarUI(broadcaster);
     StopBroadcastingMainContentUI(broadcaster);
-    [_toolbarUIUpdater stopUpdating];
-    _toolbarUIUpdater = nil;
     _mainContentUIUpdater = nil;
+    _toolbarUIState = nil;
     [_webMainContentUIForwarder disconnect];
     _webMainContentUIForwarder = nil;
 
@@ -1531,7 +1524,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [super viewDidAppear:animated];
   self.viewVisible = YES;
   [self updateBroadcastState];
-  [_toolbarUIUpdater updateState];
+  [self updateToolbarState];
   [self.infobarContainerCoordinator baseViewDidAppear];
 
   // |viewDidAppear| can be called after |browserState| is destroyed. Since
@@ -1609,8 +1602,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.browserViewHiderCoordinator stop];
     self.browserViewHiderCoordinator = nil;
     self.toolbarInterface = nil;
-    [_toolbarUIUpdater stopUpdating];
-    _toolbarUIUpdater = nil;
+    _toolbarUIState = nil;
     _locationBarModelDelegate = nil;
     _locationBarModel = nil;
     self.helper = nil;
@@ -1656,7 +1648,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
 
-  [_toolbarUIUpdater updateState];
+  [self updateToolbarState];
 
   // If the device's size class has changed from RegularXRegular to another and
   // vice-versa, the find bar should switch between regular mode and compact
@@ -1721,9 +1713,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)animateTransition {
-  // Force updates of the toolbar updater as the toolbar height might
+  // Force updates of the toolbar state as the toolbar height might
   // change on rotation.
-  [_toolbarUIUpdater updateState];
+  [self updateToolbarState];
   // Resize horizontal viewport if Smooth Scrolling is on.
   if (fullscreen::features::ShouldUseSmoothScrolling()) {
     self.fullscreenController->ResizeHorizontalViewport();
@@ -2475,7 +2467,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
     [self viewForWebState:webState].frame = webStateViewFrame;
 
-    [_toolbarUIUpdater updateState];
+    [self updateToolbarState];
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
@@ -2609,7 +2601,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
   if (!IsRegularXRegularSizeClass(self)) {
-    viewportInsets.bottom = [self bottomToolbarHeight];
+    viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
   }
 
   // Add toolbar margin to the frame for every scenario except compact-width
@@ -3995,7 +3987,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  [_toolbarUIUpdater updateState];
   if ([self canShowTabStrip]) {
     UIUserInterfaceSizeClass sizeClass =
         self.view.window.traitCollection.horizontalSizeClass;
@@ -4114,24 +4105,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return self.fullscreenController;
 }
 
-#pragma mark - ToolbarHeightProviderForFullscreen
-
-- (CGFloat)collapsedTopToolbarHeight {
-  return self.view.safeAreaInsets.top +
-         ToolbarCollapsedHeight(
-             self.traitCollection.preferredContentSizeCategory);
-}
-
-- (CGFloat)expandedTopToolbarHeight {
-  return [self primaryToolbarHeightWithInset] +
-         ([self canShowTabStrip] ? self.tabStripView.frame.size.height : 0.0) +
-         self.headerOffset;
-}
-
-- (CGFloat)bottomToolbarHeight {
-  return [self secondaryToolbarHeightWithInset];
-}
-
 #pragma mark - FullscreenUIElement methods
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
@@ -4189,6 +4162,30 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - FullscreenUIElement helpers
+
+// The minimum amount by which the top toolbar overlaps the browser content
+// area.
+- (CGFloat)collapsedTopToolbarHeight {
+  return self.view.safeAreaInsets.top +
+         ToolbarCollapsedHeight(
+             self.traitCollection.preferredContentSizeCategory);
+}
+
+// The maximum amount by which the top toolbar overlaps the browser content
+// area.
+- (CGFloat)expandedTopToolbarHeight {
+  return [self primaryToolbarHeightWithInset] +
+         ([self canShowTabStrip] ? self.tabStripView.frame.size.height : 0.0) +
+         self.headerOffset;
+}
+
+// Updates the ToolbarUIState, which broadcasts any changes to registered
+// listeners.
+- (void)updateToolbarState {
+  _toolbarUIState.collapsedHeight = [self collapsedTopToolbarHeight];
+  _toolbarUIState.expandedHeight = [self expandedTopToolbarHeight];
+  _toolbarUIState.bottomToolbarHeight = [self secondaryToolbarHeightWithInset];
+}
 
 // Returns the height difference between the fully expanded and fully collapsed
 // primary toolbar.
