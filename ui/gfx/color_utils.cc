@@ -234,28 +234,6 @@ SkColor HSLShift(SkColor color, const HSL& shift) {
                         base::ClampRound<U8CPU>(g), base::ClampRound<U8CPU>(b));
 }
 
-void BuildLumaHistogram(const SkBitmap& bitmap, int histogram[256]) {
-  DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
-
-  int pixel_width = bitmap.width();
-  int pixel_height = bitmap.height();
-  for (int y = 0; y < pixel_height; ++y) {
-    for (int x = 0; x < pixel_width; ++x)
-      ++histogram[GetLuma(bitmap.getColor(x, y))];
-  }
-}
-
-double CalculateBoringScore(const SkBitmap& bitmap) {
-  if (bitmap.isNull() || bitmap.empty())
-    return 1.0;
-  int histogram[256] = {0};
-  BuildLumaHistogram(bitmap, histogram);
-
-  int color_count = *std::max_element(histogram, histogram + 256);
-  int pixel_count = bitmap.width() * bitmap.height();
-  return static_cast<double>(color_count) / pixel_count;
-}
-
 SkColor AlphaBlend(SkColor foreground, SkColor background, SkAlpha alpha) {
   return AlphaBlend(foreground, background, alpha / 255.0f);
 }
