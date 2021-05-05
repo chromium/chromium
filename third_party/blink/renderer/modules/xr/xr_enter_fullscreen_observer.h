@@ -26,6 +26,7 @@ class XrEnterFullscreenObserver : public NativeEventListener {
   // Attempt to enter fullscreen with |element| as the root. |on_completed| will
   // be notified with whether or not fullscreen was successfully entered.
   void RequestFullscreen(Element* element,
+                         bool setup_for_dom_overlay,
                          base::OnceCallback<void(bool)> on_completed);
 
   void Trace(Visitor*) const override;

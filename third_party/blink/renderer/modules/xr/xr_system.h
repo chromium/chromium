@@ -359,14 +359,14 @@ class XRSystem final : public EventTargetWithInlineData,
   void DoRequestSession(
       PendingRequestSessionQuery* query,
       device::mojom::blink::XRSessionOptionsPtr session_options);
-  void OnRequestSessionSetupForDomOverlay(
+  void OnRequestSessionReturned(
       PendingRequestSessionQuery*,
       device::mojom::blink::RequestSessionResultPtr result);
   void OnFullscreenConfigured(
       PendingRequestSessionQuery* query,
       device::mojom::blink::RequestSessionResultPtr result,
       bool fullscreen_succeeded);
-  void OnRequestSessionReturned(
+  void FinishSessionCreation(
       PendingRequestSessionQuery*,
       device::mojom::blink::RequestSessionResultPtr result);
   void OnSupportsSessionReturned(PendingSupportsSessionQuery*,

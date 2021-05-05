@@ -44,6 +44,7 @@ void XrEnterFullscreenObserver::Invoke(ExecutionContext* execution_context,
 
 void XrEnterFullscreenObserver::RequestFullscreen(
     Element* fullscreen_element,
+    bool setup_for_dom_overlay,
     base::OnceCallback<void(bool)> on_completed) {
   DCHECK(!on_completed_);
   DCHECK(fullscreen_element);
@@ -84,11 +85,16 @@ void XrEnterFullscreenObserver::RequestFullscreen(
   // immersive session had required a user activation state, but that may have
   // expired by now due to the user taking time to respond to the consent
   // prompt.
-  ScopedAllowFullscreen scope(ScopedAllowFullscreen::kXrOverlay);
+  ScopedAllowFullscreen scope(setup_for_dom_overlay
+                                  ? ScopedAllowFullscreen::kXrOverlay
+                                  : ScopedAllowFullscreen::kXrSession);
 
-  Fullscreen::RequestFullscreen(*fullscreen_element_, options,
-                                FullscreenRequestType::kUnprefixed |
-                                    FullscreenRequestType::kForXrOverlay);
+  FullscreenRequestType request_type = FullscreenRequestType::kUnprefixed;
+  if (setup_for_dom_overlay) {
+    request_type = request_type | FullscreenRequestType::kForXrOverlay;
+  }
+
+  Fullscreen::RequestFullscreen(*fullscreen_element_, options, request_type);
 
   if (!wait_for_fullscreen_change) {
     // Element was already fullscreen, proceed with session creation.
