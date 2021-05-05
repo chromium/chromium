@@ -394,8 +394,8 @@ Polymer({
    * @param {boolean} managed Defines whether this setting is set by policy.
    */
   setLocationServicesMode(enabled, managed) {
-    this.backupRestore = enabled;
-    this.backupRestoreManaged = managed;
+    this.locationService = enabled;
+    this.locationServiceManaged = managed;
   },
 
   /**
