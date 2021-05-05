@@ -242,7 +242,10 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.encryption_schemes.insert(media::EncryptionScheme::kCenc);
   capability.encryption_schemes.insert(media::EncryptionScheme::kCbcs);
 
-  // TODO(xhwang): Add supported session types.
+  // Both temporary and persistent sessions are supported on ChromeOS.
+  capability.session_types.insert(media::CdmSessionType::kTemporary);
+  capability.session_types.insert(media::CdmSessionType::kPersistentLicense);
+
   // TODO(xhwang): Specify kChromeOsCdmFileSystemId here and update
   // MediaInterfaceProxy to use it.
 

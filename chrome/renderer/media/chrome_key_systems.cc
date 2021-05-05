@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -259,13 +260,43 @@ static void AddWidevine(
   }
 
   // Codecs and encryption schemes.
-  auto codecs = GetSupportedCodecs(capability->video_codecs,
-                                   /*is_secure=*/false);
-  const auto& encryption_schemes = capability->encryption_schemes;
-  auto hw_secure_codecs = GetSupportedCodecs(capability->hw_secure_video_codecs,
-                                             /*is_secure=*/true);
-  const auto& hw_secure_encryption_schemes =
-      capability->hw_secure_encryption_schemes;
+  SupportedCodecs codecs = media::EME_CODEC_NONE;
+  SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
+  base::flat_set<::media::EncryptionScheme> encryption_schemes;
+  base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
+  bool cdm_supports_persistent_license = false;
+
+  if (capability->sw_secure_capability) {
+    codecs = GetSupportedCodecs(capability->sw_secure_capability->video_codecs,
+                                /*is_secure=*/false);
+    encryption_schemes = capability->sw_secure_capability->encryption_schemes;
+    if (!base::Contains(capability->sw_secure_capability->session_types,
+                        media::CdmSessionType::kTemporary)) {
+      DVLOG(1) << "Temporary sessions must be supported.";
+      return;
+    }
+
+    cdm_supports_persistent_license =
+        base::Contains(capability->sw_secure_capability->session_types,
+                       media::CdmSessionType::kPersistentLicense);
+  }
+
+  if (capability->hw_secure_capability) {
+    hw_secure_codecs = GetSupportedCodecs(
+        capability->hw_secure_capability->video_codecs, /*is_secure=*/true);
+    hw_secure_encryption_schemes =
+        capability->hw_secure_capability->encryption_schemes;
+    if (!base::Contains(capability->hw_secure_capability->session_types,
+                        media::CdmSessionType::kTemporary)) {
+      DVLOG(1) << "Temporary sessions must be supported.";
+      return;
+    }
+
+    // TODO(b/186035558): With a single flag we can't distinguish persistent
+    // session support between software and hardware CDMs. This should be
+    // fixed so that if there is both a software and a hardware CDM, persistent
+    // session support can be different between the versions.
+  }
 
   // Robustness.
   using Robustness = cdm::WidevineKeySystemProperties::Robustness;
@@ -284,16 +315,6 @@ static void AddWidevine(
   }
 #endif
 
-  // Session types.
-  bool cdm_supports_temporary_session = base::Contains(
-      capability->session_types, media::CdmSessionType::kTemporary);
-  if (!cdm_supports_temporary_session) {
-    DVLOG(1) << "Temporary session must be supported.";
-    return;
-  }
-
-  bool cdm_supports_persistent_license = base::Contains(
-      capability->session_types, media::CdmSessionType::kPersistentLicense);
   auto persistent_license_support =
       GetPersistentLicenseSupport(cdm_supports_persistent_license);
 

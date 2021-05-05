@@ -41,11 +41,6 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
                             available);
 }
 
-template <typename T>
-std::vector<T> SetToVector(const base::flat_set<T>& s) {
-  return std::vector<T>(s.begin(), s.end());
-}
-
 // Returns a CdmCapability with codecs specified on command line. Returns null
 // if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
 // codecs specified.
@@ -248,28 +243,13 @@ void KeySystemSupportImpl::OnHardwareSecureCapability(
         hw_secure_capability));
   }
 
-  auto sw_secure_capability = GetSoftwareSecureCapability(key_system);
+  auto capability = media::mojom::KeySystemCapability::New();
+  capability->sw_secure_capability = GetSoftwareSecureCapability(key_system);
+  capability->hw_secure_capability = hw_secure_capability;
 
-  if (!sw_secure_capability && !hw_secure_capability) {
+  if (!capability->sw_secure_capability && !capability->hw_secure_capability) {
     std::move(callback).Run(false, nullptr);
     return;
-  }
-
-  auto capability = media::mojom::KeySystemCapability::New();
-
-  if (sw_secure_capability) {
-    capability->video_codecs = sw_secure_capability->video_codecs;
-    capability->encryption_schemes =
-        SetToVector(sw_secure_capability->encryption_schemes);
-    capability->session_types =
-        SetToVector(sw_secure_capability->session_types);
-  }
-
-  if (hw_secure_capability) {
-    capability->hw_secure_video_codecs = hw_secure_capability->video_codecs;
-    capability->hw_secure_encryption_schemes =
-        SetToVector(hw_secure_capability->encryption_schemes);
-    // TODO(xhwang): Also populate supported session types here.
   }
 
   std::move(callback).Run(true, std::move(capability));
