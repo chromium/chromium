@@ -3682,6 +3682,7 @@ source_set("unit_tests") {
     "../ash/base/file_flusher_unittest.cc",
     "../ash/bluetooth/debug_logs_manager_unittest.cc",
     "../ash/borealis/borealis_app_launcher_unittest.cc",
+    "../ash/borealis/borealis_app_uninstaller_unittest.cc",
     "../ash/borealis/borealis_context_manager_unittest.cc",
     "../ash/borealis/borealis_context_unittest.cc",
     "../ash/borealis/borealis_features_unittest.cc",

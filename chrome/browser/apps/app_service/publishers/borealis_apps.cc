@@ -190,9 +190,7 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
                                 GetMenuModelCallback callback) {
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
-  // TODO(b/171353248): Uninstall for individual apps (not just the parent one).
-  if (app_id == borealis::kBorealisAppId &&
-      borealis::BorealisService::GetForProfile(profile_)
+  if (borealis::BorealisService::GetForProfile(profile_)
           ->Features()
           .IsEnabled()) {
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);

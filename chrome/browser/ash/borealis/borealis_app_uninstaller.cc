@@ -4,23 +4,85 @@
 
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 
+#include "base/base64.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 
 namespace borealis {
+
+const char kBorealisUninstallPrefix[] = "Oi8vdW5pbnN0YWxsLw==";
 
 BorealisAppUninstaller::BorealisAppUninstaller(Profile* profile)
     : profile_(profile) {}
 
 void BorealisAppUninstaller::Uninstall(std::string app_id,
                                        OnUninstalledCallback callback) {
-  // TODO(b/171353248): Allow uninstalling other apps
-  DCHECK(app_id == kBorealisAppId);
+  if (app_id == kBorealisAppId || app_id == kBorealisMainAppId) {
+    BorealisService::GetForProfile(profile_)->Installer().Uninstall(
+        base::BindOnce(
+            [](OnUninstalledCallback callback, BorealisUninstallResult result) {
+              if (result != BorealisUninstallResult::kSuccess) {
+                LOG(ERROR) << "Failed to uninstall borealis";
+                std::move(callback).Run(UninstallResult::kError);
+                return;
+              }
+              std::move(callback).Run(UninstallResult::kSuccess);
+            },
+            std::move(callback)));
+    return;
+  }
 
-  BorealisService::GetForProfile(profile_)->Installer().Uninstall(
-      base::DoNothing());
+  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
+          ->GetRegistration(app_id);
+  if (!registration.has_value()) {
+    LOG(ERROR) << "Tried to uninstall an application that does not exist in "
+                  "the registry";
+    std::move(callback).Run(UninstallResult::kError);
+    return;
+  }
+  base::Optional<int> uninstall_app_id = GetBorealisAppId(registration->Exec());
+  if (!uninstall_app_id.has_value()) {
+    LOG(ERROR) << "Couldn't retrieve the borealis app id from the exec "
+                  "information provided";
+    std::move(callback).Run(UninstallResult::kError);
+    return;
+  }
+  // TODO(174282035): Changeup string usage and finish tests.
+  base::Optional<guest_os::GuestOsRegistryService::Registration> main_app =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
+          ->GetRegistration(kBorealisMainAppId);
+  if (!main_app.has_value()) {
+    LOG(ERROR) << "Failed to retrieve a registration for the Borealis main app";
+    std::move(callback).Run(UninstallResult::kError);
+    return;
+  }
+  std::string prefix;
+  if (!base::Base64Decode(kBorealisUninstallPrefix, &prefix)) {
+    LOG(ERROR) << "Couldn't decode the Borealis uninstall prefix";
+    std::move(callback).Run(UninstallResult::kError);
+    return;
+  }
+  std::string uninstall_string = main_app->DesktopFileId() + prefix +
+                                 base::NumberToString(*uninstall_app_id);
+  borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
+      kBorealisMainAppId, {uninstall_string},
+      base::BindOnce(
+          [](OnUninstalledCallback callback,
+             BorealisAppLauncher::LaunchResult result) {
+            if (result != BorealisAppLauncher::LaunchResult::kSuccess) {
+              LOG(ERROR) << "Failed to uninstall a borealis application";
+              std::move(callback).Run(UninstallResult::kError);
+              return;
+            }
+            std::move(callback).Run(UninstallResult::kSuccess);
+          },
+          std::move(callback)));
 }
 
 }  // namespace borealis
