@@ -326,7 +326,7 @@ bool DoIdentifyingPropertiesMatch(const base::DictionaryValue& new_properties,
     return false;
   }
 
-  return new_identifying.Equals(&old_identifying);
+  return new_identifying == old_identifying;
 }
 
 bool IsLoggableShillProperty(const std::string& key) {

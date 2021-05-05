@@ -331,15 +331,15 @@ namespace {
 // Returns true if all not-null values in |values| are equal to |value|.
 bool AllPresentValuesEqual(const MergeSettingsAndPolicies::ValueParams& values,
                            const base::Value& value) {
-  if (values.user_policy && !value.Equals(values.user_policy))
+  if (values.user_policy && value != *values.user_policy)
     return false;
-  if (values.device_policy && !value.Equals(values.device_policy))
+  if (values.device_policy && value != *values.device_policy)
     return false;
-  if (values.user_setting && !value.Equals(values.user_setting))
+  if (values.user_setting && value != *values.user_setting)
     return false;
-  if (values.shared_setting && !value.Equals(values.shared_setting))
+  if (values.shared_setting && value != *values.shared_setting)
     return false;
-  if (values.active_setting && !value.Equals(values.active_setting))
+  if (values.active_setting && value != *values.active_setting)
     return false;
   return true;
 }

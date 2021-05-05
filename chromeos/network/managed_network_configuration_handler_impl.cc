@@ -533,7 +533,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     policies->per_network_config[guid] = base::WrapUnique(new_entry);
 
     base::DictionaryValue* old_entry = old_per_network_config[guid].get();
-    if (!old_entry || !old_entry->Equals(new_entry))
+    if (!old_entry || *old_entry != *new_entry)
       modified_policies.insert(guid);
   }
 
