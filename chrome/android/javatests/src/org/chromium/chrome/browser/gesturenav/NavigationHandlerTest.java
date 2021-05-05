@@ -21,15 +21,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,6 +56,28 @@ public class NavigationHandlerTest {
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
     private static final int PAGELOAD_TIMEOUT_MS = 4000;
+
+    private static class ActivityStateListener implements ApplicationStatus.ActivityStateListener {
+        private final @ActivityState int mInitState;
+        private @ActivityState int mCurState;
+
+        private ActivityStateListener(@ActivityState int state) {
+            mInitState = mCurState = state;
+        }
+
+        @Override
+        public void onActivityStateChange(Activity activity, int newState) {
+            mCurState = newState;
+        }
+
+        private boolean isUpdated() {
+            return mCurState != mInitState;
+        }
+
+        private @ActivityState int getState() {
+            return mCurState;
+        }
+    }
 
     private EmbeddedTestServer mTestServer;
     private HistoryNavigationLayout mNavigationLayout;
@@ -161,15 +180,18 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1205167")
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
         final Activity activity = mActivityTestRule.getActivity();
+        ActivityStateListener stateListener =
+                new ActivityStateListener(ApplicationStatus.getStateForActivity(activity));
+        ApplicationStatus.registerStateListenerForAllActivities(stateListener);
         swipeFromEdge(LEFT_EDGE);
-        CriteriaHelper.pollUiThread(() -> {
-            int state = ApplicationStatus.getStateForActivity(activity);
-            return state == ActivityState.STOPPED || state == ActivityState.DESTROYED;
-        }, "Chrome should be in background");
+        CriteriaHelper.pollUiThread(stateListener::isUpdated);
+        ApplicationStatus.unregisterActivityStateListener(stateListener);
+        Assert.assertThat(stateListener.getState(),
+                Matchers.isOneOf(
+                        ActivityState.STOPPED, ActivityState.PAUSED, ActivityState.DESTROYED));
     }
 
     @Test
@@ -280,7 +302,6 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1205106")
     public void testEdgeSwipeIsNoopInTabSwitcher() throws TimeoutException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
@@ -289,7 +310,7 @@ public class NavigationHandlerTest {
         Assert.assertTrue("Chrome should stay in tab switcher",
                 mActivityTestRule.getActivity().isInOverviewMode());
         setTabSwitcherModeAndWait(false);
-        Assert.assertEquals("Current page should not change", UrlConstants.RECENT_TABS_URL,
+        Assert.assertEquals("Current page should not change. ", UrlConstants.RECENT_TABS_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
     }
 
@@ -298,26 +319,14 @@ public class NavigationHandlerTest {
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
     private void setTabSwitcherModeAndWait(boolean inSwitcher) throws TimeoutException {
-        CallbackHelper switchHelper = new CallbackHelper();
-        LayoutStateProvider.LayoutStateObserver layoutObserver =
-                new LayoutStateProvider.LayoutStateObserver() {
-                    @Override
-                    public void onFinishedShowing(int layoutType) {
-                        if ((inSwitcher && layoutType == LayoutType.TAB_SWITCHER)
-                                || (!inSwitcher && layoutType == LayoutType.BROWSING)) {
-                            switchHelper.notifyCalled();
-                        }
-                    }
-                };
-
-        LayoutManagerChrome controller = mActivityTestRule.getActivity().getLayoutManager();
-        controller.addObserver(layoutObserver);
-        if (inSwitcher) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> controller.showOverview(false));
-        } else {
-            TestThreadUtils.runOnUiThreadBlocking(() -> controller.hideOverview(false));
-        }
-        switchHelper.waitForCallback(0);
-        controller.removeObserver(layoutObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (inSwitcher) {
+                mActivityTestRule.getActivity().getLayoutManager().showOverview(false);
+            } else {
+                mActivityTestRule.getActivity().getLayoutManager().hideOverview(false);
+            }
+        });
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 }
