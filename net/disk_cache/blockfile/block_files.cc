@@ -384,24 +384,6 @@ void BlockFiles::CloseFiles() {
   block_files_.clear();
 }
 
-void BlockFiles::ReportStats() {
-  DCHECK(thread_checker_->CalledOnValidThread());
-  int used_blocks[kFirstAdditionalBlockFile];
-  int load[kFirstAdditionalBlockFile];
-  for (int i = 0; i < kFirstAdditionalBlockFile; i++) {
-    GetFileStats(i, &used_blocks[i], &load[i]);
-  }
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_0", used_blocks[0]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_1", used_blocks[1]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_2", used_blocks[2]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_3", used_blocks[3]);
-
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_0", load[0], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_1", load[1], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_2", load[2], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_3", load[3], 101);
-}
-
 bool BlockFiles::IsValid(Addr address) {
 #ifdef NDEBUG
   return true;
@@ -676,37 +658,6 @@ bool BlockFiles::FixBlockFileHeader(MappedFile* file) {
 
   header->updating = 0;
   return true;
-}
-
-// We are interested in the total number of blocks used by this file type, and
-// the max number of blocks that we can store (reported as the percentage of
-// used blocks). In order to find out the number of used blocks, we have to
-// substract the empty blocks from the total blocks for each file in the chain.
-void BlockFiles::GetFileStats(int index, int* used_count, int* load) {
-  int max_blocks = 0;
-  *used_count = 0;
-  *load = 0;
-  for (;;) {
-    if (!block_files_[index] && !OpenBlockFile(index))
-      return;
-
-    BlockFileHeader* header =
-        reinterpret_cast<BlockFileHeader*>(block_files_[index]->buffer());
-
-    max_blocks += header->max_entries;
-    int used = header->max_entries;
-    for (int i = 0; i < kMaxNumBlocks; i++) {
-      used -= header->empty[i] * (i + 1);
-      DCHECK_GE(used, 0);
-    }
-    *used_count += used;
-
-    if (!header->next_file)
-      break;
-    index = header->next_file;
-  }
-  if (max_blocks)
-    *load = *used_count * 100 / max_blocks;
 }
 
 base::FilePath BlockFiles::Name(int index) {

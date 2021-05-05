@@ -117,9 +117,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
   // cache is being purged.
   void CloseFiles();
 
-  // Sends UMA stats.
-  void ReportStats();
-
   // Returns true if the blocks pointed by a given address are currently used.
   // This method is only intended for debugging.
   bool IsValid(Addr address);
@@ -146,9 +143,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
 
   // Restores the header of a potentially inconsistent file.
   bool FixBlockFileHeader(MappedFile* file);
-
-  // Retrieves stats for the given file index.
-  void GetFileStats(int index, int* used_count, int* load);
 
   // Returns the filename for a given file index.
   base::FilePath Name(int index);
