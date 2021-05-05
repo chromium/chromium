@@ -1,0 +1,8 @@
+# TODO(crbug.com/1204709) Enable following tests on lacros.
+-*/WaylandWindowTest.SetsPropertiesOnShow/*
+
+# TODO(crbug.com/1204706) Enable following tests on lacros.
+-*/WaylandCursorFactoryTest.RetainOldThemeUntilNewBufferIsAttached/*
+
+# TODO(crbug.com/1204707) Enable following tests on lacros.
+-*/WaylandInputMethodContextTest.*

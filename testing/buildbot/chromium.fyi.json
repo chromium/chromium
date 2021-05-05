@@ -38755,7 +38755,8 @@
       {
         "args": [
           "--board=amd64-generic",
-          "--use-vm"
+          "--use-vm",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/device-lacros.ozone_unittests.filter"
         ],
         "merge": {
           "args": [],
