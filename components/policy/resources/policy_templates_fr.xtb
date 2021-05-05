@@ -280,7 +280,7 @@
 <translation id="1413936351612032792">Transmettre des informations sur l'utilisation des applications Linux</translation>
 <translation id="1417888712677507140">Bloquer les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
 <translation id="1418387035898607074">Ignorer les vérifications de la navigation sécurisée visant à autoriser ou non le téléchargement de fichiers provenant d'une source fiable</translation>
-<translation id="1418968246960170056">Cette règle permet d'établir la liste des sites qui sont automatiquement autorisés à accéder aux appareils sériels USB avec les ID produit et de fournisseur correspondant aux champs <ph name="PRODUCT_ID_FIELD_NAME" /> et <ph name="VENDOR_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle autorise les sites donnés à accéder aux appareils à l'aide d'un ID de fournisseur correspondant au champ <ph name="VENDOR_ID_FIELD_NAME" /> et de n'importe quel ID produit.
+<translation id="1418968246960170056">Cette règle vous permet de lister les sites qui sont automatiquement autorisés à accéder aux appareils série USB avec les ID produit et de fournisseur correspondant aux champs <ph name="PRODUCT_ID_FIELD_NAME" /> et <ph name="VENDOR_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle autorise ces sites à accéder aux appareils à l'aide d'un ID de fournisseur correspondant au champ <ph name="VENDOR_ID_FIELD_NAME" /> et de n'importe quel ID produit.
 
       Si les URL ne sont pas valides, la règle est ignorée. Seule l'origine (schéma, hôte et port) de l'URL est prise en compte.
 
@@ -603,7 +603,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1798559516913615713">Durée de réutilisation des GPO mis en cache</translation>
 <translation id="180130467244315277">Cette règle permet aux administrateurs de configurer l'ordre des langues préférées dans les paramètres de <ph name="PRODUCT_NAME" />.
 
-      La liste apparaîtra dans le même ordre dans la section "Classer les langues selon vos préférences" à l'adresse chrome://settings/languages. Les utilisateurs ne pourront pas supprimer ni réorganiser les langues définies par la règle, mais pourront en ajouter sous celles définies. Les utilisateurs auront un contrôle total de la langue de l'UI du navigateur et des paramètres de traduction/du correcteur orthographique, sauf si d'autres règles s'appliquent.
+      La liste apparaîtra dans le même ordre dans la section "Classer les langues selon vos préférences" dans chrome://settings/languages. Les utilisateurs ne pourront pas supprimer ni réorganiser les langues définies par la règle, mais pourront en ajouter sous celles définies. Les utilisateurs auront un contrôle total de la langue de l'UI du navigateur et des paramètres de traduction/du correcteur orthographique, sauf si d'autres règles s'appliquent.
 
       Si cette règle n'est pas définie, les utilisateurs peuvent manipuler toute la liste des langues préférées.</translation>
 <translation id="1803646570632580723">Liste des applications épinglées à afficher dans le lanceur d'applications</translation>
@@ -2753,7 +2753,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle n'est pas configurée ou qu'elle est activée, les contrôles d'interception des requêtes DNS ont lieu. Si elle est explicitement désactivée, les contrôles n'ont pas lieu.</translation>
 <translation id="4700190441681139987">Interdire à tous les sites d'accéder aux capteurs</translation>
 <translation id="4703402283970867140">Activer le modèle de réduction intelligente de la luminosité pour augmenter le délai d'assombrissement de l'écran</translation>
-<translation id="4704958130749494760">Autoriser automatiquement les sites à se connecter aux appareils sériels USB.</translation>
+<translation id="4704958130749494760">Autoriser automatiquement les sites à se connecter aux appareils série USB.</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
 <translation id="4723122879352880315">Ce paramètre permet d'utiliser les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> pour s'authentifier auprès d'un proxy géré dont l'accès est protégé par l'authentification NTLM.
 
@@ -4229,7 +4229,7 @@ Si vous sélectionnez les options suivantes :
 
       Si vous désactivez cette règle, ou si vous ne la configurez pas, les commandes d'impression génèrent un aperçu avant impression.</translation>
 <translation id="6658245400435704251">Indique le nombre maximal de secondes pendant lesquelles un appareil peut retarder de façon aléatoire le téléchargement d'une mise à jour à partir du moment où celle-ci est disponible sur le serveur. L'appareil peut attendre pendant une certaine partie de ce temps en termes de temps de l'horloge et pendant la partie restante en termes de nombre de recherches de mise à jour. Dans tous les cas, le facteur de dispersion est limité à une quantité de temps constante, de sorte qu'un appareil ne reste jamais bloqué dans l'attente d'une mise à jour.</translation>
-<translation id="6662162847932043943">Cette règle permet d'établir la liste des sites automatiquement autorisés à accéder à tous les ports série disponibles.
+<translation id="6662162847932043943">Cette règle permet de lister les sites automatiquement autorisés à accéder à tous les ports série disponibles.
 
       Si les URL ne sont pas valides, la règle est ignorée. Seule l'origine (schéma, hôte et port) de l'URL est prise en compte.
 
@@ -4510,11 +4510,11 @@ Si vous sélectionnez les options suivantes :
       Si elle est définie sur "<ph name="BR_UNDER_USER_CONTROL" />", les utilisateurs sont invités à utiliser le service de sauvegarde et restauration. S'ils activent ce service, les données des applications Android sont importées sur les serveurs de sauvegarde Android, puis restaurées lors de la réinstallation des applications compatibles.
 
       Les utilisateurs peuvent activer ou désactiver le service de sauvegarde et de restauration, après la configuration initiale.</translation>
-<translation id="6981537713216575858">Cette règle permet d'établir la liste des formats d'URL qui indiquent les sites automatiquement autorisés à accéder à un appareil USB à l'aide des ID produit et de fournisseur indiqués. Pour que la règle soit valide, les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> doivent être renseignés pour chaque élément de la liste. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle ayant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
+<translation id="6981537713216575858">Cette règle vous permet de lister les formats d'URL qui indiquent les sites automatiquement autorisés à accéder à un appareil USB à l'aide des ID produit et de fournisseur indiqués. Pour que la règle soit valide, les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> doivent être renseignés pour chaque élément de la liste. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et un champ <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur indiqué. Une règle ayant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
 
       Le modèle d'autorisations USB autorisera l'URL spécifiée à accéder à l'appareil USB en tant qu'origine de niveau supérieur. Si les cadres intégrés doivent accéder aux appareils USB, l'en-tête <ph name="FEATURE_POLICY_HEADER_NAME" /> "usb" doit être utilisé pour autoriser l'accès. Si l'URL n'est pas valide, la règle est ignorée.
 
-      Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois l'URL à l'origine de la requête et l'URL d'intégration. Il est obsolète et seulement possible pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors la seconde obtiendra l'autorisation en tant qu'origine de niveau supérieur et la première sera totalement ignorée.
+      Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois l'URL à l'origine de la requête et l'URL d'intégration. Il est obsolète et n'est plus utilisé que pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors la seconde obtiendra l'autorisation en tant qu'origine de niveau supérieur et la première sera totalement ignorée.
 
       Cette règle remplace <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.
 

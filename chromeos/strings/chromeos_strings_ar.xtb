@@ -213,7 +213,7 @@
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
-<translation id="5457599981699367932">تصفَّح كزائر</translation>
+<translation id="5457599981699367932">التصفّح كضيف</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}many{تتبقّى {0} محاولة.}other{تتبقّى {0} محاولة.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>

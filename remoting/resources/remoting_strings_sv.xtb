@@ -173,7 +173,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="858006550102277544">Kommentar</translation>
 <translation id="8743328882720071828">Vill du tillåta att <ph name="CLIENT_USERNAME" /> ser och styr din dator?</translation>
 <translation id="8747048596626351634">Sessionen kraschade eller gick inte att starta. Om ~/.chrome-remote-desktop-session finns på fjärrdatorn kontrollerar du att det som startas med den filen är en process som körs under lång tid i förgrunden, som en skrivbordsmiljö eller fönsterhanterare.</translation>
-<translation id="8804164990146287819">Sekretesspolicy</translation>
+<translation id="8804164990146287819">Integritetspolicy</translation>
 <translation id="8906511416443321782">Mikrofonåtkomst behövs för att spela in ljud och streama det till Chrome Remote Desktop-klienten.</translation>
 <translation id="9111855907838866522">Du är ansluten till fjärrenheten. Tryck på skärmen med fyra fingrar om du vill öppna menyn.</translation>
 <translation id="9126115402994542723">Be inte om en pinkod igen när du ansluter till den här värden från den här enheten.</translation>

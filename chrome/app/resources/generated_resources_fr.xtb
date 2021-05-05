@@ -3783,7 +3783,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="520621735928254154">Erreur d'importation du certificat</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Le mot de passe compromis a bien été changé. Vous avez # mot de passe compromis supplémentaire. Chrome vous recommande de vérifier ce mot de passe maintenant.}one{Le mot de passe compromis a bien été changé. Vous avez # mot de passe compromis supplémentaire. Chrome vous recommande de vérifier ce mot de passe maintenant.}other{Le mot de passe compromis a bien été changé. Vous avez # mots de passe compromis supplémentaires. Chrome vous recommande de vérifier ces mots de passe maintenant.}}</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
-<translation id="520902706163766447">Active une bulle pop-up dans la partie supérieure de l'UI de Chrome pour lancer une recherche dans les onglets ouverts.</translation>
+<translation id="520902706163766447">Active une bulle pop-up dans la partie supérieure de l'UI de Chrome pour rechercher dans les onglets ouverts.</translation>
 <translation id="5209320130288484488">Aucun appareil trouvé.</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5213114823401215820">Rouvrir le groupe fermé</translation>
@@ -6869,7 +6869,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8677212948402625567">Tout réduire...</translation>
 <translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="8678582529642151449">Onglets non réduits en longueur</translation>
+<translation id="8678582529642151449">Onglets non réduits</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous que cette application soit lancée ?</translation>
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
 <translation id="8681614230122836773">Chrome a détecté un logiciel malveillant sur votre ordinateur</translation>
