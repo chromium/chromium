@@ -562,7 +562,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAtStartup) {
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   ClearPrimaryAccount(identity_manager());
 
-  SetPrimaryAccount(identity_manager(), kTestEmail);
+  SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
   auto event = identity_manager_observer()->GetPrimaryAccountChangedEvent();
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
             event.GetEventTypeFor(ConsentLevel::kSync));
@@ -598,7 +598,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
   ClearPrimaryAccount(identity_manager());
   // First ensure that the user is signed in from the POV of the
   // IdentityManager.
-  SetPrimaryAccount(identity_manager(), kTestEmail);
+  SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
 
   // Sign the user out and check that the IdentityManager responds
   // appropriately.
@@ -642,7 +642,7 @@ TEST_F(IdentityManagerTest,
   ClearPrimaryAccount(identity_manager());
   // First ensure that the user is signed in from the POV of the
   // IdentityManager.
-  SetPrimaryAccount(identity_manager(), kTestEmail);
+  SetPrimaryAccount(identity_manager(), kTestEmail, ConsentLevel::kSync);
 
   identity_manager()->account_fetcher_service_->EnableAccountRemovalForTest();
   // Revoke the primary's account credentials from the token service and

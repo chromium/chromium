@@ -376,12 +376,14 @@ void IdentityTestEnvironment::WaitForRefreshTokensLoaded() {
 
 CoreAccountInfo IdentityTestEnvironment::SetPrimaryAccount(
     const std::string& email) {
-  return signin::SetPrimaryAccount(identity_manager(), email);
+  return signin::SetPrimaryAccount(identity_manager(), email,
+                                   signin::ConsentLevel::kSync);
 }
 
 CoreAccountInfo IdentityTestEnvironment::SetUnconsentedPrimaryAccount(
     const std::string& email) {
-  return signin::SetUnconsentedPrimaryAccount(identity_manager(), email);
+  return signin::SetPrimaryAccount(identity_manager(), email,
+                                   signin::ConsentLevel::kSignin);
 }
 
 void IdentityTestEnvironment::SetRefreshTokenForPrimaryAccount() {

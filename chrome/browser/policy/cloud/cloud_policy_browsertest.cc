@@ -226,7 +226,8 @@ class CloudPolicyTest : public InProcessBrowserTest,
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     ASSERT_TRUE(identity_manager);
-    signin::SetPrimaryAccount(identity_manager, GetTestUser());
+    signin::SetPrimaryAccount(identity_manager, GetTestUser(),
+                              signin::ConsentLevel::kSync);
 
     UserCloudPolicyManager* policy_manager =
         browser()->profile()->GetUserCloudPolicyManager();

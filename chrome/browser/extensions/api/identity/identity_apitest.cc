@@ -463,7 +463,8 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
         ASSERT_FALSE(
             identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
         signin::MakeAccountAvailable(identity_manager, "primary@example.com");
-        signin::SetPrimaryAccount(identity_manager, "primary@example.com");
+        signin::SetPrimaryAccount(identity_manager, "primary@example.com",
+                                  signin::ConsentLevel::kSync);
       } else {
         FixOrAddSecondaryAccount();
       }

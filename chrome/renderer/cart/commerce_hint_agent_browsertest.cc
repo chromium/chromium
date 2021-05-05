@@ -162,7 +162,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     service_ = CartServiceFactory::GetForProfile(profile);
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     ASSERT_TRUE(identity_manager);
-    signin::SetPrimaryAccount(identity_manager, "user@gmail.com");
+    signin::SetPrimaryAccount(identity_manager, "user@gmail.com",
+                              signin::ConsentLevel::kSync);
 
     // This is necessary to test non-localhost domains. See |NavigateToURL|.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -451,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kEmptyExpected);
 
-  signin::SetPrimaryAccount(identity_manager, "user@gmail.com");
+  signin::SetPrimaryAccount(identity_manager, "user@gmail.com",
+                            signin::ConsentLevel::kSync);
   NavigateToURL("https://www.guitarcenter.com/");
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kExpectedExampleFallbackCart);

@@ -357,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile_);
-  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz");
+  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz",
+                            signin::ConsentLevel::kSync);
 
   engine_->Enable(kEngineIdUs);
 
@@ -399,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile_);
-  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz");
+  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz",
+                            signin::ConsentLevel::kSync);
 
   engine_->Enable(kEngineIdUs);
 

@@ -173,9 +173,10 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
             https_server(), kChallengePath);
     https_server()->StartAcceptingConnections();
 
-    account_id_ = signin::SetUnconsentedPrimaryAccount(identity_manager(),
-                                                       "alice@gmail.com")
-                      .account_id;
+    account_id_ =
+        signin::SetPrimaryAccount(identity_manager(), "alice@gmail.com",
+                                  signin::ConsentLevel::kSignin)
+            .account_id;
 
     reauth_result_loop_ = std::make_unique<base::RunLoop>();
     InProcessBrowserTest::SetUpOnMainThread();
