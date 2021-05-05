@@ -2013,10 +2013,9 @@ public class StartSurfaceTest {
     }
 
     private void waitForOverviewVisible() {
-        int callCount = mLayoutChangedCallbackHelper.getCallCount();
         if (mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER) return;
         try {
-            mLayoutChangedCallbackHelper.waitForCallback(callCount);
+            mLayoutChangedCallbackHelper.waitForNext();
         } catch (TimeoutException ex) {
             assert false : "Timeout waiting for browser to enter tab switcher.";
         }
