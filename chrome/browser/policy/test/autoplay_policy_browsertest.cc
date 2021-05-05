@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
 }
 
 // Flaky on Linux. See: crbug.com/1172978.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_AutoplayDeniedAllowedWithURL DISABLED_AutoplayDeniedAllowedWithURL
 #else
 #define MAYBE_AutoplayDeniedAllowedWithURL AutoplayDeniedAllowedWithURL
