@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, History) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/history")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcess) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, CrossProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LoadExtension(test_data_dir_.AppendASCII("webnavigation").AppendASCII("app"));
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcess) {
       "empty.html");
   call_script_user_gesture.set_has_user_gesture(true);
 
-  ASSERT_TRUE(RunExtensionTest("webnavigation/crossProcess")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/crossProcess")) << message_;
 }
 
 // crbug.com/708139.
@@ -540,7 +540,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, DISABLED_CrossProcessFragment) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcessHistory) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
+                       CrossProcessHistory) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // See crossProcessHistory/e.html.
@@ -558,14 +559,14 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcessHistory) {
       browser(), embedded_test_server()->GetURL("/test6"), "updateHistory()",
       "empty.html");
 
-  ASSERT_TRUE(RunExtensionTest("webnavigation/crossProcessHistory"))
-      << message_;
+  ASSERT_TRUE(RunTest("webnavigation/crossProcessHistory")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcessIframe) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
+                       CrossProcessIframe) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/crossProcessIframe")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/crossProcessIframe")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, PendingDeletion) {
