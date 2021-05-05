@@ -91,6 +91,7 @@ namespace content {
 class BrowserMainParts;
 class BrowserOnlineStateObserver;
 class BrowserThreadImpl;
+class FieldTrialSynchronizer;
 class MediaKeysListenerManagerImpl;
 class MediaStreamManager;
 class SaveFileManager;
@@ -349,6 +350,12 @@ class CONTENT_EXPORT BrowserMainLoop {
   // Members initialized in |BrowserThreadsStarted()| --------------------------
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
   std::unique_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
+
+  // The FieldTrialSynchronizer tells child processes when a trial gets
+  // activated. This is mostly an optimization, as a consequence if renderers
+  // know a trial is already active they don't need to send anything to the
+  // browser.
+  scoped_refptr<FieldTrialSynchronizer> field_trial_synchronizer_;
 
   // |user_input_monitor_| has to outlive |audio_manager_|, so declared first.
   std::unique_ptr<media::UserInputMonitor> user_input_monitor_;
