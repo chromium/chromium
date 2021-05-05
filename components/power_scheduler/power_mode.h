@@ -34,6 +34,9 @@ enum class PowerMode {
   // A surface rendered by the process is animating and producing frames.
   kAnimation,
 
+  // Both kLoading + kAnimation modes are active.
+  kLoadingAnimation,
+
   // The process is responding to user input.
   kResponse,
 

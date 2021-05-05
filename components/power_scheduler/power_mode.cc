@@ -22,6 +22,8 @@ const char* PowerModeToString(PowerMode mode) {
       return "Loading";
     case PowerMode::kAnimation:
       return "Animation";
+    case PowerMode::kLoadingAnimation:
+      return "LoadingAnimation";
     case PowerMode::kResponse:
       return "Response";
     case PowerMode::kNonWebActivity:

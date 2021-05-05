@@ -308,6 +308,7 @@ void PowerModeArbiter::OnVotesUpdated() {
 PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
   PowerMode mode = PowerMode::kIdle;
   bool is_audible = false;
+  bool is_loading = false;
 
   for (const auto& voter_and_vote : votes_) {
     PowerMode vote = voter_and_vote.second.mode();
@@ -315,11 +316,17 @@ PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
       mode = vote;
     if (vote == PowerMode::kAudible)
       is_audible = true;
+    if (vote == PowerMode::kLoading)
+      is_loading = true;
   }
 
   // In background, audible overrides.
   if (mode == PowerMode::kBackground && is_audible)
     return PowerMode::kAudible;
+
+  // Break out loading while concurrently animating into a separate mode.
+  if (mode == PowerMode::kAnimation && is_loading)
+    return PowerMode::kLoadingAnimation;
 
   return mode;
 }

@@ -101,8 +101,9 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kAnimation);
   vote_and_expect(PowerMode::kAnimation, PowerMode::kAudible,
                   PowerMode::kAnimation);
+  // Animation while loading breaks out into a separate mode.
   vote_and_expect(PowerMode::kAnimation, PowerMode::kLoading,
-                  PowerMode::kAnimation);
+                  PowerMode::kLoadingAnimation);
 
   // Loading trumps remaining modes.
   vote_and_expect(PowerMode::kLoading, PowerMode::kIdle, PowerMode::kLoading);
