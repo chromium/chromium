@@ -450,7 +450,7 @@ Status IsElementFocused(
   if (status.IsError())
     return status;
   std::unique_ptr<base::Value> element_dict(CreateElement(element_id));
-  *is_focused = result->Equals(element_dict.get());
+  *is_focused = *result == *element_dict;
   return Status(kOk);
 }
 
