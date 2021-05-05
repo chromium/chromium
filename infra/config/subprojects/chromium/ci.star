@@ -1804,6 +1804,7 @@ ci.chromiumos_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromiumos_builder(

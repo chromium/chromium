@@ -811,6 +811,7 @@ try_.chromium_chromiumos_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_chromiumos_builder(
