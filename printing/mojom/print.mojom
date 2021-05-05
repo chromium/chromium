@@ -97,3 +97,32 @@ enum MarginType {
   kPrintableAreaMargins,
   kCustomMargins,
 };
+
+// Allowed printing modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum ColorModeRestriction {
+  [Default] kUnset = 0x0,
+  kMonochrome = 0x1,
+  kColor = 0x2,
+};
+
+// Allowed duplex modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum DuplexModeRestriction {
+  [Default] kUnset = 0x0,
+  kSimplex = 0x1,
+  kLongEdge = 0x2,
+  kShortEdge = 0x4,
+  kDuplex = 0x6,
+};
+
+// Allowed PIN printing modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum PinModeRestriction {
+  [Default] kUnset = 0,
+  kPin = 1,
+  kNoPin = 2,
+};

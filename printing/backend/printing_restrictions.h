@@ -8,34 +8,24 @@
 #include "base/component_export.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Allowed printing modes as a bitmask.
 // This is used in pref file and should never change.
-enum class ColorModeRestriction {
-  kUnset = 0x0,
-  kMonochrome = 0x1,
-  kColor = 0x2,
-};
+using ColorModeRestriction = mojom::ColorModeRestriction;
 
 // Allowed duplex modes as a bitmask.
 // This is used in pref file and should never change.
-enum class DuplexModeRestriction {
-  kUnset = 0x0,
-  kSimplex = 0x1,
-  kLongEdge = 0x2,
-  kShortEdge = 0x4,
-  kDuplex = 0x2 | 0x4,
-};
+using DuplexModeRestriction = mojom::DuplexModeRestriction;
 
 // Allowed PIN printing modes.
 // This is used in pref file and should never change.
-enum class PinModeRestriction {
-  kUnset = 0,
-  kPin = 1,
-  kNoPin = 2,
-};
+using PinModeRestriction = mojom::PinModeRestriction;
 
 // Dictionary key for printing policies.
 // Must coincide with the name of field in `print_preview.Policies` in
