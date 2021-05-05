@@ -36,14 +36,14 @@ class ContentDirectoryLoaderFactory
   // method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  ContentDirectoryLoaderFactory(const ContentDirectoryLoaderFactory&) = delete;
+  ContentDirectoryLoaderFactory& operator=(
+      const ContentDirectoryLoaderFactory&) = delete;
+
  private:
   explicit ContentDirectoryLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
   ~ContentDirectoryLoaderFactory() override;
-
-  ContentDirectoryLoaderFactory(const ContentDirectoryLoaderFactory&) = delete;
-  ContentDirectoryLoaderFactory& operator=(
-      const ContentDirectoryLoaderFactory&) = delete;
 
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(

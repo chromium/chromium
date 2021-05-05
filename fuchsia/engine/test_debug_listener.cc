@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TestDebugListener::TestDebugListener() {}
+TestDebugListener::TestDebugListener() = default;
 TestDebugListener::~TestDebugListener() = default;
 
 void TestDebugListener::DestroyListener(TestPerContextListener* listener) {

@@ -43,8 +43,7 @@ std::string NormalizeConsoleLogMessage(base::StringPiece original) {
 class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationLoggingTest()
-      : WebEngineIntegrationTestBase(),
-        isolated_archivist_service_dir_(
+      : isolated_archivist_service_dir_(
             StartIsolatedArchivist(archivist_controller_.NewRequest())) {
     // Redirect the LogSink service to an isolated archivist instance.
     zx_status_t status = filtered_service_directory()

@@ -349,7 +349,7 @@ ContentDirectoryLoaderFactory::ContentDirectoryLoaderFactory(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
-ContentDirectoryLoaderFactory::~ContentDirectoryLoaderFactory() {}
+ContentDirectoryLoaderFactory::~ContentDirectoryLoaderFactory() = default;
 
 void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,

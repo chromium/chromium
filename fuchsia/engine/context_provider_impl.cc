@@ -132,9 +132,7 @@ bool SetContentDirectoriesArgsAndLaunchInfo(
   DCHECK(launch_info->flat_namespace);
   DCHECK(!directories.empty());
 
-  for (size_t i = 0; i < directories.size(); ++i) {
-    fuchsia::web::ContentDirectoryProvider& directory = directories[i];
-
+  for (auto& directory : directories) {
     if (!IsValidContentDirectoryName(directory.name())) {
       DLOG(ERROR) << "Invalid directory name: " << directory.name();
       return false;

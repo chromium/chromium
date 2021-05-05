@@ -53,7 +53,7 @@ zx_handle_t GetKoidFromEventPair(const zx::eventpair& object) {
 class MockVirtualKeyboardController : public virtualkeyboard::Controller {
  public:
   MockVirtualKeyboardController() : binding_(this) {}
-  ~MockVirtualKeyboardController() override {}
+  ~MockVirtualKeyboardController() override = default;
 
   MockVirtualKeyboardController(MockVirtualKeyboardController&) = delete;
   MockVirtualKeyboardController operator=(MockVirtualKeyboardController&) =

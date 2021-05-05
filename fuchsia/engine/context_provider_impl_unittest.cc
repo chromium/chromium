@@ -111,9 +111,9 @@ class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
   using CreateComponentCallback =
       base::OnceCallback<void(const base::CommandLine&)>;
 
-  FakeSysLauncher(fuchsia::sys::Launcher* real_launcher)
+  explicit FakeSysLauncher(fuchsia::sys::Launcher* real_launcher)
       : real_launcher_(real_launcher) {}
-  ~FakeSysLauncher() final {}
+  ~FakeSysLauncher() final = default;
 
   void set_create_component_callback(CreateComponentCallback callback) {
     create_component_callback_ = std::move(callback);

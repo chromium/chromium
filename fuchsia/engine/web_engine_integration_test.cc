@@ -34,7 +34,7 @@ constexpr char kInvalidUserAgentVersion[] = "dev/12345";
 // Starts a WebEngine instance before running the test.
 class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
  protected:
-  WebEngineIntegrationTest() : WebEngineIntegrationTestBase() {}
+  WebEngineIntegrationTest() = default;
 
   void SetUp() override {
     WebEngineIntegrationTestBase::SetUp();
@@ -50,8 +50,7 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
 class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
  protected:
   WebEngineIntegrationMediaTest()
-      : WebEngineIntegrationTest(),
-        fake_audio_consumer_service_(filtered_service_directory()
+      : fake_audio_consumer_service_(filtered_service_directory()
                                          .outgoing_directory()
                                          ->GetOrCreateDirectory("svc")) {}
 
@@ -468,7 +467,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 // starting it.
 class WebEngineIntegrationCameraTest : public WebEngineIntegrationTestBase {
  protected:
-  WebEngineIntegrationCameraTest() : WebEngineIntegrationTestBase() {}
+  WebEngineIntegrationCameraTest() = default;
 
   void RunCameraTest(bool grant_permission);
 };

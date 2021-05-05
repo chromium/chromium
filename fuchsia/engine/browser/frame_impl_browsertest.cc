@@ -117,7 +117,7 @@ std::string StringFromMemBufferOrDie(const fuchsia::mem::Buffer& buffer) {
 class FrameImplTest : public FrameImplTestBase {
  public:
   FrameImplTest() = default;
-  ~FrameImplTest() = default;
+  ~FrameImplTest() override = default;
 
   FrameImplTest(const FrameImplTest&) = delete;
   FrameImplTest& operator=(const FrameImplTest&) = delete;
@@ -130,7 +130,7 @@ class FrameImplTest : public FrameImplTestBase {
   // TODO(crbug.com/1155378): Remove |navigation_listener_| and use the parent's
   // implementation of this method after updating all tests to use the
   // appropriate base.
-  fuchsia::web::FramePtr CreateFrame() {
+  fuchsia::web::FramePtr CreateFrame() override {
     return WebEngineBrowserTest::CreateFrame(&navigation_listener_);
   }
 
