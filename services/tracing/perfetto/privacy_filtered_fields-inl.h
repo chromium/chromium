@@ -356,7 +356,7 @@ constexpr int kHistogramRuleIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kHistogramRule = {kHistogramRuleIndices, nullptr};
 
 // Proto Message: NamedRule
-constexpr int kNamedRuleIndices[] = {1, -1};
+constexpr int kNamedRuleIndices[] = {1, 2, -1};
 constexpr MessageInfo kNamedRule = {kNamedRuleIndices, nullptr};
 
 // Proto Message: TriggerRule
