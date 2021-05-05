@@ -433,12 +433,12 @@ AnimationTimeDelta IterationElapsedTime(const AnimationEffect& effect,
 }
 
 CSSScrollTimeline* CreateCSSScrollTimeline(
-    Element* element,
+    Document& document,
     CSSScrollTimeline::Options&& options) {
   if (!options.IsValid())
     return nullptr;
-  auto* scroll_timeline = MakeGarbageCollected<CSSScrollTimeline>(
-      &element->GetDocument(), std::move(options));
+  auto* scroll_timeline =
+      MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
   // It's is not allowed for a style resolve to create timelines that
   // needs timing updates (i.e. AnimationTimeline::NeedsAnimationTimingUpdate()
   // must return false). Servicing animations after creation preserves this
@@ -471,7 +471,7 @@ AnimationTimeline* ComputeTimeline(Element* element,
     return nullptr;
   }
   if (rule) {
-    CSSScrollTimeline::Options options(element, *rule);
+    CSSScrollTimeline::Options options(document, *rule);
 
     const AtomicString& name = timeline_name.GetName().GetValue();
     // When multiple animations refer to the same @scroll-timeline, the same
@@ -486,7 +486,8 @@ AnimationTimeline* ComputeTimeline(Element* element,
       if (timeline->Matches(options))
         return existing_timeline;
     }
-    if (auto* timeline = CreateCSSScrollTimeline(element, std::move(options))) {
+    if (auto* timeline =
+            CreateCSSScrollTimeline(document, std::move(options))) {
       document.GetDocumentAnimations().CacheCSSScrollTimeline(*timeline);
       return timeline;
     }
