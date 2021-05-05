@@ -148,6 +148,10 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     return handler_->GetESimProfiles();
   }
 
+  bool HasAutoRefreshedEuicc(int euicc_num) {
+    return handler_->HasRefreshedProfilesForEuicc(CreateTestEid(euicc_num));
+  }
+
   size_t NumObserverEvents() const { return observer_.num_updates(); }
 
   std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellularScanning() {
@@ -450,12 +454,21 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
   EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
 
+  // Set device prefs; a new auto-refresh should have started but not yet
+  // completed.
   SetDevicePrefs();
+  euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
+  EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
+  EXPECT_FALSE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
+
+  base::RunLoop().RunUntilIdle();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
   EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
             euicc_paths_from_prefs.GetList()[0].GetString());
+  EXPECT_TRUE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
 }
 
 TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {

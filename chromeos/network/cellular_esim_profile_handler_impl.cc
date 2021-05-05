@@ -4,6 +4,7 @@
 
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
 
+#include <sstream>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -56,7 +57,7 @@ void CellularESimProfileHandlerImpl::DeviceListChanged() {
   if (!device_prefs_)
     return;
 
-  RefreshEuiccsIfNecessary();
+  AutoRefreshEuiccsIfNecessary();
 }
 
 void CellularESimProfileHandlerImpl::InitInternal() {
@@ -96,6 +97,24 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   return profiles;
 }
 
+bool CellularESimProfileHandlerImpl::HasRefreshedProfilesForEuicc(
+    const std::string& eid) {
+  base::flat_set<std::string> euicc_paths =
+      GetAutoRefreshedEuiccPathsFromPrefs();
+
+  for (const auto& path : euicc_paths) {
+    HermesEuiccClient::Properties* euicc_properties =
+        HermesEuiccClient::Get()->GetProperties(dbus::ObjectPath(path));
+    if (!euicc_properties)
+      continue;
+
+    if (eid == euicc_properties->eid().value())
+      return true;
+  }
+
+  return false;
+}
+
 void CellularESimProfileHandlerImpl::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
   OnHermesPropertiesUpdated();
@@ -105,62 +124,74 @@ void CellularESimProfileHandlerImpl::OnHermesPropertiesUpdated() {
   if (!device_prefs_)
     return;
 
-  RefreshEuiccsIfNecessary();
+  AutoRefreshEuiccsIfNecessary();
   UpdateProfilesFromHermes();
 }
 
-void CellularESimProfileHandlerImpl::RefreshEuiccsIfNecessary() {
+void CellularESimProfileHandlerImpl::AutoRefreshEuiccsIfNecessary() {
   if (!CellularDeviceExists())
     return;
 
   base::flat_set<std::string> euicc_paths_from_hermes =
       GetEuiccPathsFromHermes();
-  base::flat_set<std::string> euicc_paths_from_prefs = GetEuiccPathsFromPrefs();
+  base::flat_set<std::string> auto_refreshed_euicc_paths =
+      GetAutoRefreshedEuiccPaths();
 
-  // If the paths in prefs and Hermes match, we have already tried refreshing
-  // them both, and there is nothing else to do.
-  if (euicc_paths_from_hermes == euicc_paths_from_prefs)
-    return;
-
-  base::flat_set<std::string> paths_in_hermes_but_not_prefs;
-  for (const auto& hermes_path : euicc_paths_from_hermes) {
-    if (!base::Contains(euicc_paths_from_prefs, hermes_path))
-      paths_in_hermes_but_not_prefs.insert(hermes_path);
+  base::flat_set<std::string> paths_needing_auto_refresh;
+  for (const auto& euicc_path : euicc_paths_from_hermes) {
+    if (!base::Contains(auto_refreshed_euicc_paths, euicc_path))
+      paths_needing_auto_refresh.insert(euicc_path);
   }
 
   // We only need to request profiles if we see a new EUICC from Hermes that we
   // have not yet seen before. If no such EUICCs exist, return early.
-  if (paths_in_hermes_but_not_prefs.empty())
+  if (paths_needing_auto_refresh.empty())
     return;
 
-  // If there is more than one EUICC, log a warning. This configuration is not
-  // officially supported, so this may be helpful in feedback reports.
-  if (paths_in_hermes_but_not_prefs.size() > 1u)
-    NET_LOG(ERROR) << "Attempting to refresh profiles from multiple EUICCs";
+  StartAutoRefresh(paths_needing_auto_refresh);
+}
 
-  // Combine both sets together and store them to prefs to ensure that we do not
-  // need to refresh again for the same EUICCs.
-  base::flat_set<std::string> all_paths;
-  all_paths.insert(euicc_paths_from_prefs.begin(),
-                   euicc_paths_from_prefs.end());
-  all_paths.insert(euicc_paths_from_hermes.begin(),
-                   euicc_paths_from_hermes.end());
-  StoreEuiccPathsToPrefs(all_paths);
+void CellularESimProfileHandlerImpl::StartAutoRefresh(
+    const base::flat_set<std::string>& euicc_paths) {
+  paths_pending_auto_refresh_.insert(euicc_paths.begin(), euicc_paths.end());
+
+  // If there is more than one EUICC, log an error. This configuration is not
+  // officially supported, so this log may be helpful in feedback reports.
+  if (euicc_paths.size() > 1u)
+    NET_LOG(ERROR) << "Attempting to refresh profiles from multiple EUICCs";
 
   // Refresh profiles from the unknown EUICCs. Note that this will internally
   // start an inhibit operation, temporarily blocking the user from changing
   // cellular settings. This operation is only expected to occur when the device
   // originally boots or after a powerwash.
-  for (const auto& path : paths_in_hermes_but_not_prefs) {
+  for (const auto& path : euicc_paths) {
     NET_LOG(EVENT) << "Found new EUICC whose profiles have not yet been "
                    << "refreshsed. Refreshing profile list for " << path;
-    RefreshProfileList(dbus::ObjectPath(path), base::DoNothing());
+    RefreshProfileList(
+        dbus::ObjectPath(path),
+        base::BindOnce(
+            &CellularESimProfileHandlerImpl::OnAutoRefreshEuiccComplete,
+            weak_ptr_factory_.GetWeakPtr(), path));
   }
 }
 
 base::flat_set<std::string>
-CellularESimProfileHandlerImpl::GetEuiccPathsFromPrefs() const {
+CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPaths() const {
+  // Add all paths stored in prefs.
+  base::flat_set<std::string> euicc_paths =
+      GetAutoRefreshedEuiccPathsFromPrefs();
+
+  // Add paths which are currently pending a refresh.
+  euicc_paths.insert(paths_pending_auto_refresh_.begin(),
+                     paths_pending_auto_refresh_.end());
+
+  return euicc_paths;
+}
+
+base::flat_set<std::string>
+CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
+
   const base::ListValue* euicc_paths_from_prefs =
       device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
   if (!euicc_paths_from_prefs) {
@@ -168,24 +199,46 @@ CellularESimProfileHandlerImpl::GetEuiccPathsFromPrefs() const {
     return {};
   }
 
-  base::flat_set<std::string> euicc_paths_from_prefs_set;
+  base::flat_set<std::string> euicc_paths;
   for (const auto& euicc : *euicc_paths_from_prefs) {
     if (!euicc.is_string()) {
       NET_LOG(ERROR) << "Non-string EUICC path: " << euicc;
       continue;
     }
-    euicc_paths_from_prefs_set.insert(euicc.GetString());
+    euicc_paths.insert(euicc.GetString());
   }
-  return euicc_paths_from_prefs_set;
+  return euicc_paths;
 }
 
-void CellularESimProfileHandlerImpl::StoreEuiccPathsToPrefs(
-    const base::flat_set<std::string>& paths) {
+void CellularESimProfileHandlerImpl::OnAutoRefreshEuiccComplete(
+    const std::string& path,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  paths_pending_auto_refresh_.erase(path);
+
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Auto-refresh failed due to inhibit error. Path: "
+                   << path;
+    return;
+  }
+
+  NET_LOG(EVENT) << "Finished auto-refresh for path: " << path;
+  AddNewlyRefreshedEuiccPathToPrefs(path);
+}
+
+void CellularESimProfileHandlerImpl::AddNewlyRefreshedEuiccPathToPrefs(
+    const std::string& new_path) {
   DCHECK(device_prefs_);
 
+  base::flat_set<std::string> auto_refreshed_euicc_paths =
+      GetAutoRefreshedEuiccPathsFromPrefs();
+
+  // Keep all paths which were already in prefs.
   base::Value euicc_paths(base::Value::Type::LIST);
-  for (const auto& path : paths)
+  for (const auto& path : auto_refreshed_euicc_paths)
     euicc_paths.Append(path);
+
+  // Add new path.
+  euicc_paths.Append(new_path);
 
   device_prefs_->Set(prefs::kESimRefreshedEuiccs, std::move(euicc_paths));
 }
@@ -219,13 +272,20 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   if (profiles_from_hermes == profiles_before_fetch)
     return;
 
-  NET_LOG(EVENT) << "New set of eSIM profiles have been fetched from Hermes";
+  std::stringstream ss;
+  ss << "New set of eSIM profiles have been fetched from Hermes: ";
 
   // Store the updated list of profiles in prefs.
   base::Value list(base::Value::Type::LIST);
-  for (const auto& profile : profiles_from_hermes)
+  for (const auto& profile : profiles_from_hermes) {
     list.Append(profile.ToDictionaryValue());
+    ss << "{iccid: " << profile.iccid() << ", eid: " << profile.eid() << "}, ";
+  }
   device_prefs_->Set(prefs::kESimProfiles, std::move(list));
+
+  if (profiles_from_hermes.empty())
+    ss << "<empty>";
+  NET_LOG(EVENT) << ss.str();
 
   network_state_handler()->SyncStubCellularNetworks();
   NotifyESimProfileListUpdated();

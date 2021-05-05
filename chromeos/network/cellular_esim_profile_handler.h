@@ -68,6 +68,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   // (e.g., if ModemManager is currently pointed to a pSIM slot).
   virtual std::vector<CellularESimProfile> GetESimProfiles() = 0;
 
+  // Returns whether profiles for the EUICC with the given EID have been
+  // refreshsed. If this function returns true, any known eSIM profiles for the
+  // associated EUICC should be returned by GetESimProfiles().
+  virtual bool HasRefreshedProfilesForEuicc(const std::string& eid) = 0;
+
   virtual void SetDevicePrefs(PrefService* device_prefs) = 0;
 
   void AddObserver(Observer* observer);

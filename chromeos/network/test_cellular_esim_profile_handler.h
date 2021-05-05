@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_NETWORK_TEST_CELLULAR_ESIM_PROFILE_HANDLER_H_
 #define CHROMEOS_NETWORK_TEST_CELLULAR_ESIM_PROFILE_HANDLER_H_
 
+#include <string>
+
+#include "base/containers/flat_set.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 
 namespace chromeos {
@@ -16,13 +19,18 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
   TestCellularESimProfileHandler();
   ~TestCellularESimProfileHandler() override;
 
+  void SetHasRefreshedProfilesForEuicc(const std::string& eid,
+                                       bool has_refreshed);
+
   // CellularESimProfileHandler:
   std::vector<CellularESimProfile> GetESimProfiles() override;
+  bool HasRefreshedProfilesForEuicc(const std::string& eid) override;
   void SetDevicePrefs(PrefService* device_prefs) override;
   void OnHermesPropertiesUpdated() override;
 
  private:
   std::vector<CellularESimProfile> esim_profile_states_;
+  base::flat_set<std::string> refreshed_eids_;
 };
 
 }  // namespace chromeos
