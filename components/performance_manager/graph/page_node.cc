@@ -13,8 +13,6 @@ const char* PageNode::ToString(PageNode::EmbeddingType embedding_type) {
   switch (embedding_type) {
     case PageNode::EmbeddingType::kInvalid:
       return "kInvalid";
-    case PageNode::EmbeddingType::kPopup:
-      return "kPopup";
     case PageNode::EmbeddingType::kGuestView:
       return "kGuestView";
     case PageNode::EmbeddingType::kPortal:

@@ -573,6 +573,8 @@ class LenientMockPageObserver : public PageNode::ObserverDefaultImpl {
 
   // Note that embedder functionality is actually tested in the
   // performance_manager_browsertest.
+  MOCK_METHOD2(OnOpenerFrameNodeChanged,
+               void(const PageNode*, const FrameNode*));
   MOCK_METHOD3(OnEmbedderFrameNodeChanged,
                void(const PageNode*, const FrameNode*, EmbeddingType));
 };
@@ -581,7 +583,7 @@ using MockPageObserver = ::testing::StrictMock<LenientMockPageObserver>;
 
 }  // namespace
 
-TEST_F(FrameNodeImplTest, EmbedderRelationships) {
+TEST_F(FrameNodeImplTest, PageRelationships) {
   using EmbeddingType = PageNode::EmbeddingType;
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -603,14 +605,14 @@ TEST_F(FrameNodeImplTest, EmbedderRelationships) {
 
   // You can always call the pre-delete embedder clearing helper, even if you
   // have no such relationships.
-  frameB1->SeverEmbeddedPagesAndMaybeReparentForTesting();
+  frameB1->SeverPageRelationshipsAndMaybeReparentForTesting();
 
   // You can't clear an embedder if you don't already have one.
   EXPECT_DCHECK_DEATH(pageB->ClearEmbedderFrameNodeAndEmbeddingType());
 
   // You can't be an embedder for your own frame tree.
   EXPECT_DCHECK_DEATH(pageA->SetEmbedderFrameNodeAndEmbeddingType(
-      frameA1.get(), EmbeddingType::kPopup));
+      frameA1.get(), EmbeddingType::kPortal));
 
   // You can't set a null embedder or an invalid embedded type.
   EXPECT_DCHECK_DEATH(pageB->SetEmbedderFrameNodeAndEmbeddingType(
@@ -640,18 +642,16 @@ TEST_F(FrameNodeImplTest, EmbedderRelationships) {
   EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().count(pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
-  // Set another embedder relationship.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageC.get(), nullptr,
-                                              EmbeddingType::kInvalid));
-  pageC->SetEmbedderFrameNodeAndEmbeddingType(frameA1.get(),
-                                              EmbeddingType::kPopup);
-  EXPECT_EQ(frameA1.get(), pageC->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kPopup, pageC->embedding_type());
-  EXPECT_EQ(2u, frameA1->embedded_page_nodes().size());
+  // Set an opener relationship.
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageC.get(), nullptr));
+  pageC->SetOpenerFrameNode(frameA1.get());
+  EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
+  EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
+  EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().count(pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
-  // Do a traversal.
+  // Do an embedded page traversal.
   std::set<const PageNode*> visited;
   EXPECT_TRUE(
       ToPublic(frameA1.get())
@@ -661,8 +661,19 @@ TEST_F(FrameNodeImplTest, EmbedderRelationships) {
                 return true;
               },
               base::Unretained(&visited))));
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageB.get()),
-                                                     ToPublic(pageC.get())));
+  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageB.get())));
+
+  // Do an opened page traversal.
+  visited.clear();
+  EXPECT_TRUE(
+      ToPublic(frameA1.get())
+          ->VisitOpenedPageNodes(base::BindRepeating(
+              [](std::set<const PageNode*>* visited, const PageNode* page) {
+                EXPECT_TRUE(visited->insert(page).second);
+                return true;
+              },
+              base::Unretained(&visited))));
+  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageC.get())));
 
   // Do an aborted visit.
   visited.clear();
@@ -676,80 +687,69 @@ TEST_F(FrameNodeImplTest, EmbedderRelationships) {
               base::Unretained(&visited))));
   EXPECT_EQ(1u, visited.size());
 
-  // Manually clear the first relationship (initiated from the page).
+  // Manually clear the embedder relationship (initiated from the page).
   EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA1.get(),
                                               EmbeddingType::kGuestView));
   pageB->ClearEmbedderFrameNodeAndEmbeddingType();
   EXPECT_EQ(nullptr, pageB->embedder_frame_node());
   EXPECT_EQ(EmbeddingType::kInvalid, pageB->embedding_type());
-  EXPECT_EQ(frameA1.get(), pageC->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kPopup, pageC->embedding_type());
-  EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
-  EXPECT_EQ(0u, frameA1->embedded_page_nodes().count(pageB.get()));
+  EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
+  EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
-  // Clear the second relationship (initiated from the frame).
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageC.get(), frameA1.get(),
-                                              EmbeddingType::kPopup));
-  frameA1->SeverEmbeddedPagesAndMaybeReparentForTesting();
+  // Clear the opener relationship.
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageC.get(), frameA1.get()));
+  frameA1->SeverPageRelationshipsAndMaybeReparentForTesting();
   EXPECT_EQ(nullptr, pageC->embedder_frame_node());
   EXPECT_EQ(EmbeddingType::kInvalid, pageC->embedding_type());
+  EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
-  // Set a popup embedder relationship on node A2.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), nullptr,
-                                              EmbeddingType::kInvalid));
-  pageB->SetEmbedderFrameNodeAndEmbeddingType(frameA2.get(),
-                                              EmbeddingType::kPopup);
-  EXPECT_EQ(frameA2.get(), pageB->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kPopup, pageB->embedding_type());
+  // Set a popup relationship on node A2.
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), nullptr));
+  pageB->SetOpenerFrameNode(frameA2.get());
+  EXPECT_EQ(frameA2.get(), pageB->opener_frame_node());
+  EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
-  EXPECT_EQ(1u, frameA2->embedded_page_nodes().size());
-  EXPECT_EQ(1u, frameA2->embedded_page_nodes().count(pageB.get()));
+  EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
+  EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
+  EXPECT_EQ(1u, frameA2->opened_page_nodes().count(pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Clear it with the helper, and expect it to be reparented to node A1.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA2.get(),
-                                              EmbeddingType::kPopup));
-  frameA2->SeverEmbeddedPagesAndMaybeReparentForTesting();
-  EXPECT_EQ(frameA1.get(), pageB->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kPopup, pageB->embedding_type());
-  EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
-  EXPECT_EQ(1u, frameA1->embedded_page_nodes().count(pageB.get()));
-  EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), frameA2.get()));
+  frameA2->SeverPageRelationshipsAndMaybeReparentForTesting();
+  EXPECT_EQ(frameA1.get(), pageB->opener_frame_node());
+  EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
+  EXPECT_EQ(1u, frameA1->opened_page_nodes().count(pageB.get()));
+  EXPECT_TRUE(frameA2->opened_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
   // Clear it again with the helper. This time reparenting can't happen, as it
   // was already parented to the root.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA1.get(),
-                                              EmbeddingType::kPopup));
-  frameA1->SeverEmbeddedPagesAndMaybeReparentForTesting();
-  EXPECT_EQ(nullptr, pageB->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kInvalid, pageB->embedding_type());
-  EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
-  EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), frameA1.get()));
+  frameA1->SeverPageRelationshipsAndMaybeReparentForTesting();
+  EXPECT_EQ(nullptr, pageB->opener_frame_node());
+  EXPECT_TRUE(frameA1->opened_page_nodes().empty());
+  EXPECT_TRUE(frameA2->opened_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
   // verify that the embedder relationship is torn down before any node removal
   // notification arrives.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), nullptr,
-                                              EmbeddingType::kInvalid));
-  pageB->SetEmbedderFrameNodeAndEmbeddingType(frameA2.get(),
-                                              EmbeddingType::kPopup);
-  EXPECT_EQ(frameA2.get(), pageB->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kPopup, pageB->embedding_type());
-  EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
-  EXPECT_EQ(1u, frameA2->embedded_page_nodes().size());
-  EXPECT_EQ(1u, frameA2->embedded_page_nodes().count(pageB.get()));
+  EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), nullptr));
+  pageB->SetOpenerFrameNode(frameA2.get());
+  EXPECT_EQ(frameA2.get(), pageB->opener_frame_node());
+  EXPECT_TRUE(frameA1->opened_page_nodes().empty());
+  EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
+  EXPECT_EQ(1u, frameA2->opened_page_nodes().count(pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   {
     ::testing::InSequence seq;
 
     // These must occur in sequence.
-    EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA2.get(),
-                                                EmbeddingType::kPopup));
+    EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), frameA2.get()));
     EXPECT_CALL(obs, OnBeforePageNodeRemoved(pageB.get()));
   }
   frameB1.reset();

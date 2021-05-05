@@ -53,6 +53,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
 FrameNodeImpl::~FrameNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_worker_nodes_.empty());
+  DCHECK(opened_page_nodes_.empty());
   DCHECK(embedded_page_nodes_.empty());
   DCHECK(!execution_context_);
 }
@@ -164,6 +165,11 @@ const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
 const base::flat_set<FrameNodeImpl*>& FrameNodeImpl::child_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_frame_nodes_;
+}
+
+const base::flat_set<PageNodeImpl*>& FrameNodeImpl::opened_page_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return opened_page_nodes_;
 }
 
 const base::flat_set<PageNodeImpl*>& FrameNodeImpl::embedded_page_nodes()
@@ -367,6 +373,28 @@ base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void FrameNodeImpl::AddOpenedPage(base::PassKey<PageNodeImpl>,
+                                  PageNodeImpl* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(page_node);
+  DCHECK_NE(page_node_, page_node);
+  DCHECK(graph()->NodeInGraph(page_node));
+  DCHECK_EQ(this, page_node->opener_frame_node());
+  bool inserted = opened_page_nodes_.insert(page_node).second;
+  DCHECK(inserted);
+}
+
+void FrameNodeImpl::RemoveOpenedPage(base::PassKey<PageNodeImpl>,
+                                     PageNodeImpl* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(page_node);
+  DCHECK_NE(page_node_, page_node);
+  DCHECK(graph()->NodeInGraph(page_node));
+  DCHECK_EQ(this, page_node->opener_frame_node());
+  size_t removed = opened_page_nodes_.erase(page_node);
+  DCHECK_EQ(1u, removed);
+}
+
 void FrameNodeImpl::AddEmbeddedPage(base::PassKey<PageNodeImpl>,
                                     PageNodeImpl* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -440,6 +468,22 @@ const base::flat_set<const FrameNode*> FrameNodeImpl::GetChildFrameNodes()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return UpcastNodeSet<FrameNode>(child_frame_nodes());
+}
+
+bool FrameNodeImpl::VisitOpenedPageNodes(const PageNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto* page_impl : opened_page_nodes()) {
+    const PageNode* page = page_impl;
+    if (!visitor.Run(page))
+      return false;
+  }
+  return true;
+}
+
+const base::flat_set<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return UpcastNodeSet<PageNode>(opened_page_nodes());
 }
 
 bool FrameNodeImpl::VisitEmbeddedPageNodes(
@@ -592,8 +636,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
 
   DCHECK(child_frame_nodes_.empty());
 
-  // Sever embedder relationships.
-  SeverEmbeddedPagesAndMaybeReparent();
+  SeverPageRelationshipsAndMaybeReparent();
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
@@ -619,32 +662,44 @@ void FrameNodeImpl::RemoveNodeAttachedData() {
   execution_context_.reset();
 }
 
-void FrameNodeImpl::SeverEmbeddedPagesAndMaybeReparent() {
+void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Copy |embedded_page_nodes_| as we'll be modifying it in this loop: when we
-  // call PageNodeImpl::(Set|Clear)EmbedderFrameNodeAndEmbeddingType() this will
-  // call back into this frame node and call RemoveEmbeddedPage().
-  base::flat_set<PageNodeImpl*> embedded_nodes = embedded_page_nodes_;
-  for (auto* embedded_node : embedded_nodes) {
-    auto embedding_type = embedded_node->embedding_type();
+  // Be careful when iterating: when we call
+  // PageNodeImpl::(Set|Clear)(Opener|Embedder)FrameNode() this will call
+  // back into this frame node and call Remove(Opened|Embedded)Page(), which
+  // modifies |opened_page_nodes_| and |embedded_page_nodes_|.
+  //
+  // We also reparent related pages to this frame's parent to maintain the
+  // relationship between the distinct frame trees for bookkeeping. For the
+  // relationship to be finally severed one of the frame trees must completely
+  // disappear, or it must be explicitly severed (this can happen with
+  // portals).
+  while (!opened_page_nodes_.empty()) {
+    auto* opened_node = *opened_page_nodes_.begin();
+    if (parent_frame_node_) {
+      opened_node->SetOpenerFrameNode(parent_frame_node_);
+    } else {
+      opened_node->ClearOpenerFrameNode();
+    }
+    DCHECK(!base::Contains(opened_page_nodes_, opened_node));
+  }
 
-    // Reparent embedded pages to this frame's parent to maintain the
-    // relationship between the frame trees for bookkeeping. For the
-    // relationship to be finally severed one of the frame trees must completely
-    // disappear, or it must be explicitly severed (this can happen with
-    // portals).
+  while (!embedded_page_nodes_.empty()) {
+    auto* embedded_node = *embedded_page_nodes_.begin();
+    auto embedding_type = embedded_node->embedding_type();
     if (parent_frame_node_) {
       embedded_node->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
                                                           embedding_type);
     } else {
-      // There's no new parent, so simply clear the embedder.
       embedded_node->ClearEmbedderFrameNodeAndEmbeddingType();
     }
+    DCHECK(!base::Contains(embedded_page_nodes_, embedded_node));
   }
 
   // Expect each page node to have called RemoveEmbeddedPage(), and for this to
   // now be empty.
+  DCHECK(opened_page_nodes_.empty());
   DCHECK(embedded_page_nodes_.empty());
 }
 

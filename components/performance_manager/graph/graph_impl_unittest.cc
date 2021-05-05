@@ -322,7 +322,7 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
   EXPECT_EQ(0u, descr.DictSize());
 }
 
-TEST_F(GraphImplTest, EmbeddersClearedOnTeardown) {
+TEST_F(GraphImplTest, OpenersAndEmbeddersClearedOnTeardown) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto pageA = CreateNode<PageNodeImpl>();
   auto frameA1 = CreateFrameNodeAutoId(process.get(), pageA.get());
@@ -338,8 +338,7 @@ TEST_F(GraphImplTest, EmbeddersClearedOnTeardown) {
   // will explode.
   pageB->SetEmbedderFrameNodeAndEmbeddingType(
       frameA1.get(), PageNode::EmbeddingType::kGuestView);
-  pageC->SetEmbedderFrameNodeAndEmbeddingType(frameA2.get(),
-                                              PageNode::EmbeddingType::kPopup);
+  pageC->SetOpenerFrameNode(frameA2.get());
 }
 
 }  // namespace performance_manager

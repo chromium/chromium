@@ -100,6 +100,9 @@ struct PageInfo {
 
   url.mojom.Url main_frame_url;
 
+  // The id of the frame that opened this page via window.open, if any.
+  int64 opener_frame_id;
+
   // The id of the frame that embedded this page, if any.
   int64 embedder_frame_id;
 

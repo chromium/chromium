@@ -64,11 +64,9 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
     return false;
 
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType,
-                     base::Unretained(helper->page_node()),
-                     base::Unretained(opener_frame_node),
-                     PageNode::EmbeddingType::kPopup));
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetOpenerFrameNode,
+                                base::Unretained(helper->page_node()),
+                                base::Unretained(opener_frame_node)));
   return true;
 }
 
@@ -388,11 +386,7 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   } else {
     embedding_type = PageNode::EmbeddingType::kGuestView;
     // For a guest view, the RFH should already have been seen.
-
     // Note that guest views can simultaneously have openers *and* be embedded.
-    // The embedded relationship has higher priority, but we'll fall back to
-    // using the window.open relationship if the embedded relationship is
-    // severed.
   }
   DCHECK_NE(PageNode::EmbeddingType::kInvalid, embedding_type);
   if (!frame) {
@@ -417,15 +411,10 @@ void PerformanceManagerTabHelper::InnerWebContentsDetached(
     content::WebContents* inner_web_contents) {
   auto* helper = FromWebContents(inner_web_contents);
   DCHECK(helper);
-
-  // Fall back to using the window.open opener if it exists. If not, simply
-  // clear the opener relationship entirely.
-  if (!ConnectWindowOpenRelationshipIfExists(helper, inner_web_contents)) {
-    PerformanceManagerImpl::CallOnGraphImpl(
-        FROM_HERE,
-        base::BindOnce(&PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType,
-                       base::Unretained(helper->page_node())));
-  }
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(&PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType,
+                     base::Unretained(helper->page_node())));
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {

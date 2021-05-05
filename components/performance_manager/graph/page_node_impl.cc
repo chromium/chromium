@@ -36,6 +36,7 @@ PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
 
 PageNodeImpl::~PageNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(nullptr, embedder_frame_node_);
   DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
   DCHECK(!page_load_tracker_data_);
@@ -164,6 +165,11 @@ FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
   return *main_frame_nodes_.begin();
 }
 
+FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return opener_frame_node_;
+}
+
 FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
@@ -257,6 +263,35 @@ const base::Optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
   return freezing_vote_.value();
 }
 
+void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(opener);
+  DCHECK(graph()->NodeInGraph(opener));
+  DCHECK_NE(this, opener->page_node());
+
+  auto* previous_opener = opener_frame_node_;
+  if (previous_opener)
+    previous_opener->RemoveOpenedPage(PassKey(), this);
+  opener_frame_node_ = opener;
+  opener->AddOpenedPage(PassKey(), this);
+
+  for (auto* observer : GetObservers())
+    observer->OnOpenerFrameNodeChanged(this, previous_opener);
+}
+
+void PageNodeImpl::ClearOpenerFrameNode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(nullptr, opener_frame_node_);
+
+  auto* previous_opener = opener_frame_node_;
+
+  opener_frame_node_->RemoveOpenedPage(PassKey(), this);
+  opener_frame_node_ = nullptr;
+
+  for (auto* observer : GetObservers())
+    observer->OnOpenerFrameNodeChanged(this, previous_opener);
+}
+
 void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
     FrameNodeImpl* embedder,
     EmbeddingType embedding_type) {
@@ -334,6 +369,10 @@ void PageNodeImpl::OnJoiningGraph() {
 void PageNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Sever opener relationships.
+  if (opener_frame_node_)
+    ClearOpenerFrameNode();
+
   // Sever embedder relationships.
   if (embedder_frame_node_)
     ClearEmbedderFrameNodeAndEmbeddingType();
@@ -352,6 +391,11 @@ void PageNodeImpl::RemoveNodeAttachedData() {
 const std::string& PageNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browser_context_id();
+}
+
+const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return opener_frame_node();
 }
 
 const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {

@@ -40,8 +40,6 @@ class PageNode : public Node {
   enum class EmbeddingType {
     // Returned if this node doesn't have an embedder.
     kInvalid,
-    // This page is a popup (the embedder created it via window.open).
-    kPopup,
     // This page is a guest view. This can be many things (<webview>, <appview>,
     // etc) but is backed by the same inner/outer WebContents mechanism.
     kGuestView,
@@ -81,6 +79,10 @@ class PageNode : public Node {
 
   // Returns the unique ID of the browser context that this page belongs to.
   virtual const std::string& GetBrowserContextID() const = 0;
+
+  // Returns the opener frame node, if there is one. This may change over the
+  // lifetime of this page. See "OnOpenerFrameNodeChanged".
+  virtual const FrameNode* GetOpenerFrameNode() const = 0;
 
   // Returns the embedder frame node, if there is one. This may change over the
   // lifetime of this page. See "OnEmbedderFrameNodeChanged".
@@ -204,9 +206,16 @@ class PageNodeObserver {
 
   // Notifications of property changes.
 
+  // Invoked when this page has been assigned an opener, had the opener
+  // change, or had the opener removed. This happens when a page is opened
+  // via window.open, or when that relationship is subsequently severed or
+  // reparented.
+  virtual void OnOpenerFrameNodeChanged(const PageNode* page_node,
+                                        const FrameNode* previous_opener) = 0;
+
   // Invoked when this page has been assigned an embedder, had the embedder
   // change, or had the embedder removed. This can happen if a page is opened
-  // via window.open, webviews, portals, etc, or when that relationship is
+  // via webviews, guestviews, portals, etc, or when that relationship is
   // subsequently severed or reparented.
   virtual void OnEmbedderFrameNodeChanged(
       const PageNode* page_node,
@@ -276,6 +285,8 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override {}
   void OnBeforePageNodeRemoved(const PageNode* page_node) override {}
+  void OnOpenerFrameNodeChanged(const PageNode* page_node,
+                                const FrameNode* previous_opener) override {}
   void OnEmbedderFrameNodeChanged(
       const PageNode* page_node,
       const FrameNode* previous_embedder,

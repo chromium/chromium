@@ -83,6 +83,7 @@ class PageNodeImpl
 
   // Accessors.
   const std::string& browser_context_id() const;
+  FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
   EmbeddingType embedding_type() const;
   bool is_visible() const;
@@ -100,6 +101,10 @@ class PageNodeImpl
   const std::string& contents_mime_type() const;
   bool had_form_interaction() const;
   const base::Optional<freezing::FreezingVote>& freezing_vote() const;
+
+  // Invoked to set/clear the opener of this page.
+  void SetOpenerFrameNode(FrameNodeImpl* opener);
+  void ClearOpenerFrameNode();
 
   // Invoked to set/clear the embedder of this page.
   void SetEmbedderFrameNodeAndEmbeddingType(FrameNodeImpl* embedder,
@@ -185,6 +190,7 @@ class PageNodeImpl
 
   // PageNode implementation.
   const std::string& GetBrowserContextID() const override;
+  const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
   EmbeddingType GetEmbeddingType() const override;
   bool IsVisible() const override;
@@ -267,6 +273,10 @@ class PageNodeImpl
 
   // The unique ID of the browser context that this page belongs to.
   const std::string browser_context_id_;
+
+  // The opener of this page, if there is one.
+  FrameNodeImpl* opener_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The embedder of this page, if there is one.
   FrameNodeImpl* embedder_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =

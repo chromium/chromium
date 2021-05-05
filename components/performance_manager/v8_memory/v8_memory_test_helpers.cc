@@ -254,8 +254,7 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
   if (opener) {
     pages_.push_back(CreateNode<PageNodeImpl>());
     page = pages_.back().get();
-    page->SetEmbedderFrameNodeAndEmbeddingType(opener,
-                                               PageNode::EmbeddingType::kPopup);
+    page->SetOpenerFrameNode(opener);
   }
 
   int frame_tree_node_id = GetNextUniqueId();

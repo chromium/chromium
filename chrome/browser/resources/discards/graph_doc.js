@@ -396,10 +396,14 @@ class PageNode extends GraphNode {
 
   /** override */
   get dashedLinkTargets() {
-    if (this.page.embedderFrameId) {
-      return [this.page.embedderFrameId];
+    const targets = [];
+    if (this.page.openerFrameId) {
+      targets.push(this.page.openerFrameId);
     }
-    return [];
+    if (this.page.embedderFrameId) {
+      targets.push(this.page.embedderFrameId);
+    }
+    return targets;
   }
 }
 
