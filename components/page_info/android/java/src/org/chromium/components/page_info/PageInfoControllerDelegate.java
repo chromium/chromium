@@ -21,7 +21,6 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -154,13 +153,6 @@ public abstract class PageInfoControllerDelegate {
     @Nullable
     public String getPaintPreviewPageConnectionMessage() {
         return null;
-    }
-
-    /**
-     * Returns whether or not the performance badge should be shown for |url|.
-     */
-    public boolean shouldShowPerformanceBadge(GURL url) {
-        return false;
     }
 
     /**

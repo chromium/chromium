@@ -402,7 +402,6 @@ public abstract class ChromeFeatureList {
             "OptimizationGuidePushNotifications";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";
-    public static final String PAGE_INFO_PERFORMANCE_HINTS = "PageInfoPerformanceHints";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
     public static final String PASSWORD_SCRIPTS_FETCHING = "PasswordScriptsFetching";

@@ -308,8 +308,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 setupForgetSiteButton(view2.getForgetSiteButton());
             }
         } else {
-            mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
-
             CookieControlsView.CookieControlsParams cookieControlsParams =
                     new CookieControlsView.CookieControlsParams();
             cookieControlsParams.onCheckedChangedCallback = (Boolean blockCookies) -> {

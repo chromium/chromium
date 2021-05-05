@@ -518,9 +518,6 @@
       <message name="IDS_PAGE_INFO_SITE_SETTINGS_BUTTON" desc="Text in the button that opens a website's Site Settings from the Page Info dialog.">
         Site settings
       </message>
-      <message name="IDS_PAGE_INFO_FAST_SITE_SUMMARY" desc="A short summary phrase in the Page Info bubble (which shows when you click the lock icon) that indicates that pages on the current website should load quickly.">
-        Site is fast
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR" desc="Text on the button to clear cookies for a site.">
         Clear cookies
       </message>
@@ -540,9 +537,6 @@
         {NUM_SELECTED, plural,
           =1 {1 cookie in use}
           other {# cookies in use}}
-      </message>
-      <message name="IDS_PAGE_INFO_FAST_SITE_MESSAGE" desc="A short paragraph that explains what is meant by labeling the current website as fast.">
-        This site opens and responds quickly for most people
       </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device

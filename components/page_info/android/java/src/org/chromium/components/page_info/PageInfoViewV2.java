@@ -50,9 +50,6 @@ public class PageInfoViewV2 extends PageInfoView {
     }
 
     @Override
-    protected void initPerformance(PageInfoView.PageInfoViewParams params) {}
-
-    @Override
     protected void initPermissions(PageInfoView.PageInfoViewParams params) {
         mPermissionsRow = findViewById(R.id.page_info_permissions_row);
     }

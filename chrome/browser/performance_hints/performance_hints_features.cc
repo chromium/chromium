@@ -28,12 +28,9 @@ constexpr base::FeatureParam<bool> kUseLinkPerformanceHints{
 
 const base::Feature kContextMenuPerformanceInfo{
     "ContextMenuPerformanceInfo", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPageInfoPerformanceHints{
-    "PageInfoPerformanceHints", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsPerformanceHintsObserverEnabled() {
-  return base::FeatureList::IsEnabled(kPageInfoPerformanceHints) ||
-         IsContextMenuPerformanceInfoEnabled() ||
+  return IsContextMenuPerformanceInfoEnabled() ||
          base::FeatureList::IsEnabled(kPerformanceHintsObserver);
 }
 

@@ -12,9 +12,6 @@
 namespace performance_hints {
 namespace features {
 
-// Exposed for chrome://flags.
-extern const base::Feature kPageInfoPerformanceHints;
-
 // Exposed for testing.
 extern const base::Feature kPerformanceHintsObserver;
 extern const base::Feature kPerformanceHintsTreatUnknownAsFast;

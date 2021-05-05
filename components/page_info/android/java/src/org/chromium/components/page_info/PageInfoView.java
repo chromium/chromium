@@ -186,8 +186,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     // Components specific to this PageInfoView
     private TextView mConnectionSummary;
     private TextView mConnectionMessage;
-    private TextView mPerformanceSummary;
-    private TextView mPerformanceMessage;
     private TextView mHttpsImageCompressionMessage;
     private View mCookieControlsSeparator;
     private CookieControlsView mCookieControlsView;
@@ -205,7 +203,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected void init(PageInfoViewParams params) {
         initUrlTitle(params);
         initConnection(params);
-        initPerformance(params);
         initHttpsImageCompression(params);
         initPermissions(params);
         initCookies(params);
@@ -232,13 +229,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         // Hide the connection summary until its text is set.
         initializePageInfoViewChild(mConnectionSummary, false, null);
         initializePageInfoViewChild(mConnectionMessage, params.connectionMessageShown, null);
-    }
-
-    protected void initPerformance(PageInfoViewParams params) {
-        mPerformanceSummary = findViewById(R.id.page_info_performance_summary);
-        mPerformanceMessage = findViewById(R.id.page_info_performance_message);
-        initializePageInfoViewChild(mPerformanceSummary, false, null);
-        initializePageInfoViewChild(mPerformanceMessage, false, null);
     }
 
     protected void initHttpsImageCompression(PageInfoViewParams params) {
@@ -304,16 +294,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         }
     }
 
-    public void showPerformanceInfo(boolean show) {
-        if (show) {
-            mPerformanceSummary.setVisibility(View.VISIBLE);
-            mPerformanceMessage.setVisibility(View.VISIBLE);
-        } else {
-            mPerformanceSummary.setVisibility(View.GONE);
-            mPerformanceMessage.setVisibility(View.GONE);
-        }
-    }
-
     public void showHttpsImageCompressionInfo(boolean show) {
         if (show) {
             mHttpsImageCompressionMessage.setVisibility(View.VISIBLE);
@@ -359,8 +339,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         animatableViews.add(mUrlTitle);
         animatableViews.add(mConnectionSummary);
         animatableViews.add(mConnectionMessage);
-        animatableViews.add(mPerformanceSummary);
-        animatableViews.add(mPerformanceMessage);
         animatableViews.add(mHttpsImageCompressionMessage);
         animatableViews.add(mInstantAppButton);
         animatableViews.add(mCookieControlsSeparator);

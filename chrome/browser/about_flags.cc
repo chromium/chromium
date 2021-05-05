@@ -6317,14 +6317,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
-    {"page-info-performance-hints",
-     flag_descriptions::kPageInfoPerformanceHintsName,
-     flag_descriptions::kPageInfoPerformanceHintsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         performance_hints::features::kPageInfoPerformanceHints)},
-#endif  // !defined(OS_ANDROID)
-
-#if defined(OS_ANDROID)
     {"page-info-version-2", flag_descriptions::kPageInfoV2Name,
      flag_descriptions::kPageInfoV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoV2)},

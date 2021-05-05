@@ -50,26 +50,6 @@
             android:textAppearance="@style/TextAppearance.TextMedium.Primary"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/page_info_performance_summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:text="@string/page_info_fast_site_summary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_performance_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="8dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:text="@string/page_info_fast_site_message"
-            android:visibility="gone" />
-
         <View
             android:id="@+id/page_info_preview_separator"
             android:layout_marginTop="16dp"
