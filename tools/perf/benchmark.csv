@@ -30,7 +30,7 @@ blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, mslekova@c
 chrome_sizes,"heiserya@chromium.org, johnchen@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 components_perftests,csharrison@chromium.org,,,
 dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
-desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/desktop_ui.md,
+desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,
 dromaeo,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,,
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
@@ -41,8 +41,8 @@ kraken,hablich@chromium.org,Blink>JavaScript,,
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 loading.desktop,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_warm,international,intl_ar_fa_he,intl_es_fr_pt_BR,intl_hi_ru,intl_ja_zh,intl_ko_th_vi,typical"
 loading.mobile,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_hot,cache_temperature_warm,easy_ttfmp,easy_tti,global,pwa,tough_ttfmp,tough_tti"
-media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
-media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
+media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
+media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
 memory.desktop,erikchen@chromium.org,,,
 octane,hablich@chromium.org,Blink>JavaScript,,
 performance_browser_tests,"johnchen@chromium.org, jophba@chromium.org",Internals>Media>ScreenCapture,,

@@ -18,7 +18,7 @@ import page_sets
     ],
     component='UI>Browser',
     documentation_url=
-    'https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/desktop_ui.md'
+    'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md'
 )
 class DesktopUI(perf_benchmark.PerfBenchmark):
   """Desktop UI Benchmark."""
