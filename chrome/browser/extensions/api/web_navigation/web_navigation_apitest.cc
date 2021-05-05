@@ -263,8 +263,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebNavigationApiTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ClientRedirect) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ClientRedirect) {
+  ASSERT_TRUE(RunTest("webnavigation/clientRedirect")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirect) {
@@ -349,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, SimpleLoad) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/simpleLoad")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Failures) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/failures")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Failures) {
+  ASSERT_TRUE(RunTest("webnavigation/failures")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, FilteredTest) {
@@ -574,12 +574,12 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, PendingDeletion) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/pendingDeletion")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Crash) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTest("webnavigation/crash")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/crash")) << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
