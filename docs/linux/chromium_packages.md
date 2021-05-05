@@ -2,7 +2,7 @@
 
 Some Linux distributions package up Chromium for easy installation. Please note
 that Chromium is not identical to Google Chrome -- see
-[chromium_browser_vs_google_chrome.md](chromium_browser_vs_google_chrome.md) --
+[chromium_browser_vs_google_chrome.md](../chromium_browser_vs_google_chrome.md) --
 and that distributions may (and actually do) make their own modifications.
 
 TODO: Move away from tables.
