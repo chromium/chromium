@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
+#include "base/value_iterators.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -65,7 +66,7 @@ std::unique_ptr<base::DictionaryValue> CopyValuesAndAddDefaults(
     }
 
     CHECK(value->type() == i.value().type());
-    to->Set(i.key(), value->CreateDeepCopy());
+    to->Set(i.key(), base::Value::ToUniquePtrValue(value->Clone()));
   }
 
   return to;
@@ -101,7 +102,7 @@ std::unique_ptr<base::DictionaryValue> CopyChromotingPoliciesIntoDictionary(
     // TODO(lukasza): Removing this somewhat brittle filtering will be possible
     //                after having separate, Chromoting-specific schema.
     if (key.find(kPolicyNameSubstring) != std::string::npos) {
-      policy_dict->Set(key, value->CreateDeepCopy());
+      policy_dict->Set(key, base::Value::ToUniquePtrValue(value->Clone()));
     }
   }
 
@@ -297,7 +298,7 @@ void CopyDictionaryValue(const base::DictionaryValue& from,
                          std::string key) {
   const base::Value* value;
   if (from.Get(key, &value)) {
-    to.Set(key, value->CreateDeepCopy());
+    to.Set(key, base::Value::ToUniquePtrValue(value->Clone()));
   }
 }
 }  // namespace
@@ -313,7 +314,8 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
     base::Value* old_policy;
     if (!(effective_policies_->Get(iter.key(), &old_policy) &&
           old_policy->Equals(&iter.value()))) {
-      changed_policies->Set(iter.key(), iter.value().CreateDeepCopy());
+      changed_policies->Set(
+          iter.key(), base::Value::ToUniquePtrValue(iter.value().Clone()));
     }
     iter.Advance();
   }
