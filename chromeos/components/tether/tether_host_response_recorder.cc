@@ -89,19 +89,18 @@ bool TetherHostResponseRecorder::AddRecentResponse(
 
   // Create a mutable copy of the stored IDs, or create one if it has yet to be
   // stored.
-  std::unique_ptr<base::ListValue> updated_ids =
-      ids ? ids->CreateDeepCopy() : std::make_unique<base::ListValue>();
+  base::Value updated_ids =
+      ids ? ids->Clone() : base::Value(base::Value::Type::LIST);
 
   // Remove the device ID if it was already present in the list.
-  std::unique_ptr<base::Value> device_id_value =
-      std::make_unique<base::Value>(device_id);
-  updated_ids->Remove(*device_id_value, nullptr);
+  base::Value device_id_value(device_id);
+  updated_ids.EraseListValue(device_id_value);
 
   // Add the device ID to the front of the queue.
-  updated_ids->Insert(0, std::move(device_id_value));
+  updated_ids.Insert(updated_ids.GetList().begin(), std::move(device_id_value));
 
   // Store the updated list back in |pref_service_|.
-  pref_service_->Set(pref_name, *updated_ids);
+  pref_service_->Set(pref_name, std::move(updated_ids));
 
   return true;
 }
