@@ -421,10 +421,9 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   GURL endpoint = GURL(logout_endpoints_.back());
   logout_endpoints_.pop_back();
 
-  // TODO(kenrb): Validate that |endpoint| is a legal target under whatever
-  // policy we decide is appropriate.
-
-  if (endpoint.is_valid()) {
+  if (endpoint.is_valid() && GetRequestPermissionContext() &&
+      GetRequestPermissionContext()->HasRequestPermission(
+          url::Origin::Create(endpoint), origin())) {
     network_manager_->SendLogout(
         endpoint, base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                                  weak_ptr_factory_.GetWeakPtr()));
@@ -510,13 +509,24 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
   mock_dialog_controller_ = std::move(controller);
 }
 
+void FederatedAuthRequestImpl::SetRequestPermissionDelegateForTests(
+    FederatedIdentityRequestPermissionContextDelegate*
+        request_permission_delegate) {
+  request_permission_delegate_ = request_permission_delegate;
+}
+
+void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
+    FederatedIdentitySharingPermissionContextDelegate*
+        sharing_permission_delegate) {
+  sharing_permission_delegate_ = sharing_permission_delegate;
+}
+
 FederatedIdentityRequestPermissionContextDelegate*
 FederatedAuthRequestImpl::GetRequestPermissionContext() {
   if (!request_permission_delegate_) {
-    request_permission_delegate_ =
-        render_frame_host()
-            ->GetBrowserContext()
-            ->GetFederatedIdentityRequestPermissionContext();
+    render_frame_host()
+        ->GetBrowserContext()
+        ->GetFederatedIdentityRequestPermissionContext();
   }
   return request_permission_delegate_;
 }
@@ -524,10 +534,9 @@ FederatedAuthRequestImpl::GetRequestPermissionContext() {
 FederatedIdentitySharingPermissionContextDelegate*
 FederatedAuthRequestImpl::GetSharingPermissionContext() {
   if (!sharing_permission_delegate_) {
-    sharing_permission_delegate_ =
-        render_frame_host()
-            ->GetBrowserContext()
-            ->GetFederatedIdentitySharingPermissionContext();
+    render_frame_host()
+        ->GetBrowserContext()
+        ->GetFederatedIdentitySharingPermissionContext();
   }
   return sharing_permission_delegate_;
 }

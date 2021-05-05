@@ -14,6 +14,9 @@ namespace content {
 // information from a given provider to a given relying party.
 class FederatedIdentitySharingPermissionContextDelegate {
  public:
+  FederatedIdentitySharingPermissionContextDelegate() = default;
+  virtual ~FederatedIdentitySharingPermissionContextDelegate() = default;
+
   // Determine whether the requester has an existing permission grant to share
   // identity information to the relying party.
   virtual bool HasSharingPermission(const url::Origin& identity_provider,
@@ -28,9 +31,6 @@ class FederatedIdentitySharingPermissionContextDelegate {
   // relying party.
   virtual void RevokeSharingPermission(const url::Origin& identity_provider,
                                        const url::Origin& relying_party) = 0;
-
- protected:
-  virtual ~FederatedIdentitySharingPermissionContextDelegate() = default;
 };
 
 }  // namespace content

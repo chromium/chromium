@@ -14,6 +14,9 @@ namespace content {
 // requests to a given provider.
 class FederatedIdentityRequestPermissionContextDelegate {
  public:
+  FederatedIdentityRequestPermissionContextDelegate() = default;
+  virtual ~FederatedIdentityRequestPermissionContextDelegate() = default;
+
   // Determine whether the relying_party has an existing permission grant to
   // send identity requests to the Identity Provider.
   virtual bool HasRequestPermission(const url::Origin& relying_party,
@@ -28,9 +31,6 @@ class FederatedIdentityRequestPermissionContextDelegate {
   virtual void RevokeRequestPermission(
       const url::Origin& relying_party,
       const url::Origin& identity_provider) = 0;
-
- protected:
-  virtual ~FederatedIdentityRequestPermissionContextDelegate() = default;
 };
 
 }  // namespace content

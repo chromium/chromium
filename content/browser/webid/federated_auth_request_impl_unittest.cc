@@ -16,6 +16,7 @@
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "content/browser/webid/test/mock_request_permission_delegate.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +36,7 @@ using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace content {
 
@@ -364,6 +366,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                                                                  main_rfh());
     mock_dialog_controller_ =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+
+    mock_request_permission_delegate_ =
+        std::make_unique<NiceMock<MockRequestPermissionDelegate>>();
   }
 
   std::pair<RequestIdTokenStatus, base::Optional<std::string>>
@@ -385,6 +390,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
       const std::vector<std::string>& logout_endpoints) {
     auth_request_impl_->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
+    auth_request_impl_->SetRequestPermissionDelegateForTests(
+        mock_request_permission_delegate_.get());
 
     LogoutRequestCallbackHelper logout_helper;
     request_remote_->Logout(logout_endpoints, logout_helper.callback());
@@ -507,20 +514,44 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   // Expectations have to be set explicitly in advance using
   // logout_return_status() and logout_endpoints().
   void SetLogoutMockExpectations() {
-    logout_count_ = 0;
-    EXPECT_CALL(*mock_request_manager_, SendLogout(_, _))
-        .Times(logout_endpoints_.size())
-        .WillRepeatedly(
-            Invoke([&](const GURL& logout_endpoint,
-                       IdpNetworkRequestManager::LogoutCallback callback) {
-              std::move(callback).Run(logout_return_status_[logout_count_++]);
-            }));
+    if (logout_request_permissions_.size() == 0) {
+      EXPECT_CALL(*mock_request_permission_delegate_,
+                  HasRequestPermission(_, _))
+          .Times(0);
+    } else {
+      for (int i = logout_request_permissions_.size() - 1; i >= 0; i--) {
+        auto single_logout_request_permission = logout_request_permissions_[i];
+        EXPECT_CALL(*mock_request_permission_delegate_,
+                    HasRequestPermission(_, _))
+            .WillOnce(Return(single_logout_request_permission))
+            .RetiresOnSaturation();
+      }
+    }
+
+    if (logout_return_status_.size() == 0) {
+      EXPECT_CALL(*mock_request_manager_, SendLogout(_, _)).Times(0);
+    } else {
+      for (int i = logout_return_status_.size() - 1; i >= 0; i--) {
+        auto single_logout_return_status = logout_return_status_[i];
+        EXPECT_CALL(*mock_request_manager_, SendLogout(_, _))
+            .WillOnce(
+                Invoke([single_logout_return_status](
+                           const GURL& logout_endpoint,
+                           IdpNetworkRequestManager::LogoutCallback callback) {
+                  std::move(callback).Run(single_logout_return_status);
+                }))
+            .RetiresOnSaturation();
+      }
+    }
   }
 
   std::vector<LogoutResponse>& logout_return_status() {
     return logout_return_status_;
   }
   std::vector<std::string>& logout_endpoints() { return logout_endpoints_; }
+  std::vector<bool>& logout_request_permissions() {
+    return logout_request_permissions_;
+  }
 
  private:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
@@ -529,13 +560,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   std::unique_ptr<NiceMock<MockIdpNetworkRequestManager>> mock_request_manager_;
   std::unique_ptr<NiceMock<MockIdentityRequestDialogController>>
       mock_dialog_controller_;
+  std::unique_ptr<NiceMock<MockRequestPermissionDelegate>>
+      mock_request_permission_delegate_;
 
   base::OnceClosure close_idp_window_callback_;
 
   // Test case storage for Logout tests.
   std::vector<LogoutResponse> logout_return_status_;
   std::vector<std::string> logout_endpoints_;
-  int logout_count_;
+  std::vector<bool> logout_request_permissions_;
 
   GURL provider_;
 };
@@ -571,12 +604,15 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
 
   logout_endpoints().push_back("https://rp1.example");
   logout_return_status().push_back(LogoutResponse::kSuccess);
+  logout_request_permissions().push_back(true);
   logout_endpoints().push_back("https://rp2.example");
   logout_return_status().push_back(LogoutResponse::kSuccess);
+  logout_request_permissions().push_back(true);
   logout_endpoints().push_back("https://rp3.example");
   logout_return_status().push_back(LogoutResponse::kSuccess);
-  SetLogoutMockExpectations();
+  logout_request_permissions().push_back(true);
 
+  SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
   EXPECT_EQ(logout_response, LogoutStatus::kSuccess);
 }
@@ -587,8 +623,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutInvalidEndpoint) {
 
   logout_endpoints().push_back("Invalid string");
 
-  // No need to set mock expectations here because it should not attempt to
-  // send anything.
+  SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
   EXPECT_EQ(logout_response, LogoutStatus::kError);
 }
@@ -599,8 +634,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSingleFailure) {
 
   logout_endpoints().push_back("https://rp1.example");
   logout_return_status().push_back(LogoutResponse::kSuccess);
+  logout_request_permissions().push_back(true);
   logout_endpoints().push_back("https://rp2.example");
   logout_return_status().push_back(LogoutResponse::kError);
+  logout_request_permissions().push_back(true);
 
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
@@ -611,8 +648,21 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSingleFailure) {
 TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
   CreateAuthRequest(GURL(kIdpTestOrigin));
 
-  // No need to set mock expectations here because it should not attempt to
-  // send anything.
+  SetLogoutMockExpectations();
+  auto logout_response = PerformLogoutRequest(logout_endpoints());
+  EXPECT_EQ(logout_response, LogoutStatus::kError);
+}
+
+// Test Logout without request permission granted.
+TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
+  CreateAuthRequest(GURL(kIdpTestOrigin));
+
+  // logout_return_status() not set because there should be no
+  // attempt at dispatch.
+  logout_endpoints().push_back("https://rp1.example");
+  logout_request_permissions().push_back(false);
+
+  SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
   EXPECT_EQ(logout_response, LogoutStatus::kError);
 }

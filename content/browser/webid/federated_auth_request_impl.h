@@ -60,6 +60,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
+  void SetRequestPermissionDelegateForTests(
+      FederatedIdentityRequestPermissionContextDelegate*);
+  void SetSharingPermissionDelegateForTests(
+      FederatedIdentitySharingPermissionContextDelegate*);
 
  private:
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
