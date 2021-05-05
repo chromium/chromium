@@ -64,7 +64,8 @@
 }
 
 - (void)closeAllNotifications {
-  [[self serviceProxy] closeAllNotifications];
+  if (_mojoService)
+    [[self serviceProxy] closeAllNotifications];
   // We know that there are no more notifications after this.
   [self onServiceDisconnectedGracefully:YES];
 }

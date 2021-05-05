@@ -178,15 +178,6 @@ class AlertDispatcherMojoTest : public testing::Test {
   FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
 };
 
-TEST_F(AlertDispatcherMojoTest, CloseAllNotifications) {
-  base::RunLoop run_loop;
-  // Expect that we disconnect after closing all notifications.
-  ExpectDisconnect(run_loop.QuitClosure());
-  EXPECT_CALL(service(), CloseAllNotifications);
-  [alert_dispatcher_ closeAllNotifications];
-  run_loop.Run();
-}
-
 TEST_F(AlertDispatcherMojoTest, CloseNotificationAndDisconnect) {
   base::RunLoop run_loop;
   // Expect that we disconnect after closing the last notification.
@@ -233,6 +224,13 @@ TEST_F(AlertDispatcherMojoTest, CloseThenDispatchNotificationAndKeepConnected) {
 
   run_loop.Run();
   ExpectKeepConnected();
+
+  base::RunLoop run_loop2;
+  // Expect that we disconnect after closing all notifications.
+  ExpectDisconnect(run_loop2.QuitClosure());
+  EXPECT_CALL(service(), CloseAllNotifications);
+  [alert_dispatcher_ closeAllNotifications];
+  run_loop2.Run();
 }
 
 TEST_F(AlertDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
