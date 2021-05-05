@@ -217,7 +217,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
        it.Advance()) {
     std::unique_ptr<base::Value> sync_value;
     if (sync_state->RemoveWithoutPathExpansion(it.key(), &sync_value)) {
-      if (sync_value->Equals(&it.value())) {
+      if (*sync_value == it.value()) {
         // Sync and local values are the same, no changes to send.
       } else {
         // Sync value is different, update local setting with new value.
