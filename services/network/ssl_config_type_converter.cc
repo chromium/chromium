@@ -38,6 +38,7 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
   net_config.cecpq2_enabled = mojo_config->cecpq2_enabled;
+  net_config.triple_des_enabled = mojo_config->triple_des_enabled;
   return net_config;
 }
 

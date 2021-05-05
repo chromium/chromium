@@ -171,6 +171,7 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
   BooleanPrefMember cecpq2_enabled_;
+  BooleanPrefMember triple_des_enabled_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;
@@ -205,6 +206,8 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
   cecpq2_enabled_.Init(prefs::kCECPQ2Enabled, local_state,
                        local_state_callback);
+  triple_des_enabled_.Init(prefs::kTripleDESEnabled, local_state,
+                           local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -233,6 +236,8 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kCECPQ2Enabled,
                                 default_context_config.cecpq2_enabled);
+  registry->RegisterBooleanPref(prefs::kTripleDESEnabled,
+                                default_context_config.triple_des_enabled);
 }
 
 void SSLConfigServiceManagerPref::AddToNetworkContextParams(
@@ -303,6 +308,7 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   // is especially conservative.
   config->cecpq2_enabled =
       cecpq2_enabled_.GetValue() && variations_unrestricted_;
+  config->triple_des_enabled = triple_des_enabled_.GetValue();
 
   return config;
 }

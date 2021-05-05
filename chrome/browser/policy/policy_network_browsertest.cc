@@ -41,11 +41,13 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
@@ -584,80 +586,143 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
   EXPECT_FALSE(IsQuicEnabled(profile_2()));
 }
 
-class CECPQ2PolicyTest : public PolicyTest {
+class SSLPolicyTest : public PolicyTest {
+ public:
+  SSLPolicyTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+ protected:
+  struct LoadResult {
+    bool success;
+    std::u16string title;
+  };
+
+  bool StartTestServer(const net::SSLServerConfig ssl_config) {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    return https_server_.Start();
+  }
+
+  bool GetBooleanPref(const std::string& pref_name) {
+    return g_browser_process->local_state()->GetBoolean(pref_name);
+  }
+
+  LoadResult LoadPage(const std::string& path) {
+    ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==
+        content::PAGE_TYPE_ERROR) {
+      return LoadResult{false, u""};
+    }
+    return LoadResult{true, web_contents->GetTitle()};
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+};
+
+class CECPQ2PolicyTest : public SSLPolicyTest {
  public:
   CECPQ2PolicyTest() {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kPostQuantumCECPQ2);
   }
 
- protected:
-  // RunTest checks that CECPQ2 works initially but stops working after
-  // |update_policy| has run.
-  void RunTest(base::OnceCallback<void(PolicyMap*)> update_policy) {
-    // A test server is configured with support for only CECPQ2.
-    net::EmbeddedTestServer https_server_ok(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    net::SSLServerConfig ssl_config;
-    ssl_config.curves_for_testing = {NID_CECPQ2};
-    https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
-    https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(https_server_ok.Start());
-
-    PrefService* const prefs = g_browser_process->local_state();
-    EXPECT_TRUE(prefs->GetBoolean(prefs::kCECPQ2Enabled));
-
-    // Should be able to load a page from the test server because CECPQ2 is
-    // enabled.
-    ui_test_utils::NavigateToURL(browser(),
-                                 https_server_ok.GetURL("/title2.html"));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
-    EXPECT_NE(
-        web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
-        content::PAGE_TYPE_ERROR);
-
-    PolicyMap policies;
-    std::move(update_policy).Run(&policies);
-    UpdateProviderPolicy(policies);
-    content::FlushNetworkServiceInstanceForTesting();
-
-    // Page loads should now fail.
-    const GURL fail_url = https_server_ok.GetURL("/title3.html");
-    ui_test_utils::NavigateToURL(browser(), fail_url);
-    web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(
-        web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
-        content::PAGE_TYPE_ERROR);
-  }
-
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, CECPQ2EnabledPolicy) {
-  RunTest(base::BindOnce([](PolicyMap* policies) {
-    SetPolicy(policies, key::kCECPQ2Enabled, base::Value(false));
-  }));
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_CECPQ2};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should be able to load a page from the test server because CECPQ2 is
+  // enabled.
+  EXPECT_TRUE(GetBooleanPref(prefs::kCECPQ2Enabled));
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Disable the policy.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kCECPQ2Enabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Page loads should now fail.
+  EXPECT_FALSE(GetBooleanPref(prefs::kCECPQ2Enabled));
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_CECPQ2};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should be able to load a page from the test server because CECPQ2 is
+  // enabled.
+  EXPECT_TRUE(GetBooleanPref(prefs::kCECPQ2Enabled));
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
   // Setting ChromeVariations to a non-zero value should also disable
   // CECPQ2.
-  RunTest(base::BindOnce([](PolicyMap* policies) {
-    const auto* const variations_key =
+  const auto* const variations_key =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        // On Chrome OS the ChromeVariations policy doesn't exist and is
-        // replaced by DeviceChromeVariations.
-        key::kDeviceChromeVariations;
+      // On Chrome OS the ChromeVariations policy doesn't exist and is
+      // replaced by DeviceChromeVariations.
+      key::kDeviceChromeVariations;
 #else
-        key::kChromeVariations;
+      key::kChromeVariations;
 #endif
+  PolicyMap policies;
+  SetPolicy(&policies, variations_key, base::Value(1));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
 
-    SetPolicy(policies, variations_key, base::Value(1));
-  }));
+  // Page loads should now fail.
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
+  // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
+  net::SSLServerConfig ssl_config;
+  ssl_config.cipher_suite_for_testing = 0x000a;
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // 3DES is enabled by default, for now.
+  EXPECT_TRUE(GetBooleanPref(prefs::kTripleDESEnabled));
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Enable 3DES by policy.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // 3DES is still enabled.
+  EXPECT_TRUE(GetBooleanPref(prefs::kTripleDESEnabled));
+  result = LoadPage("/title3.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of More Awesomeness", result.title);
+
+  // Disable 3DES by policy.
+  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // 3DES is now disabled.
+  EXPECT_FALSE(GetBooleanPref(prefs::kTripleDESEnabled));
+  result = LoadPage("/title.html");
+  EXPECT_FALSE(result.success);
+}
 
 }  // namespace policy

@@ -855,8 +855,10 @@ int SSLClientSocketImpl::Init() {
 
   if (ssl_config_.require_ecdhe)
     command.append(":!kRSA");
-  if (ssl_config_.disable_legacy_crypto)
+  if (!context_->config().triple_des_enabled ||
+      ssl_config_.disable_legacy_crypto) {
     command.append(":!3DES");
+  }
 
   // Remove any disabled ciphers.
   for (uint16_t id : context_->config().disabled_cipher_suites) {

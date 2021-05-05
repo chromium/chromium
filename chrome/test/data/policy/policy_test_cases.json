@@ -3266,6 +3266,24 @@
     ]
   },
 
+  "TripleDESEnabled": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "TripleDESEnabled": true },
+        "prefs": {
+          "ssl.3des_enabled": { "value": true, "location": "local_state" }
+        }
+      },
+      {
+        "policies": { "TripleDESEnabled": false },
+        "prefs": {
+          "ssl.3des_enabled": { "value": false, "location": "local_state" }
+        }
+      }
+    ]
+  },
+
   "CertificateTransparencyEnforcementDisabledForUrls": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [

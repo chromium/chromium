@@ -47,6 +47,9 @@ struct NET_EXPORT SSLContextConfig {
   // If false, disables post-quantum key agreement in TLS connections.
   bool cecpq2_enabled = true;
 
+  // If false, disables 3DES cipher suites in TLS connections.
+  bool triple_des_enabled = true;
+
   // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
 };
 

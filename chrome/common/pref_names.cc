@@ -2161,6 +2161,9 @@ const char kHSTSPolicyBypassList[] = "hsts.policy.upgrade_bypass_list";
 // If false, disable post-quantum key agreement in TLS connections.
 const char kCECPQ2Enabled[] = "ssl.cecpq2_enabled";
 
+// Boolean that specifies whether 3DES cipher suites are enabled in TLS.
+const char kTripleDESEnabled[] = "ssl.3des_enabled";
+
 // Boolean that specifies whether the built-in asynchronous DNS client is used.
 const char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 

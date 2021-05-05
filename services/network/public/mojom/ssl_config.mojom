@@ -46,6 +46,9 @@ struct SSLConfig {
 
   // If false, disables post-quantum key agreement in TLS connections.
   bool cecpq2_enabled = true;
+
+  // If false, disables 3DES cipher suites in TLS connections.
+  bool triple_des_enabled = true;
 };
 
 // Receives SSL configuration updates.
