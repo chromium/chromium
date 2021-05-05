@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/value_iterators.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -410,8 +411,8 @@ void ContentSettingsPref::UpdatePref(
         settings_dictionary->RemoveWithoutPathExpansion(kSessionModelPath,
                                                         nullptr);
       } else {
-        settings_dictionary->SetWithoutPathExpansion(kSettingPath,
-                                                     value->CreateDeepCopy());
+        settings_dictionary->SetWithoutPathExpansion(
+            kSettingPath, base::Value::ToUniquePtrValue(value->Clone()));
         settings_dictionary->SetKey(
             kLastModifiedPath,
             base::Value(base::NumberToString(

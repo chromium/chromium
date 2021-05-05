@@ -964,7 +964,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
           *secondary_pattern = rule.secondary_pattern;
         if (session_model)
           *session_model = rule.session_model;
-        return rule.value.CreateDeepCopy();
+        return base::Value::ToUniquePtrValue(rule.value.Clone());
       }
     }
   }
