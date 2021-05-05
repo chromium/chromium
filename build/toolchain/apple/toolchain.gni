@@ -494,7 +494,7 @@ template("apple_toolchain") {
         }
 
         command =
-            "$_env_vars $_tool -module-name {{module_name}} " +
+            "$_env_vars $python_path $_tool -module-name {{module_name}} " +
             "-object-dir $_objects_dir " +
             "-module-path {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-header-path {{target_gen_dir}}/{{module_name}}.h " +
