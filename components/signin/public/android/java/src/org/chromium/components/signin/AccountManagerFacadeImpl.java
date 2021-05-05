@@ -60,7 +60,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final CountDownLatch mPopulateAccountCacheLatch = new CountDownLatch(1);
 
     private int mUpdateTasksCounter;
-    private final Queue<Runnable> mCallbacksWaitingForAccountsFetch = new ArrayDeque<>();
+    private final Queue<Callback<List<Account>>> mCallbacksWaitingForAccountsFetch =
+            new ArrayDeque<>();
 
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
@@ -137,7 +138,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      */
     @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
-        runAfterCacheIsPopulated(() -> callback.onResult(tryGetGoogleAccounts()));
+        ThreadUtils.assertOnUiThread();
+        if (isCachePopulated()) {
+            ThreadUtils.postOnUiThread(callback.bind(tryGetGoogleAccounts()));
+        } else {
+            mCallbacksWaitingForAccountsFetch.add(callback);
+        }
     }
 
     /**
@@ -255,18 +261,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mDelegate.isGooglePlayServicesAvailable();
     }
 
-    /**
-     * Runs a callback after the account list cache is populated.
-     */
-    private void runAfterCacheIsPopulated(Runnable runnable) {
-        ThreadUtils.assertOnUiThread();
-        if (isCachePopulated()) {
-            ThreadUtils.postOnUiThread(runnable);
-        } else {
-            mCallbacksWaitingForAccountsFetch.add(runnable);
-        }
-    }
-
     private void updateAccounts() {
         ThreadUtils.assertOnUiThread();
         new UpdateAccountsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -324,8 +318,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         if (--mUpdateTasksCounter > 0) return;
 
         while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
-            final Runnable runnable = mCallbacksWaitingForAccountsFetch.remove();
-            runnable.run();
+            final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
+            callback.onResult(tryGetGoogleAccounts());
         }
     }
 
@@ -350,8 +344,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         @Override
         protected void onPostExecute(Void v) {
             while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
-                final Runnable runnable = mCallbacksWaitingForAccountsFetch.remove();
-                runnable.run();
+                final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
+                callback.onResult(tryGetGoogleAccounts());
             }
             fireOnAccountsChangedNotification();
             decrementUpdateCounter();
