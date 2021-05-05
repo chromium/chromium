@@ -54,7 +54,9 @@
     </style>
     <base-page>
       <div slot="page-body">
-        <div id="description">[[i18n('confirmationCodeMessage')]]</div>
+        <div aria-live="polite">
+          [[i18n('confirmationCodeMessage')]]
+        </div>
         <div id="outerDiv" class="layout horizontal center">
           <div class="container">
             <div id="details" hidden$="[[!shouldShowProfileDetails_(profile)]]">
@@ -68,7 +70,6 @@
               <cr-input id="confirmationCode"
                   label="[[i18n('confirmationCodeInput')]]"
                   value="{{confirmationCode}}"
-                  aria-describedby="description"
                   error-message="[[i18n('confirmationCodeError')]]"
                   invalid="[[showError]]"
                   disabled="[[showBusy]]"

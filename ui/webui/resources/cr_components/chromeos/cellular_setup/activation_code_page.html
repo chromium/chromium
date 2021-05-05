@@ -177,7 +177,7 @@
     </style>
     <base-page>
       <div slot="page-body" id="pageBody" class="animate">
-        <span id="scanQrCodeDescription">
+        <span aria-live="polite">
           [[getDescription_(showNoProfilesMessage, cameraCount_ )]]
         </span>
         <template is="dom-if"
@@ -198,7 +198,6 @@
               <cr-button class="label"
                   id="startScanningButton"
                   on-click="startScanning_"
-                  aria-describedby="scanQrCodeDescription"
                   disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_, showBusy)]]">
                 <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
                 [[i18n('useCamera')]]
