@@ -5713,6 +5713,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings)},
 
+    {"privacy-sandbox-settings-2",
+     flag_descriptions::kPrivacySandboxSettings2Name,
+     flag_descriptions::kPrivacySandboxSettings2Description,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings2)},
+
 #if defined(OS_ANDROID)
     {"metrics-settings-android", flag_descriptions::kMetricsSettingsAndroidName,
      flag_descriptions::kMetricsSettingsAndroidDescription, kOsAndroid,

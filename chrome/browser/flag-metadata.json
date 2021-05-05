@@ -4318,6 +4318,17 @@
     "expiry_milestone": 92
   },
   {
+    "name": "privacy-sandbox-settings-2",
+    "owners": [
+      "andzaytsev",
+      "harrisonsean",
+      "sauski",
+      "rainhard",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "prominent-dark-mode-active-tab-title",
     "owners": [ "dfried" ],
     "expiry_milestone": 82

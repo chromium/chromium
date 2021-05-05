@@ -2063,6 +2063,11 @@ const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "
     "Sandbox APIs to be enabled.";
 
+const char kPrivacySandboxSettings2Name[] = "Privacy Sandbox Settings 2";
+const char kPrivacySandboxSettings2Description[] =
+    "Enables the second set of privacy sandbox settings. Requires "
+    "#privacy-sandbox-settings to also be enabled";
+
 const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
 const char kSafetyCheckWeakPasswordsDescription[] =
     "If weak passwords were found, show them in safety check.";

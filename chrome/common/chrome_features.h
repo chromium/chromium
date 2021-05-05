@@ -119,6 +119,9 @@ extern const base::Feature kPrivacySandboxSettings;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kPrivacySandboxSettingsURL;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrivacySandboxSettings2;
+
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCpuAffinityRestrictToLittleCores;
