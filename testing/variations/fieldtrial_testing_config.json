@@ -8303,6 +8303,26 @@
             ]
         }
     ],
+    "WebRTC-PreStreamDecoders": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "max:0,_V1"
+                }
+            ]
+        }
+    ],
     "WebRTC-TaskQueuePacer": [
         {
             "platforms": [
