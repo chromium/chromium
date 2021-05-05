@@ -122,20 +122,8 @@ void ExtensionsMenuItemView::OnThemeChanged() {
       GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_MenuIconColor));
 
-  if (pin_button_) {
+  if (pin_button_)
     pin_button_->SetInkDropBaseColor(icon_color);
-
-    SkColor unpinned_icon_color =
-        GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_MenuIconColor));
-    SkColor icon_color =
-        IsPinned() ? GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
-                         ui::NativeTheme::kColorId_ProminentButtonColor))
-                   : unpinned_icon_color;
-    SetButtonIconWithColor(pin_button_,
-                           IsPinned() ? views::kUnpinIcon : views::kPinIcon,
-                           icon_color);
-  }
 
   SetButtonIconWithColor(context_menu_button_, kBrowserToolsIcon, icon_color);
 
@@ -159,6 +147,19 @@ void ExtensionsMenuItemView::UpdatePinButton() {
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
   pin_button_->SetEnabled(!is_force_pinned && !profile_->IsOffTheRecord());
+
+  if (!GetWidget())
+    return;
+  SkColor unpinned_icon_color =
+      GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_MenuIconColor));
+  SkColor icon_color =
+      IsPinned() ? GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
+                       ui::NativeTheme::kColorId_ProminentButtonColor))
+                 : unpinned_icon_color;
+  SetButtonIconWithColor(pin_button_,
+                         IsPinned() ? views::kUnpinIcon : views::kPinIcon,
+                         icon_color);
 }
 
 bool ExtensionsMenuItemView::IsContextMenuRunningForTesting() const {
