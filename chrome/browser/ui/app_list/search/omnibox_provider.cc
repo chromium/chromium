@@ -9,10 +9,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
+#include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -44,7 +47,13 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
       list_controller_(list_controller),
       controller_(std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          ProviderTypes())) {
+          ProviderTypes())),
+      favicon_cache_(FaviconServiceFactory::GetForProfile(
+                         profile,
+                         ServiceAccessType::EXPLICIT_ACCESS),
+                     HistoryServiceFactory::GetForProfile(
+                         profile,
+                         ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_->AddObserver(this);
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization)) {
@@ -86,17 +95,19 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   for (const AutocompleteMatch& match : result) {
     // Do not return a match in any of these cases:
     // - The URL is invalid.
-    // - The URL points to Drive Web. The LauncherSearchProvider surfaces Drive
-    //   results.
-    // - The URL points to a local file. The LauncherSearchProvider also handles
-    //   files results, even if they've been opened in the browser.
+    // - The URL points to Drive Web. The Drive search and zero-state
+    //   providers surface Drive results.
+    // - The URL points to a local file. The Local file search and zero-state
+    //   providers handle local file results, even if they've been opened in
+    //   the browser.
     if (!match.destination_url.is_valid() ||
         IsDriveUrl(match.destination_url) ||
         match.destination_url.SchemeIsFile()) {
       continue;
     }
+
     new_results.emplace_back(std::make_unique<OmniboxResult>(
-        profile_, list_controller_, controller_.get(), match,
+        profile_, list_controller_, controller_.get(), &favicon_cache_, match,
         is_zero_state_input_));
   }
 

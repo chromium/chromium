@@ -49,7 +49,7 @@ class RankingItemUtilTest : public AppListTestBase {
     match.type = type;
     return std::make_unique<OmniboxResult>(profile_.get(),
                                            app_list_controller_delegate_.get(),
-                                           nullptr, match, false);
+                                           nullptr, nullptr, match, false);
   }
 
  private:

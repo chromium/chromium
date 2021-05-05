@@ -24,6 +24,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/util.h"
 #include "extensions/common/image_util.h"
@@ -69,8 +70,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "publicly available image."
         })");
 
-// AutocompleteMatchType::Type to vector icon, used for app list.
-const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
+// Types of generic icon to show with a result.
+enum class IconType {
+  kDomainIcon,
+  kSearchIcon,
+  kHistoryIcon,
+  kEqualIcon,
+};
+
+const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::HISTORY_URL:
@@ -86,7 +94,7 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL:
-      return ash::kDomainIcon;
+      return IconType::kDomainIcon;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -98,24 +106,36 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return ash::kSearchIcon;
+      return IconType::kSearchIcon;
 
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return ash::kHistoryIcon;
+      return IconType::kHistoryIcon;
 
     case AutocompleteMatchType::CALCULATOR:
-      return ash::kEqualIcon;
+      return IconType::kEqualIcon;
 
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
-      break;
+      return IconType::kDomainIcon;
   }
-  NOTREACHED();
-  return ash::kDomainIcon;
+}
+
+// AutocompleteMatchType::Type to vector icon, used for app list.
+const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
+  switch (MatchTypeToIconType(type)) {
+    case IconType::kDomainIcon:
+      return ash::kDomainIcon;
+    case IconType::kSearchIcon:
+      return ash::kSearchIcon;
+    case IconType::kHistoryIcon:
+      return ash::kHistoryIcon;
+    case IconType::kEqualIcon:
+      return ash::kEqualIcon;
+  }
 }
 
 // Converts AutocompleteMatchType::Type to an answer vector icon.
@@ -176,11 +196,13 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
 OmniboxResult::OmniboxResult(Profile* profile,
                              AppListControllerDelegate* list_controller,
                              AutocompleteController* autocomplete_controller,
+                             FaviconCache* favicon_cache,
                              const AutocompleteMatch& match,
                              bool is_zero_suggestion)
     : profile_(profile),
       list_controller_(list_controller),
       autocomplete_controller_(autocomplete_controller),
+      favicon_cache_(favicon_cache),
       match_(match),
       is_zero_suggestion_(is_zero_suggestion) {
   if (match_.search_terms_args && autocomplete_controller_) {
@@ -223,6 +245,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
 
   if (AutocompleteMatch::IsSearchType(match_.type))
     SetIsOmniboxSearch(true);
+
   UpdateIcon();
   UpdateTitleAndDetails();
 
@@ -327,6 +350,9 @@ GURL OmniboxResult::DestinationURL() const {
 }
 
 void OmniboxResult::UpdateIcon() {
+  // TODO(crbug.com/1201151): Refactor this method once we've decided whether or
+  // not to use favicons for bookmarks.
+
   if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
       IsRichEntityResult()) {
     // Determine if we have a local icon. Calculator and non-weather answer
@@ -347,6 +373,20 @@ void OmniboxResult::UpdateIcon() {
       FetchRichEntityImage(match_.image_url);
     }
   } else {
+    if (favicon_cache_ &&
+        MatchTypeToIconType(match_.type) == IconType::kDomainIcon) {
+      // If we have a favicon available for this URL, use it. Otherwise fall
+      // back on using a generic icon.
+      const auto icon = favicon_cache_->GetFaviconForPageUrl(
+          match_.destination_url,
+          base::BindOnce(&OmniboxResult::OnFaviconFetched,
+                         weak_factory_.GetWeakPtr()));
+      if (!icon.IsEmpty()) {
+        SetIcon(icon.AsImageSkia());
+        return;
+      }
+    }
+
     BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile_);
     bool is_bookmarked =
@@ -435,6 +475,12 @@ void OmniboxResult::FetchRichEntityImage(const GURL& url) {
                         net::ReferrerPolicy::NEVER_CLEAR,
                         network::mojom::CredentialsMode::kOmit);
   bitmap_fetcher_->Start(profile_->GetURLLoaderFactory().get());
+}
+
+void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
+  // By contract, this is never called with an empty |icon|.
+  DCHECK(!icon.IsEmpty());
+  SetIcon(icon.AsImageSkia());
 }
 
 void OmniboxResult::SetZeroSuggestionActions() {
