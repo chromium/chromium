@@ -153,8 +153,6 @@
   } else {
     [self.consumer noIdentityAvailable];
   }
-
-  // TODO(crbug.com/1189836): Update the buttons.
 }
 
 // Callback used when the sign in flow is complete, with |success|.

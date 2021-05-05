@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -68,10 +69,14 @@
 }
 
 - (void)start {
-  // TODO(crbug.com/1189836): Check if sign-in screen need to be shown.
-  // if not:
-  // [self.delegate willFinishPresenting]
-  // if yes:
+  // TODO(crbug.com/1189836): The kSigninAllowed pref should be observed in case
+  // the policy is applied while this screen is presented.
+
+  if (!signin::IsSigninAllowed(self.browser->GetBrowserState()->GetPrefs())) {
+    self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
+    [self finishPresentingAndSkipRemainingScreens:NO];
+    return;
+  }
   self.hadIdentitiesAtStartup = ios::GetChromeBrowserProvider()
                                     ->GetChromeIdentityService()
                                     ->HasIdentities();
@@ -123,6 +128,10 @@
   } else {
     [self triggerAddAccount];
   }
+}
+
+- (void)didTapSecondaryActionButton {
+  [self finishPresentingAndSkipRemainingScreens:NO];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate

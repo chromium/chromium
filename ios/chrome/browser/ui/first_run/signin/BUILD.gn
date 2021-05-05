@@ -13,6 +13,7 @@ source_set("signin") {
   ]
   deps = [
     ":signin_ui",
+    "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
