@@ -22,6 +22,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/host_resolver.mojom-shared.h"
 
@@ -120,6 +121,14 @@ struct EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode> {
       net::SecureDnsMode secure_dns_mode);
   static bool FromMojom(network::mojom::SecureDnsMode in,
                         net::SecureDnsMode* out);
+};
+
+template <>
+struct EnumTraits<network::mojom::SecureDnsPolicy, net::SecureDnsPolicy> {
+  static network::mojom::SecureDnsPolicy ToMojom(
+      net::SecureDnsPolicy secure_dns_mode);
+  static bool FromMojom(network::mojom::SecureDnsPolicy in,
+                        net::SecureDnsPolicy* out);
 };
 
 template <>

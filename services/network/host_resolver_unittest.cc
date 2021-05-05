@@ -715,8 +715,8 @@ TEST_F(HostResolverTest, SecureDnsModeOverride) {
 
   mojom::ResolveHostParametersPtr optional_parameters =
       mojom::ResolveHostParameters::New();
-  optional_parameters->secure_dns_mode_override =
-      network::mojom::OptionalSecureDnsMode::SECURE;
+  optional_parameters->secure_dns_policy =
+      network::mojom::SecureDnsPolicy::DISABLE;
 
   base::RunLoop run_loop;
   mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
@@ -730,7 +730,7 @@ TEST_F(HostResolverTest, SecureDnsModeOverride) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("127.0.0.1", 80)));
-  EXPECT_EQ(net::SecureDnsMode::kSecure,
+  EXPECT_EQ(net::SecureDnsMode::kOff,
             inner_resolver->last_secure_dns_mode_override().value());
 }
 

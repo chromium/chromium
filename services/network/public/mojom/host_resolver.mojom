@@ -40,6 +40,12 @@ enum SecureDnsMode {
   SECURE,
 };
 
+// This enum corresponds to net::SecureDnsPolicy
+enum SecureDnsPolicy {
+  ALLOW,
+  DISABLE,
+};
+
 // Overridable DNS configuration values for host resolution. All fields default
 // to a non-overriding state where the relevant value will be used from system
 // DNS configuration.
@@ -83,8 +89,9 @@ struct DnsConfigOverrides {
   // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
   array<DnsOverHttpsServer>? dns_over_https_servers;
 
-  // The default SecureDnsMode to use when resolving queries. It can be
-  // for individual requests such as requests to resolve a DoH server hostname.
+  // The SecureDnsMode to use when resolving queries. If set, it overrides
+  // the resolver's current configured mode, and can in turn be overridden by
+  // ResolveHostParameters.secure_dns_policy.
   OptionalSecureDnsMode secure_dns_mode = OptionalSecureDnsMode.NO_OVERRIDE;
 
   // Whether automatic upgrade to DNS over HTTPS servers is permitted.
@@ -244,9 +251,8 @@ struct ResolveHostParameters {
   // ResolveHostClient::OnComplete will not receive any addresses.
   bool is_speculative = false;
 
-  // Set to override the resolver's default secure dns mode for this request.
-  OptionalSecureDnsMode secure_dns_mode_override =
-      OptionalSecureDnsMode.NO_OVERRIDE;
+  // Controls the resolver's Secure DNS behavior for this request.
+  SecureDnsPolicy secure_dns_policy = SecureDnsPolicy.ALLOW;
 };
 
 // Response interface used to receive notifications from
