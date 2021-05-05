@@ -4,6 +4,7 @@
 
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
 
+#include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -18,6 +19,17 @@ namespace {
 // Number of random bytes in unique key for window ID. The length of the
 // window ID will be twice this number, as it is hexadecimal encoded.
 const size_t kUniqueKeyLength = 16;
+
+#if DCHECK_IS_ON()
+// Returns whether |error| represents a failure to execute JavaScript due to
+// JavaScript execution being disallowed.
+bool IsJavaScriptExecutionProhibitedError(NSError* error) {
+  return error.code == WKErrorJavaScriptExceptionOccurred &&
+         [@"Cannot execute JavaScript in this document"
+             isEqualToString:error.userInfo[@"WKJavaScriptExceptionMessage"]];
+}
+#endif
+
 }  // namespace
 
 @interface CRWJSWindowIDManager () {
@@ -61,10 +73,13 @@ const size_t kUniqueKeyLength = 16;
   [_webView evaluateJavaScript:scriptWithResult
              completionHandler:^(id result, NSError* error) {
                if (error) {
+#if DCHECK_IS_ON()
                  DCHECK(error.code == WKErrorWebViewInvalidated ||
-                        error.code == WKErrorWebContentProcessTerminated)
+                        error.code == WKErrorWebContentProcessTerminated ||
+                        IsJavaScriptExecutionProhibitedError(error))
                      << scriptWithResult << " failed with error "
                      << base::SysNSStringToUTF8(error.description);
+#endif
                  return;
                }
 
