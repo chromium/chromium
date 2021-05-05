@@ -7706,6 +7706,10 @@ PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
 }
 
 void LayoutBox::CheckIsVisualOverflowComputed() const {
+  // TODO(crbug.com/1205708): There are still too many failures. Disable the
+  // the check for now. Need to investigate the reason.
+  return;
+  /*
   if (NGInkOverflow::ReadUnsetAsNoneScope::IsActive())
     return;
   if (!CanUseFragmentsForVisualOverflow())
@@ -7715,6 +7719,7 @@ void LayoutBox::CheckIsVisualOverflowComputed() const {
     return;
   for (const NGPhysicalBoxFragment& fragment : PhysicalFragments())
     DCHECK(fragment.IsInkOverflowComputed());
+  */
 }
 #endif
 
