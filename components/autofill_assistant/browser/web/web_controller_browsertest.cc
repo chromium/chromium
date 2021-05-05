@@ -322,11 +322,12 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                        std::move(done_callback), result_output));
   }
 
-  ClientStatus SelectOption(const Selector& selector,
-                            const std::string& re2,
-                            bool case_sensitive,
-                            SelectOptionProto::OptionComparisonAttribute
-                                option_comparison_attribute) {
+  ClientStatus SelectOption(
+      const Selector& selector,
+      const std::string& re2,
+      bool case_sensitive,
+      SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+      bool strict) {
     base::RunLoop run_loop;
     ClientStatus result;
 
@@ -335,7 +336,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
         base::BindOnce(
             &WebControllerBrowserTest::FindSelectOptionElementCallback,
             base::Unretained(this), re2, case_sensitive,
-            option_comparison_attribute, run_loop.QuitClosure(), &result));
+            option_comparison_attribute, strict, run_loop.QuitClosure(),
+            &result));
 
     run_loop.Run();
     return result;
@@ -345,6 +347,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       const std::string& re2,
       bool case_sensitive,
       SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+      bool strict,
       base::OnceClosure done_callback,
       ClientStatus* result_output,
       const ClientStatus& status,
@@ -358,7 +361,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(element_result != nullptr);
     const ElementFinder::Result* element_result_ptr = element_result.get();
     web_controller_->SelectOption(
-        re2, case_sensitive, option_comparison_attribute, *element_result_ptr,
+        re2, case_sensitive, option_comparison_attribute, strict,
+        *element_result_ptr,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
@@ -2053,48 +2057,61 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOption) {
   )";
 
   // Selecting on a non-<select> element.
-  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+  EXPECT_EQ(INVALID_TARGET,
             SelectOption(Selector({"#input1"}), std::string(),
-                         /* case_sensitive= */ false, SelectOptionProto::LABEL)
+                         /* case_sensitive= */ false, SelectOptionProto::LABEL,
+                         /* strict= */ true)
                 .proto_status());
 
   // Fails if no comparison attribute is set.
   EXPECT_EQ(INVALID_ACTION,
             SelectOption(selector, "one", /* case_sensitive= */ false,
-                         SelectOptionProto::NOT_SET)
+                         SelectOptionProto::NOT_SET, /* strict= */ true)
                 .proto_status());
 
   // Select value not matching anything.
   EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
             SelectOption(selector, "incorrect label",
-                         /* case_sensitive= */ false, SelectOptionProto::LABEL)
+                         /* case_sensitive= */ false, SelectOptionProto::LABEL,
+                         /* strict= */ true)
                 .proto_status());
+
+  // Select value matching everything.
+  EXPECT_EQ(TOO_MANY_OPTION_VALUES_FOUND,
+            SelectOption(selector, ".*", /* case_sensitive= */ false,
+                         SelectOptionProto::LABEL, /* strict= */ true)
+                .proto_status());
+  EXPECT_EQ(ACTION_APPLIED,
+            SelectOption(selector, ".*", /* case_sensitive= */ false,
+                         SelectOptionProto::LABEL, /* strict= */ false)
+                .proto_status());
+  EXPECT_EQ("One", content::EvalJs(shell(), javascript));
 
   // Select value matching the option's label.
   EXPECT_EQ(ACTION_APPLIED,
             SelectOption(selector, "^ZÜRICH", /* case_sensitive= */ false,
-                         SelectOptionProto::LABEL)
+                         SelectOptionProto::LABEL, /* strict= */ true)
                 .proto_status());
   EXPECT_EQ("Zürich Hauptbahnhof", content::EvalJs(shell(), javascript));
 
   // Select value matching the option's value.
   EXPECT_EQ(ACTION_APPLIED,
             SelectOption(selector, "^Aü万𠜎$", /* case_sensitive= */ false,
-                         SelectOptionProto::VALUE)
+                         SelectOptionProto::VALUE, /* strict= */ true)
                 .proto_status());
   EXPECT_EQ("Character Test Entry", content::EvalJs(shell(), javascript));
 
   // With a regular expression matching the option's value.
   EXPECT_EQ(ACTION_APPLIED,
             SelectOption(selector, "^O.E$", /* case_sensitive= */ false,
-                         SelectOptionProto::VALUE)
+                         SelectOptionProto::VALUE, /* strict= */ true)
                 .proto_status());
   EXPECT_EQ("One", content::EvalJs(shell(), javascript));
 
   // With a regular expression matching the option's value case sensitive.
   EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
             SelectOption(selector, "^O.E$", /* case_sensitive= */ true,
-                         SelectOptionProto::VALUE)
+                         SelectOptionProto::VALUE, /* strict= */ true)
                 .proto_status());
   EXPECT_EQ("One", content::EvalJs(shell(), javascript));
 }
@@ -2104,7 +2121,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionInIFrame) {
   Selector select_selector({"#iframe", "select[name=state]"});
   EXPECT_EQ(ACTION_APPLIED,
             SelectOption(select_selector, "^NY", /* case_sensitive= */ false,
-                         SelectOptionProto::LABEL)
+                         SelectOptionProto::LABEL, /* strict= */ true)
                 .proto_status());
 
   const std::string javascript = R"(
@@ -2119,7 +2136,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionInIFrame) {
   select_selector = Selector({"#iframeExternal", "select[name=pet]"});
   EXPECT_EQ(ACTION_APPLIED,
             SelectOption(select_selector, "^Cat", /* case_sensitive= */ false,
-                         SelectOptionProto::LABEL)
+                         SelectOptionProto::LABEL, /* strict= */ true)
                 .proto_status());
 
   Selector result_selector({"#iframeExternal", "#myPet"});
@@ -2929,7 +2946,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionElement) {
   GetFieldsValue({selector}, {"two"});
 
   // Using on a non-<select> element.
-  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+  EXPECT_EQ(INVALID_TARGET,
             SelectOptionElement(Selector({"#input1"}), option).proto_status());
 
   // Random element that is certainly not an option in the <select>.
@@ -2967,7 +2984,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckSelectedOptionElement) {
       CheckSelectedOptionElement(select, not_selected_option).proto_status());
 
   // Using on a non-<select> element.
-  EXPECT_EQ(ELEMENT_MISMATCH,
+  EXPECT_EQ(INVALID_TARGET,
             CheckSelectedOptionElement(input, selected_option).proto_status());
 }
 

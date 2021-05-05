@@ -210,6 +210,13 @@ enum ProcessedActionStatusProto {
   // password's origin.
   PASSWORD_ORIGIN_MISMATCH = 29;
 
+  // Selecting an option failed because more than one option matched.
+  TOO_MANY_OPTION_VALUES_FOUND = 30;
+
+  // The action's target did not fit the action. E.g. a |SelectOption| being
+  // called on any element other than <select>.
+  INVALID_TARGET = 31;
+
   reserved 15, 23, 25;
 }
 

@@ -92,7 +92,8 @@ void SelectOptionAction::OnWaitForElement(const Selector& selector,
       base::BindOnce(&WebController::SelectOption,
                      delegate_->GetWebController()->GetWeakPtr(), value_,
                      case_sensitive_,
-                     proto_.select_option().option_comparison_attribute()),
+                     proto_.select_option().option_comparison_attribute(),
+                     proto_.select_option().strict()),
       base::BindOnce(&SelectOptionAction::EndAction,
                      weak_ptr_factory_.GetWeakPtr()));
 }

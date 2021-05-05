@@ -336,7 +336,7 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
 
     action_delegate_->GetWebController()->SelectOption(
         re2, /* case_sensitive= */ false, option_comparison_attribute,
-        *element_ptr, std::move(on_set_field_value));
+        /* strict= */ true, *element_ptr, std::move(on_set_field_value));
     return;
   }
 

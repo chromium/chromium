@@ -42,11 +42,12 @@ class MockWebController : public WebController {
   MOCK_METHOD2(CheckOnTop,
                void(const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>));
-  MOCK_METHOD5(SelectOption,
+  MOCK_METHOD6(SelectOption,
                void(const std::string& re2,
                     bool case_sensitive,
                     SelectOptionProto::OptionComparisonAttribute
                         option_comparison_attribute,
+                    bool strict,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD3(CheckSelectedOptionElement,

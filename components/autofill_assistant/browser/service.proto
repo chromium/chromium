@@ -1393,6 +1393,11 @@ message SelectOptionProto {
   }
   optional OptionComparisonAttribute option_comparison_attribute = 6;
 
+  // If |strict|, only one match is allowed. Multiple matches will return a
+  // |TOO_MANY_OPTION_VALUES_FOUND| error. If not |strict| and multiple matches
+  // are found, the first one is selected.
+  optional bool strict = 9;
+
   reserved 1, 3 to 5;
 }
 

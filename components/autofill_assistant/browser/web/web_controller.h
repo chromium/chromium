@@ -151,6 +151,7 @@ class WebController {
       const std::string& re2,
       bool case_sensitive,
       SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+      bool strict,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
@@ -465,9 +466,15 @@ class WebController {
       autofill::ContentAutofillDriver* driver,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
-  void OnJavascriptResultExpectingTrue(
+  // Handling a JS result for a "SelectOption" action. This expects the JS
+  // result to contain an integer and returns the following status:
+  // * -1 -> INVALID_TARGET
+  // *  0 -> OPTION_ELEMENT_NOT_FOUND
+  // *  1 -> ACTION_APPLIED
+  // *  n -> TOO_MANY_OPTION_VALUES_FOUND
+  void OnSelectOptionJavascriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
-      ProcessedActionStatusProto status_if_false,
+      ProcessedActionStatusProto status_if_zero,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 

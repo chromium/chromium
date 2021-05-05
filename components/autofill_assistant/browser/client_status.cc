@@ -142,6 +142,12 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::PASSWORD_ORIGIN_MISMATCH:
       out << "PASSWORD_ORIGIN_MISMATCH";
       break;
+    case ProcessedActionStatusProto::TOO_MANY_OPTION_VALUES_FOUND:
+      out << "TOO_MANY_OPTION_VALUES_FOUND";
+      break;
+    case ProcessedActionStatusProto::INVALID_TARGET:
+      out << "INVALID_TARGET";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.
