@@ -5,9 +5,18 @@
     justify-content: flex-end;
   }
 
+  :host([side-panel]) #top-container {
+    display: none;
+  }
+
   #readLaterList {
     max-height: 500px;
     overflow: auto;
+  }
+
+  :host([side-panel]) #readLaterList {
+    margin-block-start: 8px;
+    max-height: none;
   }
 
   #header {
@@ -49,6 +58,19 @@
     height: 24px;
     margin-inline-start: var(--mwb-list-item-horizontal-margin);
     margin-top: 4px;
+  }
+
+  :host([side-panel]) .sub-heading {
+    border: none;
+    font-weight: 600;
+    height: 20px;
+    margin: 0;
+    padding: 8px 16px;
+  }
+
+  :host([side-panel]) #ureadItemsList + .sub-heading {
+    border-top: 1px solid #dbdbdb;
+    margin-block-start: 8px;
   }
 
   #empty-state-header {
