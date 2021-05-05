@@ -20,10 +20,12 @@ import collections
 import dataclasses
 import json
 import logging
+import os
 import pathlib
 import subprocess
 import sys
-from typing import Dict, List
+import zipfile
+from typing import Dict, List, Set
 
 _SRC_DIR = pathlib.Path(__file__).parents[4].resolve()
 
@@ -154,27 +156,78 @@ class ClassLookupIndex:
       assert len(target_line_parts) == 2, target_line_parts
       target, build_config_path = target_line_parts
 
-      # Read the location of the java_sources_file from the build_config
-      with open(build_config_path) as build_config_contents:
-        build_config: Dict = json.load(build_config_contents)
-      deps_info = build_config['deps_info']
-      sources_path = deps_info.get('java_sources_file')
-      if not sources_path:
-        # TODO(crbug.com/1108362): Handle targets that have no
-        # deps_info.sources_path but contain srcjars.
-        continue
+      target = self._compute_toplevel_target(target)
+      full_class_names = self._compute_full_class_names_for_build_config(
+          build_config_path)
+      for full_class_name in full_class_names:
+        class_index[full_class_name].append(target)
 
+    return class_index
+
+  def _compute_toplevel_target(self, target: str) -> str:
+    """Computes top level target from the passed-in sub-target."""
+    if target.endswith('_java'):
+      return target
+
+    # Handle android_aar_prebuilt() sub targets.
+    index = target.find('_java__subjar')
+    if index >= 0:
+      return target[0:index + 5]
+    index = target.find('_java__classes')
+    if index >= 0:
+      return target[0:index + 5]
+
+    return target
+
+  def _compute_full_class_names_for_build_config(self, build_config_path: str
+                                                 ) -> Set[str]:
+    """Returns set of fully qualified class names for build config."""
+    with open(build_config_path) as build_config_contents:
+      build_config: Dict = json.load(build_config_contents)
+    deps_info = build_config['deps_info']
+
+    # Read the location of the java_sources_file from the build_config
+    sources_path = deps_info.get('java_sources_file')
+    if sources_path:
       # Read the java_sources_file, indexing the classes found
       with open(self._build_output_dir / sources_path) as sources_contents:
-        sources_lines = sources_contents
-        for source_line in sources_lines:
+        out = set()
+        for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())
           java_class = self._parse_full_java_class(source_path)
           if java_class:
-            class_index[java_class].append(target)
-          continue
+            out.add(java_class)
+        return out
 
-    return class_index
+    # |unprocessed_jar_path| is set for prebuilt targets. (ex:
+    # android_aar_prebuilt())
+    # |unprocessed_jar_path| might be set but not exist if not all targets have
+    # been built.
+    unprocessed_jar_path = self._build_output_dir / deps_info.get(
+        'unprocessed_jar_path')
+    if unprocessed_jar_path and os.path.exists(unprocessed_jar_path):
+      return self._extract_full_class_names_from_jar(unprocessed_jar_path)
+
+    return set()
+
+  def _extract_full_class_names_from_jar(self,
+                                         jar_path: pathlib.Path) -> Set[str]:
+    """Returns set of fully qualified class names in passed-in jar."""
+    out = set()
+    with zipfile.ZipFile(jar_path) as z:
+      for zip_entry_name in z.namelist():
+        if not zip_entry_name.endswith('.class'):
+          continue
+        # Remove .class suffix
+        full_java_class = zip_entry_name[:-6]
+
+        full_java_class = full_java_class.replace('/', '.')
+        dollar_index = full_java_class.find('$')
+        if dollar_index >= 0:
+          full_java_class[0:dollar_index]
+
+        out.add(full_java_class)
+    return out
 
   def _parse_full_java_class(self, source_path: pathlib.Path) -> str:
     """Guess the fully qualified class name from the path to the source file."""
