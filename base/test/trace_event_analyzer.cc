@@ -149,7 +149,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
         arg_numbers[it.key()] = it.value().GetDouble();
       }
       // Record all arguments as values.
-      arg_values[it.key()] = it.value().CreateDeepCopy();
+      arg_values[it.key()] = base::Value::ToUniquePtrValue(it.value().Clone());
     }
   }
 
@@ -184,7 +184,7 @@ bool TraceEvent::GetArgAsValue(const std::string& name,
                                std::unique_ptr<base::Value>* arg) const {
   const auto it = arg_values.find(name);
   if (it != arg_values.end()) {
-    *arg = it->second->CreateDeepCopy();
+    *arg = base::Value::ToUniquePtrValue(it->second->Clone());
     return true;
   }
   return false;
