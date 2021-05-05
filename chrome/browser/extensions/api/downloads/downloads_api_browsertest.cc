@@ -4391,7 +4391,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       base::BindOnce(&OnDangerPromptCreated);
   DownloadsAcceptDangerFunction::OnPromptCreatedForTesting(
       &callback);
-  ExtensionActionTestHelper::Create(current_browser())->Press(0);
+  ExtensionActionTestHelper::Create(current_browser())->Press(GetExtensionId());
   observer->WaitForFinished();
 }
 

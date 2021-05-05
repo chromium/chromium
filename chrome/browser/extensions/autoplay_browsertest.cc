@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
   content::WindowedNotificationObserver popup_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  browser_action_test_util->Press(0);
+  browser_action_test_util->Press(extension->id());
   popup_observer.Wait();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

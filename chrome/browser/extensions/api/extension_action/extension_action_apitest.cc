@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
-  EXPECT_EQ(extension->id(), toolbar_helper->GetExtensionId(0));
+  EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
 
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   EXPECT_FALSE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  toolbar_helper->Press(0);
+  toolbar_helper->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   EXPECT_TRUE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  toolbar_helper->Press(0);
+  toolbar_helper->Press(extension->id());
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   EXPECT_TRUE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  toolbar_helper->Press(0);
+  toolbar_helper->Press(extension->id());
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   EXPECT_EQ(0u, frames.size());
 
   // Open the popup again.
-  toolbar_helper->Press(0);
+  toolbar_helper->Press(extension->id());
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   frames = process_manager->GetRenderFrameHostsForExtension(extension->id());
@@ -766,9 +766,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
       ExtensionActionTestHelper::Create(browser());
 
   ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
-  EXPECT_EQ(extension->id(), toolbar_helper->GetExtensionId(0));
+  EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
 
-  gfx::Image default_icon = toolbar_helper->GetIcon(0);
+  gfx::Image default_icon = toolbar_helper->GetIcon(extension->id());
   EXPECT_FALSE(default_icon.IsEmpty());
 
   // Check the midpoint. All these icons are solid, but the rendered icon
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   EnsureActionIsEnabledOnActiveTab(action);
 
   // The new tab should still have the same icon (the default).
-  gfx::Image new_tab_icon = toolbar_helper->GetIcon(0);
+  gfx::Image new_tab_icon = toolbar_helper->GetIcon(extension->id());
   EXPECT_FALSE(default_icon.IsEmpty());
   EXPECT_EQ(SK_ColorRED, default_icon.AsBitmap().getColor(mid_x, mid_y));
 
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
       base::StringPrintf("setIcon({tabId: %d, path: 'blue_icon.png'});",
                          new_tab_id));
 
-  new_tab_icon = toolbar_helper->GetIcon(0);
+  new_tab_icon = toolbar_helper->GetIcon(extension->id());
   EXPECT_FALSE(new_tab_icon.IsEmpty());
   EXPECT_EQ(SK_ColorBLUE, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
 
@@ -830,14 +830,14 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   RunTestAndWaitForSuccess(
       web_contents, base::StringPrintf(kSetIconFromImageData, new_tab_id));
 
-  new_tab_icon = toolbar_helper->GetIcon(0);
+  new_tab_icon = toolbar_helper->GetIcon(extension->id());
   EXPECT_FALSE(new_tab_icon.IsEmpty());
   EXPECT_EQ(SK_ColorGREEN, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
 
   // Switch back to the first tab. The icon should still be red, since the other
   // changes were for specific tabs.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  gfx::Image first_tab_icon = toolbar_helper->GetIcon(0);
+  gfx::Image first_tab_icon = toolbar_helper->GetIcon(extension->id());
   EXPECT_FALSE(first_tab_icon.IsEmpty());
   EXPECT_EQ(SK_ColorRED, first_tab_icon.AsBitmap().getColor(mid_x, mid_y));
 
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
   auto get_response = [extension, toolbar_helper = toolbar_helper.get()]() {
     ExtensionTestMessageListener listener(/*will_reply=*/false);
     listener.set_extension_id(extension->id());
-    toolbar_helper->Press(0);
+    toolbar_helper->Press(extension->id());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     return listener.message();
   };

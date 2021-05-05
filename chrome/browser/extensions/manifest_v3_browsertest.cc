@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
   std::unique_ptr<ExtensionActionTestHelper> action_test_util =
       ExtensionActionTestHelper::Create(browser());
   ASSERT_EQ(1, action_test_util->NumberOfBrowserActions());
-  EXPECT_EQ(extension->id(), action_test_util->GetExtensionId(0));
+  EXPECT_TRUE(action_test_util->HasAction(extension->id()));
 
   ExtensionAction* const action =
       ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
   EXPECT_FALSE(action->HasIcon(ExtensionAction::kDefaultTabId));
 
   ResultCatcher catcher;
-  action_test_util->Press(0);
+  action_test_util->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   EXPECT_TRUE(action->HasIcon(ExtensionAction::kDefaultTabId));

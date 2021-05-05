@@ -173,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BrowserActionCreateTab) {
   // Observe background page being created and closed after
   // the browser action is clicked.
   LazyBackgroundObserver page_complete;
-  ExtensionActionTestHelper::Create(browser())->Press(0);
+  ExtensionActionTestHelper::Create(browser())->Press(
+      last_loaded_extension_id());
   page_complete.Wait();
 
   // Background page created a new tab before it closed.
@@ -197,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
   // Observe background page being created and closed after
   // the browser action is clicked.
   LazyBackgroundObserver page_complete;
-  ExtensionActionTestHelper::Create(browser())->Press(0);
+  ExtensionActionTestHelper::Create(browser())->Press(
+      last_loaded_extension_id());
   page_complete.Wait();
 
   // Background page is closed after creating a new tab.
@@ -409,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInBackgroundPage) {
   {
     ExtensionTestMessageListener nacl_module_loaded("nacl_module_loaded",
                                                     false);
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(
+        last_loaded_extension_id());
     EXPECT_TRUE(nacl_module_loaded.WaitUntilSatisfied());
     content::RunAllTasksUntilIdle();
     EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
@@ -419,7 +422,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInBackgroundPage) {
   // down.
   {
     LazyBackgroundObserver page_complete;
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(
+        last_loaded_extension_id());
     page_complete.WaitUntilClosed();
   }
 
@@ -530,7 +534,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
     ExtensionTestMessageListener listener_incognito("waiting_incognito", false);
 
     LazyBackgroundObserver page_complete(browser()->profile());
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(
+        last_loaded_extension_id());
     page_complete.Wait();
 
     // Only the original event page received the message.
@@ -613,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnUnload) {
   // The browser action has a new title.
   auto browser_action = ExtensionActionTestHelper::Create(browser());
   ASSERT_EQ(1, browser_action->NumberOfBrowserActions());
-  EXPECT_EQ("Success", browser_action->GetTooltip(0));
+  EXPECT_EQ("Success", browser_action->GetTooltip(last_loaded_extension_id()));
 }
 
 // Tests that both a regular page and an event page will receive events when
@@ -730,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureLazyBackgroundPageApiTest,
   // Click on the browser action icon to load video.
   {
     ExtensionTestMessageListener video_loaded("video_loaded", false);
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
     EXPECT_TRUE(video_loaded.WaitUntilSatisfied());
   }
 
@@ -744,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureLazyBackgroundPageApiTest,
                 testing::Not(testing::Contains(pip_activity)));
 
     ExtensionTestMessageListener entered_pip("entered_pip", false);
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
     EXPECT_TRUE(entered_pip.WaitUntilSatisfied());
     EXPECT_THAT(pm->GetLazyKeepaliveActivities(extension),
                 testing::Contains(pip_activity));
@@ -754,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureLazyBackgroundPageApiTest,
   // Background Page shuts down.
   {
     LazyBackgroundObserver page_complete;
-    ExtensionActionTestHelper::Create(browser())->Press(0);
+    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
     page_complete.WaitUntilClosed();
     EXPECT_FALSE(IsBackgroundPageAlive(extension->id()));
   }

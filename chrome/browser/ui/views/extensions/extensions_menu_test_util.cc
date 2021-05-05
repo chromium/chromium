@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_test_util.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -114,30 +115,34 @@ int ExtensionsMenuTestUtil::VisibleBrowserActions() {
   return visible_icons;
 }
 
-void ExtensionsMenuTestUtil::InspectPopup(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
+bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
+  return GetMenuItemViewForId(id) != nullptr;
+}
+
+void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
+  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   static_cast<ExtensionActionViewController*>(view->view_controller())
       ->InspectPopup();
 }
 
-bool ExtensionsMenuTestUtil::HasIcon(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
+bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
+  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return !view->primary_action_button_for_testing()
               ->GetImage(views::Button::STATE_NORMAL)
               .isNull();
 }
 
-gfx::Image ExtensionsMenuTestUtil::GetIcon(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
+gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
+  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return gfx::Image(view->primary_action_button_for_testing()->GetImage(
       views::Button::STATE_NORMAL));
 }
 
-void ExtensionsMenuTestUtil::Press(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
+void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
+  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -147,14 +152,9 @@ void ExtensionsMenuTestUtil::Press(int index) {
   views::test::ButtonTestApi(primary_button).NotifyClick(event);
 }
 
-std::string ExtensionsMenuTestUtil::GetExtensionId(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
-  DCHECK(view);
-  return view->view_controller()->GetId();
-}
-
-std::string ExtensionsMenuTestUtil::GetTooltip(int index) {
-  ExtensionsMenuItemView* view = GetMenuItemViewAtIndex(index);
+std::string ExtensionsMenuTestUtil::GetTooltip(
+    const extensions::ExtensionId& id) {
+  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -226,10 +226,10 @@ gfx::Size ExtensionsMenuTestUtil::GetToolbarActionSize() {
 }
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
-    int action_index) {
+    const extensions::ExtensionId& id) {
   auto* view_delegate = static_cast<ToolbarActionViewDelegateViews*>(
       static_cast<ExtensionActionViewController*>(
-          extensions_container_->GetActionForId(GetExtensionId(action_index)))
+          extensions_container_->GetActionForId(id))
           ->view_delegate());
   return views::BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
       view_delegate->GetReferenceButtonForPopup(),
@@ -238,13 +238,17 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 }
 
-ExtensionsMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewAtIndex(
-    int index) {
+ExtensionsMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
+    const extensions::ExtensionId& id) {
   std::vector<ExtensionsMenuItemView*> menu_items =
       menu_view_->extensions_menu_items_for_testing();
-  if (index >= base::checked_cast<int>(menu_items.size()))
+  auto iter =
+      base::ranges::find_if(menu_items, [id](ExtensionsMenuItemView* view) {
+        return view->view_controller()->GetId() == id;
+      });
+  if (iter == menu_items.end())
     return nullptr;
-  return menu_items[index];
+  return *iter;
 }
 
 // static

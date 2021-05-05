@@ -28,12 +28,12 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   // ExtensionActionTestHelper:
   int NumberOfBrowserActions() override;
   int VisibleBrowserActions() override;
-  void InspectPopup(int index) override;
-  bool HasIcon(int index) override;
-  gfx::Image GetIcon(int index) override;
-  void Press(int index) override;
-  std::string GetExtensionId(int index) override;
-  std::string GetTooltip(int index) override;
+  bool HasAction(const extensions::ExtensionId& id) override;
+  void InspectPopup(const extensions::ExtensionId& id) override;
+  bool HasIcon(const extensions::ExtensionId& id) override;
+  gfx::Image GetIcon(const extensions::ExtensionId& id) override;
+  void Press(const extensions::ExtensionId& id) override;
+  std::string GetTooltip(const extensions::ExtensionId& id) override;
   gfx::NativeView GetPopupNativeView() override;
   bool HasPopup() override;
   bool HidePopup() override;
@@ -51,15 +51,17 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
   gfx::Size GetToolbarActionSize() override;
-  gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(int action_index) override;
+  gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
+      const extensions::ExtensionId& id) override;
 
  private:
   class MenuViewObserver;
   class Wrapper;
 
-  // Returns the ExtensionsMenuItemView at the given |index| from the
-  // |menu_view|.
-  ExtensionsMenuItemView* GetMenuItemViewAtIndex(int index);
+  // Returns the ExtensionsMenuItemView for the given `id` from the
+  // `menu_view`.
+  ExtensionsMenuItemView* GetMenuItemViewForId(
+      const extensions::ExtensionId& id);
 
   // An override to allow test instances of the ExtensionsMenuView.
   // This has to be defined before |menu_view_| below.

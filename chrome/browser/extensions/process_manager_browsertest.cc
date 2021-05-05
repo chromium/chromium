@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
   // Open popup in the first extension.
-  test_util->Press(0);
+  test_util->Press(popup->id());
   frame_observer.Wait();
   ASSERT_TRUE(test_util->HasPopup());
 

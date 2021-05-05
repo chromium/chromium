@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -22,6 +23,9 @@ class Image;
 class Size;
 }  // namespace gfx
 
+// TODO(https://crbug.com/1197766): A lot of this class can be cleaned up for
+// the new toolbar UI. Some of it may also be removable, since we now have
+// the platform-abstract ExtensionsContainer class.
 class ExtensionActionTestHelper {
  public:
   // Constructs a ExtensionActionTestHelper which, if |is_real_window| is false,
@@ -41,25 +45,25 @@ class ExtensionActionTestHelper {
   // calling InProcessBrowserTest::RunScheduledLayouts()) for a browser test.
   virtual int VisibleBrowserActions() = 0;
 
-  // Inspects the extension popup for the action at the given index.
-  virtual void InspectPopup(int index) = 0;
+  // Returns true if there is an action for the given `id`.
+  virtual bool HasAction(const extensions::ExtensionId& id) = 0;
 
-  // Returns whether the brownser action at |index| has a non-null icon. Note
-  // that the icon is loaded asynchronously, in which case you can wait for it
-  // to load by calling WaitForBrowserActionUpdated.
-  virtual bool HasIcon(int index) = 0;
+  // Inspects the extension popup for the action with the given `id`.
+  virtual void InspectPopup(const extensions::ExtensionId& id) = 0;
 
-  // Returns icon for the browser action at |index|.
-  virtual gfx::Image GetIcon(int index) = 0;
+  // Returns whether the extension action for the given `id` has a non-null
+  // icon. Note that the icon is loaded asynchronously, in which case you can
+  // wait for it to load by calling WaitForBrowserActionUpdated.
+  virtual bool HasIcon(const extensions::ExtensionId& id) = 0;
 
-  // Simulates a user click on the browser action button at |index|.
-  virtual void Press(int index) = 0;
+  // Returns icon for the action for the given `id`.
+  virtual gfx::Image GetIcon(const extensions::ExtensionId& id) = 0;
 
-  // Returns the extension id of the extension at |index|.
-  virtual std::string GetExtensionId(int index) = 0;
+  // Simulates a user click on the action button for the given `id`.
+  virtual void Press(const extensions::ExtensionId& id) = 0;
 
-  // Returns the current tooltip for the browser action button.
-  virtual std::string GetTooltip(int index) = 0;
+  // Returns the current tooltip of the action for the given `id`.
+  virtual std::string GetTooltip(const extensions::ExtensionId& id) = 0;
 
   virtual gfx::NativeView GetPopupNativeView() = 0;
 
@@ -108,9 +112,9 @@ class ExtensionActionTestHelper {
   virtual gfx::Size GetMaxPopupSize() = 0;
 
   // Returns the maximum available size to place a bubble anchored to
-  // the browser action at |action_index| on screen.
+  // the action with the given `id` on screen.
   virtual gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
-      int action_index) = 0;
+      const extensions::ExtensionId& id) = 0;
 
  protected:
   ExtensionActionTestHelper() {}

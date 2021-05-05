@@ -169,9 +169,10 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoDisabled) {
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DISABLED_IncognitoPopup) {
   ResultCatcher catcher;
 
-  ASSERT_TRUE(LoadExtension(
+  const extensions::Extension* const extension = LoadExtension(
       test_data_dir_.AppendASCII("incognito").AppendASCII("popup"),
-      {.allow_in_incognito = true}));
+      {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
 
   // Open incognito window and navigate to test page.
   Browser* incognito_browser = OpenURLOffTheRecord(
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DISABLED_IncognitoPopup) {
       embedded_test_server()->GetURL("/extensions/test_file.html"));
 
   // Simulate the incognito's browser action being clicked.
-  ExtensionActionTestHelper::Create(incognito_browser)->Press(0);
+  ExtensionActionTestHelper::Create(incognito_browser)->Press(extension->id());
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
