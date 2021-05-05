@@ -7,16 +7,12 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
-#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 
 namespace base {
-
-class Value;
 
 namespace trace_event {
 

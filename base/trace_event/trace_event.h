@@ -13,10 +13,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -452,32 +452,33 @@ class BASE_EXPORT TraceID {
     unsigned int id_flags_ = TRACE_EVENT_FLAG_HAS_ID;
   };
 
-  TraceID(const void* raw_id) : raw_id_(static_cast<unsigned long long>(
-                                        reinterpret_cast<uintptr_t>(raw_id))) {
+  explicit TraceID(const void* raw_id)
+      : raw_id_(static_cast<unsigned long long>(
+            reinterpret_cast<uintptr_t>(raw_id))) {
     id_flags_ = TRACE_EVENT_FLAG_HAS_LOCAL_ID;
   }
-  TraceID(unsigned long long raw_id) : raw_id_(raw_id) {}
-  TraceID(unsigned long raw_id) : raw_id_(raw_id) {}
-  TraceID(unsigned int raw_id) : raw_id_(raw_id) {}
-  TraceID(unsigned short raw_id) : raw_id_(raw_id) {}
-  TraceID(unsigned char raw_id) : raw_id_(raw_id) {}
-  TraceID(long long raw_id)
+  explicit TraceID(unsigned long long raw_id) : raw_id_(raw_id) {}
+  explicit TraceID(unsigned long raw_id) : raw_id_(raw_id) {}
+  explicit TraceID(unsigned int raw_id) : raw_id_(raw_id) {}
+  explicit TraceID(unsigned short raw_id) : raw_id_(raw_id) {}
+  explicit TraceID(unsigned char raw_id) : raw_id_(raw_id) {}
+  explicit TraceID(long long raw_id)
       : raw_id_(static_cast<unsigned long long>(raw_id)) {}
-  TraceID(long raw_id)
+  explicit TraceID(long raw_id)
       : raw_id_(static_cast<unsigned long long>(raw_id)) {}
-  TraceID(int raw_id)
+  explicit TraceID(int raw_id)
       : raw_id_(static_cast<unsigned long long>(raw_id)) {}
-  TraceID(short raw_id)
+  explicit TraceID(short raw_id)
       : raw_id_(static_cast<unsigned long long>(raw_id)) {}
-  TraceID(signed char raw_id)
+  explicit TraceID(signed char raw_id)
       : raw_id_(static_cast<unsigned long long>(raw_id)) {}
-  TraceID(LocalId raw_id) : raw_id_(raw_id.raw_id()) {
+  explicit TraceID(LocalId raw_id) : raw_id_(raw_id.raw_id()) {
     id_flags_ = TRACE_EVENT_FLAG_HAS_LOCAL_ID;
   }
-  TraceID(GlobalId raw_id) : raw_id_(raw_id.raw_id()) {
+  explicit TraceID(GlobalId raw_id) : raw_id_(raw_id.raw_id()) {
     id_flags_ = TRACE_EVENT_FLAG_HAS_GLOBAL_ID;
   }
-  TraceID(WithScope scoped_id)
+  explicit TraceID(WithScope scoped_id)
       : scope_(scoped_id.scope()),
         raw_id_(scoped_id.raw_id()),
         id_flags_(scoped_id.id_flags()) {}
@@ -587,7 +588,7 @@ void BASE_EXPORT UpdateTraceEventDurationExplicit(
 
 // These AddTraceEvent and AddTraceEventWithThreadIdAndTimestamp template
 // functions are defined here instead of in the macro, because the arg_values
-// could be temporary objects, such as std::string. In order to store
+// could be temporary objects, such as `std::string`. In order to store
 // pointers to the internal c_str and pass through to the tracing API,
 // the arg_values must live throughout these procedures.
 

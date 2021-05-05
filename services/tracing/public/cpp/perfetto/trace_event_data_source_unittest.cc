@@ -1052,8 +1052,8 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   auto* category_group_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kCategoryGroup);
 
-  trace_event_internal::TraceID trace_event_trace_id =
-      trace_event_internal::kNoId;
+  trace_event_internal::TraceID trace_event_trace_id(
+      trace_event_internal::kNoId);
 
   // COMPLETE events are split into a BEGIN/END event pair. Adding the event
   // writes the BEGIN event immediately.
@@ -1134,8 +1134,8 @@ TEST_F(TraceEventDataSourceTest, ExplicitThreadTimeForDifferentThread) {
   auto* category_group_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kCategoryGroup);
 
-  trace_event_internal::TraceID trace_event_trace_id =
-      trace_event_internal::kNoId;
+  trace_event_internal::TraceID trace_event_trace_id(
+      trace_event_internal::kNoId);
 
   // Chrome's main thread buffers and later flushes EarlyJava events on behalf
   // of other threads, including explicit thread time values. Such an event
