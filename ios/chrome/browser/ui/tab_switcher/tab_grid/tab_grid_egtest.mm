@@ -31,6 +31,7 @@ using chrome_test_util::LongPressCellAndDragToEdge;
 using chrome_test_util::LongPressCellAndDragToOffsetOf;
 using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
+using chrome_test_util::AddToBookmarksButton;
 using chrome_test_util::AddToReadingListButton;
 using chrome_test_util::CloseTabMenuButton;
 
@@ -91,7 +92,9 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   if ([self isRunningTest:@selector(testTabGridItemContextMenuShare)] ||
       [self isRunningTest:@selector
             (testTabGridItemContextMenuAddToReadingList)] ||
-      [self isRunningTest:@selector(testTabGridItemContextCloseTab)]) {
+      [self isRunningTest:@selector(testTabGridItemContextCloseTab)] ||
+      [self
+          isRunningTest:@selector(testTabGridItemContextMenuAddToBookmarks)]) {
     config.features_enabled.push_back(kTabGridContextMenu);
   }
   return config;
@@ -327,41 +330,29 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
 
-  NSString* snackBarLabel =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
-  // Start custom monitor, because there's a chance the snackbar is
-  // already gone by the time we wait for it (and it was like that sometimes).
-  [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
-                                    timeout:kSnackbarAppearanceTimeout];
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [self waitForSnackBarMessage:IDS_IOS_READING_LIST_SNACKBAR_MESSAGE
+      triggeredByTappingItemWithMatcher:AddToReadingListButton()];
+}
+
+// Tests the Add to Bookmarks action on a tab grid item's context menu.
+- (void)testTabGridItemContextMenuAddToBookmarks {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Tab Grid context menu only supported on iOS 13 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
 
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
-  // Add the page to the reading list.
-  [[EarlGrey selectElementWithMatcher:AddToReadingListButton()]
-      performAction:grey_tap()];
-
-  // Wait for the snackbar to appear.
-  id<GREYMatcher> snackbar_matcher =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
-  ConditionBlock wait_for_appearance = ^{
-    return [ChromeEarlGrey watcherDetectedButtonWithLabel:snackBarLabel];
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarAppearanceTimeout, wait_for_appearance),
-             @"Snackbar did not appear.");
-
-  // Wait for the snackbar to disappear.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_nil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
-             @"Snackbar did not disappear.");
+  [self waitForSnackBarMessage:IDS_IOS_BOOKMARK_PAGE_SAVED
+      triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
 }
 
 // Tests the Share action on a tab grid item's context menu.
@@ -952,6 +943,40 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
                              inWindowWithNumber:windowNumber];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
+}
+
+- (void)waitForSnackBarMessage:(int)messageIdentifier
+    triggeredByTappingItemWithMatcher:(id<GREYMatcher>)matcher {
+  NSString* snackBarLabel = l10n_util::GetNSStringWithFixup(messageIdentifier);
+  // Start custom monitor, because there's a chance the snackbar is
+  // already gone by the time we wait for it (and it was like that sometimes).
+  [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
+                                    timeout:kSnackbarAppearanceTimeout];
+
+  // Add the page to the reading list.
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  // Wait for the snackbar to appear.
+  id<GREYMatcher> snackbar_matcher =
+      chrome_test_util::ButtonWithAccessibilityLabelId(messageIdentifier);
+  ConditionBlock wait_for_appearance = ^{
+    return [ChromeEarlGrey watcherDetectedButtonWithLabel:snackBarLabel];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarAppearanceTimeout, wait_for_appearance),
+             @"Snackbar did not appear.");
+
+  // Wait for the snackbar to disappear.
+  ConditionBlock wait_for_disappearance = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
+             @"Snackbar did not disappear.");
 }
 
 @end

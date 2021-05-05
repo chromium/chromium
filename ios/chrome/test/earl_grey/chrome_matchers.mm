@@ -178,6 +178,10 @@ id<GREYMatcher> AddToReadingListButton() {
   return [ChromeMatchersAppInterface addToReadingListButton];
 }
 
+id<GREYMatcher> AddToBookmarksButton() {
+  return [ChromeMatchersAppInterface addToBookmarksButton];
+}
+
 id<GREYMatcher> CloseTabMenuButton() {
   return [ChromeMatchersAppInterface closeTabMenuButton];
 }

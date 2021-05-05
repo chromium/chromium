@@ -34,6 +34,9 @@ class DistantSession;
 // Tells the delegate to add |URL| and |title| to the reading list.
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
 
+// Tells the delegate to create a bookmark for |URL| with |title|.
+- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title;
+
 // Tells the delegate to close the tab with the item identifier |identifier|.
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito;
 

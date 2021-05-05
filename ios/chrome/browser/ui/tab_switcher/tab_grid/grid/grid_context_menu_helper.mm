@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
+#import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
@@ -70,19 +71,32 @@
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
-        [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                        [weakSelf.contextMenuDelegate shareURL:item.URL
-                                                         title:item.title
-                                                      fromView:gridCell];
-                      }]];
-        if ([weakSelf.contextMenuDelegate
-                respondsToSelector:@selector(addToReadingListURL:title:)]) {
-          [menuElements
-              addObject:[actionFactory actionToAddToReadingListWithBlock:^{
-                [weakSelf.contextMenuDelegate addToReadingListURL:item.URL
-                                                            title:item.title];
-              }]];
+        if (!IsURLNewTabPage(item.URL)) {
+          [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                          [weakSelf.contextMenuDelegate shareURL:item.URL
+                                                           title:item.title
+                                                        fromView:gridCell];
+                        }]];
+
+          if ([weakSelf.contextMenuDelegate
+                  respondsToSelector:@selector(addToReadingListURL:title:)]) {
+            [menuElements
+                addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+                  [weakSelf.contextMenuDelegate addToReadingListURL:item.URL
+                                                              title:item.title];
+                }]];
+          }
+
+          if ([weakSelf.contextMenuDelegate
+                  respondsToSelector:@selector(bookmarkURL:title:)]) {
+            [menuElements addObject:[actionFactory actionToBookmarkWithBlock:^{
+                            [weakSelf.contextMenuDelegate
+                                bookmarkURL:item.URL
+                                      title:item.title];
+                          }]];
+          }
         }
+
         if ([weakSelf.contextMenuDelegate
                 respondsToSelector:@selector(closeTabWithIdentifier:
                                                           incognito:)]) {

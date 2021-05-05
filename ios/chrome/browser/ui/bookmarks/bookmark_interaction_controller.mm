@@ -201,26 +201,33 @@ enum class PresentedState {
 
 - (void)presentBookmarkEditorForWebState:(web::WebState*)webState
                      currentlyBookmarked:(BOOL)bookmarked {
-  if (!self.bookmarkModel->loaded())
-    return;
   if (!webState)
     return;
 
-  GURL bookmarkedURL = webState->GetLastCommittedURL();
+  [self presentBookmarkEditorForURL:webState->GetLastCommittedURL()
+                              title:tab_util::GetTabTitle(webState)
+                currentlyBookmarked:bookmarked];
+}
+
+- (void)presentBookmarkEditorForURL:(const GURL&)URL
+                              title:(NSString*)title
+                currentlyBookmarked:(BOOL)bookmarked {
+  if (!self.bookmarkModel->loaded())
+    return;
 
   if (bookmarked) {
-    [self presentBookmarkEditorForBookmarkedURL:bookmarkedURL];
+    [self presentBookmarkEditorForBookmarkedURL:URL];
   } else {
     __weak BookmarkInteractionController* weakSelf = self;
+    // Copy of |URL| to be captured in block.
+    GURL bookmarkedURL(URL);
     void (^editAction)() = ^{
       [weakSelf presentBookmarkEditorForBookmarkedURL:bookmarkedURL];
     };
     [self.handler
-        showSnackbarMessage:[self.mediator
-                                addBookmarkWithTitle:tab_util::GetTabTitle(
-                                                         webState)
-                                                 URL:bookmarkedURL
-                                          editAction:editAction]];
+        showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
+                                                            URL:bookmarkedURL
+                                                     editAction:editAction]];
   }
 }
 

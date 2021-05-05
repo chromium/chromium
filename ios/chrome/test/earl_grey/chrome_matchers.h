@@ -139,6 +139,9 @@ id<GREYMatcher> ShowTabsButton();
 // Matcher for Add to reading list button.
 id<GREYMatcher> AddToReadingListButton();
 
+// Matcher for Add to bookmarks button.
+id<GREYMatcher> AddToBookmarksButton();
+
 // Matcher for SettingsSwitchCell.
 id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
                                    BOOL is_toggled_on);

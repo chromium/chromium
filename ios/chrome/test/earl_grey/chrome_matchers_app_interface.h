@@ -133,6 +133,9 @@
 // Matcher for Add to reading list button.
 + (id<GREYMatcher>)addToReadingListButton;
 
+// Matcher for Add to bookmarks button.
++ (id<GREYMatcher>)addToBookmarksButton;
+
 // Matcher for SettingsSwitchCell.
 + (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
                           isToggledOn:(BOOL)isToggledOn;

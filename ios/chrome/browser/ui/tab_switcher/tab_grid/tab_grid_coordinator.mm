@@ -10,7 +10,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/strings/grit/components_strings.h"
+#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -20,6 +22,7 @@
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -76,6 +79,10 @@
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
+
+  // The controller that shows the bookmarking UI after the user taps the Add
+  // to Bookmarks button.
+  BookmarkInteractionController* _bookmarkInteractionController;
 }
 
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
@@ -409,6 +416,18 @@
              withCompletion:^{
                extendedCompletion();
              }];
+}
+
+#pragma mark - Private
+
+// Lazily creates the bookmark interaction controller.
+- (BookmarkInteractionController*)bookmarkInteractionController {
+  if (!_bookmarkInteractionController) {
+    _bookmarkInteractionController = [[BookmarkInteractionController alloc]
+         initWithBrowser:self.regularBrowser
+        parentController:self.baseViewController];
+  }
+  return _bookmarkInteractionController;
 }
 
 #pragma mark - Private (Thumb Strip)
@@ -856,6 +875,19 @@
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:URL title:title];
   [readingListAdder addToReadingList:command];
+}
+
+- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
+  bool currentlyBookmarked =
+      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+
+  [self.bookmarkInteractionController
+      presentBookmarkEditorForURL:URL
+                            title:title
+              currentlyBookmarked:currentlyBookmarked];
 }
 
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {

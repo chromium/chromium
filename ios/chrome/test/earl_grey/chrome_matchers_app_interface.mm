@@ -389,6 +389,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)addToBookmarksButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS)],
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
                           isToggledOn:(BOOL)isToggledOn {
   return [ChromeMatchersAppInterface settingsSwitchCell:accessibilityIdentifier
