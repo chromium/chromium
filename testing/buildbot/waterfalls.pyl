@@ -4979,7 +4979,7 @@
       },
       'Linux Ozone Tester (Headless)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
          ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_headless_tests',
@@ -4987,7 +4987,7 @@
       },
       'Linux Ozone Tester (Wayland)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
          ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_wayland_tests',
@@ -4995,7 +4995,7 @@
       },
       'Linux Ozone Tester (X11)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_x11_tests',

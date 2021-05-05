@@ -781,12 +781,22 @@
       'Linux Ozone Tester (Wayland)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
         ],
       },
       # CI tester.
       'Linux Tester (Ozone Wayland)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
+        ],
+      },
+    },
+  },
+  'browser_tests_x11': {
+    'modifications': {
+      'Linux Ozone Tester (X11)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
         ],
       },
     },
