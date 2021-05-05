@@ -18,10 +18,12 @@
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/enum_table.h"
@@ -34,6 +36,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using blink::mojom::PresentationConnectionMessagePtr;
 using cast_channel::Result;
@@ -318,6 +321,23 @@ void MirroringActivity::OnInternalMessage(
 void MirroringActivity::CreateMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {}
+
+std::string MirroringActivity::GetRouteDescription(
+    const CastSession& session) const {
+  if (!mirroring_type_) {
+    return CastActivity::GetRouteDescription(session);
+  }
+  switch (*mirroring_type_) {
+    case MirroringActivity::MirroringType::kTab:
+      return l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_CASTING_TAB);
+    case MirroringActivity::MirroringType::kDesktop:
+      return l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_CASTING_DESKTOP);
+    case MirroringActivity::MirroringType::kOffscreenTab:
+      return l10n_util::GetStringFUTF8(
+          IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION,
+          base::UTF8ToUTF16(route().media_source().url().host()));
+  }
+}
 
 void MirroringActivity::HandleParseJsonResult(
     const std::string& route_id,

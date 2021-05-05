@@ -73,7 +73,7 @@ std::string WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
 std::string WiredDisplayMediaRouteProvider::GetRouteDescription(
     const std::string& media_source) {
   return l10n_util::GetStringFUTF8(
-      IDS_MEDIA_ROUTER_WIRED_DISPLAY_ROUTE_DESCRIPTION,
+      IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION,
       base::UTF8ToUTF16(url::Origin::Create(GURL(media_source)).host()));
 }
 

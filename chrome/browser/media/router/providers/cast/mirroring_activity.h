@@ -72,6 +72,7 @@ class MirroringActivity : public CastActivity,
   void CreateMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
+  std::string GetRouteDescription(const CastSession& session) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);

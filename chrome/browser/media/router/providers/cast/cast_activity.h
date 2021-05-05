@@ -165,6 +165,8 @@ class CastActivity {
     return it == connected_clients_.end() ? nullptr : it->second.get();
   }
 
+  virtual std::string GetRouteDescription(const CastSession& session) const;
+
   int cast_channel_id() const { return sink_.cast_channel_id(); }
 
   MediaRoute route_;

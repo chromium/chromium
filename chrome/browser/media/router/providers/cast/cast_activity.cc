@@ -69,7 +69,7 @@ void CastActivity::SetOrUpdateSession(const CastSession& session,
            << session_id_.value_or("<missing>")
            << ", new session_id = " << session.session_id();
   DCHECK(sink.is_cast_sink());
-  route_.set_description(session.GetRouteDescription());
+  route_.set_description(GetRouteDescription(session));
   sink_ = sink;
   if (session_id_) {
     DCHECK_EQ(*session_id_, session.session_id());
@@ -177,6 +177,11 @@ void CastActivity::HandleLeaveSession(const std::string& client_id) {
 
 void CastActivity::OnSessionUpdated(const CastSession& session,
                                     const std::string& hash_token) {}
+
+std::string CastActivity::GetRouteDescription(
+    const CastSession& session) const {
+  return session.GetRouteDescription();
+}
 
 CastSessionClientFactoryForTest* CastActivity::client_factory_for_test_ =
     nullptr;

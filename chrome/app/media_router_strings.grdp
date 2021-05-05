@@ -110,6 +110,15 @@
   <message name="IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES" desc="Text shown as the status of a Cast device that is not compatible with the selected website but is compatible with other video websites.">
     Available for specific video sites
   </message>
+  <message name="IDS_MEDIA_ROUTER_CASTING_DESKTOP" desc="The status text of a Cast device to which we are mirroring the contents of the user's entire screen.">
+    Casting desktop
+  </message>
+  <message name="IDS_MEDIA_ROUTER_CASTING_TAB" desc="The status text of a Cast device to which we are mirroring the contents of a browser tab.">
+    Casting tab
+  </message>
+  <message name="IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
+    Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
+  </message>
 
   <!-- File Dialog -->
   <message name="IDS_MEDIA_ROUTER_FILE_DIALOG_AUDIO_VIDEO_FILTER" desc="Label for the drop down menu in the file selection dialog to show only audio and
@@ -146,9 +155,6 @@ video files, instead of all files.">
   </message>
 
   <!-- Wired Display Media Route Provider -->
-  <message name="IDS_MEDIA_ROUTER_WIRED_DISPLAY_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
-    Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
-  </message>
   <message name="IDS_MEDIA_ROUTER_WIRED_DISPLAY_SINK_NAME" desc="Name shown for a wired display that can be used as a Cast destination.">
     Display <ph name="DISPLAY_ID">$1<ex>1</ex></ph>
   </message>
