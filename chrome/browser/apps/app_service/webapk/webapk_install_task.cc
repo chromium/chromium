@@ -24,6 +24,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/webapk.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -124,7 +125,10 @@ void WebApkInstallTask::Start(ResultCallback callback) {
 
   auto& registrar = web_app_provider_->registrar();
 
-  if (!registrar.IsInstalled(app_id_)) {
+  // This is already checked in WebApkManager, check again in case anything
+  // changed while the install request was queued.
+  if (!registrar.IsInstalled(app_id_) ||
+      !registrar.GetAppShareTarget(app_id_)) {
     std::move(callback).Run(false);
     return;
   }
@@ -171,7 +175,34 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   web_app_manifest->set_start_url(registrar.GetAppStartUrl(app_id_).spec());
   web_app_manifest->add_scopes(registrar.GetAppScope(app_id_).spec());
 
-  // TODO(crbug.com/1198433): Fill in Share Target.
+  auto* share_target = registrar.GetAppShareTarget(app_id_);
+  webapk::ShareTarget* proto_share_target =
+      web_app_manifest->add_share_targets();
+  proto_share_target->set_action(share_target->action.spec());
+  proto_share_target->set_method(
+      apps::ShareTarget::MethodToString(share_target->method));
+  proto_share_target->set_enctype(
+      apps::ShareTarget::EnctypeToString(share_target->enctype));
+
+  webapk::ShareTargetParams* proto_params =
+      proto_share_target->mutable_params();
+  if (!share_target->params.title.empty()) {
+    proto_params->set_title(share_target->params.title);
+  }
+  if (!share_target->params.text.empty()) {
+    proto_params->set_text(share_target->params.text);
+  }
+  if (!share_target->params.url.empty()) {
+    proto_params->set_url(share_target->params.url);
+  }
+
+  for (const auto& file : share_target->params.files) {
+    webapk::ShareTargetParamsFile* proto_file = proto_params->add_files();
+    proto_file->set_name(file.name);
+    for (const auto& accept_type : file.accept) {
+      proto_file->add_accept(accept_type);
+    }
+  }
 
   webapk::Image* image = web_app_manifest->add_icons();
   image->set_src(std::move(icon_url));

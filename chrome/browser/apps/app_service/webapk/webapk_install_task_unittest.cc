@@ -31,8 +31,10 @@
 namespace {
 
 constexpr char kTestAppUrl[] = "https://www.example.com/";
+constexpr char kTestAppActionUrl[] = "https://www.example.com/share";
 constexpr char kTestAppIcon[] = "https://www.example.com/icon.png";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
+constexpr char kTestShareTextParam[] = "share_text";
 const std::u16string kTestAppTitle = u"Test App";
 
 constexpr char kServerPath[] = "/webapk";
@@ -62,7 +64,7 @@ std::unique_ptr<net::test_server::HttpResponse> BuildFailedResponse() {
   return response;
 }
 
-std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
+std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
@@ -74,8 +76,16 @@ std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
   icon.url = GURL(kTestAppIcon);
   app_info->icon_infos.push_back(icon);
 
+  apps::ShareTarget target;
+  target.action = GURL(kTestAppActionUrl);
+  target.method = apps::ShareTarget::Method::kPost;
+  target.enctype = apps::ShareTarget::Enctype::kMultipartFormData;
+  target.params.text = kTestShareTextParam;
+  app_info->share_target = target;
+
   return app_info;
 }
+
 }  // namespace
 
 class WebApkInstallTaskTest : public testing::Test {
@@ -171,7 +181,8 @@ class WebApkInstallTaskTest : public testing::Test {
 };
 
 TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
-  auto app_id = web_app::test::InstallWebApp(profile(), BuildWebAppInfo());
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
@@ -180,16 +191,53 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
 
   ASSERT_EQ(last_webapk_request()->manifest_url(), kTestManifestUrl);
   const webapk::WebAppManifest& manifest = last_webapk_request()->manifest();
-  ASSERT_EQ(manifest.short_name(), "Test App");
-  ASSERT_EQ(manifest.start_url(), kTestAppUrl);
-  ASSERT_EQ(manifest.icons(0).src(), kTestAppIcon);
+  EXPECT_EQ(manifest.short_name(), "Test App");
+  EXPECT_EQ(manifest.start_url(), kTestAppUrl);
+  EXPECT_EQ(manifest.icons(0).src(), kTestAppIcon);
 
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 1);
   ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
             "org.chromium.webapk.some_package");
 }
 
-TEST_F(WebApkInstallTaskTest, InvalidManifest) {
+TEST_F(WebApkInstallTaskTest, ShareTarget) {
+  auto web_app_info = BuildDefaultWebAppInfo();
+
+  apps::ShareTarget share_target;
+  share_target.action = GURL("https://www.example.com/new");
+  share_target.method = apps::ShareTarget::Method::kPost;
+  share_target.enctype = apps::ShareTarget::Enctype::kFormUrlEncoded;
+  share_target.params.text = "share_text";
+  share_target.params.url = "share_url";
+  apps::ShareTarget::Files files1;
+  files1.name = "images";
+  files1.accept = {"image/*"};
+  apps::ShareTarget::Files files2;
+  files2.name = "videos";
+  files2.accept = {"video/mp4", "video/quicktime"};
+  share_target.params.files = {files1, files2};
+  web_app_info->share_target = share_target;
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  const webapk::WebAppManifest& manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(manifest.share_targets(0).action(), "https://www.example.com/new");
+  EXPECT_EQ(manifest.share_targets(0).params().text(), "share_text");
+  EXPECT_EQ(manifest.share_targets(0).params().url(), "share_url");
+  EXPECT_FALSE(manifest.share_targets(0).params().has_title());
+  EXPECT_EQ(manifest.share_targets(0).params().files(0).name(), "images");
+  EXPECT_EQ(manifest.share_targets(0).params().files(0).accept_size(), 1);
+  EXPECT_EQ(manifest.share_targets(0).params().files(0).accept(0), "image/*");
+  EXPECT_EQ(manifest.share_targets(0).params().files(1).accept_size(), 2);
+}
+
+TEST_F(WebApkInstallTaskTest, NoIconInManifest) {
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
@@ -201,7 +249,8 @@ TEST_F(WebApkInstallTaskTest, InvalidManifest) {
 }
 
 TEST_F(WebApkInstallTaskTest, FailedServerCall) {
-  auto app_id = web_app::test::InstallWebApp(profile(), BuildWebAppInfo());
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
   SetWebApkResponse(base::BindRepeating(&BuildFailedResponse));
 
@@ -211,7 +260,8 @@ TEST_F(WebApkInstallTaskTest, FailedServerCall) {
 }
 
 TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
-  auto app_id = web_app::test::InstallWebApp(profile(), BuildWebAppInfo());
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
