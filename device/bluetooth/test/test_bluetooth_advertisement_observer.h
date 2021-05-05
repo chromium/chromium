@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_TEST_TEST_BLUETOOTH_ADVERTISEMENT_OBSERVER_H_
 #define DEVICE_BLUETOOTH_TEST_TEST_BLUETOOTH_ADVERTISEMENT_OBSERVER_H_
 
-#include <utility>
-
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

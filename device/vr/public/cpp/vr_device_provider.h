@@ -5,9 +5,6 @@
 #ifndef DEVICE_VR_PUBLIC_CPP_VR_DEVICE_PROVIDER_H_
 #define DEVICE_VR_PUBLIC_CPP_VR_DEVICE_PROVIDER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"

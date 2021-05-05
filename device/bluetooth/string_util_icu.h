@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_STRING_UTIL_ICU_H_
 #define DEVICE_BLUETOOTH_STRING_UTIL_ICU_H_
 
-#include <string>
-
 #include "base/strings/string_piece.h"
 #include "device/bluetooth/bluetooth_export.h"
 

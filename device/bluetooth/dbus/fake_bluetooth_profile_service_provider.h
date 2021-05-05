@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_PROFILE_SERVICE_PROVIDER_H_
 #define DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_PROFILE_SERVICE_PROVIDER_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"

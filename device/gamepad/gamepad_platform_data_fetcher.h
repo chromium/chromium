@@ -8,8 +8,6 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_H_
 #define DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"

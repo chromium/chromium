@@ -5,8 +5,6 @@
 #ifndef DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 #define DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

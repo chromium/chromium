@@ -6,7 +6,6 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_H_
 
 #include <stdint.h>
-#include <vector>
 
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"

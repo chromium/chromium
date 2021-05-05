@@ -6,7 +6,6 @@
 #define DEVICE_VR_OPENXR_OPENXR_STATICS_H_
 
 #include <d3d11.h>
-#include <memory>
 
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_util.h"

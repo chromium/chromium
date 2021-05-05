@@ -5,9 +5,6 @@
 #ifndef DEVICE_VR_VR_DEVICE_BASE_H_
 #define DEVICE_VR_VR_DEVICE_BASE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"

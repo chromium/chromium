@@ -8,8 +8,6 @@
 #include <Windows.Gaming.Input.h>
 #include <wrl.h>
 
-#include <map>
-
 #include "base/containers/flat_map.h"
 
 namespace device {

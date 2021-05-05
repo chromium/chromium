@@ -5,8 +5,6 @@
 #ifndef DEVICE_VR_UTIL_SLIDING_AVERAGE_H_
 #define DEVICE_VR_UTIL_SLIDING_AVERAGE_H_
 
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
