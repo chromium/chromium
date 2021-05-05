@@ -61,6 +61,11 @@ class ArcMetricsService : public KeyedService,
     virtual void OnArcMetricsServiceDestroyed() {}
   };
 
+  class UserInteractionObserver : public base::CheckedObserver {
+   public:
+    virtual void OnUserInteraction(UserInteractionType type) = 0;
+  };
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcMetricsService* GetForBrowserContext(
@@ -123,6 +128,9 @@ class ArcMetricsService : public KeyedService,
 
   void AddAppKillObserver(AppKillObserver* obs);
   void RemoveAppKillObserver(AppKillObserver* obs);
+
+  void AddUserInteractionObserver(UserInteractionObserver* obs);
+  void RemoveUserInteractionObserver(UserInteractionObserver* obs);
 
   // Finds the boot_progress_arc_upgraded event, removes it from |events|, and
   // returns the event time. If the boot_progress_arc_upgraded event is not
@@ -238,6 +246,7 @@ class ArcMetricsService : public KeyedService,
   bool gamepad_interaction_recorded_ = false;
 
   base::ObserverList<AppKillObserver> app_kill_observers_;
+  base::ObserverList<UserInteractionObserver> user_interaction_observers_;
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.

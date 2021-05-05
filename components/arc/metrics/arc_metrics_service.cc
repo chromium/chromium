@@ -159,6 +159,8 @@ void ArcMetricsService::RecordArcUserInteraction(
 
 void ArcMetricsService::RecordArcUserInteraction(UserInteractionType type) {
   UMA_HISTOGRAM_ENUMERATION("Arc.UserInteraction", type);
+  for (auto& obs : user_interaction_observers_)
+    obs.OnUserInteraction(type);
 }
 
 void ArcMetricsService::SetHistogramNamer(HistogramNamer histogram_namer) {
@@ -429,6 +431,18 @@ void ArcMetricsService::AddAppKillObserver(AppKillObserver* obs) {
 void ArcMetricsService::RemoveAppKillObserver(AppKillObserver* obs) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   app_kill_observers_.RemoveObserver(obs);
+}
+
+void ArcMetricsService::AddUserInteractionObserver(
+    UserInteractionObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  user_interaction_observers_.AddObserver(obs);
+}
+
+void ArcMetricsService::RemoveUserInteractionObserver(
+    UserInteractionObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  user_interaction_observers_.RemoveObserver(obs);
 }
 
 base::Optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(

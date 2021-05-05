@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -319,6 +320,28 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
   base::Optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_FALSE(arc_start_time.has_value());
+}
+
+TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
+  class Observer : public ArcMetricsService::UserInteractionObserver {
+   public:
+    void OnUserInteraction(UserInteractionType type) override {
+      this->type = type;
+    }
+    base::Optional<UserInteractionType> type;
+  } observer;
+
+  service()->AddUserInteractionObserver(&observer);
+
+  // This calls RecordArcUserInteraction() with APP_CONTENT_WINDOW_INTERACTION.
+  service()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
+      fake_arc_window(), nullptr);
+  ASSERT_TRUE(observer.type);
+  EXPECT_EQ(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION,
+            *observer.type);
+
+  service()->RemoveUserInteractionObserver(&observer);
 }
 
 }  // namespace
