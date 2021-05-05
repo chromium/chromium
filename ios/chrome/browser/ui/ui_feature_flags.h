@@ -80,4 +80,8 @@ extern const base::Feature kIOSPersistCrashRestore;
 // Enables the Search History Link in Clear Browsing Data for iOS.
 extern const base::Feature kSearchHistoryLinkIOS;
 
+// Feature flag to enable removing any entry points to the history UI from
+// Incognito mode.
+extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

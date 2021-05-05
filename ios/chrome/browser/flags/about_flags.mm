@@ -734,6 +734,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoBrandConsistencyForIOSName,
      flag_descriptions::kIncognitoBrandConsistencyForIOSDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIncognitoBrandConsistencyForIOS)},
+    {"update-history-entry-points-in-incognito",
+     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoName,
+     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUpdateHistoryEntryPointsInIncognito)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

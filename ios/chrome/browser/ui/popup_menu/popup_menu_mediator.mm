@@ -1117,6 +1117,11 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_SETTINGS, PopupMenuActionSettings,
                           @"popup_menu_settings", kToolsMenuSettingsId);
 
+  if (self.isIncognito &&
+      base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito)) {
+    return @[ bookmarks, self.readingListItem, downloadsFolder, settings ];
+  }
+
   return @[
     bookmarks, self.readingListItem, recentTabs, history, downloadsFolder,
     settings

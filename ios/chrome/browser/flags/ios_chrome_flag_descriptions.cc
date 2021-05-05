@@ -434,6 +434,12 @@ const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
 
+const char kUpdateHistoryEntryPointsInIncognitoName[] =
+    "Update history entry points in Incongito.";
+const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
+    "When enabled, the entry points to history UI from Incognito mode will be "
+    "removed.";
+
 const char kURLBlocklistIOSName[] = "URL Blocklist Policy";
 const char kURLBlocklistIOSDescription[] =
     "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
