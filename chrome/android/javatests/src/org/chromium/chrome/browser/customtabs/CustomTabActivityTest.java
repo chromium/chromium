@@ -2174,6 +2174,32 @@ public class CustomTabActivityTest {
                 () -> { assertTrue(CustomTabsTestUtils.hasVariationId(101)); });
     }
 
+    // The flags are necessary to ensure the experiment id 101 is honored.
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"disable-features=ExternalExperimentAllowlist",
+            "force-fieldtrials=Trial/Group", "force-fieldtrial-params=Trial.Group:101/x"})
+    public void
+    testExperimentIdsFromMayLaunchUrl() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        intent.setData(Uri.parse(mTestPage));
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(
+                token, "com.google.android.googlequicksearchbox");
+        Bundle extrasBundle = new Bundle();
+        int[] ids = {101};
+        extrasBundle.putIntArray(CustomTabIntentDataProvider.EXPERIMENT_IDS, ids);
+        Assert.assertTrue(connection.mayLaunchUrl(
+                token, Uri.parse("https://www.google.com"), extrasBundle, null));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { assertTrue(CustomTabsTestUtils.hasVariationId(101)); });
+    }
+
     private void verifyHistoryAfterHiddenTab(boolean speculationWasAHit) throws Exception {
         String speculationUrl = mTestPage;
         String navigationUrl = speculationWasAHit ? mTestPage : mTestPage2;

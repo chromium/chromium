@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.ChainedTasks;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -575,6 +576,18 @@ public class CustomTabsConnection {
         return true;
     }
 
+    private void enableExperimentIdsIfNecessary(Bundle extras) {
+        ThreadUtils.assertOnUiThread();
+        if (extras == null) return;
+        int[] experimentIds =
+                IntentUtils.safeGetIntArray(extras, CustomTabIntentDataProvider.EXPERIMENT_IDS);
+        if (experimentIds == null) return;
+        // When ids are set through cct, they should not override existing ids.
+        boolean override = false;
+        UmaSessionStats.registerExternalExperiment(
+                BaseCustomTabActivity.GSA_FALLBACK_STUDY_NAME, experimentIds, override);
+    }
+
     private void doMayLaunchUrlOnUiThread(final boolean lowConfidence,
             final CustomTabsSessionToken session, final int uid, final String urlString,
             final Bundle extras, final List<Bundle> otherLikelyBundles, boolean retryIfNotLoaded) {
@@ -594,6 +607,8 @@ public class CustomTabsConnection {
                 }
                 return;
             }
+
+            enableExperimentIdsIfNecessary(extras);
 
             if (lowConfidence) {
                 lowConfidenceMayLaunchUrl(otherLikelyBundles);
