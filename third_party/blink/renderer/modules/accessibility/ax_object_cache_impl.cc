@@ -671,7 +671,11 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
       // objects that are no longer relevant.
       Invalidate(layout_id);
     } else {
-      // Layout object is irrelevant, but node object is still relevant.
+      // Layout object is irrelevant, but node object can still be relevant.
+      if (!node_id) {
+        Remove(layout_object);
+        return nullptr;
+      }
       layout_object = nullptr;
       layout_id = 0;
     }
