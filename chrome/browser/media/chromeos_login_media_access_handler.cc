@@ -57,7 +57,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
   const base::ListValue* list_value;
   const bool is_list = raw_list_value->GetAsList(&list_value);
   DCHECK(is_list);
-  for (const auto& base_value : *list_value) {
+  for (const auto& base_value : list_value->GetList()) {
     std::string value;
     if (base_value.GetAsString(&value)) {
       const ContentSettingsPattern pattern =
