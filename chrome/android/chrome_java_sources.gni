@@ -736,7 +736,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
   "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",
   "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
-  "java/src/org/chromium/chrome/browser/lens/LensDebugBridge.java",
   "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
   "java/src/org/chromium/chrome/browser/locale/DefaultSearchEnginePromoDialog.java",
   "java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
