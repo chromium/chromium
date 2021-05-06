@@ -89,7 +89,11 @@ bool PrefValueMap::empty() const {
 
 bool PrefValueMap::GetBoolean(const std::string& key, bool* value) const {
   const base::Value* stored_value = nullptr;
-  return GetValue(key, &stored_value) && stored_value->GetAsBoolean(value);
+  if (GetValue(key, &stored_value) && stored_value->is_bool()) {
+    *value = stored_value->GetBool();
+    return true;
+  }
+  return false;
 }
 
 void PrefValueMap::SetBoolean(const std::string& key, bool value) {
@@ -98,7 +102,11 @@ void PrefValueMap::SetBoolean(const std::string& key, bool value) {
 
 bool PrefValueMap::GetString(const std::string& key, std::string* value) const {
   const base::Value* stored_value = nullptr;
-  return GetValue(key, &stored_value) && stored_value->GetAsString(value);
+  if (GetValue(key, &stored_value) && stored_value->is_string()) {
+    *value = stored_value->GetString();
+    return true;
+  }
+  return false;
 }
 
 void PrefValueMap::SetString(const std::string& key, const std::string& value) {

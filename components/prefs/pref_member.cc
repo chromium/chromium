@@ -129,15 +129,12 @@ bool PrefMemberVectorStringUpdate(const base::Value& value,
                                   std::vector<std::string>* string_vector) {
   if (!value.is_list())
     return false;
-  const base::ListValue* list = static_cast<const base::ListValue*>(&value);
 
   std::vector<std::string> local_vector;
-  for (auto it = list->begin(); it != list->end(); ++it) {
-    std::string string_value;
-    if (!it->GetAsString(&string_value))
+  for (const auto& item : value.GetList()) {
+    if (!item.is_string())
       return false;
-
-    local_vector.push_back(string_value);
+    local_vector.push_back(item.GetString());
   }
 
   string_vector->swap(local_vector);
@@ -154,7 +151,9 @@ void PrefMember<bool>::UpdatePref(const bool& value) {
 template <>
 bool PrefMember<bool>::Internal::UpdateValueInternal(
     const base::Value& value) const {
-  return value.GetAsBoolean(&value_);
+  if (value.is_bool())
+    value_ = value.GetBool();
+  return value.is_bool();
 }
 
 template <>
@@ -178,7 +177,9 @@ void PrefMember<double>::UpdatePref(const double& value) {
 template <>
 bool PrefMember<double>::Internal::UpdateValueInternal(const base::Value& value)
     const {
-  return value.GetAsDouble(&value_);
+  if (value.is_double() || value.is_int())
+    value_ = value.GetDouble();
+  return value.is_double() || value.is_int();
 }
 
 template <>
@@ -190,7 +191,9 @@ template <>
 bool PrefMember<std::string>::Internal::UpdateValueInternal(
     const base::Value& value)
     const {
-  return value.GetAsString(&value_);
+  if (value.is_string())
+    value_ = value.GetString();
+  return value.is_string();
 }
 
 template <>
