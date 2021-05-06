@@ -5,4 +5,5 @@
 // This serves as the input to CanvasFilter, only implemented filters are listed
 dictionary CanvasFilterDictionary {
   object blur;
+  object colorMatrix;
 };

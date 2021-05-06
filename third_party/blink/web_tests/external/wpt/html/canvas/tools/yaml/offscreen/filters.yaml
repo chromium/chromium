@@ -29,3 +29,51 @@
     @assert throws TypeError ctx.filter = new CanvasFilter({blur: {stdDevation: null}});
     @assert throws TypeError ctx.filter = new CanvasFilter({blur: {stdDeviation: "foo"}});
     t.done();
+
+- name: 2d.filter.canvasFilterObject.colorMatrix
+  desc: Test the functionality of ColorMatrix filters in CanvasFilter objects
+  code: |
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: undefined}});
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: "foo"}});
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: null}});
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3]}});
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, "a"]}});
+    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, Infinity]}});
+    ctx.fillStyle = "#f00";
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 0}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 255,0,0,255;
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 90}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 0,91,0,255;
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 180}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 0,109,109,255;
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 270}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 109,18,255,255;
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "saturate", values: 0.5}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 155,27,27,255;
+    ctx.clearRect(0, 0, 100, 50);
+    ctx.filter = new CanvasFilter({colorMatrix: {type: "luminanceToAlpha"}});
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 10,10 ==~ 0,0,0,54;
+    ctx.filter = new CanvasFilter({colorMatrix: {values: [
+            0, 0, 0, 0, 0,
+            1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0
+    ]}});
+    ctx.fillRect(0, 0, 50, 25);
+    ctx.fillStyle = "#0f0";
+    ctx.fillRect(50, 0, 50, 25);
+    ctx.fillStyle = "#00f";
+    ctx.fillRect(0, 25, 50, 25);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(50, 25, 50, 25);
+    @assert pixel 10,10 ==~ 0,255,0,255;
+    @assert pixel 60,10 ==~ 0,255,0,255;
+    @assert pixel 10,30 ==~ 0,255,0,255;
+    @assert pixel 60,30 ==~ 0,255,0,255;
+    t.done();
