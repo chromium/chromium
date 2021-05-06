@@ -137,6 +137,9 @@ Merge-Approved-[Milestone-Number] label. Please merge
 **immediately after**. Please note that if change is not
 merged in time after approval, it can be rejected.
 
+To perform the merge see [How to merge a change to a release
+branch](https://www.chromium.org/developers/how-tos/drover).
+
 If merge is rejected, “Merge-Rejected” label will be
 applied. If you think it’s important to consider the
 change for merge and does not meet the criteria above,
