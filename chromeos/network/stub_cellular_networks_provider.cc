@@ -161,6 +161,8 @@ bool StubCellularNetworksProvider::AddStubNetworks(
     if (base::Contains(all_iccids, iccid_eid_pair.first))
       continue;
 
+    NET_LOG(EVENT) << "Adding stub cellular network for ICCID="
+                   << iccid_eid_pair.first << " EID=" << iccid_eid_pair.second;
     network_added = true;
     new_stub_networks.push_back(NetworkState::CreateNonShillCellularNetwork(
         iccid_eid_pair.first, iccid_eid_pair.second,
@@ -192,6 +194,8 @@ bool StubCellularNetworksProvider::RemoveStubCellularNetworks(
 
     if (shill_iccids.contains(network->iccid()) ||
         !esim_and_slot_iccids.contains(network->iccid())) {
+      NET_LOG(EVENT) << "Removing stub cellular network for ICCID="
+                     << network->iccid() << " EID=" << network->eid();
       network_removed = true;
       it = network_list.erase(it);
       continue;
