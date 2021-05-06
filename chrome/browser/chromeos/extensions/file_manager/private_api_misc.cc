@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -192,6 +193,14 @@ bool IsAllowedSource(storage::FileSystemType type,
   }
 }
 
+std::string Redact(const std::string& s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
+
+std::string Redact(const base::FilePath& path) {
+  return Redact(path.value());
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -273,54 +282,73 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // First param is the parent directory URL.
-  if (params->parent_url.empty())
-    return RespondNow(Error("Empty parent URL."));
-
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  base::FilePath src_dir = file_manager::util::GetLocalPathFromURL(
+
+  // Convert parent directory URL to absolute path.
+  if (params->parent_url.empty())
+    return RespondNow(Error("Empty parent URL"));
+
+  const base::FilePath parent_dir = file_manager::util::GetLocalPathFromURL(
       render_frame_host(), profile, GURL(params->parent_url));
-  if (src_dir.empty())
-    return RespondNow(Error("Invalid source dir."));
+  if (parent_dir.empty())
+    return RespondNow(
+        Error(base::StrCat({"Cannot convert parent URL ",
+                            Redact(params->parent_url), " to absolute path"})));
 
-  // Second param is the list of selected file URLs to be zipped.
+  // Convert source file URLs to relative paths.
   if (params->urls.empty())
-    return RespondNow(Error("No files selected to be zipped."));
+    return RespondNow(Error("No input files"));
 
-  std::vector<base::FilePath> files;
-  for (size_t i = 0; i < params->urls.size(); ++i) {
-    base::FilePath path = file_manager::util::GetLocalPathFromURL(
-        render_frame_host(), profile, GURL(params->urls[i]));
-    if (path.empty())
-      return RespondNow(Error("Invalid selected file path."));
-    files.push_back(path);
-  }
+  std::vector<base::FilePath> src_files;
+  src_files.reserve(params->urls.size());
 
-  // Third param is the name of the output zip file.
-  if (params->dest_name.empty())
-    return RespondNow(Error("Empty output file name."));
+  for (const std::string& url : params->urls) {
+    // Convert input URL to absolute path.
+    const base::FilePath absolute_path =
+        file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
+                                                GURL(url));
+    if (absolute_path.empty())
+      return RespondNow(Error(base::StrCat(
+          {"Cannot convert URL ", Redact(url), " to absolute file path"})));
 
-  base::FilePath dest_file = src_dir.Append(params->dest_name);
-  std::vector<base::FilePath> src_relative_paths;
-  for (size_t i = 0; i != files.size(); ++i) {
-    const base::FilePath& file_path = files[i];
-
-    // Obtain the relative path of |file_path| under |src_dir|.
+    // Convert absolute path to relative path under |parent_dir|.
     base::FilePath relative_path;
-    if (!src_dir.AppendRelativePath(file_path, &relative_path))
-      return RespondNow(Error("Invalid selected file path."));
-    src_relative_paths.push_back(relative_path);
+    if (!parent_dir.AppendRelativePath(absolute_path, &relative_path))
+      return RespondNow(
+          Error(base::StrCat({"Input file ", Redact(absolute_path),
+                              " is not in directory ", Redact(parent_dir)})));
+
+    src_files.push_back(std::move(relative_path));
   }
 
-  (new ZipFileCreator(
-       base::BindOnce(
-           &FileManagerPrivateInternalZipSelectionFunction::OnZipDone, this),
-       src_dir, src_relative_paths, dest_file))
-      ->Start(LaunchFileUtilService());
+  // Convert destination filename to absolute path.
+  if (params->dest_name.empty())
+    return RespondNow(Error("Empty destination file name"));
+
+  const base::FilePath dest_file = parent_dir.Append(params->dest_name);
+
+  VLOG(0) << "Creating ZIP archive " << Redact(dest_file) << " with "
+          << src_files.size() << " items...";
+
+  // Start a ZipFileCreator service.
+  ZipFileCreator* const creator = new ZipFileCreator(
+      base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::OnZipDone,
+                     this, dest_file.value()),
+      parent_dir, src_files, dest_file);
+  creator->Start(LaunchFileUtilService());
+
   return RespondLater();
 }
 
-void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(bool success) {
+void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(
+    const std::string& dest_file,
+    bool success) {
+  if (success) {
+    VLOG(0) << "Created ZIP archive " << Redact(dest_file);
+  } else {
+    LOG(ERROR) << "Cannot create ZIP archive " << Redact(dest_file);
+  }
+
   Respond(OneArgument(base::Value(success)));
 }
 
@@ -712,7 +740,7 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
       base::BindOnce(
           [](base::FilePath path, crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
-              LOG(ERROR) << "Error importing crostini image " << path.value()
+              LOG(ERROR) << "Error importing crostini image " << Redact(path)
                          << ": " << (int)result;
             }
           },
@@ -807,7 +835,7 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
     if (!file_manager::util::ExtractMountNameFileSystemNameFullPath(
             path, &mount_name, &file_system_name, &full_path)) {
       LOG(ERROR) << "Error extracting mount name and path from "
-                 << path.value();
+                 << Redact(path);
       continue;
     }
     auto entry = std::make_unique<base::DictionaryValue>();

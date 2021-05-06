@@ -100,7 +100,7 @@ class FileManagerPrivateInternalZipSelectionFunction
   ResponseAction Run() override;
 
   // Receives the result from ZipFileCreator.
-  void OnZipDone(bool success);
+  void OnZipDone(const std::string& dest_file, bool success);
 };
 
 // Implements the chrome.fileManagerPrivate.zoom method.
