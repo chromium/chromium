@@ -299,6 +299,19 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             parent_filter, box_reflect_operation->Reflection());
         break;
       }
+      case FilterOperation::CONVOLVE_MATRIX: {
+        ConvolveMatrixFilterOperation* convolve_matrix_operation =
+            To<ConvolveMatrixFilterOperation>(filter_operation);
+        effect = MakeGarbageCollected<FEConvolveMatrix>(
+            parent_filter, convolve_matrix_operation->KernelSize(),
+            convolve_matrix_operation->Divisor(),
+            convolve_matrix_operation->Bias(),
+            convolve_matrix_operation->TargetOffset(),
+            convolve_matrix_operation->EdgeMode(),
+            convolve_matrix_operation->PreserveAlpha(),
+            convolve_matrix_operation->KernelMatrix());
+        break;
+      }
       default:
         break;
     }
@@ -371,7 +384,8 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         break;
       }
       case FilterOperation::LUMINANCE_TO_ALPHA:
-        // LuminanceToAlpha only exists for SVG and Canvas filters.
+      case FilterOperation::CONVOLVE_MATRIX:
+        // These filter types only exist for Canvas filters.
         NOTREACHED();
         break;
       case FilterOperation::COLOR_MATRIX: {

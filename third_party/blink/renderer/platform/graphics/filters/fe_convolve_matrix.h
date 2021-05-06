@@ -31,29 +31,28 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-enum EdgeModeType {
-  EDGEMODE_UNKNOWN = 0,
-  EDGEMODE_DUPLICATE = 1,
-  EDGEMODE_WRAP = 2,
-  EDGEMODE_NONE = 3
-};
-
 class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
  public:
+  enum EdgeModeType {
+    EDGEMODE_UNKNOWN = 0,
+    EDGEMODE_DUPLICATE = 1,
+    EDGEMODE_WRAP = 2,
+    EDGEMODE_NONE = 3
+  };
+
   FEConvolveMatrix(Filter*,
                    const IntSize&,
                    float,
                    float,
                    const IntPoint&,
-                   EdgeModeType,
+                   FEConvolveMatrix::EdgeModeType,
                    bool,
                    const Vector<float>&);
 
   bool SetDivisor(float);
   bool SetBias(float);
   bool SetTargetOffset(const IntPoint&);
-  bool SetEdgeMode(EdgeModeType);
+  bool SetEdgeMode(FEConvolveMatrix::EdgeModeType);
   bool SetPreserveAlpha(bool);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,

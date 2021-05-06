@@ -34,7 +34,7 @@ class SVGAnimatedNumberOptionalNumber;
 class SVGAnimatedInteger;
 class SVGAnimatedIntegerOptionalInteger;
 
-DECLARE_SVG_ENUM_MAP(EdgeModeType);
+DECLARE_SVG_ENUM_MAP(FEConvolveMatrix::EdgeModeType);
 
 class SVGFEConvolveMatrixElement final
     : public SVGFilterPrimitiveStandardAttributes {
@@ -50,7 +50,9 @@ class SVGFEConvolveMatrixElement final
   SVGAnimatedNumber* kernelUnitLengthY();
   SVGAnimatedNumberList* kernelMatrix() { return kernel_matrix_.Get(); }
   SVGAnimatedString* in1() { return in1_.Get(); }
-  SVGAnimatedEnumeration<EdgeModeType>* edgeMode() { return edge_mode_.Get(); }
+  SVGAnimatedEnumeration<FEConvolveMatrix::EdgeModeType>* edgeMode() {
+    return edge_mode_.Get();
+  }
   SVGAnimatedInteger* orderX() const;
   SVGAnimatedInteger* orderY() const;
   SVGAnimatedInteger* targetX() { return target_x_.Get(); }
@@ -71,7 +73,7 @@ class SVGFEConvolveMatrixElement final
   Member<SVGAnimatedNumber> bias_;
   Member<SVGAnimatedNumber> divisor_;
   Member<SVGAnimatedString> in1_;
-  Member<SVGAnimatedEnumeration<EdgeModeType>> edge_mode_;
+  Member<SVGAnimatedEnumeration<FEConvolveMatrix::EdgeModeType>> edge_mode_;
   Member<SVGAnimatedNumberList> kernel_matrix_;
   Member<SVGAnimatedNumberOptionalNumber> kernel_unit_length_;
   Member<SVGAnimatedIntegerOptionalInteger> order_;
