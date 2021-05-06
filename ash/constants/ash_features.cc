@@ -687,7 +687,7 @@ const base::Feature kSplitSettingsSync{"SplitSettingsSync",
 // Enables or disables using the system input engine for physical typing in
 // languages based on latin script.
 const base::Feature kSystemLatinPhysicalTyping{
-    "SystemLatinPhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SystemLatinPhysicalTyping", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Chrome OS system-proxy daemon, only for system services. This
 // means that system services like tlsdate, update engine etc. can opt to be
