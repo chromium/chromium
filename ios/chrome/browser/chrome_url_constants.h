@@ -22,6 +22,7 @@ extern const char kChromeUIManagementURL[];
 extern const char kChromeUINewTabURL[];
 extern const char kChromeUINTPTilesInternalsURL[];
 extern const char kChromeUIOfflineURL[];
+extern const char kChromeUIPolicyURL[];
 extern const char kChromeUIPopularSitesInternalsURL[];
 extern const char kChromeUISettingsURL[];
 extern const char kChromeUISuggestionsURL[];

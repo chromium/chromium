@@ -20,6 +20,7 @@ const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUINTPTilesInternalsURL[] = "chrome://ntp-tiles-internals/";
 const char kChromeUIOfflineURL[] = "chrome://offline/";
+const char kChromeUIPolicyURL[] = "chrome://policy/";
 const char kChromeUISettingsURL[] = "chrome://settings/";
 const char kChromeUISuggestionsURL[] = "chrome://suggestions/";
 const char kChromeUITermsURL[] = "chrome://terms/";
