@@ -12,6 +12,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/ozone/platform/scenic/safe_presenter.h"
 #include "ui/ozone/platform/scenic/scenic_surface.h"
 
 namespace ui {
@@ -60,6 +61,8 @@ class ScenicOverlayView {
 
  private:
   scenic::Session scenic_session_;
+  // Used for safely queueing Present() operations on |scenic_session_|.
+  SafePresenter safe_presenter_;
   ScenicSurfaceFactory* const scenic_surface_factory_;
   fuchsia::ui::views::ViewHolderToken view_holder_token_;
   scenic::View view_;

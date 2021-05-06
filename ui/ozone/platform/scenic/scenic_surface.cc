@@ -49,6 +49,7 @@ ScenicSurface::ScenicSurface(
     gfx::AcceleratedWidget window,
     scenic::SessionPtrAndListenerRequest sesion_and_listener_request)
     : scenic_session_(std::move(sesion_and_listener_request)),
+      safe_presenter_(&scenic_session_),
       main_shape_(&scenic_session_),
       main_material_(&scenic_session_),
       scenic_surface_factory_(scenic_surface_factory),
@@ -104,10 +105,7 @@ bool ScenicSurface::SetTextureToNewImagePipe(
   main_material_.SetTexture(image_pipe_id);
   main_shape_.SetMaterial(main_material_);
   scenic_session_.ReleaseResource(image_pipe_id);
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
   return true;
 }
 
@@ -132,10 +130,7 @@ bool ScenicSurface::PresentOverlayView(
 
   entity_node.AddChild(view_holder);
   parent_->AddChild(entity_node);
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
 
   DCHECK(!overlays_.count(id));
   overlays_.emplace(
@@ -184,10 +179,7 @@ bool ScenicSurface::RemoveOverlayView(gfx::SysmemBufferCollectionId id) {
   auto it = overlays_.find(id);
   DCHECK(it != overlays_.end());
   parent_->DetachChild(it->second.entity_node);
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
   overlays_.erase(it);
   return true;
 }
@@ -203,10 +195,7 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
       &scenic_session_, std::move(tokens.view_token), "chromium surface");
   parent_->AddChild(main_shape_);
 
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  // Defer first Present call to SetTextureToNewImagePipe().
   return mojo::PlatformHandle(std::move(tokens.view_holder_token.value));
 }
 
@@ -274,10 +263,7 @@ void ScenicSurface::UpdateViewHolderScene() {
   main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);
   main_shape_.SetTranslation(0.f, 0.f, min_z_order * kElevationStep);
 
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
 }
 
 }  // namespace ui

@@ -166,10 +166,7 @@ void ScenicWindowCanvas::PresentCanvas(const gfx::Rect& damage) {
   ZX_CHECK(status == ZX_OK, status);
   scenic_surface_->scenic_session()->EnqueueReleaseFence(
       std::move(release_fence_dup));
-  scenic_surface_->scenic_session()->Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  scenic_surface_->safe_presenter()->QueuePresent();
 
   // Move to the next buffer.
   current_frame_ = (current_frame_ + 1) % kNumBuffers;

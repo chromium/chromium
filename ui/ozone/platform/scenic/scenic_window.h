@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/scenic/safe_presenter.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -120,6 +121,9 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
 
   // Scenic session used for all drawing operations in this View.
   scenic::Session scenic_session_;
+
+  // Used for safely queueing Present() operations on |scenic_session_|.
+  SafePresenter safe_presenter_;
 
   // Handle to a kernel object which identifies this window's View
   // across the system. ViewRef consumers can access the handle by

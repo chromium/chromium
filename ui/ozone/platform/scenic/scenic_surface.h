@@ -18,6 +18,7 @@
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/ozone/platform/scenic/safe_presenter.h"
 #include "ui/ozone/public/platform_window_surface.h"
 
 namespace ui {
@@ -80,11 +81,19 @@ class ScenicSurface : public ui::PlatformWindowSurface {
     return &scenic_session_;
   }
 
+  SafePresenter* safe_presenter() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return &safe_presenter_;
+  }
+
  private:
   void UpdateViewHolderScene();
 
   scenic::Session scenic_session_;
   std::unique_ptr<scenic::View> parent_;
+
+  // Used for safely queueing Present() operations on |scenic_session_|.
+  SafePresenter safe_presenter_;
 
   // Scenic resources used for the primary plane, that is not an overlay.
   scenic::ShapeNode main_shape_;
