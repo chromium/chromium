@@ -38,9 +38,7 @@ class CORE_EXPORT AuditsIssue {
   AuditsIssue& operator=(AuditsIssue&&);
 
   const protocol::Audits::InspectorIssue* issue() const { return issue_.get(); }
-  std::unique_ptr<protocol::Audits::InspectorIssue> TakeIssue() {
-    return std::move(issue_);
-  }
+  std::unique_ptr<protocol::Audits::InspectorIssue> TakeIssue();
 
   ~AuditsIssue();
 

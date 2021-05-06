@@ -16,4 +16,8 @@ AuditsIssue::AuditsIssue(AuditsIssue&&) = default;
 AuditsIssue& AuditsIssue::operator=(AuditsIssue&&) = default;
 AuditsIssue::~AuditsIssue() = default;
 
+std::unique_ptr<protocol::Audits::InspectorIssue> AuditsIssue::TakeIssue() {
+  return std::move(issue_);
+}
+
 }  // namespace blink
