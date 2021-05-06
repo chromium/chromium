@@ -22,6 +22,11 @@ _NON_BRANCHED_TESTERS = (
     # the branches
     "mac-osxbeta-rel",
 
+    # This tester is also triggered by 'Mac Builder', but we don't have enough
+    # capacity on Mac 11 to run this on the branches yet.
+    # TODO(crbug.com/1206401): Restore this when we do have capacity.
+    "Mac11 Tests",
+
     # This tester is triggered by 'mac-arm64-rel', but it is an FYI builder and
     # not mirrored by any branched try builders and we have limited test
     # capacity, so we do not need to run it on the branches
