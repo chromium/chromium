@@ -101,18 +101,20 @@ TestInkDropHost::TestInkDropHost() {
         return highlight;
       },
       this));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropRipple> {
+        auto ripple = std::make_unique<TestInkDropRipple>(
+            host->size(), 0, host->size(), 0, gfx::Point(), SK_ColorBLACK,
+            0.175f);
+        if (host->disable_timers_for_test_)
+          ripple->GetTestApi()->SetDisableAnimationTimers(true);
+        host->num_ink_drop_ripples_created_++;
+        host->last_ink_drop_ripple_ = ripple.get();
+        return ripple;
+      },
+      this));
 }
 
 TestInkDropHost::~TestInkDropHost() = default;
-
-std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {
-  std::unique_ptr<InkDropRipple> ripple(new TestInkDropRipple(
-      size(), 0, size(), 0, gfx::Point(), SK_ColorBLACK, 0.175f));
-  if (disable_timers_for_test_)
-    ripple->GetTestApi()->SetDisableAnimationTimers(true);
-  num_ink_drop_ripples_created_++;
-  last_ink_drop_ripple_ = ripple.get();
-  return ripple;
-}
 
 }  // namespace views

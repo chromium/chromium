@@ -127,7 +127,6 @@ class NotificationInputContainerMD : public views::InkDropHostView,
   // views::InkDropHostView:
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
   void Layout() override;
@@ -192,7 +191,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void PreferredSizeChanged() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
   void UpdateWithNotification(const Notification& notification) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;

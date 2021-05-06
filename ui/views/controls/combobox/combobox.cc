@@ -70,6 +70,15 @@ class TransparentButton : public Button {
     SetHasInkDropActionOnClick(true);
     InkDrop::UseInkDropForSquareRipple(this,
                                        /*highlight_on_hover=*/false);
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+              host->GetNativeTheme()->GetSystemColor(
+                  ui::NativeTheme::kColorId_LabelEnabledColor),
+              host->GetInkDropVisibleOpacity());
+        },
+        this));
   }
 
   ~TransparentButton() override = default;
@@ -85,16 +94,6 @@ class TransparentButton : public Button {
 
   double GetAnimationValue() const {
     return hover_animation().GetCurrentValue();
-  }
-
-  // Button:
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
-    return std::unique_ptr<views::InkDropRipple>(
-        new views::FloodFillInkDropRipple(
-            size(), GetInkDropCenterBasedOnLastEvent(),
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_LabelEnabledColor),
-            GetInkDropVisibleOpacity()));
   }
 
  private:

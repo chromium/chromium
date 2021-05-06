@@ -50,9 +50,10 @@ class StackingBarLabelButton : public views::LabelButton {
     TrayPopupUtils::ConfigureTrayPopupButton(
         this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true,
         /*highlight_on_focus=*/true);
-    // SetCreateInkDropHighlightCallback is explicitly called after
-    // ConfigureTrayPopupButton as the former configures the InkDrop and this
-    // overrides that behavior.
+    // SetCreateInkDropHighlightCallback and SetCreateInkDropRippleCallback are
+    // explicitly called after ConfigureTrayPopupButton as
+    // ConfigureTrayPopupButton configures the InkDrop and these callbacks
+    // override that behavior.
     SetCreateInkDropHighlightCallback(base::BindRepeating(
         [](InkDropHostView* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
@@ -60,6 +61,14 @@ class StackingBarLabelButton : public views::LabelButton {
           highlight->set_visible_opacity(
               message_center_style::kInkRippleOpacity);
           return highlight;
+        },
+        this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+              message_center_style::kInkRippleColor,
+              message_center_style::kInkRippleOpacity);
         },
         this));
   }
@@ -88,15 +97,6 @@ class StackingBarLabelButton : public views::LabelButton {
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
     views::LabelButton::PaintButtonContents(canvas);
-  }
-
-  // TODO(crbug.com/1204653): Set these as callbacks in the constructor (after
-  // ConfigureTrayPopupButton, which does configure InkDrop callbacks).
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetInkDropCenterBasedOnLastEvent(),
-        message_center_style::kInkRippleColor,
-        message_center_style::kInkRippleOpacity);
   }
 
  private:

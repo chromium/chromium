@@ -82,12 +82,10 @@ class VIEWS_EXPORT InkDropHostView : public View {
   GetRemoveInkDropLayerCallback() const;
 
   // Returns a configured InkDrop. To override default behavior call
-  // SetCreateInkDropRippleCallback().
+  // SetCreateInkDropCallback().
   std::unique_ptr<InkDrop> CreateInkDrop();
 
-  // Callback version of CreateInkDrop(). Note that this is called in the base
-  // implementation of CreateInkDrop(), so if "it's not working", check the
-  // class hierarchy for overrides.
+  // Replace CreateInkDrop() behavior.
   void SetCreateInkDropCallback(
       base::RepeatingCallback<std::unique_ptr<InkDrop>()> callback);
 
@@ -97,11 +95,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Creates and returns the visual effect used for press. Used by InkDropImpl
   // instances.
-  virtual std::unique_ptr<InkDropRipple> CreateInkDropRipple() const;
+  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const;
 
-  // Callback version of CreateInkDropRipple(). Note that this is called in the
-  // base implementation of CreateInkDropRipple(), so if "it's not working",
-  // check the class hierarchy for overrides.
+  // Replaces CreateInkDropRipple() behavior.
   void SetCreateInkDropRippleCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropRipple>()> callback);
 
@@ -115,12 +111,11 @@ class VIEWS_EXPORT InkDropHostView : public View {
   gfx::Point GetInkDropCenterBasedOnLastEvent() const;
 
   // Creates and returns the visual effect used for hover and focus. Used by
-  // InkDropImpl instances.
+  // InkDropImpl instances. To override behavior call
+  // SetCreateInkDropHighlightCallback().
   std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
 
-  // Callback version of CreateInkDropHighlight(). Note that this is called in
-  // the base implementation of CreateInkDropHighlight(), so if "it's not
-  // working", check the class hierarchy for overrides.
+  // Replaces CreateInkDropHighlight() behavior.
   void SetCreateInkDropHighlightCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback);
 

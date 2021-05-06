@@ -146,6 +146,17 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
       this, std::make_unique<ExpandArrowHighlightPathGenerator>());
   views::InkDrop::UseInkDropWithoutAutoHighlight(this,
                                                  /*highlight_on_hover=*/false);
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+        const AppListColorProvider* color_provider =
+            AppListColorProvider::Get();
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), host->GetLocalBounds().InsetsFrom(GetCircleBounds()),
+            host->GetInkDropCenterBasedOnLastEvent(),
+            color_provider->GetRippleAttributesBaseColor(),
+            color_provider->GetRippleAttributesInkDropOpacity());
+      },
+      this));
 
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_LIST_EXPAND_BUTTON));
 
@@ -271,16 +282,6 @@ void ExpandArrowView::OnBlur() {
 
 const char* ExpandArrowView::GetClassName() const {
   return "ExpandArrowView";
-}
-
-std::unique_ptr<views::InkDropRipple> ExpandArrowView::CreateInkDropRipple()
-    const {
-  const AppListColorProvider* color_provider = AppListColorProvider::Get();
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), GetLocalBounds().InsetsFrom(GetCircleBounds()),
-      GetInkDropCenterBasedOnLastEvent(),
-      color_provider->GetRippleAttributesBaseColor(),
-      color_provider->GetRippleAttributesInkDropOpacity());
 }
 
 void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {

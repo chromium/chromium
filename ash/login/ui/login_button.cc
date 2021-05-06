@@ -36,6 +36,19 @@ LoginButton::LoginButton(PressedCallback callback)
             gfx::SizeF(host->size()), kInkDropHighlightColor);
       },
       this));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](LoginButton* host) -> std::unique_ptr<views::InkDropRipple> {
+        const gfx::Point center = host->GetLocalBounds().CenterPoint();
+        const int radius = host->GetInkDropRadius();
+        gfx::Rect bounds(center.x() - radius, center.y() - radius, radius * 2,
+                         radius * 2);
+
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+            host->GetInkDropCenterBasedOnLastEvent(), kInkDropRippleColor,
+            1.f /*visible_opacity*/);
+      },
+      this));
 
   SetInstallFocusRingOnFocus(true);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
@@ -43,18 +56,6 @@ LoginButton::LoginButton(PressedCallback callback)
 }
 
 LoginButton::~LoginButton() = default;
-
-std::unique_ptr<views::InkDropRipple> LoginButton::CreateInkDropRipple() const {
-  gfx::Point center = GetLocalBounds().CenterPoint();
-  const int radius = GetInkDropRadius();
-  gfx::Rect bounds(center.x() - radius, center.y() - radius, radius * 2,
-                   radius * 2);
-
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), GetLocalBounds().InsetsFrom(bounds),
-      GetInkDropCenterBasedOnLastEvent(), kInkDropRippleColor,
-      1.f /*visible_opacity*/);
-}
 
 int LoginButton::GetInkDropRadius() const {
   return std::min(GetLocalBounds().width(), GetLocalBounds().height()) / 2;

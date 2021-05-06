@@ -58,7 +58,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // LabelButton:
   void OnThemeChanged() override;
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
 
   // Returns the path to draw the focus ring around for this Checkbox.

@@ -47,7 +47,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   static void InitializeBubbleAnimations(views::Widget* bubble_widget);
 
   // ActionableView:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   void OnThemeChanged() override;
 
   // VirtualKeyboardModel::Observer:

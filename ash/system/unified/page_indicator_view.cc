@@ -68,6 +68,18 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
           return highlight;
         },
         this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](PageIndicatorButton* host) -> std::unique_ptr<views::InkDropRipple> {
+          gfx::Point center = host->GetLocalBounds().CenterPoint();
+          gfx::Rect bounds(center.x() - kInkDropRadius,
+                           center.y() - kInkDropRadius, 2 * kInkDropRadius,
+                           2 * kInkDropRadius);
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+              host->GetInkDropCenterBasedOnLastEvent(),
+              host->ripple_base_color_, host->inkdrop_opacity_);
+        },
+        this));
   }
 
   ~PageIndicatorButton() override {}
@@ -121,16 +133,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
 
  protected:
   // views::Button:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    gfx::Point center = GetLocalBounds().CenterPoint();
-    gfx::Rect bounds(center.x() - kInkDropRadius, center.y() - kInkDropRadius,
-                     2 * kInkDropRadius, 2 * kInkDropRadius);
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetLocalBounds().InsetsFrom(bounds),
-        GetInkDropCenterBasedOnLastEvent(), ripple_base_color_,
-        inkdrop_opacity_);
-  }
-
   void NotifyClick(const ui::Event& event) override {
     Button::NotifyClick(event);
     GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);

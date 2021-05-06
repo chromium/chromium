@@ -241,6 +241,16 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
         return highlight;
       },
       this));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](TrayBackgroundView* host) -> std::unique_ptr<views::InkDropRipple> {
+        const AshColorProvider::RippleAttributes ripple_attributes =
+            AshColorProvider::Get()->GetRippleAttributes();
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), host->GetBackgroundInsets(),
+            host->GetInkDropCenterBasedOnLastEvent(),
+            ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
+      },
+      this));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
@@ -410,15 +420,6 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
                                   /*aborted=*/false);
 
   return views::View::RecreateLayer();
-}
-
-std::unique_ptr<views::InkDropRipple> TrayBackgroundView::CreateInkDropRipple()
-    const {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), GetBackgroundInsets(), GetInkDropCenterBasedOnLastEvent(),
-      ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
 }
 
 void TrayBackgroundView::OnThemeChanged() {

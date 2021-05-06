@@ -127,9 +127,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // views::Button:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 

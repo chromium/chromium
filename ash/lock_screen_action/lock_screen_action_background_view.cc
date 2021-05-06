@@ -40,19 +40,24 @@ class LockScreenActionBackgroundView::NoteBackground
           return ink_drop;
         },
         this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+          const gfx::Point center = base::i18n::IsRTL()
+                                        ? host->GetLocalBounds().origin()
+                                        : host->GetLocalBounds().top_right();
+          auto ink_drop_ripple =
+              std::make_unique<views::FloodFillInkDropRipple>(
+                  host->size(), gfx::Insets(), center,
+                  host->GetInkDropBaseColor(), 1);
+          ink_drop_ripple->set_use_hide_transform_duration_for_hide_fade_out(
+              true);
+          ink_drop_ripple->set_duration_factor(1.5);
+          return ink_drop_ripple;
+        },
+        this));
   }
 
   ~NoteBackground() override = default;
-
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    gfx::Point center = base::i18n::IsRTL() ? GetLocalBounds().origin()
-                                            : GetLocalBounds().top_right();
-    auto ink_drop_ripple = std::make_unique<views::FloodFillInkDropRipple>(
-        size(), gfx::Insets(), center, GetInkDropBaseColor(), 1);
-    ink_drop_ripple->set_use_hide_transform_duration_for_hide_fade_out(true);
-    ink_drop_ripple->set_duration_factor(1.5);
-    return ink_drop_ripple;
-  }
 
   SkColor GetInkDropBaseColor() const override { return SK_ColorBLACK; }
 

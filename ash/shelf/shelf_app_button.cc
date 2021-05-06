@@ -286,6 +286,20 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   };
   icon_shadows_.assign(kShadows, kShadows + base::size(kShadows));
 
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](ShelfAppButton* host) -> std::unique_ptr<views::InkDropRipple> {
+        const gfx::Rect small_ripple_area = host->CalculateSmallRippleArea();
+        const int ripple_size = host->shelf_view_->GetShelfItemRippleSize();
+
+        return std::make_unique<views::SquareInkDropRipple>(
+            gfx::Size(ripple_size, ripple_size),
+            host->GetInkDropLargeCornerRadius(), small_ripple_area.size(),
+            host->GetInkDropSmallCornerRadius(),
+            small_ripple_area.CenterPoint(), host->GetInkDropBaseColor(),
+            host->GetInkDropVisibleOpacity());
+      },
+      this));
+
   // TODO: refactor the layers so each button doesn't require 3.
   // |icon_view_| needs its own layer so it can be scaled up independently of
   // the ink drop ripple.
@@ -784,18 +798,6 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
 
   if (!event->handled())
     return Button::OnGestureEvent(event);
-}
-
-std::unique_ptr<views::InkDropRipple> ShelfAppButton::CreateInkDropRipple()
-    const {
-  const gfx::Rect small_ripple_area = CalculateSmallRippleArea();
-  const int ripple_size = shelf_view_->GetShelfItemRippleSize();
-
-  return std::make_unique<views::SquareInkDropRipple>(
-      gfx::Size(ripple_size, ripple_size), GetInkDropLargeCornerRadius(),
-      small_ripple_area.size(), GetInkDropSmallCornerRadius(),
-      small_ripple_area.CenterPoint(), GetInkDropBaseColor(),
-      GetInkDropVisibleOpacity());
 }
 
 bool ShelfAppButton::HandleAccessibleAction(

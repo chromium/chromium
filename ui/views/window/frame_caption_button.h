@@ -22,8 +22,6 @@ struct VectorIcon;
 
 namespace views {
 
-class InkDropRipple;
-
 // Base class for the window caption buttons (minimize, maximize, restore,
 // close).
 class VIEWS_EXPORT FrameCaptionButton : public views::Button {
@@ -62,7 +60,6 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
 
   void SetBackgroundColor(SkColor background_color);
   SkColor GetBackgroundColor() const;

@@ -39,6 +39,11 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
       this));
   SetCreateInkDropHighlightCallback(base::BindRepeating(
       &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](ActionableView* host) {
+        return TrayPopupUtils::CreateInkDropRipple(host->ink_drop_style_, host);
+      },
+      this));
 }
 
 ActionableView::~ActionableView() {
@@ -70,11 +75,6 @@ void ActionableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleName());
 }
 
-
-std::unique_ptr<views::InkDropRipple> ActionableView::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(ink_drop_style_, this);
-}
 
 void ActionableView::ButtonPressed(const ui::Event& event) {
   bool destroyed = false;

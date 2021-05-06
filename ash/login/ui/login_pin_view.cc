@@ -116,6 +116,21 @@ class BasePinButton : public views::InkDropHostView {
           return highlight;
         },
         this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](BasePinButton* host) -> std::unique_ptr<views::InkDropRipple> {
+          const gfx::Point center = host->GetLocalBounds().CenterPoint();
+          const gfx::Rect bounds(center.x() - kInkDropCornerRadiusDp,
+                                 center.y() - kInkDropCornerRadiusDp,
+                                 kInkDropCornerRadiusDp * 2,
+                                 kInkDropCornerRadiusDp * 2);
+
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+              host->GetInkDropCenterBasedOnLastEvent(),
+              host->palette_.pin_ink_drop_ripple_color,
+              /*visible_opacity=*/1.f);
+        },
+        this));
 
     views::FocusRing* focus_ring = views::FocusRing::Install(this);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
@@ -158,17 +173,7 @@ class BasePinButton : public views::InkDropHostView {
     node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kButton;
   }
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    gfx::Point center = GetLocalBounds().CenterPoint();
-    gfx::Rect bounds(center.x() - kInkDropCornerRadiusDp,
-                     center.y() - kInkDropCornerRadiusDp,
-                     kInkDropCornerRadiusDp * 2, kInkDropCornerRadiusDp * 2);
 
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetLocalBounds().InsetsFrom(bounds),
-        GetInkDropCenterBasedOnLastEvent(), palette_.pin_ink_drop_ripple_color,
-        /*visible_opacity=*/1.f);
-  }
  protected:
   // Called when the button has been pressed.
   virtual void DispatchPress(ui::Event* event) {

@@ -106,6 +106,22 @@ class SearchBoxImageButton : public views::ImageButton {
           return highlight;
         },
         this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](SearchBoxImageButton* host)
+            -> std::unique_ptr<views::InkDropRipple> {
+          const gfx::Point center = host->GetLocalBounds().CenterPoint();
+          const int ripple_radius = host->GetInkDropRadius();
+          gfx::Rect bounds(center.x() - ripple_radius,
+                           center.y() - ripple_radius, 2 * ripple_radius,
+                           2 * ripple_radius);
+          constexpr SkColor ripple_color =
+              SkColorSetA(gfx::kGoogleGrey900, 0x17);
+
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+              host->GetInkDropCenterBasedOnLastEvent(), ripple_color, 1.0f);
+        },
+        this));
 
     SetPreferredSize({kSearchBoxButtonSizeDip, kSearchBoxButtonSizeDip});
     SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -135,19 +151,6 @@ class SearchBoxImageButton : public views::ImageButton {
   void OnBlur() override {
     views::ImageButton::OnBlur();
     SchedulePaint();
-  }
-
-  // views::InkDropHostView:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    const gfx::Point center = GetLocalBounds().CenterPoint();
-    const int ripple_radius = GetInkDropRadius();
-    gfx::Rect bounds(center.x() - ripple_radius, center.y() - ripple_radius,
-                     2 * ripple_radius, 2 * ripple_radius);
-    constexpr SkColor ripple_color = SkColorSetA(gfx::kGoogleGrey900, 0x17);
-
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetLocalBounds().InsetsFrom(bounds),
-        GetInkDropCenterBasedOnLastEvent(), ripple_color, 1.0f);
   }
 
  private:

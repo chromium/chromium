@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -80,6 +81,14 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   UpdateInkDropBaseColor();
   views::InkDrop::UseInkDropWithoutAutoHighlight(this,
                                                  /*highlight_on_hover=*/false);
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](FrameCaptionButton* host) -> std::unique_ptr<views::InkDropRipple> {
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), host->GetInkdropInsets(host->size()),
+            host->GetInkDropCenterBasedOnLastEvent(),
+            host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
+      },
+      this));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
@@ -185,13 +194,6 @@ void FrameCaptionButton::OnGestureEvent(ui::GestureEvent* event) {
 
 views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
   return views::PaintInfo::ScaleType::kUniformScaling;
-}
-
-std::unique_ptr<views::InkDropRipple> FrameCaptionButton::CreateInkDropRipple()
-    const {
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), GetInkdropInsets(size()), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {

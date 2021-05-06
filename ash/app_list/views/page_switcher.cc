@@ -71,6 +71,26 @@ class PageSwitcherButton : public views::Button {
           return highlight;
         },
         this));
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](PageSwitcherButton* host) -> std::unique_ptr<views::InkDropRipple> {
+          const gfx::Point center = host->GetLocalBounds().CenterPoint();
+          const int max_radius =
+              host->is_root_app_grid_page_switcher_
+                  ? PageSwitcher::kMaxButtonRadiusForRootGrid
+                  : PageSwitcher::kMaxButtonRadiusForFolderGrid;
+          gfx::Rect bounds(center.x() - max_radius, center.y() - max_radius,
+                           2 * max_radius, 2 * max_radius);
+          const AppListColorProvider* const color_provider =
+              AppListColorProvider::Get();
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+              host->GetInkDropCenterBasedOnLastEvent(),
+              color_provider->GetRippleAttributesBaseColor(
+                  host->background_color_),
+              color_provider->GetRippleAttributesInkDropOpacity(
+                  host->background_color_));
+        },
+        this));
 
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, is_root_app_grid_page_switcher ? kInkDropRadiusForRootGrid
@@ -92,7 +112,7 @@ class PageSwitcherButton : public views::Button {
       NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
   }
 
-  // Overridden from views::View:
+  // views::Button:
   gfx::Size CalculatePreferredSize() const override {
     const int max_radius = is_root_app_grid_page_switcher_
                                ? PageSwitcher::kMaxButtonRadiusForRootGrid
@@ -105,21 +125,7 @@ class PageSwitcherButton : public views::Button {
   }
 
  protected:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    gfx::Point center = GetLocalBounds().CenterPoint();
-    const int max_radius = is_root_app_grid_page_switcher_
-                               ? PageSwitcher::kMaxButtonRadiusForRootGrid
-                               : PageSwitcher::kMaxButtonRadiusForFolderGrid;
-    gfx::Rect bounds(center.x() - max_radius, center.y() - max_radius,
-                     2 * max_radius, 2 * max_radius);
-    const AppListColorProvider* color_provider = AppListColorProvider::Get();
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetLocalBounds().InsetsFrom(bounds),
-        GetInkDropCenterBasedOnLastEvent(),
-        color_provider->GetRippleAttributesBaseColor(background_color_),
-        color_provider->GetRippleAttributesInkDropOpacity(background_color_));
-  }
-
+  // views::Button:
   void NotifyClick(const ui::Event& event) override {
     Button::NotifyClick(event);
     GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);

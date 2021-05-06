@@ -403,13 +403,6 @@ void NotificationInputContainerMD::RemoveLayerBeneathView(ui::Layer* layer) {
   button_->DestroyLayer();
 }
 
-std::unique_ptr<views::InkDropRipple>
-NotificationInputContainerMD::CreateInkDropRipple() const {
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), GetInkDropCenterBasedOnLastEvent(), GetInkDropBaseColor(),
-      GetInkDropVisibleOpacity());
-}
-
 SkColor NotificationInputContainerMD::GetInkDropBaseColor() const {
   return GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationInkDropBase);
@@ -577,6 +570,13 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   SetCreateInkDropCallback(base::BindRepeating(
       [](InkDropHostView* host) -> std::unique_ptr<views::InkDrop> {
         return std::make_unique<NotificationInkDropImpl>(host, host->size());
+      },
+      this));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+            host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
       },
       this));
 
@@ -1477,13 +1477,6 @@ void NotificationViewMD::AddBackgroundAnimation(const ui::Event& event) {
 void NotificationViewMD::RemoveBackgroundAnimation() {
   SetInkDropMode(InkDropMode::OFF);
   AnimateInkDrop(views::InkDropState::HIDDEN, nullptr);
-}
-
-std::unique_ptr<views::InkDropRipple> NotificationViewMD::CreateInkDropRipple()
-    const {
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      GetPreferredSize(), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()

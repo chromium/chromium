@@ -80,6 +80,15 @@ class Arrow : public Button {
     SetHasInkDropActionOnClick(true);
     InkDrop::UseInkDropForSquareRipple(this,
                                        /*highlight_on_hover=*/false);
+    SetCreateInkDropRippleCallback(base::BindRepeating(
+        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+              style::GetColor(*host, style::CONTEXT_TEXTFIELD,
+                              style::STYLE_PRIMARY),
+              host->GetInkDropVisibleOpacity());
+        },
+        this));
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -89,16 +98,8 @@ class Arrow : public Button {
     return hover_animation().GetCurrentValue();
   }
 
-  // Button:
-  // Similar to Combobox's TransparentButton.
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetInkDropCenterBasedOnLastEvent(),
-        style::GetColor(*this, style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY),
-        GetInkDropVisibleOpacity());
-  }
-
  private:
+  // Button:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     gfx::ScopedCanvas scoped_canvas(canvas);
     canvas->ClipRect(GetContentsBounds());

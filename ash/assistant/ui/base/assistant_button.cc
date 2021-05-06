@@ -67,6 +67,14 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
         return highlight;
       },
       this));
+  SetCreateInkDropRippleCallback(base::BindRepeating(
+      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            host->size(), gfx::Insets(kInkDropInset),
+            host->GetInkDropCenterBasedOnLastEvent(),
+            host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
+      },
+      this));
 }
 
 AssistantButton::~AssistantButton() = default;
@@ -103,13 +111,6 @@ void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
       SkColorSetA(GetInkDropBaseColor(), 0xff * kInkDropHighlightOpacity),
       width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
-}
-
-std::unique_ptr<views::InkDropRipple> AssistantButton::CreateInkDropRipple()
-    const {
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), gfx::Insets(kInkDropInset), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
 void AssistantButton::OnButtonPressed() {
