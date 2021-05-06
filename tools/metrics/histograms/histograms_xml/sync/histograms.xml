@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BookmarkEntityReuploadNeeded.On{UpdateType}"
-    enum="Boolean" expires_after="M92">
+    enum="Boolean" expires_after="M95">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.ModelTypeIncrementalUpdateReceived" enum="SyncModelTypes"
-    expires_after="2021-05-31">
+    expires_after="2021-08-31">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -704,7 +704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.ModelTypeInitialUpdateReceived" enum="SyncModelTypes"
-    expires_after="2021-05-31">
+    expires_after="2021-08-31">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
