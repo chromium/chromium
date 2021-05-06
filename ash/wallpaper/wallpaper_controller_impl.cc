@@ -2125,7 +2125,7 @@ base::Optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
   }
   cached_colors_out = std::vector<SkColor>();
   cached_colors_out.value().reserve(prominent_colors->GetList().size());
-  for (const auto& value : *prominent_colors) {
+  for (const auto& value : prominent_colors->GetList()) {
     cached_colors_out.value().push_back(
         static_cast<SkColor>(value.GetDouble()));
   }
