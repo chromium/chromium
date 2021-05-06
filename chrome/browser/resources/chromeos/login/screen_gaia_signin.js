@@ -54,6 +54,12 @@ const DialogMode = {
   SAML_INTERSTITIAL: 'saml-interstitial',
 };
 
+/**
+ * Steps that could be the first one in the flow.
+ */
+const POSSIBLE_FIRST_SIGNIN_STEPS =
+    [DialogMode.GAIA, DialogMode.GAIA_LOADING, DialogMode.SAML_INTERSTITIAL];
+
 Polymer({
   is: 'gaia-signin-element',
 
@@ -359,8 +365,8 @@ Polymer({
    */
   isFirstSigninStep(uiStep, canGaiaGoBack, isSaml) {
     return !this.isClosable_() &&
-        (uiStep == DialogMode.GAIA || uiStep == DialogMode.GAIA_LOADING) &&
-        !canGaiaGoBack && !isSaml;
+        POSSIBLE_FIRST_SIGNIN_STEPS.includes(uiStep) && !canGaiaGoBack &&
+        !isSaml;
   },
 
   onIsFirstSigninStepChanged(isFirstSigninStep) {
