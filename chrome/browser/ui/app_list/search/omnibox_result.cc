@@ -128,7 +128,7 @@ const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
 const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
   switch (MatchTypeToIconType(type)) {
     case IconType::kDomain:
-      return ash::kDomainIcon;
+      return ash::kOmniboxGenericIcon;
     case IconType::kSearch:
       return ash::kSearchIcon;
     case IconType::kHistory:
@@ -374,10 +374,9 @@ void OmniboxResult::UpdateIcon() {
     return;
   }
 
-  const IconType icon_type = MatchTypeToIconType(match_.type);
-  if (favicon_cache_ && icon_type == IconType::kDomain) {
-    // If we have a favicon available for this URL, use it. Otherwise fall
-    // back on using a generic icon.
+  // Use a favicon if eligible. If the result should have a favicon but there
+  // isn't one in the cache, fall through to using a generic icon instead.
+  if (favicon_cache_ && MatchTypeToIconType(match_.type) == IconType::kDomain) {
     const auto icon = favicon_cache_->GetFaviconForPageUrl(
         match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
                                                weak_factory_.GetWeakPtr()));
@@ -388,16 +387,21 @@ void OmniboxResult::UpdateIcon() {
     }
   }
 
+  // If this is neither a rich entity nor eligible for a favicon, use either the
+  // generic bookmark or another generic icon as appropriate.
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
-  bool is_bookmarked =
-      bookmark_model && bookmark_model->IsBookmarked(match_.destination_url);
-
-  const gfx::VectorIcon& icon =
-      is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
-  SetIcon(gfx::CreateVectorIcon(
-      icon, ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-      kListIconColor));
+  if (bookmark_model && bookmark_model->IsBookmarked(match_.destination_url)) {
+    SetIcon(gfx::CreateVectorIcon(
+        omnibox::kBookmarkIcon,
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        kListIconColor));
+  } else {
+    SetIcon(gfx::CreateVectorIcon(
+        TypeToVectorIcon(match_.type),
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        kListIconColor));
+  }
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
