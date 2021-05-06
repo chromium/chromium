@@ -13,9 +13,8 @@ namespace printing {
 // interact with printer drivers installed on a system.  This can be useful on
 // machines which a developer has control over the driver installations, but is
 // less useful on bots which are managed by the infra team.
-// These tests are all disabled by default to avoid causing problems on the
-// bots.  Use with the --gtest_also_run_disabled_tests flag to locally test
-// these interactions.
+// These tests are intended to be run manually by developers using the
+// --run-manual flag.
 class PrintBackendTest : public testing::Test {
  public:
   void SetUp() override {
@@ -34,7 +33,7 @@ class PrintBackendTest : public testing::Test {
 // A developer running these manually can verify that the appropriate test is
 // passing for the given state of installed printer drivers on the system being
 // checked.
-TEST_F(PrintBackendTest, DISABLED_EnumeratePrintersSomeInstalled) {
+TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
   PrinterList printer_list;
 
   EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
@@ -46,7 +45,7 @@ TEST_F(PrintBackendTest, DISABLED_EnumeratePrintersSomeInstalled) {
   }
 }
 
-TEST_F(PrintBackendTest, DISABLED_EnumeratePrintersNoneInstalled) {
+TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
   PrinterList printer_list;
 
   EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
