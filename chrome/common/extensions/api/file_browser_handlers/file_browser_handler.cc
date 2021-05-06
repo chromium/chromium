@@ -253,7 +253,7 @@ bool LoadFileBrowserHandlers(const std::string& extension_id,
                              const base::ListValue* extension_actions,
                              FileBrowserHandler::List* result,
                              std::u16string* error) {
-  for (const auto& entry : *extension_actions) {
+  for (const auto& entry : extension_actions->GetList()) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict)) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
