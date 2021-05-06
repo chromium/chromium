@@ -4912,7 +4912,6 @@
     "MojoSharedMemoryChannelLinux": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux"
