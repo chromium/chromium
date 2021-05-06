@@ -57,6 +57,9 @@ class SyncSessionDurationsMetricsRecorder
   // out of UNKNOWN, it can alternate between OFF and ON.
   enum class FeatureState { UNKNOWN, OFF, ON };
 
+  static constexpr int GetFeatureStates(FeatureState feature1,
+                                        FeatureState feature2);
+
   void LogSigninDuration(base::TimeDelta session_length);
 
   void LogSyncAndAccountDuration(base::TimeDelta session_length);
