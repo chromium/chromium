@@ -299,14 +299,11 @@ std::ostream& operator<<(std::ostream& os,
      << " stored_content_age=" << result.stored_content_age
      << " last_added_time=" << result.last_added_time
      << " load_type=" << static_cast<int>(result.load_type)
-     << " update_request=" << result.update_request
      << " request_schedule?=" << result.request_schedule.has_value();
   if (result.network_response_info)
     os << " network_response_info=" << *result.network_response_info;
   return os << " loaded_new_content_from_network="
-            << result.loaded_new_content_from_network
-            << " latencies=" << result.latencies
-            << " upload_actions_result=" << result.upload_actions_result << "}";
+            << result.loaded_new_content_from_network << "}";
 }
 
 }  // namespace feed
