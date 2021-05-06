@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.locale;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -28,6 +27,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
+import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
+import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
@@ -39,8 +40,6 @@ import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.base.PageTransition;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -50,27 +49,6 @@ import java.util.List;
  */
 public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     private static final String SPECIAL_LOCALE_ID = "US";
-
-    /** The current state regarding search engine promo dialogs. */
-    @IntDef({SearchEnginePromoState.SHOULD_CHECK, SearchEnginePromoState.CHECKED_NOT_SHOWN,
-            SearchEnginePromoState.CHECKED_AND_SHOWN})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SearchEnginePromoState {
-        int SHOULD_CHECK = -1;
-        int CHECKED_NOT_SHOWN = 0;
-        int CHECKED_AND_SHOWN = 1;
-    }
-
-    /** The different types of search engine promo dialogs. */
-    @IntDef({SearchEnginePromoType.DONT_SHOW, SearchEnginePromoType.SHOW_SOGOU,
-            SearchEnginePromoType.SHOW_EXISTING, SearchEnginePromoType.SHOW_NEW})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SearchEnginePromoType {
-        int DONT_SHOW = -1;
-        int SHOW_SOGOU = 0;
-        int SHOW_EXISTING = 1;
-        int SHOW_NEW = 2;
-    }
 
     // TODO(crbug.com/1022108): Remove this when downstream uses the replacement:
     // {@link ChromePreferenceKeys#LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE}.
