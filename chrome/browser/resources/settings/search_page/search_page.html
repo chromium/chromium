@@ -60,7 +60,8 @@
         page-title="$i18n{searchEnginesManage}"
         search-label="$i18n{searchEnginesSearch}"
         search-term="{{searchEnginesFilter_}}">
-      <settings-search-engines-page filter="[[searchEnginesFilter_]]">
+      <settings-search-engines-page prefs="{{prefs}}"
+          filter="[[searchEnginesFilter_]]">
     </settings-subpage>
   </template>
 </settings-animated-pages>

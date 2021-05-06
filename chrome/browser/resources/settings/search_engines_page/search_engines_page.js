@@ -11,6 +11,8 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/cr.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
 import './search_engine_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
@@ -23,6 +25,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
@@ -35,6 +38,14 @@ Polymer({
   behaviors: [GlobalScrollTargetBehavior, WebUIListenerBehavior],
 
   properties: {
+    /**
+     * Preferences state.
+     */
+    prefs: {
+      type: Object,
+      notify: true,
+    },
+
     /** @type {!Array<!SearchEngine>} */
     defaultEngines: Array,
 
@@ -105,6 +116,12 @@ Polymer({
     showDialog_: {
       type: Boolean,
       value: false,
+    },
+
+    /** @private */
+    showKeywordTriggerSetting_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
     },
   },
 

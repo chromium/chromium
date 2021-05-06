@@ -3926,6 +3926,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "omnibox-keyword-space-triggering-setting",
+    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "omnibox-local-history-zero-suggest",
     "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 92
