@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="HangWatcher.IsThreadHung.{ProcessType}.{ThreadType}"
     enum="BooleanHung" expires_after="2021-10-23">
   <owner>olivierli@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Every 10 seconds, a boolean is recorded to this histogram to indicate
     whether the {ProcessType} {ThreadType} was hung. The thread is hung if the
@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Replaced by HangWatcher.IsThreadHung on 11-2020.
   </obsolete>
   <owner>olivierli@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     HangWatcher is a class that periodically watches threads to see if they are
     making progress or if they are hung. This metric is recorded when the
@@ -73,9 +73,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="ThreadType" variants="ThreadType"/>
 </histogram>
 
-<histogram name="HangWatcher.SleepDrift.{ProcessType}" units="microseconds"
+<histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"
     expires_after="2021-10-23">
   <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     HangWatcher is a class that periodically checks on watched threads to see if
     they are making progress or if they are hung. This metric is recorded when

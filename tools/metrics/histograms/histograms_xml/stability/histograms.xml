@@ -330,7 +330,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
     expires_after="2021-09-12">
   <owner>fdoray@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Counts &quot;pageloads&quot; by type. This is recorded when a page stops
     loading, i.e. from WebContentsObserver::DidStopLoading. The sum of all

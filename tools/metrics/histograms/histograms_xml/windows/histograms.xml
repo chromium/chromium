@@ -146,7 +146,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
     expires_after="2022-02-12">
   <owner>olivierli@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Percentage of elapsed time the high resolution timer is activated. The usage
     is reported by each of Chrome processes individually (without aggregation)
