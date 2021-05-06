@@ -719,9 +719,9 @@ Thread T5 (fuzzer_thread) created by T0 here:
 ```
 
 [markbrand@google.com]:mailto:markbrand@google.com?subject=[MojoLPM%20Help]:%20&cc=fuzzing@chromium.org
-[libfuzzer]: https://source.chromium.org/chromium/chromium/src/+/master:testing/libfuzzer/getting_started.md
+[libfuzzer]: https://source.chromium.org/chromium/chromium/src/+/main:testing/libfuzzer/getting_started.md
 [Protocol Buffers]: https://developers.google.com/protocol-buffers/docs/cpptutorial
-[libprotobuf-mutator]: https://source.chromium.org/chromium/chromium/src/+/master:testing/libfuzzer/libprotobuf-mutator.md
-[testing in Chromium]: https://source.chromium.org/chromium/chromium/src/+/master:docs/testing/testing_in_chromium.md
+[libprotobuf-mutator]: https://source.chromium.org/chromium/chromium/src/+/main:testing/libfuzzer/libprotobuf-mutator.md
+[testing in Chromium]: https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/testing_in_chromium.md
 [interfaces]: https://source.chromium.org/search?q=interface%5Cs%2B%5Cw%2B%5Cs%2B%7B%20f:%5C.mojom$%20-f:test
 

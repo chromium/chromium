@@ -765,7 +765,7 @@ where you would use `component` for non-mojom files.
 **NOTE**: by default, components for both blink and non-blink bindings are generated.
 Use the `disable_variants` target parameter to generate only non-blink bindings.
 You can also generate a `source_set` for one of the variants by defining
-[export_*](https://source.chromium.org/chromium/chromium/src/+/master:mojo/public/tools/bindings/mojom.gni;drc=739b9fbce50310c1dd2b59c279cd90a9319cb6e8;l=318)
+[export_*](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/tools/bindings/mojom.gni;drc=739b9fbce50310c1dd2b59c279cd90a9319cb6e8;l=318)
 parameters for the `mojom_component` target.
 ***
 
