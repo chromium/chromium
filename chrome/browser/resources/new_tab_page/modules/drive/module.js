@@ -50,7 +50,7 @@ class DriveModuleElement extends mixinBehaviors
       detail: {
         message: loadTimeData.getStringF(
             'disableModuleToastMessage',
-            loadTimeData.getString('modulesDriveSentence')),
+            loadTimeData.getString('modulesDriveSentence2')),
       },
     }));
   }
