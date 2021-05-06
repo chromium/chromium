@@ -1679,16 +1679,6 @@
       "layouts": [
         "dk"
       ]
-    },
-    {
-      "name": "Catalan with Spanish keyboard",
-      "id": "experimental_layout-es_lang-ca",
-      "language": [
-        "ca"
-      ],
-      "layouts": [
-        "es"
-      ]
     }
   ],
   "manifest_version": 2,
