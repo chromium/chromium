@@ -558,8 +558,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   // if they execute code injected via DevTools, WebView APIs or extensions.
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
-
-  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 // This test verifies the contents of the ClientSecurityState for `about:blank`
@@ -577,8 +575,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
-
-  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForDataURL) {
@@ -590,8 +586,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForDataURL) {
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
             security_state->ip_address_space);
-
-  EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForFileURL) {
@@ -603,8 +597,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForFileURL) {
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
-
-  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -618,8 +610,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
-
-  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -633,8 +623,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
-
-  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -648,8 +636,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
-
-  EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -670,8 +656,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
-
-  EXPECT_EQ("private", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -692,8 +676,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
-
-  EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 // This test verifies that the chrome:// scheme is considered local for the
