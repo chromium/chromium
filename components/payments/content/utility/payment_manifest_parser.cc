@@ -193,7 +193,7 @@ void ParseIcons(const base::DictionaryValue& dict,
     return;
   }
 
-  for (const auto& icon : *icons_list) {
+  for (const auto& icon : icons_list->GetList()) {
     if (!icon.is_dict()) {
       log.Warn(base::StringPrintf(
           "Each item in the list \"%s\" should be a dictionary.",
@@ -582,7 +582,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
             kMaximumNumberOfSupportedDelegations));
         return false;
       }
-      for (const auto& delegation_item : *delegation_list) {
+      for (const auto& delegation_item : delegation_list->GetList()) {
         std::string delegation_name = delegation_item.GetString();
         if (delegation_name == "shippingAddress") {
           installation_info->supported_delegations.shipping_address = true;
