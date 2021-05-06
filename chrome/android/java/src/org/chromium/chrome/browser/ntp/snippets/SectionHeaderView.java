@@ -10,7 +10,10 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -149,17 +153,24 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /**
-     * Set text for the header tab at a particular index to text.
+     * Set the properties for the header tab at a particular index to text.
      *
      * Does nothing if index is invalid. Make sure to call addTab() beforehand.
      *
      * @param text Text to set the tab to.
+     * @param accessibilityText The optional content description for the header.
+     * @param hasUnreadContent Whether there is unread content.
      * @param index Index of the tab to set.
      */
-    void setHeaderTextAt(String text, int index) {
+    void setHeaderAt(
+            String text, @Nullable String accessibilityText, boolean hasUnreadContent, int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab != null) {
             tab.setText(text);
+            tab.setContentDescription(accessibilityText);
+            TextView textView = (TextView) tab.getCustomView().findViewById(android.R.id.text1);
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    null, null, hasUnreadContent ? makeUnreadContentIndicator() : null, null);
         }
     }
 
@@ -168,14 +179,13 @@ public class SectionHeaderView extends LinearLayout {
         return mTabLayout != null ? mTabLayout.getTabAt(index) : null;
     }
 
-    /** Sets whether or not the tab shows a blue badge */
-    void setHeaderHasBadgeAt(boolean hasBadge, int index) {
-        TabLayout.Tab tab = getTabAt(index);
-        if (tab != null) {
-            tab.getCustomView()
-                    .findViewById(R.id.badge)
-                    .setVisibility(hasBadge ? View.VISIBLE : View.INVISIBLE);
-        }
+    private Drawable makeUnreadContentIndicator() {
+        // Use insets to shift the shape up.
+        final int fiveDpInPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        return new InsetDrawable(ResourcesCompat.getDrawable(getResources(),
+                                         R.drawable.new_tab_section_header_content_circle, null),
+                0, -fiveDpInPx, 0, fiveDpInPx);
     }
 
     /**

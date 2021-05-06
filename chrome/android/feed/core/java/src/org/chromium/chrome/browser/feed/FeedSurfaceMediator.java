@@ -395,7 +395,7 @@ public class FeedSurfaceMediator
             mFeedMenuModel = buildMenuItems();
 
             addHeaderAndStream(
-                    getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
+                    getInterestFeedHeaderText(suggestionsVisible), null, mCoordinator.getStream());
 
             mCoordinator.initializeIph();
             mSigninManager.getIdentityManager().addObserver(this);
@@ -437,15 +437,20 @@ public class FeedSurfaceMediator
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
     }
 
-    private void addHeaderAndStream(String headerText, Stream stream) {
+    private void addHeaderAndStream(
+            String headerText, @Nullable String accessibilityTextUnreadContent, Stream stream) {
         PropertyModel headerModel = SectionHeaderProperties.createSectionHeader(headerText);
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(headerModel);
         int tabId =
                 mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).size() - 1;
 
-        // Update UNREAD_CONTENT_KEY now, and any time hasUnreadContent() changes.
-        Callback<Boolean> callback = hasUnreadContent
-                -> headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
+        // Update UNREAD_CONTENT_KEY and HEADER_ACCESSIBILITY_TEXT_KEY now, and any time
+        // hasUnreadContent() changes.
+        Callback<Boolean> callback = hasUnreadContent -> {
+            headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
+            headerModel.set(SectionHeaderProperties.HEADER_ACCESSIBILITY_TEXT_KEY,
+                    hasUnreadContent ? accessibilityTextUnreadContent : null);
+        };
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
 
         mTabToStreamMap.put(tabId, stream);
@@ -473,6 +478,9 @@ public class FeedSurfaceMediator
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
+                    mContext.getResources().getString(
+                            R.string.accessibility_ntp_following_unread_content),
+
                     mCoordinator.createFeedStream(/* isInterestFeed = */ false));
         } else {
             if (mCurrentStream != null && mCurrentStream.getSectionType() == SectionType.WEB_FEED) {

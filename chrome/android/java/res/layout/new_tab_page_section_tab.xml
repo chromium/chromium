@@ -3,34 +3,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:gravity="center"
+    android:maxLines="2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:ignore="UseCompoundDrawables"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:focusable="true"
-    android:padding="0dp">
-
-    <TextView
-        android:id="@android:id/text1"
-        android:gravity="center"
-        android:maxLines="2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Button.Text.Blue"
-        />
-
-    <ImageView
-        android:id="@+id/badge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/accessibility_new_tab_page_section_has_unread_content"
-        android:src="@drawable/new_tab_section_header_content_circle"
-        android:paddingStart="2dp"
-        android:layout_gravity="top"
-        android:visibility="gone"
-        />
-
-</LinearLayout>
+    android:drawablePadding="2dp"
+    android:textAppearance="@style/TextAppearance.Button.Text.Blue"
+    />
