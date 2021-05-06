@@ -12,7 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class RevampedContextMenuHeaderProperties {
+class ContextMenuHeaderProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> URL =

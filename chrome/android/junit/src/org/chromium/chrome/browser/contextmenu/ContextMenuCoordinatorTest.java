@@ -8,8 +8,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.TEXT;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -29,7 +29,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
-import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,10 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Unit tests for the Revamped context menu.
+ * Unit tests for the context menu.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class RevampedContextMenuCoordinatorTest {
+public class ContextMenuCoordinatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -58,14 +58,14 @@ public class RevampedContextMenuCoordinatorTest {
     @Mock
     ContextMenuNativeDelegate mNativeDelegate;
 
-    private RevampedContextMenuCoordinator mCoordinator;
+    private ContextMenuCoordinator mCoordinator;
     private Activity mActivity;
     private final Profile mProfile = Mockito.mock(Profile.class);
 
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mCoordinator = new RevampedContextMenuCoordinator(0, mNativeDelegate);
+        mCoordinator = new ContextMenuCoordinator(0, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);
         when(mNativeMock.isContextMenuPerformanceInfoEnabled()).thenReturn(false);
@@ -159,7 +159,7 @@ public class RevampedContextMenuCoordinatorTest {
 
     private ListItem createListItem(@Item int item) {
         final PropertyModel model =
-                new PropertyModel.Builder(RevampedContextMenuItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
                         .build();
@@ -168,7 +168,7 @@ public class RevampedContextMenuCoordinatorTest {
 
     private ListItem createShareListItem(@Item int item) {
         final PropertyModel model =
-                new PropertyModel.Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
+                new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
                         .build();

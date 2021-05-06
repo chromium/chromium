@@ -370,7 +370,7 @@
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
 
-    <!-- Revamped Context Menu Dimensions -->
+    <!-- Context Menu Dimensions -->
     <!-- Prevent the chip from reaching the edges of the screen for long translations. -->
     <dimen name="context_menu_chip_max_width">338dp</dimen>
     <dimen name="context_menu_chip_vertical_margin">24dp</dimen>
@@ -380,19 +380,19 @@
     <dimen name="context_menu_chip_icon_size">24dp</dimen>
 
     <dimen name="context_menu_max_width">500dp</dimen>
-    <dimen name="revamped_context_menu_lateral_margin">40dp</dimen>
-    <dimen name="revamped_context_menu_vertical_margin">20dp</dimen>
-    <dimen name="revamped_context_menu_list_lateral_padding">16dp</dimen>
-    <dimen name="revamped_context_menu_bottom_padding">8dp</dimen>
-    <dimen name="revamped_context_menu_header_vertical_padding">16dp</dimen>
-    <dimen name="revamped_context_menu_header_image_max_size">60dp</dimen>
-    <dimen name="revamped_context_menu_header_circle_bg_diameter">48dp</dimen>
-    <dimen name="revamped_context_menu_header_circle_bg_lateral_margin">6dp</dimen>
-    <dimen name="revamped_context_menu_header_circle_bg_vertical_margin">22dp</dimen>
-    <dimen name="revamped_context_menu_header_monogram_text_size">16dp</dimen>
-    <dimen name="revamped_context_menu_header_monogram_size">26dp</dimen>
-    <dimen name="revamped_context_menu_small_width">268dp</dimen>
-    <dimen name="revamped_context_menu_small_lateral_margin">30dp</dimen>
+    <dimen name="context_menu_lateral_margin">40dp</dimen>
+    <dimen name="context_menu_vertical_margin">20dp</dimen>
+    <dimen name="context_menu_list_lateral_padding">16dp</dimen>
+    <dimen name="context_menu_bottom_padding">8dp</dimen>
+    <dimen name="context_menu_header_vertical_padding">16dp</dimen>
+    <dimen name="context_menu_header_image_max_size">60dp</dimen>
+    <dimen name="context_menu_header_circle_bg_diameter">48dp</dimen>
+    <dimen name="context_menu_header_circle_bg_lateral_margin">6dp</dimen>
+    <dimen name="context_menu_header_circle_bg_vertical_margin">22dp</dimen>
+    <dimen name="context_menu_header_monogram_text_size">16dp</dimen>
+    <dimen name="context_menu_header_monogram_size">26dp</dimen>
+    <dimen name="context_menu_small_width">268dp</dimen>
+    <dimen name="context_menu_small_lateral_margin">30dp</dimen>
 
     <!-- Defaults for TabbedModeFirstRunActivity values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>

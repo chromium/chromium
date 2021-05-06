@@ -15,8 +15,8 @@ import org.chromium.chrome.R;
  * A custom ListView to be able to set width and height using the contents. Width and height are
  * constrained to make sure the view fits the screen size with margins.
  */
-public class RevampedContextMenuListView extends ListView {
-    public RevampedContextMenuListView(Context context, AttributeSet attrs) {
+public class ContextMenuListView extends ListView {
+    public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -36,7 +36,7 @@ public class RevampedContextMenuListView extends ListView {
         final int windowWidthPx = getResources().getDisplayMetrics().widthPixels;
         final int maxWidth = getResources().getDimensionPixelSize(R.dimen.context_menu_max_width);
         final int lateralMargin =
-                getResources().getDimensionPixelSize(R.dimen.revamped_context_menu_lateral_margin);
+                getResources().getDimensionPixelSize(R.dimen.context_menu_lateral_margin);
 
         // This ListView should be inside a FrameLayout with the popup_bg_tinted background. Since
         // the background is a 9-patch, it gets some extra padding automatically, and we should

@@ -17,29 +17,27 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
-class RevampedContextMenuHeaderCoordinator {
+class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
-    private RevampedContextMenuHeaderMediator mMediator;
+    private ContextMenuHeaderMediator mMediator;
 
-    RevampedContextMenuHeaderCoordinator(Activity activity, @PerformanceClass int performanceClass,
+    ContextMenuHeaderCoordinator(Activity activity, @PerformanceClass int performanceClass,
             ContextMenuParams params, Profile profile, ContextMenuNativeDelegate nativeDelegate) {
         mModel = buildModel(ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
-        mMediator = new RevampedContextMenuHeaderMediator(
+        mMediator = new ContextMenuHeaderMediator(
                 activity, mModel, performanceClass, params, profile, nativeDelegate);
     }
 
     private PropertyModel buildModel(String title, CharSequence url) {
-        return new PropertyModel.Builder(RevampedContextMenuHeaderProperties.ALL_KEYS)
-                .with(RevampedContextMenuHeaderProperties.TITLE, title)
-                .with(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES,
-                        TextUtils.isEmpty(url) ? 2 : 1)
-                .with(RevampedContextMenuHeaderProperties.URL, url)
-                .with(RevampedContextMenuHeaderProperties.URL_MAX_LINES,
-                        TextUtils.isEmpty(title) ? 2 : 1)
-                .with(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
+        return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                .with(ContextMenuHeaderProperties.TITLE, title)
+                .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, TextUtils.isEmpty(url) ? 2 : 1)
+                .with(ContextMenuHeaderProperties.URL, url)
+                .with(ContextMenuHeaderProperties.URL_MAX_LINES, TextUtils.isEmpty(title) ? 2 : 1)
+                .with(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
                         PerformanceClass.PERFORMANCE_UNKNOWN)
-                .with(RevampedContextMenuHeaderProperties.IMAGE, null)
-                .with(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
+                .with(ContextMenuHeaderProperties.IMAGE, null)
+                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
                 .build();
     }
 

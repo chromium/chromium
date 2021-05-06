@@ -8,7 +8,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class RevampedContextMenuItemProperties {
+class ContextMenuItemProperties {
     public static final WritableObjectPropertyKey<CharSequence> TEXT =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey MENU_ID = new WritableIntPropertyKey();

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -43,10 +43,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * The main coordinator for the Revamped Context Menu, responsible for creating the context menu in
+ * The main coordinator for the context menu, responsible for creating the context menu in
  * general and the header component.
  */
-public class RevampedContextMenuCoordinator implements ContextMenuUi {
+public class ContextMenuCoordinator implements ContextMenuUi {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.DIVIDER, ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM,
             ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON})
@@ -61,10 +61,10 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
 
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
-    private RevampedContextMenuChipController mChipController;
-    private RevampedContextMenuHeaderCoordinator mHeaderCoordinator;
+    private ContextMenuChipController mChipController;
+    private ContextMenuHeaderCoordinator mHeaderCoordinator;
 
-    private RevampedContextMenuListView mListView;
+    private ContextMenuListView mListView;
     private float mTopContentOffsetPx;
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
@@ -77,8 +77,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
      *         native.
      */
-    RevampedContextMenuCoordinator(
-            float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
+    ContextMenuCoordinator(float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
         mTopContentOffsetPx = topContentOffsetPx;
         mNativeDelegate = nativeDelegate;
     }
@@ -118,7 +117,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         // Only display a chip if an image was selected and the menu isn't a popup.
         if (params.isImage() && chipDelegate != null && !isPopup) {
             View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
-            mChipController = new RevampedContextMenuChipController(activity, chipAnchorView);
+            mChipController = new ContextMenuChipController(activity, chipAnchorView);
             chipDelegate.getChipRenderParams((chipRenderParams) -> {
                 if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
                     mChipController.showChip(chipRenderParams);
@@ -134,11 +133,10 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 : ((ViewStub) layout.findViewById(R.id.context_menu_stub)).inflate();
         Integer popupMargin = params.getOpenedFromHighlight()
                 ? activity.getResources().getDimensionPixelSize(
-                        R.dimen.revamped_context_menu_small_lateral_margin)
+                        R.dimen.context_menu_small_lateral_margin)
                 : null;
         Integer desiredPopupContentWidth = params.getOpenedFromHighlight()
-                ? activity.getResources().getDimensionPixelSize(
-                        R.dimen.revamped_context_menu_small_width)
+                ? activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
                 : null;
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
                 touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx, popupMargin,
@@ -151,8 +149,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 ? PerformanceHintsObserver.getPerformanceClassForURL(
                         webContents, params.getLinkUrl())
                 : PerformanceClass.PERFORMANCE_UNKNOWN;
-        mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(activity, performanceClass,
-                params, Profile.fromWebContents(mWebContents), mNativeDelegate);
+        mHeaderCoordinator = new ContextMenuHeaderCoordinator(activity, performanceClass, params,
+                Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems = getItemList(
@@ -189,20 +187,20 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         // clang-format off
         adapter.registerType(
                 ListItemType.HEADER,
-                new LayoutViewBuilder(R.layout.revamped_context_menu_header),
-                RevampedContextMenuHeaderViewBinder::bind);
+                new LayoutViewBuilder(R.layout.context_menu_header),
+                ContextMenuHeaderViewBinder::bind);
         adapter.registerType(
                 ListItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.app_menu_divider),
                 (m, v, p) -> {});
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,
-                new LayoutViewBuilder(R.layout.revamped_context_menu_row),
-                RevampedContextMenuItemViewBinder::bind);
+                new LayoutViewBuilder(R.layout.context_menu_row),
+                ContextMenuItemViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                new LayoutViewBuilder(R.layout.revamped_context_menu_share_row),
-                RevampedContextMenuItemWithIconButtonViewBinder::bind);
+                new LayoutViewBuilder(R.layout.context_menu_share_row),
+                ContextMenuItemWithIconButtonViewBinder::bind);
         // clang-format on
 
         mListView.setOnItemClickListener((p, v, pos, id) -> {
@@ -320,7 +318,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     void initializeHeaderCoordinatorForTesting(Activity activity, ContextMenuParams params,
             Profile profile, ContextMenuNativeDelegate nativeDelegate) {
-        mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(
+        mHeaderCoordinator = new ContextMenuHeaderCoordinator(
                 activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile, nativeDelegate);
     }
 
@@ -357,12 +355,12 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         return chipRenderParamsForTesting;
     }
 
-    // Public only to allow references from RevampedContextMenuUtils.java
+    // Public only to allow references from ContextMenuUtils.java
     public void clickChipForTesting() {
         mChipController.clickChipForTesting(); // IN-TEST
     }
 
-    // Public only to allow references from RevampedContextMenuUtils.java
+    // Public only to allow references from ContextMenuUtils.java
     public AnchoredPopupWindow getCurrentPopupWindowForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.

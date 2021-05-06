@@ -16,29 +16,29 @@ import org.junit.Assert;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuHelper;
-import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.concurrent.TimeoutException;
 
 /**
- * A utility class to help open and interact with the Revamped Context Menu.
+ * A utility class to help open and interact with the context menu.
  */
-public class RevampedContextMenuUtils {
+public class ContextMenuUtils {
     /**
-     * Callback helper that also provides access to the last displayed Revamped Context Menu.
+     * Callback helper that also provides access to the last displayed context menu.
      */
     private static class OnContextMenuShownHelper extends CallbackHelper {
-        private RevampedContextMenuCoordinator mCoordinator;
+        private ContextMenuCoordinator mCoordinator;
 
-        public void notifyCalled(RevampedContextMenuCoordinator coordinator) {
+        public void notifyCalled(ContextMenuCoordinator coordinator) {
             mCoordinator = coordinator;
             notifyCalled();
         }
 
-        RevampedContextMenuCoordinator getRevampedContextMenuCoordinator() {
+        ContextMenuCoordinator getContextMenuCoordinator() {
             assert getCallCount() > 0;
             return mCoordinator;
         }
@@ -48,10 +48,10 @@ public class RevampedContextMenuUtils {
      * Opens a context menu.
      * @param tab                   The tab to open a context menu for.
      * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @return                      The {@link RevampedContextMenuCoordinator} of the context menu.
+     * @return                      The {@link ContextMenuCoordinator} of the context menu.
      * @throws TimeoutException
      */
-    public static RevampedContextMenuCoordinator openContextMenu(Tab tab, String openerDOMNodeId)
+    public static ContextMenuCoordinator openContextMenu(Tab tab, String openerDOMNodeId)
             throws TimeoutException {
         String jsCode = "document.getElementById('" + openerDOMNodeId + "')";
         return openContextMenuByJs(tab, jsCode);
@@ -62,10 +62,10 @@ public class RevampedContextMenuUtils {
      * @param tab                   The tab to open a context menu for.
      * @param jsCode                The javascript to get the DOM node to long press to
      *                              open the context menu for.
-     * @return                      The {@link RevampedContextMenuCoordinator} of the context menu.
+     * @return                      The {@link ContextMenuCoordinator} of the context menu.
      * @throws TimeoutException
      */
-    private static RevampedContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
+    private static ContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
             throws TimeoutException {
         final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
         ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
@@ -77,7 +77,7 @@ public class RevampedContextMenuUtils {
         DOMUtils.longPressNodeByJs(tab.getWebContents(), jsCode);
 
         helper.waitForCallback(callCount);
-        return helper.getRevampedContextMenuCoordinator();
+        return helper.getContextMenuCoordinator();
     }
 
     /**
@@ -129,8 +129,8 @@ public class RevampedContextMenuUtils {
      */
     public static void selectAlreadyOpenedContextMenuChipWithExpectedIntent(
             Instrumentation instrumentation, Activity expectedActivity,
-            RevampedContextMenuCoordinator menuCoordinator, String openerDOMNodeId,
-            final int itemId, String expectedIntentPackage) throws TimeoutException {
+            ContextMenuCoordinator menuCoordinator, String openerDOMNodeId, final int itemId,
+            String expectedIntentPackage) throws TimeoutException {
         Assert.assertNotNull("Menu coordinator was not provided.", menuCoordinator);
 
         selectAlreadyOpenedContextMenuChip(
@@ -151,7 +151,7 @@ public class RevampedContextMenuUtils {
     public static void selectContextMenuItemByJs(Instrumentation instrumentation,
             Activity expectedActivity, Tab tab, String jsCode, final int itemId,
             String expectedIntentPackage) throws TimeoutException {
-        RevampedContextMenuCoordinator menu = openContextMenuByJs(tab, jsCode);
+        ContextMenuCoordinator menu = openContextMenuByJs(tab, jsCode);
         Assert.assertNotNull("Failed to open context menu", menu);
 
         selectOpenContextMenuItem(
@@ -169,14 +169,14 @@ public class RevampedContextMenuUtils {
      */
     private static void selectContextMenuItemByJs(Instrumentation instrumentation,
             Activity activity, Tab tab, String jsCode, final int itemId) throws TimeoutException {
-        RevampedContextMenuCoordinator menuCoordinator = openContextMenuByJs(tab, jsCode);
+        ContextMenuCoordinator menuCoordinator = openContextMenuByJs(tab, jsCode);
         Assert.assertNotNull("Failed to open context menu", menuCoordinator);
 
         selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId);
     }
 
     private static void selectOpenContextMenuItem(Instrumentation instrumentation,
-            final Activity activity, final RevampedContextMenuCoordinator menuCoordinator,
+            final Activity activity, final ContextMenuCoordinator menuCoordinator,
             final int itemId) {
         instrumentation.runOnMainSync(() -> menuCoordinator.clickListItemForTesting(itemId));
 
@@ -186,7 +186,7 @@ public class RevampedContextMenuUtils {
     }
 
     private static void selectOpenContextMenuItem(Instrumentation instrumentation,
-            final Activity expectedActivity, final RevampedContextMenuCoordinator menuCoordinator,
+            final Activity expectedActivity, final ContextMenuCoordinator menuCoordinator,
             final int itemId, final String expectedIntentPackage) {
         if (expectedIntentPackage != null) {
             Intents.init();
@@ -207,7 +207,7 @@ public class RevampedContextMenuUtils {
     }
 
     private static void selectAlreadyOpenedContextMenuChip(Instrumentation instrumentation,
-            final Activity expectedActivity, final RevampedContextMenuCoordinator menuCoordinator,
+            final Activity expectedActivity, final ContextMenuCoordinator menuCoordinator,
             final int itemId, final String expectedIntentPackage) {
         if (expectedIntentPackage != null) {
             Intents.init();

@@ -92,7 +92,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
-import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -127,7 +127,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
@@ -358,7 +358,7 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "logo");
         assertEquals(expectedMenuSize, menu.getCount());
 
@@ -386,7 +386,7 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "aboutLink");
         assertEquals(expectedMenuSize, menu.getCount());
 
@@ -413,7 +413,7 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "email");
         assertEquals(expectedMenuSize, menu.getCount());
 
@@ -440,7 +440,7 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "tel");
         assertEquals(expectedMenuSize, menu.getCount());
 
@@ -469,7 +469,7 @@ public class CustomTabActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         // The context menu for images should not be built when the first run is not completed.
-        RevampedContextMenuCoordinator imageMenu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator imageMenu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "logo");
         Assert.assertNull(
                 "Context menu for images should not be built when first run is not finished.",
@@ -477,7 +477,7 @@ public class CustomTabActivityTest {
 
         // Options on the context menu for links should be limited when the first run is not
         // completed.
-        RevampedContextMenuCoordinator linkMenu = RevampedContextMenuUtils.openContextMenu(
+        ContextMenuCoordinator linkMenu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "aboutLink");
         final int expectedMenuItems = 4;
         Assert.assertEquals("Menu item count does not match expectation.", expectedMenuItems,

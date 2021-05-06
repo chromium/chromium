@@ -22,7 +22,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -38,11 +38,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Render tests for the RevampedContextMenu
+ * Render tests for the ContextMenu
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
+public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -56,7 +56,7 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
     private View mView;
     private View mFrame;
 
-    public RevampedContextMenuRenderTest(boolean nightModeEnabled) {
+    public ContextMenuRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -71,14 +71,14 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
             mView = getActivity().findViewById(android.R.id.content);
             ((ViewStub) mView.findViewById(R.id.context_menu_stub)).inflate();
             mFrame = mView.findViewById(R.id.context_menu_frame);
-            RevampedContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
+            ContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
             listView.setAdapter(mAdapter);
 
             // clang-format off
             mAdapter.registerType(
                     ListItemType.HEADER,
-                    new LayoutViewBuilder(R.layout.revamped_context_menu_header),
-                    RevampedContextMenuHeaderViewBinder::bind);
+                    new LayoutViewBuilder(R.layout.context_menu_header),
+                    ContextMenuHeaderViewBinder::bind);
             mAdapter.registerType(
                     ListItemType.DIVIDER,
                     new LayoutViewBuilder(R.layout.app_menu_divider),
@@ -86,12 +86,12 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     });
             mAdapter.registerType(
                     ListItemType.CONTEXT_MENU_ITEM,
-                    new LayoutViewBuilder(R.layout.revamped_context_menu_row),
-                    RevampedContextMenuItemViewBinder::bind);
+                    new LayoutViewBuilder(R.layout.context_menu_row),
+                    ContextMenuItemViewBinder::bind);
             mAdapter.registerType(
                     ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                    new LayoutViewBuilder(R.layout.revamped_context_menu_share_row),
-                    RevampedContextMenuItemWithIconButtonViewBinder::bind);
+                    new LayoutViewBuilder(R.layout.context_menu_share_row),
+                    ContextMenuItemWithIconButtonViewBinder::bind);
             // clang-format on
         });
     }
@@ -108,7 +108,7 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    public void testRevampedContextMenuViewWithLink() throws IOException {
+    public void testContextMenuViewWithLink() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems.add(
                     new ListItem(ListItemType.HEADER, getHeaderModel("", "www.google.com", false)));
@@ -122,13 +122,13 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share link"))));
         });
-        mRenderTestRule.render(mFrame, "revamped_context_menu_with_link");
+        mRenderTestRule.render(mFrame, "context_menu_with_link");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    public void testRevampedContextMenuViewWithImageLink() throws IOException {
+    public void testContextMenuViewWithImageLink() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems.add(new ListItem(
                     ListItemType.HEADER, getHeaderModel("Capybara", "www.google.com", true)));
@@ -148,9 +148,8 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     (new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Download image"))));
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share image"))));
-
         });
-        mRenderTestRule.render(mFrame, "revamped_context_menu_with_image_link");
+        mRenderTestRule.render(mFrame, "context_menu_with_image_link");
     }
 
     private PropertyModel getHeaderModel(String title, CharSequence url, boolean hasImage) {
@@ -160,25 +159,25 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     UrlUtils.getIsolatedTestFilePath("chrome/test/data/android/capybara.jpg"));
         } else {
             final int size = getActivity().getResources().getDimensionPixelSize(
-                    R.dimen.revamped_context_menu_header_monogram_size);
+                    R.dimen.context_menu_header_monogram_size);
             image = BitmapFactory.decodeFile(UrlUtils.getIsolatedTestFilePath(
                     "chrome/test/data/android/UiCapture/cloud.png"));
             image = Bitmap.createScaledBitmap(image, size, size, true);
         }
 
-        return new PropertyModel.Builder(RevampedContextMenuHeaderProperties.ALL_KEYS)
-                .with(RevampedContextMenuHeaderProperties.TITLE, title)
-                .with(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
-                .with(RevampedContextMenuHeaderProperties.URL, url)
-                .with(RevampedContextMenuHeaderProperties.URL_MAX_LINES, 1)
-                .with(RevampedContextMenuHeaderProperties.IMAGE, image)
-                .with(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImage)
+        return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                .with(ContextMenuHeaderProperties.TITLE, title)
+                .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
+                .with(ContextMenuHeaderProperties.URL, url)
+                .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
+                .with(ContextMenuHeaderProperties.IMAGE, image)
+                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImage)
                 .build();
     }
 
     private PropertyModel getItemModel(String title) {
-        return new PropertyModel.Builder(RevampedContextMenuItemProperties.ALL_KEYS)
-                .with(RevampedContextMenuItemProperties.TEXT, title)
+        return new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
+                .with(ContextMenuItemProperties.TEXT, title)
                 .build();
     }
 
@@ -186,9 +185,9 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
         final BitmapDrawable drawable = new BitmapDrawable(getActivity().getResources(),
                 BitmapFactory.decodeFile(UrlUtils.getIsolatedTestFilePath(
                         "chrome/test/data/android/UiCapture/dots.png")));
-        return new PropertyModel.Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                .with(RevampedContextMenuItemWithIconButtonProperties.TEXT, title)
-                .with(RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
+        return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
+                .with(ContextMenuItemWithIconButtonProperties.TEXT, title)
+                .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
                 .build();
     }
 }

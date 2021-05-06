@@ -26,10 +26,10 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
- * Tests for RevampedContextMenuHeader view and {@link RevampedContextMenuHeaderViewBinder}
+ * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCase {
+public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:
@@ -72,8 +72,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testChipShownWhenCallbackReturnsChipRenderParams() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChipRenderParams chipRenderParams = new ChipRenderParams();
             chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
@@ -92,8 +92,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissLensChipIfShowing(); });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
@@ -104,8 +104,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testDismissChipWhenShown() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChipRenderParams chipRenderParams = new ChipRenderParams();
             chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
@@ -125,8 +125,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
@@ -135,8 +135,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(false));
@@ -145,8 +145,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @Test
     @SmallTest
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
-        RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView);
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(true));

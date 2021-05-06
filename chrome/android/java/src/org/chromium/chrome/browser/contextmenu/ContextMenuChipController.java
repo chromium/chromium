@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A controller to handle chip construction and cross-app communication.
  */
-class RevampedContextMenuChipController implements View.OnClickListener {
+class ContextMenuChipController implements View.OnClickListener {
     private boolean mFakeLensQueryResultForTesting;
     private View mAnchorView;
     private ChipView mChipView;
@@ -50,7 +50,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
                 "ContextMenu.LensChip.Event", chipEvent, ChipEvent.NUM_ENTRIES);
     }
 
-    RevampedContextMenuChipController(Context context, View anchorView) {
+    ContextMenuChipController(Context context, View anchorView) {
         mContext = context;
         mAnchorView = anchorView;
     }
@@ -137,8 +137,8 @@ class RevampedContextMenuChipController implements View.OnClickListener {
 
         mChipRenderParams = chipRenderParams;
 
-        mChipView = (ChipView) LayoutInflater.from(mContext).inflate(
-                R.layout.revamped_context_menu_chip, null);
+        mChipView =
+                (ChipView) LayoutInflater.from(mContext).inflate(R.layout.context_menu_chip, null);
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         // Draw a clear background to avoid blocking context menu items.

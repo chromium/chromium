@@ -33,24 +33,24 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-class RevampedContextMenuHeaderMediator implements View.OnClickListener {
+class ContextMenuHeaderMediator implements View.OnClickListener {
     private PropertyModel mModel;
 
     private Context mContext;
     private GURL mPlainUrl;
 
-    RevampedContextMenuHeaderMediator(Context context, PropertyModel model,
+    ContextMenuHeaderMediator(Context context, PropertyModel model,
             @PerformanceClass int performanceClass, ContextMenuParams params, Profile profile,
             ContextMenuNativeDelegate nativeDelegate) {
         mContext = context;
         mPlainUrl = params.getUrl();
         mModel = model;
-        mModel.set(RevampedContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, this);
+        mModel.set(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, this);
 
         if (params.isImage()) {
             final Resources res = mContext.getResources();
             final int imageMaxSize =
-                    res.getDimensionPixelSize(R.dimen.revamped_context_menu_header_image_max_size);
+                    res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
             nativeDelegate.retrieveImageForContextMenu(
                     imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
         } else if (!params.isImage() && !params.isVideo()) {
@@ -62,7 +62,7 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
             setVideoIcon();
         }
         if (PerformanceHintsObserver.isContextMenuPerformanceInfoEnabled() && params.isAnchor()) {
-            mModel.set(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS, performanceClass);
+            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS, performanceClass);
         }
     }
 
@@ -96,7 +96,7 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
         }
 
         final int size = mContext.getResources().getDimensionPixelSize(
-                R.dimen.revamped_context_menu_header_monogram_size);
+                R.dimen.context_menu_header_monogram_size);
 
         icon = Bitmap.createScaledBitmap(icon, size, size, true);
 
@@ -110,20 +110,19 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         RecordHistogram.recordBooleanHistogram("ContextMenu.URLClicked", true);
-        if (mModel.get(RevampedContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE) {
+        if (mModel.get(ContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE) {
             // URL and title should both be expanded.
-            assert mModel.get(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES)
-                    == Integer.MAX_VALUE;
+            assert mModel.get(ContextMenuHeaderProperties.TITLE_MAX_LINES) == Integer.MAX_VALUE;
 
             final boolean isTitleEmpty =
-                    TextUtils.isEmpty(mModel.get(RevampedContextMenuHeaderProperties.TITLE));
-            mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES, isTitleEmpty ? 2 : 1);
+                    TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.TITLE));
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, isTitleEmpty ? 2 : 1);
             final boolean isUrlEmpty =
-                    TextUtils.isEmpty(mModel.get(RevampedContextMenuHeaderProperties.URL));
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, isUrlEmpty ? 2 : 1);
+                    TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.URL));
+            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, isUrlEmpty ? 2 : 1);
         } else {
-            mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
+            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
         }
     }
 
@@ -179,21 +178,21 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
 
     private void setHeaderImage(Bitmap bitmap, boolean isThumbnail) {
         if (isThumbnail) {
-            mModel.set(RevampedContextMenuHeaderProperties.IMAGE, bitmap);
+            mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap);
             return;
         }
 
-        mModel.set(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, true);
-        mModel.set(RevampedContextMenuHeaderProperties.IMAGE, bitmap);
+        mModel.set(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, true);
+        mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap);
     }
 
     private RoundedIconGenerator createRoundedIconGenerator(@ColorInt int iconColor) {
         final Resources resources = mContext.getResources();
         final int iconSize =
-                resources.getDimensionPixelSize(R.dimen.revamped_context_menu_header_monogram_size);
+                resources.getDimensionPixelSize(R.dimen.context_menu_header_monogram_size);
         final int cornerRadius = iconSize / 2;
-        final int textSize = resources.getDimensionPixelSize(
-                R.dimen.revamped_context_menu_header_monogram_text_size);
+        final int textSize =
+                resources.getDimensionPixelSize(R.dimen.context_menu_header_monogram_text_size);
 
         return new RoundedIconGenerator(iconSize, iconSize, cornerRadius, iconColor, textSize);
     }

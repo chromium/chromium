@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -16,17 +16,16 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class RevampedContextMenuItemWithIconButtonViewBinder extends RevampedContextMenuItemViewBinder {
+class ContextMenuItemWithIconButtonViewBinder extends ContextMenuItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        RevampedContextMenuItemViewBinder.bind(
-                model, view.findViewById(R.id.menu_row_text), propertyKey);
+        ContextMenuItemViewBinder.bind(model, view.findViewById(R.id.menu_row_text), propertyKey);
         if (propertyKey == BUTTON_IMAGE) {
             Drawable drawable = model.get(BUTTON_IMAGE);
             final ImageView imageView = view.findViewById(R.id.menu_row_share_icon);
             imageView.setImageDrawable(drawable);
             imageView.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
             final int padding = view.getResources().getDimensionPixelSize(
-                    R.dimen.revamped_context_menu_list_lateral_padding);
+                    R.dimen.context_menu_list_lateral_padding);
             // We don't need extra end padding for the text if the share icon is visible as the icon
             // already has padding.
             view.findViewById(R.id.menu_row_text)

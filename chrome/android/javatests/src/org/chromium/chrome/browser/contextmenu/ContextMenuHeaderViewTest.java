@@ -33,10 +33,10 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
- * Tests for RevampedContextMenuHeader view and {@link RevampedContextMenuHeaderViewBinder}
+ * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
+public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
 
@@ -52,7 +52,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.revamped_context_menu_header);
+        DummyUiActivity.setTestLayout(R.layout.context_menu_header);
     }
 
     @Override
@@ -67,19 +67,18 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
             mImage = mHeaderView.findViewById(R.id.menu_header_image);
             mCircleBg = mHeaderView.findViewById(R.id.circle_background);
             mPerformanceInfo = mHeaderView.findViewById(R.id.menu_header_performance_info);
-            mModel = new PropertyModel.Builder(RevampedContextMenuHeaderProperties.ALL_KEYS)
-                             .with(RevampedContextMenuHeaderProperties.TITLE, "")
-                             .with(RevampedContextMenuHeaderProperties.URL, "")
-                             .with(RevampedContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER,
-                                     null)
-                             .with(RevampedContextMenuHeaderProperties.IMAGE, null)
-                             .with(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
-                             .with(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
+            mModel = new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                             .with(ContextMenuHeaderProperties.TITLE, "")
+                             .with(ContextMenuHeaderProperties.URL, "")
+                             .with(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, null)
+                             .with(ContextMenuHeaderProperties.IMAGE, null)
+                             .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
+                             .with(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
                                      PerformanceClass.PERFORMANCE_UNKNOWN)
                              .build();
 
             mMCP = PropertyModelChangeProcessor.create(
-                    mModel, mHeaderView, RevampedContextMenuHeaderViewBinder::bind);
+                    mModel, mHeaderView, ContextMenuHeaderViewBinder::bind);
         });
     }
 
@@ -96,8 +95,8 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 "Incorrect initial title visibility.", mTitle.getVisibility(), equalTo(View.GONE));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE, TITLE_STRING);
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, 2);
+            mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
+            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 2);
         });
 
         assertThat("Incorrect title visibility.", mTitle.getVisibility(), equalTo(View.VISIBLE));
@@ -113,8 +112,8 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
         assertThat("Incorrect initial URL visibility.", mUrl.getVisibility(), equalTo(View.GONE));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuHeaderProperties.URL, URL_STRING);
-            mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES, 1);
+            mModel.set(ContextMenuHeaderProperties.URL, URL_STRING);
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
         });
 
         assertThat("Incorrect URL visibility.", mUrl.getVisibility(), equalTo(View.VISIBLE));
@@ -124,8 +123,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 equalTo(TextUtils.TruncateAt.END));
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES,
-                                Integer.MAX_VALUE));
+                () -> mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE));
 
         assertThat("Incorrect max line count for URL.", mUrl.getMaxLines(),
                 equalTo(Integer.MAX_VALUE));
@@ -140,20 +138,17 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 mTitleAndUrl.hasOnClickListeners());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE, TITLE_STRING);
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
-            mModel.set(RevampedContextMenuHeaderProperties.URL, URL_STRING);
-            mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES, 1);
-            mModel.set(RevampedContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, (v) -> {
-                if (mModel.get(RevampedContextMenuHeaderProperties.URL_MAX_LINES)
-                        == Integer.MAX_VALUE) {
-                    mModel.set(RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
-                    mModel.set(RevampedContextMenuHeaderProperties.URL_MAX_LINES, 1);
+            mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
+            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
+            mModel.set(ContextMenuHeaderProperties.URL, URL_STRING);
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
+            mModel.set(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, (v) -> {
+                if (mModel.get(ContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE) {
+                    mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
+                    mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
                 } else {
-                    mModel.set(
-                            RevampedContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
-                    mModel.set(
-                            RevampedContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
+                    mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
+                    mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
                 }
             });
             mTitleAndUrl.callOnClick();
@@ -182,7 +177,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
         assertThat("Incorrect initial circle background visibility.", mCircleBg.getVisibility(),
                 equalTo(View.INVISIBLE));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, true));
+                () -> mModel.set(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, true));
         assertThat("Incorrect circle background visibility.", mCircleBg.getVisibility(),
                 equalTo(View.VISIBLE));
 
@@ -190,7 +185,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 mImage.getDrawable() instanceof BitmapDrawable);
         final Bitmap bitmap = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(RevampedContextMenuHeaderProperties.IMAGE, bitmap));
+                () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat("Incorrect thumbnail bitmap.",
                 ((BitmapDrawable) mImage.getDrawable()).getBitmap(), equalTo(bitmap));
     }
@@ -202,7 +197,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 mPerformanceInfo.getVisibility(), equalTo(View.GONE));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
+            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
                     PerformanceClass.PERFORMANCE_FAST);
         });
 
@@ -214,7 +209,7 @@ public class RevampedContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 greaterThan(0));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
+            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
                     PerformanceClass.PERFORMANCE_SLOW);
         });
 

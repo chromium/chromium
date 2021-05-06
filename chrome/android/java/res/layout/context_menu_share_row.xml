@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        style="@style/RevampedContextMenuItemText" />
+        style="@style/ContextMenuItemText" />
     <!-- We use tools:ignore instead of android:importantForAccessibility="no" here because this
          view is important for accessibility, but we don't have a content description yet. -->
     <ImageView

@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -165,7 +165,7 @@ public class ContextMenuLoadUrlParamsTest {
         sActivityTestRule.loadUrl(url);
         sActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 sActivityTestRule.getActivity(), tab, openerDomId, menuItemId);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

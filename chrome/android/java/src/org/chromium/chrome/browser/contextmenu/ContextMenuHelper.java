@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * A helper class that handles generating context menus for {@link WebContents}s.
  */
 public class ContextMenuHelper {
-    private static Callback<RevampedContextMenuCoordinator> sMenuShownCallbackForTests;
+    private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTests;
 
     private final WebContents mWebContents;
     private long mNativeContextMenuHelper;
@@ -149,10 +149,10 @@ public class ContextMenuHelper {
                     mNativeContextMenuHelper, ContextMenuHelper.this);
         };
 
-        displayRevampedContextMenu(topContentOffsetPx);
+        displayContextMenu(topContentOffsetPx);
     }
 
-    private void displayRevampedContextMenu(float topContentOffsetPx) {
+    private void displayContextMenu(float topContentOffsetPx) {
         List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
         if (items.isEmpty()) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed);
@@ -162,8 +162,8 @@ public class ContextMenuHelper {
             return;
         }
 
-        final RevampedContextMenuCoordinator menuCoordinator =
-                new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
+        final ContextMenuCoordinator menuCoordinator =
+                new ContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 
@@ -199,8 +199,7 @@ public class ContextMenuHelper {
     }
 
     @VisibleForTesting
-    public static void setMenuShownCallbackForTests(
-            Callback<RevampedContextMenuCoordinator> callback) {
+    public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {
         sMenuShownCallbackForTests = callback;
     }
 

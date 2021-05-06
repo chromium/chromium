@@ -31,11 +31,11 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
- * Tests for RevampedContextMenu item view, {@link RevampedContextMenuItemViewBinder}, and {@link
- * RevampedContextMenuItemWithIconButtonViewBinder}.
+ * Tests for ContextMenu item view, {@link ContextMenuItemViewBinder}, and {@link
+ * ContextMenuItemWithIconButtonViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
+public class ContextMenuItemViewTest extends DummyUiActivityTestCase {
     private static final String TEXT = "Useful menu item";
     private static final String APP = "Some app";
 
@@ -49,7 +49,7 @@ public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(org.chromium.chrome.R.layout.revamped_context_menu_share_row);
+        DummyUiActivity.setTestLayout(org.chromium.chrome.R.layout.context_menu_share_row);
     }
 
     @Override
@@ -60,20 +60,15 @@ public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
             mShareItemView = getActivity().findViewById(android.R.id.content);
             mText = mShareItemView.findViewById(R.id.menu_row_text);
             mIcon = mShareItemView.findViewById(R.id.menu_row_share_icon);
-            mModel = new PropertyModel
-                             .Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                             .with(RevampedContextMenuItemWithIconButtonProperties.TEXT, "")
-                             .with(RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE,
-                                     null)
-                             .with(RevampedContextMenuItemWithIconButtonProperties
-                                             .BUTTON_CONTENT_DESC,
-                                     "")
-                             .with(RevampedContextMenuItemWithIconButtonProperties
-                                             .BUTTON_CLICK_LISTENER,
+            mModel = new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
+                             .with(ContextMenuItemWithIconButtonProperties.TEXT, "")
+                             .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, null)
+                             .with(ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC, "")
+                             .with(ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER,
                                      null)
                              .build();
             mMCP = PropertyModelChangeProcessor.create(
-                    mModel, mShareItemView, RevampedContextMenuItemWithIconButtonViewBinder::bind);
+                    mModel, mShareItemView, ContextMenuItemWithIconButtonViewBinder::bind);
         });
     }
 
@@ -88,7 +83,7 @@ public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
     @UiThreadTest
     public void testText() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(RevampedContextMenuItemWithIconButtonProperties.TEXT, TEXT));
+                () -> mModel.set(ContextMenuItemWithIconButtonProperties.TEXT, TEXT));
         assertThat("Incorrect item text.", mText.getText(), equalTo(TEXT));
     }
 
@@ -100,8 +95,8 @@ public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
         final Bitmap bitmap = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
         final BitmapDrawable drawable = new BitmapDrawable(mIcon.getResources(), bitmap);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable);
-            mModel.set(RevampedContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC, APP);
+            mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable);
+            mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC, APP);
         });
         assertThat("Incorrect icon drawable.", mIcon.getDrawable(), equalTo(drawable));
         assertThat("Incorrect icon visibility.", mIcon.getVisibility(), equalTo(View.VISIBLE));
@@ -117,8 +112,7 @@ public class RevampedContextMenuItemViewTest extends DummyUiActivityTestCase {
         assertFalse("Icon has onClickListeners when it shouldn't, yet, have.",
                 mIcon.hasOnClickListeners());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(RevampedContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER,
-                    this::click);
+            mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER, this::click);
             mIcon.callOnClick();
         });
         assertTrue("Icon hasn't been clicked.", mIsClicked);
