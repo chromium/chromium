@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -65,8 +64,7 @@ class InProcessChildThreadParams;
 
 // The main thread of a child process derives from this class.
 class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
-                                       virtual public ChildThread,
-                                       private base::FieldTrialList::Observer {
+                                       virtual public ChildThread {
  public:
   struct CONTENT_EXPORT Options;
 
@@ -99,10 +97,6 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
-
-  // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
-                                  const std::string& group_name) override;
 
   IPC::SyncChannel* channel() { return channel_.get(); }
 
@@ -223,10 +217,8 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
 
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner_;
 
-  std::unique_ptr<variations::ChildProcessFieldTrialSyncer> field_trial_syncer_;
-  // Whether we're handling the SetFieldTrialGroup() notification from the
-  // browser process.
-  bool handling_set_field_trial_group_notification_ = false;
+  // Pointer to a global object which is never deleted.
+  variations::ChildProcessFieldTrialSyncer* field_trial_syncer_ = nullptr;
 
   std::unique_ptr<base::WeakPtrFactory<ChildThreadImpl>>
       channel_connected_factory_;

@@ -5,52 +5,17 @@
 #include "components/variations/child_process_field_trial_syncer.h"
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/variations/variations_crash_keys.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
-
-namespace {
-
-// TestFieldTrialObserver to listen to be notified by the child process syncer.
-class TestFieldTrialObserver : public base::FieldTrialList::Observer {
- public:
-  TestFieldTrialObserver() {}
-  ~TestFieldTrialObserver() override { ClearCrashKeysInstanceForTesting(); }
-
-  // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
-                                  const std::string& group_name) override {
-    observed_entries_.push_back(std::make_pair(trial_name, group_name));
-  }
-
-  size_t observed_entries_count() const { return observed_entries_.size(); }
-
-  std::pair<std::string, std::string> get_observed_entry(int i) const {
-    return observed_entries_[i];
-  }
-
- private:
-  std::vector<std::pair<std::string, std::string>> observed_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFieldTrialObserver);
-};
-
-// Needed because make_pair("a", "b") doesn't convert to std::string pair.
-std::pair<std::string, std::string> MakeStringPair(const std::string& a,
-                                                   const std::string& b) {
-  return std::make_pair(a, b);
-}
-
-}  // namespace
 
 TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   base::test::TaskEnvironment task_environment;
@@ -75,24 +40,24 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   // Active trial 2 before creating the syncer.
   trial2->group();
 
-  TestFieldTrialObserver observer;
-  ChildProcessFieldTrialSyncer syncer(&observer);
-  syncer.InitFieldTrialObserving(*base::CommandLine::ForCurrentProcess());
+  std::vector<std::string> observed_trial_names;
+  auto callback =
+      base::BindLambdaForTesting([&](const std::string& trial_name) {
+        observed_trial_names.push_back(trial_name);
+      });
 
-  // The observer should be notified of activated entries that were not activate
+  ChildProcessFieldTrialSyncer::CreateInstance(callback);
+
+  // The callback should be invoked for activated trials that were not specified
   // on the command line. In this case, trial 2. (Trial 1 was already active via
   // command line and so its state shouldn't be notified.)
-  ASSERT_EQ(1U, observer.observed_entries_count());
-  EXPECT_EQ(MakeStringPair("B", "G2"), observer.get_observed_entry(0));
+  EXPECT_THAT(observed_trial_names, testing::ElementsAre("B"));
 
   // Now, activate trial 3, which should also get reflected.
   trial3->group();
-  // Notifications from field trial activation actually happen via posted tasks,
-  // so invoke the run loop.
-  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(observed_trial_names, testing::ElementsAre("B", "C"));
 
-  ASSERT_EQ(2U, observer.observed_entries_count());
-  EXPECT_EQ(MakeStringPair("C", "G3"), observer.get_observed_entry(1));
+  ChildProcessFieldTrialSyncer::DeleteInstanceForTesting();
 }
 
 }  // namespace variations

@@ -55,29 +55,15 @@ scoped_refptr<FieldTrial> CreateFieldTrial(
       FieldTrial::SESSION_RANDOMIZED, default_group_number);
 }
 
-// FieldTrialList::Observer implementation for testing.
+// A FieldTrialList::Observer implementation which stores the trial name and
+// group name received via OnFieldTrialGroupFinalized() for later inspection.
 class TestFieldTrialObserver : public FieldTrialList::Observer {
  public:
-  enum Type {
-    ASYNCHRONOUS,
-    SYNCHRONOUS,
-  };
-
-  explicit TestFieldTrialObserver(Type type) : type_(type) {
-    if (type == SYNCHRONOUS)
-      FieldTrialList::SetSynchronousObserver(this);
-    else
-      FieldTrialList::AddObserver(this);
-  }
+  TestFieldTrialObserver() { FieldTrialList::AddObserver(this); }
   TestFieldTrialObserver(const TestFieldTrialObserver&) = delete;
   TestFieldTrialObserver& operator=(const TestFieldTrialObserver&) = delete;
 
-  ~TestFieldTrialObserver() override {
-    if (type_ == SYNCHRONOUS)
-      FieldTrialList::RemoveSynchronousObserver(this);
-    else
-      FieldTrialList::RemoveObserver(this);
-  }
+  ~TestFieldTrialObserver() override { FieldTrialList::RemoveObserver(this); }
 
   void OnFieldTrialGroupFinalized(const std::string& trial,
                                   const std::string& group) override {
@@ -89,9 +75,37 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
   const std::string& group_name() const { return group_name_; }
 
  private:
-  const Type type_;
   std::string trial_name_;
   std::string group_name_;
+};
+
+// A FieldTrialList::Observer implementation which accesses the group of a
+// FieldTrial from OnFieldTrialGroupFinalized(). Used to test reentrancy.
+class FieldTrialObserverAccessingGroup : public FieldTrialList::Observer {
+ public:
+  // |trial_to_access| is the FieldTrial on which to invoke group() when
+  // receiving an OnFieldTrialGroupFinalized() notification.
+  explicit FieldTrialObserverAccessingGroup(
+      scoped_refptr<FieldTrial> trial_to_access)
+      : trial_to_access_(trial_to_access) {
+    FieldTrialList::AddObserver(this);
+  }
+  FieldTrialObserverAccessingGroup(const FieldTrialObserverAccessingGroup&) =
+      delete;
+  FieldTrialObserverAccessingGroup& operator=(
+      const FieldTrialObserverAccessingGroup&) = delete;
+
+  ~FieldTrialObserverAccessingGroup() override {
+    FieldTrialList::RemoveObserver(this);
+  }
+
+  void OnFieldTrialGroupFinalized(const std::string& trial,
+                                  const std::string& group) override {
+    trial_to_access_->group();
+  }
+
+ private:
+  scoped_refptr<FieldTrial> trial_to_access_;
 };
 
 std::string MockEscapeQueryParamValue(const std::string& input) {
@@ -614,7 +628,7 @@ TEST_F(FieldTrialTest, CreateTrialsFromStringForceActivation) {
 TEST_F(FieldTrialTest, CreateTrialsFromStringNotActiveObserver) {
   ASSERT_FALSE(FieldTrialList::TrialExists("Abc"));
 
-  TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
+  TestFieldTrialObserver observer;
   ASSERT_TRUE(FieldTrialList::CreateTrialsFromString("Abc/def/"));
   RunLoop().RunUntilIdle();
   // Observer shouldn't be notified.
@@ -623,7 +637,6 @@ TEST_F(FieldTrialTest, CreateTrialsFromStringNotActiveObserver) {
   // Check that the values still get returned and querying them activates them.
   EXPECT_EQ("def", FieldTrialList::FindFullName("Abc"));
 
-  RunLoop().RunUntilIdle();
   EXPECT_EQ("Abc", observer.trial_name());
   EXPECT_EQ("def", observer.group_name());
 }
@@ -888,26 +901,7 @@ TEST_F(FieldTrialTest, Observe) {
   const char kTrialName[] = "TrialToObserve1";
   const char kSecondaryGroupName[] = "SecondaryGroup";
 
-  TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
-  int default_group = -1;
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial(kTrialName, 100, kDefaultGroupName, &default_group);
-  const int secondary_group = trial->AppendGroup(kSecondaryGroupName, 50);
-  const int chosen_group = trial->group();
-  EXPECT_TRUE(chosen_group == default_group || chosen_group == secondary_group);
-
-  EXPECT_EQ(kTrialName, observer.trial_name());
-  if (chosen_group == default_group)
-    EXPECT_EQ(kDefaultGroupName, observer.group_name());
-  else
-    EXPECT_EQ(kSecondaryGroupName, observer.group_name());
-}
-
-TEST_F(FieldTrialTest, SynchronousObserver) {
-  const char kTrialName[] = "TrialToObserve1";
-  const char kSecondaryGroupName[] = "SecondaryGroup";
-
-  TestFieldTrialObserver observer(TestFieldTrialObserver::SYNCHRONOUS);
+  TestFieldTrialObserver observer;
   int default_group = -1;
   scoped_refptr<FieldTrial> trial =
       CreateFieldTrial(kTrialName, 100, kDefaultGroupName, &default_group);
@@ -923,10 +917,39 @@ TEST_F(FieldTrialTest, SynchronousObserver) {
     EXPECT_EQ(kSecondaryGroupName, observer.group_name());
 }
 
+// Verify that no hang occurs when a FieldTrial group is selected from a
+// FieldTrialList::Observer::OnFieldTrialGroupFinalized() notification. If the
+// FieldTrialList's lock is held when observers are notified, this test will
+// hang due to reentrant lock acquisition when selecting the FieldTrial group.
+TEST_F(FieldTrialTest, ObserveReentrancy) {
+  const char kTrialName1[] = "TrialToObserve1";
+  const char kTrialName2[] = "TrialToObserve2";
+
+  int default_group_1 = -1;
+  scoped_refptr<FieldTrial> trial_1 =
+      CreateFieldTrial(kTrialName1, 100, kDefaultGroupName, &default_group_1);
+
+  FieldTrialObserverAccessingGroup observer(trial_1);
+
+  int default_group_2 = -1;
+  scoped_refptr<FieldTrial> trial_2 =
+      CreateFieldTrial(kTrialName2, 100, kDefaultGroupName, &default_group_2);
+
+  // No group should be selected for |trial_1| yet.
+  EXPECT_EQ(FieldTrial::kNotFinalized, trial_1->group_);
+
+  // Force selection of a group for |trial_2|. This will notify |observer| which
+  // will force the selection of a group for |trial_1|. This should not hang.
+  trial_2->group();
+
+  // The above call should have selected a group for |trial_1|.
+  EXPECT_NE(FieldTrial::kNotFinalized, trial_1->group_);
+}
+
 TEST_F(FieldTrialTest, ObserveDisabled) {
   const char kTrialName[] = "TrialToObserve2";
 
-  TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
+  TestFieldTrialObserver observer;
   int default_group = -1;
   scoped_refptr<FieldTrial> trial =
       CreateFieldTrial(kTrialName, 100, kDefaultGroupName, &default_group);
@@ -950,7 +973,7 @@ TEST_F(FieldTrialTest, ObserveDisabled) {
 TEST_F(FieldTrialTest, ObserveForcedDisabled) {
   const char kTrialName[] = "TrialToObserve3";
 
-  TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
+  TestFieldTrialObserver observer;
   int default_group = -1;
   scoped_refptr<FieldTrial> trial =
       CreateFieldTrial(kTrialName, 100, kDefaultGroupName, &default_group);
@@ -1046,14 +1069,13 @@ TEST_F(FieldTrialTest, CreateSimulatedFieldTrial) {
     { 0.95, kDefaultGroupName },
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
-    TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
-    scoped_refptr<FieldTrial> trial(
-       FieldTrial::CreateSimulatedFieldTrial(kTrialName, 100, kDefaultGroupName,
-                                             test_cases[i].entropy_value));
+  for (auto& test_case : test_cases) {
+    TestFieldTrialObserver observer;
+    scoped_refptr<FieldTrial> trial(FieldTrial::CreateSimulatedFieldTrial(
+        kTrialName, 100, kDefaultGroupName, test_case.entropy_value));
     trial->AppendGroup("A", 80);
     trial->AppendGroup("B", 10);
-    EXPECT_EQ(test_cases[i].expected_group, trial->group_name());
+    EXPECT_EQ(test_case.expected_group, trial->group_name());
 
     // Field trial shouldn't have been registered with the list.
     EXPECT_FALSE(FieldTrialList::TrialExists(kTrialName));

@@ -239,6 +239,14 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
       std::move(endpoint), MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT);
 }
 
+// Callback passed to variations::ChildProcessFieldTrialSyncer. Notifies the
+// browser process that a field trial group was activated in this process.
+void FieldTrialActivatedCallback(
+    mojo::SharedRemote<mojom::FieldTrialRecorder> recorder,
+    const std::string& trial_name) {
+  recorder->FieldTrialActivated(trial_name);
+}
+
 }  // namespace
 
 // Implements the mojom ChildProcess interface and lives on the IO thread.
@@ -541,23 +549,7 @@ void ChildThreadImpl::SetFieldTrialGroup(const std::string& trial_name,
   if (!field_trial_syncer_)
     return;
 
-  handling_set_field_trial_group_notification_ = true;
-  field_trial_syncer_->OnSetFieldTrialGroup(trial_name, group_name);
-  handling_set_field_trial_group_notification_ = false;
-}
-
-void ChildThreadImpl::OnFieldTrialGroupFinalized(
-    const std::string& trial_name,
-    const std::string& group_name) {
-  // If we're currently in SetFieldTrialGroup(), it's a field trial the browser
-  // is telling us about. Don't send a mojo request back to the browser, since
-  // it's unnecessary.
-  if (handling_set_field_trial_group_notification_)
-    return;
-
-  mojo::Remote<mojom::FieldTrialRecorder> field_trial_recorder;
-  BindHostReceiver(field_trial_recorder.BindNewPipeAndPassReceiver());
-  field_trial_recorder->FieldTrialActivated(trial_name);
+  field_trial_syncer_->SetFieldTrialGroupFromBrowser(trial_name, group_name);
 }
 
 void ChildThreadImpl::Init(const Options& options) {
@@ -703,10 +695,14 @@ void ChildThreadImpl::Init(const Options& options) {
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).
   if (!IsInBrowserProcess()) {
+    mojo::PendingRemote<mojom::FieldTrialRecorder> pending_remote;
+    BindHostReceiver(pending_remote.InitWithNewPipeAndPassReceiver());
+    mojo::SharedRemote<mojom::FieldTrialRecorder> shared_remote(
+        std::move(pending_remote));
     field_trial_syncer_ =
-        base::WrapUnique(new variations::ChildProcessFieldTrialSyncer(this));
-    field_trial_syncer_->InitFieldTrialObserving(
-        *base::CommandLine::ForCurrentProcess());
+        variations::ChildProcessFieldTrialSyncer::CreateInstance(
+            base::BindRepeating(&FieldTrialActivatedCallback,
+                                std::move(shared_remote)));
   }
 }
 
