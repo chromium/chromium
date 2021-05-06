@@ -304,7 +304,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   // Constructing request to send the policy to DLP Files daemon.
   ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
-  for (const base::Value& rule : *rules_list) {
+  for (const base::Value& rule : rules_list->GetList()) {
     DCHECK(rule.is_dict());
     const auto* sources = rule.FindDictKey("sources");
     DCHECK(sources);
