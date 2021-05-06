@@ -24,8 +24,7 @@ class InspectorIssue;
 }  // namespace Audits
 }  // namespace protocol
 
-class CORE_EXPORT InspectorIssueStorage
-    : public GarbageCollected<InspectorIssueStorage> {
+class CORE_EXPORT InspectorIssueStorage {
  public:
   InspectorIssueStorage();
 
@@ -39,8 +38,6 @@ class CORE_EXPORT InspectorIssueStorage
   void Clear();
   size_t size() const;
   protocol::Audits::InspectorIssue* at(size_t index) const;
-
-  void Trace(Visitor*) const;
 
   virtual ~InspectorIssueStorage();
 

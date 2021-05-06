@@ -50,7 +50,7 @@ class CORE_EXPORT InspectorAuditsAgent final
   void InnerEnable();
   void CheckContrastForDocument(Document* document, bool report_aaa);
 
-  Member<InspectorIssueStorage> inspector_issue_storage_;
+  InspectorIssueStorage* const inspector_issue_storage_;
   InspectorAgentState::Boolean enabled_;
   Member<InspectorNetworkAgent> network_agent_;
   Member<InspectedFrames> inspected_frames_;

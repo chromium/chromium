@@ -39,7 +39,7 @@ class CORE_EXPORT InspectorIssueReporter final
   void Trace(Visitor*) const;
 
  private:
-  WeakMember<InspectorIssueStorage> storage_;
+  InspectorIssueStorage* storage_;
 };
 
 }  // namespace blink

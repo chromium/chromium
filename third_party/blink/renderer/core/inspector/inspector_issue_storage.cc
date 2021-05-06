@@ -69,7 +69,4 @@ protocol::Audits::InspectorIssue* InspectorIssueStorage::at(
   return issues_[index].get();
 }
 
-void InspectorIssueStorage::Trace(Visitor* visitor) const {
-}
-
 }  // namespace blink

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/settings_delegate.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -61,7 +62,6 @@ class AutoscrollController;
 class BrowserControls;
 class ChromeClient;
 class ConsoleMessageStorage;
-class InspectorIssueStorage;
 class ContextMenuController;
 class Document;
 class DragCaret;
@@ -421,7 +421,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   Member<ScrollingCoordinator> scrolling_coordinator_;
   const Member<BrowserControls> browser_controls_;
   const Member<ConsoleMessageStorage> console_message_storage_;
-  const Member<InspectorIssueStorage> inspector_issue_storage_;
   const Member<TopDocumentRootScrollerController>
       global_root_scroller_controller_;
   const Member<VisualViewport> visual_viewport_;
@@ -432,6 +431,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   Member<PluginData> plugin_data_;
 
   Member<ValidationMessageClient> validation_message_client_;
+
+  InspectorIssueStorage inspector_issue_storage_;
 
   Deprecation deprecation_;
   WebWindowFeatures window_features_;

@@ -205,7 +205,6 @@ Page::Page(base::PassKey<Page>,
           MakeGarbageCollected<PointerLockController>(this)),
       browser_controls_(MakeGarbageCollected<BrowserControls>(*this)),
       console_message_storage_(MakeGarbageCollected<ConsoleMessageStorage>()),
-      inspector_issue_storage_(MakeGarbageCollected<InspectorIssueStorage>()),
       global_root_scroller_controller_(
           MakeGarbageCollected<TopDocumentRootScrollerController>(*this)),
       visual_viewport_(MakeGarbageCollected<VisualViewport>(*this)),
@@ -306,11 +305,11 @@ const ConsoleMessageStorage& Page::GetConsoleMessageStorage() const {
 }
 
 InspectorIssueStorage& Page::GetInspectorIssueStorage() {
-  return *inspector_issue_storage_;
+  return inspector_issue_storage_;
 }
 
 const InspectorIssueStorage& Page::GetInspectorIssueStorage() const {
-  return *inspector_issue_storage_;
+  return inspector_issue_storage_;
 }
 
 TopDocumentRootScrollerController& Page::GlobalRootScrollerController() const {
@@ -924,7 +923,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(scrolling_coordinator_);
   visitor->Trace(browser_controls_);
   visitor->Trace(console_message_storage_);
-  visitor->Trace(inspector_issue_storage_);
   visitor->Trace(global_root_scroller_controller_);
   visitor->Trace(visual_viewport_);
   visitor->Trace(overscroll_controller_);

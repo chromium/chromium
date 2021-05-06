@@ -21,7 +21,6 @@ InspectorIssueReporter::InspectorIssueReporter(InspectorIssueStorage* storage)
 InspectorIssueReporter::~InspectorIssueReporter() = default;
 
 void InspectorIssueReporter::Trace(Visitor* visitor) const {
-  visitor->Trace(storage_);
 }
 
 void InspectorIssueReporter::DidFailLoading(

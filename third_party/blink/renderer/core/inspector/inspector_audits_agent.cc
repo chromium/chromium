@@ -109,7 +109,6 @@ std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
 
 void InspectorAuditsAgent::Trace(Visitor* visitor) const {
   visitor->Trace(network_agent_);
-  visitor->Trace(inspector_issue_storage_);
   visitor->Trace(inspected_frames_);
   InspectorBaseAgent::Trace(visitor);
 }
