@@ -329,12 +329,12 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
   TraceQueueSize();
 }
 
-void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
+void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
                                         CurrentThread current_thread) {
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
-  CHECK(task.callback);
-  DCHECK_GT(task.delay, TimeDelta());
+  CHECK(posted_task.callback);
+  DCHECK_GT(posted_task.delay, TimeDelta());
 
   WakeUpResolution resolution = WakeUpResolution::kLow;
 #if defined(OS_WIN)
@@ -342,7 +342,8 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
   // than 0 and less than 32ms. This caps the relative error to less than 50% :
   // a 33ms wait can wake at 48ms since the default resolution on Windows is
   // between 10 and 15ms.
-  if (task.delay.InMilliseconds() < (2 * Time::kMinLowResolutionThresholdMs))
+  if (posted_task.delay.InMilliseconds() <
+      (2 * Time::kMinLowResolutionThresholdMs))
     resolution = WakeUpResolution::kHigh;
 #endif  // defined(OS_WIN)
 
@@ -351,13 +352,14 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
     TimeTicks time_domain_now = main_thread_only().time_domain->Now();
-    TimeTicks time_domain_delayed_run_time = time_domain_now + task.delay;
+    TimeTicks time_domain_delayed_run_time =
+        time_domain_now + posted_task.delay;
     if (sequence_manager_->GetAddQueueTimeToTasks())
-      task.queue_time = time_domain_now;
+      posted_task.queue_time = time_domain_now;
 
     PushOntoDelayedIncomingQueueFromMainThread(
-        Task(std::move(task), time_domain_delayed_run_time, sequence_number,
-             EnqueueOrder(), resolution),
+        Task(std::move(posted_task), time_domain_delayed_run_time,
+             sequence_number, EnqueueOrder(), resolution),
         time_domain_now, /* notify_task_annotator */ true);
   } else {
     // NOTE posting a delayed task from a different thread is not expected to
@@ -371,13 +373,14 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
       base::internal::CheckedAutoLock lock(any_thread_lock_);
       time_domain_now = any_thread_.time_domain->Now();
     }
-    TimeTicks time_domain_delayed_run_time = time_domain_now + task.delay;
+    TimeTicks time_domain_delayed_run_time =
+        time_domain_now + posted_task.delay;
     if (sequence_manager_->GetAddQueueTimeToTasks())
-      task.queue_time = time_domain_now;
+      posted_task.queue_time = time_domain_now;
 
     PushOntoDelayedIncomingQueue(
-        Task(std::move(task), time_domain_delayed_run_time, sequence_number,
-             EnqueueOrder(), resolution));
+        Task(std::move(posted_task), time_domain_delayed_run_time,
+             sequence_number, EnqueueOrder(), resolution));
   }
 }
 
