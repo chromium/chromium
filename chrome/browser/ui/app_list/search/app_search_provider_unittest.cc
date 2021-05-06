@@ -99,9 +99,14 @@ void WaitTimeUpdated() {
   run_loop.Run();
 }
 
+base::Time MicrosecondsSinceEpoch(int microseconds) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(microseconds));
+}
+
 }  // namespace
 
-const base::Time kTestCurrentTime = base::Time::FromInternalValue(100000);
+const base::Time kTestCurrentTime = MicrosecondsSinceEpoch(100000);
 
 bool MoreRelevant(const ChromeSearchResult* result1,
                   const ChromeSearchResult* result2) {
@@ -416,16 +421,16 @@ TEST_F(AppSearchProviderTest, FetchRecommendations) {
   extensions::ExtensionPrefs* prefs =
       extensions::ExtensionPrefs::Get(profile_.get());
 
-  prefs->SetLastLaunchTime(kHostedAppId, base::Time::FromInternalValue(20));
-  prefs->SetLastLaunchTime(kPackagedApp1Id, base::Time::FromInternalValue(10));
-  prefs->SetLastLaunchTime(kPackagedApp2Id, base::Time::FromInternalValue(5));
+  prefs->SetLastLaunchTime(kHostedAppId, MicrosecondsSinceEpoch(20));
+  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
+  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
 
-  prefs->SetLastLaunchTime(kHostedAppId, base::Time::FromInternalValue(5));
-  prefs->SetLastLaunchTime(kPackagedApp1Id, base::Time::FromInternalValue(10));
-  prefs->SetLastLaunchTime(kPackagedApp2Id, base::Time::FromInternalValue(20));
+  prefs->SetLastLaunchTime(kHostedAppId, MicrosecondsSinceEpoch(5));
+  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
+  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(20));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("Packaged App 2,Packaged App 1,Hosted App", RunQuery(""));
@@ -433,8 +438,8 @@ TEST_F(AppSearchProviderTest, FetchRecommendations) {
   // Times in the future should just be handled as highest priority.
   prefs->SetLastLaunchTime(kHostedAppId,
                            kTestCurrentTime + base::TimeDelta::FromSeconds(5));
-  prefs->SetLastLaunchTime(kPackagedApp1Id, base::Time::FromInternalValue(10));
-  prefs->SetLastLaunchTime(kPackagedApp2Id, base::Time::FromInternalValue(5));
+  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
+  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
@@ -664,8 +669,8 @@ TEST_F(AppSearchProviderTest, FetchUnlaunchedRecommendations) {
   // The order of unlaunched recommendations should be based on the install time
   // order.
   prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now());
-  prefs->SetLastLaunchTime(kPackagedApp1Id, base::Time::FromInternalValue(0));
-  prefs->SetLastLaunchTime(kPackagedApp2Id, base::Time::FromInternalValue(0));
+  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(0));
+  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(0));
   EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
 }
 
