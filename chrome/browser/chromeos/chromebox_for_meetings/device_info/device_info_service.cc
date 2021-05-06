@@ -115,12 +115,31 @@ void DeviceInfoService::AddDeviceSettingsObserver(
 }
 
 void DeviceInfoService::UpdatePolicyInfo() {
+  auto policy_info = mojom::PolicyInfo::New();
+
+  PopulatePolicyInfoFromProto(policy_info);
+  PopulateChromeDeviceSettingsFromProto(policy_info);
+
+  if (current_policy_info_.Equals(policy_info)) {
+    return;
+  }
+
+  current_policy_info_ = std::move(policy_info);
+
+  for (auto& remote : policy_remotes_) {
+    remote->OnPolicyInfoChange(current_policy_info_->Clone());
+  }
+}
+
+void DeviceInfoService::PopulatePolicyInfoFromProto(
+    mojom::PolicyInfoPtr& policy_info) {
   auto* device_settings = ash::DeviceSettingsService::Get();
+
   if (!device_settings || !device_settings->policy_data()) {
     return;
   }
+
   auto* policy_data = device_settings->policy_data();
-  auto policy_info = mojom::PolicyInfo::New();
 
   if (policy_data->has_timestamp()) {
     policy_info->timestamp_ms = policy_data->timestamp();
@@ -143,15 +162,34 @@ void DeviceInfoService::UpdatePolicyInfo() {
   if (policy_data->has_device_id()) {
     policy_info->cros_device_id = policy_data->device_id();
   }
+}
 
-  if (current_policy_info_.Equals(policy_info)) {
+void DeviceInfoService::PopulateChromeDeviceSettingsFromProto(
+    mojom::PolicyInfoPtr& policy_info) {
+  auto* device_settings = ash::DeviceSettingsService::Get();
+
+  if (!device_settings || !device_settings->device_settings()) {
     return;
   }
 
-  current_policy_info_ = std::move(policy_info);
+  auto* chrome_settings_data = device_settings->device_settings();
 
-  for (auto& remote : policy_remotes_) {
-    remote->OnPolicyInfoChange(current_policy_info_->Clone());
+  if (chrome_settings_data->has_auto_update_settings()) {
+    auto auto_update_settings = chrome_settings_data->auto_update_settings();
+
+    if (auto_update_settings.has_device_quick_fix_build_token()) {
+      policy_info->cohort_hint =
+          auto_update_settings.device_quick_fix_build_token();
+    }
+  }
+
+  if (chrome_settings_data->has_release_channel()) {
+    auto release_channel = chrome_settings_data->release_channel();
+
+    if (release_channel.has_release_channel_delegated()) {
+      policy_info->release_channel_delegated =
+          release_channel.release_channel_delegated();
+    }
   }
 }
 
