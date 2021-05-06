@@ -200,7 +200,8 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.AndroidGetAccountsTime" units="ms" expires_after="M92">
+<histogram base="true" name="Signin.AndroidGetAccountsTime" units="ms"
+    expires_after="M96">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
