@@ -56,9 +56,9 @@ rmad::RmadState CreateWelcomeState() {
   return state;
 }
 
-rmad::RmadState CreateSelectComponentsState() {
+rmad::RmadState CreateSelectNetworkState() {
   rmad::RmadState state;
-  state.set_allocated_select_components(new rmad::ComponentsRepairState());
+  state.set_allocated_select_network(new rmad::SelectNetworkState());
   return state;
 }
 
@@ -70,12 +70,11 @@ rmad::GetStateReply CreateWelcomeStateReply(rmad::RmadErrorCode error) {
   return reply;
 }
 
-rmad::GetStateReply CreateSelectComponentsStateReply(
-    rmad::RmadErrorCode error) {
+rmad::GetStateReply CreateSelectNetworkStateReply(rmad::RmadErrorCode error) {
   rmad::GetStateReply reply;
   reply.set_allocated_state(new rmad::RmadState());
-  reply.mutable_state()->set_allocated_select_components(
-      new rmad::ComponentsRepairState());
+  reply.mutable_state()->set_allocated_select_network(
+      new rmad::SelectNetworkState());
   reply.set_error(error);
   return reply;
 }
@@ -172,8 +171,8 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(rmad::GetStateReply(
-      CreateSelectComponentsStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(
+      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   base::RunLoop run_loop;
@@ -184,7 +183,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
             EXPECT_TRUE(response->has_state());
-            EXPECT_TRUE(response->state().has_select_components());
+            EXPECT_TRUE(response->state().has_select_network());
             run_loop.Quit();
           }));
   run_loop.RunUntilIdle();
@@ -194,13 +193,13 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(rmad::GetStateReply(
-      CreateSelectComponentsStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(
+      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   base::RunLoop run_loop;
   client_->TransitionNextState(
-      std::move(CreateSelectComponentsState()),
+      std::move(CreateSelectNetworkState()),
       base::BindLambdaForTesting(
           [&](base::Optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
@@ -228,8 +227,8 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
-  fake_states.push_back(rmad::GetStateReply(
-      CreateSelectComponentsStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(
+      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
@@ -241,7 +240,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
-              EXPECT_TRUE(response->state().has_select_components());
+              EXPECT_TRUE(response->state().has_select_network());
               run_loop.Quit();
             }));
     run_loop.RunUntilIdle();
@@ -265,8 +264,8 @@ TEST_F(FakeRmadClientTest,
        TransitionPreviousState_HasPreviousState_StateUpdated) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK));
-  fake_states.push_back(rmad::GetStateReply(
-      CreateSelectComponentsStateReply(rmad::RMAD_ERROR_OK)));
+  fake_states.push_back(
+      rmad::GetStateReply(CreateSelectNetworkStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
@@ -296,7 +295,7 @@ TEST_F(FakeRmadClientTest,
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
-              EXPECT_TRUE(response->state().has_select_components());
+              EXPECT_TRUE(response->state().has_select_network());
               run_loop.Quit();
             }));
     run_loop.RunUntilIdle();

@@ -155,8 +155,7 @@ TEST_F(RmadClientTest, TransitionNextState) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   rmad::GetStateReply expected_proto;
   rmad::RmadState* expected_state = new rmad::RmadState();
-  expected_state->set_allocated_select_components(
-      new rmad::ComponentsRepairState());
+  expected_state->set_allocated_select_network(new rmad::SelectNetworkState());
   expected_proto.set_allocated_state(expected_state);
   expected_proto.set_error(rmad::RMAD_ERROR_OK);
   ASSERT_TRUE(dbus::MessageWriter(response.get())
@@ -178,7 +177,7 @@ TEST_F(RmadClientTest, TransitionNextState) {
                      EXPECT_TRUE(response.has_value());
                      EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
                      EXPECT_TRUE(response->has_state());
-                     EXPECT_TRUE(response->state().has_select_components());
+                     EXPECT_TRUE(response->state().has_select_network());
                      run_loop.Quit();
                    }));
   run_loop.RunUntilIdle();
