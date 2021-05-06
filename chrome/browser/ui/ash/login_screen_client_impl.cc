@@ -303,7 +303,7 @@ void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
     std::unique_ptr<base::ListValue> keyboard_layouts) {
   std::vector<ash::InputMethodItem> result;
 
-  for (const auto& i : *keyboard_layouts) {
+  for (const auto& i : keyboard_layouts->GetList()) {
     const base::DictionaryValue* dictionary;
     if (!i.GetAsDictionary(&dictionary))
       continue;
