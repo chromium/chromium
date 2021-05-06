@@ -1,3 +1,2 @@
-tedchoc@chromium.org
-yfriedman@chromium.org
+file://chrome/android/OWNERS
 per-file ssl_client_certificate_selector.cc=dmcardle@chromium.org
