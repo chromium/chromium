@@ -189,6 +189,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // APIs: See `IsInvisibleOrIgnored`.)
   virtual gfx::NativeViewAccessible GetLowestPlatformAncestor() const = 0;
 
+  // If this node is within an editable region, returns the node that is at the
+  // root of that editable region, otherwise returns nullptr. In accessibility,
+  // an editable region is synonymous to a node with the kTextField role, or a
+  // contenteditable without the role, (see `AXNodeData::IsTextField()`).
+  virtual gfx::NativeViewAccessible GetTextFieldAncestor() const = 0;
+
   class ChildIterator {
    public:
     virtual ~ChildIterator() = default;

@@ -4872,18 +4872,13 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
           GetData().HasTextStyle(ax::mojom::TextStyle::kItalic));
       break;
     case UIA_IsReadOnlyAttributeId: {
-      if (!IsText()) {
-        result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
+      // If inside a text field, the text field's readonly state rules.
+      const AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
+          FromNativeViewAccessible(GetDelegate()->GetTextFieldAncestor()));
+      if (text_field) {
+        result->Insert<VT_BOOL>(text_field->GetData().IsReadOnlyOrDisabled());
       } else {
-        // TODO(nektar): Does not work in rich text fields.
-        AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
-            FromNativeViewAccessible(GetParent()));
-        DCHECK(text_field);
-        if (text_field->IsTextField()) {
-          result->Insert<VT_BOOL>(text_field->GetData().IsReadOnlyOrDisabled());
-        } else {
-          result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
-        }
+        result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
       }
       break;
     }
@@ -7982,17 +7977,6 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
   for (LONG i = 0; i < count; i++)
     (*selected)[i] = results[i];
   return S_OK;
-}
-
-bool AXPlatformNodeWin::IsPlaceholderText() const {
-  if (!IsText())
-    return false;
-  AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
-      FromNativeViewAccessible(GetDelegate()->GetLowestPlatformAncestor()));
-  DCHECK(text_field);
-  return text_field->IsTextField() &&
-         text_field->HasStringAttribute(
-             ax::mojom::StringAttribute::kPlaceholder);
 }
 
 bool AXPlatformNodeWin::IsHyperlink() {

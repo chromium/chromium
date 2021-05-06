@@ -77,6 +77,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
+  gfx::NativeViewAccessible GetTextFieldAncestor() const override;
 
   class ChildIteratorBase : public ChildIterator {
    public:

@@ -266,6 +266,14 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetLowestPlatformAncestor()
   return manager()->GetFromAXNode(lowest_platform_ancestor);
 }
 
+BrowserAccessibility* BrowserAccessibility::PlatformGetTextFieldAncestor()
+    const {
+  ui::AXNode* text_field_ancestor = node()->GetTextFieldAncestor();
+  if (!text_field_ancestor)
+    return nullptr;
+  return manager()->GetFromAXNode(text_field_ancestor);
+}
+
 bool BrowserAccessibility::IsPreviousSiblingOnSameLine() const {
   const BrowserAccessibility* previous_sibling = PlatformGetPreviousSibling();
   if (!previous_sibling)
@@ -1232,7 +1240,8 @@ bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
 
   // A selection or the caret will be visible in a focused text field (including
   // content editables).
-  const BrowserAccessibility* text_field = focus_object->GetTextFieldAncestor();
+  const BrowserAccessibility* text_field =
+      focus_object->PlatformGetTextFieldAncestor();
   if (text_field)
     return true;
 
@@ -1576,6 +1585,13 @@ gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
       PlatformGetLowestPlatformAncestor();
   if (lowest_platform_ancestor)
     return lowest_platform_ancestor->GetNativeViewAccessible();
+  return nullptr;
+}
+
+gfx::NativeViewAccessible BrowserAccessibility::GetTextFieldAncestor() const {
+  BrowserAccessibility* text_field_ancestor = PlatformGetTextFieldAncestor();
+  if (text_field_ancestor)
+    return text_field_ancestor->GetNativeViewAccessible();
   return nullptr;
 }
 
@@ -2166,13 +2182,6 @@ BrowserAccessibility::GetCollapsedMenuListPopUpButtonAncestor() const {
   if (!popup_button)
     return nullptr;
   return manager()->GetFromAXNode(popup_button);
-}
-
-BrowserAccessibility* BrowserAccessibility::GetTextFieldAncestor() const {
-  ui::AXNode* text_field_ancestor = node()->GetTextFieldAncestor();
-  if (!text_field_ancestor)
-    return nullptr;
-  return manager()->GetFromAXNode(text_field_ancestor);
 }
 
 std::string BrowserAccessibility::ToString() const {

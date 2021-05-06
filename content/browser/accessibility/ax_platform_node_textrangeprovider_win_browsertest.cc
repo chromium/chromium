@@ -110,7 +110,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
   }
 
   void GetTextRangeProviderFromTextNode(
-      const BrowserAccessibility& target_node,
+      BrowserAccessibility& target_node,
       ITextRangeProvider** text_range_provider) {
     BrowserAccessibilityComWin* target_node_com =
         ToBrowserAccessibilityWin(&target_node)->GetCOM();
@@ -394,7 +394,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        GetAttributeValue) {
-  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
         <body>
@@ -404,13 +404,13 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
           </div>
         </body>
       </html>
-  )HTML"));
+  )HTML");
 
   ComPtr<IUnknown> mix_attribute_value;
   EXPECT_HRESULT_SUCCEEDED(
       UiaGetReservedMixedAttributeValue(&mix_attribute_value));
 
-  auto* node = FindNode(ax::mojom::Role::kStaticText, "Text1");
+  BrowserAccessibility* node = FindNode(ax::mojom::Role::kStaticText, "Text1");
   ASSERT_NE(nullptr, node);
   EXPECT_TRUE(node->PlatformIsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
@@ -437,19 +437,22 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       << "expected 'mixed attribute value' interface pointer";
 }
 
+// An empty atomic text field, such as an empty <input type="text">, should
+// expose an embedded object replacement character in its text representation.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
-                       GetAttributeValueIsReadonlyEmptyTextInputs) {
-  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+                       GetAttributeValueInReadonlyEmptyAtomicTextField) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
         <body>
-          <input type="text" aria-label="input_text">
+          <input readonly type="text" aria-label="input_text">
           <input type="search" aria-label="input_search">
         </body>
       </html>
-  )HTML"));
+  )HTML");
 
-  auto* input_text_node = FindNode(ax::mojom::Role::kTextField, "input_text");
+  BrowserAccessibility* input_text_node =
+      FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
   EXPECT_TRUE(input_text_node->PlatformIsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
@@ -464,11 +467,11 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));
   EXPECT_EQ(value.type(), VT_BOOL);
-  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_FALSE);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_TRUE);
   text_range_provider.Reset();
   value.Reset();
 
-  auto* input_search_node =
+  BrowserAccessibility* input_search_node =
       FindNode(ax::mojom::Role::kSearchBox, "input_search");
   ASSERT_NE(nullptr, input_search_node);
   EXPECT_TRUE(input_search_node->PlatformIsLeaf());
@@ -487,38 +490,112 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   value.Reset();
 }
 
-// With a rich text field, the read-only attribute should be determined based on
-// the editable root node's editable state.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
-                       DISABLED_GetAttributeValueIsReadonlyRichTextField) {
+                       GetAttributeValueInReadonlyAtomicTextField) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
-        <style>
-          .myDiv::before {
-              content: attr(data-placeholder);
-              pointer-events: none;
-          }
-        </style>
         <body>
-          <div contenteditable="true" data-placeholder="@mention or comment"
-          role="textbox" aria-readonly="false" aria-label="text_field"
-          class="myDiv"><p>3.14</p></div>
+          <input type="text" aria-label="input_text" value="text">
+          <input readonly type="search" aria-label="input_search"
+              value="search">
         </body>
       </html>
   )HTML");
 
-  auto* text_field_node = FindNode(ax::mojom::Role::kTextField, "text_field");
-  ASSERT_NE(nullptr, text_field_node);
+  BrowserAccessibility* input_text_node =
+      FindNode(ax::mojom::Role::kTextField, "input_text");
+  ASSERT_NE(nullptr, input_text_node);
+  EXPECT_TRUE(input_text_node->PlatformIsLeaf());
+  EXPECT_EQ(0u, input_text_node->PlatformChildCount());
+
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(*text_field_node, &text_range_provider);
+  GetTextRangeProviderFromTextNode(*input_text_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"text");
 
   base::win::ScopedVariant value;
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));
   EXPECT_EQ(value.type(), VT_BOOL);
   EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_FALSE);
+  text_range_provider.Reset();
+  value.Reset();
+
+  BrowserAccessibility* input_search_node =
+      FindNode(ax::mojom::Role::kSearchBox, "input_search");
+  ASSERT_NE(nullptr, input_search_node);
+  EXPECT_TRUE(input_search_node->PlatformIsLeaf());
+  EXPECT_EQ(0u, input_search_node->PlatformChildCount());
+
+  GetTextRangeProviderFromTextNode(*input_search_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"search");
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsReadOnlyAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_TRUE);
+  text_range_provider.Reset();
+  value.Reset();
+}
+
+// With a non-atomic text field, the read-only attribute should be determined
+// based on the content editable root node's editable state.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetAttributeValueInReadonlyNonAtomicTextField) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <style>
+          .non-atomic-text-field::before {
+              content: attr(data-placeholder);
+              pointer-events: none;
+          }
+        </style>
+        <body>
+          <div contenteditable="true" data-placeholder="@mention or comment"
+              role="textbox" aria-readonly="false" aria-label="text_field_1"
+              class="non-atomic-text-field">
+              <p>value1</p>
+          </div>
+          <div contenteditable="true" data-placeholder="@mention or comment"
+              role="textbox" aria-readonly="true" aria-label="text_field_2"
+              class="non-atomic-text-field">
+              <p>value2</p>
+          </div>
+        </body>
+      </html>
+  )HTML");
+
+  BrowserAccessibility* text_field_node_1 =
+      FindNode(ax::mojom::Role::kTextField, "text_field_1");
+  ASSERT_NE(nullptr, text_field_node_1);
+  BrowserAccessibility* text_field_node_2 =
+      FindNode(ax::mojom::Role::kTextField, "text_field_2");
+  ASSERT_NE(nullptr, text_field_node_2);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*text_field_node_1, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue1");
+
+  base::win::ScopedVariant value;
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsReadOnlyAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_FALSE);
+  text_range_provider.Reset();
+  value.Reset();
+
+  GetTextRangeProviderFromTextNode(*text_field_node_2, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue2");
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsReadOnlyAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_TRUE);
   text_range_provider.Reset();
   value.Reset();
 }
@@ -664,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        TextInputWithNewline) {
-  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
         <body>
@@ -673,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
           </div>
         </body>
       </html>
-  )HTML"));
+  )HTML");
 
   // This test validates an important scenario for editing. UIA clients such as
   // Narrator expect newlines to be contained within their adjacent nodes.
@@ -684,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // input, first change the value of the text input and then focus it. Only
   // editing the value won't show the cursor and only focusing will put the
   // cursor at the beginning of the text input, so both steps are necessary.
-  auto* input_text_node = FindNode(ax::mojom::Role::kTextField, "input_text");
+  BrowserAccessibility* input_text_node =
+      FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
   EXPECT_TRUE(input_text_node->PlatformIsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());

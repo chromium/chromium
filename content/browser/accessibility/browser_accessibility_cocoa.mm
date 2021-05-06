@@ -1355,7 +1355,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
   const BrowserAccessibility* text_field_ancestor =
-      _owner->GetTextFieldAncestor();
+      _owner->PlatformGetTextFieldAncestor();
   if (text_field_ancestor)
     return ToBrowserAccessibilityCocoa(text_field_ancestor);
   return nil;

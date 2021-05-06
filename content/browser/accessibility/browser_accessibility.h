@@ -165,6 +165,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // platform.
   virtual BrowserAccessibility* PlatformGetLowestPlatformAncestor() const;
 
+  // If this node is within an editable region, such as a content editable,
+  // returns the node that is at the root of that editable region, otherwise
+  // returns nullptr. In accessibility, an editable region includes all types of
+  // text fields, (see `AXNodeData::IsTextField()`).
+  BrowserAccessibility* PlatformGetTextFieldAncestor() const;
+
   bool IsPreviousSiblingOnSameLine() const;
   bool IsNextSiblingOnSameLine() const;
 
@@ -406,6 +412,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsInvisibleOrIgnored() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
+  gfx::NativeViewAccessible GetTextFieldAncestor() const override;
 
   std::unique_ptr<ChildIterator> ChildrenBegin() override;
   std::unique_ptr<ChildIterator> ChildrenEnd() override;
@@ -525,12 +532,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // button needs to be the parent of a menu list popup and needs to be
   // collapsed.
   BrowserAccessibility* GetCollapsedMenuListPopUpButtonAncestor() const;
-
-  // If this node is within an editable region, such as a content editable,
-  // returns the node that is at the root of that editable region, otherwise
-  // returns nullptr. In accessibility, an editable region also includes all
-  // types of text fields.
-  BrowserAccessibility* GetTextFieldAncestor() const;
 
   // Returns true if:
   // 1. This node is a list, AND

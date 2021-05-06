@@ -544,14 +544,16 @@ class AX_EXPORT AXNode final {
 
   // If this node is within an editable region, returns the node that is at the
   // root of that editable region, otherwise returns nullptr. In accessibility,
-  // an editable region is synonymous to a text field.
+  // an editable region is synonymous to a node with the kTextField role, or a
+  // contenteditable without the role, (see `AXNodeData::IsTextField()`).
   AXNode* GetTextFieldAncestor() const;
 
   // Returns true if this node is either an atomic text field , or one of its
   // ancestors is. An atomic text field does not expose its internal
   // implementation to assistive software, appearing as a single leaf node in
-  // the accessibility tree. It includes <input>, <textarea> and Views-based
-  // text fields.
+  // the accessibility tree. Examples include: An <input> or a <textarea> on the
+  // Web, a text field in a PDF form, a Views-based text field, or a native
+  // Android one.
   bool IsDescendantOfAtomicTextField() const;
 
   // Finds and returns a pointer to ordered set containing node.

@@ -3995,6 +3995,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   input_text_data2.id = 14;
   input_text_data2.role = ax::mojom::Role::kTextField;
   input_text_data2.AddState(ax::mojom::State::kEditable);
+  input_text_data2.SetRestriction(ax::mojom::Restriction::kDisabled);
   input_text_data2.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
                                       "placeholder2");
   input_text_data2.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
@@ -4198,7 +4199,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                               UIA_IsReadOnlyAttributeId, expected_variant);
   expected_variant.Reset();
 
-  expected_variant.Set(false);
+  expected_variant.Set(true);
   EXPECT_UIA_TEXTATTRIBUTE_EQ(placeholder_text_range_provider2,
                               UIA_IsReadOnlyAttributeId, expected_variant);
   expected_variant.Reset();

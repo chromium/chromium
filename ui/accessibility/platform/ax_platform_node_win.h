@@ -1441,8 +1441,6 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   bool IsAncestorComboBox();
 
-  bool IsPlaceholderText() const;
-
   // Helper method for getting the horizontal scroll percent.
   double GetHorizontalScrollPercent();
 

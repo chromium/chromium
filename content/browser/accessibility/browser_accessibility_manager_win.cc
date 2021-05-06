@@ -245,7 +245,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       if (focus_object) {
         EnqueueSelectionChangedEvent(*focus_object);
         if (BrowserAccessibility* text_field =
-                focus_object->GetTextFieldAncestor()) {
+                focus_object->PlatformGetTextFieldAncestor()) {
           EnqueueSelectionChangedEvent(*text_field);
 
           // Atomic text fields (including input and textarea elements) have

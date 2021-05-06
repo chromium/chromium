@@ -173,6 +173,16 @@ bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
 }
 
 bool AXPlatformNodeDelegateBase::IsDescendantOfAtomicTextField() const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegateBase*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->GetData().IsAtomicTextField())
+      return true;
+  }
   return false;
 }
 
@@ -208,6 +218,21 @@ AXPlatformNodeDelegateBase::GetLowestPlatformAncestor() const {
   if (lowest_unignored_delegate)
     return lowest_unignored_delegate->GetNativeViewAccessible();
   return current_delegate->GetNativeViewAccessible();
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetTextFieldAncestor()
+    const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegateBase*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->GetData().IsTextField())
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
 }
 
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
