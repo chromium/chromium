@@ -101,7 +101,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
 
   const base::ListValue* alternate_urls = nullptr;
   if (dict.GetList(DefaultSearchManager::kAlternateURLs, &alternate_urls)) {
-    for (const auto& it : *alternate_urls) {
+    for (const auto& it : alternate_urls->GetList()) {
       std::string alternate_url;
       if (it.GetAsString(&alternate_url))
         result->alternate_urls.push_back(std::move(alternate_url));
@@ -110,7 +110,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
 
   const base::ListValue* encodings = nullptr;
   if (dict.GetList(DefaultSearchManager::kInputEncodings, &encodings)) {
-    for (const auto& it : *encodings) {
+    for (const auto& it : encodings->GetList()) {
       std::string encoding;
       if (it.GetAsString(&encoding))
         result->input_encodings.push_back(std::move(encoding));
