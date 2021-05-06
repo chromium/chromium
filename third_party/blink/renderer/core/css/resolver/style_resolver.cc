@@ -1215,7 +1215,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   // element which is not represented by a PseudoElement like scrollbar pseudo
   // elements.
   Element* animating_element = state.GetAnimatingElement();
-  DCHECK(animating_element == &element || !animating_element ||
+
+  if (!animating_element)
+    return false;
+
+  DCHECK(animating_element == &element ||
          animating_element->ParentOrShadowHostElement() == element);
 
   if (!HasAnimationsOrTransitions(state)) {
@@ -1227,17 +1231,17 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   }
 
   CSSAnimations::CalculateAnimationUpdate(
-      state.AnimationUpdate(), animating_element, state.GetElement(),
+      state.AnimationUpdate(), *animating_element, state.GetElement(),
       *state.Style(), state.ParentStyle(), this);
   CSSAnimations::CalculateCompositorAnimationUpdate(
-      state.AnimationUpdate(), animating_element, element, *state.Style(),
+      state.AnimationUpdate(), *animating_element, element, *state.Style(),
       state.ParentStyle(), WasViewportResized());
   CSSAnimations::CalculateTransitionUpdate(
       state.AnimationUpdate(), CSSAnimations::PropertyPass::kStandard,
-      animating_element, *state.Style());
+      *animating_element, *state.Style());
   CSSAnimations::CalculateTransitionUpdate(state.AnimationUpdate(),
                                            CSSAnimations::PropertyPass::kCustom,
-                                           animating_element, *state.Style());
+                                           *animating_element, *state.Style());
 
   CSSAnimations::SnapshotCompositorKeyframes(
       element, state.AnimationUpdate(), *state.Style(), state.ParentStyle());

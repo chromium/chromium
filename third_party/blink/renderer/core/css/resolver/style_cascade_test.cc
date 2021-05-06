@@ -169,16 +169,16 @@ class TestCascade {
   void CalculateTransitionUpdate() {
     CSSAnimations::CalculateTransitionUpdate(
         state_.AnimationUpdate(), CSSAnimations::PropertyPass::kCustom,
-        &state_.GetElement(), *state_.Style());
+        state_.GetElement(), *state_.Style());
     CSSAnimations::CalculateTransitionUpdate(
         state_.AnimationUpdate(), CSSAnimations::PropertyPass::kStandard,
-        &state_.GetElement(), *state_.Style());
+        state_.GetElement(), *state_.Style());
     AddTransitions();
   }
 
   void CalculateAnimationUpdate() {
     CSSAnimations::CalculateAnimationUpdate(
-        state_.AnimationUpdate(), &state_.GetElement(), state_.GetElement(),
+        state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
         *state_.Style(), state_.ParentStyle(),
         &GetDocument().GetStyleResolver());
     AddAnimations();

@@ -68,14 +68,14 @@ class CORE_EXPORT CSSAnimations final {
   static bool IsAnimatingFontAffectingProperties(const ElementAnimations*);
   static bool IsAnimatingRevert(const ElementAnimations*);
   static void CalculateAnimationUpdate(CSSAnimationUpdate&,
-                                       const Element* animating_element,
+                                       const Element& animating_element,
                                        Element&,
                                        const ComputedStyle&,
                                        const ComputedStyle* parent_style,
                                        StyleResolver*);
   static void CalculateCompositorAnimationUpdate(
       CSSAnimationUpdate&,
-      const Element* animating_element,
+      const Element& animating_element,
       Element&,
       const ComputedStyle&,
       const ComputedStyle* parent_style,
@@ -95,7 +95,7 @@ class CORE_EXPORT CSSAnimations final {
   enum class PropertyPass { kCustom, kStandard };
   static void CalculateTransitionUpdate(CSSAnimationUpdate&,
                                         PropertyPass,
-                                        Element* animating_element,
+                                        Element& animating_element,
                                         const ComputedStyle&);
 
   static void SnapshotCompositorKeyframes(Element&,
@@ -182,7 +182,7 @@ class CORE_EXPORT CSSAnimations final {
 
    public:
     CSSAnimationUpdate& update;
-    Element* animating_element = nullptr;
+    Element& animating_element;
     const ComputedStyle& old_style;
     const ComputedStyle& style;
     const ComputedStyle* before_change_style;
@@ -209,18 +209,18 @@ class CORE_EXPORT CSSAnimations final {
 
   static void CalculateAnimationActiveInterpolations(
       CSSAnimationUpdate&,
-      const Element* animating_element);
+      const Element& animating_element);
   static void CalculateTransitionActiveInterpolations(
       CSSAnimationUpdate&,
       PropertyPass,
-      const Element* animating_element);
+      const Element& animating_element);
 
   // The before-change style is defined as the computed values of all properties
   // on the element as of the previous style change event, except with any
   // styles derived from declarative animations updated to the current time.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
   static const ComputedStyle* CalculateBeforeChangeStyle(
-      Element* animating_element,
+      Element& animating_element,
       const ComputedStyle& base_style);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
