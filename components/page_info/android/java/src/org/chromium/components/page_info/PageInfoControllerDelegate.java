@@ -163,12 +163,6 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /**
-     * Show site settings for the URL passed in.
-     * @param url The URL to show site settings for.
-     */
-    public abstract void showSiteSettings(String url);
-
-    /**
      * Show cookie settings.
      */
     public abstract void showCookieSettings();

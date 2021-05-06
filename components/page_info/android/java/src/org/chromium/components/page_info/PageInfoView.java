@@ -148,14 +148,12 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         public boolean urlTitleShown = true;
         public boolean connectionMessageShown = true;
         public boolean instantAppButtonShown = true;
-        public boolean siteSettingsButtonShown = true;
         public boolean openOnlineButtonShown = true;
         public boolean cookieControlsShown = true;
 
         public Runnable urlTitleClickCallback;
         public Runnable urlTitleLongClickCallback;
         public Runnable instantAppButtonClickCallback;
-        public Runnable siteSettingsButtonClickCallback;
         public Runnable openOnlineButtonClickCallback;
         public Runnable onUiClosingCallback;
 
@@ -179,7 +177,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     // completely.
     protected ElidedUrlTextView mUrlTitle;
     protected Button mInstantAppButton;
-    protected Button mSiteSettingsButton;
     protected Button mOpenOnlineButton;
     protected Runnable mOnUiClosingCallback;
 
@@ -207,7 +204,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         initPermissions(params);
         initCookies(params);
         initInstantApp(params);
-        initSiteSettings(params);
         initOpenOnline(params);
     }
 
@@ -253,12 +249,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         mInstantAppButton = findViewById(R.id.page_info_instant_app_button);
         initializePageInfoViewChild(mInstantAppButton, params.instantAppButtonShown,
                 params.instantAppButtonClickCallback);
-    }
-
-    protected void initSiteSettings(PageInfoViewParams params) {
-        mSiteSettingsButton = findViewById(R.id.page_info_site_settings_button);
-        initializePageInfoViewChild(mSiteSettingsButton, params.siteSettingsButtonShown,
-                params.siteSettingsButtonClickCallback);
     }
 
     protected void initOpenOnline(PageInfoViewParams params) {
@@ -343,7 +333,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         animatableViews.add(mInstantAppButton);
         animatableViews.add(mCookieControlsSeparator);
         animatableViews.add(mCookieControlsView);
-        animatableViews.add(mSiteSettingsButton);
 
         return animatableViews;
     }

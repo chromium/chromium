@@ -211,14 +211,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return mContext.getString(R.string.page_info_connection_paint_preview);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showSiteSettings(String url) {
-        SiteSettingsHelper.showSiteSettings(mContext, url);
-    }
-
     @Override
     public void showCookieSettings() {
         SiteSettingsHelper.showCategorySettings(mContext, SiteSettingsCategory.Type.COOKIES);

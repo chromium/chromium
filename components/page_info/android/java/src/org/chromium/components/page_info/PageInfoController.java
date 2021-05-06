@@ -225,16 +225,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         autocompleteSchemeClassifier.destroy();
 
         if (mDelegate.isSiteSettingsAvailable()) {
-            viewParams.siteSettingsButtonClickCallback = () -> {
-                // Delay while the dialog closes.
-                runAfterDismiss(() -> {
-                    recordAction(PageInfoAction.PAGE_INFO_SITE_SETTINGS_OPENED);
-                    mDelegate.showSiteSettings(mFullUrl.getSpec());
-                });
-            };
             viewParams.cookieControlsShown = delegate.cookieControlsShown();
         } else {
-            viewParams.siteSettingsButtonShown = false;
             viewParams.cookieControlsShown = false;
         }
         viewParams.onUiClosingCallback = () -> {

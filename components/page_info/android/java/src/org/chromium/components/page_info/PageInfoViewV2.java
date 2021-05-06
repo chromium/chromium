@@ -65,9 +65,6 @@ public class PageInfoViewV2 extends PageInfoView {
         mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
     }
 
-    @Override
-    protected void initSiteSettings(PageInfoViewParams params) {}
-
     public PageInfoRowView getConnectionRowView() {
         return mConnectionRow;
     }

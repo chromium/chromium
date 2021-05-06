@@ -72,17 +72,6 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
         return mBrowser.getWindowAndroid().getModalDialogManager();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showSiteSettings(String url) {
-        Intent intent = SettingsIntentHelper.createIntentForSiteSettingsSingleWebsite(
-                mContext, mProfile.getName(), mProfile.isIncognito(), url);
-
-        launchIntent(intent);
-    }
-
     @Override
     public void showCookieSettings() {
         String category = SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES);
