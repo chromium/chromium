@@ -738,7 +738,7 @@ const base::Feature kVirtualKeyboardBorderedKey{
 
 // Enable or disable multipaste feature for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardMultipaste{
-    "VirtualKeyboardMultipaste", base::FEATURE_DISABLED_BY_DEFAULT};
+    "VirtualKeyboardMultipaste", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable the camera/mic indicators/notifications for VMs.
 const base::Feature kVmCameraMicIndicatorsAndNotifications{
