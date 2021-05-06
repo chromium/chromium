@@ -25,11 +25,11 @@
 #include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
 #endif
 
-namespace ui {
-
 using ::testing::_;
 using ::testing::SaveArg;
 using ::testing::Values;
+
+namespace ui {
 
 class WaylandKeyboardTest : public WaylandTest {
  public:

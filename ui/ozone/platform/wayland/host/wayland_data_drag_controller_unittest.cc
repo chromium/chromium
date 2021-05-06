@@ -41,13 +41,13 @@
 #include "ui/platform_window/wm/wm_drop_handler.h"
 #include "url/gurl.h"
 
-namespace ui {
-namespace {
-
-using mojom::DragOperation;
 using ::testing::_;
 using ::testing::Mock;
 using ::testing::Values;
+using ui::mojom::DragOperation;
+
+namespace ui {
+namespace {
 
 constexpr char kSampleTextForDragAndDrop[] =
     "This is a sample text for drag-and-drop.";

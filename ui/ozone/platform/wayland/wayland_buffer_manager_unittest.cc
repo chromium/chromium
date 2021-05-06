@@ -23,10 +23,10 @@
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
-namespace ui {
-
 using testing::_;
 using testing::Values;
+
+namespace ui {
 
 namespace {
 

@@ -13,9 +13,9 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
-namespace ui {
-
 using ::testing::Values;
+
+namespace ui {
 
 namespace {
 

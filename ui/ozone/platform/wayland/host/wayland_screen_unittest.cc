@@ -23,9 +23,9 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-namespace ui {
-
 using ::testing::Values;
+
+namespace ui {
 
 namespace {
 
