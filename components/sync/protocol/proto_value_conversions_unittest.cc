@@ -45,7 +45,7 @@ namespace {
     specifics.mutable_##Key();                                      \
     std::unique_ptr<base::DictionaryValue> value(                   \
         EntitySpecificsToValue(specifics));                         \
-    EXPECT_EQ(1, static_cast<int>(value->size()));                  \
+    EXPECT_EQ(1, static_cast<int>(value->DictSize()));              \
   }
 
 // We'd also like to check if we changed any field in our messages. However,
