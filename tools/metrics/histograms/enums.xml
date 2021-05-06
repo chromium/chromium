@@ -49404,6 +49404,12 @@ from previous Chrome versions.
   <int value="11" label="GAIA_REAUTH_POLICY">
     Admin policy required re-auth for Gaia without SAML users.
   </int>
+  <int value="12" label="GaiaLockScreenReauthPolicy">
+    Admin policy required re-auth on lock screen for Gaia without SAML users.
+  </int>
+  <int value="13" label="SamlLockScreenReauthPolicy">
+    Admin policy required re-auth on lock screen for SAML users.
+  </int>
 </enum>
 
 <enum name="LoginScreenUserClickTarget">

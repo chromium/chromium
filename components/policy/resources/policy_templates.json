@@ -9294,7 +9294,7 @@
       'type': 'int',
       'schema': {
         'type': 'integer',
-        'minimum': -1,
+        'minimum': -2,
         'maximum': 365
       },
       'future_on': ['chrome_os'],
@@ -9309,7 +9309,9 @@
       'tags': [],
       'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
-      When this policy is unset, or set to a value of -1, it will not enforce online authentication on the lock screen and will allow the user to use offline authentication unless a different reason than this policy enforces an online authentication.
+      When this policy is set to -2, it will match the value of the login screen offline signin time limit which comes from <ph name="POLICY">GaiaOfflineSigninTimeLimitDays</ph>.
+
+      When the policy is unset, or set to a value of -1, it will not enforce online authentication on the lock screen and will allow the user to use offline authentication unless a different reason than this policy enforces an online authentication.
 
       If the policy is set to a value of 0, online authentication will always be required.
 
@@ -9325,7 +9327,7 @@
       'type': 'int',
       'schema': {
         'type': 'integer',
-        'minimum': -1,
+        'minimum': -2,
         'maximum': 365
       },
       'future_on': ['chrome_os'],
@@ -9340,7 +9342,9 @@
       'tags': [],
       'desc': '''While logging in through the lock screen, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
 
-      When this policy is unset or set to a value of -1, it will not enforce online authentication on the lock screen and will allow the user to use offline authentication unless a different reason than this policy enforces an online authentication.
+      When this policy is set to -2, it will match the value of the login screen offline signin time limit which comes from <ph name="POLICY">SAMLOfflineSigninTimeLimit</ph>.
+
+      When the policy is unset or set to a value of -1, it will not enforce online authentication on the lock screen and will allow the user to use offline authentication unless a different reason than this policy enforces an online authentication.
 
       If the policy is set to a value of 0, online authentication will always be required.
 

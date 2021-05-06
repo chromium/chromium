@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
@@ -32,15 +33,6 @@
 #include "components/user_manager/user_manager.h"
 
 namespace chromeos {
-
-namespace {
-
-constexpr int kSAMLOfflineSigninTimeLimitNotSet = -1;
-// This constant value comes from the `GaiaOfflineSigninTimeLimitDays`
-// policy's definition.
-constexpr int kGaiaOfflineSigninTimeLimitDaysNotSet = -1;
-
-}  // namespace
 
 void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   PrefService* prefs = profile_->GetPrefs();
@@ -61,6 +53,7 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     prefs->SetTime(prefs::kGaiaLastOnlineSignInTime, clock_->Now());
 
     UpdateOnlineSigninData(clock_->Now(), GetGaiaNoSamlTimeLimit());
+
     // Clear the time of last login with SAML.
     prefs->ClearPref(prefs::kSAMLLastGAIASignInTime);
   }
@@ -75,6 +68,7 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     prefs->SetTime(prefs::kSAMLLastGAIASignInTime, clock_->Now());
 
     UpdateOnlineSigninData(clock_->Now(), GetGaiaSamlTimeLimit());
+
     // Clear the time of last Gaia login without SAML.
     prefs->ClearPref(prefs::kGaiaLastOnlineSignInTime);
   }
@@ -89,6 +83,14 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
       prefs::kGaiaOfflineSigninTimeLimitDays,
       base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
+                          base::Unretained(this)));
   // Start listening to power state.
   base::PowerMonitor::AddPowerSuspendObserver(this);
 
@@ -101,6 +103,8 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
 
   // Arm the `offline_signin_limit_timer_` if a limit is in force.
   UpdateLimit();
+  // Arm the `offline_lock_screen_signin_limit_timer_` if a limit is in force.
+  UpdateLockScreenLimit();
 }
 
 util::WallClockTimer* OfflineSigninLimiter::GetTimerForTesting() {
@@ -109,20 +113,24 @@ util::WallClockTimer* OfflineSigninLimiter::GetTimerForTesting() {
 
 void OfflineSigninLimiter::Shutdown() {
   offline_signin_limit_timer_->Stop();
+  offline_lock_screen_signin_limit_timer_->Stop();
   pref_change_registrar_.RemoveAll();
 }
 
 void OfflineSigninLimiter::OnSessionStateChanged() {
-  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
+  if (!session_manager::SessionManager::Get()->IsScreenLocked())
     UpdateLimit();
-  }
+  else
+    UpdateLockScreenLimit();
 }
 
 OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile,
                                            const base::Clock* clock)
     : profile_(profile),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
-      offline_signin_limit_timer_(std::make_unique<util::WallClockTimer>()) {}
+      offline_signin_limit_timer_(std::make_unique<util::WallClockTimer>()),
+      offline_lock_screen_signin_limit_timer_(
+          std::make_unique<util::WallClockTimer>()) {}
 
 OfflineSigninLimiter::~OfflineSigninLimiter() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
@@ -193,19 +201,65 @@ void OfflineSigninLimiter::UpdateLimit() {
                      base::Unretained(this)));
 }
 
-base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
-  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
-  auto override_val = GetTimeLimitOverrideForTesting();
-  if (override_val.has_value())
-    return override_val;
+void OfflineSigninLimiter::UpdateLockScreenLimit() {
+  // Stop the `offline_lock_screen_signin_limit_timer_`.
+  offline_lock_screen_signin_limit_timer_->Stop();
 
-  const int saml_offline_limit =
-      profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
-  if (saml_offline_limit <= kSAMLOfflineSigninTimeLimitNotSet)
-    return base::nullopt;
+  PrefService* prefs = pref_change_registrar_.prefs();
 
-  return base::make_optional<base::TimeDelta>(
-      base::TimeDelta::FromSeconds(saml_offline_limit));
+  bool using_saml =
+      ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
+
+  const base::Optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
+      using_saml ? GetGaiaSamlLockScreenTimeLimit()
+                 : GetGaiaNoSamlLockScreenTimeLimit();
+  base::Time last_gaia_signin_time =
+      prefs->GetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
+                                : prefs::kGaiaLastOnlineSignInTime);
+
+  if (!offline_lock_screen_signin_time_limit.has_value()) {
+    // If no limit is in force, return.
+    return;
+  }
+
+  if (last_gaia_signin_time.is_null()) {
+    // If the time of last login is not set, enforce online signin in the next
+    // login.
+    ForceOnlineLockScreenReauth();
+    return;
+  }
+
+  const base::Time now = clock_->Now();
+  if (last_gaia_signin_time > now) {
+    // If the time of last login lies in the future, set it to the
+    // current time.
+    NOTREACHED();
+    last_gaia_signin_time = now;
+    prefs->SetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
+                              : prefs::kGaiaLastOnlineSignInTime,
+                   now);
+  }
+
+  const base::TimeDelta time_since_last_gaia_signin =
+      now - last_gaia_signin_time;
+  const base::TimeDelta time_limit_left =
+      offline_lock_screen_signin_time_limit.value() -
+      time_since_last_gaia_signin;
+
+  if (time_limit_left <= base::TimeDelta()) {
+    // If the limit already expired, set the flag enforcing online login
+    // immediately and return.
+    ForceOnlineLockScreenReauth();
+    return;
+  }
+
+  // Arm `offline_lock_screen_signin_limit_timer_` so that it sets the flag
+  // enforcing online login when the limit expires.
+  const base::Time offline_signin_limit = now + time_limit_left;
+  offline_lock_screen_signin_limit_timer_->Start(
+      FROM_HERE, offline_signin_limit,
+      base::BindOnce(&OfflineSigninLimiter::ForceOnlineLockScreenReauth,
+                     base::Unretained(this)));
 }
 
 base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
@@ -216,11 +270,76 @@ base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
 
   int no_saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
-  if (no_saml_offline_limit <= kGaiaOfflineSigninTimeLimitDaysNotSet)
+  if (no_saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
     return base::nullopt;
 
   return base::make_optional<base::TimeDelta>(
       base::TimeDelta::FromDays(no_saml_offline_limit));
+}
+
+base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
+  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
+  auto override_val = GetTimeLimitOverrideForTesting();
+  if (override_val.has_value())
+    return override_val;
+
+  const int saml_offline_limit =
+      profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
+  if (saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
+    return base::nullopt;
+
+  return base::make_optional<base::TimeDelta>(
+      base::TimeDelta::FromSeconds(saml_offline_limit));
+}
+
+base::Optional<base::TimeDelta>
+OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
+  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
+  auto override_val = GetTimeLimitOverrideForTesting();
+  if (override_val.has_value())
+    return override_val;
+
+  int no_saml_lock_screen_offline_limit = profile_->GetPrefs()->GetInteger(
+      prefs::kGaiaLockScreenOfflineSigninTimeLimitDays);
+
+  if (no_saml_lock_screen_offline_limit ==
+      constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin) {
+    no_saml_lock_screen_offline_limit = profile_->GetPrefs()->GetInteger(
+        prefs::kGaiaOfflineSigninTimeLimitDays);
+  }
+
+  if (no_saml_lock_screen_offline_limit <=
+      constants::kOfflineSigninTimeLimitNotSet) {
+    return base::nullopt;
+  }
+
+  return base::make_optional<base::TimeDelta>(
+      base::TimeDelta::FromDays(no_saml_lock_screen_offline_limit));
+}
+
+base::Optional<base::TimeDelta>
+OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
+  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
+  auto override_val = GetTimeLimitOverrideForTesting();
+  if (override_val.has_value())
+    return override_val;
+
+  int saml_lock_screen_offline_limit = profile_->GetPrefs()->GetInteger(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays);
+
+  if (saml_lock_screen_offline_limit ==
+      constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin) {
+    saml_lock_screen_offline_limit =
+        profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
+  }
+
+  if (saml_lock_screen_offline_limit <=
+      constants::kOfflineSigninTimeLimitNotSet) {
+    return base::nullopt;
+  }
+
+  return base::make_optional<base::TimeDelta>(
+      base::TimeDelta::FromDays(saml_lock_screen_offline_limit));
 }
 
 base::Optional<base::TimeDelta>
@@ -249,6 +368,18 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
 
   user_manager::UserManager::Get()->SaveForceOnlineSignin(user->GetAccountId(),
                                                           true);
+  if (user->using_saml())
+    RecordReauthReason(user->GetAccountId(), ReauthReason::SAML_REAUTH_POLICY);
+  else
+    RecordReauthReason(user->GetAccountId(), ReauthReason::GAIA_REAUTH_POLICY);
+  offline_signin_limit_timer_->Stop();
+}
+
+void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(profile_);
+  DCHECK(user);
+
   // Re-auth on lock - enabled only for the primary user.
   InSessionPasswordSyncManager* password_sync_manager =
       InSessionPasswordSyncManagerFactory::GetForProfile(profile_);
@@ -257,10 +388,12 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
         InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
   }
   if (user->using_saml())
-    RecordReauthReason(user->GetAccountId(), ReauthReason::SAML_REAUTH_POLICY);
+    RecordReauthReason(user->GetAccountId(),
+                       ReauthReason::SAML_LOCK_SCREEN_REAUTH_POLICY);
   else
-    RecordReauthReason(user->GetAccountId(), ReauthReason::GAIA_REAUTH_POLICY);
-  offline_signin_limit_timer_->Stop();
+    RecordReauthReason(user->GetAccountId(),
+                       ReauthReason::GAIA_LOCK_SCREEN_REAUTH_POLICY);
+  offline_lock_screen_signin_limit_timer_->Stop();
 }
 
 void OfflineSigninLimiter::UpdateOnlineSigninData(
@@ -272,6 +405,7 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
     NOTREACHED();
     return;
   }
+
   user_manager::known_user::SetLastOnlineSignin(user->GetAccountId(), time);
   user_manager::known_user::SetOfflineSigninLimit(user->GetAccountId(), limit);
 }

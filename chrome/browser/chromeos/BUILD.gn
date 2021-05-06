@@ -1315,6 +1315,7 @@ source_set("chromeos") {
     "../ash/login/login_auth_recorder.h",
     "../ash/login/login_client_cert_usage_observer.cc",
     "../ash/login/login_client_cert_usage_observer.h",
+    "../ash/login/login_constants.h",
     "../ash/login/login_pref_names.cc",
     "../ash/login/login_pref_names.h",
     "../ash/login/login_screen_extensions_lifetime_manager.cc",

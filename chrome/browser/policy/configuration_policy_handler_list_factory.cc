@@ -1805,11 +1805,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       chromeos::prefs::kSAMLOfflineSigninTimeLimit, -1, INT_MAX, true));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGaiaLockScreenOfflineSigninTimeLimitDays,
-      chromeos::prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, -1, 365,
+      chromeos::prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, -2, 365,
       true));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kSamlLockScreenOfflineSigninTimeLimitDays,
-      chromeos::prefs::kSamlLockScreenOfflineSigninTimeLimitDays, -1, 365,
+      chromeos::prefs::kSamlLockScreenOfflineSigninTimeLimitDays, -2, 365,
       true));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kLidCloseAction, ash::prefs::kPowerLidClosedAction,

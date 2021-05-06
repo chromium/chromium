@@ -57,6 +57,14 @@ enum ReauthReason {
   // login time limit has been reached.
   GAIA_REAUTH_POLICY = 11,
 
+  // Gaia lock screen re-auth policy is set, which requires re-auth on lock
+  // screen if the offline lock screen time limit has been reached.
+  GAIA_LOCK_SCREEN_REAUTH_POLICY = 12,
+
+  // Saml lock screen re-auth policy is set, which requires re-auth on lock
+  // screen if the offline lock screen time limit has been reached.
+  SAML_LOCK_SCREEN_REAUTH_POLICY = 13,
+
   // Must be the last value in this list.
   NUM_REAUTH_FLOW_REASONS,
 };

@@ -58,16 +58,28 @@ class OfflineSigninLimiter : public KeyedService,
   // has expired already, sets the flag enforcing online login immediately.
   void UpdateLimit();
 
+  // Recalculates the amount of time remaining until online login through the
+  // lock screen should be forced and sets the
+  // `offline_lock_screen_signin_limit_timer_` accordingly. If the limit has
+  // expired already, sets the flag enforcing online re-authentication
+  // immediately.
+  void UpdateLockScreenLimit();
+
   // Convenience method to get the time limit for SAML and no-SAML flows
   // taking into consideration a possible override from the command line.
   // Returns nullopt if it is an invalid time.
   base::Optional<base::TimeDelta> GetGaiaSamlTimeLimit();
   base::Optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
+  base::Optional<base::TimeDelta> GetGaiaNoSamlLockScreenTimeLimit();
+  base::Optional<base::TimeDelta> GetGaiaSamlLockScreenTimeLimit();
   base::Optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
 
   // Sets the flag enforcing online login. This will cause the user's next login
   // to use online authentication against GAIA.
   void ForceOnlineLogin();
+
+  // Enforces online reauthentication on the lock screen.
+  void ForceOnlineLockScreenReauth();
 
   // Stores the last online login time and offline login time limit
   void UpdateOnlineSigninData(base::Time time,
@@ -79,6 +91,8 @@ class OfflineSigninLimiter : public KeyedService,
   PrefChangeRegistrar pref_change_registrar_;
 
   std::unique_ptr<util::WallClockTimer> offline_signin_limit_timer_;
+
+  std::unique_ptr<util::WallClockTimer> offline_lock_screen_signin_limit_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };
