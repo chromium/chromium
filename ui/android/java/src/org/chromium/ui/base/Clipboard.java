@@ -42,6 +42,7 @@ import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -285,7 +286,12 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
             TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
             CharSequence firstLinkText =
                     fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
-            return firstLinkText.toString();
+
+            // Fixing the URL here since Android thought the string is a URL, but GURL may not
+            // recognize the string as a URL. Ex. www.foo.com. Android thinks this is a URL, but
+            // GURL doesn't since there is no protocol.
+            GURL fixedUrl = UrlFormatter.fixupUrl(firstLinkText.toString());
+            return fixedUrl.getSpec();
         } catch (Exception e) {
             return null;
         }
