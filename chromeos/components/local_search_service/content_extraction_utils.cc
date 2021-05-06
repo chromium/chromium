@@ -24,6 +24,35 @@ namespace local_search_service {
 
 namespace {
 using chromeos::string_matching::TokenizedString;
+
+std::unique_ptr<icu::Transliterator> CreateDiacriticRemover() {
+  UErrorCode status = U_ZERO_ERROR;
+  UParseError parse_error;
+
+  // Adds a rule to remove diacritic from text. Adds a few characters that are
+  // not handled by ICU (ł > l; ø > o; đ > d).
+  return base::WrapUnique(icu::Transliterator::createFromRules(
+      UNICODE_STRING_SIMPLE("RemoveDiacritic"),
+      icu::UnicodeString::fromUTF8("::NFD; ::[:Nonspacing Mark:] Remove; "
+                                   "::NFC; ł > l; ø > o; đ > d;"),
+      UTRANS_FORWARD, parse_error, status));
+}
+
+std::unique_ptr<icu::Transliterator> CreateHyphenRemover() {
+  UErrorCode status = U_ZERO_ERROR;
+  UParseError parse_error;
+
+  // Hyphen characters list is taken from here: http://jkorpela.fi/dashes.html
+  // U+002D(-), U+007E(~), U+058A(֊), U+05BE(־), U+1806(᠆), U+2010(‐),
+  // U+2011(‑), U+2012(‒), U+2013(–), U+2014(—), U+2015(―), U+2053(⁓),
+  // U+207B(⁻), U+208B(₋), U+2212(−), U+2E3A(⸺ ), U+2E3B(⸻  ), U+301C(〜),
+  // U+3030(〰), U+30A0(゠), U+FE58(﹘), U+FE63(﹣), U+FF0D(－).
+  return base::WrapUnique(icu::Transliterator::createFromRules(
+      UNICODE_STRING_SIMPLE("RemoveHyphen"),
+      icu::UnicodeString::fromUTF8("::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;"),
+      UTRANS_FORWARD, parse_error, status));
+}
+
 }  // namespace
 
 std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
@@ -140,33 +169,15 @@ std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {
       base::UTF16ToUTF8(base::i18n::FoldCase(word)));
 
   // Removes diacritic.
-  UErrorCode status = U_ZERO_ERROR;
-  UParseError parse_error;
-
-  // Adds a rule to remove diacritic from text. Adds a few characters that are
-  // not handled by ICU (ł > l; ø > o; đ > d).
-  std::unique_ptr<icu::Transliterator> diacritic_remover =
-      base::WrapUnique(icu::Transliterator::createFromRules(
-          UNICODE_STRING_SIMPLE("RemoveDiacritic"),
-          icu::UnicodeString::fromUTF8("::NFD; ::[:Nonspacing Mark:] Remove; "
-                                       "::NFC; ł > l; ø > o; đ > d;"),
-          UTRANS_FORWARD, parse_error, status));
-  diacritic_remover->transliterate(source);
+  static base::NoDestructor<std::unique_ptr<icu::Transliterator>>
+      diacritic_remover(CreateDiacriticRemover());
+  (*diacritic_remover)->transliterate(source);
 
   // Removes hyphen.
   if (remove_hyphen) {
-    // Hyphen characters list is taken from here: http://jkorpela.fi/dashes.html
-    // U+002D(-), U+007E(~), U+058A(֊), U+05BE(־), U+1806(᠆), U+2010(‐),
-    // U+2011(‑), U+2012(‒), U+2013(–), U+2014(—), U+2015(―), U+2053(⁓),
-    // U+207B(⁻), U+208B(₋), U+2212(−), U+2E3A(⸺ ), U+2E3B(⸻  ), U+301C(〜),
-    // U+3030(〰), U+30A0(゠), U+FE58(﹘), U+FE63(﹣), U+FF0D(－).
-    std::unique_ptr<icu::Transliterator> hyphen_remover =
-        base::WrapUnique(icu::Transliterator::createFromRules(
-            UNICODE_STRING_SIMPLE("RemoveHyphen"),
-            icu::UnicodeString::fromUTF8(
-                "::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;"),
-            UTRANS_FORWARD, parse_error, status));
-    hyphen_remover->transliterate(source);
+    static base::NoDestructor<std::unique_ptr<icu::Transliterator>>
+        hyphen_remover(CreateHyphenRemover());
+    (*hyphen_remover)->transliterate(source);
   }
 
   return base::i18n::UnicodeStringToString16(source);
