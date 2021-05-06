@@ -1160,7 +1160,7 @@ bool HostProcess::OnHostDomainListPolicyUpdate(
   }
 
   host_domain_list_.clear();
-  for (const auto& value : *list) {
+  for (const auto& value : list->GetList()) {
     host_domain_list_.push_back(value.GetString());
   }
 
@@ -1179,7 +1179,7 @@ bool HostProcess::OnClientDomainListPolicyUpdate(
   }
 
   client_domain_list_.clear();
-  for (const auto& value : *list) {
+  for (const auto& value : list->GetList()) {
     client_domain_list_.push_back(value.GetString());
   }
 

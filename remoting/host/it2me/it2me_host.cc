@@ -318,7 +318,7 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetList(policy::key::kRemoteAccessHostDomainList,
                         &host_domain_list)) {
     std::vector<std::string> host_domain_list_vector;
-    for (const auto& value : *host_domain_list) {
+    for (const auto& value : host_domain_list->GetList()) {
       host_domain_list_vector.push_back(value.GetString());
     }
     UpdateHostDomainListPolicy(std::move(host_domain_list_vector));
@@ -328,7 +328,7 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetList(policy::key::kRemoteAccessHostClientDomainList,
                         &client_domain_list)) {
     std::vector<std::string> client_domain_list_vector;
-    for (const auto& value : *client_domain_list) {
+    for (const auto& value : client_domain_list->GetList()) {
       client_domain_list_vector.push_back(value.GetString());
     }
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
