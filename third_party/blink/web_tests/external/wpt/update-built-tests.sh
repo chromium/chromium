@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -ex
 
+# This list should be kept in sync with tools/ci/jobs.py.
+conformance-checkers/tools/build.sh
 html/canvas/tools/build.sh
 infrastructure/assumptions/tools/build.sh
 html/tools/build.sh

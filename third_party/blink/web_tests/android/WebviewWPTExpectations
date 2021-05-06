@@ -2561,8 +2561,6 @@ crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.image
 crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.create2.nonfinite.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.nonfinite.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.nonfinite.worker.html [ Failure ]
-crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.tiny.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.tiny.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.put.nonfinite.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.put.nonfinite.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/offscreen/text/2d.text.draw.align.center.html [ Failure Pass ]

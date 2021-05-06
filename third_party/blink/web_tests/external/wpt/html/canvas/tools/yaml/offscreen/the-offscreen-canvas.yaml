@@ -264,10 +264,10 @@
     offscreenCanvas.height = 301.001;
     @assert offscreenCanvas.width === 301;
     @assert offscreenCanvas.height === 301;
-    offscreenCanvas.width = "400x";
-    offscreenCanvas.height = "foo";
-    @assert offscreenCanvas.width === 0;
-    @assert offscreenCanvas.height === 0;
+    @assert throws TypeError offscreenCanvas.width = "400x";
+    @assert throws TypeError offscreenCanvas.height = "foo";
+    @assert offscreenCanvas.width === 301;
+    @assert offscreenCanvas.height === 301;
     t.done();
 
 - name: size.attributes.default

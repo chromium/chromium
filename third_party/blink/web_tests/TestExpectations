@@ -4787,7 +4787,6 @@ crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.
 crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.rect.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.create2.nonfinite.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.nonfinite.worker.html [ Failure ]
-crbug.com/709227 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.get.tiny.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.put.nonfinite.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/the-offscreen-canvas/2d.getcontext.extraargs.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/the-offscreen-canvas/size.attributes.idl.worker.html [ Failure ]
