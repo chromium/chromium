@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
 
+#include <memory>
+#include <utility>
+#include <vector>
 #include "base/callback.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/native_widget_types.h"
 
 class GURL;
 class WebIdDialog;
@@ -19,11 +24,15 @@ using IdProviderWindowClosedCallback =
     content::IdentityRequestDialogController::IdProviderWindowClosedCallback;
 using TokenExchangeApprovalCallback =
     content::IdentityRequestDialogController::TokenExchangeApprovalCallback;
+using AccountSelectionCallback =
+    content::IdentityRequestDialogController::AccountSelectionCallback;
+using AccountList = content::IdentityRequestDialogController::AccountList;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
 class IdentityDialogController
-    : public content::IdentityRequestDialogController {
+    : public content::IdentityRequestDialogController,
+      public AccountSelectionView::Delegate {
  public:
   IdentityDialogController();
 
@@ -55,9 +64,21 @@ class IdentityDialogController
       const GURL& idp_url,
       TokenExchangeApprovalCallback) override;
 
+  // AccountSelectionView::Delegate:
+
+  void OnAccountSelected(const Account& account) override;
+  void OnDismiss() override;
+
+  // The web page view containing the focused field.
+  gfx::NativeView GetNativeView() override;
+
  private:
   WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
   WebIdDialog* view_{nullptr};
+
+  std::unique_ptr<AccountSelectionView> account_view_{nullptr};
+  AccountSelectionCallback on_account_selection_;
+  content::WebContents* rp_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
