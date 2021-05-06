@@ -3218,17 +3218,17 @@ TEST_F(HistoryBackendTest, ClusterVisits) {
   EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
   EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 3);
   EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[0].context_signals.omnibox_url_copied, false);
+  EXPECT_EQ(cluster_visits[0].context_annotations.omnibox_url_copied, false);
   EXPECT_EQ(cluster_visits[1].url_row.id(), 2);
   EXPECT_EQ(cluster_visits[1].url_row.url(), "http://2.com/");
   EXPECT_EQ(cluster_visits[1].visit_row.visit_id, 2);
   EXPECT_EQ(cluster_visits[1].visit_row.url_id, 2);
-  EXPECT_EQ(cluster_visits[1].context_signals.omnibox_url_copied, true);
+  EXPECT_EQ(cluster_visits[1].context_annotations.omnibox_url_copied, true);
   EXPECT_EQ(cluster_visits[2].url_row.id(), 1);
   EXPECT_EQ(cluster_visits[2].url_row.url(), "http://1.com/");
   EXPECT_EQ(cluster_visits[2].visit_row.visit_id, 1);
   EXPECT_EQ(cluster_visits[2].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[2].context_signals.omnibox_url_copied, true);
+  EXPECT_EQ(cluster_visits[2].context_annotations.omnibox_url_copied, true);
 
   // Cluster visits should be removed if their associated URL or visit is
   // removed.
@@ -3245,7 +3245,7 @@ TEST_F(HistoryBackendTest, ClusterVisits) {
   EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
   EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 1);
   EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[0].context_signals.omnibox_url_copied, true);
+  EXPECT_EQ(cluster_visits[0].context_annotations.omnibox_url_copied, true);
   // `backend_->GetClusterVisits()` should delete visits without associated URLs
   // and visits.
   EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 1u);

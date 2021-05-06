@@ -18,13 +18,15 @@ struct RecordingStatus {
   // Whether a navigation has ended; i.e. another navigation has began in the
   // same tab or the navigation's tab has been closed.
   bool navigation_ended = false;
-  // Whether the |context_signals| associated with navigation end have been set.
-  // Should only be true if both |history_rows| and |navigation_ended| are true.
+  // Whether the |context_annotations| associated with navigation end have been
+  // set. Should only be true if both |history_rows| and |navigation_ended| are
+  // true.
   bool navigation_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_signal| is expected to be set.
+  // Whether the UKM |page_end_reason| |context_annotations| is expected to be
+  // set.
   bool expect_ukm_page_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_signal| has been set. Should
-  // only be true if |expect_ukm_page_end_signals| is true.
+  // Whether the UKM |page_end_reason| |context_annotations| has been set.
+  // Should only be true if |expect_ukm_page_end_signals| is true.
   bool ukm_page_end_signals = false;
 };
 

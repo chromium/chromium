@@ -45,14 +45,13 @@ class HistoryClustersTabHelper
   // a UKM |page_end_reason|.
   void TagNavigationAsExpectingUkmNavigationComplete(int64_t navigation_id);
 
-  // Updates the visit with |navigation_id| with |page_end_reason|.
-  // This also records the page end metrics, if necessary.
-  // It returns a copy of the completed |ClusterVisit|'s
-  // |ClusterVisitContextSignals|, if available.
+  // Updates the visit with |navigation_id| with |page_end_reason|. This also
+  // records the page end metrics, if necessary. It returns a copy of the
+  // completed |ClusterVisit|'s |VisitContextAnnotations|, if available.
   //
   // This should only be called once per navigation, as this may flush the visit
   // to MemoriesService.
-  history::ClusterVisitContextSignals OnUkmNavigationComplete(
+  history::VisitContextAnnotations OnUkmNavigationComplete(
       int64_t navigation_id,
       const page_load_metrics::PageEndReason page_end_reason);
 

@@ -1440,7 +1440,7 @@ std::vector<ClusterVisit> HistoryBackend::GetClusterVisits(int max_results) {
     VisitRow visit_row;
     if (db_->GetRowForVisit(row.visit_id, &visit_row) &&
         db_->GetURLRow(visit_row.url_id, &url_row)) {
-      cluster_visits.push_back({url_row, visit_row, row.context_signals});
+      cluster_visits.push_back({url_row, visit_row, row.context_annotations});
     } else {
       db_->DeleteClusterVisit(row.visit_id);
       deleted_any_visits = true;

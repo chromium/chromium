@@ -59,18 +59,18 @@ TEST_F(ClusterVisitDatabaseTest, AddDeleteAndGet) {
   std::vector<ClusterVisitRow> rows = GetClusterVisits(10);
   ASSERT_EQ(rows.size(), 3u);
   EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_signals.omnibox_url_copied);
+  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
   EXPECT_EQ(rows[1].visit_id, 1);
-  EXPECT_TRUE(rows[1].context_signals.omnibox_url_copied);
+  EXPECT_TRUE(rows[1].context_annotations.omnibox_url_copied);
   EXPECT_EQ(rows[2].visit_id, 3);
-  EXPECT_FALSE(rows[2].context_signals.omnibox_url_copied);
+  EXPECT_FALSE(rows[2].context_annotations.omnibox_url_copied);
 
   rows = GetClusterVisits(2);
   ASSERT_EQ(rows.size(), 2u);
   EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_signals.omnibox_url_copied);
+  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
   EXPECT_EQ(rows[1].visit_id, 1);
-  EXPECT_TRUE(rows[1].context_signals.omnibox_url_copied);
+  EXPECT_TRUE(rows[1].context_annotations.omnibox_url_copied);
 
   DeleteClusterVisit(1);
   DeleteClusterVisit(3);
@@ -78,7 +78,7 @@ TEST_F(ClusterVisitDatabaseTest, AddDeleteAndGet) {
   rows = GetClusterVisits(10);
   ASSERT_EQ(rows.size(), 1u);
   EXPECT_EQ(rows[0].visit_id, 2);
-  EXPECT_FALSE(rows[0].context_signals.omnibox_url_copied);
+  EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
 }
 
 }  // namespace history

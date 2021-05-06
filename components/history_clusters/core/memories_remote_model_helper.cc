@@ -38,7 +38,8 @@ proto::GetClustersRequest CreateRequestProto(
     request_visit->set_origin(visit.url_row.url().GetOrigin().spec());
     request_visit->set_navigation_time_ms(
         visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
-    request_visit->set_page_end_reason(visit.context_signals.page_end_reason);
+    request_visit->set_page_end_reason(
+        visit.context_annotations.page_end_reason);
     request_visit->set_page_transition(
         static_cast<int>(visit.visit_row.transition));
 

@@ -106,7 +106,7 @@ class MemoriesServiceTest : public testing::Test {
     visit.url_row.set_title(title);
     visit.visit_row.visit_id = visit_id;
     visit.visit_row.visit_time = visit_time;
-    visit.context_signals.page_end_reason = page_end_reason;
+    visit.context_annotations.page_end_reason = page_end_reason;
     AddVisit(visit);
   }
 
@@ -120,7 +120,7 @@ class MemoriesServiceTest : public testing::Test {
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
     visit_copy.visit_row = visit.visit_row;
     visit_copy.url_row = visit.url_row;
-    visit_copy.context_signals = visit.context_signals;
+    visit_copy.context_annotations = visit.context_annotations;
     visit_copy.status.history_rows = true;
     visit_copy.status.navigation_ended = true;
     visit_copy.status.navigation_end_signals = true;
