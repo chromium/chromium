@@ -1005,10 +1005,10 @@ void AppMenuModel::UpdateSettingsItemState() {
       !system_features_disable_list_pref ||
       // TODO(crbug.com/1187106): Use base::Contains once
       // |system_features_disable_list_pref| is not a ListValue.
-      std::find(system_features_disable_list_pref->begin(),
-                system_features_disable_list_pref->end(),
+      std::find(system_features_disable_list_pref->GetList().begin(),
+                system_features_disable_list_pref->GetList().end(),
                 base::Value(policy::SystemFeature::kBrowserSettings)) ==
-          system_features_disable_list_pref->end();
+          system_features_disable_list_pref->GetList().end();
 
   int index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index != -1)
