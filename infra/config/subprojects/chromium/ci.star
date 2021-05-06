@@ -1879,7 +1879,22 @@ ci.cipd_3pp_builder(
     schedule = "with 6h interval",
     triggered_by = [],
     properties = {
+        # TODO(hypan): Remove this property after chromium_3pp is
+        # migrated to a recipe module (crrev.com/c/2870555)
         "platform": "linux-amd64",
+        "$build/chromium_3pp": {
+            "platform": "linux-amd64",
+            "preprocess": [{
+                "name": "third_party/android_deps",
+                "cmd": [
+                    "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
+                    "-v",
+                    "--ignore-vulnerabilities",
+                ],
+            }],
+            "gclient_config": "chromium",
+            "gclient_apply_config": ["android"],
+        },
     },
 )
 

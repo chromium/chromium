@@ -1899,8 +1899,24 @@ try_.cipd_3pp_builder(
     os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
     builderless = False,
     properties = {
+        # TODO(hypan): Remove these two properties after chromium_3pp is
+        # migrated to a recipe module (crrev.com/c/2870555)
         "platform": "linux-amd64",
         "package_prefix": "chromium_3pp",
+        "$build/chromium_3pp": {
+            "platform": "linux-amd64",
+            "package_prefix": "chromium_3pp",
+            "preprocess": [{
+                "name": "third_party/android_deps",
+                "cmd": [
+                    "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
+                    "-v",
+                    "--ignore-vulnerabilities",
+                ],
+            }],
+            "gclient_config": "chromium",
+            "gclient_apply_config": ["android"],
+        },
     },
     tryjob = try_.job(
         location_regexp = [
