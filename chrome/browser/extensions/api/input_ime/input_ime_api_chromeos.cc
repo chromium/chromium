@@ -247,7 +247,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
     // first composition character, so for backward compatibility, add it here.
     base::Value* first_value = NULL;
     if (bounds_list->Get(0, &first_value))
-      args->Append(first_value->CreateDeepCopy());
+      args->Append(first_value->Clone());
     args->Append(std::move(bounds_list));
 
     DispatchEventToExtension(
