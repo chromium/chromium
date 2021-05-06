@@ -212,7 +212,8 @@ TEST_F(ManagedBookmarksTrackerTest, SwapNodes) {
   // These two nodes should just be swapped.
   const BookmarkNode* parent = managed_node();
   EXPECT_CALL(observer_, BookmarkNodeMoved(model_.get(), parent, 1, parent, 0));
-  prefs_.SetManagedPref(prefs::kManagedBookmarks, updated->CreateDeepCopy());
+  prefs_.SetManagedPref(prefs::kManagedBookmarks,
+                        base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
 
   // Verify the final tree.
@@ -231,7 +232,8 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveNode) {
 
   const BookmarkNode* parent = managed_node();
   EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _));
-  prefs_.SetManagedPref(prefs::kManagedBookmarks, updated->CreateDeepCopy());
+  prefs_.SetManagedPref(prefs::kManagedBookmarks,
+                        base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
 
   // Verify the final tree.
@@ -254,7 +256,8 @@ TEST_F(ManagedBookmarksTrackerTest, CreateNewNodes) {
   const BookmarkNode* parent = managed_node();
   EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _))
       .Times(2);
-  prefs_.SetManagedPref(prefs::kManagedBookmarks, updated->CreateDeepCopy());
+  prefs_.SetManagedPref(prefs::kManagedBookmarks,
+                        base::Value::ToUniquePtrValue(updated->Clone()));
   Mock::VerifyAndClearExpectations(&observer_);
 
   // Verify the final tree.

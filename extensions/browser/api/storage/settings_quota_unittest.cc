@@ -197,7 +197,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingExistingSettings) {
   EXPECT_TRUE(storage_->Remove("b").status().ok());
   settings.Remove("b", NULL);
   EXPECT_TRUE(storage_->Set(DEFAULTS, "c", byte_value_256_).status().ok());
-  settings.Set("c", byte_value_256_.CreateDeepCopy());
+  settings.SetKey("c", byte_value_256_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
 
   // Enough byte quota but max keys not high enough.
@@ -367,7 +367,7 @@ TEST_F(ExtensionSettingsQuotaTest, SetsOnlyEntireCompletedWithMaxKeys) {
 TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndByteQuota) {
   base::DictionaryValue settings;
   delegate_->Set(DEFAULTS, "a", byte_value_256_);
-  settings.Set("a", byte_value_256_.CreateDeepCopy());
+  settings.SetKey("a", byte_value_256_.Clone());
 
   CreateStorage(280, UINT_MAX, UINT_MAX);
   EXPECT_TRUE(SettingsEqual(settings));
@@ -402,7 +402,7 @@ TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndByteQuota) {
   EXPECT_TRUE(SettingsEqual(settings));
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "d", byte_value_256_).status().ok());
-  settings.Set("d", byte_value_256_.CreateDeepCopy());
+  settings.SetKey("d", byte_value_256_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
 }
 
@@ -544,12 +544,12 @@ TEST_F(ExtensionSettingsQuotaTest,
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "a", byte_value_1_).status().ok());
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "a", byte_value_16_).status().ok());
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "a", byte_value_256_).status().ok());
-  settings.Set("a", byte_value_256_.CreateDeepCopy());
+  settings.SetKey("a", byte_value_256_.Clone());
 
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "b", byte_value_1_).status().ok());
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "b", byte_value_16_).status().ok());
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "b", byte_value_256_).status().ok());
-  settings.Set("b", byte_value_256_.CreateDeepCopy());
+  settings.SetKey("b", byte_value_256_.Clone());
 
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "c", byte_value_1_).status().ok());
   EXPECT_TRUE(storage_->Set(IGNORE_QUOTA, "c", byte_value_16_).status().ok());

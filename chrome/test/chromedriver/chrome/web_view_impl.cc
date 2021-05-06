@@ -495,8 +495,8 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
                                        std::unique_ptr<base::Value>* result) {
   base::ListValue sync_args;
   sync_args.AppendString(script);
-  // Deep-copy needed since ListValue only accepts unique_ptrs of Values.
-  sync_args.Append(args.CreateDeepCopy());
+  // Clone needed since Append only accepts Value as an rvalue.
+  sync_args.Append(args.Clone());
   return CallFunctionWithTimeout(frame, kExecuteScriptScript, sync_args,
                                  timeout, result);
 }
@@ -1184,7 +1184,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     std::unique_ptr<base::Value>* result) {
   base::ListValue async_args;
   async_args.AppendString("return (" + function + ").apply(null, arguments);");
-  async_args.Append(args.CreateDeepCopy());
+  async_args.Append(args.Clone());
   async_args.AppendBoolean(is_user_supplied);
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);

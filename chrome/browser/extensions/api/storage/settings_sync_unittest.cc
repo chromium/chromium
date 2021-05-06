@@ -431,8 +431,8 @@ TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
         ->MergeDataAndStartSyncing(
             model_type, sync_data, std::move(sync_processor_wrapper_),
             std::make_unique<syncer::SyncErrorFactoryMock>());
-    expected1.Set("foo", value1.CreateDeepCopy());
-    expected2.Set("bar", value2.CreateDeepCopy());
+    expected1.SetKey("foo", value1.Clone());
+    expected2.SetKey("bar", value2.Clone());
   });
 
   ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
@@ -477,7 +477,7 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
         ->MergeDataAndStartSyncing(
             model_type, sync_data, std::move(sync_processor_wrapper_),
             std::make_unique<syncer::SyncErrorFactoryMock>());
-    expected2.Set("bar", value2.CreateDeepCopy());
+    expected2.SetKey("bar", value2.Clone());
 
     // Make sync add some settings.
     syncer::SyncChangeList change_list;
@@ -486,8 +486,8 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     change_list.push_back(
         settings_sync_util::CreateAdd("s2", "foo", value1, model_type));
     GetSyncableService(model_type)->ProcessSyncChanges(FROM_HERE, change_list);
-    expected1.Set("bar", value2.CreateDeepCopy());
-    expected2.Set("foo", value1.CreateDeepCopy());
+    expected1.SetKey("bar", value2.Clone());
+    expected2.SetKey("foo", value1.Clone());
 
     EXPECT_PRED_FORMAT2(SettingsEq, expected1, storage1->Get());
     EXPECT_PRED_FORMAT2(SettingsEq, expected2, storage2->Get());
@@ -500,8 +500,8 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     change_list.push_back(
         settings_sync_util::CreateUpdate("s2", "bar", value1, model_type));
     GetSyncableService(model_type)->ProcessSyncChanges(FROM_HERE, change_list);
-    expected1.Set("bar", value2.CreateDeepCopy());
-    expected2.Set("bar", value1.CreateDeepCopy());
+    expected1.SetKey("bar", value2.Clone());
+    expected2.SetKey("bar", value1.Clone());
 
     EXPECT_PRED_FORMAT2(SettingsEq, expected1, storage1->Get());
     EXPECT_PRED_FORMAT2(SettingsEq, expected2, storage2->Get());

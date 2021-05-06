@@ -278,23 +278,16 @@ DictionaryValue* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  std::unique_ptr<ListValue> old_trace_parsed(trace_parsed_.CreateDeepCopy());
-  size_t old_trace_parsed_size = old_trace_parsed->GetSize();
+  base::Value old_trace_parsed = trace_parsed_.Clone();
   trace_parsed_.Clear();
 
-  for (size_t i = 0; i < old_trace_parsed_size; i++) {
-    Value* value = nullptr;
-    old_trace_parsed->Get(i, &value);
-    if (!value || value->type() != Value::Type::DICTIONARY) {
-      trace_parsed_.Append(value->CreateDeepCopy());
-      continue;
+  for (const auto& value : old_trace_parsed.GetList()) {
+    if (value.type() == Value::Type::DICTIONARY) {
+      const std::string* tmp = value.FindStringKey("ph");
+      if (tmp != nullptr && *tmp == "M")
+        continue;
     }
-    DictionaryValue* dict = static_cast<DictionaryValue*>(value);
-    std::string tmp;
-    if (dict->GetString("ph", &tmp) && tmp == "M")
-      continue;
-
-    trace_parsed_.Append(value->CreateDeepCopy());
+    trace_parsed_.Append(value.Clone());
   }
 }
 

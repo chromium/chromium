@@ -356,7 +356,7 @@ class FindElementWebView : public StubWebView {
           base::ListValue list;
           list.Append(element1.CreateDeepCopy());
           list.Append(element2.CreateDeepCopy());
-          result_ = list.CreateDeepCopy();
+          result_ = base::Value::ToUniquePtrValue(list.Clone());
         }
         break;
       }

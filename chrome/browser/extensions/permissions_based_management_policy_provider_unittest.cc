@@ -67,12 +67,12 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
     manifest_dict.SetString(manifest_keys::kVersion, "0.1");
     manifest_dict.SetInteger(manifest_keys::kManifestVersion, 2);
     if (required_permissions) {
-      manifest_dict.Set(manifest_keys::kPermissions,
-                        required_permissions->CreateDeepCopy());
+      manifest_dict.SetPath(manifest_keys::kPermissions,
+                            required_permissions->Clone());
     }
     if (optional_permissions) {
-      manifest_dict.Set(manifest_keys::kOptionalPermissions,
-                        optional_permissions->CreateDeepCopy());
+      manifest_dict.SetPath(manifest_keys::kOptionalPermissions,
+                            optional_permissions->Clone());
     }
     std::string error;
     scoped_refptr<const Extension> extension = Extension::Create(

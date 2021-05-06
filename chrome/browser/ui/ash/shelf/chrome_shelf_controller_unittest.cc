@@ -1602,7 +1602,8 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   AppendPrefValue(&policy_value, extension2_->id());
   AppendPrefValue(&policy_value, web_app::kGoogleDocsAppId);
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
   // 2 is not pinned as it's not installed
@@ -3083,7 +3084,8 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   AppendPrefValue(&policy_value, extension1_->id());
   AppendPrefValue(&policy_value, extension2_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
 
   InitShelfController();
 
@@ -3101,7 +3103,8 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   // shelf and pin will exist.
   policy_value.Remove(0, nullptr);
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
 }
 
@@ -4102,7 +4105,8 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
   base::ListValue policy_value;
   AppendPrefValue(&policy_value, appinfo.package_name);
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
@@ -4655,7 +4659,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
       {extension2_->id(), online_only_appinfo.package_name});
 
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
 
   app_service_test().FlushMojoCalls();
 
@@ -4707,7 +4712,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
       {extension2_->id(), online_only_appinfo.package_name});
 
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, policy_value.CreateDeepCopy());
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
   app_service_test().FlushMojoCalls();
 
   // Since the device is online, the policy pinned apps that shouldn't be pinned
