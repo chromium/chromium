@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -1626,12 +1625,8 @@ RefTestData ref_not_equal_test_data[] = {
     // clang-format on
 };
 
-class RuleFeatureSetRefTest : public RuleFeatureSetTest,
-                              private ScopedCSSPseudoIsForTest,
-                              private ScopedCSSPseudoWhereForTest {
+class RuleFeatureSetRefTest : public RuleFeatureSetTest {
  public:
-  RuleFeatureSetRefTest()
-      : ScopedCSSPseudoIsForTest(true), ScopedCSSPseudoWhereForTest(true) {}
 
   void Run(const RefTestData& data) {
     RuleFeatureSet main_set;

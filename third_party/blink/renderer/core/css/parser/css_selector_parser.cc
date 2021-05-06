@@ -746,9 +746,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
   switch (selector->GetPseudoType()) {
     case CSSSelector::kPseudoIs: {
-      if (!RuntimeEnabledFeatures::CSSPseudoIsEnabled())
-        break;
-
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
@@ -761,9 +758,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       return selector;
     }
     case CSSSelector::kPseudoWhere: {
-      if (!RuntimeEnabledFeatures::CSSPseudoWhereEnabled())
-        break;
-
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
@@ -1306,7 +1300,6 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           feature = WebFeature::kCSSSelectorPseudoAny;
           break;
         case CSSSelector::kPseudoIs:
-          DCHECK(RuntimeEnabledFeatures::CSSPseudoIsEnabled());
           feature = WebFeature::kCSSSelectorPseudoIs;
           break;
         case CSSSelector::kPseudoFocusVisible:
@@ -1323,7 +1316,6 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           feature = WebFeature::kCSSSelectorPseudoWebkitAnyLink;
           break;
         case CSSSelector::kPseudoWhere:
-          DCHECK(RuntimeEnabledFeatures::CSSPseudoWhereEnabled());
           feature = WebFeature::kCSSSelectorPseudoWhere;
           break;
         case CSSSelector::kPseudoDefined:
