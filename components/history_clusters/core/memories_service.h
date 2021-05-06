@@ -63,17 +63,20 @@ class MemoriesService : public KeyedService {
   // TODO(manukh) |MemoriesService| should be responsible for constructing the
   //  |AnnotatedVisit|s rather than exposing these methods which are used by
   //  |HistoryClustersTabHelper| to construct the visits.
-  // Gets an incomplete visit after DCHECKing it exists; this saves the call
-  // sites the effort.
-  IncompleteVisit& GetIncompleteVisit(int64_t nav_id);
-  // Gets or creates an incomplete visit.
-  IncompleteVisit& GetOrCreateIncompleteVisit(int64_t nav_id);
-  // Returns whether an incomplete visit exists.
-  // TODO(manukh): Merge |HasIncompleteVisit()| and |GetIncompleteVisit()|.
-  bool HasIncompleteVisit(int64_t nav_id);
-  // Completes the visit if the expected metrics have been recorded. Incomplete
-  // visit references retrieved prior will no longer be valid.
-  void CompleteVisitIfReady(int64_t nav_id);
+  // Gets an `IncompleteVisitContextAnnotations` after DCHECKing it exists; this
+  // saves the call sites the effort.
+  IncompleteVisitContextAnnotations& GetIncompleteVisitContextAnnotations(
+      int64_t nav_id);
+  // Gets or creates an `IncompleteVisitContextAnnotations`.
+  IncompleteVisitContextAnnotations&
+  GetOrCreateIncompleteVisitContextAnnotations(int64_t nav_id);
+  // Returns whether an `IncompleteVisitContextAnnotations` exists.
+  // TODO(manukh): Merge |HasIncompleteVisitContextAnnotations()| and
+  //  |GetIncompleteVisitContextAnnotations()|.
+  bool HasIncompleteVisitContextAnnotations(int64_t nav_id);
+  // Completes the `IncompleteVisitContextAnnotations` if the expected metrics
+  // have been recorded. References retrieved prior will no longer be valid.
+  void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
   // Returns the freshest Memories created from the user visit history, in
   // reverse chronological order, based on the parameters in |query_params|
@@ -95,13 +98,15 @@ class MemoriesService : public KeyedService {
 
   // If the Memories flag is enabled, this contains all the visits in-memory
   // during the Profile lifetime. If the "MemoriesStoreVisitsInHistoryDb" param
-  // is true, this will be empty as completed visits will instead be persisted
-  // to the history database.
+  // is true, this will be empty.
   // TODO(tommycli): Hide this better behind a new debug flag.
   std::vector<history::AnnotatedVisit> visits_;
-  // A visit is constructed stepwise. Visits are initially placed in
-  // |incomplete_visits_| and moved to |visits_| once completed.
-  std::map<int64_t, IncompleteVisit> incomplete_visits_;
+
+  // `VisitContextAnnotations`s are constructed stepwise; they're initially
+  // placed in |incomplete_visit_context_annotations_| and moved either to
+  // |visits_| or the history database once completed.
+  std::map<int64_t, IncompleteVisitContextAnnotations>
+      incomplete_visit_context_annotations_;
 
   history::HistoryService* history_service_;
 

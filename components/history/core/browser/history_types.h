@@ -734,10 +734,6 @@ struct AnnotatedVisit {
 // The DB representation of `AnnotatedVisit`.
 struct AnnotatedVisitRow {
   AnnotatedVisitRow() = default;
-  explicit AnnotatedVisitRow(const AnnotatedVisit& annotated_visit)
-      : AnnotatedVisitRow(annotated_visit.visit_row.visit_id,
-                          annotated_visit.context_annotations,
-                          annotated_visit.content_annotations) {}
   AnnotatedVisitRow(const VisitID visit_id,
                     const VisitContextAnnotations& context_annotations,
                     const VisitContentAnnotations& content_annotations)

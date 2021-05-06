@@ -149,35 +149,46 @@ void MemoriesService::NotifyDebugMessage(const std::string& message) const {
   }
 }
 
-IncompleteVisit& MemoriesService::GetIncompleteVisit(int64_t nav_id) {
-  DCHECK(HasIncompleteVisit(nav_id));
-  return GetOrCreateIncompleteVisit(nav_id);
+IncompleteVisitContextAnnotations&
+MemoriesService::GetIncompleteVisitContextAnnotations(int64_t nav_id) {
+  DCHECK(HasIncompleteVisitContextAnnotations(nav_id));
+  return GetOrCreateIncompleteVisitContextAnnotations(nav_id);
 }
 
-IncompleteVisit& MemoriesService::GetOrCreateIncompleteVisit(int64_t nav_id) {
-  return incomplete_visits_[nav_id];
+IncompleteVisitContextAnnotations&
+MemoriesService::GetOrCreateIncompleteVisitContextAnnotations(int64_t nav_id) {
+  return incomplete_visit_context_annotations_[nav_id];
 }
 
-bool MemoriesService::HasIncompleteVisit(int64_t nav_id) {
-  return incomplete_visits_.count(nav_id);
+bool MemoriesService::HasIncompleteVisitContextAnnotations(int64_t nav_id) {
+  return incomplete_visit_context_annotations_.count(nav_id);
 }
 
-void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
-  auto& visit = GetIncompleteVisit(nav_id);
-  DCHECK((visit.status.history_rows && visit.status.navigation_ended) ||
-         !visit.status.navigation_end_signals);
-  DCHECK(visit.status.expect_ukm_page_end_signals ||
-         !visit.status.ukm_page_end_signals);
-  if (visit.status.history_rows && visit.status.navigation_end_signals &&
-      (visit.status.ukm_page_end_signals ||
-       !visit.status.expect_ukm_page_end_signals)) {
+void MemoriesService::CompleteVisitContextAnnotationsIfReady(int64_t nav_id) {
+  auto& visit_context_annotations =
+      GetIncompleteVisitContextAnnotations(nav_id);
+  DCHECK((visit_context_annotations.status.history_rows &&
+          visit_context_annotations.status.navigation_ended) ||
+         !visit_context_annotations.status.navigation_end_signals);
+  DCHECK(visit_context_annotations.status.expect_ukm_page_end_signals ||
+         !visit_context_annotations.status.ukm_page_end_signals);
+  if (visit_context_annotations.status.history_rows &&
+      visit_context_annotations.status.navigation_end_signals &&
+      (visit_context_annotations.status.ukm_page_end_signals ||
+       !visit_context_annotations.status.expect_ukm_page_end_signals)) {
     if (base::FeatureList::IsEnabled(kMemories)) {
       if (StoreVisitsInHistoryDb())
-        history_service_->AddAnnotatedVisit(history::AnnotatedVisitRow(visit));
+        history_service_->AddAnnotatedVisit(
+            {visit_context_annotations.visit_row.visit_id,
+             visit_context_annotations.context_annotations,
+             {}});
       else
-        visits_.push_back(visit);
+        visits_.push_back({visit_context_annotations.url_row,
+                           visit_context_annotations.visit_row,
+                           visit_context_annotations.context_annotations,
+                           {}});
     }
-    incomplete_visits_.erase(nav_id);
+    incomplete_visit_context_annotations_.erase(nav_id);
   }
 }
 

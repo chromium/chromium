@@ -30,9 +30,13 @@ struct RecordingStatus {
   bool ukm_page_end_signals = false;
 };
 
-// A partially built visit with its state of completeness.
-struct IncompleteVisit : history::AnnotatedVisit {
+// A partially built VisitContextAnnotations with its state of completeness and
+// associated `URLRow` and `VisitRow` which are necessary to build it.
+struct IncompleteVisitContextAnnotations {
   RecordingStatus status;
+  history::URLRow url_row;
+  history::VisitRow visit_row;
+  history::VisitContextAnnotations context_annotations;
 };
 
 }  // namespace history_clusters
