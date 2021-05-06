@@ -9,17 +9,34 @@
 namespace base {
 namespace android {
 
-bool RadioUtils::IsSupported() {
+namespace {
+bool InitializeIsSupported() {
   JNIEnv* env = AttachCurrentThread();
   return Java_RadioUtils_isSupported(env);
 }
+}  // namespace
 
-bool RadioUtils::IsWifiConnected() {
+bool RadioUtils::IsSupported() {
+  static const bool kIsSupported = InitializeIsSupported();
+  return kIsSupported;
+}
+
+RadioConnectionType RadioUtils::GetConnectionType() {
+  if (!IsSupported())
+    return RadioConnectionType::kUnknown;
+
   JNIEnv* env = AttachCurrentThread();
-  return Java_RadioUtils_isWifiConnected(env);
+  if (Java_RadioUtils_isWifiConnected(env)) {
+    return RadioConnectionType::kWifi;
+  } else {
+    return RadioConnectionType::kCell;
+  }
 }
 
 Optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
+  if (!IsSupported())
+    return nullopt;
+
   JNIEnv* env = AttachCurrentThread();
   int signal_level = Java_RadioUtils_getCellSignalLevel(env);
   if (signal_level < 0) {
@@ -29,7 +46,10 @@ Optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
   }
 }
 
-RadioDataActivity RadioUtils::GetCellDataActivity() {
+Optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
+  if (!IsSupported())
+    return nullopt;
+
   JNIEnv* env = AttachCurrentThread();
   return static_cast<RadioDataActivity>(
       Java_RadioUtils_getCellDataActivity(env));

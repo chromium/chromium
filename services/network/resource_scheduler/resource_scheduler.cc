@@ -920,7 +920,8 @@ class ResourceScheduler::Client
       base::TimeDelta time_since_throttling_start =
           tick_clock_->NowTicks() -
           weak_signal_throttling_start_timestamp_.value();
-      if (base::android::RadioUtils::IsWifiConnected()) {
+      if (base::android::RadioUtils::GetConnectionType() ==
+          base::android::RadioConnectionType::kWifi) {
         base::UmaHistogramLongTimes(
             "ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.Wifi",
             time_since_throttling_start);
@@ -938,7 +939,8 @@ class ResourceScheduler::Client
         !base::PowerMonitor::IsOnBatteryPower()) {
       return false;
     }
-    if (base::android::RadioUtils::IsWifiConnected()) {
+    if (base::android::RadioUtils::GetConnectionType() ==
+        base::android::RadioConnectionType::kWifi) {
       base::Optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
       return maybe_level.has_value() &&
              *maybe_level <=

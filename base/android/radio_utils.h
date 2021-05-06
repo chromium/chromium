@@ -31,12 +31,18 @@ enum class RadioDataActivity {
   kDormant = 4,
 };
 
+enum class RadioConnectionType {
+  kUnknown = 0,
+  kWifi = 1,
+  kCell = 2,
+};
+
 class BASE_EXPORT RadioUtils {
  public:
   static bool IsSupported();
-  static bool IsWifiConnected();
+  static RadioConnectionType GetConnectionType();
   static Optional<RadioSignalLevel> GetCellSignalLevel();
-  static RadioDataActivity GetCellDataActivity();
+  static Optional<RadioDataActivity> GetCellDataActivity();
 };
 
 }  // namespace android

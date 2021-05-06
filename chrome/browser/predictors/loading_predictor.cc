@@ -70,8 +70,8 @@ bool IsPreconnectExpensive() {
   // the radio signal is weak.
   if ((base::PowerMonitor::IsInitialized() &&
        !base::PowerMonitor::IsOnBatteryPower()) ||
-      !base::android::RadioUtils::IsSupported() ||
-      base::android::RadioUtils::IsWifiConnected()) {
+      (base::android::RadioUtils::GetConnectionType() !=
+       base::android::RadioConnectionType::kCell)) {
     return false;
   }
 
