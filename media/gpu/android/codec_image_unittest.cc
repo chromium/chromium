@@ -207,6 +207,20 @@ TEST_F(CodecImageTest, CopyTexImageTriggersFrontBufferRendering) {
   ASSERT_TRUE(i->was_rendered_to_front_buffer());
 }
 
+TEST_F(CodecImageTestExplicitBind, CopyTexImageTriggersFrontBufferRendering) {
+  auto i = NewImage(kTextureOwner);
+  // Verify that the release comes before the wait.
+  InSequence s;
+  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
+  EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable());
+  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
+              UpdateTexImage());
+  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
+              EnsureTexImageBound());
+  i->CopyTexImage(GL_TEXTURE_EXTERNAL_OES);
+  ASSERT_TRUE(i->was_rendered_to_front_buffer());
+}
+
 TEST_F(CodecImageTest, ScheduleOverlayPlaneTriggersFrontBufferRendering) {
   auto i = NewImage(kOverlay);
   EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
@@ -366,8 +380,7 @@ TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   i->NotifyUnused();
   EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
   EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer(
-      CodecImage::BindingsMode::kEnsureTexImageBound,
-      codec_buffer_wait_coordinator_->texture_owner()->GetTextureId()));
+      CodecImage::BindingsMode::kEnsureTexImageBound));
 }
 
 TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {

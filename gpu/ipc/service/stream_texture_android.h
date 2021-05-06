@@ -82,27 +82,17 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   // gpu::StreamTextureSharedImageInterface implementation.
   void ReleaseResources() override {}
   bool IsUsingGpuMemory() const override;
-  void UpdateAndBindTexImage(GLuint service_id) override;
+  void UpdateAndBindTexImage() override;
   bool HasTextureOwner() const override;
   TextureBase* GetTextureBase() const override;
   void NotifyOverlayPromotion(bool promotion, const gfx::Rect& bounds) override;
   bool RenderToOverlay() override;
-  bool TextureOwnerBindsTextureOnUpdate() override;
 
   // SharedContextState::ContextLostObserver implementation.
   void OnContextLost() override;
 
-  // Update the TextureOwner to get the latest image. Also bind the latest image
-  // to the provided |service_id| if TextureOwner does not binds texture on
-  // update. If |bindings_mode| is other than kEnsureTexImageBound, then
-  // |service_id| is not required.
-  void UpdateTexImage(BindingsMode bindings_mode, GLuint service_id);
-
-  // Ensure that the latest image is bound to the texture |service_id| if
-  // TextureOwner does not binds texture on update. If TextureOwner binds
-  // texture on update, then it will always be bound to the TextureOwners
-  // texture and |service_id| will be ignored.
-  void EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id);
+  void UpdateTexImage(BindingsMode bindings_mode);
+  void EnsureBoundIfNeeded(BindingsMode mode);
   gpu::Mailbox CreateSharedImage(const gfx::Size& coded_size);
 
   // Called when a new frame is available for the SurfaceOwner.
