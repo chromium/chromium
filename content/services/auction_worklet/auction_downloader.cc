@@ -11,7 +11,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -87,7 +90,8 @@ AuctionDownloader::AuctionDownloader(
     const GURL& source_url,
     MimeType mime_type,
     AuctionDownloaderCallback auction_downloader_callback)
-    : mime_type_(mime_type),
+    : source_url_(source_url),
+      mime_type_(mime_type),
       auction_downloader_callback_(std::move(auction_downloader_callback)) {
   DCHECK(auction_downloader_callback_);
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -99,8 +103,6 @@ AuctionDownloader::AuctionDownloader(
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
-
-  // TODO(mmenke): Reject unexpected charsets.
 
   // Abort on redirects.
   // TODO(mmenke): May want a browser-side proxy to block redirects instead.
@@ -120,19 +122,54 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
 
   auto simple_url_loader = std::move(simple_url_loader_);
   std::string allow_fledge;
-  if (!body || !simple_url_loader->ResponseInfo()->headers ||
-      !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
-          "X-Allow-FLEDGE", &allow_fledge) ||
-      !base::EqualsCaseInsensitiveASCII(allow_fledge, "true") ||
-      // Note that ResponseInfo's `mime_type` is always lowercase.
-      !MimeTypeIsConsistent(mime_type_,
-                            simple_url_loader->ResponseInfo()->mime_type) ||
-      !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset, *body)) {
-    std::move(auction_downloader_callback_).Run(nullptr);
-    return;
-  }
 
-  std::move(auction_downloader_callback_).Run(std::move(body));
+  if (!body) {
+    std::string error_msg;
+    if (simple_url_loader->ResponseInfo() &&
+        simple_url_loader->ResponseInfo()->headers &&
+        simple_url_loader->ResponseInfo()->headers->response_code() / 100 !=
+            2) {
+      int status = simple_url_loader->ResponseInfo()->headers->response_code();
+      error_msg = base::StringPrintf(
+          "Failed to load %s HTTP status = %d %s.", source_url_.spec().c_str(),
+          status,
+          simple_url_loader->ResponseInfo()->headers->GetStatusText().c_str());
+    } else {
+      error_msg = base::StringPrintf(
+          "Failed to load %s error = %s.", source_url_.spec().c_str(),
+          net::ErrorToString(simple_url_loader->NetError()).c_str());
+    }
+    std::move(auction_downloader_callback_).Run(nullptr /* body */, error_msg);
+  } else if (!simple_url_loader->ResponseInfo()->headers ||
+             !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
+                 "X-Allow-FLEDGE", &allow_fledge) ||
+             !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) {
+    std::move(auction_downloader_callback_)
+        .Run(nullptr /* body */,
+             base::StringPrintf(
+                 "Rejecting load of %s due to lack of X-Allow-FLEDGE: true.",
+                 source_url_.spec().c_str()));
+  } else if (!MimeTypeIsConsistent(
+                 mime_type_,
+                 // ResponseInfo's `mime_type` is always lowercase.
+                 simple_url_loader->ResponseInfo()->mime_type)) {
+    std::move(auction_downloader_callback_)
+        .Run(nullptr /* body */,
+             base::StringPrintf(
+                 "Rejecting load of %s due to unexpected MIME type.",
+                 source_url_.spec().c_str()));
+  } else if (!IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
+                               *body)) {
+    std::move(auction_downloader_callback_)
+        .Run(nullptr /* body */,
+             base::StringPrintf(
+                 "Rejecting load of %s due to unexpected charset.",
+                 source_url_.spec().c_str()));
+  } else {
+    // All OK!
+    std::move(auction_downloader_callback_)
+        .Run(std::move(body), base::nullopt /* error_msg */);
+  }
 }
 
 void AuctionDownloader::OnRedirect(
@@ -144,7 +181,9 @@ void AuctionDownloader::OnRedirect(
   // Need to cancel the load, to prevent the request from continuing.
   simple_url_loader_.reset();
 
-  std::move(auction_downloader_callback_).Run(nullptr /* body */);
+  std::move(auction_downloader_callback_)
+      .Run(nullptr /* body */, base::StringPrintf("Unexpected redirect on %s.",
+                                                  source_url_.spec().c_str()));
 }
 
 }  // namespace auction_worklet

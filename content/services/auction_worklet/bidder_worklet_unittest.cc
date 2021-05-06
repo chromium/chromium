@@ -20,10 +20,14 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using testing::HasSubstr;
+using testing::StartsWith;
 
 namespace auction_worklet {
 namespace {
@@ -135,31 +139,41 @@ class BidderWorkletTest : public testing::Test {
     EXPECT_EQ(expected_result.ad, actual_result.ad);
     EXPECT_EQ(expected_result.bid, actual_result.bid);
     EXPECT_EQ(expected_result.render_url, actual_result.render_url);
+    EXPECT_EQ(expected_result.error_msg.has_value(),
+              actual_result.error_msg.has_value());
+    EXPECT_EQ(expected_result.error_msg.value_or("Not an error"),
+              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
   // specified body. Then runs the script, expecting the provided result.
   void RunReportWinWithFunctionBodyExpectingResult(
       const std::string& function_body,
-      const GURL& expected_report_url) {
+      const GURL& expected_report_url,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     RunReportWinWithJavascriptExpectingResult(
-        CreateReportWinScript(function_body), expected_report_url);
+        CreateReportWinScript(function_body), expected_report_url,
+        std::move(expected_error_msg));
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
   // specified Javascript. Then runs the script, expecting the provided result.
   void RunReportWinWithJavascriptExpectingResult(
       const std::string& javascript,
-      const GURL& expected_report_url) {
+      const GURL& expected_report_url,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunReportWinExpectingResult(expected_report_url);
+    RunReportWinExpectingResult(expected_report_url,
+                                std::move(expected_error_msg));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
   // supplied result.
-  void RunReportWinExpectingResult(const GURL& expected_report_url) {
+  void RunReportWinExpectingResult(
+      const GURL& expected_report_url,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     auto bidder_worket = CreateWorklet();
     ASSERT_TRUE(bidder_worket);
 
@@ -168,6 +182,10 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_ad_render_fingerprint_, browser_signal_bid_);
     EXPECT_EQ(!expected_report_url.is_empty(), actual_result.success);
     EXPECT_EQ(expected_report_url, actual_result.report_url);
+    EXPECT_EQ(expected_error_msg.has_value(),
+              actual_result.error_msg.has_value());
+    EXPECT_EQ(expected_error_msg.value_or("Not an error"),
+              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Create a BidderWorklet, waiting for the URLLoader to complete. Returns
@@ -231,9 +249,17 @@ class BidderWorkletTest : public testing::Test {
     return out;
   }
 
-  void CreateWorkletCallback(bool success) {
+  void CreateWorkletCallback(bool success,
+                             base::Optional<std::string> error_msg) {
     create_worklet_succeeded_ = success;
+    error_msg_ = std::move(error_msg);
+    if (success)
+      EXPECT_FALSE(error_msg_.has_value());
     load_script_run_loop_->Quit();
+  }
+
+  std::string last_error_msg() const {
+    return error_msg_.value_or("Not an error");
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -277,6 +303,7 @@ class BidderWorkletTest : public testing::Test {
   // synchronously.
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
   bool create_worklet_succeeded_ = false;
+  base::Optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
@@ -287,12 +314,17 @@ TEST_F(BidderWorkletTest, NetworkError) {
                                   CreateBasicGenerateBidScript(),
                                   net::HTTP_NOT_FOUND);
   EXPECT_FALSE(CreateWorklet());
+  EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
+            last_error_msg());
 }
 
 TEST_F(BidderWorkletTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
+
+  EXPECT_THAT(last_error_msg(), StartsWith("https://url.test/:1 "));
+  EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
 }
 
 // Test parsing of return values.
@@ -335,10 +367,12 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: function() {return 1;}, bid:1, render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
 
   // Make sure recursive structures aren't allowed in ad field.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -349,7 +383,8 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: a, bid:1, render:"https://response.test/"};
         }
       )",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
 
   // --------
   // Vary bid
@@ -392,10 +427,12 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Non-numeric bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"1", render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1], render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
 
   // ---------
   // Vary URL.
@@ -408,43 +445,61 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Disallowed schemes.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"chrome-extension://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"about:blank"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:"data:,foo"})", BidderWorklet::BidResult());
+      R"({ad: ["ad"], bid:1, render:"data:,foo"})",
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
 
   // Invalid URLs.
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:"test"})", BidderWorklet::BidResult());
+      R"({ad: ["ad"], bid:1, render:"test"})",
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:"http://"})", BidderWorklet::BidResult());
+      R"({ad: ["ad"], bid:1, render:"http://"})",
+      BidderWorklet::BidResult("https://url.test/ generateBid() returned "
+                               "render_url isn't a valid https:// URL."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:9})", BidderWorklet::BidResult());
+      R"({ad: ["ad"], bid:1, render:9})",
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
 
   // ------------
   // Other cases.
   // ------------
 
   // No return value.
-  RunGenerateBidWithReturnValueExpectingResult("", BidderWorklet::BidResult());
+  RunGenerateBidWithReturnValueExpectingResult(
+      "", BidderWorklet::BidResult(
+              "https://url.test/ generateBid() return value not an object."));
 
   // Missing value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:"a", render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], render:"https://response.test/"})",
-      BidderWorklet::BidResult());
-  RunGenerateBidWithReturnValueExpectingResult(R"({ad: ["ad"], bid:"a"})",
-                                               BidderWorklet::BidResult());
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: ["ad"], bid:"a"})",
+      BidderWorklet::BidResult("https://url.test/ generateBid() return value "
+                               "has incorrect structure."));
 
   // Valid JS, but missing function.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -453,22 +508,28 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: ["ad"], bid:1, render:"https://response.test/"};
         }
       )",
-      BidderWorklet::BidResult());
-  RunGenerateBidWithJavascriptExpectingResult("", BidderWorklet::BidResult());
-  RunGenerateBidWithJavascriptExpectingResult("5", BidderWorklet::BidResult());
-  RunGenerateBidWithJavascriptExpectingResult("shrimp",
-                                              BidderWorklet::BidResult());
+      BidderWorklet::BidResult(
+          "https://url.test/ `generateBid` is not a function."));
+  RunGenerateBidWithJavascriptExpectingResult(
+      "", BidderWorklet::BidResult(
+              "https://url.test/ `generateBid` is not a function."));
+  RunGenerateBidWithJavascriptExpectingResult(
+      "5", BidderWorklet::BidResult(
+               "https://url.test/ `generateBid` is not a function."));
 
   // Throw exception.
-  RunGenerateBidWithReturnValueExpectingResult("shrimp",
-                                               BidderWorklet::BidResult());
+  RunGenerateBidWithJavascriptExpectingResult(
+      "shrimp",
+      BidderWorklet::BidResult("https://url.test/:1 Uncaught ReferenceError: "
+                               "shrimp is not defined."));
 }
 
 // Make sure Date() is not available when running generateBid().
 TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult(
+          "https://url.test/:4 Uncaught ReferenceError: Date is not defined."));
 }
 
 // Checks that most input parameters are correctly passed in, and each is parsed
@@ -610,7 +671,9 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   // A bid URL that's not in the InterestGroup's ads list should fail.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response2.test/"})",
-      BidderWorklet::BidResult());
+      BidderWorklet::BidResult(
+          "https://url.test/ generateBid() returned render_url isn't one of "
+          "the registered creative URLs."));
 
   // Adding an ad with a corresponding `renderUrl` should result in success.
   // Also check the `interestGroup.ads` field passed to Javascript.
@@ -784,10 +847,12 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   trusted_bidding_signals_ = std::make_unique<TrustedBiddingSignals>(
       &url_loader_factory_, std::vector<std::string>({"key1", "key2"}),
       "hostname", kBaseSignalsUrl, &v8_helper_,
-      base::BindLambdaForTesting([&](bool success) {
-        signals_loaded_successfully = success;
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](bool success, base::Optional<std::string> signals_error_msg) {
+            signals_loaded_successfully = success;
+            EXPECT_FALSE(signals_error_msg.has_value());
+            run_loop.Quit();
+          }));
   run_loop.Run();
   ASSERT_TRUE(signals_loaded_successfully);
 
@@ -827,21 +892,31 @@ TEST_F(BidderWorkletTest, ReportWin) {
       R"(sendReportTo("https://foo.test/bar"))", GURL("https://foo.test/bar"));
 
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("http://http.not.allowed.test"))", GURL());
+      R"(sendReportTo("http://http.not.allowed.test"))", GURL(),
+      "https://url.test/:4 Uncaught TypeError: sendReportTo must be passed a "
+      "valid HTTPS url.");
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("file:///file.not.allowed.test"))", GURL());
+      R"(sendReportTo("file:///file.not.allowed.test"))", GURL(),
+      "https://url.test/:4 Uncaught TypeError: sendReportTo must be passed a "
+      "valid HTTPS url.");
 
-  RunReportWinWithFunctionBodyExpectingResult(R"(sendReportTo(""))", GURL());
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(sendReportTo(""))", GURL(),
+      "https://url.test/:4 Uncaught TypeError: sendReportTo must be passed a "
+      "valid HTTPS url.");
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
-      GURL());
+      GURL(),
+      "https://url.test/:4 Uncaught TypeError: sendReportTo may be called at "
+      "most once.");
 }
 
 // Make sure Date() is not available when running reportWin().
 TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("https://foo.test/" + Date().toString()))", GURL());
+      R"(sendReportTo("https://foo.test/" + Date().toString()))", GURL(),
+      "https://url.test/:4 Uncaught ReferenceError: Date is not defined.");
 }
 
 TEST_F(BidderWorkletTest, ReportWinParameters) {
@@ -852,31 +927,49 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     bool is_json;
     // Pointer to location at which the string can be modified.
     std::string* value_ptr;
+    // Whether to expect an error. This can be empty when call fails in case
+    // it's due to something like passing non-JSON to JSON parameter which user
+    // code should be unable to trigger, and for which we thus do not produce
+    // an error message.
+    base::Optional<std::string> expect_error_msg;
+    base::Optional<std::string> expect_error_msg_array;
   } kStringTestCases[] = {
       {
           "auctionSignals",
           true /* is_json */,
           &auction_signals_,
+          base::nullopt,
+          base::nullopt,
       },
       {
           "perBuyerSignals",
           true /* is_json */,
           &per_buyer_signals_,
+          base::nullopt,
+          base::nullopt,
       },
       {
           "sellerSignals",
           true /* is_json */,
           &seller_signals_,
+          base::nullopt,
+          base::nullopt,
       },
       {
           "browserSignals.interestGroupName",
           false /* is_json */,
           &interest_group_name_,
+          base::nullopt,
+          "https://url.test/:4 Uncaught TypeError: sendReportTo must be passed "
+          "a valid HTTPS url.",
       },
       {
           "browserSignals.adRenderFingerprint",
           false /* is_json */,
           &browser_signal_ad_render_fingerprint_,
+          base::nullopt,
+          "https://url.test/:4 Uncaught TypeError: sendReportTo must be passed "
+          "a valid HTTPS url.",
       },
   };
 
@@ -886,12 +979,14 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     *test_case.value_ptr = "https://foo.test/";
     RunReportWinWithFunctionBodyExpectingResult(
         base::StringPrintf("sendReportTo(%s)", test_case.name),
-        test_case.is_json ? GURL() : GURL("https://foo.test/"));
+        test_case.is_json ? GURL() : GURL("https://foo.test/"),
+        test_case.expect_error_msg);
 
     *test_case.value_ptr = R"(["https://foo.test/"])";
     RunReportWinWithFunctionBodyExpectingResult(
         base::StringPrintf("sendReportTo(%s[0])", test_case.name),
-        test_case.is_json ? GURL("https://foo.test/") : GURL());
+        test_case.is_json ? GURL("https://foo.test/") : GURL(),
+        test_case.expect_error_msg_array);
 
     SetDefaultParameters();
   }

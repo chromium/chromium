@@ -98,8 +98,11 @@ class TrustedBiddingSignalsTest : public testing::Test {
   }
 
  protected:
-  void LoadSignalsCallback(bool success) {
+  void LoadSignalsCallback(bool success,
+                           base::Optional<std::string> error_msg) {
     load_signals_succeeded_ = success;
+    error_msg_ = std::move(error_msg);
+    EXPECT_EQ(load_signals_succeeded_, !error_msg_.has_value());
     load_signals_run_loop_->Quit();
   }
 
@@ -113,6 +116,7 @@ class TrustedBiddingSignalsTest : public testing::Test {
   // synchronously.
   std::unique_ptr<base::RunLoop> load_signals_run_loop_;
   bool load_signals_succeeded_ = false;
+  base::Optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
@@ -123,18 +127,29 @@ TEST_F(TrustedBiddingSignalsTest, NetworkError) {
       "https://url.test/?hostname=publisher&keys=key1", kBaseJson,
       net::HTTP_NOT_FOUND);
   EXPECT_FALSE(FetchBiddingSignals({"key1"}, kHostname));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ(
+      "Failed to load https://url.test/?hostname=publisher&keys=key1 "
+      "HTTP status = 404 Not Found.",
+      error_msg_.value());
 }
 
 TEST_F(TrustedBiddingSignalsTest, ResponseNotJson) {
   EXPECT_FALSE(FetchBiddingSignalsWithResponse(
       GURL("https://url.test/?hostname=publisher&keys=key1"), "Not Json",
       {"key1"}, kHostname));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
+            error_msg_.value());
 }
 
 TEST_F(TrustedBiddingSignalsTest, ResponseNotObject) {
   EXPECT_FALSE(FetchBiddingSignalsWithResponse(
       GURL("https://url.test/?hostname=publisher&keys=key1"), "42", {"key1"},
       kHostname));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
+            error_msg_.value());
 }
 
 TEST_F(TrustedBiddingSignalsTest, KeyMissing) {

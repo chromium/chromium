@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace auction_worklet {
@@ -205,6 +206,7 @@ class AuctionRunnerTest : public testing::Test {
     std::string interest_group_name;
     mojom::WinningBidderReportPtr bidder_report;
     mojom::SellerReportPtr seller_report;
+    std::vector<std::string> errors;
   };
 
   Result RunAuctionAndWait(const GURL& seller_decision_logic_url,
@@ -238,12 +240,14 @@ class AuctionRunnerTest : public testing::Test {
                                        const url::Origin& interest_group_owner,
                                        const std::string& interest_group_name,
                                        mojom::WinningBidderReportPtr bid_report,
-                                       mojom::SellerReportPtr seller_report) {
+                                       mojom::SellerReportPtr seller_report,
+                                       const std::vector<std::string>& errors) {
           result.ad_url = ad_url;
           result.interest_group_owner = interest_group_owner;
           result.interest_group_name = interest_group_name;
           result.bidder_report = std::move(bid_report);
           result.seller_report = std::move(seller_report);
+          result.errors = errors;
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -346,6 +350,7 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(res.errors, testing::ElementsAre());
 }
 
 // An auction where one bid is successful, another's script 404s.
@@ -381,6 +386,10 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(
+      res.errors,
+      testing::ElementsAre("Failed to load https://anotheradthing.com/bids.js "
+                           "HTTP status = 404 Not Found."));
 }
 
 // An auction where one bid is successful, another's script does not provide a
@@ -419,6 +428,9 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(res.errors,
+              testing::ElementsAre("https://anotheradthing.com/bids.js "
+                                   "`generateBid` is not a function."));
 }
 
 // An auction where no bidding scripts load successfully.
@@ -444,6 +456,12 @@ TEST_F(AuctionRunnerTest, NoBids) {
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+  EXPECT_THAT(
+      res.errors,
+      testing::ElementsAre("Failed to load https://adplatform.com/offers.js "
+                           "HTTP status = 404 Not Found.",
+                           "Failed to load https://anotheradthing.com/bids.js "
+                           "HTTP status = 404 Not Found."));
 }
 
 // An auction where none of the bidding scripts has a valid bidding function.
@@ -470,6 +488,12 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+  EXPECT_THAT(
+      res.errors,
+      testing::ElementsAre(
+          "https://adplatform.com/offers.js `generateBid` is not a function.",
+          "https://anotheradthing.com/bids.js `generateBid` is not a "
+          "function."));
 }
 
 // An auction where the seller script doesn't have a scoring function.
@@ -503,6 +527,11 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+  EXPECT_THAT(res.errors,
+              testing::ElementsAre("https://adstuff.publisher1.com/auction.js "
+                                   "`scoreAd` is not a function.",
+                                   "https://adstuff.publisher1.com/auction.js "
+                                   "`scoreAd` is not a function."));
 }
 
 // An auction where seller rejects one bid when scoring.
@@ -560,6 +589,10 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
 
   EXPECT_EQ(0, url_loader_factory_.NumPending());
+  EXPECT_THAT(res.errors,
+              testing::ElementsAre(
+                  "Failed to load https://adstuff.publisher1.com/auction.js "
+                  "HTTP status = 404 Not Found."));
 }
 
 // An auction where bidders don't requested trusted bidding signals.
@@ -604,6 +637,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(res.errors, testing::ElementsAre());
 }
 
 // An auction where trusted bidding signals are requested, but the fetch 404s.
@@ -640,6 +674,15 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(res.errors,
+              testing::ElementsAre("Failed to load "
+                                   "https://trustedsignaller.org/"
+                                   "signals?hostname=publisher1.com&keys=k1,k2 "
+                                   "HTTP status = 404 Not Found.",
+                                   "Failed to load "
+                                   "https://trustedsignaller.org/"
+                                   "signals?hostname=publisher1.com&keys=l1,l2 "
+                                   "HTTP status = 404 Not Found."));
 }
 
 // A successful auction where seller reporting worklet doesn't set a URL.
@@ -678,6 +721,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
+  EXPECT_THAT(res.errors, testing::ElementsAre());
 }
 
 // A successful auction where bidder reporting worklet doesn't set a URL.
@@ -717,6 +761,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
             res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+  EXPECT_THAT(res.errors, testing::ElementsAre());
 }
 
 // A successful auction where neither reporting worklets sets a URL.
@@ -756,6 +801,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
             res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
+  EXPECT_THAT(res.errors, testing::ElementsAre());
 }
 
 }  // namespace

@@ -16,9 +16,13 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
+
+using testing::HasSubstr;
+using testing::StartsWith;
 
 namespace auction_worklet {
 namespace {
@@ -34,9 +38,16 @@ class WorkletLoaderTest : public testing::Test {
   ~WorkletLoaderTest() override = default;
 
   void LoadWorkletCallback(
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script) {
+      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+      base::Optional<std::string> error_msg) {
     load_succeeded_ = !!worklet_script;
+    error_msg_ = std::move(error_msg);
+    EXPECT_EQ(load_succeeded_, !error_msg_.has_value());
     run_loop_.Quit();
+  }
+
+  std::string last_error_msg() const {
+    return error_msg_.value_or("Not an error");
   }
 
  protected:
@@ -47,6 +58,7 @@ class WorkletLoaderTest : public testing::Test {
   GURL url_ = GURL("https://foo.test/");
   base::RunLoop run_loop_;
   bool load_succeeded_ = false;
+  base::Optional<std::string> error_msg_;
 };
 
 TEST_F(WorkletLoaderTest, NetworkError) {
@@ -59,6 +71,8 @@ TEST_F(WorkletLoaderTest, NetworkError) {
                      base::Unretained(this)));
   run_loop_.Run();
   EXPECT_FALSE(load_succeeded_);
+  EXPECT_EQ("Failed to load https://foo.test/ HTTP status = 404 Not Found.",
+            last_error_msg());
 }
 
 TEST_F(WorkletLoaderTest, CompileError) {
@@ -69,6 +83,8 @@ TEST_F(WorkletLoaderTest, CompileError) {
                      base::Unretained(this)));
   run_loop_.Run();
   EXPECT_FALSE(load_succeeded_);
+  EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/:1 "));
+  EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
 }
 
 TEST_F(WorkletLoaderTest, Success) {
@@ -92,9 +108,10 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
-              [&](std::unique_ptr<v8::Global<v8::UnboundScript>>
-                      worklet_script) {
+              [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+                  base::Optional<std::string> error_msg) {
                 EXPECT_TRUE(worklet_script);
+                EXPECT_FALSE(error_msg.has_value());
                 worklet_script.reset();
                 worklet_loader.reset();
                 v8_helper.reset();
@@ -114,9 +131,13 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
-              [&](std::unique_ptr<v8::Global<v8::UnboundScript>>
-                      worklet_script) {
+              [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+                  base::Optional<std::string> error_msg) {
                 EXPECT_FALSE(worklet_script);
+                ASSERT_TRUE(error_msg.has_value());
+                EXPECT_THAT(error_msg.value(),
+                            StartsWith("https://foo.test/:1 "));
+                EXPECT_THAT(error_msg.value(), HasSubstr("SyntaxError"));
                 worklet_loader.reset();
                 v8_helper.reset();
                 run_loop.Quit();

@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_RUNNER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_RUNNER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -85,14 +86,19 @@ class AuctionRunner {
   ~AuctionRunner();
 
   void StartBidding();
-  void OnBidderScriptLoaded(BidState* state, bool load_result);
-  void OnTrustedSignalsLoaded(BidState* state, bool load_result);
+  void OnBidderScriptLoaded(BidState* state,
+                            bool load_result,
+                            base::Optional<std::string> error_msg);
+  void OnTrustedSignalsLoaded(BidState* state,
+                              bool load_result,
+                              base::Optional<std::string> error_msg);
   void MaybeRunBid(BidState* state);
   void RunBid(BidState* state);
 
   // True if all bid results and the seller script load are complete.
   bool ReadyToScore() const { return outstanding_bids_ == 0 && seller_loaded_; }
-  void OnSellerWorkletLoaded(bool load_result);
+  void OnSellerWorkletLoaded(bool load_result,
+                             base::Optional<std::string> error_msg);
 
   // Lets the seller score a single outstanding bid, if any, and then either
   // re-queues itself on event loop if there is more to check, or proceeds to
@@ -145,6 +151,9 @@ class AuctionRunner {
   // that can be done.
   bool seller_loaded_ = false;
   size_t seller_considering_ = 0;
+
+  // All errors reported by worklets thus far.
+  std::vector<std::string> errors_;
 };
 
 }  // namespace auction_worklet

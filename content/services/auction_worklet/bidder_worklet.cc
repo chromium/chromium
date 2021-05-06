@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -59,12 +60,37 @@ BidderWorklet::BidResult::BidResult(std::string ad, double bid, GURL render_url)
   DCHECK(this->render_url.is_valid());
 }
 
+BidderWorklet::BidResult::BidResult(base::Optional<std::string> error_msg)
+    : error_msg(std::move(error_msg)) {}
+
+BidderWorklet::BidResult::BidResult(const BidResult& other) = default;
+BidderWorklet::BidResult::BidResult(BidResult&& other) = default;
+BidderWorklet::BidResult::~BidResult() = default;
+BidderWorklet::BidResult& BidderWorklet::BidResult::operator=(
+    const BidResult&) = default;
+BidderWorklet::BidResult& BidderWorklet::BidResult::operator=(BidResult&&) =
+    default;
+
 BidderWorklet::ReportWinResult::ReportWinResult() = default;
 
 BidderWorklet::ReportWinResult::ReportWinResult(GURL report_url)
     : success(true), report_url(std::move(report_url)) {
   DCHECK(this->report_url.is_valid());
 }
+
+BidderWorklet::ReportWinResult::ReportWinResult(
+    base::Optional<std::string> error_msg)
+    : error_msg(std::move(error_msg)) {}
+
+BidderWorklet::ReportWinResult::ReportWinResult(const ReportWinResult& other) =
+    default;
+BidderWorklet::ReportWinResult::ReportWinResult(ReportWinResult&& other) =
+    default;
+BidderWorklet::ReportWinResult::~ReportWinResult() = default;
+BidderWorklet::ReportWinResult& BidderWorklet::ReportWinResult::operator=(
+    const ReportWinResult&) = default;
+BidderWorklet::ReportWinResult& BidderWorklet::ReportWinResult::operator=(
+    ReportWinResult&&) = default;
 
 BidderWorklet::BidderWorklet(
     network::mojom::URLLoaderFactory* url_loader_factory,
@@ -76,7 +102,9 @@ BidderWorklet::BidderWorklet(
     base::Time auction_start_time,
     AuctionV8Helper* v8_helper,
     LoadWorkletCallback load_worklet_callback)
-    : v8_helper_(v8_helper),
+    : script_source_url_(
+          bidding_interest_group->group->bidding_url.value_or(GURL())),
+      v8_helper_(v8_helper),
       bidding_interest_group_(std::move(bidding_interest_group)),
       auction_signals_json_(auction_signals_json),
       per_buyer_signals_json_(per_buyer_signals_json),
@@ -85,11 +113,10 @@ BidderWorklet::BidderWorklet(
       browser_signal_seller_(browser_signal_seller),
       auction_start_time_(auction_start_time) {
   DCHECK(load_worklet_callback);
-  // TODO(mmenke): Remove up the value_or() - auction worklets shouldn't be
-  // created when there's no bidding URL.
+  // TODO(mmenke): Remove up the value_or() for script_source_url_- auction
+  // worklets shouldn't be created when there's no bidding URL.
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory,
-      bidding_interest_group_->group->bidding_url.value_or(GURL()), v8_helper,
+      url_loader_factory, script_source_url_, v8_helper,
       base::BindOnce(&BidderWorklet::OnDownloadComplete, base::Unretained(this),
                      std::move(load_worklet_callback)));
 }
@@ -202,12 +229,18 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> generate_bid_result;
+  base::Optional<std::string> error_msg_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "generateBid",
-                       args)
-           .ToLocal(&generate_bid_result) ||
-      !generate_bid_result->IsObject()) {
-    return BidResult();
+                       args, error_msg_out)
+           .ToLocal(&generate_bid_result)) {
+    return BidResult(std::move(error_msg_out));
+  }
+
+  if (!generate_bid_result->IsObject()) {
+    return BidResult(
+        base::StrCat({script_source_url_.spec(),
+                      " generateBid() return value not an object."}));
   }
 
   gin::Dictionary result_dict(isolate, generate_bid_result.As<v8::Object>());
@@ -221,22 +254,29 @@ BidderWorklet::BidResult BidderWorklet::GenerateBid(
       !v8_helper_->ExtractJson(context, ad_object, &ad_json) ||
       !result_dict.Get("bid", &bid) ||
       !result_dict.Get("render", &render_url_string)) {
-    return BidResult();
+    return BidResult(
+        base::StrCat({script_source_url_.spec(),
+                      " generateBid() return value has incorrect structure."}));
   }
 
   if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid))
     return BidResult();
 
   GURL render_url(render_url_string);
-  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme))
-    return BidResult();
+  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme)) {
+    return BidResult(base::StrCat(
+        {script_source_url_.spec(),
+         " generateBid() returned render_url isn't a valid https:// URL."}));
+  }
 
   // `render_url` must be in `ad_render_urls`.
   for (const auto& ad : *interest_group.ads) {
     if (render_url == ad->render_url)
       return BidResult(std::move(ad_json), bid, std::move(render_url));
   }
-  return BidResult();
+  return BidResult(base::StrCat({script_source_url_.spec(),
+                                 " generateBid() returned render_url isn't one "
+                                 "of the registered creative URLs."}));
 }
 
 BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
@@ -285,10 +325,12 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
 
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
+  base::Optional<std::string> error_msg_out;
   if (v8_helper_
-          ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args)
+          ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args,
+                      error_msg_out)
           .IsEmpty()) {
-    return ReportWinResult();
+    return ReportWinResult(std::move(error_msg_out));
   }
 
   if (!report_bindings.report_url().is_valid())
@@ -299,10 +341,12 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
 
 void BidderWorklet::OnDownloadComplete(
     LoadWorkletCallback load_worklet_callback,
-    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script) {
+    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+    base::Optional<std::string> error_msg) {
   worklet_loader_.reset();
   worklet_script_ = std::move(worklet_script);
-  std::move(load_worklet_callback).Run(worklet_script_ != nullptr);
+  std::move(load_worklet_callback)
+      .Run(worklet_script_ != nullptr, std::move(error_msg));
 }
 
 }  // namespace auction_worklet

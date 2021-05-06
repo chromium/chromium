@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_sandbox_type.h"
 #include "content/browser/storage_partition_impl.h"
@@ -322,9 +323,16 @@ void AdAuctionServiceImpl::WorkletComplete(
     const url::Origin& owner,
     const std::string& name,
     auction_worklet::mojom::WinningBidderReportPtr bidder_report,
-    auction_worklet::mojom::SellerReportPtr seller_report) {
+    auction_worklet::mojom::SellerReportPtr seller_report,
+    const std::vector<std::string>& errors) {
   // Release process if needed.
   AuctionComplete();
+
+  // Forward debug information to devtools.
+  for (const std::string& error : errors) {
+    devtools_instrumentation::LogWorkletError(
+        static_cast<RenderFrameHostImpl*>(render_frame_host()), error);
+  }
 
   // Check if returned winner's information is valid.
   ValidatedResult result =

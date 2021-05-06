@@ -49,12 +49,21 @@ class BidderWorklet {
     // valid.
     BidResult(std::string ad, double bid, GURL render_url);
 
+    // Constructor when there is no bid due to an error and an error message
+    // may be available.
+    explicit BidResult(base::Optional<std::string> error_msg);
+
+    BidResult(const BidResult& other);
+    BidResult(BidResult&& other);
+
+    ~BidResult();
+
+    BidResult& operator=(const BidResult&);
+    BidResult& operator=(BidResult&&);
+
     // `success` will be false on any type of failure, and other values will be
     // empty or 0. Inability to extract ad string, bid value, or valid render
     // URL are all considered errors.
-    //
-    // TODO(mmenke): Pass along some sort of error string instead, to make
-    // debugging easier.
     bool success = false;
 
     // JSON string to be passed to the scoring function.
@@ -66,6 +75,10 @@ class BidderWorklet {
 
     // Render URL, if any bid was made.
     GURL render_url;
+
+    // Error message for debugging. This isn't guaranteed to be produced for all
+    // failures, so don't check this instead of `success`.
+    base::Optional<std::string> error_msg;
   };
 
   struct ReportWinResult {
@@ -76,19 +89,33 @@ class BidderWorklet {
     // Constructor when a report was requested.
     explicit ReportWinResult(GURL report_url);
 
+    // Constructor when there is some sort of a falire for which an error
+    // message may be available.
+    explicit ReportWinResult(base::Optional<std::string> error_msg);
+
+    ReportWinResult(const ReportWinResult& other);
+    ReportWinResult(ReportWinResult&& other);
+
+    ~ReportWinResult();
+
+    ReportWinResult& operator=(const ReportWinResult&);
+    ReportWinResult& operator=(ReportWinResult&&);
+
     // `success` will be false on any type of failure. Neither lack or reporting
     // function nor lack of report URL is considered an error.
-    //
-    // TODO(mmenke): Pass along some sort of error string instead, to make
-    // debugging easier.
     bool success = false;
 
     // Report URL, if one is provided. Empty on failure, or if no report URL is
     // provided.
     GURL report_url;
+
+    // Error message for debugging.
+    base::Optional<std::string> error_msg;
   };
 
-  using LoadWorkletCallback = base::OnceCallback<void(bool success)>;
+  using LoadWorkletCallback =
+      base::OnceCallback<void(bool success,
+                              base::Optional<std::string> error_msg)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -123,8 +150,10 @@ class BidderWorklet {
  private:
   void OnDownloadComplete(
       LoadWorkletCallback load_worklet_callback,
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script);
+      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+      base::Optional<std::string> error_msg);
 
+  const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;
   const mojom::BiddingInterestGroupPtr bidding_interest_group_;
 

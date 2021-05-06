@@ -211,6 +211,9 @@ void OnWebTransportHandshakeFailed(
     const GURL& url,
     const base::Optional<net::QuicTransportError>& error);
 
+// Adds a debug error message from a worklet to the devtools console.
+void LogWorkletError(RenderFrameHostImpl* frame_host, const std::string& error);
+
 void ApplyNetworkContextParamsOverrides(
     BrowserContext* browser_context,
     network::mojom::NetworkContextParams* network_context_params);

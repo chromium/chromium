@@ -94,7 +94,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const url::Origin& owner,
       const std::string& name,
       auction_worklet::mojom::WinningBidderReportPtr bidder_report,
-      auction_worklet::mojom::SellerReportPtr seller_report);
+      auction_worklet::mojom::SellerReportPtr seller_report,
+      const std::vector<std::string>& errors);
 
   // Returns an untrusted URLLoaderFactory created by the RenderFrameHost,
   // suitable for loading URLs like subresources. Caches the factory in

@@ -45,7 +45,7 @@ void ReportBindings::SendReportTo(
     bindings->report_url_ = GURL();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "SendReportTo requires 1 string parameter.")));
+            "sendReportTo requires 1 string parameter")));
     return;
   }
 
@@ -54,7 +54,8 @@ void ReportBindings::SendReportTo(
     bindings->report_url_ = GURL();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "SendReportTo may be called at most once.")));
+            "sendReportTo may be called at most once")));
+    return;
   }
 
   GURL url(url_string);
@@ -62,7 +63,7 @@ void ReportBindings::SendReportTo(
     bindings->exception_thrown_ = true;
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "SendReportTo must be passed a valid HTTPS url.")));
+            "sendReportTo must be passed a valid HTTPS url")));
     return;
   }
 

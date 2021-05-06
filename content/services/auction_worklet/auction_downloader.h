@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -32,11 +33,9 @@ class AuctionDownloader {
   };
 
   // Passes in nullptr on failure. Always invoked asynchronously.
-  //
-  // TODO(mmenke): Pass along some sort of error string on failure, to make
-  // debugging easier.
   using AuctionDownloaderCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body)>;
+      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+                              base::Optional<std::string> error)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -55,6 +54,7 @@ class AuctionDownloader {
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
 
+  const GURL source_url_;
   const MimeType mime_type_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   AuctionDownloaderCallback auction_downloader_callback_;

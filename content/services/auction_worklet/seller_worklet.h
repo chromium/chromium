@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -27,8 +28,7 @@ class WorkletLoader;
 // seller worklet's Javascript.
 class SellerWorklet {
  public:
-  // The result of invoking scoreAd(). This could just be a double, but planning
-  // to add error information down the line.
+  // The result of invoking scoreAd().
   struct ScoreResult {
     // Creates a ScoreResult for a failure or rejected bid.
     ScoreResult();
@@ -36,15 +36,28 @@ class SellerWorklet {
     // Creates a ScoreResult for a successfully scored ad. `score` will be > 0.
     explicit ScoreResult(double score);
 
+    // Creates a ScoreResult representing a fatal error, potentially with a
+    // helpful diagnostic message in `error_msg`.
+    explicit ScoreResult(base::Optional<std::string> error_msg);
+
+    ScoreResult(const ScoreResult& other);
+    ScoreResult(ScoreResult&& other);
+
+    ~ScoreResult();
+
+    ScoreResult& operator=(const ScoreResult&);
+    ScoreResult& operator=(ScoreResult&&);
+
     // `success` will be false on any type of failure, and score will be 0.
-    //
-    // TODO(mmenke): Pass along some sort of error string instead, to make
-    // debugging easier.
     bool success = false;
 
     // Score. 0 if no bid is offered (even if underlying script returned a
     // negative value).
     double score = 0;
+
+    // Error message for debugging. This is not guaranteed to be present on
+    // failure.
+    base::Optional<std::string> error_msg;
   };
 
   // The result of invoking reportResult().
@@ -55,11 +68,20 @@ class SellerWorklet {
     // Creates a Report for a successful call.
     Report(std::string signals_for_winner, GURL report_url);
 
+    // Creates a ScoreResult representing a fatal error, potentially with a
+    // helpful diagnostic message in `error_msg`.
+    explicit Report(base::Optional<std::string> error_msg);
+
+    Report(const Report& other);
+    Report(Report&& other);
+
+    ~Report();
+
+    Report& operator=(const Report&);
+    Report& operator=(Report&&);
+
     // `success` will be false on any type of failure, including lack of a
     // method.
-    //
-    // TODO(mmenke): Pass along some sort of error string instead, to make
-    // debugging easier.
     bool success = false;
 
     // JSON data as a string. Sent to the winner's ReportWin function. JSON
@@ -69,9 +91,15 @@ class SellerWorklet {
     // Report URL, if one is provided. Empty on failure, or if no report URL is
     // provided.
     GURL report_url;
+
+    // Error message for debugging. This isn't guaranteed to have a value for
+    // all failures.
+    base::Optional<std::string> error_msg;
   };
 
-  using LoadWorkletCallback = base::OnceCallback<void(bool success)>;
+  using LoadWorkletCallback =
+      base::OnceCallback<void(bool success,
+                              base::Optional<std::string> error_msg)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -109,8 +137,10 @@ class SellerWorklet {
  private:
   void OnDownloadComplete(
       LoadWorkletCallback load_worklet_callback,
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script);
+      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+      base::Optional<std::string> error_msg);
 
+  const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;
   std::unique_ptr<WorkletLoader> worklet_loader_;
 

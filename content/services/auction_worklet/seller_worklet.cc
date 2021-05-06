@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -114,6 +115,17 @@ SellerWorklet::ScoreResult::ScoreResult(double score)
   DCHECK_GT(score, 0);
 }
 
+SellerWorklet::ScoreResult::ScoreResult(base::Optional<std::string> error_msg)
+    : error_msg(std::move(error_msg)) {}
+
+SellerWorklet::ScoreResult::ScoreResult(const ScoreResult& other) = default;
+SellerWorklet::ScoreResult::ScoreResult(ScoreResult&& other) = default;
+SellerWorklet::ScoreResult::~ScoreResult() = default;
+SellerWorklet::ScoreResult& SellerWorklet::ScoreResult::operator=(
+    const ScoreResult&) = default;
+SellerWorklet::ScoreResult& SellerWorklet::ScoreResult::operator=(
+    ScoreResult&&) = default;
+
 SellerWorklet::Report::Report() = default;
 
 SellerWorklet::Report::Report(std::string signals_for_winner, GURL report_url)
@@ -121,12 +133,22 @@ SellerWorklet::Report::Report(std::string signals_for_winner, GURL report_url)
       signals_for_winner(std::move(signals_for_winner)),
       report_url(std::move(report_url)) {}
 
+SellerWorklet::Report::Report(base::Optional<std::string> error_msg)
+    : error_msg(std::move(error_msg)) {}
+
+SellerWorklet::Report::Report(const Report& other) = default;
+SellerWorklet::Report::Report(Report&& other) = default;
+SellerWorklet::Report::~Report() = default;
+SellerWorklet::Report& SellerWorklet::Report::operator=(const Report&) =
+    default;
+SellerWorklet::Report& SellerWorklet::Report::operator=(Report&&) = default;
+
 SellerWorklet::SellerWorklet(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& script_source_url,
     AuctionV8Helper* v8_helper,
     LoadWorkletCallback load_worklet_callback)
-    : v8_helper_(v8_helper) {
+    : script_source_url_(script_source_url), v8_helper_(v8_helper) {
   DCHECK(load_worklet_callback);
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory, script_source_url, v8_helper,
@@ -181,14 +203,22 @@ SellerWorklet::ScoreResult SellerWorklet::ScoreAd(
 
   v8::Local<v8::Value> score_ad_result;
   double score;
+  base::Optional<std::string> error_msg_out;
   if (!v8_helper_
-           ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args)
-           .ToLocal(&score_ad_result) ||
-      !gin::ConvertFromV8(isolate, score_ad_result, &score)) {
-    return ScoreResult();
+           ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args,
+                       error_msg_out)
+           .ToLocal(&score_ad_result)) {
+    return ScoreResult(std::move(error_msg_out));
   }
 
-  if (score <= 0 || std::isnan(score) || !std::isfinite(score))
+  if (!gin::ConvertFromV8(isolate, score_ad_result, &score) ||
+      std::isnan(score) || !std::isfinite(score)) {
+    return ScoreResult(
+        base::StrCat({script_source_url_.spec(),
+                      " scoreAd() did not return a valid number."}));
+  }
+
+  if (score <= 0)
     return ScoreResult();
 
   return ScoreResult(score);
@@ -236,11 +266,12 @@ SellerWorklet::Report SellerWorklet::ReportResult(
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> signals_for_winner_value;
+  base::Optional<std::string> error_msg_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
-                       args)
+                       args, error_msg_out)
            .ToLocal(&signals_for_winner_value)) {
-    return Report();
+    return Report(std::move(error_msg_out));
   }
 
   // Consider lack of error but no return value type, or a return value that
@@ -256,10 +287,12 @@ SellerWorklet::Report SellerWorklet::ReportResult(
 
 void SellerWorklet::OnDownloadComplete(
     LoadWorkletCallback load_worklet_callback,
-    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script) {
+    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+    base::Optional<std::string> error_msg) {
   worklet_loader_.reset();
   worklet_script_ = std::move(worklet_script);
-  std::move(load_worklet_callback).Run(worklet_script_ != nullptr);
+  std::move(load_worklet_callback)
+      .Run(worklet_script_ != nullptr, std::move(error_msg));
 }
 
 }  // namespace auction_worklet

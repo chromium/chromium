@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -275,7 +276,8 @@ bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
 
 v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
-    const GURL& src_url) {
+    const GURL& src_url,
+    base::Optional<std::string>& error_out) {
   v8::Isolate* v8_isolate = isolate();
 
   v8::MaybeLocal<v8::String> src_string = CreateUtf8String(src);
@@ -291,8 +293,10 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   auto result = v8::ScriptCompiler::CompileUnboundScript(
       v8_isolate, &script_source, v8::ScriptCompiler::kNoCompileOptions,
       v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
-  if (try_catch.HasCaught())
-    PrintMessage(v8_isolate->GetCurrentContext(), try_catch.Message());
+  if (try_catch.HasCaught()) {
+    error_out = FormatExceptionMessage(v8_isolate->GetCurrentContext(),
+                                       try_catch.Message());
+  }
   return result;
 }
 
@@ -300,7 +304,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::Context> context,
     v8::Local<v8::UnboundScript> script,
     base::StringPiece script_name,
-    base::span<v8::Local<v8::Value>> args) {
+    base::span<v8::Local<v8::Value>> args,
+    base::Optional<std::string>& error_out) {
   DCHECK_EQ(isolate(), context->GetIsolate());
 
   v8::Local<v8::String> v8_script_name;
@@ -313,8 +318,15 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   v8::TryCatch try_catch(isolate());
   ScriptTimeoutHelper timeout_helper(isolate(), script_timeout_);
   auto result = local_script->Run(context);
+
+  if (try_catch.HasTerminated()) {
+    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                              " top-level execution timed out."});
+    return v8::MaybeLocal<v8::Value>();
+  }
+
   if (try_catch.HasCaught()) {
-    PrintMessage(context, try_catch.Message());
+    error_out = FormatExceptionMessage(context, try_catch.Message());
     return v8::MaybeLocal<v8::Value>();
   }
 
@@ -322,35 +334,47 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     return v8::MaybeLocal<v8::Value>();
 
   v8::Local<v8::Value> function;
-  if (!context->Global()->Get(context, v8_script_name).ToLocal(&function))
+  if (!context->Global()->Get(context, v8_script_name).ToLocal(&function)) {
+    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                              " function `", script_name, "` not found."});
     return v8::MaybeLocal<v8::Value>();
+  }
 
-  if (!function->IsFunction())
+  if (!function->IsFunction()) {
+    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                              " `", script_name, "` is not a function."});
     return v8::MaybeLocal<v8::Value>();
+  }
 
   v8::MaybeLocal<v8::Value> func_result = v8::Function::Cast(*function)->Call(
       context, context->Global(), args.size(), args.data());
+  if (try_catch.HasTerminated()) {
+    error_out = base::StrCat({FormatValue(isolate(), script->GetScriptName()),
+                              " execution of `", script_name, "` timed out."});
+    return v8::MaybeLocal<v8::Value>();
+  }
   if (try_catch.HasCaught()) {
-    PrintMessage(context, try_catch.Message());
+    error_out = FormatExceptionMessage(context, try_catch.Message());
     return v8::MaybeLocal<v8::Value>();
   }
   return func_result;
 }
 
 // static
-void AuctionV8Helper::PrintMessage(v8::Local<v8::Context> context,
-                                   v8::Local<v8::Message> message) {
+std::string AuctionV8Helper::FormatExceptionMessage(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Message> message) {
   if (message.IsEmpty()) {
-    LOG(ERROR) << "Unknown exception";
+    return "Unknown exception.";
   } else {
     v8::Isolate* isolate = message->GetIsolate();
     int line_num;
-    LOG(ERROR) << FormatValue(isolate, message->GetScriptResourceName())
-               << (!context.IsEmpty() &&
-                           message->GetLineNumber(context).To(&line_num)
-                       ? std::string(":") + base::NumberToString(line_num)
-                       : std::string())
-               << " " << FormatValue(isolate, message->Get());
+    return base::StrCat(
+        {FormatValue(isolate, message->GetScriptResourceName()),
+         !context.IsEmpty() && message->GetLineNumber(context).To(&line_num)
+             ? std::string(":") + base::NumberToString(line_num)
+             : std::string(),
+         " ", FormatValue(isolate, message->Get()), "."});
   }
 }
 

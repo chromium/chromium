@@ -6,9 +6,11 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_V8_HELPER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "gin/public/isolate_holder.h"
@@ -108,9 +110,12 @@ class AuctionV8Helper {
                    std::string* out);
 
   // Compiles the provided script. Despite not being bound to a context, there
-  // still must be an active context for this method to be invoked.
-  v8::MaybeLocal<v8::UnboundScript> Compile(const std::string& src,
-                                            const GURL& src_url);
+  // still must be an active context for this method to be invoked. In case of
+  // an error, sets `error_out`.
+  v8::MaybeLocal<v8::UnboundScript> Compile(
+      const std::string& src,
+      const GURL& src_url,
+      base::Optional<std::string>& error_out);
 
   // Binds a script and runs it in the passed in context, returning the result.
   // Note that the returned value could include references to objects or
@@ -122,19 +127,21 @@ class AuctionV8Helper {
   //
   // Running this multiple times in the same context will re-load the entire
   // script file in the context, and then run the script again.
-  v8::MaybeLocal<v8::Value> RunScript(
-      v8::Local<v8::Context> context,
-      v8::Local<v8::UnboundScript> script,
-      base::StringPiece script_name,
-      base::span<v8::Local<v8::Value>> args = {});
+  //
+  // In case of an error, sets `error_out`.
+  v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
+                                      v8::Local<v8::UnboundScript> script,
+                                      base::StringPiece script_name,
+                                      base::span<v8::Local<v8::Value>> args,
+                                      base::Optional<std::string>& error_out);
 
   void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
     script_timeout_ = script_timeout;
   }
 
  private:
-  static void PrintMessage(v8::Local<v8::Context> context,
-                           v8::Local<v8::Message> message);
+  static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
+                                            v8::Local<v8::Message> message);
   static std::string FormatValue(v8::Isolate* isolate,
                                  v8::Local<v8::Value> val);
 

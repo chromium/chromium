@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
@@ -25,11 +26,9 @@ class WorkletLoader {
   // On success, `worklet_script` is compiled script, not bound to any context.
   // It can be repeatedly bound to different contexts and executed, without
   // persisting any state.
-  //
-  // TODO(mmenke): Pass along some sort of error string on failure, to make
-  // debugging easier.
   using LoadWorkletCallback = base::OnceCallback<void(
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script)>;
+      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+      base::Optional<std::string> error_msg)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -43,7 +42,8 @@ class WorkletLoader {
   ~WorkletLoader();
 
  private:
-  void OnDownloadComplete(std::unique_ptr<std::string> body);
+  void OnDownloadComplete(std::unique_ptr<std::string> body,
+                          base::Optional<std::string> error_msg);
 
   const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;

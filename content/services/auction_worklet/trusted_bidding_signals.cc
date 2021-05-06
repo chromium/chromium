@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
@@ -28,7 +29,8 @@ TrustedBiddingSignals::TrustedBiddingSignals(
     const GURL& trusted_bidding_signals_url,
     AuctionV8Helper* v8_helper,
     LoadSignalsCallback load_signals_callback)
-    : v8_helper_(v8_helper),
+    : trusted_bidding_signals_url_(trusted_bidding_signals_url),
+      v8_helper_(v8_helper),
       load_signals_callback_(std::move(load_signals_callback)) {
   DCHECK(!trusted_bidding_signals_keys.empty());
   DCHECK(load_signals_callback_);
@@ -81,13 +83,16 @@ v8::Local<v8::Object> TrustedBiddingSignals::GetSignals(
 
 void TrustedBiddingSignals::OnDownloadComplete(
     std::vector<std::string> trusted_bidding_signals_keys,
-    std::unique_ptr<std::string> body) {
+    std::unique_ptr<std::string> body,
+    base::Optional<std::string> error_msg) {
   auction_downloader_.reset();
 
   if (!body) {
-    std::move(load_signals_callback_).Run(false);
+    std::move(load_signals_callback_).Run(false, std::move(error_msg));
     return;
   }
+
+  DCHECK(!error_msg.has_value());
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
   v8::Context::Scope context_scope(v8_helper_->scratch_context());
@@ -96,7 +101,9 @@ void TrustedBiddingSignals::OnDownloadComplete(
   if (!v8_helper_->CreateValueFromJson(v8_helper_->scratch_context(), *body)
            .ToLocal(&v8_data) ||
       !v8_data->IsObject()) {
-    std::move(load_signals_callback_).Run(false);
+    std::string error = base::StrCat({trusted_bidding_signals_url_.spec(),
+                                      " Unable to parse as a JSON object."});
+    std::move(load_signals_callback_).Run(false, std::move(error));
     return;
   }
 
@@ -108,7 +115,7 @@ void TrustedBiddingSignals::OnDownloadComplete(
     v8::Local<v8::Value> v8_string_value;
     std::string value;
     if (!v8_helper_->CreateUtf8String(key).ToLocal(&v8_key)) {
-      std::move(load_signals_callback_).Run(false);
+      std::move(load_signals_callback_).Run(false, base::nullopt);
       return;
     }
     // Only the `has_result` check should be able to fail.
@@ -124,7 +131,7 @@ void TrustedBiddingSignals::OnDownloadComplete(
     }
     json_data_[key] = std::move(value);
   }
-  std::move(load_signals_callback_).Run(true);
+  std::move(load_signals_callback_).Run(true, base::nullopt);
 }
 
 }  // namespace auction_worklet

@@ -106,6 +106,9 @@ interface AuctionWorkletService {
   // `seller_report` indicates if the seller wishes to make a report,
   //  and the URL that the seller wanted fetched for that.
   //
+  // `errors` are various error messages to be used for debugging. These are too
+  // sensitive for the renderers to see.
+  //
   // TODO(mmenke):  May be good to make some way to share worklets between
   // multiple auctions on the same page, but not auctions across pages.
   // Could create separate top level AuctionWorkletService objects (using the
@@ -119,5 +122,6 @@ interface AuctionWorkletService {
                 url.mojom.Origin winning_interest_group_owner,
                 string winning_interest_group_name,
                 WinningBidderReport bidder_report,
-                SellerReport seller_report);
+                SellerReport seller_report,
+                array<string> errors);
 };

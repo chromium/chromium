@@ -52,23 +52,32 @@ class AuctionDownloaderTest : public testing::Test {
     return std::move(body_);
   }
 
+  // Helper to avoid checking has_value all over the place.
+  std::string last_error_msg() const {
+    return error_.value_or("Not an error.");
+  }
+
  protected:
-  void DownloadCompleteCallback(std::unique_ptr<std::string> body) {
+  void DownloadCompleteCallback(std::unique_ptr<std::string> body,
+                                base::Optional<std::string> error) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
+    error_ = std::move(error);
+    EXPECT_EQ(error_.has_value(), !body_);
     run_loop_->Quit();
   }
 
   base::test::TaskEnvironment task_environment_;
 
-  const GURL url_ = GURL("https://url.test/");
+  const GURL url_ = GURL("https://url.test/script.js");
 
   AuctionDownloader::MimeType mime_type_ =
       AuctionDownloader::MimeType::kJavascript;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
+  base::Optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
 };
@@ -79,6 +88,9 @@ TEST_F(AuctionDownloaderTest, NetworkError) {
   url_loader_factory_.AddResponse(url_, nullptr /* head */, kAsciiResponseBody,
                                   status);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Failed to load https://url.test/script.js error = net::ERR_FAILED.",
+      last_error_msg());
 }
 
 // HTTP 404 responses are trested as failures.
@@ -88,6 +100,9 @@ TEST_F(AuctionDownloaderTest, HttpError) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Failed to load https://url.test/script.js HTTP status = 404 Not Found.",
+      last_error_msg());
 }
 
 TEST_F(AuctionDownloaderTest, AllowFledge) {
@@ -102,26 +117,50 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: false");
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: sometimes");
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: ");
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-Hats: true");
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "");
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, base::nullopt);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "X-Allow-FLEDGE: true.",
+      last_error_msg());
 }
 
 // Redirect responses are treated as failures.
@@ -140,6 +179,8 @@ TEST_F(AuctionDownloaderTest, Redirect) {
               kAsciiResponseBody, kAllowFledgeHeader, net::HTTP_OK,
               std::move(redirects));
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ("Unexpected redirect on https://url.test/script.js.",
+            last_error_msg());
 }
 
 TEST_F(AuctionDownloaderTest, Success) {
@@ -156,40 +197,72 @@ TEST_F(AuctionDownloaderTest, MimeType) {
   AddResponse(&url_loader_factory_, url_, kJsonMimeType, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // Javascript request, no response type.
   AddResponse(&url_loader_factory_, url_, base::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // Javascript request, empty response type.
   AddResponse(&url_loader_factory_, url_, "", kUtf8Charset, kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // Javascript request, unknown response type.
   AddResponse(&url_loader_factory_, url_, "blobfish", kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // JSON request, Javascript response type.
   mime_type_ = AuctionDownloader::MimeType::kJson;
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // JSON request, no response type.
   AddResponse(&url_loader_factory_, url_, base::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // JSON request, empty response type.
   AddResponse(&url_loader_factory_, url_, "", kUtf8Charset, kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // JSON request, unknown response type.
   AddResponse(&url_loader_factory_, url_, "blobfish", kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 
   // JSON request, JSON response type.
   mime_type_ = AuctionDownloader::MimeType::kJson;
@@ -241,6 +314,10 @@ TEST_F(AuctionDownloaderTest, MimeTypeVariants) {
     AddResponse(&url_loader_factory_, url_, javascript_type, kUtf8Charset,
                 kAsciiResponseBody);
     EXPECT_FALSE(RunRequest());
+    EXPECT_EQ(
+        "Rejecting load of https://url.test/script.js due to unexpected MIME "
+        "type.",
+        last_error_msg());
   }
 
   for (const char* json_type : kJsonMimeTypes) {
@@ -248,6 +325,10 @@ TEST_F(AuctionDownloaderTest, MimeTypeVariants) {
     AddResponse(&url_loader_factory_, url_, json_type, kUtf8Charset,
                 kAsciiResponseBody);
     EXPECT_FALSE(RunRequest());
+    EXPECT_EQ(
+        "Rejecting load of https://url.test/script.js due to unexpected MIME "
+        "type.",
+        last_error_msg());
 
     mime_type_ = AuctionDownloader::MimeType::kJson;
     AddResponse(&url_loader_factory_, url_, json_type, kUtf8Charset,
@@ -259,18 +340,31 @@ TEST_F(AuctionDownloaderTest, MimeTypeVariants) {
 }
 
 TEST_F(AuctionDownloaderTest, Charset) {
+  mime_type_ = AuctionDownloader::MimeType::kJson;
   // Unknown/unsupported charsets should result in failure.
   AddResponse(&url_loader_factory_, url_, kJsonMimeType, "fred",
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
+
   AddResponse(&url_loader_factory_, url_, kJsonMimeType, "iso-8859-1",
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
 
   // ASCII charset should restrict response bodies to ASCII characters.
+  mime_type_ = AuctionDownloader::MimeType::kJavascript;
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
+
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kAsciiResponseBody);
   std::unique_ptr<std::string> body = RunRequest();
@@ -279,9 +373,16 @@ TEST_F(AuctionDownloaderTest, Charset) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
+
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kAsciiCharset,
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
 
   // UTF-8 charset should restrict response bodies to valid UTF-8 characters.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -297,6 +398,9 @@ TEST_F(AuctionDownloaderTest, Charset) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
 
   // Null charset should act like UTF-8.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
@@ -312,6 +416,9 @@ TEST_F(AuctionDownloaderTest, Charset) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
 
   // Empty charset should act like UTF-8.
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, "",
@@ -327,6 +434,9 @@ TEST_F(AuctionDownloaderTest, Charset) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, "",
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected charset.",
+      last_error_msg());
 }
 
 }  // namespace

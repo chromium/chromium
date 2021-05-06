@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "content/browser/devtools/devtools_instrumentation.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
@@ -975,6 +976,21 @@ void OnWebTransportHandshakeFailed(
   text += ".";
   auto entry = protocol::Log::LogEntry::Create()
                    .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
+                   .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
+                   .SetText(text)
+                   .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
+                   .Build();
+  DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
+}
+
+void LogWorkletError(RenderFrameHostImpl* frame_host,
+                     const std::string& error) {
+  FrameTreeNode* ftn = frame_host->frame_tree_node();
+  if (!ftn)
+    return;
+  std::string text = base::StrCat({"Worklet error: ", error});
+  auto entry = protocol::Log::LogEntry::Create()
+                   .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
                    .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
                    .SetText(text)
                    .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)

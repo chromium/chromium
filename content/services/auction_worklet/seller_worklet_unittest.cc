@@ -18,8 +18,12 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using testing::HasSubstr;
+using testing::StartsWith;
 
 namespace auction_worklet {
 namespace {
@@ -85,23 +89,29 @@ class SellerWorkletTest : public testing::Test {
   // return line, expecting the provided result.
   void RunScoreAdWithReturnValueExpectingResult(
       const std::string& raw_return_value,
-      double expected_score) {
+      double expected_score,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(raw_return_value), expected_score);
+        CreateScoreAdScript(raw_return_value), expected_score,
+        std::move(expected_error_msg));
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
   // runs its generate_bid() function. Then runs the script, expecting the
   // provided result.
-  void RunScoreAdWithJavascriptExpectingResult(const std::string& javascript,
-                                               double expected_score) {
+  void RunScoreAdWithJavascriptExpectingResult(
+      const std::string& javascript,
+      double expected_score,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, url_, javascript);
-    RunScoreAdExpectingResult(expected_score);
+    RunScoreAdExpectingResult(expected_score, std::move(expected_error_msg));
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
-  void RunScoreAdExpectingResult(double expected_score) {
+  void RunScoreAdExpectingResult(
+      double expected_score,
+      base::Optional<std::string> expected_error_msg = base::nullopt) {
     auto seller_worket = CreateWorklet();
     ASSERT_TRUE(seller_worket);
 
@@ -113,6 +123,10 @@ class SellerWorkletTest : public testing::Test {
                                browser_signal_bidding_duration_);
     EXPECT_EQ(expected_score > 0, actual_result.success);
     EXPECT_EQ(expected_score, actual_result.score);
+    EXPECT_EQ(expected_error_msg.has_value(),
+              actual_result.error_msg.has_value());
+    EXPECT_EQ(expected_error_msg.value_or("Not an error"),
+              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Configures `url_loader_factory_` to return a report_result() script created
@@ -152,6 +166,10 @@ class SellerWorkletTest : public testing::Test {
     EXPECT_EQ(expected_report.signals_for_winner,
               actual_result.signals_for_winner);
     EXPECT_EQ(expected_report.report_url, actual_result.report_url);
+    EXPECT_EQ(expected_report.error_msg.has_value(),
+              actual_result.error_msg.has_value());
+    EXPECT_EQ(expected_report.error_msg.value_or("Not an error"),
+              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Create a SellerWorklet, waiting for the URLLoader to complete. Returns
@@ -160,7 +178,7 @@ class SellerWorkletTest : public testing::Test {
     CHECK(!load_script_run_loop_);
 
     create_worklet_succeeded_ = false;
-    auto bidder_worket = std::make_unique<SellerWorklet>(
+    auto seller_worket = std::make_unique<SellerWorklet>(
         &url_loader_factory_, url_, &v8_helper_,
         base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
                        base::Unretained(this)));
@@ -169,14 +187,20 @@ class SellerWorkletTest : public testing::Test {
     load_script_run_loop_.reset();
     if (!create_worklet_succeeded_)
       return nullptr;
-    return bidder_worket;
+    return seller_worket;
   }
 
  protected:
-  void CreateWorkletCallback(bool success) {
+  void CreateWorkletCallback(bool success,
+                             base::Optional<std::string> error_msg) {
     create_worklet_succeeded_ = success;
+    error_msg_ = std::move(error_msg);
+    if (success)
+      EXPECT_FALSE(error_msg_.has_value());
     load_script_run_loop_->Quit();
   }
+
+  std::string last_error_msg() { return error_msg_.value_or("Not an error"); }
 
   base::test::TaskEnvironment task_environment_;
 
@@ -201,6 +225,7 @@ class SellerWorkletTest : public testing::Test {
   // synchronously.
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
   bool create_worklet_succeeded_ = false;
+  base::Optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
@@ -210,11 +235,15 @@ TEST_F(SellerWorkletTest, NetworkError) {
   url_loader_factory_.AddResponse(url_.spec(), CreateBasicSellAdScript(),
                                   net::HTTP_NOT_FOUND);
   EXPECT_FALSE(CreateWorklet());
+  EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
+            last_error_msg());
 }
 
 TEST_F(SellerWorkletTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
+  EXPECT_THAT(last_error_msg(), StartsWith("https://url.test/:1 "));
+  EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
 }
 
 // Test parsing of return values.
@@ -229,21 +258,31 @@ TEST_F(SellerWorkletTest, ScoreAd) {
   RunScoreAdWithReturnValueExpectingResult("-10", 0);
 
   // No return value.
-  RunScoreAdWithReturnValueExpectingResult("", 0);
+  RunScoreAdWithReturnValueExpectingResult(
+      "", 0, "https://url.test/ scoreAd() did not return a valid number.");
 
   // Wrong return type / invalid values.
-  RunScoreAdWithReturnValueExpectingResult("[15]", 0);
-  RunScoreAdWithReturnValueExpectingResult("1/0", 0);
-  RunScoreAdWithReturnValueExpectingResult("0/0", 0);
-  RunScoreAdWithReturnValueExpectingResult("-1/0", 0);
-  RunScoreAdWithReturnValueExpectingResult("true", 0);
+  RunScoreAdWithReturnValueExpectingResult(
+      "[15]", 0, "https://url.test/ scoreAd() did not return a valid number.");
+  RunScoreAdWithReturnValueExpectingResult(
+      "1/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+  RunScoreAdWithReturnValueExpectingResult(
+      "0/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+  RunScoreAdWithReturnValueExpectingResult(
+      "-1/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+  RunScoreAdWithReturnValueExpectingResult(
+      "true", 0, "https://url.test/ scoreAd() did not return a valid number.");
 
   // Throw exception.
-  RunScoreAdWithReturnValueExpectingResult("shrimp", 0);
+  RunScoreAdWithReturnValueExpectingResult(
+      "shrimp", 0,
+      "https://url.test/:4 Uncaught ReferenceError: shrimp is not defined.");
 }
 
 TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
-  RunScoreAdWithReturnValueExpectingResult("Date.parse(Date().toString())", 0);
+  RunScoreAdWithReturnValueExpectingResult(
+      "Date.parse(Date().toString())", 0,
+      "https://url.test/:4 Uncaught ReferenceError: Date is not defined.");
 }
 
 // Checks that input parameters are correctly passed in.
@@ -363,7 +402,9 @@ TEST_F(SellerWorkletTest, ReportResult) {
 
   // Throw exception.
   RunReportResultCreatedScriptExpectingResult(
-      "shrimp", std::string() /* extra_code */, SellerWorklet::Report());
+      "shrimp", std::string() /* extra_code */,
+      SellerWorklet::Report("https://url.test/:4 Uncaught ReferenceError: "
+                            "shrimp is not defined."));
 }
 
 // Tests reporting URLs.
@@ -377,29 +418,49 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
 
   // Disallowed schemes.
   RunReportResultCreatedScriptExpectingResult(
-      "1", R"(sendReportTo("http://foo.test/"))", SellerWorklet::Report());
+      "1", R"(sendReportTo("http://foo.test/"))",
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo must be passed a valid HTTPS url."));
   RunReportResultCreatedScriptExpectingResult(
-      "1", R"(sendReportTo("file:///foo/"))", SellerWorklet::Report());
+      "1", R"(sendReportTo("file:///foo/"))",
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo must be passed a valid HTTPS url."));
 
   // Multiple calls.
   RunReportResultCreatedScriptExpectingResult(
       "1",
       R"(sendReportTo("https://foo.test/"); sendReportTo("https://foo.test/"))",
-      SellerWorklet::Report());
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo may be called at most once."));
+
+  // No message if caught, but still no URL.
+  RunReportResultCreatedScriptExpectingResult(
+      "1",
+      R"(try {
+        sendReportTo("https://foo.test/");
+        sendReportTo("https://foo.test/")} catch(e) {})",
+      SellerWorklet::Report("1", GURL()));
 
   // Not a URL.
-  RunReportResultCreatedScriptExpectingResult("1", R"(sendReportTo("France"))",
-                                              SellerWorklet::Report());
-  RunReportResultCreatedScriptExpectingResult("1", R"(sendReportTo(null))",
-                                              SellerWorklet::Report());
-  RunReportResultCreatedScriptExpectingResult("1", R"(sendReportTo([5]))",
-                                              SellerWorklet::Report());
+  RunReportResultCreatedScriptExpectingResult(
+      "1", R"(sendReportTo("France"))",
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo must be passed a valid HTTPS url."));
+  RunReportResultCreatedScriptExpectingResult(
+      "1", R"(sendReportTo(null))",
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo requires 1 string parameter."));
+  RunReportResultCreatedScriptExpectingResult(
+      "1", R"(sendReportTo([5]))",
+      SellerWorklet::Report("https://url.test/:3 Uncaught TypeError: "
+                            "sendReportTo requires 1 string parameter."));
 }
 
 TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("https://foo.test/" + Date().toString()))",
-      SellerWorklet::Report());
+      SellerWorklet::Report(
+          "https://url.test/:3 Uncaught ReferenceError: Date is not defined."));
 }
 
 TEST_F(SellerWorkletTest, ReportResultParameters) {

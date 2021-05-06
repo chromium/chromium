@@ -38,17 +38,20 @@ WorkletLoader::WorkletLoader(
 
 WorkletLoader::~WorkletLoader() = default;
 
-void WorkletLoader::OnDownloadComplete(std::unique_ptr<std::string> body) {
+void WorkletLoader::OnDownloadComplete(std::unique_ptr<std::string> body,
+                                       base::Optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
 
   auction_downloader_.reset();
 
   if (!body) {
-    std::move(load_worklet_callback_).Run(nullptr /* worklet_script */);
+    std::move(load_worklet_callback_)
+        .Run(nullptr /* worklet_script */, std::move(error_msg));
     return;
   }
 
   std::unique_ptr<v8::Global<v8::UnboundScript>> global_script;
+  DCHECK(!error_msg.has_value());
 
   // Need to release the isolate and context before invoking the callback, in
   // case the `v8_helper_` is destroyed.
@@ -57,13 +60,15 @@ void WorkletLoader::OnDownloadComplete(std::unique_ptr<std::string> body) {
     v8::Context::Scope context_scope(v8_helper_->scratch_context());
 
     v8::Local<v8::UnboundScript> local_script;
-    if (v8_helper_->Compile(*body, script_source_url_).ToLocal(&local_script)) {
+    if (v8_helper_->Compile(*body, script_source_url_, error_msg)
+            .ToLocal(&local_script)) {
       global_script = std::make_unique<v8::Global<v8::UnboundScript>>(
           v8_helper_->isolate(), local_script);
     }
   }
 
-  std::move(load_worklet_callback_).Run(std::move(global_script));
+  std::move(load_worklet_callback_)
+      .Run(std::move(global_script), std::move(error_msg));
 }
 
 }  // namespace auction_worklet

@@ -80,7 +80,7 @@ void AuctionRunner::StartBidding() {
               base::BindOnce(&AuctionRunner::OnTrustedSignalsLoaded,
                              base::Unretained(this), bid_state));
     } else {
-      OnTrustedSignalsLoaded(bid_state, false);
+      OnTrustedSignalsLoaded(bid_state, false, base::nullopt);
     }
   }
 
@@ -92,9 +92,16 @@ void AuctionRunner::StartBidding() {
                      base::Unretained(this)));
 }
 
-void AuctionRunner::OnBidderScriptLoaded(BidState* state, bool load_result) {
+void AuctionRunner::OnBidderScriptLoaded(
+    BidState* state,
+    bool load_result,
+    base::Optional<std::string> error_msg) {
   DCHECK(!state->bidder_script_loaded);
   DCHECK(!state->failed);
+
+  if (error_msg.has_value())
+    errors_.push_back(std::move(error_msg).value());
+
   state->bidder_script_loaded = true;
   if (!load_result) {
     state->failed = true;
@@ -108,8 +115,15 @@ void AuctionRunner::OnBidderScriptLoaded(BidState* state, bool load_result) {
   MaybeRunBid(state);
 }
 
-void AuctionRunner::OnTrustedSignalsLoaded(BidState* state, bool load_result) {
+void AuctionRunner::OnTrustedSignalsLoaded(
+    BidState* state,
+    bool load_result,
+    base::Optional<std::string> error_msg) {
   DCHECK(!state->trusted_signals_loaded);
+
+  if (error_msg.has_value())
+    errors_.push_back(std::move(error_msg).value());
+
   state->trusted_signals_loaded = true;
   if (!load_result)
     state->trusted_bidding_signals.reset();
@@ -133,10 +147,17 @@ void AuctionRunner::RunBid(BidState* state) {
   base::TimeTicks start = base::TimeTicks::Now();
   state->bid_result =
       state->bidder_worklet->GenerateBid(state->trusted_bidding_signals.get());
+  if (state->bid_result.error_msg.has_value())
+    errors_.push_back(std::move(state->bid_result.error_msg).value());
   state->bid_duration = base::TimeTicks::Now() - start;
 }
 
-void AuctionRunner::OnSellerWorkletLoaded(bool load_result) {
+void AuctionRunner::OnSellerWorkletLoaded(
+    bool load_result,
+    base::Optional<std::string> error_msg) {
+  if (error_msg.has_value())
+    errors_.push_back(std::move(error_msg).value());
+
   if (load_result) {
     seller_loaded_ = true;
     if (ReadyToScore())
@@ -177,10 +198,13 @@ void AuctionRunner::ScoreOne() {
 }
 
 SellerWorklet::ScoreResult AuctionRunner::ScoreBid(const BidState* state) {
-  return seller_worklet_->ScoreAd(
+  SellerWorklet::ScoreResult result = seller_worklet_->ScoreAd(
       state->bid_result.ad, state->bid_result.bid, *auction_config_,
       browser_signals_->top_frame_origin.host(), state->bidder->group->owner,
       AdRenderFingerprint(state), state->bid_duration);
+  if (result.error_msg.has_value())
+    errors_.push_back(std::move(result.error_msg).value());
+  return result;
 }
 
 std::string AuctionRunner::AdRenderFingerprint(const BidState* state) {
@@ -225,26 +249,32 @@ void AuctionRunner::CompleteAuction() {
 
 SellerWorklet::Report AuctionRunner::ReportSellerResult(
     const BidState* best_bid) {
-  return seller_worklet_->ReportResult(
+  SellerWorklet::Report result = seller_worklet_->ReportResult(
       *auction_config_, browser_signals_->top_frame_origin.host(),
       best_bid->bidder->group->owner, best_bid->bid_result.render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result.bid,
       best_bid->score_result.score);
+  if (result.error_msg.has_value())
+    errors_.push_back(std::move(result.error_msg).value());
+  return result;
 }
 
 BidderWorklet::ReportWinResult AuctionRunner::ReportBidWin(
     const BidState* best_bid,
     const SellerWorklet::Report& seller_report) {
-  return best_bid->bidder_worklet->ReportWin(
+  BidderWorklet::ReportWinResult result = best_bid->bidder_worklet->ReportWin(
       seller_report.signals_for_winner, best_bid->bid_result.render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result.bid);
+  if (result.error_msg.has_value())
+    errors_.push_back(std::move(result.error_msg).value());
+  return result;
 }
 
 void AuctionRunner::FailAuction() {
   std::move(callback_).Run(
       GURL(), url::Origin(), std::string(),
       mojom::WinningBidderReport::New(false /* success */, GURL()),
-      mojom::SellerReport::New(false /* success */, "", GURL()));
+      mojom::SellerReport::New(false /* success */, "", GURL()), errors_);
   delete this;
 }
 
@@ -259,7 +289,8 @@ void AuctionRunner::ReportSuccess(
                                       bidder_report.report_url),
       mojom::SellerReport::New(seller_report.success,
                                seller_report.signals_for_winner,
-                               seller_report.report_url));
+                               seller_report.report_url),
+      errors_);
   delete this;
 }
 
