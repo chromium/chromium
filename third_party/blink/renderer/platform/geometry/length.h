@@ -94,7 +94,7 @@ class PLATFORM_EXPORT Length {
     float_value_ = clampTo<float>(v);
   }
 
-  explicit Length(scoped_refptr<CalculationValue>);
+  explicit Length(scoped_refptr<const CalculationValue>);
 
   Length(const Length& length) {
     memcpy(this, &length, sizeof(Length));
@@ -184,12 +184,12 @@ class PLATFORM_EXPORT Length {
 
   PixelsAndPercent GetPixelsAndPercent() const;
 
-  CalculationValue& GetCalculationValue() const;
+  const CalculationValue& GetCalculationValue() const;
 
   // If |this| is calculated, returns the underlying |CalculationValue|. If not,
   // returns a |CalculationValue| constructed from |GetPixelsAndPercent()|. Hits
   // a DCHECK if |this| is not a specified value (e.g., 'auto').
-  scoped_refptr<CalculationValue> AsCalculationValue() const;
+  scoped_refptr<const CalculationValue> AsCalculationValue() const;
 
   Length::Type GetType() const { return static_cast<Length::Type>(type_); }
   bool Quirk() const { return quirk_; }

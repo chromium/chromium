@@ -24,7 +24,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   const CSSMathExpressionNode* ExpressionNode() const { return expression_; }
 
-  scoped_refptr<CalculationValue> ToCalcValue(
+  scoped_refptr<const CalculationValue> ToCalcValue(
       const CSSToLengthConversionData& conversion_data) const;
 
   bool MayHaveRelativeUnit() const;

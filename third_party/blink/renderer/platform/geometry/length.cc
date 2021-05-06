@@ -37,9 +37,9 @@ class CalculationValueHandleMap {
   USING_FAST_MALLOC(CalculationValueHandleMap);
 
  public:
-  CalculationValueHandleMap() : index_(1) {}
+  CalculationValueHandleMap() = default;
 
-  int insert(scoped_refptr<CalculationValue> calc_value) {
+  int insert(scoped_refptr<const CalculationValue> calc_value) {
     DCHECK(index_);
     // FIXME calc(): https://bugs.webkit.org/show_bug.cgi?id=80489
     // This monotonically increasing handle generation scheme is potentially
@@ -57,14 +57,14 @@ class CalculationValueHandleMap {
     map_.erase(index);
   }
 
-  CalculationValue& Get(int index) {
+  const CalculationValue& Get(int index) {
     DCHECK(map_.Contains(index));
     return *map_.at(index);
   }
 
   void DecrementRef(int index) {
     DCHECK(map_.Contains(index));
-    CalculationValue* value = map_.at(index);
+    const CalculationValue* value = map_.at(index);
     if (value->HasOneRef()) {
       // Force the CalculationValue destructor early to avoid a potential
       // recursive call inside HashMap remove().
@@ -76,8 +76,8 @@ class CalculationValueHandleMap {
   }
 
  private:
-  int index_;
-  HashMap<int, scoped_refptr<CalculationValue>> map_;
+  int index_ = 1;
+  HashMap<int, scoped_refptr<const CalculationValue>> map_;
 
   DISALLOW_COPY_AND_ASSIGN(CalculationValueHandleMap);
 };
@@ -87,7 +87,7 @@ static CalculationValueHandleMap& CalcHandles() {
   return handle_map;
 }
 
-Length::Length(scoped_refptr<CalculationValue> calc)
+Length::Length(scoped_refptr<const CalculationValue> calc)
     : quirk_(false), type_(kCalculated), is_float_(false) {
   int_value_ = CalcHandles().insert(std::move(calc));
 }
@@ -128,7 +128,7 @@ PixelsAndPercent Length::GetPixelsAndPercent() const {
   }
 }
 
-scoped_refptr<CalculationValue> Length::AsCalculationValue() const {
+scoped_refptr<const CalculationValue> Length::AsCalculationValue() const {
   if (IsCalculated())
     return &GetCalculationValue();
   return CalculationValue::Create(GetPixelsAndPercent(), kValueRangeAll);
@@ -138,7 +138,7 @@ Length Length::SubtractFromOneHundredPercent() const {
   if (IsPercent())
     return Length::Percent(100 - Value());
   DCHECK(IsSpecified());
-  scoped_refptr<CalculationValue> result =
+  scoped_refptr<const CalculationValue> result =
       AsCalculationValue()->SubtractFromOneHundredPercent();
   if (result->IsExpression() ||
       (result->Pixels() != 0 && result->Percent() != 0)) {
@@ -160,7 +160,7 @@ Length Length::Zoom(double factor) const {
   }
 }
 
-CalculationValue& Length::GetCalculationValue() const {
+const CalculationValue& Length::GetCalculationValue() const {
   DCHECK(IsCalculated());
   return CalcHandles().Get(CalculationHandle());
 }

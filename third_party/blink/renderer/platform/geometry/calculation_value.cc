@@ -19,7 +19,7 @@ CalculationValue::DataUnion::~DataUnion() {
 }
 
 // static
-scoped_refptr<CalculationValue> CalculationValue::CreateSimplified(
+scoped_refptr<const CalculationValue> CalculationValue::CreateSimplified(
     scoped_refptr<const CalculationExpressionNode> expression,
     ValueRange range) {
   if (expression->IsLeaf()) {
@@ -66,7 +66,7 @@ CalculationValue::GetOrCreateExpression() const {
       GetPixelsAndPercent());
 }
 
-scoped_refptr<CalculationValue> CalculationValue::Blend(
+scoped_refptr<const CalculationValue> CalculationValue::Blend(
     const CalculationValue& from,
     double progress,
     ValueRange range) const {
@@ -90,7 +90,7 @@ scoped_refptr<CalculationValue> CalculationValue::Blend(
   return CreateSimplified(std::move(result_expression), range);
 }
 
-scoped_refptr<CalculationValue>
+scoped_refptr<const CalculationValue>
 CalculationValue::SubtractFromOneHundredPercent() const {
   if (!IsExpression()) {
     PixelsAndPercent result(-Pixels(), 100 - Percent());
@@ -104,7 +104,8 @@ CalculationValue::SubtractFromOneHundredPercent() const {
   return CreateSimplified(std::move(result_expression), kValueRangeAll);
 }
 
-scoped_refptr<CalculationValue> CalculationValue::Zoom(double factor) const {
+scoped_refptr<const CalculationValue> CalculationValue::Zoom(
+    double factor) const {
   if (!IsExpression()) {
     PixelsAndPercent result(Pixels() * factor, Percent());
     return Create(result, GetValueRange());

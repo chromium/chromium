@@ -139,7 +139,7 @@ bool CSSMathFunctionValue::IsComputationallyIndependent() const {
   return expression_->IsComputationallyIndependent();
 }
 
-scoped_refptr<CalculationValue> CSSMathFunctionValue::ToCalcValue(
+scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSToLengthConversionData& conversion_data) const {
   return expression_->ToCalcValue(conversion_data, PermittedValueRange(),
                                   AllowsNegativePercentageReference());

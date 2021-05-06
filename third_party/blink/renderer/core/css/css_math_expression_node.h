@@ -94,7 +94,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual base::Optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSToLengthConversionData&) const = 0;
 
-  scoped_refptr<CalculationValue> ToCalcValue(
+  scoped_refptr<const CalculationValue> ToCalcValue(
       const CSSToLengthConversionData& conversion_data,
       ValueRange range,
       bool allows_negative_percentage_reference) const;

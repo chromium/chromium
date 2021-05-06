@@ -1294,7 +1294,7 @@ class CSSMathExpressionNodeParser {
   }
 };
 
-scoped_refptr<CalculationValue> CSSMathExpressionNode::ToCalcValue(
+scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
     const CSSToLengthConversionData& conversion_data,
     ValueRange range,
     bool allows_negative_percentage_reference) const {
