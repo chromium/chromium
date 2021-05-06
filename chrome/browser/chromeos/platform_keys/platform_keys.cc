@@ -10,9 +10,11 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -90,6 +92,108 @@ std::string StatusToString(Status status) {
     case Status::kNetErrorCertificateInvalid:
       return net::ErrorToString(net::ERR_CERT_INVALID);
   }
+}
+
+crosapi::mojom::KeystoreError StatusToKeystoreError(Status status) {
+  DCHECK(status != Status::kSuccess);
+  using crosapi::mojom::KeystoreError;
+
+  switch (status) {
+    case Status::kSuccess:
+      return KeystoreError::kUnknown;
+    case Status::kErrorAlgorithmNotSupported:
+      return KeystoreError::kAlgorithmNotSupported;
+    case Status::kErrorAlgorithmNotPermittedByCertificate:
+      return KeystoreError::kAlgorithmNotPermittedByCertificate;
+    case Status::kErrorCertificateNotFound:
+      return KeystoreError::kCertificateNotFound;
+    case Status::kErrorCertificateInvalid:
+      return KeystoreError::kCertificateInvalid;
+    case Status::kErrorInputTooLong:
+      return KeystoreError::kInputTooLong;
+    case Status::kErrorGrantKeyPermissionForExtension:
+      return KeystoreError::kGrantKeyPermissionForExtension;
+    case Status::kErrorInternal:
+      return KeystoreError::kInternal;
+    case Status::kErrorKeyAttributeRetrievalFailed:
+      return KeystoreError::kKeyAttributeRetrievalFailed;
+    case Status::kErrorKeyAttributeSettingFailed:
+      return KeystoreError::kKeyAttributeSettingFailed;
+    case Status::kErrorKeyNotAllowedForSigning:
+      return KeystoreError::kKeyNotAllowedForSigning;
+    case Status::kErrorKeyNotFound:
+      return KeystoreError::kKeyNotFound;
+    case Status::kErrorShutDown:
+      return KeystoreError::kShutDown;
+    case Status::kNetErrorAddUserCertFailed:
+      return KeystoreError::kNetAddUserCertFailed;
+    case Status::kNetErrorCertificateDateInvalid:
+      return KeystoreError::kNetCertificateDateInvalid;
+    case Status::kNetErrorCertificateInvalid:
+      return KeystoreError::kNetCertificateInvalid;
+  }
+  NOTREACHED();
+}
+
+Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
+  using crosapi::mojom::KeystoreError;
+
+  switch (error) {
+      // Keystore specific errors shouldn't be passed here.
+    case KeystoreError::kUnknown:
+    case KeystoreError::kUnsupportedKeystoreType:
+      DCHECK(false);
+      return Status::kErrorInternal;
+
+    case KeystoreError::kAlgorithmNotSupported:
+      return Status::kErrorAlgorithmNotSupported;
+    case KeystoreError::kAlgorithmNotPermittedByCertificate:
+      return Status::kErrorAlgorithmNotPermittedByCertificate;
+    case KeystoreError::kCertificateNotFound:
+      return Status::kErrorCertificateNotFound;
+    case KeystoreError::kCertificateInvalid:
+      return Status::kErrorCertificateInvalid;
+    case KeystoreError::kInputTooLong:
+      return Status::kErrorInputTooLong;
+    case KeystoreError::kGrantKeyPermissionForExtension:
+      return Status::kErrorGrantKeyPermissionForExtension;
+    case KeystoreError::kInternal:
+      return Status::kErrorInternal;
+    case KeystoreError::kKeyAttributeRetrievalFailed:
+      return Status::kErrorKeyAttributeRetrievalFailed;
+    case KeystoreError::kKeyAttributeSettingFailed:
+      return Status::kErrorKeyAttributeSettingFailed;
+    case KeystoreError::kKeyNotAllowedForSigning:
+      return Status::kErrorKeyNotAllowedForSigning;
+    case KeystoreError::kKeyNotFound:
+      return Status::kErrorKeyNotFound;
+    case KeystoreError::kShutDown:
+      return Status::kErrorShutDown;
+    case KeystoreError::kNetAddUserCertFailed:
+      return Status::kNetErrorAddUserCertFailed;
+    case KeystoreError::kNetCertificateDateInvalid:
+      return Status::kNetErrorCertificateDateInvalid;
+    case KeystoreError::kNetCertificateInvalid:
+      return Status::kNetErrorCertificateInvalid;
+  }
+
+  NOTREACHED();
+}
+
+std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {
+  using crosapi::mojom::KeystoreError;
+
+  // Handle Keystore specific errors.
+  switch (error) {
+    case KeystoreError::kUnknown:
+      return "Unknown keystore error.";
+    case KeystoreError::kUnsupportedKeystoreType:
+      return "The token is not valid.";
+    default:
+      break;
+  }
+  // Handle platform_keys errors.
+  return StatusToString(StatusFromKeystoreError(error));
 }
 
 void IntersectCertificates(

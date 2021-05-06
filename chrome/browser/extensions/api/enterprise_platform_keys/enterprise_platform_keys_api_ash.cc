@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
@@ -92,13 +93,14 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
 
 void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
     const std::string& public_key_der,
-    chromeos::platform_keys::Status status) {
+    base::Optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status == chromeos::platform_keys::Status::kSuccess) {
+  if (!error) {
     Respond(ArgumentList(api_epki::GenerateKey::Results::Create(
         std::vector<uint8_t>(public_key_der.begin(), public_key_der.end()))));
   } else {
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
   }
 }
 

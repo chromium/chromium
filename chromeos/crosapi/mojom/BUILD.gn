@@ -19,6 +19,7 @@ mojom("mojom") {
     "feedback.mojom",
     "file_manager.mojom",
     "idle_service.mojom",
+    "keystore_error.mojom",
     "keystore_service.mojom",
     "local_printer.mojom",
     "message_center.mojom",

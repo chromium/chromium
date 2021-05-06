@@ -16,7 +16,10 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -75,9 +78,9 @@ class ExtensionPlatformKeysService : public KeyedService {
   // If the generation was successful, |public_key_spki_der| will contain the
   // DER encoding of the SubjectPublicKeyInfo of the generated key. If it
   // failed, |public_key_spki_der| will be empty.
-  using GenerateKeyCallback =
-      base::OnceCallback<void(const std::string& public_key_spki_der,
-                              platform_keys::Status status)>;
+  using GenerateKeyCallback = base::OnceCallback<void(
+      const std::string& public_key_spki_der,
+      base::Optional<crosapi::mojom::KeystoreError> error)>;
 
   // Generates an RSA key pair with |modulus_length_bits| and registers the key
   // to allow a single sign operation by the given extension. |token_id|
@@ -210,6 +213,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
   platform_keys::KeyPermissionsService* const key_permissions_service_ =
       nullptr;
+  mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};

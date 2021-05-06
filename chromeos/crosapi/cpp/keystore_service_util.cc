@@ -44,6 +44,8 @@ base::Optional<base::DictionaryValue> DictionaryFromSigningAlgorithm(
       value.SetStringKey("name", kWebCryptoEcdsa);
       value.SetStringKey("namedCurve", algorithm->get_ecdsa()->named_curve);
       break;
+    default:
+      return base::nullopt;
   }
   return value;
 }

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/values.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "net/cert/x509_certificate.h"
 
 namespace chromeos {
@@ -67,6 +68,19 @@ enum class Status {
 // Note: Do not change already existing status-to-string translations, since
 // extensions may hardcode specific messages.
 std::string StatusToString(Status status);
+
+// Convert platform_keys::Status into a KeystoreError. Status::kSuccess should
+// not be passed in the function.
+crosapi::mojom::KeystoreError StatusToKeystoreError(Status status);
+
+// Creates platform_keys::Status into a KeystoreError. Keystore specific errors
+// are not supported and should be processed separately.
+Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error);
+
+// Converts KeystoreError code into an error message.
+// Note: Do not change already existing error-to-string translations, since
+// extensions may hardcode specific messages.
+std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error);
 
 // Returns the DER encoding of the X.509 Subject Public Key Info of the public
 // key in |certificate|.
