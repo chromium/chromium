@@ -11,7 +11,7 @@ import './wifi_info.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface, NetworkType} from './diagnostics_types.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
@@ -70,5 +70,29 @@ Polymer({
   detached() {
     // TODO(michaelcheco): Stop observing guid when the real
     // observeNetwork implementation is added.
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isWifiNetwork_() {
+    return this.network_.type === NetworkType.kWiFi;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isCellularNetwork_() {
+    return this.network_.type === NetworkType.kCellular;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isEthernetNetwork_() {
+    return this.network_.type === NetworkType.kEthernet;
   },
 });

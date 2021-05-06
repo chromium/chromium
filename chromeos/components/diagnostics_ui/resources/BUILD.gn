@@ -189,8 +189,10 @@ js_library("mojo_utils") {
 
 js_library("network_info") {
   deps = [
+    ":cellular_info",
     ":diagnostics_card",
     ":diagnostics_types",
+    ":ethernet_info",
     ":wifi_info",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

@@ -4,10 +4,17 @@
 <diagnostics-card>
     <!-- TODO(michaelcheco): Add localized strings. -->
   <div id="cardTitle" slot="title">Network</div>
-  <!-- TODO(michaelcheco): Conditionally render *-info element when
-  ObserveNetwork is wired up. -->
-  <wifi-info></wifi-info>
-  <ethernet-info></ethernet-info>
-  <cellular-info></cellular-info>
+    <wifi-info
+      slot="body" id="wifiInfo"
+      hidden$="[[!isWifiNetwork_(network_.type)]]">
+    </wifi-info>
+    <ethernet-info
+      slot="body" id="ethernetInfo"
+      hidden$="[[!isEthernetNetwork_(network_.type)]]">
+    </ethernet-info>
+    <cellular-info
+      slot="body" id="cellularInfo"
+      hidden$="[[!isCellularNetwork_(network_.type)]]">
+    </cellular-info>
   <div id="guid" slot="body">[[network_.guid]]</div>
 </diagnostics-card>
