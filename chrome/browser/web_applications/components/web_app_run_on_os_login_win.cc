@@ -21,7 +21,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
   locations.in_startup = true;
 
   return CreatePlatformShortcuts(shortcut_data_dir, locations,
-                                 SHORTCUT_CREATION_BY_USER, shortcut_info);
+                                 SHORTCUT_CREATION_AUTOMATED, shortcut_info);
 }
 
 bool UnregisterRunOnOsLogin(const std::string& app_id,
