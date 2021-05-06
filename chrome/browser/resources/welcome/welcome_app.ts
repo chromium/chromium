@@ -12,11 +12,12 @@ import './set_as_default/nux_set_as_default.js';
 import './signin_view.js';
 import '../strings.m.js';
 
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior, Routes} from './navigation_behavior.js';
+import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
@@ -43,8 +44,16 @@ const MODULES_WHITELIST: Set<string> = new Set([
  */
 const MODULES_NEEDING_INDICATOR: Set<string> =
     new Set(['nux-google-apps', 'nux-ntp-background', 'nux-set-as-default']);
+
+export interface WelcomeAppElement {
+  $: {
+    viewManager: CrViewManagerElement,
+  };
+}
+
 const WelcomeAppElementBase =
-    mixinBehaviors([NavigationBehavior], PolymerElement);
+    mixinBehaviors([NavigationBehavior], PolymerElement) as
+    {new (): PolymerElement & NavigationBehaviorInterface};
 
 /** @polymer */
 export class WelcomeAppElement extends WelcomeAppElementBase {
@@ -84,7 +93,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     this.shadowRoot.querySelector('cr-toast').show();
   }
 
-  private onRouteChange(route: Routes, step: number) {
+  onRouteChange(route: Routes, step: number) {
     const setStep = () => {
       // If the specified step doesn't exist, that means there are no more
       // steps. In that case, replace this page with NTP.
@@ -182,4 +191,4 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     return html`{__html_template__}`;
   }
 }
-customElements.define(WelcomeAppElement.is, WelcomeAppElement as any);
+customElements.define(WelcomeAppElement.is, WelcomeAppElement);

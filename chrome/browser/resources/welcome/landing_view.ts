@@ -13,12 +13,19 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LandingViewProxy, LandingViewProxyImpl} from './landing_view_proxy.js';
-import {navigateTo, NavigationBehavior, Routes} from './navigation_behavior.js';
+import {navigateTo, NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
+export interface LandingViewElement {
+  $: {
+    background: OnboardingBackgroundElement,
+  };
+}
+
 const LandingViewElementBase =
-    mixinBehaviors([NavigationBehavior], PolymerElement);
+    mixinBehaviors([NavigationBehavior], PolymerElement) as
+    {new (): PolymerElement & NavigationBehaviorInterface};
 
 /** @polymer */
 export class LandingViewElement extends LandingViewElementBase {
@@ -37,6 +44,7 @@ export class LandingViewElement extends LandingViewElementBase {
 
   private landingViewProxy_: LandingViewProxy|null = null;
   private finalized_: boolean = false;
+  private signinAllowed_: boolean;
 
   ready() {
     super.ready();
@@ -46,11 +54,11 @@ export class LandingViewElement extends LandingViewElementBase {
   onRouteEnter() {
     this.finalized_ = false;
     this.landingViewProxy_.recordPageShown();
-    (this.$.background as OnboardingBackgroundElement).play();
+    this.$.background.play();
   }
 
   onRouteExit() {
-    (this.$.background as OnboardingBackgroundElement).pause();
+    this.$.background.pause();
   }
 
   onRouteUnload() {
@@ -83,4 +91,4 @@ export class LandingViewElement extends LandingViewElementBase {
     return html`{__html_template__}`;
   }
 }
-customElements.define(LandingViewElement.is, LandingViewElement as any);
+customElements.define(LandingViewElement.is, LandingViewElement);

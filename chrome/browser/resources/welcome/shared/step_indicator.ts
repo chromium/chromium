@@ -9,12 +9,14 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './navi_colors_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {stepIndicatorModel} from './nux_types.js';
 
-const StepIndicatorElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const StepIndicatorElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehaviorInterface};
 
 /** @polymer */
 export class StepIndicatorElement extends StepIndicatorElementBase {
@@ -53,4 +55,4 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     return html`{__html_template__}`;
   }
 }
-customElements.define(StepIndicatorElement.is, StepIndicatorElement as any);
+customElements.define(StepIndicatorElement.is, StepIndicatorElement);

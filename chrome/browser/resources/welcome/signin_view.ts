@@ -12,13 +12,20 @@ import '../strings.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior} from './navigation_behavior.js';
+import {NavigationBehavior, NavigationBehaviorInterface} from './navigation_behavior.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
+export interface SigninViewElement {
+  $: {
+    background: OnboardingBackgroundElement,
+  };
+}
+
 const SigninViewElementBase =
-    mixinBehaviors([NavigationBehavior], PolymerElement);
+    mixinBehaviors([NavigationBehavior], PolymerElement) as
+    {new (): PolymerElement & NavigationBehaviorInterface};
 
 /** @polymer */
 export class SigninViewElement extends SigninViewElementBase {
@@ -43,7 +50,7 @@ export class SigninViewElement extends SigninViewElementBase {
   onRouteEnter() {
     this.finalized_ = false;
     this.signinViewProxy_.recordPageShown();
-    (this.$.background as OnboardingBackgroundElement).play();
+    this.$.background.play();
   }
 
   onRouteExit() {
@@ -52,7 +59,7 @@ export class SigninViewElement extends SigninViewElementBase {
     }
     this.finalized_ = true;
     this.signinViewProxy_.recordNavigatedAwayThroughBrowserHistory();
-    (this.$.background as OnboardingBackgroundElement).pause();
+    this.$.background.pause();
   }
 
   onRouteUnload() {
@@ -81,4 +88,4 @@ export class SigninViewElement extends SigninViewElementBase {
     return html`{__html_template__}`;
   }
 }
-customElements.define(SigninViewElement.is, SigninViewElement as any);
+customElements.define(SigninViewElement.is, SigninViewElement);

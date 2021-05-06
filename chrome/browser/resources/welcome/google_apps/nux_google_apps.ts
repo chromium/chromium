@@ -13,13 +13,13 @@ import '../shared/chooser_shared_css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationBehavior} from '../navigation_behavior.js';
+import {navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface} from '../navigation_behavior.js';
 import {BookmarkBarManager, BookmarkProxy, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {stepIndicatorModel} from '../shared/nux_types.js';
@@ -44,7 +44,10 @@ type AppItemModel = {
 const KEYBOARD_FOCUSED = 'keyboard-focused';
 
 const NuxGoogleAppsElementBase =
-    mixinBehaviors([I18nBehavior, NavigationBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, NavigationBehavior], PolymerElement) as {
+      new ():
+          PolymerElement & NavigationBehaviorInterface & I18nBehaviorInterface
+    };
 
 /** @polymer */
 export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
@@ -288,4 +291,4 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     return html`{__html_template__}`;
   }
 }
-customElements.define(NuxGoogleAppsElement.is, NuxGoogleAppsElement as any);
+customElements.define(NuxGoogleAppsElement.is, NuxGoogleAppsElement);
