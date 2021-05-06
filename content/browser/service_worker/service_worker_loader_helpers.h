@@ -60,7 +60,7 @@ bool ShouldValidateBrowserCacheForScript(
 // the script resource destination to be fetched by the loaders.
 void CheckVersionStatusBeforeWorkerScriptLoad(
     ServiceWorkerVersion::Status status,
-    network::mojom::RequestDestination resource_destination);
+    bool is_main_script);
 #endif  // DCHECK_IS_ON()
 
 network::ResourceRequest CreateRequestForServiceWorkerScript(
