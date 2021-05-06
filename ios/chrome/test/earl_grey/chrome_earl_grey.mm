@@ -1329,9 +1329,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
   {
-    // The activity view share sheet blocks EarlGrey's synchronization. Ref:
+#if TARGET_IPHONE_SIMULATOR
+    // The activity view share sheet blocks EarlGrey's synchronization on
+    // the simulators. Ref:
     // github.com/google/EarlGrey/blob/master/docs/features.md#visibility-checks
     ScopedSynchronizationDisabler disabler;
+#endif
 
     // Page title is added asynchronously, so wait for its appearance.
     NSString* hostString = base::SysUTF8ToNSString(URL.host());
