@@ -1,0 +1,54 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/js_compile.gni")
+
+source_set("image_fetch") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "image_fetch_java_script_feature.h",
+    "image_fetch_java_script_feature.mm",
+    "image_fetch_tab_helper.h",
+    "image_fetch_tab_helper.mm",
+  ]
+  deps = [
+    ":image_fetch_js",
+    "//base",
+    "//components/image_fetcher/ios",
+    "//ios/web",
+    "//ios/web/common",
+    "//ios/web/public/js_messaging",
+    "//url",
+  ]
+}
+
+js_compile_bundle("image_fetch_js") {
+  visibility = [
+    ":image_fetch",
+    ":unit_tests",
+  ]
+  closure_entry_point = "__crWeb.imageFetch"
+
+  sources = [ "resources/image_fetch.js" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "image_fetch_java_script_feature_unittest.mm",
+    "image_fetch_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":image_fetch",
+    ":image_fetch_js",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/web/public/test",
+    "//net:test_support",
+    "//services/network:test_support",
+  ]
+}

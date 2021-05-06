@@ -39,6 +39,7 @@
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
+#include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #include "ios/chrome/browser/web/print/print_java_script_feature.h"
@@ -299,9 +300,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(autofill::FormHandlersJavaScriptFeature::GetInstance());
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
+  features.push_back(FontSizeJavaScriptFeature::GetInstance());
+  features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
       password_manager::PasswordManagerJavaScriptFeature::GetInstance());
-  features.push_back(FontSizeJavaScriptFeature::GetInstance());
 
   return features;
 }

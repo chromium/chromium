@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
+
+#import <WebKit/WebKit.h>
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -30,30 +35,37 @@ const char kImageData[] = "abc";
 }
 
 // Test fixture for ImageFetchTabHelper class.
-class ImageFetchTabHelperTest : public web::WebTestWithWebState {
+class ImageFetchTabHelperTest : public ChromeWebTest {
  protected:
   ImageFetchTabHelperTest()
-      : web::WebTestWithWebState(
-            web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
+      : ChromeWebTest(std::make_unique<web::FakeWebClient>(),
+                      web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
 
   void SetUp() override {
-    WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
+    SetUpTestSharedURLLoaderFactory();
+    GetWebClient()->SetJavaScriptFeatures(
+        {ImageFetchJavaScriptFeature::GetInstance()});
+
     ASSERT_TRUE(LoadHtml("<html></html>"));
     ImageFetchTabHelper::CreateForWebState(web_state());
-    SetUpTestSharedURLLoaderFactory();
+  }
+
+  web::FakeWebClient* GetWebClient() override {
+    return static_cast<web::FakeWebClient*>(
+        WebTestWithWebState::GetWebClient());
   }
 
   // Sets up the network::TestURLLoaderFactory to handle download request.
   void SetUpTestSharedURLLoaderFactory() {
-    SetSharedURLLoaderFactory(
+    chrome_browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
 
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
-    std::string raw_header =
-        "HTTP/1.1 200 OK\n"
-        "Content-type: image/png\n\n";
+    std::string raw_header = "HTTP/1.1 200 OK\n"
+                             "Content-type: image/png\n\n";
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(raw_header));
     head->mime_type = "image/png";
@@ -61,6 +73,19 @@ class ImageFetchTabHelperTest : public web::WebTestWithWebState {
     status.decoded_body_length = strlen(kImageData);
     test_url_loader_factory_.AddResponse(GURL(kImageUrl), std::move(head),
                                          kImageData, status);
+  }
+
+  // Executes the given |script| in the appropriate content world for this iOS
+  // version.
+  // TODO(crbug.com/1206328): Convert this into a shared (test-only) helper that
+  // automatically executes JavaScript in the appropriate world for a given
+  // feature.
+  id ExecuteJavaScriptInContentWorld(NSString* script) {
+    if (@available(iOS 14.0, *)) {
+      return ExecuteJavaScript(WKContentWorld.defaultClientWorld, script);
+    } else {
+      return ExecuteJavaScript(script);
+    }
   }
 
   ImageFetchTabHelper* image_fetch_tab_helper() {
@@ -83,12 +108,12 @@ class ImageFetchTabHelperTest : public web::WebTestWithWebState {
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
   // in base64 format.
-  id script_result = ExecuteJavaScript([NSString
+  id script_result = ExecuteJavaScriptInContentWorld([NSString
       stringWithFormat:
           @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-           "function(id, url) { __gCrWeb.message.invokeOnHost({'command': "
-           "'imageFetch.getImageData', 'id': id, 'data': btoa('%s'), "
-           "'from':'canvas'}); }; true;",
+           "function(id, url) { "
+           "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
+           "{'id': id, 'data': btoa('%s'), 'from':'canvas'}); }; true;",
           kImageData]);
   ASSERT_NSEQ(@YES, script_result);
 
@@ -113,12 +138,12 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
   // in base64 format.
-  id script_result = ExecuteJavaScript([NSString
+  id script_result = ExecuteJavaScriptInContentWorld([NSString
       stringWithFormat:
           @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-           "function(id, url) { __gCrWeb.message.invokeOnHost({'command': "
-           "'imageFetch.getImageData', 'id': id, 'data': btoa('%s'), "
-           "'from':'xhr'}); }; true;",
+           "function(id, url) { "
+           "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
+           "{'id': id, 'data': btoa('%s'), 'from':'xhr'}); }; true;",
           kImageData]);
   ASSERT_NSEQ(@YES, script_result);
 
@@ -142,10 +167,11 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // Js fails.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
-  id script_result = ExecuteJavaScript(
+  id script_result = ExecuteJavaScriptInContentWorld(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-       "function(id, url) { __gCrWeb.message.invokeOnHost({'command': "
-       "'imageFetch.getImageData', 'id': id}); }; true;");
+       "function(id, url) { "
+       "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
+       "{'id': id}); }; true;");
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -168,7 +194,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
 // Js does not send a message back.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScript(
+  id script_result = ExecuteJavaScriptInContentWorld(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;");
   ASSERT_NSEQ(@YES, script_result);
@@ -194,7 +220,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
 // WebState is destroyed.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScript(
+  id script_result = ExecuteJavaScriptInContentWorld(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;");
   ASSERT_NSEQ(@YES, script_result);
@@ -220,7 +246,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
 // WebState navigates to a new web page.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScript(
+  id script_result = ExecuteJavaScriptInContentWorld(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;");
   ASSERT_NSEQ(@YES, script_result);

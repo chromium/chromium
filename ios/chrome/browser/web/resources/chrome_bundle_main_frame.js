@@ -9,7 +9,6 @@ goog.provide('__crWeb.chromeBundleMainFrame');
 // Do NOT add new features here, but rather add them using an instance of
 // JavaScriptFeature. Please see the documentation at
 // //ios/web/public/js_messaging/README.md
-goog.require('__crWeb.imageFetch');
 goog.require('__crWeb.searchEngine');
 goog.require('__crWeb.languageDetection');
 goog.require('__crWeb.linkToText');

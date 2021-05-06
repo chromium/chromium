@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_
 
 #include <string>
 #include <unordered_map>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -32,7 +33,8 @@ enum class ContextMenuGetImageDataByJsResult {
 // image_fetcher::IOSImageDataFetcherWrapper. Always use this class by
 // ImageFetchTabHelper::FromWebState on UI thread. All callbacks will also be
 // invoked on UI thread.
-class ImageFetchTabHelper : public web::WebStateObserver,
+class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
+                            public web::WebStateObserver,
                             public web::WebStateUserData<ImageFetchTabHelper> {
  public:
   ~ImageFetchTabHelper() override;
@@ -49,6 +51,12 @@ class ImageFetchTabHelper : public web::WebStateObserver,
                     const web::Referrer& referrer,
                     ImageDataCallback callback);
 
+  // ImageFetchJavaScriptFeature::Handler.
+  void HandleJsSuccess(int call_id,
+                       std::string& decoded_data,
+                       std::string& from) override;
+  void HandleJsFailure(int call_id) override;
+
  protected:
   friend class web::WebStateUserData<ImageFetchTabHelper>;
 
@@ -63,10 +71,7 @@ class ImageFetchTabHelper : public web::WebStateObserver,
   // if GetImageDataByJs failed.
   typedef base::OnceCallback<void(const std::string* data)> JsCallback;
 
-  // Gets image data in binary format by trying 2 JavaScript methods in order:
-  //   1. Draw <img> to <canvas> and export its data;
-  //   2. Download the image by XMLHttpRequest and hopefully get responded from
-  //   cache.
+  // Gets image data in binary format via ImageFetchJavaScriptFeature.
   // |url| should be equal to the resolved "src" attribute of <img>, otherwise
   // the method 1 would fail. If the JavaScript does not respond after
   // |timeout|, the |callback| will be invoked with nullptr.
@@ -76,12 +81,6 @@ class ImageFetchTabHelper : public web::WebStateObserver,
 
   // Records ContextMenu.iOS.GetImageDataByJsResult UMA histogram.
   void RecordGetImageDataByJsResult(ContextMenuGetImageDataByJsResult result);
-
-  // Handler for messages sent back from injected JavaScript.
-  void OnJsMessage(const base::DictionaryValue& message,
-                   const GURL& page_url,
-                   bool user_is_interacting,
-                   web::WebFrame* sender_frame);
 
   // Handler for timeout on GetImageDataByJs.
   void OnJsTimeout(int call_id);
@@ -104,9 +103,6 @@ class ImageFetchTabHelper : public web::WebStateObserver,
   // |OnImageDataReceived| and used to invoke the corresponding callback.
   int call_id_ = 0;
 
-  // Subscription for JS message.
-  base::CallbackListSubscription subscription_;
-
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
@@ -114,4 +110,4 @@ class ImageFetchTabHelper : public web::WebStateObserver,
   DISALLOW_COPY_AND_ASSIGN(ImageFetchTabHelper);
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_

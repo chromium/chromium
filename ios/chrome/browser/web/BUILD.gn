@@ -13,8 +13,6 @@ source_set("web") {
     "error_page_controller_bridge.mm",
     "error_page_util.h",
     "error_page_util.mm",
-    "image_fetch_tab_helper.h",
-    "image_fetch_tab_helper.mm",
     "invalid_url_tab_helper.h",
     "invalid_url_tab_helper.mm",
     "load_timing_tab_helper.h",
@@ -37,7 +35,6 @@ source_set("web") {
     ":tab_helper_delegates",
     "//base",
     "//components/error_page/common",
-    "//components/image_fetcher/ios",
     "//components/pref_registry",
     "//components/resources:components_resources_grit",
     "//components/resources:dev_ui_components_resources_grit",
@@ -115,8 +112,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "error_page_util_unittest.mm",
-    "image_fetch_js_unittest.mm",
-    "image_fetch_tab_helper_unittest.mm",
     "invalid_url_tab_helper_unittest.mm",
     "load_timing_tab_helper_unittest.mm",
     "page_placeholder_tab_helper_unittest.mm",
@@ -128,7 +123,6 @@ source_set("unit_tests") {
     "web_state_delegate_tab_helper_unittest.mm",
   ]
   deps = [
-    ":image_fetch",
     ":page_placeholder",
     ":tab_helper_delegates",
     ":test_support",
@@ -178,17 +172,6 @@ js_compile_bundle("chrome_bundle_main_frame") {
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "resources/chrome_bundle_main_frame.js",
-    "resources/image_fetch.js",
-  ]
-}
-
-js_compile_checked("image_fetch") {
-  sources = [ "resources/image_fetch.js" ]
-
-  js_modules = [
-    "//ios/web/web_state/js/resources/base.js",
-    "//ios/web/web_state/js/resources/common.js",
-    "//ios/web/js_messaging/resources/message.js",
   ]
 }
 
@@ -234,6 +217,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/image_fetch",
     "//ios/chrome/browser/web/java_script_console",
     "//ios/chrome/browser/web/print",
     "//ios/chrome/browser/web/session_state",

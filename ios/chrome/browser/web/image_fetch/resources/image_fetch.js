@@ -7,6 +7,7 @@
  */
 goog.provide('__crWeb.imageFetch');
 
+(function() {
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected.
@@ -14,14 +15,11 @@ goog.provide('__crWeb.imageFetch');
 __gCrWeb.imageFetch = {};
 
 /**
- * Store common namespace object in a global __gCrWeb object referenced by a
- * string, so it does not get renamed by closure compiler during the
+ * Store the imageFetch namespace object in a global __gCrWeb object referenced
+ * by a string, so it does not get renamed by closure compiler during the
  * minification.
  */
 __gCrWeb['imageFetch'] = __gCrWeb.imageFetch;
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Returns image data as base64 string, because WKWebView does not support BLOB
@@ -35,16 +33,15 @@ __gCrWeb['imageFetch'] = __gCrWeb.imageFetch;
 __gCrWeb.imageFetch.getImageData = function(id, url) {
   // |from| indicates where the |data| is fetched from.
   var onData = function(data, from) {
-    __gCrWeb.message.invokeOnHost({
-      'command': 'imageFetch.getImageData',
-      'id': id,
-      'data': data,
-      'from': from
-    });
+      __gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler',
+        {'id': id,
+         'data': data,
+         'from': from
+        });
   };
   var onError = function() {
-    __gCrWeb.message.invokeOnHost(
-        {'command': 'imageFetch.getImageData', 'id': id});
+      __gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler',
+        {'id': id});
   };
 
   var data = getImageDataByCanvas(url);
@@ -129,4 +126,5 @@ function getImageDataByXMLHttpRequest(url, timeout, onData, onError) {
 
   xhr.send();
 };
+
 }());  // End of anonymous object

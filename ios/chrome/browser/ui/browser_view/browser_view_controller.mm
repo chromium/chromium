@@ -163,7 +163,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
-#import "ios/chrome/browser/web/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
