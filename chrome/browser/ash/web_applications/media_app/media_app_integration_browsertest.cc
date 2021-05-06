@@ -243,6 +243,21 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
 // `linux-chromeos-rel` trybot. Only include these when our CIPD package is
 // present.
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+namespace {
+// Clicks the button on the app bar with the specified selector.
+void clickAppBarButton(content::WebContents* app, const std::string& selector) {
+  constexpr char kClickButton[] = R"(
+      (async () => {
+        const button =
+            await getNode('$1', ['backlight-app-bar', 'backlight-app']);
+        button.click();
+      })();
+  )";
+  MediaAppUiBrowserTest::EvalJsInAppFrame(
+      app, base::ReplaceStringPlaceholders(kClickButton, {selector}, nullptr));
+}
+}  // namespace
+
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   WaitForTestSystemAppInstall();
   auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
@@ -253,19 +268,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   // Ensure test image loaded.
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
-  // Note the button id (icon-button-3709949292) corresponds to the annotation
-  // button and is calculated from a hash of the label ("Annotate"). This id is
-  // used since cl/366443893 because the UI toolkit has loose guarantees about
-  // where the actual label appears in the shadow DOM.
-  constexpr char kClickAnnotate[] = R"(
-    (async () => {
-      const annotateButton = await waitForNode(
-          '#icon-button-3709949292', ['backlight-app-bar', 'backlight-app']);
-      annotateButton.click();
-      return true;
-    })();
-  )";
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickAnnotate));
+  // icon-button ids are calculated from a hash of the button labels. Id is used
+  // because the UI toolkit has loose guarantees about where the actual label
+  // appears in the shadow DOM.
+  clickAppBarButton(app, "#icon-button-3709949292");
 
   // Checks ink is loaded for images by ensuring the ink engine canvas has a non
   // zero width and height attributes (checking <canvas.width/height is
@@ -311,22 +317,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
 
-  // Click info button.
-  // Note the button id (icon-button-2283726) corresponds to the info panel
-  // button and is calculated from a hash of the label ("Info"). This id is
-  // used because the UI toolkit has loose guarantees about where the actual
-  // label appears in the shadow DOM.
-  constexpr char kClickInfo[] = R"(
-    (async () => {
-      const infoButton = await getNode(
-          '#icon-button-2283726', ['backlight-app-bar', 'backlight-app']);
-      infoButton.click();
-      return true;
-    })();
-  )";
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickInfo));
-
   // Expect info panel to be open after clicking info button.
+  // icon-button ids are calculated from a hash of the button labels. Id is used
+  // because the UI toolkit has loose guarantees about where the actual label
+  // appears in the shadow DOM.
+  clickAppBarButton(app, "#icon-button-2283726");
   EXPECT_EQ(true,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
 }
