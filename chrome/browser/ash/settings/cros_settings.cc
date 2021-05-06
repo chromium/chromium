@@ -238,16 +238,13 @@ bool CrosSettings::FindEmailInList(const base::ListValue* list,
     *wildcard_match = false;
 
   bool found_wildcard_match = false;
-  for (base::ListValue::const_iterator entry(list->begin());
-       entry != list->end();
-       ++entry) {
-    std::string entry_string;
-    if (!entry->GetAsString(&entry_string)) {
+  for (const auto& entry : list->GetList()) {
+    if (!entry.is_string()) {
       NOTREACHED();
       continue;
     }
     std::string canonicalized_entry(
-        gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry_string)));
+        gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry.GetString())));
 
     if (canonicalized_entry != wildcard_email &&
         canonicalized_entry == canonicalized_email) {
