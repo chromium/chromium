@@ -39,4 +39,4 @@ class UtilCCHelper(object):
     call = '.type()'
     if is_ptr:
       call = '->type()'
-    return 'std::string(base::Value::GetTypeName(%s%s))' % (value, call)
+    return 'UTF8ToUTF16(base::Value::GetTypeName(%s%s))' % (value, call)
