@@ -306,30 +306,27 @@ class ImageDecodeAcceleratorStubTest
     // would make RunTasksUntilIdle() run forever.
     CommandBufferStub::SetMemoryTrackerFactoryForTesting(
         base::BindRepeating(&CreateMockMemoryTracker));
-    GPUCreateCommandBufferConfig init_params;
-    init_params.surface_handle = kNullSurfaceHandle;
-    init_params.share_group_id = MSG_ROUTING_NONE;
-    init_params.stream_id = 0;
-    init_params.stream_priority = SchedulingPriority::kNormal;
-    init_params.attribs = ContextCreationAttribs();
-    init_params.attribs.enable_gles2_interface = false;
-    init_params.attribs.enable_raster_interface = true;
-    init_params.attribs.bind_generates_resource = false;
-    init_params.active_url = GURL();
+    auto init_params = mojom::CreateCommandBufferParams::New();
+    init_params->surface_handle = kNullSurfaceHandle;
+    init_params->share_group_id = MSG_ROUTING_NONE;
+    init_params->stream_id = 0;
+    init_params->stream_priority = SchedulingPriority::kNormal;
+    init_params->attribs = ContextCreationAttribs();
+    init_params->attribs.enable_gles2_interface = false;
+    init_params->attribs.enable_raster_interface = true;
+    init_params->attribs.bind_generates_resource = false;
+    init_params->active_url = GURL();
     ContextResult result = ContextResult::kTransientFailure;
     Capabilities capabilities;
-    HandleMessage(channel,
-                  new GpuChannelMsg_CreateCommandBuffer(
-                      init_params, kCommandBufferRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities));
+    CreateCommandBuffer(*channel, std::move(init_params), kCommandBufferRouteId,
+                        GetSharedMemoryRegion(), &result, &capabilities);
     ASSERT_EQ(ContextResult::kSuccess, result);
     CommandBufferStub* command_buffer =
         channel->LookupCommandBuffer(kCommandBufferRouteId);
     ASSERT_TRUE(command_buffer);
 
     // Make sure there are no pending tasks before starting the test.
-    ASSERT_EQ(0u, task_runner()->NumPendingTasks());
-    ASSERT_EQ(0u, io_task_runner()->NumPendingTasks());
+    ASSERT_TRUE(task_environment().MainThreadIsIdle());
   }
 
   void TearDown() override {
@@ -424,13 +421,7 @@ class ImageDecodeAcceleratorStubTest
     return decode_sync_token;
   }
 
-  void RunTasksUntilIdle() {
-    while (task_runner()->HasPendingTask() ||
-           io_task_runner()->HasPendingTask()) {
-      task_runner()->RunUntilIdle();
-      io_task_runner()->RunUntilIdle();
-    }
-  }
+  void RunTasksUntilIdle() { task_environment().RunUntilIdle(); }
 
   void CheckTransferCacheEntries(
       const std::vector<ExpectedCacheEntry>& expected_entries) {
@@ -654,7 +645,6 @@ class ImageDecodeAcceleratorStubTest
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   StrictMock<MockImageDecodeAcceleratorWorker> image_decode_accelerator_worker_;
 
  private:

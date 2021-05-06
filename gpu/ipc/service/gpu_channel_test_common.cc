@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -70,11 +72,9 @@ GpuChannelTestCommon::GpuChannelTestCommon(
     bool use_stub_bindings)
     : memory_dump_manager_(
           base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
-      task_runner_(new base::TestSimpleTaskRunner),
-      io_task_runner_(new base::TestSimpleTaskRunner),
       sync_point_manager_(new SyncPointManager()),
       shared_image_manager_(new SharedImageManager(false /* thread_safe */)),
-      scheduler_(new Scheduler(task_runner_,
+      scheduler_(new Scheduler(task_environment_.GetMainThreadTaskRunner(),
                                sync_point_manager_.get(),
                                GpuPreferences())),
       channel_manager_delegate_(
@@ -92,7 +92,8 @@ GpuChannelTestCommon::GpuChannelTestCommon(
 
   channel_manager_ = std::make_unique<GpuChannelManager>(
       GpuPreferences(), channel_manager_delegate_.get(), nullptr, /* watchdog */
-      task_runner_.get(), io_task_runner_.get(), scheduler_.get(),
+      task_environment_.GetMainThreadTaskRunner(),
+      task_environment_.GetMainThreadTaskRunner(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
       nullptr, /* gpu_memory_buffer_factory */
       std::move(feature_info), GpuProcessActivityFlags(),
@@ -103,11 +104,7 @@ GpuChannelTestCommon::GpuChannelTestCommon(
 GpuChannelTestCommon::~GpuChannelTestCommon() {
   // Command buffers can post tasks and run GL in destruction so do this first.
   channel_manager_ = nullptr;
-
-  // Clear pending tasks to avoid refptr cycles that get flagged by ASAN.
-  task_runner_->ClearPendingTasks();
-  io_task_runner_->ClearPendingTasks();
-
+  task_environment_.RunUntilIdle();
   gl::init::ShutdownGL(false);
 }
 
@@ -120,6 +117,26 @@ GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,
   base::ProcessId kProcessId = 1;
   channel->OnChannelConnected(kProcessId);
   return channel;
+}
+
+void GpuChannelTestCommon::CreateCommandBuffer(
+    GpuChannel& channel,
+    mojom::CreateCommandBufferParamsPtr init_params,
+    int32_t routing_id,
+    base::UnsafeSharedMemoryRegion shared_state,
+    ContextResult* out_result,
+    Capabilities* out_capabilities) {
+  base::RunLoop loop;
+  auto quit = loop.QuitClosure();
+  channel.CreateCommandBuffer(
+      std::move(init_params), routing_id, std::move(shared_state),
+      base::BindLambdaForTesting(
+          [&](ContextResult result, const Capabilities& capabilities) {
+            *out_result = result;
+            *out_capabilities = capabilities;
+            quit.Run();
+          }));
+  loop.Run();
 }
 
 void GpuChannelTestCommon::HandleMessage(GpuChannel* channel,
@@ -135,7 +152,7 @@ void GpuChannelTestCommon::HandleMessage(GpuChannel* channel,
   channel->HandleMessageForTesting(*msg);
 
   // Run the HandleMessage task posted to the main thread.
-  task_runner()->RunPendingTasks();
+  task_environment_.RunUntilIdle();
 
   // Replies are sent to the sink.
   if (msg->is_sync()) {
