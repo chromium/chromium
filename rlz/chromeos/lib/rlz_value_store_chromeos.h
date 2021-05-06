@@ -13,12 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "rlz/lib/rlz_value_store.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 namespace rlz_lib {
 
@@ -71,17 +67,22 @@ class RlzValueStoreChromeOS : public RlzValueStore {
   void WriteStore();
 
   // Adds |value| to list at |list_name| path in JSON store.
-  bool AddValueToList(const std::string& list_name,
-                      std::unique_ptr<base::Value> value);
+  bool AddValueToList(const std::string& list_name, base::Value value);
+
   // Removes |value| from list at |list_name| path in JSON store.
   bool RemoveValueFromList(const std::string& list_name,
                            const base::Value& value);
+
+  // Returns true if |value| is contained in list at |list_name| path in
+  // JSON store.
+  bool ListContainsValue(const std::string& list_name,
+                         const base::Value& value) const;
 
   // Returns true if the store contains |access_point|.
   bool HasAccessPointRlz(AccessPoint access_point) const;
 
   // In-memory store with RLZ data.
-  std::unique_ptr<base::DictionaryValue> rlz_store_;
+  base::Value rlz_store_;
 
   base::FilePath store_path_;
 
