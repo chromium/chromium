@@ -48,17 +48,15 @@ static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
 void LoadMimeTypes(bool matching_mime_types,
                    const base::DictionaryValue* plugin_dict,
                    PluginMetadata* plugin) {
-  const base::ListValue* mime_types = NULL;
-  std::string list_key =
+  const base::ListValue* mime_types = nullptr;
+  base::StringPiece list_key =
       matching_mime_types ? "matching_mime_types" : "mime_types";
   if (!plugin_dict->GetList(list_key, &mime_types))
     return;
 
-  bool success = false;
-  for (auto mime_type_it = mime_types->begin();
-       mime_type_it != mime_types->end(); ++mime_type_it) {
+  for (const auto& mime_type : mime_types->GetList()) {
     std::string mime_type_str;
-    success = mime_type_it->GetAsString(&mime_type_str);
+    bool success = mime_type.GetAsString(&mime_type_str);
     DCHECK(success);
     if (matching_mime_types) {
       plugin->AddMatchingMimeType(mime_type_str);
@@ -93,9 +91,9 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
       group_name_matcher, language_str, plugin_is_deprecated);
   const base::ListValue* versions = NULL;
   if (plugin_dict->GetList("versions", &versions)) {
-    for (auto it = versions->begin(); it != versions->end(); ++it) {
-      const base::DictionaryValue* version_dict = NULL;
-      if (!it->GetAsDictionary(&version_dict)) {
+    for (const auto& entry : versions->GetList()) {
+      const base::DictionaryValue* version_dict = nullptr;
+      if (!entry.GetAsDictionary(&version_dict)) {
         NOTREACHED();
         continue;
       }
