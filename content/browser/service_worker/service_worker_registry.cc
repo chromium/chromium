@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -203,7 +204,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
                      weak_factory_.GetWeakPtr(), client_url, trace_event_id,
                      std::move(callback)),
-      client_url);
+      client_url, storage::StorageKey(url::Origin::Create(client_url)));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForScope(
@@ -231,7 +232,7 @@ void ServiceWorkerRegistry::FindRegistrationForScope(
       &storage::mojom::ServiceWorkerStorageControl::FindRegistrationForScope,
       base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForScope,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      scope);
+      scope, storage::StorageKey(url::Origin::Create(scope)));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForId(
@@ -253,10 +254,11 @@ void ServiceWorkerRegistry::GetRegistrationsForOrigin(
     GetRegistrationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CreateInvokerAndStartRemoteCall(
-      &storage::mojom::ServiceWorkerStorageControl::GetRegistrationsForOrigin,
+      &storage::mojom::ServiceWorkerStorageControl::
+          GetRegistrationsForStorageKey,
       base::BindOnce(&ServiceWorkerRegistry::DidGetRegistrationsForOrigin,
                      weak_factory_.GetWeakPtr(), std::move(callback), origin),
-      origin);
+      storage::StorageKey(origin));
 }
 
 void ServiceWorkerRegistry::GetStorageUsageForOrigin(
@@ -266,10 +268,10 @@ void ServiceWorkerRegistry::GetStorageUsageForOrigin(
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed, 0);
   CreateInvokerAndStartRemoteCall(
-      &storage::mojom::ServiceWorkerStorageControl::GetUsageForOrigin,
+      &storage::mojom::ServiceWorkerStorageControl::GetUsageForStorageKey,
       base::BindOnce(&ServiceWorkerRegistry::DidGetStorageUsageForOrigin,
                      weak_factory_.GetWeakPtr(), std::move(wrapped_callback)),
-      origin);
+      storage::StorageKey(origin));
 }
 
 void ServiceWorkerRegistry::GetAllRegistrationsInfos(
@@ -402,7 +404,7 @@ void ServiceWorkerRegistry::DeleteRegistration(
       base::BindOnce(&ServiceWorkerRegistry::DidDeleteRegistration,
                      weak_factory_.GetWeakPtr(), registration->id(), origin,
                      std::move(callback)),
-      registration->id(), origin);
+      registration->id(), storage::StorageKey(url::Origin::Create(origin)));
 
   DCHECK(!base::Contains(uninstalling_registrations_, registration->id()));
   uninstalling_registrations_[registration->id()] = registration;
@@ -451,7 +453,8 @@ void ServiceWorkerRegistry::UpdateToActiveState(int64_t registration_id,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateToActiveState,
                      weak_factory_.GetWeakPtr(), url::Origin::Create(origin),
                      std::move(callback)),
-      static_cast<const int64_t>(registration_id), origin);
+      static_cast<const int64_t>(registration_id),
+      storage::StorageKey(url::Origin::Create(origin)));
 }
 
 void ServiceWorkerRegistry::UpdateLastUpdateCheckTime(
@@ -464,7 +467,8 @@ void ServiceWorkerRegistry::UpdateLastUpdateCheckTime(
       &storage::mojom::ServiceWorkerStorageControl::UpdateLastUpdateCheckTime,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      static_cast<const int64_t>(registration_id), origin,
+      static_cast<const int64_t>(registration_id),
+      storage::StorageKey(url::Origin::Create(origin)),
       static_cast<const base::Time&>(last_update_check_time));
 }
 
@@ -479,7 +483,8 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadEnabled(
           UpdateNavigationPreloadEnabled,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      static_cast<const int64_t>(registration_id), origin,
+      static_cast<const int64_t>(registration_id),
+      storage::StorageKey(url::Origin::Create(origin)),
       static_cast<const bool>(enable));
 }
 
@@ -494,7 +499,8 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadHeader(
           UpdateNavigationPreloadHeader,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      static_cast<const int64_t>(registration_id), origin, value);
+      static_cast<const int64_t>(registration_id),
+      storage::StorageKey(url::Origin::Create(origin)), value);
 }
 
 void ServiceWorkerRegistry::StoreUncommittedResourceId(int64_t resource_id,
@@ -578,7 +584,7 @@ void ServiceWorkerRegistry::StoreUserData(
       base::BindOnce(&ServiceWorkerRegistry::DidStoreUserData,
                      weak_factory_.GetWeakPtr(), std::move(wrapped_callback),
                      origin),
-      registration_id, origin, std::move(user_data));
+      registration_id, storage::StorageKey(origin), std::move(user_data));
 }
 
 void ServiceWorkerRegistry::ClearUserData(int64_t registration_id,
@@ -658,7 +664,7 @@ void ServiceWorkerRegistry::GetRegisteredOrigins(
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<url::Origin>());
   CreateInvokerAndStartRemoteCall(
-      &storage::mojom::ServiceWorkerStorageControl::GetRegisteredOrigins,
+      &storage::mojom::ServiceWorkerStorageControl::GetRegisteredStorageKeys,
       base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOrigins,
                      weak_factory_.GetWeakPtr(), std::move(wrapped_callback)));
 }
@@ -733,12 +739,15 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     return;
   }
 
+  const base::Optional<storage::StorageKey> key =
+      origin.has_value() ? base::make_optional(storage::StorageKey(*origin))
+                         : base::nullopt;
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::FindRegistrationForId,
       base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForId,
                      weak_factory_.GetWeakPtr(), registration_id,
                      std::move(callback)),
-      static_cast<const int64_t>(registration_id), origin);
+      static_cast<const int64_t>(registration_id), key);
 }
 
 ServiceWorkerRegistration*
@@ -1184,7 +1193,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     uint64_t deleted_resources_size,
-    storage::mojom::ServiceWorkerStorageOriginState origin_state) {
+    storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
@@ -1208,8 +1217,8 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
   if (registration)
     registration->UnsetStored();
 
-  if (origin_state ==
-      storage::mojom::ServiceWorkerStorageOriginState::kDelete) {
+  if (storage_key_state ==
+      storage::mojom::ServiceWorkerStorageStorageKeyState::kDelete) {
     context_->NotifyAllRegistrationsDeletedForOrigin(
         url::Origin::Create(origin));
     if (storage_policy_observer_)
@@ -1379,9 +1388,14 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
 
 void ServiceWorkerRegistry::DidGetRegisteredOrigins(
     GetRegisteredOriginsCallback callback,
-    const std::vector<url::Origin>& origins) {
+    const std::vector<storage::StorageKey>& keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(origins);
+  std::vector<url::Origin> origins;
+  origins.reserve(keys.size());
+  for (const auto& key : keys) {
+    origins.push_back(key.origin());
+  }
+  std::move(callback).Run(std::move(origins));
 }
 
 void ServiceWorkerRegistry::DidPerformStorageCleanup(

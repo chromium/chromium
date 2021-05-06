@@ -55,15 +55,11 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 // restarted.
 class ServiceWorkerStorage {
  public:
-  // TODO(http://crbug.com/1199077) Update this once
-  // service_worker_storage_control.mojom is updated.
-  using OriginState = mojom::ServiceWorkerStorageOriginState;
+  using StorageKeyState = mojom::ServiceWorkerStorageStorageKeyState;
   using RegistrationList = std::vector<mojom::ServiceWorkerRegistrationDataPtr>;
   using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
-  // TODO(http://crbug.com/1199077) Update this once
-  // service_worker_storage_control.mojom is updated.
-  using GetRegisteredOriginsCallback =
-      base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
+  using GetRegisteredStorageKeysCallback =
+      base::OnceCallback<void(const std::vector<StorageKey>& keys)>;
   using FindRegistrationDataCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
                               std::unique_ptr<ResourceList> resources,
@@ -72,9 +68,7 @@ class ServiceWorkerStorage {
       ServiceWorkerDatabase::Status status,
       std::unique_ptr<RegistrationList> registrations,
       std::unique_ptr<std::vector<ResourceList>> resource_lists)>;
-  // TODO(http://crbug.com/1199077) Update this once
-  // service_worker_storage_control.mojom is updated.
-  using GetUsageForOriginCallback =
+  using GetUsageForStorageKeyCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status status,
                               int64_t usage)>;
   using GetAllRegistrationsCallback =
@@ -87,7 +81,7 @@ class ServiceWorkerStorage {
       const std::vector<int64_t>& newly_purgeable_resources)>;
   using DeleteRegistrationCallback = base::OnceCallback<void(
       ServiceWorkerDatabase::Status status,
-      OriginState origin_state,
+      StorageKeyState storage_key_state,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources)>;
@@ -111,17 +105,15 @@ class ServiceWorkerStorage {
       const base::FilePath& user_data_directory,
       scoped_refptr<base::SequencedTaskRunner> database_task_runner);
 
-  // TODO(http://crbug.com/1199077) Update return/callback value and rename when
-  // service_worker_storage_control.mojom is updated.
-  //
-  // Returns all origins which have service worker registrations.
-  void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
+  // Returns all StorageKeys which have service worker registrations.
+  void GetRegisteredStorageKeys(GetRegisteredStorageKeysCallback callback);
 
-  // Reads stored registrations for |client_url| or |scope| or
-  // |registration_id|. Returns ServiceWorkerDatabase::Status::kOk with
-  // non-null RegistrationData and ResourceList if registration is found, or
-  // returns ServiceWorkerDatabase::Status::kErrorNotFound if no matching
-  // registration is found.
+  // Reads stored registrations for `client_url`, `scope`, or
+  // `registration_id` with the associated `key`. Returns
+  // ServiceWorkerDatabase::Status::kOk with non-null RegistrationData and
+  // ResourceList if registration is found, or returns
+  // ServiceWorkerDatabase::Status::kErrorNotFound if no matching registration
+  // is found.
   void FindRegistrationForClientUrl(const GURL& client_url,
                                     const StorageKey& key,
                                     FindRegistrationDataCallback callback);
@@ -134,13 +126,13 @@ class ServiceWorkerStorage {
   void FindRegistrationForIdOnly(int64_t registration_id,
                                  FindRegistrationDataCallback callback);
 
-  // Returns all stored registrations for a given origin.
+  // Returns all stored registrations for a given `key`.
   void GetRegistrationsForStorageKey(const StorageKey& key,
                                      GetRegistrationsDataCallback callback);
 
-  // Reads the total resource size stored in the storage for a given origin.
+  // Reads the total resource size stored in the storage for a given `key`.
   void GetUsageForStorageKey(const StorageKey& key,
-                             GetUsageForOriginCallback callback);
+                             GetUsageForStorageKeyCallback callback);
 
   // Returns all stored registrations.
   void GetAllRegistrations(GetAllRegistrationsCallback callback);
@@ -342,7 +334,7 @@ class ServiceWorkerStorage {
       const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
       ServiceWorkerDatabase::Status status)>;
   using DeleteRegistrationInDBCallback = base::OnceCallback<void(
-      OriginState origin_state,
+      StorageKeyState storage_key_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
       ServiceWorkerDatabase::Status status)>;
   using FindInDBCallback =
@@ -380,7 +372,7 @@ class ServiceWorkerStorage {
       ServiceWorkerDatabase::Status status);
   void DidDeleteRegistration(
       std::unique_ptr<DidDeleteRegistrationParams> params,
-      OriginState origin_state,
+      StorageKeyState storage_key_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version,
       ServiceWorkerDatabase::Status status);
   void DidDoomUncommittedResourceIds(const std::vector<int64_t>& resource_ids,
@@ -464,7 +456,7 @@ class ServiceWorkerStorage {
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const StorageKey& key,
-      GetUsageForOriginCallback callback);
+      GetUsageForStorageKeyCallback callback);
   static void GetUserDataInDB(
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
@@ -493,8 +485,9 @@ class ServiceWorkerStorage {
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const std::string& key_prefix,
       GetUserDataForAllRegistrationsInDBCallback callback);
-  static void DeleteAllDataForOriginsFromDB(ServiceWorkerDatabase* database,
-                                            const std::set<StorageKey>& keys);
+  static void DeleteAllDataForStorageKeysFromDB(
+      ServiceWorkerDatabase* database,
+      const std::set<StorageKey>& keys);
   static void PerformStorageCleanupInDB(ServiceWorkerDatabase* database);
   static void GetPurgeableResourceIdsFromDB(
       ServiceWorkerDatabase* database,
@@ -513,9 +506,9 @@ class ServiceWorkerStorage {
   // Posted when we finish deleting the cache directory.
   void DidDeleteDiskCache(DatabaseStatusCallback callback, bool result);
 
-  // Origins having registations.
+  // StorageKeys having registations.
   std::set<StorageKey> registered_keys_;
-  // The set of origins whose storage should be cleaned on shutdown.
+  // The set of StorageKeys whose storage should be cleaned on shutdown.
   std::set<StorageKey> keys_to_purge_on_shutdown_;
 
   // Pending database tasks waiting for initialization.

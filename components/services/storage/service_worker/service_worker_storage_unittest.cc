@@ -112,7 +112,8 @@ class ServiceWorkerStorageTest : public testing::Test {
         registration_id, key,
         base::BindLambdaForTesting(
             [&](ServiceWorkerDatabase::Status status,
-                ServiceWorkerStorage::OriginState, int64_t /*deleted_version*/,
+                ServiceWorkerStorage::StorageKeyState,
+                int64_t /*deleted_version*/,
                 uint64_t /*deleted_resources_size*/,
                 const std::vector<int64_t>& /*newly_purgeable_resources*/) {
               result = status;

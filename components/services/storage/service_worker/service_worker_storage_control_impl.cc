@@ -123,36 +123,38 @@ void ServiceWorkerStorageControlImpl::Recover(
   std::move(callback).Run();
 }
 
-void ServiceWorkerStorageControlImpl::GetRegisteredOrigins(
-    GetRegisteredOriginsCallback callback) {
-  storage_->GetRegisteredOrigins(std::move(callback));
+void ServiceWorkerStorageControlImpl::GetRegisteredStorageKeys(
+    GetRegisteredStorageKeysCallback callback) {
+  storage_->GetRegisteredStorageKeys(std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
     const GURL& client_url,
+    const StorageKey& key,
     FindRegistrationForClientUrlCallback callback) {
   storage_->FindRegistrationForClientUrl(
-      client_url, StorageKey(url::Origin::Create(client_url)),
+      client_url, key,
       base::BindOnce(&ServiceWorkerStorageControlImpl::DidFindRegistration,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
     const GURL& scope,
+    const StorageKey& key,
     FindRegistrationForClientUrlCallback callback) {
   storage_->FindRegistrationForScope(
-      scope, StorageKey(url::Origin::Create(scope)),
+      scope, key,
       base::BindOnce(&ServiceWorkerStorageControlImpl::DidFindRegistration,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForId(
     int64_t registration_id,
-    const base::Optional<url::Origin>& origin,
+    const base::Optional<StorageKey>& key,
     FindRegistrationForClientUrlCallback callback) {
-  if (origin.has_value()) {
+  if (key.has_value()) {
     storage_->FindRegistrationForId(
-        registration_id, StorageKey(*origin),
+        registration_id, *key,
         base::BindOnce(&ServiceWorkerStorageControlImpl::DidFindRegistration,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else {
@@ -163,20 +165,20 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForId(
   }
 }
 
-void ServiceWorkerStorageControlImpl::GetRegistrationsForOrigin(
-    const url::Origin& origin,
-    GetRegistrationsForOriginCallback callback) {
+void ServiceWorkerStorageControlImpl::GetRegistrationsForStorageKey(
+    const StorageKey& key,
+    GetRegistrationsForStorageKeyCallback callback) {
   storage_->GetRegistrationsForStorageKey(
-      StorageKey(origin),
+      key,
       base::BindOnce(
-          &ServiceWorkerStorageControlImpl::DidGetRegistrationsForOrigin,
+          &ServiceWorkerStorageControlImpl::DidGetRegistrationsForStorageKey,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ServiceWorkerStorageControlImpl::GetUsageForOrigin(
-    const url::Origin& origin,
-    GetUsageForOriginCallback callback) {
-  storage_->GetUsageForStorageKey(StorageKey(origin), std::move(callback));
+void ServiceWorkerStorageControlImpl::GetUsageForStorageKey(
+    const StorageKey& key,
+    GetUsageForStorageKeyCallback callback) {
+  storage_->GetUsageForStorageKey(key, std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::GetAllRegistrationsDeprecated(
@@ -197,51 +199,46 @@ void ServiceWorkerStorageControlImpl::StoreRegistration(
 
 void ServiceWorkerStorageControlImpl::DeleteRegistration(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     DeleteRegistrationCallback callback) {
   storage_->DeleteRegistration(
-      registration_id, StorageKey(url::Origin::Create(origin)),
+      registration_id, key,
       base::BindOnce(&ServiceWorkerStorageControlImpl::DidDeleteRegistration,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::UpdateToActiveState(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     UpdateToActiveStateCallback callback) {
-  storage_->UpdateToActiveState(registration_id,
-                                StorageKey(url::Origin::Create(origin)),
-                                std::move(callback));
+  storage_->UpdateToActiveState(registration_id, key, std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::UpdateLastUpdateCheckTime(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     base::Time last_update_check_time,
     UpdateLastUpdateCheckTimeCallback callback) {
   storage_->UpdateLastUpdateCheckTime(
-      registration_id, StorageKey(url::Origin::Create(origin)),
-      last_update_check_time, std::move(callback));
+      registration_id, key, last_update_check_time, std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadEnabled(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     bool enable,
     UpdateNavigationPreloadEnabledCallback callback) {
-  storage_->UpdateNavigationPreloadEnabled(
-      registration_id, StorageKey(url::Origin::Create(origin)), enable,
-      std::move(callback));
+  storage_->UpdateNavigationPreloadEnabled(registration_id, key, enable,
+                                           std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadHeader(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     const std::string& value,
     UpdateNavigationPreloadHeaderCallback callback) {
-  storage_->UpdateNavigationPreloadHeader(
-      registration_id, StorageKey(url::Origin::Create(origin)), value,
-      std::move(callback));
+  storage_->UpdateNavigationPreloadHeader(registration_id, key, value,
+                                          std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::GetNewRegistrationId(
@@ -300,11 +297,11 @@ void ServiceWorkerStorageControlImpl::GetUserData(
 
 void ServiceWorkerStorageControlImpl::StoreUserData(
     int64_t registration_id,
-    const url::Origin& origin,
+    const StorageKey& key,
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     StoreUserDataCallback callback) {
-  storage_->StoreUserData(registration_id, StorageKey(origin),
-                          std::move(user_data), std::move(callback));
+  storage_->StoreUserData(registration_id, key, std::move(user_data),
+                          std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::ClearUserData(
@@ -415,8 +412,8 @@ void ServiceWorkerStorageControlImpl::DidFindRegistration(
                               std::move(resource_list)));
 }
 
-void ServiceWorkerStorageControlImpl::DidGetRegistrationsForOrigin(
-    GetRegistrationsForOriginCallback callback,
+void ServiceWorkerStorageControlImpl::DidGetRegistrationsForStorageKey(
+    GetRegistrationsForStorageKeyCallback callback,
     mojom::ServiceWorkerDatabaseStatus status,
     std::unique_ptr<ServiceWorkerStorage::RegistrationList>
         registration_data_list,
@@ -454,12 +451,12 @@ void ServiceWorkerStorageControlImpl::DidStoreRegistration(
 void ServiceWorkerStorageControlImpl::DidDeleteRegistration(
     DeleteRegistrationCallback callback,
     mojom::ServiceWorkerDatabaseStatus status,
-    ServiceWorkerStorage::OriginState origin_state,
+    ServiceWorkerStorage::StorageKeyState storage_key_state,
     int64_t deleted_version_id,
     uint64_t deleted_resources_size,
     const std::vector<int64_t>& newly_purgeable_resources) {
   MaybePurgeResources(deleted_version_id, newly_purgeable_resources);
-  std::move(callback).Run(status, deleted_resources_size, origin_state);
+  std::move(callback).Run(status, deleted_resources_size, storage_key_state);
 }
 
 void ServiceWorkerStorageControlImpl::DidGetNewVersionId(

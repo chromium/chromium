@@ -56,8 +56,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   using FindRegistrationCallback = base::OnceCallback<void(
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration)>;
+  // TODO(http://crbug.com/1199077) Edit this once upstream code knows about
+  // StorageKey.
   using GetRegisteredOriginsCallback =
-      storage::mojom::ServiceWorkerStorageControl::GetRegisteredOriginsCallback;
+      base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
   using GetRegistrationsCallback = base::OnceCallback<void(
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
@@ -338,7 +340,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size,
-      storage::mojom::ServiceWorkerStorageOriginState origin_state);
+      storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state);
 
   void DidUpdateRegistration(
       StatusCallback callback,
@@ -388,7 +390,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus status);
 
   void DidGetRegisteredOrigins(GetRegisteredOriginsCallback callback,
-                               const std::vector<url::Origin>& origins);
+                               const std::vector<storage::StorageKey>& keys);
   void DidPerformStorageCleanup(base::OnceClosure callback);
   void DidDisable();
   void DidApplyPolicyUpdates(

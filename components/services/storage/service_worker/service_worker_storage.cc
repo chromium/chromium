@@ -89,27 +89,26 @@ std::unique_ptr<ServiceWorkerStorage> ServiceWorkerStorage::Create(
       user_data_directory, std::move(database_task_runner)));
 }
 
-void ServiceWorkerStorage::GetRegisteredOrigins(
-    GetRegisteredOriginsCallback callback) {
+void ServiceWorkerStorage::GetRegisteredStorageKeys(
+    GetRegisteredStorageKeysCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
-      std::move(callback).Run(/*origins=*/std::vector<url::Origin>());
+      std::move(callback).Run(/*keys=*/std::vector<StorageKey>());
       return;
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
-      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetRegisteredOrigins,
-                                    weak_factory_.GetWeakPtr(),
-                                    std::move(callback)));
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::GetRegisteredStorageKeys,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
   }
 
-  std::vector<url::Origin> origins;
-  for (const auto& key : registered_keys_)
-    origins.push_back(key.origin());
-  std::move(callback).Run(std::move(origins));
+  std::vector<StorageKey> keys(registered_keys_.begin(),
+                               registered_keys_.end());
+  std::move(callback).Run(std::move(keys));
 }
 
 void ServiceWorkerStorage::FindRegistrationForClientUrl(
@@ -290,7 +289,7 @@ void ServiceWorkerStorage::GetRegistrationsForStorageKey(
 
 void ServiceWorkerStorage::GetUsageForStorageKey(
     const StorageKey& key,
-    GetUsageForOriginCallback callback) {
+    GetUsageForStorageKeyCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
       RunSoon(FROM_HERE,
@@ -509,7 +508,7 @@ void ServiceWorkerStorage::DeleteRegistration(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(
           ServiceWorkerDatabase::Status::kErrorDisabled,
-          mojom::ServiceWorkerStorageOriginState::kKeep,
+          mojom::ServiceWorkerStorageStorageKeyState::kKeep,
           /*deleted_version_id=*/blink::mojom::kInvalidServiceWorkerVersionId,
           /*deleted_resources_size=*/0,
           /*newly_purgeable_resources=*/std::vector<int64_t>());
@@ -1357,22 +1356,22 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
 
 void ServiceWorkerStorage::DidDeleteRegistration(
     std::unique_ptr<DidDeleteRegistrationParams> params,
-    OriginState origin_state,
+    StorageKeyState storage_key_state,
     const ServiceWorkerDatabase::DeletedVersion& deleted_version,
     ServiceWorkerDatabase::Status status) {
   if (status != ServiceWorkerDatabase::Status::kOk) {
     std::move(params->callback)
-        .Run(status, origin_state, deleted_version.version_id,
+        .Run(status, storage_key_state, deleted_version.version_id,
              deleted_version.resources_total_size_bytes,
              deleted_version.newly_purgeable_resources);
     return;
   }
 
-  if (origin_state == OriginState::kDelete)
+  if (storage_key_state == StorageKeyState::kDelete)
     registered_keys_.erase(params->key);
 
   std::move(params->callback)
-      .Run(ServiceWorkerDatabase::Status::kOk, origin_state,
+      .Run(ServiceWorkerDatabase::Status::kOk, storage_key_state,
            deleted_version.version_id,
            deleted_version.resources_total_size_bytes,
            deleted_version.newly_purgeable_resources);
@@ -1521,8 +1520,8 @@ void ServiceWorkerStorage::DidCollectStaleResources(
 
 void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
   database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
-                                keys_to_purge_on_shutdown_));
+      FROM_HERE, base::BindOnce(&DeleteAllDataForStorageKeysFromDB,
+                                database_.get(), keys_to_purge_on_shutdown_));
 }
 
 void ServiceWorkerStorage::OnResourceReaderDisconnected(
@@ -1620,7 +1619,7 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
       database->DeleteRegistration(registration_id, key, &deleted_version);
   if (status != ServiceWorkerDatabase::Status::kOk) {
     original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), OriginState::kKeep,
+        FROM_HERE, base::BindOnce(std::move(callback), StorageKeyState::kKeep,
                                   deleted_version, status));
     return;
   }
@@ -1632,15 +1631,15 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
       database->GetRegistrationsForStorageKey(key, &registrations, nullptr);
   if (status != ServiceWorkerDatabase::Status::kOk) {
     original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), OriginState::kKeep,
+        FROM_HERE, base::BindOnce(std::move(callback), StorageKeyState::kKeep,
                                   deleted_version, status));
     return;
   }
 
-  OriginState origin_state =
-      registrations.empty() ? OriginState::kDelete : OriginState::kKeep;
+  StorageKeyState storage_key_state =
+      registrations.empty() ? StorageKeyState::kDelete : StorageKeyState::kKeep;
   original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), origin_state,
+      FROM_HERE, base::BindOnce(std::move(callback), storage_key_state,
                                 deleted_version, status));
 }
 
@@ -1775,7 +1774,7 @@ void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const StorageKey& key,
-    GetUsageForOriginCallback callback) {
+    GetUsageForStorageKeyCallback callback) {
   int64_t usage = 0;
   ServiceWorkerDatabase::Status status =
       database->GetUsageForStorageKey(key, usage);
@@ -1850,7 +1849,7 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
       base::BindOnce(std::move(callback), status, std::move(user_data)));
 }
 
-void ServiceWorkerStorage::DeleteAllDataForOriginsFromDB(
+void ServiceWorkerStorage::DeleteAllDataForStorageKeysFromDB(
     ServiceWorkerDatabase* database,
     const std::set<StorageKey>& keys) {
   DCHECK(database);
