@@ -618,16 +618,20 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // In the 32-bit case, PCScan is always disabled, but we'll deliberately
   // misrepresent it as enabled here (and later ignored when analyzing results),
   // in order to keep each population at 33%.
+  //
+  // Alsto note that USE_BACKUP_REF_PTR_FAKE is only used to fake that the
+  // feature is enabled for the purpose of this Finch setting, while in fact
+  // there are no behavior changes.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrAndPCScan",
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
       "BackupRefPtrEnabled"
 #else
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)
           ? "PCScanEnabled"
           : "Disabled"
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
   );
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
