@@ -78,6 +78,11 @@ class LocationBarPhone extends LocationBarLayout {
 
     /* package */ void setFirstVisibleFocusedView(boolean toStatusView) {
         mFirstVisibleFocusedView = toStatusView ? mStatusView : mUrlBar;
+        // It's possible that the fade animators hid the new first visible focused view if it was
+        // to the start of the previous first visible focused view. This happens while
+        // transitioning between incognito in some start surface scenarios.
+        mFirstVisibleFocusedView.setAlpha(1f);
+        mFirstVisibleFocusedView.setVisibility(View.VISIBLE);
     }
 
     @Override
