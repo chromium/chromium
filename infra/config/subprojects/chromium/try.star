@@ -1061,6 +1061,7 @@ try_.chromium_linux_builder(
         disable_reuse = True,
         add_default_excludes = False,
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1201,6 +1202,7 @@ try_.chromium_linux_builder(
     name = "linux-clang-tidy-dbg",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1556,11 +1558,13 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "tricium-oilpan-analysis",
     executable = "recipe:tricium_oilpan",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
     name = "tricium-simple",
     executable = "recipe:tricium_simple",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_mac_builder(
