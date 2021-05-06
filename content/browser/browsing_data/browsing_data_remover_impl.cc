@@ -248,7 +248,7 @@ void BrowsingDataRemoverImpl::RemoveInternal(
 void BrowsingDataRemoverImpl::RunNextTask() {
   DCHECK(!task_queue_.empty());
   RemovalTask& removal_task = task_queue_.front();
-  removal_task.task_started = base::Time::Now();
+  removal_task.task_started = base::TimeTicks::Now();
 
   // To detect tasks that are causing slow deletions, record running sub tasks
   // after a delay.
@@ -659,7 +659,7 @@ void BrowsingDataRemoverImpl::Notify() {
     }
   }
 
-  base::TimeDelta delta = base::Time::Now() - task.task_started;
+  base::TimeDelta delta = base::TimeTicks::Now() - task.task_started;
   if (task.filter_builder->GetMode() ==
       BrowsingDataFilterBuilder::Mode::kPreserve) {
     // Full, and time based and filtered deletions are often implemented

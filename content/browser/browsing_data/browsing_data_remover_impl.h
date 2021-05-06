@@ -136,7 +136,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     uint64_t origin_type_mask;
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
     std::vector<Observer*> observers;
-    base::Time task_started;
+    base::TimeTicks task_started;
   };
 
   // Setter for |is_removing_|; DCHECKs that we can only start removing if we're
