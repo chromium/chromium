@@ -114,13 +114,13 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     return false;
   }
 
-  for (auto entry(policy_list_value->begin());
-       entry != policy_list_value->end(); ++entry) {
+  int index = -1;
+  for (const auto& entry : policy_list_value->GetList()) {
+    ++index;
     std::string entry_string;
-    if (!entry->GetAsString(&entry_string)) {
+    if (!entry.GetAsString(&entry_string)) {
       if (errors) {
-        errors->AddError(policy_name(), entry - policy_list_value->begin(),
-                         IDS_POLICY_TYPE_ERROR,
+        errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                          base::Value::GetTypeName(base::Value::Type::STRING));
       }
       continue;
@@ -144,9 +144,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     if (!crx_file::id_util::IdIsValid(extension_id) ||
         !GURL(update_url).is_valid()) {
       if (errors) {
-        errors->AddError(policy_name(),
-                         entry - policy_list_value->begin(),
-                         IDS_POLICY_VALUE_FORMAT_ERROR);
+        errors->AddError(policy_name(), index, IDS_POLICY_VALUE_FORMAT_ERROR);
       }
       continue;
     }
@@ -187,11 +185,11 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   }
 
   // Check that the list contains valid URLPattern strings only.
-  for (auto entry(list_value->begin()); entry != list_value->end(); ++entry) {
+  int index = 0;
+  for (const auto& entry : list_value->GetList()) {
     std::string url_pattern_string;
-    if (!entry->GetAsString(&url_pattern_string)) {
-      errors->AddError(policy_name(), entry - list_value->begin(),
-                       IDS_POLICY_TYPE_ERROR,
+    if (!entry.GetAsString(&url_pattern_string)) {
+      errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING));
       return false;
     }
@@ -199,11 +197,10 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
     URLPattern pattern(URLPattern::SCHEME_ALL);
     if (pattern.Parse(url_pattern_string) !=
         URLPattern::ParseResult::kSuccess) {
-      errors->AddError(policy_name(),
-                       entry - list_value->begin(),
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(), index, IDS_POLICY_VALUE_FORMAT_ERROR);
       return false;
     }
+    ++index;
   }
 
   return true;

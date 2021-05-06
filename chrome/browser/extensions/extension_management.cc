@@ -441,8 +441,9 @@ void ExtensionManagement::Refresh() {
   if ((denied_list_pref &&
        // TODO(crbug.com/1187106): Use base::Contains once |denied_list_pref| is
        // not a ListValue.
-       std::find(denied_list_pref->begin(), denied_list_pref->end(),
-                 wildcard) != denied_list_pref->end()) ||
+       std::find(denied_list_pref->GetList().begin(),
+                 denied_list_pref->GetList().end(),
+                 wildcard) != denied_list_pref->GetList().end()) ||
       (extension_request_pref && extension_request_pref->GetBool())) {
     default_settings_->installation_mode = INSTALLATION_BLOCKED;
   }
@@ -468,17 +469,15 @@ void ExtensionManagement::Refresh() {
   ExtensionId id;
 
   if (allowed_list_pref) {
-    for (auto it = allowed_list_pref->begin(); it != allowed_list_pref->end();
-         ++it) {
-      if (it->GetAsString(&id) && crx_file::id_util::IdIsValid(id))
+    for (const auto& entry : allowed_list_pref->GetList()) {
+      if (entry.GetAsString(&id) && crx_file::id_util::IdIsValid(id))
         AccessById(id)->installation_mode = INSTALLATION_ALLOWED;
     }
   }
 
   if (denied_list_pref) {
-    for (auto it = denied_list_pref->begin(); it != denied_list_pref->end();
-         ++it) {
-      if (it->GetAsString(&id) && crx_file::id_util::IdIsValid(id))
+    for (const auto& entry : denied_list_pref->GetList()) {
+      if (entry.GetAsString(&id) && crx_file::id_util::IdIsValid(id))
         AccessById(id)->installation_mode = INSTALLATION_BLOCKED;
     }
   }
@@ -487,10 +486,9 @@ void ExtensionManagement::Refresh() {
 
   if (install_sources_pref) {
     global_settings_->has_restricted_install_sources = true;
-    for (auto it = install_sources_pref->begin();
-         it != install_sources_pref->end(); ++it) {
+    for (const auto& entry : install_sources_pref->GetList()) {
       std::string url_pattern;
-      if (it->GetAsString(&url_pattern)) {
+      if (entry.GetAsString(&url_pattern)) {
         URLPattern entry(URLPattern::SCHEME_ALL);
         if (entry.Parse(url_pattern) == URLPattern::ParseResult::kSuccess) {
           global_settings_->install_sources.AddPattern(entry);
@@ -505,15 +503,14 @@ void ExtensionManagement::Refresh() {
 
   if (allowed_types_pref) {
     global_settings_->has_restricted_allowed_types = true;
-    for (auto it = allowed_types_pref->begin(); it != allowed_types_pref->end();
-         ++it) {
-      if (it->is_int() && it->GetInt() >= 0 &&
-          it->GetInt() < Manifest::Type::NUM_LOAD_TYPES) {
+    for (const auto& entry : allowed_types_pref->GetList()) {
+      if (entry.is_int() && entry.GetInt() >= 0 &&
+          entry.GetInt() < Manifest::Type::NUM_LOAD_TYPES) {
         global_settings_->allowed_types.push_back(
-            static_cast<Manifest::Type>(it->GetInt()));
-      } else if (it->is_string()) {
+            static_cast<Manifest::Type>(entry.GetInt()));
+      } else if (entry.is_string()) {
         Manifest::Type manifest_type =
-            schema_constants::GetManifestType(it->GetString());
+            schema_constants::GetManifestType(entry.GetString());
         if (manifest_type != Manifest::TYPE_UNKNOWN)
           global_settings_->allowed_types.push_back(manifest_type);
       }

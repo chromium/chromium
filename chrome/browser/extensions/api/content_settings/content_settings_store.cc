@@ -310,7 +310,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     const std::string& extension_id,
     const base::ListValue* list,
     ExtensionPrefsScope scope) {
-  for (const auto& value : *list) {
+  for (const auto& value : list->GetList()) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict)) {
       NOTREACHED();

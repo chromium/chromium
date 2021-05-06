@@ -327,7 +327,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
     std::u16string error;
     std::vector<std::string> actual_ids;
-    for (const auto& val : ids_value)
+    for (const auto& val : ids_value.GetList())
       actual_ids.push_back(val.GetString());
 
     EXPECT_THAT(expected_ids, UnorderedElementsAreArray(actual_ids));

@@ -175,9 +175,9 @@ class SetIcon : public ContentAction {
 // Helper for getting JS collections into C++.
 static bool AppendJSStringsToCPPStrings(const base::ListValue& append_strings,
                                         std::vector<std::string>* append_to) {
-  for (auto it = append_strings.begin(); it != append_strings.end(); ++it) {
+  for (const auto& entry : append_strings.GetList()) {
     std::string value;
-    if (it->GetAsString(&value)) {
+    if (entry.GetAsString(&value)) {
       append_to->push_back(value);
     } else {
       return false;

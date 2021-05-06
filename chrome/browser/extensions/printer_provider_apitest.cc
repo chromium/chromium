@@ -267,7 +267,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
       const std::vector<std::unique_ptr<base::Value>>& expected_printers) {
     ASSERT_EQ(expected_printers.size(), printers.GetSize());
     for (const auto& printer_value : expected_printers) {
-      EXPECT_TRUE(printers.Find(*printer_value) != printers.end())
+      EXPECT_TRUE(printers.Find(*printer_value) != printers.GetList().end())
           << "Unable to find " << *printer_value << " in " << printers;
     }
   }

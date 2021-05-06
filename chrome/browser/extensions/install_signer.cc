@@ -141,12 +141,12 @@ void SetExtensionIdSet(base::DictionaryValue* dictionary,
 bool GetExtensionIdSet(const base::DictionaryValue& dictionary,
                        const char* key,
                        ExtensionIdSet* ids) {
-  const base::ListValue* id_list = NULL;
+  const base::ListValue* id_list = nullptr;
   if (!dictionary.GetList(key, &id_list))
     return false;
-  for (auto i = id_list->begin(); i != id_list->end(); ++i) {
+  for (const auto& entry : id_list->GetList()) {
     std::string id;
-    if (!i->GetAsString(&id)) {
+    if (!entry.GetAsString(&id)) {
       return false;
     }
     ids->insert(id);

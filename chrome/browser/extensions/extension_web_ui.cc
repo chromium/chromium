@@ -71,7 +71,7 @@ const char kActive[] = "active";
 void InitializeOverridesList(base::ListValue* list) {
   base::ListValue migrated;
   std::set<std::string> seen_entries;
-  for (auto& val : *list) {
+  for (auto& val : list->GetList()) {
     base::Value new_dict(base::Value::Type::DICTIONARY);
     std::string entry_name;
     if (val.is_dict()) {
@@ -104,7 +104,7 @@ void InitializeOverridesList(base::ListValue* list) {
 // marks it as active.
 void AddOverridesToList(base::ListValue* list, const GURL& override_url) {
   const std::string& spec = override_url.spec();
-  for (auto& val : *list) {
+  for (auto& val : list->GetList()) {
     std::string* entry = nullptr;
     if (val.is_dict()) {
       entry = val.FindStringKey(kEntry);
@@ -142,7 +142,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
                            base::ListValue* list) {
   base::ListValue migrated;
   std::set<std::string> seen_hosts;
-  for (auto& val : *list) {
+  for (auto& val : list->GetList()) {
     std::string* entry = nullptr;
     if (val.is_dict()) {
       entry = val.FindStringKey(kEntry);
@@ -201,15 +201,15 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::ListValue* overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = std::find_if(overrides_list->begin(), overrides_list->end(),
-                           [&override_url](const base::Value& value) {
-                             if (!value.is_dict())
-                               return false;
-                             const std::string* entry =
-                                 value.FindStringKey(kEntry);
-                             return entry && *entry == override_url;
-                           });
-  if (iter != overrides_list->end()) {
+  auto iter = std::find_if(
+      overrides_list->GetList().begin(), overrides_list->GetList().end(),
+      [&override_url](const base::Value& value) {
+        if (!value.is_dict())
+          return false;
+        const std::string* entry = value.FindStringKey(kEntry);
+        return entry && *entry == override_url;
+      });
+  if (iter != overrides_list->GetList().end()) {
     switch (behavior) {
       case UPDATE_DEACTIVATE: {
         // See comment about CHECK(success) in ForEachOverrideList.
@@ -372,7 +372,7 @@ std::vector<GURL> GetOverridesForChromeURL(
   std::vector<GURL> component_overrides;
 
   // Iterate over the URL list looking for suitable overrides.
-  for (const auto& value : *url_list) {
+  for (const auto& value : url_list->GetList()) {
     GURL override_url;
     const Extension* extension = nullptr;
     if (!ValidateOverrideURL(&value, url, extensions, &override_url,
@@ -465,7 +465,7 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     if (!dict_iter.value().GetAsList(&url_list))
       continue;
 
-    for (const auto& list_iter : *url_list) {
+    for (const auto& list_iter : url_list->GetList()) {
       const std::string* override = nullptr;
       if (list_iter.is_dict())
         override = list_iter.FindStringKey(kEntry);
