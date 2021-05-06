@@ -38,6 +38,20 @@ inline LayoutUnit GetSpaceBetweenImageTiles(LayoutUnit area_size,
   return space;
 }
 
+float ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
+  // Identify the number of tiles that fit within the computed
+  // position in the direction we should be moving.
+  float number_of_tiles_in_position =
+      position.ToFloat() / tile_extent.ToFloat();
+
+  // Assuming a non-integral number of tiles, find out how much of the
+  // partial tile is visible. That is the phase.
+  float fractional_position_within_tile =
+      1.0f -
+      (number_of_tiles_in_position - truncf(number_of_tiles_in_position));
+  return fractional_position_within_tile * tile_extent;
+}
+
 bool FixedBackgroundPaintsInLocalCoordinates(
     const LayoutObject& obj,
     const GlobalPaintFlags global_paint_flags) {
@@ -174,25 +188,12 @@ void BackgroundImageGeometry::SetRepeatX(const FillLayer& fill_layer,
     LayoutUnit computed_position =
         MinimumValueForLength(fill_layer.PositionX(), available_width) -
         OffsetInBackground(fill_layer).left;
+    // Convert from edge-relative form to absolute.
+    if (fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight)
+      computed_position = available_width - computed_position;
 
-    // Identify the number of tiles that fit within the computed
-    // position in the direction we should be moving.
-    float number_of_tiles_in_position;
-    if (fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight) {
-      number_of_tiles_in_position =
-          (available_width - computed_position + extra_offset).ToFloat() /
-          tile_size_.width.ToFloat();
-    } else {
-      number_of_tiles_in_position =
-          (computed_position + extra_offset).ToFloat() /
-          tile_size_.width.ToFloat();
-    }
-    // Assuming a non-integral number of tiles, find out how much of the
-    // partial tile is visible. That is the phase.
-    float fractional_position_within_tile =
-        1.0f -
-        (number_of_tiles_in_position - truncf(number_of_tiles_in_position));
-    SetPhaseX(fractional_position_within_tile * tile_size_.width);
+    SetPhaseX(
+        ComputeTilePhase(computed_position + extra_offset, tile_size_.width));
   } else {
     SetPhaseX(0);
   }
@@ -211,25 +212,12 @@ void BackgroundImageGeometry::SetRepeatY(const FillLayer& fill_layer,
     LayoutUnit computed_position =
         MinimumValueForLength(fill_layer.PositionY(), available_height) -
         OffsetInBackground(fill_layer).top;
+    // Convert from edge-relative form to absolute.
+    if (fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom)
+      computed_position = available_height - computed_position;
 
-    // Identify the number of tiles that fit within the computed
-    // position in the direction we should be moving.
-    float number_of_tiles_in_position;
-    if (fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom) {
-      number_of_tiles_in_position =
-          (available_height - computed_position + extra_offset).ToFloat() /
-          tile_size_.height.ToFloat();
-    } else {
-      number_of_tiles_in_position =
-          (computed_position + extra_offset).ToFloat() /
-          tile_size_.height.ToFloat();
-    }
-    // Assuming a non-integral number of tiles, find out how much of the
-    // partial tile is visible. That is the phase.
-    float fractional_position_within_tile =
-        1.0f -
-        (number_of_tiles_in_position - truncf(number_of_tiles_in_position));
-    SetPhaseY(fractional_position_within_tile * tile_size_.height);
+    SetPhaseY(
+        ComputeTilePhase(computed_position + extra_offset, tile_size_.height));
   } else {
     SetPhaseY(0);
   }
