@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObserver;
@@ -180,7 +179,6 @@ public class RuntimePermissionTest {
         String[] requestablePermission = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         mTestAndroidPermissionDelegate = new TestAndroidPermissionDelegate(
                 requestablePermission, RuntimePromptResponse.DENY);
-        DownloadController.setAndroidPermissionDelegateForTesting(mTestAndroidPermissionDelegate);
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 DOWNLOAD_TEST, false /* expectPermissionAllowed */,
                 null /* permissionPromptAllow */, true /* waitForMissingPermissionPrompt */,
