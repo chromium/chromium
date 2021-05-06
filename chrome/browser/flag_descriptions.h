@@ -2109,6 +2109,9 @@ extern const char kOmniboxPedalSuggestionsDescription[];
 extern const char kOmniboxPedalsBatch2Name[];
 extern const char kOmniboxPedalsBatch2Description[];
 
+extern const char kOmniboxPedalsBatch2NonEnglishName[];
+extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
+
 extern const char kOmniboxPedalsDefaultIconColoredName[];
 extern const char kOmniboxPedalsDefaultIconColoredDescription[];
 

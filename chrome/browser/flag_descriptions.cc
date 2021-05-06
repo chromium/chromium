@@ -3648,9 +3648,14 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
 
 const char kOmniboxPedalsBatch2Name[] = "Omnibox Pedals batch 2";
 const char kOmniboxPedalsBatch2Description[] =
-    "Enable the second batch of Omnibox Pedals (Safety Check, etc.). "
-    "This flag has no effect unless \"Omnibox Pedal suggestions\" is also "
-    "enabled.";
+    "Enable the second batch of Omnibox Pedals (Safety Check, etc.).";
+
+const char kOmniboxPedalsBatch2NonEnglishName[] =
+    "Omnibox Pedals batch 2 for non-English locales";
+const char kOmniboxPedalsBatch2NonEnglishDescription[] =
+    "Enable the second batch of Omnibox Pedals (Safety Check, etc.) for "
+    "locales other than 'en' and 'en-GB'. This flag has no effect unless "
+    "\"Omnibox Pedals batch 2\" is also enabled.";
 
 const char kOmniboxPedalsDefaultIconColoredName[] =
     "Omnibox Pedals Default Icon Colored";
