@@ -371,3 +371,15 @@ TestChromeBrowserState::Builder::Build() {
       state_path_, std::move(pref_service_), std::move(testing_factories_),
       std::move(refcounted_testing_factories_), std::move(policy_connector_)));
 }
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestChromeBrowserState::GetSharedURLLoaderFactory() {
+  return test_shared_url_loader_factory_
+             ? test_shared_url_loader_factory_
+             : BrowserState::GetSharedURLLoaderFactory();
+}
+
+void TestChromeBrowserState::SetSharedURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
+}
