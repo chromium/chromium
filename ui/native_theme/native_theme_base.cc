@@ -266,11 +266,17 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
   canvas->save();
   canvas->clipRect(gfx::RectToSkRect(rect));
 
+  // Form control accents shouldn't be drawn with any transparency.
+  base::Optional<SkColor> accent_color_opaque;
+  if (accent_color) {
+    accent_color_opaque = SkColorSetA(accent_color.value(), SK_AlphaOPAQUE);
+  }
+
   switch (part) {
     // Please keep these in the order of NativeTheme::Part.
     case kCheckbox:
       PaintCheckbox(canvas, state, rect, extra.button, color_scheme,
-                    accent_color);
+                    accent_color_opaque);
       break;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -300,13 +306,14 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kProgressBar:
       PaintProgressBar(canvas, state, rect, extra.progress_bar, color_scheme,
-                       accent_color);
+                       accent_color_opaque);
       break;
     case kPushButton:
       PaintButton(canvas, state, rect, extra.button, color_scheme);
       break;
     case kRadio:
-      PaintRadio(canvas, state, rect, extra.button, color_scheme, accent_color);
+      PaintRadio(canvas, state, rect, extra.button, color_scheme,
+                 accent_color_opaque);
       break;
     case kScrollbarDownArrow:
     case kScrollbarUpArrow:
@@ -336,11 +343,11 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kSliderTrack:
       PaintSliderTrack(canvas, state, rect, extra.slider, color_scheme,
-                       accent_color);
+                       accent_color_opaque);
       break;
     case kSliderThumb:
       PaintSliderThumb(canvas, state, rect, extra.slider, color_scheme,
-                       accent_color);
+                       accent_color_opaque);
       break;
     case kTabPanelBackground:
       NOTIMPLEMENTED();
