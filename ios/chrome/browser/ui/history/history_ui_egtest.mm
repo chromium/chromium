@@ -461,7 +461,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_longPress()];
 
   [ChromeEarlGrey
-      verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
+      verifyShareActionWithURL:_URL1
+                     pageTitle:[NSString stringWithUTF8String:kTitle1]];
 }
 
 // Tests the Delete context menu action for a History entry.

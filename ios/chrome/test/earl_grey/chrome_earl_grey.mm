@@ -13,6 +13,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -1323,12 +1324,20 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)verifyShareActionWithPageTitle:(NSString*)pageTitle {
+- (void)verifyShareActionWithURL:(const GURL&)URL
+                       pageTitle:(NSString*)pageTitle {
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
-  // Page title is added asynchronously, so wait for its appearance.
-  [self waitForMatcher:grey_allOf(ActivityViewHeader(pageTitle),
-                                  grey_sufficientlyVisible(), nil)];
+  {
+    // The activity view share sheet blocks EarlGrey's synchronization. Ref:
+    // github.com/google/EarlGrey/blob/master/docs/features.md#visibility-checks
+    ScopedSynchronizationDisabler disabler;
+
+    // Page title is added asynchronously, so wait for its appearance.
+    NSString* hostString = base::SysUTF8ToNSString(URL.host());
+    [self waitForMatcher:grey_allOf(ActivityViewHeader(hostString, pageTitle),
+                                    grey_sufficientlyVisible(), nil)];
+  }
 
   // Dismiss the Activity View by tapping outside its bounds.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]

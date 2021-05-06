@@ -704,8 +704,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
                               useNewString:(BOOL)useNewString;
 
 // Taps on the Share context menu action and validates that the ActivityView
-// was brought up with |pageTitle| in its header.
-- (void)verifyShareActionWithPageTitle:(NSString*)pageTitle;
+// was brought up with the correct title in its header. The title starts as the
+// host of the loaded |URL| and is then updated to the page title |pageTitle|.
+- (void)verifyShareActionWithURL:(const GURL&)URL
+                       pageTitle:(NSString*)pageTitle;
 
 #pragma mark - Unified Consent utilities
 

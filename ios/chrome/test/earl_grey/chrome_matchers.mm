@@ -719,8 +719,9 @@ id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher() {
       manualFallbackCreditCardTableViewWindowMatcher];
 }
 
-id<GREYMatcher> ActivityViewHeader(NSString* page_title) {
-  return [ChromeMatchersAppInterface activityViewHeaderWithTitle:page_title];
+id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title) {
+  return [ChromeMatchersAppInterface activityViewHeaderWithURLHost:url_host
+                                                             title:page_title];
 }
 
 id<GREYMatcher> ManualFallbackSuggestPasswordMatcher() {
