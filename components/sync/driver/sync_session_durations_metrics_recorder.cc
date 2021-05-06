@@ -215,10 +215,10 @@ void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
     // Sync is on and running, we must have an account too.
     UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::ON);
   } else {
-    // We don't know yet if sync is going to work.
-    // At least update the account status, so that if we never learn what the
-    // sync state is, we know the signin state.
-    account_status_ = DeterminePrimaryAccountStatus();
+    // This branch corresponds to the case when the sync engine is initializing.
+    // The sync state may already be set to ON/OFF based on the heuristics
+    // above. Keep the current sync status.
+    UpdateSyncAndAccountStatus(sync_status_, DeterminePrimaryAccountStatus());
   }
 }
 
