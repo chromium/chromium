@@ -16,6 +16,7 @@ source_set("android") {
     ":jni_headers",
     "//chrome/browser/signin:identity_manager_provider",
     "//components/embedder_support/android:browser_context",
+    "//components/password_manager/core/browser/leak_detection",
     "//components/prefs",
     "//components/safety_check",
     "//components/user_prefs",

@@ -64,7 +64,6 @@ default_args = {
 # "gn check" or "gn gen --check".
 no_check_targets = [
   # //chrome/*, https://crbug.com/949535
-  "//chrome/browser/safety_check/android:*",  # 3 errors
   "//chrome/browser/storage_access_api:*",  # 2 errors
   "//chrome/browser/touch_to_fill/android:*",  # 8 errors
   "//chrome/test:*",  # 2682 errors
