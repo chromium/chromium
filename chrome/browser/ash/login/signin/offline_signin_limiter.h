@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/util/timer/wall_clock_timer.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,14 +36,10 @@ class OfflineSigninLimiter : public KeyedService,
   // the type of authentication flow that the user went through.
   void SignedIn(UserContext::AuthFlow auth_flow);
 
-  // Allows a mock timer to be substituted for testing purposes.
-  void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
+  util::WallClockTimer* GetTimerForTesting();
 
   // KeyedService:
   void Shutdown() override;
-
-  // base::PowerObserver:
-  void OnResume() override;
 
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
@@ -54,7 +50,7 @@ class OfflineSigninLimiter : public KeyedService,
 
   // `profile` and `clock` must remain valid until Shutdown() is called. If
   // `clock` is NULL, the shared base::DefaultClock instance will be used.
-  OfflineSigninLimiter(Profile* profile, base::Clock* clock);
+  OfflineSigninLimiter(Profile* profile, const base::Clock* clock);
   ~OfflineSigninLimiter() override;
 
   // Recalculates the amount of time remaining until online login should be
@@ -78,11 +74,11 @@ class OfflineSigninLimiter : public KeyedService,
                               base::Optional<base::TimeDelta> limit);
 
   Profile* profile_;
-  base::Clock* clock_;
+  const base::Clock* clock_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<base::OneShotTimer> offline_signin_limit_timer_;
+  std::unique_ptr<util::WallClockTimer> offline_signin_limit_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };

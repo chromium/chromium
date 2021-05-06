@@ -103,18 +103,13 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   UpdateLimit();
 }
 
-void OfflineSigninLimiter::SetTimerForTesting(
-    std::unique_ptr<base::OneShotTimer> timer) {
-  offline_signin_limit_timer_ = std::move(timer);
+util::WallClockTimer* OfflineSigninLimiter::GetTimerForTesting() {
+  return offline_signin_limit_timer_.get();
 }
 
 void OfflineSigninLimiter::Shutdown() {
   offline_signin_limit_timer_->Stop();
   pref_change_registrar_.RemoveAll();
-}
-
-void OfflineSigninLimiter::OnResume() {
-  UpdateLimit();
 }
 
 void OfflineSigninLimiter::OnSessionStateChanged() {
@@ -123,10 +118,11 @@ void OfflineSigninLimiter::OnSessionStateChanged() {
   }
 }
 
-OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile, base::Clock* clock)
+OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile,
+                                           const base::Clock* clock)
     : profile_(profile),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
-      offline_signin_limit_timer_(std::make_unique<base::OneShotTimer>()) {}
+      offline_signin_limit_timer_(std::make_unique<util::WallClockTimer>()) {}
 
 OfflineSigninLimiter::~OfflineSigninLimiter() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
@@ -178,7 +174,10 @@ void OfflineSigninLimiter::UpdateLimit() {
   UpdateOnlineSigninData(last_gaia_signin_time, offline_signin_time_limit);
   const base::TimeDelta time_since_last_gaia_signin =
       now - last_gaia_signin_time;
-  if (time_since_last_gaia_signin >= offline_signin_time_limit.value()) {
+  const base::TimeDelta time_limit_left =
+      offline_signin_time_limit.value() - time_since_last_gaia_signin;
+
+  if (time_limit_left <= base::TimeDelta()) {
     // If the limit already expired, set the flag enforcing online login
     // immediately and return.
     ForceOnlineLogin();
@@ -187,12 +186,11 @@ void OfflineSigninLimiter::UpdateLimit() {
 
   // Arm `offline_signin_limit_timer_` so that it sets the flag enforcing online
   // login when the limit expires.
-  // TODO(b/179636755): Use `WallClockTimer` class instead of the
-  // `OneShotTimer`.
+  const base::Time offline_signin_limit = now + time_limit_left;
   offline_signin_limit_timer_->Start(
-      FROM_HERE,
-      offline_signin_time_limit.value() - time_since_last_gaia_signin, this,
-      &OfflineSigninLimiter::ForceOnlineLogin);
+      FROM_HERE, offline_signin_limit,
+      base::BindOnce(&OfflineSigninLimiter::ForceOnlineLogin,
+                     base::Unretained(this)));
 }
 
 base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
