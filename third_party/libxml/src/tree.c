@@ -1310,6 +1310,16 @@ xmlStringLenGetNodeList(const xmlDoc *doc, const xmlChar *value, int len) {
 		else
 		    tmp = 0;
 		while (tmp != ';') { /* Non input consuming loop */
+                    /*
+                     * If you find an integer overflow here when fuzzing,
+                     * the bug is probably elsewhere. This function should
+                     * only receive entities that were already validated by
+                     * the parser, typically by xmlParseAttValueComplex
+                     * calling xmlStringDecodeEntities.
+                     *
+                     * So it's better *not* to check for overflow to
+                     * potentially discover new bugs.
+                     */
 		    if ((tmp >= '0') && (tmp <= '9'))
 			charval = charval * 16 + (tmp - '0');
 		    else if ((tmp >= 'a') && (tmp <= 'f'))
@@ -1338,6 +1348,7 @@ xmlStringLenGetNodeList(const xmlDoc *doc, const xmlChar *value, int len) {
 		else
 		    tmp = 0;
 		while (tmp != ';') { /* Non input consuming loops */
+                    /* Don't check for integer overflow, see above. */
 		    if ((tmp >= '0') && (tmp <= '9'))
 			charval = charval * 10 + (tmp - '0');
 		    else {
@@ -1517,6 +1528,7 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 		cur += 3;
 		tmp = *cur;
 		while (tmp != ';') { /* Non input consuming loop */
+                    /* Don't check for integer overflow, see above. */
 		    if ((tmp >= '0') && (tmp <= '9'))
 			charval = charval * 16 + (tmp - '0');
 		    else if ((tmp >= 'a') && (tmp <= 'f'))
@@ -1539,6 +1551,7 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 		cur += 2;
 		tmp = *cur;
 		while (tmp != ';') { /* Non input consuming loops */
+                    /* Don't check for integer overflow, see above. */
 		    if ((tmp >= '0') && (tmp <= '9'))
 			charval = charval * 10 + (tmp - '0');
 		    else {
@@ -1888,12 +1901,6 @@ xmlNewPropInternal(xmlNodePtr node, xmlNsPtr ns,
     if (value != NULL) {
         xmlNodePtr tmp;
 
-        if(!xmlCheckUTF8(value)) {
-            xmlTreeErr(XML_TREE_NOT_UTF8, (xmlNodePtr) doc,
-                       NULL);
-            if (doc != NULL)
-                doc->encoding = xmlStrdup(BAD_CAST "ISO-8859-1");
-        }
         cur->children = xmlNewDocText(doc, value);
         cur->last = NULL;
         tmp = cur->children;
@@ -2013,6 +2020,11 @@ xmlNewNsPropEatName(xmlNodePtr node, xmlNsPtr ns, xmlChar *name,
  * @value:  the value of the attribute
  *
  * Create a new property carried by a document.
+ * NOTE: @value is supposed to be a piece of XML CDATA, so it allows entity
+ *       references, but XML special chars need to be escaped first by using
+ *       xmlEncodeEntitiesReentrant(). Use xmlNewProp() if you don't need
+ *       entities support.
+ *
  * Returns a pointer to the attribute
  */
 xmlAttrPtr
@@ -4558,6 +4570,7 @@ xmlCopyDoc(xmlDocPtr doc, int recursive) {
     if (doc == NULL) return(NULL);
     ret = xmlNewDoc(doc->version);
     if (ret == NULL) return(NULL);
+    ret->type = doc->type;
     if (doc->name != NULL)
         ret->name = xmlMemStrdup(doc->name);
     if (doc->encoding != NULL)
@@ -4880,7 +4893,9 @@ xmlGetNodePath(const xmlNode *node)
             }
             next = ((xmlAttrPtr) cur)->parent;
         } else {
-            next = cur->parent;
+            xmlFree(buf);
+            xmlFree(buffer);
+            return (NULL);
         }
 
         /*
@@ -6575,6 +6590,16 @@ xmlGetPropNodeInternal(const xmlNode *node, const xmlChar *name,
 		attrDecl = xmlGetDtdQAttrDesc(doc->extSubset,
 		    elemQName, name, NULL);
 	    }
+        } else if (xmlStrEqual(nsName, XML_XML_NAMESPACE)) {
+	    /*
+	    * The XML namespace must be bound to prefix 'xml'.
+	    */
+	    attrDecl = xmlGetDtdQAttrDesc(doc->intSubset,
+		elemQName, name, BAD_CAST "xml");
+	    if ((attrDecl == NULL) && (doc->extSubset != NULL)) {
+		attrDecl = xmlGetDtdQAttrDesc(doc->extSubset,
+		    elemQName, name, BAD_CAST "xml");
+	    }
 	} else {
 	    xmlNsPtr *nsList, *cur;
 
@@ -6921,12 +6946,6 @@ xmlSetNsProp(xmlNodePtr node, xmlNsPtr ns, const xmlChar *name,
 	if (value != NULL) {
 	    xmlNodePtr tmp;
 
-	    if(!xmlCheckUTF8(value)) {
-	        xmlTreeErr(XML_TREE_NOT_UTF8, (xmlNodePtr) node->doc,
-	                   NULL);
-                if (node->doc != NULL)
-                    node->doc->encoding = xmlStrdup(BAD_CAST "ISO-8859-1");
-	    }
 	    prop->children = xmlNewDocText(node->doc, value);
 	    prop->last = NULL;
 	    tmp = prop->children;

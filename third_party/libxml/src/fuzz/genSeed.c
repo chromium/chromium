@@ -102,6 +102,7 @@ fuzzRecorderCleanup() {
     globalData.oldLoader = NULL;
 }
 
+#ifdef HAVE_XML_FUZZER
 static int
 processXml(const char *docFile, FILE *out) {
     int opts = XML_PARSE_NOENT | XML_PARSE_DTDLOAD;
@@ -119,7 +120,9 @@ processXml(const char *docFile, FILE *out) {
 
     return(0);
 }
+#endif
 
+#ifdef HAVE_HTML_FUZZER
 static int
 processHtml(const char *docFile, FILE *out) {
     char buf[SEED_BUF_SIZE];
@@ -144,7 +147,9 @@ processHtml(const char *docFile, FILE *out) {
 
     return(0);
 }
+#endif
 
+#ifdef HAVE_SCHEMA_FUZZER
 static int
 processSchema(const char *docFile, FILE *out) {
     xmlSchemaPtr schema;
@@ -162,6 +167,7 @@ processSchema(const char *docFile, FILE *out) {
 
     return(0);
 }
+#endif
 
 static int
 processPattern(const char *pattern) {
@@ -240,6 +246,7 @@ error:
     return(ret);
 }
 
+#ifdef HAVE_XPATH_FUZZER
 static int
 processXPath(const char *testDir, const char *prefix, const char *name,
              const char *data, const char *subdir, int xptr) {
@@ -363,10 +370,11 @@ processXPathDir(const char *testDir) {
 
     return(ret);
 }
+#endif
 
 int
 main(int argc, const char **argv) {
-    mainFunc processArg = processPattern;
+    mainFunc processArg = NULL;
     const char *fuzzer;
     int ret = 0;
     int xpath = 0;
@@ -381,13 +389,24 @@ main(int argc, const char **argv) {
 
     fuzzer = argv[1];
     if (strcmp(fuzzer, "html") == 0) {
+#ifdef HAVE_HTML_FUZZER
+        processArg = processPattern;
         globalData.processFile = processHtml;
+#endif
     } else if (strcmp(fuzzer, "schema") == 0) {
+#ifdef HAVE_SCHEMA_FUZZER
+        processArg = processPattern;
         globalData.processFile = processSchema;
+#endif
     } else if (strcmp(fuzzer, "xml") == 0) {
+#ifdef HAVE_XML_FUZZER
+        processArg = processPattern;
         globalData.processFile = processXml;
+#endif
     } else if (strcmp(fuzzer, "xpath") == 0) {
+#ifdef HAVE_XPATH_FUZZER
         processArg = processXPathDir;
+#endif
     } else {
         fprintf(stderr, "unknown fuzzer %s\n", fuzzer);
         return(1);
@@ -399,8 +418,9 @@ main(int argc, const char **argv) {
         return(1);
     }
 
-    for (i = 2; i < argc; i++)
-        processArg(argv[i]);
+    if (processArg != NULL)
+        for (i = 2; i < argc; i++)
+            processArg(argv[i]);
 
     return(ret);
 }

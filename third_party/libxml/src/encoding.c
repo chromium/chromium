@@ -373,6 +373,11 @@ UTF8ToUTF8(unsigned char* out, int *outlen,
     if (len < 0)
 	return(-1);
 
+    /*
+     * FIXME: Conversion functions must assure valid UTF-8, so we have
+     * to check for UTF-8 validity. Preferably, this converter shouldn't
+     * be used at all.
+     */
     memcpy(out, inb, len);
 
     *outlen = len;

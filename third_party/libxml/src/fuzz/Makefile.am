@@ -74,7 +74,7 @@ fuzz-html: html$(EXEEXT) seed/html.stamp
 	./html$(EXEEXT) \
 	    -dict=html.dict \
 	    -max_len=1000000 \
-	    -timeout=20 \
+	    -timeout=10 \
 	    corpus/html seed/html
 
 # Regexp fuzzer
@@ -99,7 +99,7 @@ fuzz-uri: uri$(EXEEXT)
 	@mkdir -p corpus/uri
 	./uri$(EXEEXT) \
 	    -max_len=10000 \
-	    -timeout=5 \
+	    -timeout=2 \
 	    corpus/uri $(srcdir)/seed/uri
 
 # XML Schema fuzzer

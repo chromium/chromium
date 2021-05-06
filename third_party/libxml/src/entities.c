@@ -211,7 +211,7 @@ xmlAddEntity(xmlDtdPtr dtd, const xmlChar *name, int type,
 	  const xmlChar *content) {
     xmlDictPtr dict = NULL;
     xmlEntitiesTablePtr table = NULL;
-    xmlEntityPtr ret;
+    xmlEntityPtr ret, predef;
 
     if (name == NULL)
 	return(NULL);
@@ -224,6 +224,44 @@ xmlAddEntity(xmlDtdPtr dtd, const xmlChar *name, int type,
         case XML_INTERNAL_GENERAL_ENTITY:
         case XML_EXTERNAL_GENERAL_PARSED_ENTITY:
         case XML_EXTERNAL_GENERAL_UNPARSED_ENTITY:
+            predef = xmlGetPredefinedEntity(name);
+            if (predef != NULL) {
+                int valid = 0;
+
+                /* 4.6 Predefined Entities */
+                if ((type == XML_INTERNAL_GENERAL_ENTITY) &&
+                    (content != NULL)) {
+                    int c = predef->content[0];
+
+                    if (((content[0] == c) && (content[1] == 0)) &&
+                        ((c == '>') || (c == '\'') || (c == '"'))) {
+                        valid = 1;
+                    } else if ((content[0] == '&') && (content[1] == '#')) {
+                        if (content[2] == 'x') {
+                            xmlChar *hex = BAD_CAST "0123456789ABCDEF";
+                            xmlChar ref[] = "00;";
+
+                            ref[0] = hex[c / 16 % 16];
+                            ref[1] = hex[c % 16];
+                            if (xmlStrcasecmp(&content[3], ref) == 0)
+                                valid = 1;
+                        } else {
+                            xmlChar ref[] = "00;";
+
+                            ref[0] = '0' + c / 10 % 10;
+                            ref[1] = '0' + c % 10;
+                            if (xmlStrEqual(&content[2], ref))
+                                valid = 1;
+                        }
+                    }
+                }
+                if (!valid) {
+                    xmlEntitiesErr(XML_ERR_ENTITY_PROCESSING,
+                            "xmlAddEntity: invalid redeclaration of predefined"
+                            " entity");
+                    return(NULL);
+                }
+            }
 	    if (dtd->entities == NULL)
 		dtd->entities = xmlHashCreateDict(0, dict);
 	    table = dtd->entities;
@@ -667,11 +705,25 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
 	    } else {
 		/*
 		 * We assume we have UTF-8 input.
+		 * It must match either:
+		 *   110xxxxx 10xxxxxx
+		 *   1110xxxx 10xxxxxx 10xxxxxx
+		 *   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+		 * That is:
+		 *   cur[0] is 11xxxxxx
+		 *   cur[1] is 10xxxxxx
+		 *   cur[2] is 10xxxxxx if cur[0] is 111xxxxx
+		 *   cur[3] is 10xxxxxx if cur[0] is 1111xxxx
+		 *   cur[0] is not 11111xxx
 		 */
 		char buf[11], *ptr;
 		int val = 0, l = 1;
 
-		if (*cur < 0xC0) {
+		if (((cur[0] & 0xC0) != 0xC0) ||
+		    ((cur[1] & 0xC0) != 0x80) ||
+		    (((cur[0] & 0xE0) == 0xE0) && ((cur[2] & 0xC0) != 0x80)) ||
+		    (((cur[0] & 0xF0) == 0xF0) && ((cur[3] & 0xC0) != 0x80)) ||
+		    (((cur[0] & 0xF8) == 0xF8))) {
 		    xmlEntitiesErr(XML_CHECK_NOT_UTF8,
 			    "xmlEncodeEntities: input not UTF-8");
 		    if (doc != NULL)

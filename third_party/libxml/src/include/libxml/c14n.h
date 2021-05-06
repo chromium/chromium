@@ -16,16 +16,18 @@
  */
 #ifndef __XML_C14N_H__
 #define __XML_C14N_H__
+
+#include <libxml/xmlversion.h>
+
 #ifdef LIBXML_C14N_ENABLED
 #ifdef LIBXML_OUTPUT_ENABLED
+
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#include <libxml/xmlversion.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
 
 /*
  * XML Canonicalization

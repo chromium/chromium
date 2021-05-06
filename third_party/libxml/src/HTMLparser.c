@@ -457,7 +457,12 @@ htmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
             ctxt->input->encoding = guess;
             handler = xmlFindCharEncodingHandler((const char *) guess);
             if (handler != NULL) {
-                xmlSwitchToEncoding(ctxt, handler);
+                /*
+                 * Don't use UTF-8 encoder which isn't required and
+                 * can produce invalid UTF-8.
+                 */
+                if (!xmlStrEqual(BAD_CAST handler->name, BAD_CAST "UTF-8"))
+                    xmlSwitchToEncoding(ctxt, handler);
             } else {
                 htmlParseErr(ctxt, XML_ERR_INVALID_ENCODING,
                              "Unsupported encoding %s", guess, NULL);
@@ -570,7 +575,16 @@ encoding_error:
 		     BAD_CAST buffer, NULL);
     }
 
-    ctxt->charset = XML_CHAR_ENCODING_8859_1;
+    /*
+     * Don't switch encodings twice. Note that if there's an encoder, we
+     * shouldn't receive invalid UTF-8 anyway.
+     *
+     * Note that if ctxt->input->buf == NULL, switching encodings is
+     * impossible, see Gitlab issue #34.
+     */
+    if ((ctxt->input->buf != NULL) &&
+        (ctxt->input->buf->encoder == NULL))
+        xmlSwitchEncoding(ctxt, XML_CHAR_ENCODING_8859_1);
     *len = 1;
     return((int) *ctxt->input->cur);
 }
@@ -1058,102 +1072,266 @@ html40ElementTable[] = {
 }
 };
 
+typedef struct {
+    const char *oldTag;
+    const char *newTag;
+} htmlStartCloseEntry;
+
 /*
  * start tags that imply the end of current element
  */
-static const char * const htmlStartClose[] = {
-"form",		"form", "p", "hr", "h1", "h2", "h3", "h4", "h5", "h6",
-		"dl", "ul", "ol", "menu", "dir", "address", "pre",
-		"listing", "xmp", "head", NULL,
-"head",		"p", NULL,
-"title",	"p", NULL,
-"body",		"head", "style", "link", "title", "p", NULL,
-"frameset",	"head", "style", "link", "title", "p", NULL,
-"li",		"p", "h1", "h2", "h3", "h4", "h5", "h6", "dl", "address",
-		"pre", "listing", "xmp", "head", "li", NULL,
-"hr",		"p", "head", NULL,
-"h1",		"p", "head", NULL,
-"h2",		"p", "head", NULL,
-"h3",		"p", "head", NULL,
-"h4",		"p", "head", NULL,
-"h5",		"p", "head", NULL,
-"h6",		"p", "head", NULL,
-"dir",		"p", "head", NULL,
-"address",	"p", "head", "ul", NULL,
-"pre",		"p", "head", "ul", NULL,
-"listing",	"p", "head", NULL,
-"xmp",		"p", "head", NULL,
-"blockquote",	"p", "head", NULL,
-"dl",		"p", "dt", "menu", "dir", "address", "pre", "listing",
-		"xmp", "head", NULL,
-"dt",		"p", "menu", "dir", "address", "pre", "listing", "xmp",
-                "head", "dd", NULL,
-"dd",		"p", "menu", "dir", "address", "pre", "listing", "xmp",
-                "head", "dt", NULL,
-"ul",		"p", "head", "ol", "menu", "dir", "address", "pre",
-		"listing", "xmp", NULL,
-"ol",		"p", "head", "ul", NULL,
-"menu",		"p", "head", "ul", NULL,
-"p",		"p", "head", "h1", "h2", "h3", "h4", "h5", "h6", FONTSTYLE, NULL,
-"div",		"p", "head", NULL,
-"noscript",	"script", NULL,
-"center",	"font", "b", "i", "p", "head", NULL,
-"a",		"a", "head", NULL,
-"caption",	"p", NULL,
-"colgroup",	"caption", "colgroup", "col", "p", NULL,
-"col",		"caption", "col", "p", NULL,
-"table",	"p", "head", "h1", "h2", "h3", "h4", "h5", "h6", "pre",
-		"listing", "xmp", "a", NULL,
-"th",		"th", "td", "p", "span", "font", "a", "b", "i", "u", NULL,
-"td",		"th", "td", "p", "span", "font", "a", "b", "i", "u", NULL,
-"tr",		"th", "td", "tr", "caption", "col", "colgroup", "p", NULL,
-"thead",	"caption", "col", "colgroup", NULL,
-"tfoot",	"th", "td", "tr", "caption", "col", "colgroup", "thead",
-		"tbody", "p", NULL,
-"tbody",	"th", "td", "tr", "caption", "col", "colgroup", "thead",
-		"tfoot", "tbody", "p", NULL,
-"optgroup",	"option", NULL,
-"option",	"option", NULL,
-"fieldset",	"legend", "p", "head", "h1", "h2", "h3", "h4", "h5", "h6",
-		"pre", "listing", "xmp", "a", NULL,
-/* most tags in in FONTSTYLE, PHRASE and SPECIAL should close <head> */
-"tt",		"head", NULL,
-"i",		"head", NULL,
-"b",		"head", NULL,
-"u",		"head", NULL,
-"s",		"head", NULL,
-"strike",	"head", NULL,
-"big",		"head", NULL,
-"small",	"head", NULL,
-
-"em",		"head", NULL,
-"strong",	"head", NULL,
-"dfn",		"head", NULL,
-"code",		"head", NULL,
-"samp",		"head", NULL,
-"kbd",		"head", NULL,
-"var",		"head", NULL,
-"cite",		"head", NULL,
-"abbr",		"head", NULL,
-"acronym",	"head", NULL,
-
-/* "a" */
-"img",		"head", NULL,
-/* "applet" */
-/* "embed" */
-/* "object" */
-"font",		"head", NULL,
-/* "basefont" */
-"br",		"head", NULL,
-/* "script" */
-"map",		"head", NULL,
-"q",		"head", NULL,
-"sub",		"head", NULL,
-"sup",		"head", NULL,
-"span",		"head", NULL,
-"bdo",		"head", NULL,
-"iframe",	"head", NULL,
-NULL
+static const htmlStartCloseEntry htmlStartClose[] = {
+    { "a", "a" },
+    { "a", "fieldset" },
+    { "a", "table" },
+    { "a", "td" },
+    { "a", "th" },
+    { "address", "dd" },
+    { "address", "dl" },
+    { "address", "dt" },
+    { "address", "form" },
+    { "address", "li" },
+    { "address", "ul" },
+    { "b", "center" },
+    { "b", "p" },
+    { "b", "td" },
+    { "b", "th" },
+    { "big", "p" },
+    { "caption", "col" },
+    { "caption", "colgroup" },
+    { "caption", "tbody" },
+    { "caption", "tfoot" },
+    { "caption", "thead" },
+    { "caption", "tr" },
+    { "col", "col" },
+    { "col", "colgroup" },
+    { "col", "tbody" },
+    { "col", "tfoot" },
+    { "col", "thead" },
+    { "col", "tr" },
+    { "colgroup", "colgroup" },
+    { "colgroup", "tbody" },
+    { "colgroup", "tfoot" },
+    { "colgroup", "thead" },
+    { "colgroup", "tr" },
+    { "dd", "dt" },
+    { "dir", "dd" },
+    { "dir", "dl" },
+    { "dir", "dt" },
+    { "dir", "form" },
+    { "dir", "ul" },
+    { "dl", "form" },
+    { "dl", "li" },
+    { "dt", "dd" },
+    { "dt", "dl" },
+    { "font", "center" },
+    { "font", "td" },
+    { "font", "th" },
+    { "form", "form" },
+    { "h1", "fieldset" },
+    { "h1", "form" },
+    { "h1", "li" },
+    { "h1", "p" },
+    { "h1", "table" },
+    { "h2", "fieldset" },
+    { "h2", "form" },
+    { "h2", "li" },
+    { "h2", "p" },
+    { "h2", "table" },
+    { "h3", "fieldset" },
+    { "h3", "form" },
+    { "h3", "li" },
+    { "h3", "p" },
+    { "h3", "table" },
+    { "h4", "fieldset" },
+    { "h4", "form" },
+    { "h4", "li" },
+    { "h4", "p" },
+    { "h4", "table" },
+    { "h5", "fieldset" },
+    { "h5", "form" },
+    { "h5", "li" },
+    { "h5", "p" },
+    { "h5", "table" },
+    { "h6", "fieldset" },
+    { "h6", "form" },
+    { "h6", "li" },
+    { "h6", "p" },
+    { "h6", "table" },
+    { "head", "a" },
+    { "head", "abbr" },
+    { "head", "acronym" },
+    { "head", "address" },
+    { "head", "b" },
+    { "head", "bdo" },
+    { "head", "big" },
+    { "head", "blockquote" },
+    { "head", "body" },
+    { "head", "br" },
+    { "head", "center" },
+    { "head", "cite" },
+    { "head", "code" },
+    { "head", "dd" },
+    { "head", "dfn" },
+    { "head", "dir" },
+    { "head", "div" },
+    { "head", "dl" },
+    { "head", "dt" },
+    { "head", "em" },
+    { "head", "fieldset" },
+    { "head", "font" },
+    { "head", "form" },
+    { "head", "frameset" },
+    { "head", "h1" },
+    { "head", "h2" },
+    { "head", "h3" },
+    { "head", "h4" },
+    { "head", "h5" },
+    { "head", "h6" },
+    { "head", "hr" },
+    { "head", "i" },
+    { "head", "iframe" },
+    { "head", "img" },
+    { "head", "kbd" },
+    { "head", "li" },
+    { "head", "listing" },
+    { "head", "map" },
+    { "head", "menu" },
+    { "head", "ol" },
+    { "head", "p" },
+    { "head", "pre" },
+    { "head", "q" },
+    { "head", "s" },
+    { "head", "samp" },
+    { "head", "small" },
+    { "head", "span" },
+    { "head", "strike" },
+    { "head", "strong" },
+    { "head", "sub" },
+    { "head", "sup" },
+    { "head", "table" },
+    { "head", "tt" },
+    { "head", "u" },
+    { "head", "ul" },
+    { "head", "var" },
+    { "head", "xmp" },
+    { "hr", "form" },
+    { "i", "center" },
+    { "i", "p" },
+    { "i", "td" },
+    { "i", "th" },
+    { "legend", "fieldset" },
+    { "li", "li" },
+    { "link", "body" },
+    { "link", "frameset" },
+    { "listing", "dd" },
+    { "listing", "dl" },
+    { "listing", "dt" },
+    { "listing", "fieldset" },
+    { "listing", "form" },
+    { "listing", "li" },
+    { "listing", "table" },
+    { "listing", "ul" },
+    { "menu", "dd" },
+    { "menu", "dl" },
+    { "menu", "dt" },
+    { "menu", "form" },
+    { "menu", "ul" },
+    { "ol", "form" },
+    { "ol", "ul" },
+    { "option", "optgroup" },
+    { "option", "option" },
+    { "p", "address" },
+    { "p", "blockquote" },
+    { "p", "body" },
+    { "p", "caption" },
+    { "p", "center" },
+    { "p", "col" },
+    { "p", "colgroup" },
+    { "p", "dd" },
+    { "p", "dir" },
+    { "p", "div" },
+    { "p", "dl" },
+    { "p", "dt" },
+    { "p", "fieldset" },
+    { "p", "form" },
+    { "p", "frameset" },
+    { "p", "h1" },
+    { "p", "h2" },
+    { "p", "h3" },
+    { "p", "h4" },
+    { "p", "h5" },
+    { "p", "h6" },
+    { "p", "head" },
+    { "p", "hr" },
+    { "p", "li" },
+    { "p", "listing" },
+    { "p", "menu" },
+    { "p", "ol" },
+    { "p", "p" },
+    { "p", "pre" },
+    { "p", "table" },
+    { "p", "tbody" },
+    { "p", "td" },
+    { "p", "tfoot" },
+    { "p", "th" },
+    { "p", "title" },
+    { "p", "tr" },
+    { "p", "ul" },
+    { "p", "xmp" },
+    { "pre", "dd" },
+    { "pre", "dl" },
+    { "pre", "dt" },
+    { "pre", "fieldset" },
+    { "pre", "form" },
+    { "pre", "li" },
+    { "pre", "table" },
+    { "pre", "ul" },
+    { "s", "p" },
+    { "script", "noscript" },
+    { "small", "p" },
+    { "span", "td" },
+    { "span", "th" },
+    { "strike", "p" },
+    { "style", "body" },
+    { "style", "frameset" },
+    { "tbody", "tbody" },
+    { "tbody", "tfoot" },
+    { "td", "tbody" },
+    { "td", "td" },
+    { "td", "tfoot" },
+    { "td", "th" },
+    { "td", "tr" },
+    { "tfoot", "tbody" },
+    { "th", "tbody" },
+    { "th", "td" },
+    { "th", "tfoot" },
+    { "th", "th" },
+    { "th", "tr" },
+    { "thead", "tbody" },
+    { "thead", "tfoot" },
+    { "title", "body" },
+    { "title", "frameset" },
+    { "tr", "tbody" },
+    { "tr", "tfoot" },
+    { "tr", "tr" },
+    { "tt", "p" },
+    { "u", "p" },
+    { "u", "td" },
+    { "u", "th" },
+    { "ul", "address" },
+    { "ul", "form" },
+    { "ul", "menu" },
+    { "ul", "ol" },
+    { "ul", "pre" },
+    { "xmp", "dd" },
+    { "xmp", "dl" },
+    { "xmp", "dt" },
+    { "xmp", "fieldset" },
+    { "xmp", "form" },
+    { "xmp", "li" },
+    { "xmp", "table" },
+    { "xmp", "ul" }
 };
 
 /*
@@ -1223,9 +1401,6 @@ static const elementPriority htmlEndPriority[] = {
     {NULL,    100} /* Default priority */
 };
 
-static const char** htmlStartCloseIndex[100];
-static int htmlStartCloseIndexinitialized = 0;
-
 /************************************************************************
  *									*
  *	functions to handle HTML specific data			*
@@ -1235,24 +1410,18 @@ static int htmlStartCloseIndexinitialized = 0;
 /**
  * htmlInitAutoClose:
  *
- * Initialize the htmlStartCloseIndex for fast lookup of closing tags names.
- * This is not reentrant. Call xmlInitParser() once before processing in
- * case of use in multithreaded programs.
+ * This is a no-op now.
  */
 void
 htmlInitAutoClose(void) {
-    int indx, i = 0;
+}
 
-    if (htmlStartCloseIndexinitialized) return;
+static int
+htmlCompareTags(const void *key, const void *member) {
+    const xmlChar *tag = (const xmlChar *) key;
+    const htmlElemDesc *desc = (const htmlElemDesc *) member;
 
-    for (indx = 0;indx < 100;indx ++) htmlStartCloseIndex[indx] = NULL;
-    indx = 0;
-    while ((htmlStartClose[i] != NULL) && (indx < 100 - 1)) {
-        htmlStartCloseIndex[indx++] = (const char**) &htmlStartClose[i];
-	while (htmlStartClose[i] != NULL) i++;
-	i++;
-    }
-    htmlStartCloseIndexinitialized = 1;
+    return(xmlStrcasecmp(tag, BAD_CAST desc->name));
 }
 
 /**
@@ -1265,14 +1434,12 @@ htmlInitAutoClose(void) {
  */
 const htmlElemDesc *
 htmlTagLookup(const xmlChar *tag) {
-    unsigned int i;
+    if (tag == NULL)
+        return(NULL);
 
-    for (i = 0; i < (sizeof(html40ElementTable) /
-                     sizeof(html40ElementTable[0]));i++) {
-        if (!xmlStrcasecmp(tag, BAD_CAST html40ElementTable[i].name))
-	    return((htmlElemDescPtr) &html40ElementTable[i]);
-    }
-    return(NULL);
+    return((const htmlElemDesc *) bsearch(tag, html40ElementTable,
+                sizeof(html40ElementTable) / sizeof(htmlElemDesc),
+                sizeof(htmlElemDesc), htmlCompareTags));
 }
 
 /**
@@ -1293,6 +1460,19 @@ htmlGetEndPriority (const xmlChar *name) {
 }
 
 
+static int
+htmlCompareStartClose(const void *vkey, const void *member) {
+    const htmlStartCloseEntry *key = (const htmlStartCloseEntry *) vkey;
+    const htmlStartCloseEntry *entry = (const htmlStartCloseEntry *) member;
+    int ret;
+
+    ret = strcmp(key->oldTag, entry->oldTag);
+    if (ret == 0)
+        ret = strcmp(key->newTag, entry->newTag);
+
+    return(ret);
+}
+
 /**
  * htmlCheckAutoClose:
  * @newtag:  The new tag name
@@ -1300,37 +1480,21 @@ htmlGetEndPriority (const xmlChar *name) {
  *
  * Checks whether the new tag is one of the registered valid tags for
  * closing old.
- * Initialize the htmlStartCloseIndex for fast lookup of closing tags names.
  *
  * Returns 0 if no, 1 if yes.
  */
 static int
 htmlCheckAutoClose(const xmlChar * newtag, const xmlChar * oldtag)
 {
-    int i, indx;
-    const char **closed = NULL;
+    htmlStartCloseEntry key;
+    void *res;
 
-    if (htmlStartCloseIndexinitialized == 0)
-        htmlInitAutoClose();
-
-    /* inefficient, but not a big deal */
-    for (indx = 0; indx < 100; indx++) {
-        closed = htmlStartCloseIndex[indx];
-        if (closed == NULL)
-            return (0);
-        if (xmlStrEqual(BAD_CAST * closed, newtag))
-            break;
-    }
-
-    i = closed - htmlStartClose;
-    i++;
-    while (htmlStartClose[i] != NULL) {
-        if (xmlStrEqual(BAD_CAST htmlStartClose[i], oldtag)) {
-            return (1);
-        }
-        i++;
-    }
-    return (0);
+    key.oldTag = (const char *) oldtag;
+    key.newTag = (const char *) newtag;
+    res = bsearch(&key, htmlStartClose,
+            sizeof(htmlStartClose) / sizeof(htmlStartCloseEntry),
+            sizeof(htmlStartCloseEntry), htmlCompareStartClose);
+    return(res != NULL);
 }
 
 /**
@@ -4043,12 +4207,10 @@ htmlParseEndTag(htmlParserCtxtPtr ctxt)
      * With the exception that the autoclose may have popped stuff out
      * of the stack.
      */
-    if (!xmlStrEqual(name, ctxt->name)) {
-        if ((ctxt->name != NULL) && (!xmlStrEqual(ctxt->name, name))) {
-            htmlParseErr(ctxt, XML_ERR_TAG_NAME_MISMATCH,
-	                 "Opening and ending tag mismatch: %s and %s\n",
-			 name, ctxt->name);
-        }
+    if ((ctxt->name != NULL) && (!xmlStrEqual(ctxt->name, name))) {
+        htmlParseErr(ctxt, XML_ERR_TAG_NAME_MISMATCH,
+                     "Opening and ending tag mismatch: %s and %s\n",
+                     name, ctxt->name);
     }
 
     /*
@@ -5872,7 +6034,8 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 			xmlGenericError(xmlGenericErrorContext,
 				"HPP: Parsing char data\n");
 #endif
-                        while ((cur != '<') && (in->cur < in->end)) {
+                        while ((ctxt->instate != XML_PARSER_EOF) &&
+                               (cur != '<') && (in->cur < in->end)) {
                             if (cur == '&') {
 			        htmlParseReference(ctxt);
                             } else {

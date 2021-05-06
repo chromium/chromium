@@ -518,7 +518,7 @@ htmlNodeDumpFileFormat(FILE *out, xmlDocPtr doc,
     buf = xmlOutputBufferCreateFile(out, handler);
     if (buf == NULL) return(0);
 
-    htmlNodeDumpFormatOutput(buf, doc, cur, encoding, format);
+    htmlNodeDumpFormatOutput(buf, doc, cur, NULL, format);
 
     ret = xmlOutputBufferClose(buf);
     return(ret);
@@ -670,13 +670,11 @@ htmlDtdDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
  * @buf:  the HTML buffer output
  * @doc:  the document
  * @cur:  the attribute pointer
- * @encoding:  the encoding string
  *
  * Dump an HTML attribute
  */
 static void
-htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur,
-	           const char *encoding ATTRIBUTE_UNUSED) {
+htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur) {
     xmlChar *value;
 
     /*
@@ -737,14 +735,15 @@ htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur,
  * @buf:  the HTML buffer output
  * @doc:  the document
  * @cur:  the current node
- * @encoding:  the encoding string
+ * @encoding:  the encoding string (unused)
  * @format:  should formatting spaces been added
  *
  * Dump an HTML node, recursive behaviour,children are printed too.
  */
 void
 htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
-	                 xmlNodePtr cur, const char *encoding, int format) {
+	                 xmlNodePtr cur, const char *encoding ATTRIBUTE_UNUSED,
+                         int format) {
     xmlNodePtr root;
     xmlAttrPtr attr;
     const htmlElemDesc * info;
@@ -788,7 +787,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                 xmlNsListDumpOutput(buf, cur->nsDef);
             attr = cur->properties;
             while (attr != NULL) {
-                htmlAttrDumpOutput(buf, doc, attr, encoding);
+                htmlAttrDumpOutput(buf, doc, attr);
                 attr = attr->next;
             }
 
@@ -835,7 +834,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
             break;
 
         case XML_ATTRIBUTE_NODE:
-            htmlAttrDumpOutput(buf, doc, (xmlAttrPtr) cur, encoding);
+            htmlAttrDumpOutput(buf, doc, (xmlAttrPtr) cur);
             break;
 
         case HTML_TEXT_NODE:
@@ -955,44 +954,45 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
  * @buf:  the HTML buffer output
  * @doc:  the document
  * @cur:  the current node
- * @encoding:  the encoding string
+ * @encoding:  the encoding string (unused)
  *
  * Dump an HTML node, recursive behaviour,children are printed too,
  * and formatting returns/spaces are added.
  */
 void
 htmlNodeDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
-	           xmlNodePtr cur, const char *encoding) {
-    htmlNodeDumpFormatOutput(buf, doc, cur, encoding, 1);
+	           xmlNodePtr cur, const char *encoding ATTRIBUTE_UNUSED) {
+    htmlNodeDumpFormatOutput(buf, doc, cur, NULL, 1);
 }
 
 /**
  * htmlDocContentDumpFormatOutput:
  * @buf:  the HTML buffer output
  * @cur:  the document
- * @encoding:  the encoding string
+ * @encoding:  the encoding string (unused)
  * @format:  should formatting spaces been added
  *
  * Dump an HTML document.
  */
 void
 htmlDocContentDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
-	                       const char *encoding, int format) {
-    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, encoding, format);
+	                       const char *encoding ATTRIBUTE_UNUSED,
+                               int format) {
+    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, NULL, format);
 }
 
 /**
  * htmlDocContentDumpOutput:
  * @buf:  the HTML buffer output
  * @cur:  the document
- * @encoding:  the encoding string
+ * @encoding:  the encoding string (unused)
  *
  * Dump an HTML document. Formatting return/spaces are added.
  */
 void
 htmlDocContentDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
-	                 const char *encoding) {
-    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, encoding, 1);
+	                 const char *encoding ATTRIBUTE_UNUSED) {
+    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, NULL, 1);
 }
 
 /************************************************************************

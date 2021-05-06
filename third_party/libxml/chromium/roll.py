@@ -402,7 +402,7 @@ def roll_libxml_win32(src_path):
             shutil.move('../include/libxml/xmlversion.h',
                         '../../win32/include/libxml/xmlversion.h')
             git('add', '../../win32/include/libxml/xmlversion.h')
-            git('commit', '-m', 'Windows')
+            git('commit', '--allow-empty', '-m', 'Windows')
             git('clean', '-f')
     print('Now push to Mac and run steps there.')
 

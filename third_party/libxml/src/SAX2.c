@@ -2493,20 +2493,21 @@ xmlSAX2Reference(void *ctx, const xmlChar *name)
 }
 
 /**
- * xmlSAX2Characters:
+ * xmlSAX2Text:
  * @ctx: the user data (XML parser context)
  * @ch:  a xmlChar string
  * @len: the number of xmlChar
+ * @type: text or cdata
  *
- * receiving some chars from the parser.
+ * Append characters.
  */
-void
-xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
+static void
+xmlSAX2Text(xmlParserCtxtPtr ctxt, const xmlChar *ch, int len,
+            xmlElementType type)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlNodePtr lastChild;
 
-    if (ctx == NULL) return;
+    if (ctxt == NULL) return;
 #ifdef DEBUG_SAX
     xmlGenericError(xmlGenericErrorContext,
 	    "SAX.xmlSAX2Characters(%.30s, %d)\n", ch, len);
@@ -2535,7 +2536,10 @@ xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
      * elements. Use an attribute in the structure !!!
      */
     if (lastChild == NULL) {
-        lastChild = xmlSAX2TextNode(ctxt, ch, len);
+        if (type == XML_TEXT_NODE)
+            lastChild = xmlSAX2TextNode(ctxt, ch, len);
+        else
+            lastChild = xmlNewCDataBlock(ctxt->myDoc, ch, len);
 	if (lastChild != NULL) {
 	    ctxt->node->children = lastChild;
 	    ctxt->node->last = lastChild;
@@ -2549,8 +2553,9 @@ xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
 	}
     } else {
 	int coalesceText = (lastChild != NULL) &&
-	    (lastChild->type == XML_TEXT_NODE) &&
-	    (lastChild->name == xmlStringText);
+	    (lastChild->type == type) &&
+	    ((type != XML_TEXT_NODE) ||
+             (lastChild->name == xmlStringText));
 	if ((coalesceText) && (ctxt->nodemem != 0)) {
 	    /*
 	     * The whole point of maintaining nodelen and nodemem,
@@ -2607,7 +2612,10 @@ xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
 	    }
 	} else {
 	    /* Mixed content, first time */
-	    lastChild = xmlSAX2TextNode(ctxt, ch, len);
+            if (type == XML_TEXT_NODE)
+                lastChild = xmlSAX2TextNode(ctxt, ch, len);
+            else
+                lastChild = xmlNewCDataBlock(ctxt->myDoc, ch, len);
 	    if (lastChild != NULL) {
 		xmlAddChild(ctxt->node, lastChild);
 		if (ctxt->node->children != NULL) {
@@ -2617,6 +2625,20 @@ xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
 	    }
 	}
     }
+}
+
+/**
+ * xmlSAX2Characters:
+ * @ctx: the user data (XML parser context)
+ * @ch:  a xmlChar string
+ * @len: the number of xmlChar
+ *
+ * receiving some chars from the parser.
+ */
+void
+xmlSAX2Characters(void *ctx, const xmlChar *ch, int len)
+{
+    xmlSAX2Text((xmlParserCtxtPtr) ctx, ch, len, XML_TEXT_NODE);
 }
 
 /**
@@ -2775,27 +2797,7 @@ xmlSAX2Comment(void *ctx, const xmlChar *value)
 void
 xmlSAX2CDataBlock(void *ctx, const xmlChar *value, int len)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlNodePtr ret, lastChild;
-
-    if (ctx == NULL) return;
-#ifdef DEBUG_SAX
-    xmlGenericError(xmlGenericErrorContext,
-	    "SAX.pcdata(%.10s, %d)\n", value, len);
-#endif
-    lastChild = xmlGetLastChild(ctxt->node);
-#ifdef DEBUG_SAX_TREE
-    xmlGenericError(xmlGenericErrorContext,
-	    "add chars to %s \n", ctxt->node->name);
-#endif
-    if ((lastChild != NULL) &&
-        (lastChild->type == XML_CDATA_SECTION_NODE)) {
-	xmlTextConcat(lastChild, value, len);
-    } else {
-	ret = xmlNewCDataBlock(ctxt->myDoc, value, len);
-	if (xmlAddChild(ctxt->node, ret) == NULL)
-		xmlFreeNode(ret);
-    }
+    xmlSAX2Text((xmlParserCtxtPtr) ctx, value, len, XML_CDATA_SECTION_NODE);
 }
 
 static int xmlSAX2DefaultVersionValue = 2;

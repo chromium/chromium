@@ -4,6 +4,7 @@
  * See Copyright for the status of this software.
  */
 
+#include <libxml/catalog.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlerror.h>
@@ -15,6 +16,9 @@ int
 LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
                      char ***argv ATTRIBUTE_UNUSED) {
     xmlInitParser();
+#ifdef LIBXML_CATALOG_ENABLED
+    xmlInitializeCatalog();
+#endif
     xmlSetGenericErrorFunc(NULL, xmlFuzzErrorFunc);
     xmlSetExternalEntityLoader(xmlFuzzEntityLoader);
 
@@ -94,6 +98,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
 exit:
     xmlFuzzDataCleanup();
+    xmlResetLastError();
     return(0);
 }
 

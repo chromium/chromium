@@ -12,41 +12,53 @@
 #include <libxml/xmlstring.h>
 #include "fuzz.h"
 
-#define LLVMFuzzerInitialize fuzzHtmlInit
-#define LLVMFuzzerTestOneInput fuzzHtml
-#include "html.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_HTML_FUZZER
+  #define LLVMFuzzerInitialize fuzzHtmlInit
+  #define LLVMFuzzerTestOneInput fuzzHtml
+  #include "html.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
-#define LLVMFuzzerInitialize fuzzRegexpInit
-#define LLVMFuzzerTestOneInput fuzzRegexp
-#include "regexp.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_REGEXP_FUZZER
+  #define LLVMFuzzerInitialize fuzzRegexpInit
+  #define LLVMFuzzerTestOneInput fuzzRegexp
+  #include "regexp.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
-#define LLVMFuzzerInitialize fuzzSchemaInit
-#define LLVMFuzzerTestOneInput fuzzSchema
-#include "schema.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_SCHEMA_FUZZER
+  #define LLVMFuzzerInitialize fuzzSchemaInit
+  #define LLVMFuzzerTestOneInput fuzzSchema
+  #include "schema.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
-#define LLVMFuzzerInitialize fuzzUriInit
-#define LLVMFuzzerTestOneInput fuzzUri
-#include "uri.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_URI_FUZZER
+  #define LLVMFuzzerInitialize fuzzUriInit
+  #define LLVMFuzzerTestOneInput fuzzUri
+  #include "uri.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
-#define LLVMFuzzerInitialize fuzzXmlInit
-#define LLVMFuzzerTestOneInput fuzzXml
-#include "xml.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_XML_FUZZER
+  #define LLVMFuzzerInitialize fuzzXmlInit
+  #define LLVMFuzzerTestOneInput fuzzXml
+  #include "xml.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
-#define LLVMFuzzerInitialize fuzzXPathInit
-#define LLVMFuzzerTestOneInput fuzzXPath
-#include "xpath.c"
-#undef LLVMFuzzerInitialize
-#undef LLVMFuzzerTestOneInput
+#ifdef HAVE_XPATH_FUZZER
+  #define LLVMFuzzerInitialize fuzzXPathInit
+  #define LLVMFuzzerTestOneInput fuzzXPath
+  #include "xpath.c"
+  #undef LLVMFuzzerInitialize
+  #undef LLVMFuzzerTestOneInput
+#endif
 
 typedef int
 (*initFunc)(int *argc, char ***argv);
@@ -91,6 +103,7 @@ error:
     return(ret);
 }
 
+#ifdef HAVE_XML_FUZZER
 static int
 testEntityLoader() {
     static const char data[] =
@@ -132,25 +145,40 @@ testEntityLoader() {
 
     return(ret);
 }
+#endif
 
 int
 main() {
     int ret = 0;
 
+#ifdef HAVE_XML_FUZZER
     if (testEntityLoader() != 0)
         ret = 1;
+#endif
+#ifdef HAVE_HTML_FUZZER
     if (testFuzzer(fuzzHtmlInit, fuzzHtml, "seed/html/*") != 0)
         ret = 1;
+#endif
+#ifdef HAVE_REGEXP_FUZZER
     if (testFuzzer(fuzzRegexpInit, fuzzRegexp, "seed/regexp/*") != 0)
         ret = 1;
+#endif
+#ifdef HAVE_SCHEMA_FUZZER
     if (testFuzzer(fuzzSchemaInit, fuzzSchema, "seed/schema/*") != 0)
         ret = 1;
+#endif
+#ifdef HAVE_URI_FUZZER
     if (testFuzzer(NULL, fuzzUri, "seed/uri/*") != 0)
         ret = 1;
+#endif
+#ifdef HAVE_XML_FUZZER
     if (testFuzzer(fuzzXmlInit, fuzzXml, "seed/xml/*") != 0)
         ret = 1;
+#endif
+#ifdef HAVE_XPATH_FUZZER
     if (testFuzzer(fuzzXPathInit, fuzzXPath, "seed/xpath/*") != 0)
         ret = 1;
+#endif
 
     if (ret == 0)
         printf("Successfully tested %d inputs\n", numInputs);

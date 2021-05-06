@@ -1153,6 +1153,11 @@ xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
              * Note: this is a bit dangerous, but that's what it
              * takes to use nearly compatible signature for different
              * encodings.
+             *
+             * FIXME: Encoders might buffer partial byte sequences, so
+             * this probably can't work. We should return an error and
+             * make sure that callers never try to switch the encoding
+             * twice.
              */
             xmlCharEncCloseFunc(input->buf->encoder);
             input->buf->encoder = handler;

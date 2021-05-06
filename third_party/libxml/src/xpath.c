@@ -488,14 +488,6 @@ int wrap_cmp( xmlNodePtr x, xmlNodePtr y );
  *									*
  ************************************************************************/
 
-#ifndef INFINITY
-#define INFINITY (DBL_MAX * DBL_MAX)
-#endif
-
-#ifndef NAN
-#define NAN (INFINITY / INFINITY)
-#endif
-
 double xmlXPathNAN;
 double xmlXPathPINF;
 double xmlXPathNINF;
@@ -505,11 +497,14 @@ double xmlXPathNINF;
  *
  * Initialize the XPath environment
  */
+ATTRIBUTE_NO_SANITIZE("float-divide-by-zero")
 void
 xmlXPathInit(void) {
-    xmlXPathNAN = NAN;
-    xmlXPathPINF = INFINITY;
-    xmlXPathNINF = -INFINITY;
+    /* MSVC doesn't allow division by zero in constant expressions. */
+    double zero = 0.0;
+    xmlXPathNAN = 0.0 / zero;
+    xmlXPathPINF = 1.0 / zero;
+    xmlXPathNINF = -xmlXPathPINF;
 }
 
 /**
@@ -538,9 +533,9 @@ xmlXPathIsInf(double val) {
 #ifdef isinf
     return isinf(val) ? (val > 0 ? 1 : -1) : 0;
 #else
-    if (val >= INFINITY)
+    if (val >= xmlXPathPINF)
         return 1;
-    if (val <= -INFINITY)
+    if (val <= -xmlXPathPINF)
         return -1;
     return 0;
 #endif
@@ -5873,10 +5868,10 @@ xmlXPathCastNodeToNumber (xmlNodePtr node) {
     double ret;
 
     if (node == NULL)
-	return(NAN);
+	return(xmlXPathNAN);
     strval = xmlXPathCastNodeToString(node);
     if (strval == NULL)
-	return(NAN);
+	return(xmlXPathNAN);
     ret = xmlXPathCastStringToNumber(strval);
     xmlFree(strval);
 
@@ -5897,7 +5892,7 @@ xmlXPathCastNodeSetToNumber (xmlNodeSetPtr ns) {
     double ret;
 
     if (ns == NULL)
-	return(NAN);
+	return(xmlXPathNAN);
     str = xmlXPathCastNodeSetToString(ns);
     ret = xmlXPathCastStringToNumber(str);
     xmlFree(str);
@@ -5917,13 +5912,13 @@ xmlXPathCastToNumber(xmlXPathObjectPtr val) {
     double ret = 0.0;
 
     if (val == NULL)
-	return(NAN);
+	return(xmlXPathNAN);
     switch (val->type) {
     case XPATH_UNDEFINED:
 #ifdef DEBUG_EXPR
 	xmlGenericError(xmlGenericErrorContext, "NUMBER: undefined\n");
 #endif
-	ret = NAN;
+	ret = xmlXPathNAN;
 	break;
     case XPATH_NODESET:
     case XPATH_XSLT_TREE:
@@ -5943,7 +5938,7 @@ xmlXPathCastToNumber(xmlXPathObjectPtr val) {
     case XPATH_RANGE:
     case XPATH_LOCATIONSET:
 	TODO;
-	ret = NAN;
+	ret = xmlXPathNAN;
 	break;
     }
     return(ret);
@@ -7570,7 +7565,7 @@ xmlXPathModValues(xmlXPathParserContextPtr ctxt) {
     CHECK_TYPE(XPATH_NUMBER);
     arg1 = ctxt->value->floatval;
     if (arg2 == 0)
-	ctxt->value->floatval = NAN;
+	ctxt->value->floatval = xmlXPathNAN;
     else {
 	ctxt->value->floatval = fmod(arg1, arg2);
     }
@@ -10000,7 +9995,7 @@ xmlXPathStringEvalNumber(const xmlChar *str) {
     if (cur == NULL) return(0);
     while (IS_BLANK_CH(*cur)) cur++;
     if ((*cur != '.') && ((*cur < '0') || (*cur > '9')) && (*cur != '-')) {
-        return(NAN);
+        return(xmlXPathNAN);
     }
     if (*cur == '-') {
 	isneg = 1;
@@ -10036,7 +10031,7 @@ xmlXPathStringEvalNumber(const xmlChar *str) {
 
         cur++;
 	if (((*cur < '0') || (*cur > '9')) && (!ok)) {
-	    return(NAN);
+	    return(xmlXPathNAN);
 	}
         while (*cur == '0') {
 	    frac = frac + 1;
@@ -10069,7 +10064,7 @@ xmlXPathStringEvalNumber(const xmlChar *str) {
       }
     }
     while (IS_BLANK_CH(*cur)) cur++;
-    if (*cur != 0) return(NAN);
+    if (*cur != 0) return(xmlXPathNAN);
     if (isneg) ret = -ret;
     if (is_exponent_negative) exponent = -exponent;
     ret *= pow(10.0, (double)exponent);
