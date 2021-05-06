@@ -86,7 +86,7 @@ bool FindInListValue(const std::string& needle, const base::Value* haystack) {
   const base::ListValue* list;
   if (!haystack->GetAsList(&list))
     return false;
-  return list->end() != list->Find(base::Value(needle));
+  return list->GetList().end() != list->Find(base::Value(needle));
 }
 
 }  // namespace

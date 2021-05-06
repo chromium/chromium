@@ -485,12 +485,11 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
     device_local_accounts->clear_account();
-    const base::ListValue* accounts_list = NULL;
+    const base::ListValue* accounts_list = nullptr;
     if (value.GetAsList(&accounts_list)) {
-      for (base::ListValue::const_iterator entry(accounts_list->begin());
-           entry != accounts_list->end(); ++entry) {
-        const base::DictionaryValue* entry_dict = NULL;
-        if (entry->GetAsDictionary(&entry_dict)) {
+      for (const auto& entry : accounts_list->GetList()) {
+        const base::DictionaryValue* entry_dict = nullptr;
+        if (entry.GetAsDictionary(&entry_dict)) {
           em::DeviceLocalAccountInfoProto* account =
               device_local_accounts->add_account();
           std::string account_id;
