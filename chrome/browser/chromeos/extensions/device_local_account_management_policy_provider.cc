@@ -681,10 +681,10 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
         safe = false;
         continue;
       }
-      for (auto it2 = list_value->begin(); it2 != list_value->end(); ++it2) {
+      for (const auto& entry : list_value->GetList()) {
         // Try to read as dictionary.
         const base::DictionaryValue *dict_value;
-        if (it2->GetAsDictionary(&dict_value)) {
+        if (entry.GetAsDictionary(&dict_value)) {
           if (dict_value->size() != 1) {
             LOG(ERROR) << extension->id()
                        << " has dict in permission list with size "
@@ -708,7 +708,7 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
         }
         // Try to read as string.
         std::string permission_string;
-        if (!it2->GetAsString(&permission_string)) {
+        if (!entry.GetAsString(&permission_string)) {
           LOG(ERROR) << extension->id() << ": " << it.key()
                      << " contains a token that's neither a string nor a dict.";
           safe = false;
