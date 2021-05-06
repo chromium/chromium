@@ -249,6 +249,8 @@ class TabSearchStoryMeasureMemory2TabSearch(TabSearchStoryMeasureMemory):
   NAME = 'tab_search:measure_memory:2tab_search'
 
   def RunNavigateSteps(self, action_runner):
+    super(TabSearchStoryMeasureMemory2TabSearch,
+          self).RunNavigateSteps(action_runner)
     tabs = action_runner.tab.browser.tabs
     new_tab = tabs.New()
     new_tab.Navigate(TAB_SEARCH_URL)
@@ -264,6 +266,8 @@ class TabSearchStoryMeasureMemory3TabSearch(TabSearchStoryMeasureMemory):
   NAME = 'tab_search:measure_memory:3tab_search'
 
   def RunNavigateSteps(self, action_runner):
+    super(TabSearchStoryMeasureMemory3TabSearch,
+          self).RunNavigateSteps(action_runner)
     tabs = action_runner.tab.browser.tabs
     for i in range(2):
       new_tab = tabs.New()
