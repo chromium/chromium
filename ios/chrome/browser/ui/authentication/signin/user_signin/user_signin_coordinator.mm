@@ -698,8 +698,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 - (UserSigninViewController*)
     generateUserSigninViewControllerWithUnifiedConsentViewController:
         (UIViewController*)viewController {
-  return [[UserSigninViewController alloc]
-      initWithEmbeddedViewController:viewController];
+  UserSigninViewController* signinViewController =
+      [[UserSigninViewController alloc]
+          initWithEmbeddedViewController:viewController];
+  // TODO(crbug.com/1202731): Use Chrome Identity Service capabilities API once
+  // it has been defined.
+  signinViewController.forceEqualVisualWeightDistribution = NO;
+  return signinViewController;
 }
 
 @end
