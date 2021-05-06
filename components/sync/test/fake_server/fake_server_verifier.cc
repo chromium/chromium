@@ -105,7 +105,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
   size_t actual_count = 0;
   if (entities->GetList(model_type_string, &entity_list)) {
     base::Value name_value(name);
-    for (const auto& entity : *entity_list) {
+    for (const auto& entity : entity_list->GetList()) {
       if (name_value.Equals(&entity))
         actual_count++;
     }
