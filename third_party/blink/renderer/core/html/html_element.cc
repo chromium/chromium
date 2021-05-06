@@ -144,13 +144,13 @@ bool IsEditable(const Node& node) {
 
 const WebFeature kNoWebFeature = static_cast<WebFeature>(0);
 
-HTMLElement* GetParentForDirectionality(HTMLElement* element,
+HTMLElement* GetParentForDirectionality(const HTMLElement& element,
                                         bool& needs_slot_assignment_recalc) {
-  if (element->IsPseudoElement())
-    return DynamicTo<HTMLElement>(element->ParentOrShadowHostNode());
+  if (element.IsPseudoElement())
+    return DynamicTo<HTMLElement>(element.ParentOrShadowHostNode());
 
-  if (element->IsChildOfShadowHost()) {
-    ShadowRoot* root = element->ShadowRootOfParent();
+  if (element.IsChildOfShadowHost()) {
+    ShadowRoot* root = element.ShadowRootOfParent();
     if (!root || !root->HasSlotAssignment())
       return nullptr;
 
@@ -160,7 +160,7 @@ HTMLElement* GetParentForDirectionality(HTMLElement* element,
     }
   }
   if (auto* parent_slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(
-          element->parentElement())) {
+          element.parentElement())) {
     ShadowRoot* root = parent_slot->ContainingShadowRoot();
     if (root->NeedsSlotAssignmentRecalc()) {
       needs_slot_assignment_recalc = true;
@@ -170,8 +170,8 @@ HTMLElement* GetParentForDirectionality(HTMLElement* element,
 
   // We should take care of all cases that would trigger a slot assignment
   // recalc, and delay the check for later for a performance reason.
-  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(element->GetDocument());
-  return DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(*element));
+  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(element.GetDocument());
+  return DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(element));
 }
 
 }  // anonymous namespace
@@ -1385,10 +1385,11 @@ void HTMLElement::AdjustCandidateDirectionalityForSlot(
       }
     }
 
+    bool needs_slot_assignment_recalc = false;
     for (auto* element_to_adjust = DynamicTo<HTMLElement>(node_to_adjust);
          element_to_adjust;
-         element_to_adjust = DynamicTo<HTMLElement>(
-             FlatTreeTraversal::ParentElement(*element_to_adjust))) {
+         element_to_adjust = GetParentForDirectionality(
+             *element_to_adjust, needs_slot_assignment_recalc)) {
       if (ElementAffectsDirectionality(element_to_adjust)) {
         directionality_set.insert(element_to_adjust);
         continue;
@@ -1805,7 +1806,8 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   bool is_old_auto = SelfOrAncestorHasDirAutoAttribute();
   bool is_new_auto = HasDirectionAuto();
   bool needs_slot_assignment_recalc = false;
-  auto* parent = GetParentForDirectionality(this, needs_slot_assignment_recalc);
+  auto* parent =
+      GetParentForDirectionality(*this, needs_slot_assignment_recalc);
   if (!is_old_auto || !is_new_auto) {
     if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
       parent->AdjustDirectionalityIfNeededAfterChildAttributeChanged(this);
@@ -2006,7 +2008,7 @@ void HTMLElement::BeginParsingChildren() {
     } else if (!ElementAffectsDirectionality(this)) {
       bool needs_slot_assignment_recalc = false;
       auto* parent =
-          GetParentForDirectionality(this, needs_slot_assignment_recalc);
+          GetParentForDirectionality(*this, needs_slot_assignment_recalc);
       if (needs_slot_assignment_recalc)
         SetNeedsInheritDirectionalityFromParent();
       else if (parent)
