@@ -8,6 +8,11 @@
 #include <set>
 #include <utility>
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
@@ -51,6 +56,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -1589,6 +1595,197 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
+}
+
+class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
+ public:
+  WebAppInstallTaskTestWithFileHandlers() {
+    scoped_feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI},
+                                          {});
+  }
+
+  void SetUp() override {
+    WebAppInstallTaskTest::SetUp();
+
+    HostContentSettingsMapFactory::GetForProfile(profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsType::FILE_HANDLING,
+                                       ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+  std::unique_ptr<blink::Manifest> CreateManifest(const GURL& url) {
+    auto manifest = std::make_unique<blink::Manifest>();
+    manifest->start_url = url;
+    manifest->name = u"Manifest Name";
+    return manifest;
+  }
+
+  std::unique_ptr<WebApplicationInfo> CreateWebApplicationInfo(
+      const GURL& url) {
+    auto app_info = std::make_unique<WebApplicationInfo>();
+    app_info->title = u"Test App";
+    app_info->start_url = url;
+    app_info->scope = url;
+    return app_info;
+  }
+
+  void AddFileHandler(
+      std::vector<blink::Manifest::FileHandler>* file_handlers) {
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = GURL("https://example.com/action");
+    file_handler.name = u"Test handler";
+    file_handler.accept[u"application/pdf"].emplace_back(u".pdf");
+    file_handlers->emplace_back(file_handler);
+  }
+
+  InstallResult InstallWebAppFromManifest(
+      std::unique_ptr<blink::Manifest> manifest,
+      webapps::WebappInstallSource source) {
+    data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+
+    base::RunLoop run_loop;
+    bool callback_called = false;
+    InstallResult result;
+
+    install_task_->InstallWebAppFromManifest(
+        web_contents(), /*bypass_service_worker_check=*/false, source,
+        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindLambdaForTesting(
+            [&](const AppId& installed_app_id, InstallResultCode code) {
+              result.app_id = installed_app_id;
+              result.code = code;
+
+              callback_called = true;
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+    EXPECT_TRUE(callback_called);
+    return result;
+  }
+
+  InstallResult UpdateWebAppFromInfo(
+      const AppId& app_id,
+      std::unique_ptr<WebApplicationInfo> app_info) {
+    base::RunLoop run_loop;
+    bool callback_called = false;
+    InstallResult result;
+
+    install_task_->UpdateWebAppFromInfo(
+        web_contents(), app_id, std::move(app_info),
+        /*redownload_app_icons=*/false,
+        base::BindLambdaForTesting(
+            [&](const AppId& installed_app_id, InstallResultCode code) {
+              result.app_id = installed_app_id;
+              result.code = code;
+
+              callback_called = true;
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+    EXPECT_TRUE(callback_called);
+    return result;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebAppInstallTaskTestWithFileHandlers,
+       InstallWebAppFromManifest_OsIntegrationEnabledForUserInstalledApps) {
+  const GURL url = GURL("https://example.com/path");
+  const AppId app_id = GenerateAppIdFromURL(url);
+  auto manifest = CreateManifest(url);
+  AddFileHandler(&manifest->file_handlers);
+
+  InstallResult install_result = InstallWebAppFromManifest(
+      CreateManifest(url), webapps::WebappInstallSource::MENU_BROWSER_TAB);
+
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(app_id, install_result.app_id);
+  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
+}
+
+TEST_F(WebAppInstallTaskTestWithFileHandlers,
+       InstallWebAppFromManifest_OsIntegrationDisabledForDefaultApps) {
+  const GURL url = GURL("https://example.com/path");
+  const AppId app_id = GenerateAppIdFromURL(url);
+  auto manifest = CreateManifest(url);
+  AddFileHandler(&manifest->file_handlers);
+
+  InstallResult install_result = InstallWebAppFromManifest(
+      CreateManifest(url), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(app_id, install_result.app_id);
+#if defined(OS_CHROMEOS)
+  // OS integration is always enabled in ChromeOS
+  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
+#else
+  EXPECT_EQ(0u, test_os_integration_manager().num_create_file_handlers_calls());
+#endif  // defined(OS_CHROMEOS)
+}
+
+TEST_F(WebAppInstallTaskTestWithFileHandlers,
+       UpdateWebAppFromInfo_OsIntegrationEnabledForUserInstalledApps) {
+  const GURL url = GURL("https://example.com/path");
+  const AppId app_id = GenerateAppIdFromURL(url);
+
+  // Install the app.
+  InstallResult install_result = InstallWebAppFromManifest(
+      CreateManifest(url), webapps::WebappInstallSource::MENU_BROWSER_TAB);
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(app_id, install_result.app_id);
+  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
+
+  ResetInstallTask();
+
+  // Update the app, adding a file handler.
+  auto app_info = CreateWebApplicationInfo(url);
+  AddFileHandler(&app_info->file_handlers);
+
+  InstallResult update_result =
+      UpdateWebAppFromInfo(app_id, std::move(app_info));
+  EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, update_result.code);
+  EXPECT_EQ(app_id, update_result.app_id);
+  EXPECT_EQ(1u, test_os_integration_manager().num_update_file_handlers_calls());
+}
+
+TEST_F(WebAppInstallTaskTestWithFileHandlers,
+       UpdateWebAppFromInfo_OsIntegrationDisabledForDefaultApps) {
+  const GURL url = GURL("https://example.com/path");
+  const AppId app_id = GenerateAppIdFromURL(url);
+
+  // Install the app.
+  InstallResult install_result = InstallWebAppFromManifest(
+      CreateManifest(url), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(app_id, install_result.app_id);
+#if defined(OS_CHROMEOS)
+  // OS integration is always enabled in ChromeOS
+  EXPECT_EQ(1u, test_os_integration_manager().num_create_file_handlers_calls());
+#else
+  EXPECT_EQ(0u, test_os_integration_manager().num_create_file_handlers_calls());
+#endif  // defined(OS_CHROMEOS)
+
+  ResetInstallTask();
+
+  // Update the app, adding a file handler.
+  auto app_info = CreateWebApplicationInfo(url);
+  AddFileHandler(&app_info->file_handlers);
+
+  InstallResult update_result =
+      UpdateWebAppFromInfo(app_id, std::move(app_info));
+  EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, update_result.code);
+  EXPECT_EQ(app_id, update_result.app_id);
+#if defined(OS_CHROMEOS)
+  // OS integration is always enabled in ChromeOS
+  EXPECT_EQ(1u, test_os_integration_manager().num_update_file_handlers_calls());
+#else
+  EXPECT_EQ(0u, test_os_integration_manager().num_update_file_handlers_calls());
+#endif  // defined(OS_CHROMEOS)
 }
 
 }  // namespace web_app

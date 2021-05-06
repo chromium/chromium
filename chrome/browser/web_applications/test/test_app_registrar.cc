@@ -231,4 +231,8 @@ WebAppRegistrar* TestAppRegistrar::AsWebAppRegistrar() {
   return nullptr;
 }
 
+const WebAppRegistrar* TestAppRegistrar::AsWebAppRegistrar() const {
+  return nullptr;
+}
+
 }  // namespace web_app

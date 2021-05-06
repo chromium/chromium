@@ -52,6 +52,11 @@ std::vector<AppId> WebAppRegistrar::GetAppsInSyncInstall() {
   return app_ids;
 }
 
+bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->HasOnlySource(Source::Type::kDefault);
+}
+
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager())
@@ -251,6 +256,10 @@ RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
 }
 
 WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() {
+  return this;
+}
+
+const WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() const {
   return this;
 }
 

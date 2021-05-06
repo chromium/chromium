@@ -157,6 +157,7 @@ class AppRegistrar {
 
   // Safe downcast.
   virtual WebAppRegistrar* AsWebAppRegistrar() = 0;
+  virtual const WebAppRegistrar* AsWebAppRegistrar() const = 0;
   virtual extensions::BookmarkAppRegistrar* AsBookmarkAppRegistrar();
 
   void SetSubsystems(OsIntegrationManager* os_integration_manager);

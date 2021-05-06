@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
@@ -322,6 +323,8 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
 #else
   options.os_hooks[OsHookType::kUrlHandlers] = false;
 #endif
+
+  MaybeDisableOsIntegration(registrar_, app_id, &options);
 
   os_integration_manager_->InstallOsHooks(
       app_id,

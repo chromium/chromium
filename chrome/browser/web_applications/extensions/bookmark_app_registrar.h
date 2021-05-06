@@ -80,6 +80,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   std::vector<web_app::AppId> GetAppIds() const override;
   web_app::WebAppRegistrar* AsWebAppRegistrar() override;
+  const web_app::WebAppRegistrar* AsWebAppRegistrar() const override;
   BookmarkAppRegistrar* AsBookmarkAppRegistrar() override;
 
   syncer::StringOrdinal GetUserPageOrdinal(const web_app::AppId& app_id) const;

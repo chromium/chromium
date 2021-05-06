@@ -91,6 +91,7 @@ class TestAppRegistrar : public AppRegistrar {
   RunOnOsLoginMode GetAppRunOnOsLoginMode(const AppId& app_id) const override;
   std::vector<AppId> GetAppIds() const override;
   WebAppRegistrar* AsWebAppRegistrar() override;
+  const WebAppRegistrar* AsWebAppRegistrar() const override;
 
  private:
   std::map<AppId, AppInfo> installed_apps_;

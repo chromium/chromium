@@ -42,6 +42,10 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   const WebApp* GetAppByStartUrl(const GURL& start_url) const;
   std::vector<AppId> GetAppsInSyncInstall();
 
+  // Returns true if the app was preinstalled and NOT installed via any other
+  // mechanism.
+  bool WasInstalledByDefaultOnly(const AppId& app_id) const;
+
   // AppRegistrar:
   void Start() override;
   void Shutdown() override;
@@ -85,6 +89,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   RunOnOsLoginMode GetAppRunOnOsLoginMode(const AppId& app_id) const override;
   std::vector<AppId> GetAppIds() const override;
   WebAppRegistrar* AsWebAppRegistrar() override;
+  const WebAppRegistrar* AsWebAppRegistrar() const override;
 
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(

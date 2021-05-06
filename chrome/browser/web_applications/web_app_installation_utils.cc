@@ -13,9 +13,13 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -160,6 +164,30 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetCaptureLinks(web_app_info.capture_links);
 
   web_app.SetManifestUrl(web_app_info.manifest_url);
+}
+
+void MaybeDisableOsIntegration(const AppRegistrar* app_registrar,
+                               const AppId& app_id,
+                               InstallOsHooksOptions* options) {
+#if !defined(OS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
+  DCHECK(app_registrar);
+  const WebAppRegistrar* web_app_registrar = app_registrar->AsWebAppRegistrar();
+
+  // Disable OS integration if the app was installed by default only, and not
+  // through any other means like an enterprise policy or store.
+  if (web_app_registrar &&
+      web_app_registrar->WasInstalledByDefaultOnly(app_id)) {
+    options->add_to_desktop = false;
+    options->add_to_quick_launch_bar = false;
+    options->os_hooks[OsHookType::kShortcuts] = false;
+    options->os_hooks[OsHookType::kRunOnOsLogin] = false;
+    options->os_hooks[OsHookType::kShortcutsMenu] = false;
+    options->os_hooks[OsHookType::kUninstallationViaOsSettings] = false;
+    options->os_hooks[OsHookType::kFileHandlers] = false;
+    options->os_hooks[OsHookType::kProtocolHandlers] = false;
+    options->os_hooks[OsHookType::kUrlHandlers] = false;
+  }
+#endif  // !defined(OS_CHROMEOS)
 }
 
 }  // namespace web_app

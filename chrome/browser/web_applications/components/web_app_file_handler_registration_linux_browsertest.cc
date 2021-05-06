@@ -102,7 +102,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
       });
   SetRegisterMimeTypesOnLinuxCallbackForTesting(std::move(callback));
 
-  InstallApp(CreateInstallOptions(url));
+  // Override the source as default apps don't get file handlers registered.
+  ExternalInstallOptions install_options = CreateInstallOptions(url);
+  install_options.install_source = ExternalInstallSource::kExternalPolicy;
+  InstallApp(install_options);
   run_loop.Run();
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
   ASSERT_TRUE(path_reached);

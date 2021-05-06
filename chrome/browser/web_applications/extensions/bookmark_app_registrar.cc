@@ -382,6 +382,11 @@ web_app::WebAppRegistrar* BookmarkAppRegistrar::AsWebAppRegistrar() {
   return nullptr;
 }
 
+const web_app::WebAppRegistrar* BookmarkAppRegistrar::AsWebAppRegistrar()
+    const {
+  return nullptr;
+}
+
 BookmarkAppRegistrar* BookmarkAppRegistrar::AsBookmarkAppRegistrar() {
   return this;
 }

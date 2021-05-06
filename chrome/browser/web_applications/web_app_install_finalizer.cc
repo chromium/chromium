@@ -359,14 +359,16 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
+  bool should_update_os_hooks = ShouldUpdateOsHooks(app_id);
   bool file_handlers_need_os_update =
       DoFileHandlersNeedOsUpdate(app_id, web_app_info, web_contents);
   // Grab the shortcut info before the app is removed from the database.
   os_integration_manager().GetShortcutInfoForApp(
-      app_id, base::BindOnce(
-                  &WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
-                  weak_ptr_factory_.GetWeakPtr(), file_handlers_need_os_update,
-                  std::move(callback), app_id, web_app_info));
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
+                     weak_ptr_factory_.GetWeakPtr(), should_update_os_hooks,
+                     file_handlers_need_os_update, std::move(callback), app_id,
+                     web_app_info));
 }
 
 void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
@@ -541,6 +543,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 }
 
 void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
+    bool should_update_os_hooks,
     bool file_handlers_need_os_update,
     InstallFinalizedCallback callback,
     const AppId app_id,
@@ -552,11 +555,24 @@ void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), std::move(old_shortcut),
+      existing_web_app->name(), std::move(old_shortcut), should_update_os_hooks,
       file_handlers_need_os_update, web_app_info);
 
   SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
                                       std::move(commit_callback));
+}
+
+bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
+#if defined(OS_CHROMEOS)
+  // OS integration should always be enabled on ChromeOS.
+  return true;
+#else
+  // If the app being updated was installed by default and not also manually
+  // installed by the user or an enterprise policy, disable os integration.
+  WebAppRegistrar* web_app_registrar = registrar().AsWebAppRegistrar();
+  DCHECK(web_app_registrar);
+  return !web_app_registrar->WasInstalledByDefaultOnly(app_id);
+#endif  // defined(OS_CHROMEOS)
 }
 
 bool WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
@@ -627,6 +643,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     AppId app_id,
     std::string old_name,
     std::unique_ptr<ShortcutInfo> old_shortcut,
+    bool should_update_os_hooks,
     bool file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info,
     bool success) {
@@ -636,9 +653,11 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  os_integration_manager().UpdateOsHooks(
-      app_id, old_name, std::move(old_shortcut), file_handlers_need_os_update,
-      web_app_info);
+  if (should_update_os_hooks) {
+    os_integration_manager().UpdateOsHooks(
+        app_id, old_name, std::move(old_shortcut), file_handlers_need_os_update,
+        web_app_info);
+  }
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);
 }
