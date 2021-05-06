@@ -12,6 +12,7 @@
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/geolocation_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -24,18 +25,12 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    chromeos::shill_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
-    manager_client_ = chromeos::ShillManagerClient::Get();
-    manager_test_ = manager_client_->GetTestInterface();
     provider_ = new WifiDataProviderChromeOs();
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
     provider_.reset();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::shill_clients::Shutdown();
   }
 
   bool GetAccessPointData() { return provider_->GetAccessPointData(&ap_data_); }
@@ -53,16 +48,16 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
         properties.SetKey(shill::kGeoChannelProperty, base::Value(channel));
         properties.SetKey(shill::kGeoSignalStrengthProperty,
                           base::Value(strength));
-        manager_test_->AddGeoNetwork(shill::kGeoWifiAccessPointsProperty,
-                                     properties);
+        network_handler_test_helper_.manager_test()->AddGeoNetwork(
+            shill::kGeoWifiAccessPointsProperty, properties);
       }
     }
     base::RunLoop().RunUntilIdle();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   scoped_refptr<WifiDataProviderChromeOs> provider_;
-  chromeos::ShillManagerClient* manager_client_;
   chromeos::ShillManagerClient::TestInterface* manager_test_;
   WifiData::AccessPointDataSet ap_data_;
 };
