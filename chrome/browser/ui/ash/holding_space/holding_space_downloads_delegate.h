@@ -21,23 +21,14 @@ class FilePath;
 namespace ash {
 
 // A delegate of `HoldingSpaceKeyedService` tasked with monitoring the status of
-// of downloads and notifying a callback on download completion.
+// of downloads on its behalf.
 class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
                                       public arc::ArcIntentHelperObserver,
                                       public content::DownloadManager::Observer,
                                       public download::DownloadItem::Observer {
  public:
-  // Callback to be invoked when a download is completed. Note that the
-  // specified type must be a download type. Also note that this callback will
-  // only be invoked after holding space persistence is restored.
-  using ItemDownloadedCallback =
-      base::RepeatingCallback<void(HoldingSpaceItem::Type,
-                                   const base::FilePath&)>;
-
-  HoldingSpaceDownloadsDelegate(
-      Profile* profile,
-      HoldingSpaceModel* model,
-      ItemDownloadedCallback item_downloaded_callback);
+  HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
+                                HoldingSpaceModel* model);
   HoldingSpaceDownloadsDelegate(const HoldingSpaceDownloadsDelegate&) = delete;
   HoldingSpaceDownloadsDelegate& operator=(
       const HoldingSpaceDownloadsDelegate&) = delete;
@@ -71,12 +62,6 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   // be a download type.
   void OnDownloadCompleted(HoldingSpaceItem::Type type,
                            const base::FilePath& file_path);
-
-  // Removes all observers.
-  void RemoveObservers();
-
-  // Callback to invoke when a download is completed.
-  ItemDownloadedCallback item_downloaded_callback_;
 
   base::ScopedObservation<arc::ArcIntentHelperBridge,
                           arc::ArcIntentHelperObserver>

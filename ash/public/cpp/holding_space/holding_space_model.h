@@ -15,6 +15,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -64,6 +65,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   void UpdateBackingFileForItem(const std::string& id,
                                 const base::FilePath& file_path,
                                 const GURL& file_system_url);
+
+  // Updates the progress for a single holding space item.
+  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
+  // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
+  void UpdateProgressForItem(const std::string& id,
+                             const base::Optional<float>& progress);
 
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true.

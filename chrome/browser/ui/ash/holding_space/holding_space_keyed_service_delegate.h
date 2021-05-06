@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
 class Profile;
 
@@ -32,12 +33,16 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   void NotifyPersistenceRestored();
 
  protected:
-  HoldingSpaceKeyedServiceDelegate(Profile* profile, HoldingSpaceModel* model);
+  HoldingSpaceKeyedServiceDelegate(HoldingSpaceKeyedService* service,
+                                   HoldingSpaceModel* model);
 
-  // Returns the `profile_` associated with the `HoldingSpaceKeyedService`.
-  Profile* profile() { return profile_; }
+  // Returns the `profile_` associated with the `service_`.
+  Profile* profile() { return service_->profile(); }
 
-  // Returns the holding space model owned by `HoldingSpaceKeyedService`.
+  // Returns the `service` which owns this delegate.
+  HoldingSpaceKeyedService* service() { return service_; }
+
+  // Returns the holding space model owned by `service_`.
   HoldingSpaceModel* model() { return model_; }
 
   // Returns if persistence is being restored.
@@ -54,7 +59,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // Invoked when holding space persistence has been restored.
   virtual void OnPersistenceRestored();
 
-  Profile* const profile_;
+  HoldingSpaceKeyedService* const service_;
   HoldingSpaceModel* const model_;
 
   // If persistence is being restored.
