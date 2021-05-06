@@ -134,6 +134,12 @@ public class NotificationConstants {
     public static final int NOTIFICATION_ID_SMS_FETCHER_INCOMING = 15;
 
     /**
+     * Unique identifier for notifications indicating that the phone can be
+     * used as a security key with another device.
+     */
+    public static final int NOTIFICATION_ID_SECURITY_KEY = 16;
+
+    /**
      * Separator used to separate the notification origin from additional data such as the
      * developer specified tag. This and the prefix following it need to be the same as the one
      * specified in notification_id_generator.cc.

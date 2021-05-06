@@ -257,6 +257,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_NOTIFICATION_CATEGORY_PRICE_DROP" desc="Label for notification that indicates there is a lower price in an open tab, within a list of notification categories. [CHAR_LIMIT=32]">
         Price drop alerts
       </message>
+      <message name="IDS_NOTIFICATION_CATEGORY_SECURITY_KEY" desc="Label for a category of notifications that tells the user that they can sign in on a different computer by using this device [CHAR_LIMIT=32]">
+        Sign-in verifications
+      </message>
 
       <message name="IDS_UNSUPPORTED" desc="Message displayed to the user when an attempted action is not supported.">
         Unsupported

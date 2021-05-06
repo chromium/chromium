@@ -97,6 +97,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String TWA_DISCLOSURE_SUBSEQUENT = "twa_disclosure_subsequent";
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
         String PRICE_DROP = "shopping_price_drop_alerts";
+        String SECURITY_KEY = "security_key";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -228,6 +229,13 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(ChannelId.PRICE_DROP,
                             R.string.notification_category_price_drop,
                             NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
+
+            // The security key notification channel will only appear for users
+            // who use this feature.
+            map.put(ChannelId.SECURITY_KEY,
+                    PredefinedChannel.create(ChannelId.SECURITY_KEY,
+                            R.string.notification_category_security_key,
+                            NotificationManager.IMPORTANCE_HIGH, ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);
             STARTUP = Collections.unmodifiableSet(startup);
