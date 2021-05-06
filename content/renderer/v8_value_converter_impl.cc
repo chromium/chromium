@@ -242,9 +242,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     }
 
     case base::Value::Type::DOUBLE: {
-      double val = 0.0;
-      CHECK(value->GetAsDouble(&val));
-      return v8::Number::New(isolate, val);
+      return v8::Number::New(isolate, value->GetDouble());
     }
 
     case base::Value::Type::STRING: {
