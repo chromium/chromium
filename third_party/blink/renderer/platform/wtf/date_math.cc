@@ -671,12 +671,9 @@ base::Optional<base::Time> ParseDateFromNullTerminatedCharacters(
     UErrorCode status = U_ZERO_ERROR;
     // Handle the conversion of localtime to UTC the same way as the
     // latest ECMA 262 spec for Javascript (v8 does that, too).
-    // TODO(jshin): Once http://bugs.icu-project.org/trac/ticket/13705
-    // is fixed, no casting would be necessary.
     static_cast<const icu::BasicTimeZone*>(timezone.get())
-        ->getOffsetFromLocal(ms, icu::BasicTimeZone::kFormer,
-                             icu::BasicTimeZone::kFormer, raw_offset,
-                             dst_offset, status);
+        ->getOffsetFromLocal(ms, UCAL_TZ_LOCAL_FORMER, UCAL_TZ_LOCAL_FORMER,
+                             raw_offset, dst_offset, status);
     DCHECK(U_SUCCESS(status));
     offset = static_cast<int>((raw_offset + dst_offset) / kMsPerMinute);
   }
