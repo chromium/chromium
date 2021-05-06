@@ -267,6 +267,13 @@ void SystemTrayClientImpl::SetUpdateNotificationState(
   HandleUpdateAvailable(ash::UpdateType::kSystem);
 }
 
+void SystemTrayClientImpl::ResetUpdateState() {
+  update_notification_style_ = ash::NotificationStyle::kDefault;
+  update_notification_title_.clear();
+  update_notification_body_.clear();
+  system_tray_->ResetUpdateState();
+}
+
 void SystemTrayClientImpl::SetLacrosUpdateAvailable() {
   HandleUpdateAvailable(ash::UpdateType::kLacros);
 }

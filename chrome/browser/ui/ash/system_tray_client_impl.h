@@ -41,6 +41,9 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                                   const std::u16string& notification_title,
                                   const std::u16string& notification_body);
 
+  // Resets update state to hide notification.
+  void ResetUpdateState();
+
   // Shows a notification that a Lacros browser update is available.
   void SetLacrosUpdateAvailable();
 

@@ -52,8 +52,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  SystemTrayClientImpl::Get()->SetUpdateNotificationState(
-      ash::NotificationStyle::kDefault, std::u16string(), std::u16string());
+  SystemTrayClientImpl::Get()->ResetUpdateState();
   relaunch_required_timer_.reset();
   on_visible_.Reset();
   StopObserving();

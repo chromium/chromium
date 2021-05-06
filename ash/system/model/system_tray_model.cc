@@ -100,6 +100,10 @@ void SystemTrayModel::SetUpdateNotificationState(
                                              notification_body);
 }
 
+void SystemTrayModel::ResetUpdateState() {
+  update_model()->ResetUpdateAvailable();
+}
+
 void SystemTrayModel::SetUpdateOverCellularAvailableIconVisible(bool visible) {
   update_model()->SetUpdateOverCellularAvailable(visible);
 }

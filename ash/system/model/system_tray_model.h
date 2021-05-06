@@ -49,6 +49,7 @@ class SystemTrayModel : public SystemTray {
       NotificationStyle style,
       const std::u16string& notification_title,
       const std::u16string& notification_body) override;
+  void ResetUpdateState() override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
   void ShowVolumeSliderBubble() override;
   void ShowNetworkDetailedViewBubble() override;

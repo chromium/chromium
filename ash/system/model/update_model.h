@@ -54,6 +54,9 @@ class UpdateModel {
 
   UpdateSeverity GetSeverity() const;
 
+  // Sets |update_required_| back to false.
+  void ResetUpdateAvailable();
+
   bool update_required() const { return update_required_; }
   bool factory_reset_required() const { return factory_reset_required_; }
   bool rollback() const { return rollback_; }

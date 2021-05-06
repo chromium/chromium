@@ -97,6 +97,10 @@ class ASH_PUBLIC_EXPORT SystemTray {
       const std::u16string& notification_title,
       const std::u16string& notification_body) = 0;
 
+  // Resets update state to hide the update icon and notification. It is called
+  // when a new update starts before the current update is applied.
+  virtual void ResetUpdateState() = 0;
+
   // If |visible| is true, shows an icon in the system tray which indicates that
   // a software update is available but user's agreement is required as current
   // connection is cellular. If |visible| is false, hides the icon because the

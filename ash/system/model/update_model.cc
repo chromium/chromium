@@ -52,6 +52,11 @@ UpdateSeverity UpdateModel::GetSeverity() const {
   return update_over_cellular_available_ ? UpdateSeverity::kLow : severity_;
 }
 
+void UpdateModel::ResetUpdateAvailable() {
+  update_required_ = false;
+  NotifyUpdateAvailable();
+}
+
 void UpdateModel::NotifyUpdateAvailable() {
   for (auto& observer : observers_)
     observer.OnUpdateAvailable();
