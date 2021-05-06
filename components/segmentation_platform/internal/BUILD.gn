@@ -14,8 +14,11 @@ static_library("internal") {
   ]
 
   sources = [
+    "database/user_action_database.h",
     "segmentation_platform_service_impl.cc",
     "segmentation_platform_service_impl.h",
+    "signals/user_action_signal_handler.cc",
+    "signals/user_action_signal_handler.h",
   ]
 
   deps = [
@@ -34,7 +37,10 @@ source_set("unit_tests") {
 
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
-  sources = [ "segmentation_platform_service_impl_unittest.cc" ]
+  sources = [
+    "segmentation_platform_service_impl_unittest.cc",
+    "signals/user_action_signal_handler_unittest.cc",
+  ]
 
   deps = [
     ":internal",
