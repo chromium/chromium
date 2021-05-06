@@ -61,6 +61,8 @@ public class DeprecatedChromePreferenceKeys {
                 "inflate_toolbar_on_background_thread",
                 "interest_feed_content_suggestions",
                 "labeled_bottom_toolbar_enabled",
+                "last_shared_class_name",
+                "last_shared_package_name",
                 "night_mode_available",
                 "night_mode_cct_available",
                 "night_mode_default_to_light",

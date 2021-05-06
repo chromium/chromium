@@ -230,11 +230,9 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     @VisibleForTesting
     public static void setLastShareComponentName(ComponentName component) {
-        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
-        preferencesManager.writeString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME, component.getPackageName());
-        preferencesManager.writeString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME, component.getClassName());
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
+                component.flattenToString());
     }
 
     /**
@@ -290,15 +288,11 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     @Nullable
     public static ComponentName getLastShareComponentName() {
         SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
-        String packageName = preferencesManager.readString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME, null);
-        String className = preferencesManager.readString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME, null);
-        return createComponentName(packageName, className);
-    }
-
-    private static ComponentName createComponentName(String packageName, String className) {
-        if (packageName == null || className == null) return null;
-        return new ComponentName(packageName, className);
+        String name = preferencesManager.readString(
+                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
+        if (name == null) {
+            return null;
+        }
+        return ComponentName.unflattenFromString(name);
     }
 }

@@ -795,8 +795,8 @@ public final class ChromePreferenceKeys {
     public static final String SETTINGS_WEBSITE_FAILED_BUILD_VERSION =
             "ManagedSpace.FailedBuildVersion";
 
-    public static final String SHARING_LAST_SHARED_CLASS_NAME = "last_shared_class_name";
-    public static final String SHARING_LAST_SHARED_PACKAGE_NAME = "last_shared_package_name";
+    public static final String SHARING_LAST_SHARED_COMPONENT_NAME =
+            "Chrome.Sharing.LastSharedComponentName";
 
     public static final String SIGNIN_ACCOUNTS_CHANGED = "prefs_sync_accounts_changed";
 
@@ -1060,6 +1060,7 @@ public final class ChromePreferenceKeys {
                 QUERY_TILES_SHOW_ON_NTP,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
+                SHARING_LAST_SHARED_COMPONENT_NAME,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 VIDEO_TUTORIALS_SHARE_URL_SET,

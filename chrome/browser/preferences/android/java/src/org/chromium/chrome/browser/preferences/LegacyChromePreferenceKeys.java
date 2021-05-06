@@ -141,8 +141,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE,
                 ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
-                ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME,
-                ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME,
                 ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT,
                 ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS,
                 ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS,
