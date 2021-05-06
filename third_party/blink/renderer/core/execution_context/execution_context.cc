@@ -152,6 +152,11 @@ void ExecutionContext::NotifyContextDestroyed() {
   ContextLifecycleNotifier::NotifyContextDestroyed();
 }
 
+HeapObserverSet<ContextLifecycleObserver>&
+ExecutionContext::ContextLifecycleObserverSet() {
+  return ContextLifecycleNotifier::observers();
+}
+
 unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
     const {
   DCHECK(!ContextLifecycleNotifier::observers().IsIteratingOverObservers());

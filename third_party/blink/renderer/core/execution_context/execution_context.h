@@ -28,7 +28,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 
-#include <bitset>
 #include <memory>
 
 #include "base/macros.h"
@@ -47,12 +46,8 @@
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
-#include "third_party/blink/renderer/core/frame/policy_container.h"
-#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
@@ -78,8 +73,8 @@ class AuditsIssue;
 class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
+class ContextLifecycleObserver;
 class CoreProbeSink;
-class DOMTimerCoordinator;
 class DOMWrapperWorld;
 class ErrorEvent;
 class EventTarget;
@@ -87,6 +82,7 @@ class FrameOrWorkerScheduler;
 class KURL;
 class LocalDOMWindow;
 class OriginTrialContext;
+class PolicyContainer;
 class PublicURLManager;
 class ResourceFetcher;
 class SecurityOrigin;
@@ -359,9 +355,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   network::mojom::IPAddressSpace AddressSpace() const;
   void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
-  HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet() {
-    return ContextLifecycleNotifier::observers();
-  }
+  HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet();
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
   // Implementation of WindowOrWorkerGlobalScope.crossOriginIsolated.
