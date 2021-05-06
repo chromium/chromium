@@ -375,6 +375,8 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
 
         mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.addTintObserver(mTintObserver);
+        mModel.set(TabGroupUiProperties.PRIMARY_COLOR, mThemeColorProvider.getThemeColor());
+        mModel.set(TabGroupUiProperties.TINT, mThemeColorProvider.getTint());
 
         setupToolbarButtons();
         mModel.set(TabGroupUiProperties.IS_MAIN_CONTENT_VISIBLE, true);
