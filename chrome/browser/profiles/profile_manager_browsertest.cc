@@ -374,7 +374,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   EXPECT_EQ(new_path, last_used->GetPath());
 }
 
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteAllProfiles) {
+#if defined(OS_LINUX)
+#define MAYBE_DeleteAllProfiles DISABLED_DeleteAllProfiles
+#else
+#define MAYBE_DeleteAllProfiles DeleteAllProfiles
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeleteAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
