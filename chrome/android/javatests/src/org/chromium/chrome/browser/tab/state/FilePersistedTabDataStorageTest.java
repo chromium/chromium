@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage.FileSaveRequest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
@@ -54,6 +55,28 @@ public class FilePersistedTabDataStorageTest {
     @Test
     public void testFilePersistedDataStorageEncrypted() throws InterruptedException {
         testFilePersistedDataStorage(new EncryptedFilePersistedTabDataStorage());
+    }
+
+    @SmallTest
+    @Test
+    public void testUnsavedKeys() throws InterruptedException {
+        FilePersistedTabDataStorage persistedTabDataStorage =
+                new EncryptedFilePersistedTabDataStorage();
+        final Semaphore semaphore = new Semaphore(0);
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            persistedTabDataStorage.save(
+                    TAB_ID_1, DATA_ID_1, () -> { return DATA_A; }, semaphore::release);
+        });
+        semaphore.acquire();
+        // Simulate closing the app without saving the keys and reopening
+        CipherFactory.resetInstanceForTesting();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            persistedTabDataStorage.restore(TAB_ID_1, DATA_ID_1, (res) -> {
+                Assert.assertNull(res);
+                semaphore.release();
+            });
+        });
+        semaphore.acquire();
     }
 
     private void testFilePersistedDataStorage(FilePersistedTabDataStorage persistedTabDataStorage)
