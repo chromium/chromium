@@ -1839,7 +1839,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2979639724566107830">Atidaryti naujame lange</translation>
 <translation id="2981113813906970160">Rodyti didelį pelės žymeklį</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> išsiuntė pranešimą į jūsų telefoną. Palieskite „Taip“, kad patvirtintumėte savo tapatybę. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} slaptažodis pasiekiamas šiame įrenginyje}one{{COUNT} slaptažodis pasiekiamas šiame įrenginyje}few{{COUNT} slaptažodžiai pasiekiami šiame įrenginyje}many{{COUNT} slaptažodžio pasiekiama šiame įrenginyje}other{{COUNT} slaptažodžių pasiekiama šiame įrenginyje}}</translation>
 <translation id="2985348301114641460">Siųsti plėtinio „<ph name="EXTENSION_NAME" />“ diegimo užklausą administratoriui?</translation>
 <translation id="2987620471460279764">Tekstas, bendrinamas iš kito įrenginio</translation>
 <translation id="2988018669686457659">Atsarginis pateikėjas</translation>
@@ -1940,6 +1939,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3088325635286126843">&amp;Pervardyti...</translation>
 <translation id="3089064280130434511">Blokuoti svetaines, kad neatidarytų ir neįdėtų langų jūsų ekranuose</translation>
 <translation id="3089137131053189723">Paieška išvalyta</translation>
+<translation id="3090589793601454425">Neperkelti</translation>
 <translation id="3090819949319990166">Nepavyko nukopijuoti išorinio CRX failo į „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Įrenginys „<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="3093714882666365141">Neleisti svetainėms įdiegti mokėjimo doroklių</translation>
@@ -2184,6 +2184,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3396800784455899911">Spustelėdami mygtuką „Sutikti ir tęsti“ sutinkate, kad šios „Google“ paslaugos būtų apdorojamos, kaip aprašyta anksčiau.</translation>
 <translation id="3399432415385675819">Pranešimai bus išjungti</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – progresinis</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Šiame įrenginyje saugomas {COUNT} slaptažodis}one{Šiame įrenginyje saugomas {COUNT} slaptažodis}few{Šiame įrenginyje saugomi {COUNT} slaptažodžiai}many{Šiame įrenginyje saugoma {COUNT} slaptažodžio}other{Šiame įrenginyje saugoma {COUNT} slaptažodžių}}</translation>
 <translation id="3402255108239926910">Pasirinkite pseudoportretą</translation>
 <translation id="3402585168444815892">Užregistruojama naudoti demonstracinį režimą</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3150,6 +3151,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4474155171896946103">Pažymėti visus skirtukus...</translation>
 <translation id="4475552974751346499">Ieškoti tarp atsisiustų elementų</translation>
+<translation id="4475830133618397783">Pasirinkite norimus perkelti slaptažodžius. Juos galite pasiekti bet kada, kai esate prisijungę.</translation>
 <translation id="4476590490540813026">Sportininkas</translation>
 <translation id="4476659815936224889">Jei norite nuskaityti šį kodą, galite naudoti QR skaitytuvo programą telefone arba tam tikras fotoaparato programas.</translation>
 <translation id="4477015793815781985">Naudokite „Ctrl“, „Alt“ arba ⌘</translation>
@@ -3412,7 +3414,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4768332406694066911">Turite jus identifikuojančius sertifikatus iš šių organizacijų</translation>
 <translation id="4770119228883592393">Pateikta užklausa dėl leidimo; paspauskite ⌘ + „Option“ + žemyn, kad atsakytumėte</translation>
 <translation id="4773112038801431077">„Linux“ naujovinimas</translation>
-<translation id="4774357366578243684">Jei norite juos naudoti visuose įrenginiuose, perkelkite juos į „Google“ paskyrą</translation>
 <translation id="477647109558161443">Sukurti darbalaukio šaukinį</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> slaptažodis</translation>
 <translation id="4777825441726637019">„Play“ parduotuvė</translation>
@@ -3772,7 +3773,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> nori atsisiųsti kelis failus</translation>
 <translation id="5192062846343383368">Atidarykite programą „Family Link“ ir peržiūrėkite priežiūros nustatymus</translation>
 <translation id="5193988420012215838">Nukopijuota į iškarpinę</translation>
-<translation id="5195083053116174857">Norimų perkelti slaptažodžių pasirinkimas</translation>
 <translation id="5197255632782567636">Internetas</translation>
 <translation id="5198430103906431024">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="5199729219167945352">Bandymai</translation>
@@ -3811,6 +3811,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5235050375939235066">Pašalinti programą?</translation>
 <translation id="523505283826916779">Pasiekiamumo nustatymai</translation>
 <translation id="5235750401727657667">Pakeisti puslapį, kuris rodomas atidarant naują skirtuką</translation>
+<translation id="5236374273162681467">Kad slaptažodžius būtų paprasta naudoti visuose įrenginiuose, juos galite perkelti į „Google“ paskyrą</translation>
 <translation id="5238278114306905396">Programa „<ph name="EXTENSION_NAME" />“ automatiškai pašalinta.</translation>
 <translation id="5241128660650683457">Skaityti visus duomenis svetainėse, kuriose apsilankote</translation>
 <translation id="5242724311594467048">Įgalinti „<ph name="EXTENSION_NAME" />“?</translation>
@@ -4321,6 +4322,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5814126672212206791">Ryšio tipas</translation>
 <translation id="5815645614496570556">X.400 adresas</translation>
 <translation id="5816434091619127343">Atlikus prašomus spausdintuvo pakeitimus, spausdintuvo nebebus galima naudoti.</translation>
+<translation id="5817069030404929329">Slaptažodžius iš šio įrenginio perkelti į jūsų „Google“ paskyrą?</translation>
 <translation id="5817918615728894473">Susieti</translation>
 <translation id="5821565227679781414">Sukurti šaukinį</translation>
 <translation id="5825412242012995131">Įjungta (rekomenduojama)</translation>
@@ -5023,7 +5025,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6611972847767394631">Čia rasite savo skirtukus</translation>
 <translation id="6612358246767739896">Apsaugotas turinys</translation>
 <translation id="6615455863669487791">Rodyti</translation>
-<translation id="661587753387495724">Slaptažodžiai bus perkelti iš įrenginio į „Google“ paskyrą</translation>
 <translation id="6618097958368085618">Vis tiek palikti</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6619058681307408113">Eilutinio spausdintuvo paslaugų teikimo sistema (LPD)</translation>

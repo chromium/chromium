@@ -1831,7 +1831,6 @@
 <translation id="2979639724566107830">Шинэ цонхонд нээх</translation>
 <translation id="2981113813906970160">Том хулганын заагч сумыг харуулах</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд Тийм дээр товшино уу. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Энэ төхөөрөмж дээр {COUNT} нууц үг хандах боломжтой байна}other{Энэ төхөөрөмж дээр {COUNT} нууц үг хандах боломжтой байна}}</translation>
 <translation id="2985348301114641460">Таны администраторт "<ph name="EXTENSION_NAME" />"-г суулгах хүсэлтийг илгээх үү?</translation>
 <translation id="2987620471460279764">Өөр төхөөрөмжөөс хуваалцсан текст</translation>
 <translation id="2988018669686457659">Илүү буулгагч</translation>
@@ -1932,6 +1931,7 @@
 <translation id="3088325635286126843">&amp; Дахин нэр өгөх...</translation>
 <translation id="3089064280130434511">Сайтуудыг таны дэлгэцэд цонх нээх болон байрлуулахыг хориглоно</translation>
 <translation id="3089137131053189723">Хайлтыг устгасан</translation>
+<translation id="3090589793601454425">Бүү зөө</translation>
 <translation id="3090819949319990166">Гадаад crx файлыг <ph name="TEMP_CRX_FILE" />-д хуулах боломжгүй байна.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" хосолсон</translation>
 <translation id="3093714882666365141">Сайтуудад төлбөр хариуцагч суулгахыг бүү зөвшөөр</translation>
@@ -2176,6 +2176,7 @@
 <translation id="3396800784455899911">"Зөвшөөрөөд үргэлжлүүлэх" товчлуурыг товшсоноор та Google-н эдгээр үйлчилгээг дээр дурдсан байдлаар боловсруулахыг зөвшөөрч байна.</translation>
 <translation id="3399432415385675819">Мэдэгдлийг идэвхгүй болгоно</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Герц) - сүлжилдсэн</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Энэ төхөөрөмж дээр {COUNT} нууц үг хадгалсан}other{Энэ төхөөрөмж дээр {COUNT} нууц үг хадгалсан}}</translation>
 <translation id="3402255108239926910">Аватар сонгох</translation>
 <translation id="3402585168444815892">Туршилтын горимд бүртгүүлж байна</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" /> , <ph name="TIME_LEFT" /></translation>
@@ -3141,6 +3142,7 @@
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4474155171896946103">Бүх цонхнуудыг хадгалж жагсаах ...</translation>
 <translation id="4475552974751346499">Татаж авсан файлуудыг хайх</translation>
+<translation id="4475830133618397783">Зөөх нууц үгнүүдийг сонгоно уу. Та тэдгээрт нэвтрэх бүрдээ хандах боломжтой.</translation>
 <translation id="4476590490540813026">Тамирчин</translation>
 <translation id="4476659815936224889">Энэ кодыг скан хийхийн тулд утасныхаа QR кодын сканнерын аппыг эсвэл камерын зарим аппыг ашиглана уу.</translation>
 <translation id="4477015793815781985">Ctrl, Alt эсвэл ⌘-р эхлүүлнэ үү</translation>
@@ -3403,7 +3405,6 @@
 <translation id="4768332406694066911">Танд эдгээр байгууллагаас таныг тодорхойлох сертификат байна</translation>
 <translation id="4770119228883592393">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Доош сумыг дарна уу</translation>
 <translation id="4773112038801431077">Linux-г сайжруулах</translation>
-<translation id="4774357366578243684">Тэдгээрийг бүх төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэл рүүгээ зөөнө үү</translation>
 <translation id="477647109558161443">Дэлгэц дээрх холбоос үүсгэх</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3763,7 +3764,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> хэд хэдэн файл татах хүсэлтэй байна</translation>
 <translation id="5192062846343383368">Хяналтынхаа тохиргоог харахын тулд Family Link аппыг нээнэ үү</translation>
 <translation id="5193988420012215838">Түр санах ой руу хуулсан</translation>
-<translation id="5195083053116174857">Зөөх нууц үгнүүдийг сонгоно уу</translation>
 <translation id="5197255632782567636">Интернэт</translation>
 <translation id="5198430103906431024">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Энэ төхөөрөмж нь одоогоор оношилгоо, төхөөрөмж болон аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээж байна. Энэ нь систем, аппын тогтвортой байдал болон бусад зүйлийг сайжруулахад тусална. Хуримтлуулсан зарим өгөгдөл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд мөн тусална. Хэрэв таны Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг таны Google Бүртгэлд хадгалж болзошгүй.</translation>
 <translation id="5199729219167945352">Туршилтууд</translation>
@@ -3802,6 +3802,7 @@
 <translation id="5235050375939235066">Апп-г устгах уу?</translation>
 <translation id="523505283826916779">Нэвтрэх боломжит байдлын тохиргоо</translation>
 <translation id="5235750401727657667">Шинэ таб нээхдээ харж буй хуудсаар орлуулах</translation>
+<translation id="5236374273162681467">Тэдгээрийг бүх төхөөрөмж дээрээ хялбархан ашиглахын тулд Google Бүртгэл рүүгээ зөөх боломжтой</translation>
 <translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" аппликейшнийг автоматаар устгасан байна.</translation>
 <translation id="5241128660650683457">Өөрийн ордог вебсайт дээрх бүх мэдээллийг уншина уу</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />-ыг идэвхжүүлэх үү"?</translation>
@@ -4312,6 +4313,7 @@
 <translation id="5814126672212206791">Холболтын төрөл</translation>
 <translation id="5815645614496570556">X.400 хаяг</translation>
 <translation id="5816434091619127343">Хэвлэгчийг хүссэний дагуу өөрчилснөөр хэвлэгчийг ашиглах боломжгүй болно.</translation>
+<translation id="5817069030404929329">Энэ төхөөрөмжөөс нууц үгнүүдээ Google Бүртгэл рүүгээ зөөх үү?</translation>
 <translation id="5817918615728894473">Холбох</translation>
 <translation id="5821565227679781414">Shortcut үүсгэх</translation>
 <translation id="5825412242012995131">Дээр (Санал болгосон)</translation>
@@ -5013,7 +5015,6 @@
 <translation id="6611972847767394631">Эндээс табуудаа олоорой</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
-<translation id="661587753387495724">Нууц үгнүүдийг таны төхөөрөмжөөс Google Бүртгэл рүү тань зөөнө</translation>
 <translation id="6618097958368085618">Ямар ч үед хадгалах</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6619058681307408113">Шугам хэвлэгчийн Дэмон (LPD)</translation>

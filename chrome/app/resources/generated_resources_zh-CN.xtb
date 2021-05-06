@@ -1831,7 +1831,6 @@
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> 向您的手机发送了一条通知。请点按“是”以确认您的身份。<ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{此设备上有 {COUNT} 个密码可供使用}other{此设备上有 {COUNT} 个密码可供使用}}</translation>
 <translation id="2985348301114641460">向您的管理员发送“<ph name="EXTENSION_NAME" />”安装请求？</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2988018669686457659">备用渲染程序</translation>
@@ -3403,7 +3402,6 @@
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4773112038801431077">升级 Linux</translation>
-<translation id="4774357366578243684">如需在您的所有设备上使用这些密码，请将它们移至您的 Google 帐号中</translation>
 <translation id="477647109558161443">创建桌面快捷方式</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
 <translation id="4777825441726637019">Play 商店</translation>
@@ -3763,7 +3761,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下载多个文件</translation>
 <translation id="5192062846343383368">打开 Family Link 应用，查看您的监管设置</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
-<translation id="5195083053116174857">选择要移动的密码</translation>
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5198430103906431024">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="5199729219167945352">实验</translation>
@@ -5013,7 +5010,6 @@
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="6612358246767739896">受保护的内容</translation>
 <translation id="6615455863669487791">演示一下</translation>
-<translation id="661587753387495724">密码将会从您的设备移至您的 Google 帐号中</translation>
 <translation id="6618097958368085618">仍然保留</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

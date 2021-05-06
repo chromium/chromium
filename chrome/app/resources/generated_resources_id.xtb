@@ -1836,7 +1836,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2979639724566107830">Buka di jendela baru</translation>
 <translation id="2981113813906970160">Tampilkan kursor mouse besar</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> mengirim notifikasi ke ponsel Anda. Ketuk Ya untuk mengonfirmasi bahwa ini benar-benar Anda. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} sandi dapat diakses di perangkat ini}other{{COUNT} sandi dapat diakses di perangkat ini}}</translation>
 <translation id="2985348301114641460">Kirim permintaan ke administrator Anda untuk menginstal "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Teks yang dibagikan dari perangkat lain</translation>
 <translation id="2988018669686457659">Perender Cadangan</translation>
@@ -1937,6 +1936,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3088325635286126843">&amp;Ubah nama...</translation>
 <translation id="3089064280130434511">Blokir situs agar tidak membuka dan menempatkan jendela di layar Anda</translation>
 <translation id="3089137131053189723">Penelusuran dihapus</translation>
+<translation id="3090589793601454425">Jangan pindahkan</translation>
 <translation id="3090819949319990166">Tidak dapat menyalin file crx eksternal ke <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" disandingkan</translation>
 <translation id="3093714882666365141">Jangan izinkan situs menginstal pengendali pembayaran</translation>
@@ -2181,6 +2181,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3396800784455899911">Dengan mengklik tombol "Setuju dan lanjutkan", Anda menyetujui pemrosesan yang dijelaskan di atas terkait layanan Google ini.</translation>
 <translation id="3399432415385675819">Notifikasi akan dinonaktifkan</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - saling bertautan</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} sandi disimpan di perangkat ini}other{{COUNT} sandi disimpan di perangkat ini}}</translation>
 <translation id="3402255108239926910">Pilih avatar</translation>
 <translation id="3402585168444815892">Mendaftar ke Mode Demo</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4474155171896946103">Bookmark semua tab...</translation>
 <translation id="4475552974751346499">Telusuri download</translation>
+<translation id="4475830133618397783">Pilih sandi yang akan dipindahkan. Anda dapat mengaksesnya saat Anda login.</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Untuk memindai kode ini, Anda dapat menggunakan aplikasi pemindai QR di ponsel, atau beberapa aplikasi kamera.</translation>
 <translation id="4477015793815781985">Sertakan Ctrl, Alt, atau ⌘</translation>
@@ -3409,7 +3411,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4768332406694066911">Anda memiliki sertifikat dari organisasi ini yang mengenali Anda</translation>
 <translation id="4770119228883592393">Izin diminta, tekan ⌘ + Option + Panah bawah untuk merespons</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
-<translation id="4774357366578243684">Untuk menggunakannya di semua perangkat, pindahkan ke Akun Google Anda</translation>
 <translation id="477647109558161443">Buat pintasan desktop</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3769,7 +3770,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ingin mendownload beberapa file</translation>
 <translation id="5192062846343383368">Buka aplikasi Family Link untuk melihat setelan pengawasan Anda</translation>
 <translation id="5193988420012215838">Disalin ke papan klip Anda</translation>
-<translation id="5195083053116174857">Pilih sandi untuk dipindahkan</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Kirimkan data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda.</translation>
 <translation id="5199729219167945352">Eksperimen</translation>
@@ -3808,6 +3808,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5235050375939235066">Uninstal aplikasi?</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
 <translation id="5235750401727657667">Ganti halaman yang ditampilkan saat membuka tab baru</translation>
+<translation id="5236374273162681467">Agar mudah menggunakannya di semua perangkat, Anda dapat memindahkannya ke Akun Google Anda</translation>
 <translation id="5238278114306905396">Aplikasi "<ph name="EXTENSION_NAME" />" dihapus secara otomatis.</translation>
 <translation id="5241128660650683457">Membaca semua data pada situs web yang Anda kunjungi</translation>
 <translation id="5242724311594467048">Aktifkan "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4317,6 +4318,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5814126672212206791">Jenis sambungan</translation>
 <translation id="5815645614496570556">X.400 Address</translation>
 <translation id="5816434091619127343">Perubahan printer yang diminta akan membuat printer tidak dapat digunakan.</translation>
+<translation id="5817069030404929329">Pindahkan sandi dari perangkat ini ke Akun Google Anda?</translation>
 <translation id="5817918615728894473">Sandingkan</translation>
 <translation id="5821565227679781414">Buat Pintasan</translation>
 <translation id="5825412242012995131">Aktif (Direkomendasikan)</translation>
@@ -5019,7 +5021,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6611972847767394631">Temukan tab Anda di sini</translation>
 <translation id="6612358246767739896">Konten dilindungi</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
-<translation id="661587753387495724">Sandi akan dipindahkan dari perangkat ke Akun Google Anda</translation>
 <translation id="6618097958368085618">Tetap Lanjutkan</translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6619058681307408113">Daemon Printer Baris (LPD)</translation>

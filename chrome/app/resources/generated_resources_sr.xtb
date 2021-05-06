@@ -1835,7 +1835,6 @@
 <translation id="2979639724566107830">Отворите у новом прозору</translation>
 <translation id="2981113813906970160">Прикажи велики курсор</translation>
 <translation id="2983175648295374032">Сајт <ph name="WEBSITE" /> вам је послао обавештење на телефон. Додирните Да да бисте потврдили да сте то ви. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} лозинка је доступна на овом уређају}one{{COUNT} лозинка је доступна на овом уређају}few{{COUNT} лозинке су доступне на овом уређају}other{{COUNT} лозинки је доступно на овом уређају}}</translation>
 <translation id="2985348301114641460">Желите ли да пошаљете захтев администратору да инсталира „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2987620471460279764">Текст који се дели са другог уређаја</translation>
 <translation id="2988018669686457659">Резервни приказивач</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3088325635286126843">&amp;Преименуј...</translation>
 <translation id="3089064280130434511">Не дозвољавај сајтовима да отварају и постављају прозоре на екранима</translation>
 <translation id="3089137131053189723">Претрага је обрисана</translation>
+<translation id="3090589793601454425">Не премештај</translation>
 <translation id="3090819949319990166">Није успело копирање спољне crx датотеке у датотеку <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Упарили сте „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3093714882666365141">Не дозвољавај сајтовима да инсталирају обрађиваче плаћања</translation>
@@ -2180,6 +2180,7 @@
 <translation id="3396800784455899911">Ако кликнете на дугме „Прихвати и настави“, прихватате горенаведену обраду за ове Google услуге.</translation>
 <translation id="3399432415385675819">Обавештења ће бити онемогућена</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />×<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> херца) – преплетено</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} лозинка се чува на овом уређају}one{{COUNT} лозинка се чува на овом уређају}few{{COUNT} лозинке се чувају на овом уређају}other{{COUNT} лозинки се чува на овом уређају}}</translation>
 <translation id="3402255108239926910">Изаберите аватар</translation>
 <translation id="3402585168444815892">Регистровање за режим демонстрације</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3147,7 @@
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4474155171896946103">Обележи све картице...</translation>
 <translation id="4475552974751346499">Претражите преузимања</translation>
+<translation id="4475830133618397783">Одаберите лозинке које ћете преместити. Можете да им приступите сваки пут када сте пријављени.</translation>
 <translation id="4476590490540813026">Спортисткиња</translation>
 <translation id="4476659815936224889">Да бисте скенирали овај кôд, можете да користите апликацију скенера QR кодова на телефону или неке апликације за камеру.</translation>
 <translation id="4477015793815781985">Користите Ctrl, Alt или ⌘</translation>
@@ -3408,7 +3410,6 @@
 <translation id="4768332406694066911">Имате сертификате следећих организација који вас идентификују</translation>
 <translation id="4770119228883592393">Затражена је дозвола. Притисните ⌘ + Option + стрелицу надоле да бисте одговорили</translation>
 <translation id="4773112038801431077">Надоградите Linux</translation>
-<translation id="4774357366578243684">Да бисте користили лозинке на свим уређајима, преместите лозинке на Google налог</translation>
 <translation id="477647109558161443">Направи пречицу на радној површини</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play продавница</translation>
@@ -3768,7 +3769,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> жели да преузме више датотека</translation>
 <translation id="5192062846343383368">Отворите апликацију Family Link да бисте видели подешавања надзора</translation>
 <translation id="5193988420012215838">Копирано је у привремену меморију</translation>
-<translation id="5195083053116174857">Одаберите коју лозинку да преместите</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198430103906431024">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. То доприноси одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу.</translation>
 <translation id="5199729219167945352">Експерименти</translation>
@@ -3807,6 +3807,7 @@
 <translation id="5235050375939235066">Желите ли да деинсталирате апликацију?</translation>
 <translation id="523505283826916779">Подешавања приступачности</translation>
 <translation id="5235750401727657667">Замените страницу која се прикаже кад отворите нову картицу</translation>
+<translation id="5236374273162681467">Да бисте их лако користили на свим уређајима, можете да их преместите на Google налог</translation>
 <translation id="5238278114306905396">Апликација „<ph name="EXTENSION_NAME" />“ је аутоматски уклоњена.</translation>
 <translation id="5241128660650683457">Читање свих ваших података на веб-сајтовима које посећујете</translation>
 <translation id="5242724311594467048">Желите ли да омогућите „<ph name="EXTENSION_NAME" />“?</translation>
@@ -4317,6 +4318,7 @@
 <translation id="5814126672212206791">Тип везе</translation>
 <translation id="5815645614496570556">X.400 адреса</translation>
 <translation id="5816434091619127343">Тражене измене ће учинити штампач неупотребљивим.</translation>
+<translation id="5817069030404929329">Желите да преместите лозине са овог уређаја на Google налог?</translation>
 <translation id="5817918615728894473">Упари</translation>
 <translation id="5821565227679781414">Направи пречицу</translation>
 <translation id="5825412242012995131">Укључено (препоручено)</translation>
@@ -5019,7 +5021,6 @@
 <translation id="6611972847767394631">Пронађите картице овде</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
-<translation id="661587753387495724">Лозинке ће се преместити са уређаја на Google налог</translation>
 <translation id="6618097958368085618">Ипак задржи</translation>
 <translation id="6618744767048954150">У току је</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

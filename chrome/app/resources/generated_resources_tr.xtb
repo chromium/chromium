@@ -1835,7 +1835,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2979639724566107830">Yeni pencerede aç</translation>
 <translation id="2981113813906970160">Büyük fare imleci göster</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" />, telefonunuza bildirim gönderdi. Kimliğinizi doğrulamak için Evet'e dokunun. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} şifreye bu cihazda erişilebilir}other{{COUNT} şifreye bu cihazda erişilebilir}}</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" öğesini yüklemesi için yöneticinize istek gönderilsin mi?</translation>
 <translation id="2987620471460279764">Başka cihazdan paylaşılan metin</translation>
 <translation id="2988018669686457659">Yedek Oluşturucu</translation>
@@ -1936,6 +1935,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3088325635286126843">&amp;Yeniden adlandır…</translation>
 <translation id="3089064280130434511">Sitelerin ekranlarınızda pencereler açıp yerleştirmesini engelleyin</translation>
 <translation id="3089137131053189723">Arama temizlendi</translation>
+<translation id="3090589793601454425">Hareket etme</translation>
 <translation id="3090819949319990166">Harici crx dosyası <ph name="TEMP_CRX_FILE" /> hedefine kopyalanamıyor.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" eşlendi</translation>
 <translation id="3093714882666365141">Sitelerin ödeme işleyici yüklemesine izin verme</translation>
@@ -2180,6 +2180,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3396800784455899911">"Kabul et ve devam et" düğmesini tıklayarak bu Google hizmetleri ile ilgili yukarıda açıklanan işlemleri kabul etmiş olursunuz.</translation>
 <translation id="3399432415385675819">Bildirimler devre dışı bırakılacak</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - birbirine geçmiş</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Bu cihazda {COUNT} şifre kayıtlı}other{Bu cihazda {COUNT} şifre kayıtlı}}</translation>
 <translation id="3402255108239926910">Avatar seçin</translation>
 <translation id="3402585168444815892">Demo Modu'na Kaydolunuyor</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3147,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4474155171896946103">Tüm sekmelere yer işareti koy...</translation>
 <translation id="4475552974751346499">İndirilenlerde ara</translation>
+<translation id="4475830133618397783">Taşınacak şifreleri seçin. Oturumunuzun açık olduğu her an bu şifrelere erişebilirsiniz.</translation>
 <translation id="4476590490540813026">Sporcu</translation>
 <translation id="4476659815936224889">Bu kodu taramak için telefonunuzda bir QR tarayıcı uygulamasını veya bazı kamera uygulamalarını kullanabilirsiniz.</translation>
 <translation id="4477015793815781985">Ctrl, Alt veya ⌘ tuşuna da basın</translation>
@@ -3408,7 +3410,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4768332406694066911">Sizi tanımlayan şu kuruluşlardan sertifikalarınız var</translation>
 <translation id="4770119228883592393">İzin istendi, yanıtlamak için ⌘ + Option + Aşağı ok tuşlarına basın</translation>
 <translation id="4773112038801431077">Linux'u yeni sürüme geçirin</translation>
-<translation id="4774357366578243684">Tüm cihazlarınızda kullanmak için Google Hesabınıza taşıyın</translation>
 <translation id="477647109558161443">Masaüstü kısayolu oluştur</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3768,7 +3769,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> birden fazla dosya indirmek istiyor</translation>
 <translation id="5192062846343383368">Gözetim ayarlarınızı görmek için Family Link uygulamasını açın</translation>
 <translation id="5193988420012215838">Panonuza kopyalandı</translation>
-<translation id="5195083053116174857">Taşınacak şifreleri seçin</translation>
 <translation id="5197255632782567636">İnternet</translation>
 <translation id="5198430103906431024">Kullanım ve teşhis verilerini gönder. Bu cihaz şu anda teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a gönderiyor. Bu veriler, sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Ek Web ve Uygulama Etkinliği açıksa bu veriler Google Hesabınıza kaydedilebilir.</translation>
 <translation id="5199729219167945352">Deneyler</translation>
@@ -3807,6 +3807,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5235050375939235066">Uygulamanın yüklemesi kaldırılsın mı?</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5235750401727657667">Yeni bir sekme açarken gördüğünüz sayfayı değiştirme</translation>
+<translation id="5236374273162681467">Tüm cihazlarınızda kolayca kullanabilmek için şifrelerinizi Google hesabınıza taşıyabilirsiniz</translation>
 <translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" uygulaması otomatik olarak kaldırıldı.</translation>
 <translation id="5241128660650683457">Ziyaret ettiğiniz web sitelerindeki tüm verilerinizi okuma</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" etkinleştirilsin mi?</translation>
@@ -4317,6 +4318,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5814126672212206791">Bağlantı türü</translation>
 <translation id="5815645614496570556">X.400 Adresi</translation>
 <translation id="5816434091619127343">Yazıcıda yapılması istenen değişiklikler yazıcıyı kullanılamaz hale getirecekti.</translation>
+<translation id="5817069030404929329">Şifreler bu cihazdan Google Hesabınıza taşınsın mı?</translation>
 <translation id="5817918615728894473">Eşle</translation>
 <translation id="5821565227679781414">Kısayol Oluştur</translation>
 <translation id="5825412242012995131">Açık (Önerilen)</translation>
@@ -5019,7 +5021,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6611972847767394631">Sekmelerinizi burada bulabilirsiniz</translation>
 <translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="6615455863669487791">Göster</translation>
-<translation id="661587753387495724">Şifreler cihazınızdan Google Hesabınıza taşınacak</translation>
 <translation id="6618097958368085618">Yine de Tut</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6619058681307408113">Satır Yazıcı Arka Plan Programı (LPD)</translation>

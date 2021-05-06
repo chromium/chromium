@@ -1837,7 +1837,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> a envoyé une notification sur votre téléphone. Touchez Oui pour confirmer qu'il s'agit bien de vous. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} mot de passe n'est pas accessible sur cet appareil}one{{COUNT} mot de passe n'est pas accessible sur cet appareil}other{{COUNT} mot de passe ne sont pas accessibles sur cet appareil}}</translation>
 <translation id="2985348301114641460">Envoyer une demande à votre administrateur pour installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
 <translation id="2988018669686457659">Processus de rendu de réserve</translation>
@@ -1938,6 +1937,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3088325635286126843">&amp;Renommer...</translation>
 <translation id="3089064280130434511">Empêcher les sites d'ouvrir et de placer des fenêtres sur vos écrans</translation>
 <translation id="3089137131053189723">Recherche effacée</translation>
+<translation id="3090589793601454425">Ne pas déplacer</translation>
 <translation id="3090819949319990166">Impossible de copier un fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">« <ph name="DEVICE_NAME" /> » associé à votre appareil.</translation>
 <translation id="3093714882666365141">Ne pas autoriser les sites à installer des modules de traitement de paiement</translation>
@@ -2182,6 +2182,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3396800784455899911">En cliquant sur le bouton « Accepter et continuer », vous acceptez le traitement décrit ci-dessus pour ces services Google.</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} mot de passe est stocké sur cet appareil}one{{COUNT} mot de passe est stocké sur cet appareil}other{{COUNT} mots de passe sont stockés sur cet appareil}}</translation>
 <translation id="3402255108239926910">Choisissez un avatar</translation>
 <translation id="3402585168444815892">Inscription au mode de démonstration en cours…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3148,6 +3149,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
 <translation id="4475552974751346499">Rechercher dans les téléchargements</translation>
+<translation id="4475830133618397783">Choisissez les mots de passe à déplacer. Vous pouvez y accéder lorsque vous êtes connecté à votre compte.</translation>
 <translation id="4476590490540813026">Athlète</translation>
 <translation id="4476659815936224889">Pour numériser ce code, vous pouvez utiliser une application de numérisation de code QR sur votre téléphone ou certaines applications d'appareil photo.</translation>
 <translation id="4477015793815781985">Incluez la touche Ctrl, Alt ou ⌘</translation>
@@ -3410,7 +3412,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4768332406694066911">Vous avez des certificats provenant de ces organisations qui vous identifient</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
-<translation id="4774357366578243684">Pour les utiliser sur tous vos appareils, déplacez-les vers votre compte Google</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3770,7 +3771,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> veut télécharger plusieurs fichiers</translation>
 <translation id="5192062846343383368">Ouvrez l'application Family Link pour afficher vos paramètres de supervision</translation>
 <translation id="5193988420012215838">Copié dans votre presse-papier</translation>
-<translation id="5195083053116174857">Choisissez les mots de passe à déplacer</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5199729219167945352">Fonctionnalités expérimentales</translation>
@@ -3809,6 +3809,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5235050375939235066">Désinstaller l'application?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235750401727657667">Remplacer la page qui s'affiche lors de l'ouverture d'un nouvel onglet</translation>
+<translation id="5236374273162681467">Pour les utiliser facilement sur tous vos appareils, vous pouvez les déplacer vers votre compte Google</translation>
 <translation id="5238278114306905396">L'application « <ph name="EXTENSION_NAME" /> » a été automatiquement supprimée.</translation>
 <translation id="5241128660650683457">Lire toutes vos données sur les sites Web que vous consultez</translation>
 <translation id="5242724311594467048">Activer « <ph name="EXTENSION_NAME" /> »?</translation>
@@ -4317,6 +4318,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5814126672212206791">Type de connexion</translation>
 <translation id="5815645614496570556">Adresse X.400</translation>
 <translation id="5816434091619127343">Les modifications d'imprimante demandées risquent de rendre l'imprimante inutilisable.</translation>
+<translation id="5817069030404929329">Déplacer les mots de passe de cet appareil vers votre compte Google?</translation>
 <translation id="5817918615728894473">Associer</translation>
 <translation id="5821565227679781414">Créer un raccourci</translation>
 <translation id="5825412242012995131">Activé (recommandé)</translation>
@@ -5019,7 +5021,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="6615455863669487791">Démonstration</translation>
-<translation id="661587753387495724">Les mots de passe seront déplacés de votre appareil vers votre compte Google</translation>
 <translation id="6618097958368085618">Conserver quand même</translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6619058681307408113">Protocole LPD (Line Printer Daemon)</translation>

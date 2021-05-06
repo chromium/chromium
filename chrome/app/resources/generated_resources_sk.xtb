@@ -1837,7 +1837,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2979639724566107830">Otvoriť v novom okne</translation>
 <translation id="2981113813906970160">Zobraziť veľký kurzor myši</translation>
 <translation id="2983175648295374032">Web <ph name="WEBSITE" /> poslal upozornenie do vášho telefónu. Klepnutím na Áno potvrďte, že ste to vy. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{V tomto zariadení je prístupné {COUNT} heslo}few{V tomto zariadení sú prístupné {COUNT} heslá}many{{COUNT} passwords are accessible on this device}other{V tomto zariadení je prístupných {COUNT} hesiel}}</translation>
 <translation id="2985348301114641460">Chcete správcovi odoslať žiadosť o inštaláciu rozšírenia <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Text zdieľaný z iného zariadenia</translation>
 <translation id="2988018669686457659">Náhradný vykresľovací modul</translation>
@@ -1938,6 +1937,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3088325635286126843">&amp;Premenovať...</translation>
 <translation id="3089064280130434511">Brániť webom otvárať a umiestňovať okná na obrazovkách</translation>
 <translation id="3089137131053189723">Vyhľadávanie bolo vymazané</translation>
+<translation id="3090589793601454425">Nepresúvať</translation>
 <translation id="3090819949319990166">Externý súbor crx nie je možné skopírovať do súboru <ph name="TEMP_CRX_FILE" /></translation>
 <translation id="3090871774332213558">Zariadenie „<ph name="DEVICE_NAME" />“ bolo spárované</translation>
 <translation id="3093714882666365141">Nepovoliť webom inštalovať obslužné nástroje platieb</translation>
@@ -2182,6 +2182,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3396800784455899911">Kliknutím na tlačidlo „Súhlasím, pokračovať“ vyjadrujete súhlas so spracovaním uvedeným vyššie v rámci týchto služieb Googlu.</translation>
 <translation id="3399432415385675819">Upozornenia budú zakázané</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prekladané</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{V tomto zariadení je uložené {COUNT} heslo}few{V tomto zariadení sú uložené {COUNT} heslá}many{{COUNT} passwords are stored on this device}other{V tomto zariadení je uložených {COUNT} hesiel}}</translation>
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402585168444815892">Prebieha registrácia do ukážkového režimu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3148,6 +3149,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4474155171896946103">Uložiť všetky karty ako záložky...</translation>
 <translation id="4475552974751346499">Hľadať stiahnuté súbory</translation>
+<translation id="4475830133618397783">Vyberte, ktoré heslá chcete presunúť. Prístup k nim budete mať po prihlásení.</translation>
 <translation id="4476590490540813026">Športovkyňa</translation>
 <translation id="4476659815936224889">Tento kód môžete naskenovať pomocou aplikácie na skenovanie QR kódov vo svojom telefóne alebo pomocou niektorých aplikácií fotoaparátu.</translation>
 <translation id="4477015793815781985">Použite kláves Ctrl, Alt alebo ⌘</translation>
@@ -3410,7 +3412,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4768332406694066911">Máte certifikáty z týchto organizácií, ktoré vás identifikujú</translation>
 <translation id="4770119228883592393">Vyžaduje sa povolenie, reagujte stlačením klávesov ⌘ + Option + šípka nadol</translation>
 <translation id="4773112038801431077">Inovácia systému Linux</translation>
-<translation id="4774357366578243684">Ak ich chcete používať vo všetkých zariadeniach, presuňte ich do účtu Google</translation>
 <translation id="477647109558161443">Vytvoriť odkaz na pracovnej ploche</translation>
 <translation id="4776917500594043016">Heslo pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Obchod Play</translation>
@@ -3770,7 +3771,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="51918995459521422"><ph name="ORIGIN" /> chce stiahnuť viacero súborov</translation>
 <translation id="5192062846343383368">Ak chcete zobraziť nastavenia dohľadu, otvorte aplikáciu Family Link</translation>
 <translation id="5193988420012215838">Skopírované do schránky</translation>
-<translation id="5195083053116174857">Vyberte, ktoré heslá chcete presunúť</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Odosielanie údajov o využití a diagnostiky. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o používaní zariadenia a aplikácií. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom pre Android. Ak aktivujete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa uložia vo vašom účte Google.</translation>
 <translation id="5199729219167945352">Experimenty</translation>
@@ -3809,6 +3809,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5235050375939235066">Odinštalovať aplikáciu?</translation>
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
 <translation id="5235750401727657667">Nahradiť stránku, ktorá sa zobrazí pri otvorení novej karty</translation>
+<translation id="5236374273162681467">Ak ich chcete ľahko používať vo všetkých svojich zariadeniach, môžete si ich presunúť do účtu Google</translation>
 <translation id="5238278114306905396">Aplikácia <ph name="EXTENSION_NAME" /> bola automaticky odstránená.</translation>
 <translation id="5241128660650683457">Čítať všetky vaše údaje na weboch, ktoré navštevujete</translation>
 <translation id="5242724311594467048">Povoliť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
@@ -4318,6 +4319,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5814126672212206791">Typ pripojenia</translation>
 <translation id="5815645614496570556">Adresa X.400</translation>
 <translation id="5816434091619127343">Požadované zmeny by tlačiareň znefunkčnili.</translation>
+<translation id="5817069030404929329">Chcete presunúť heslá z tohto zariadenia do svojho účtu Google?</translation>
 <translation id="5817918615728894473">Párovať</translation>
 <translation id="5821565227679781414">Vytvoriť odkaz</translation>
 <translation id="5825412242012995131">Zapnuté (odporúča sa)</translation>
@@ -5020,7 +5022,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6611972847767394631">Tu nájdete svoje karty</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="6615455863669487791">Ukázať</translation>
-<translation id="661587753387495724">Heslá budú presunuté zo zariadenia do účtu Google</translation>
 <translation id="6618097958368085618">Aj tak ponechať</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6619058681307408113">Protokol LPD (Line Printer Daemon)</translation>

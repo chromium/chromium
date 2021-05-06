@@ -1835,7 +1835,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2981113813906970160">Grote muisaanwijzer tonen</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> heeft een melding naar je telefoon gestuurd. Tik op Ja om te bevestigen dat jij het bent. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} wachtwoord is toegankelijk op dit apparaat}other{{COUNT} wachtwoorden zijn toegankelijk op dit apparaat}}</translation>
 <translation id="2985348301114641460">Een verzoek naar je beheerder sturen om '<ph name="EXTENSION_NAME" />' te installeren?</translation>
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
 <translation id="2988018669686457659">Extra weergaveprogramma</translation>
@@ -1936,6 +1935,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3088325635286126843">&amp;Naam wijzigen...</translation>
 <translation id="3089064280130434511">Blokkeer sites die vensters op je schermen openen en plaatsen</translation>
 <translation id="3089137131053189723">Zoekopdracht gewist</translation>
+<translation id="3090589793601454425">Niet verplaatsen</translation>
 <translation id="3090819949319990166">Kan extern crx-bestand niet kopiëren naar <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
 <translation id="3093714882666365141">Niet toestaan dat sites betalingshandlers installeren</translation>
@@ -2180,6 +2180,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3396800784455899911">Door op de knop 'Accepteren en doorgaan' te klikken, ga je akkoord met de bovengenoemde verwerking voor deze Google-services.</translation>
 <translation id="3399432415385675819">Meldingen worden uitgezet</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - geïnterlinieerd</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Op dit apparaat is {COUNT} wachtwoord opgeslagen}other{Op dit apparaat zijn {COUNT} wachtwoorden opgeslagen}}</translation>
 <translation id="3402255108239926910">Kies een avatar</translation>
 <translation id="3402585168444815892">Inschrijven in demomodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3147,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
 <translation id="4475552974751346499">Zoek in downloads</translation>
+<translation id="4475830133618397783">Kies welke wachtwoorden je wilt verplaatsen. Je hebt altijd toegang tot de wachtwoorden als je bent ingelogd.</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Je kunt een QR-scanner-app op je telefoon of sommige camera-apps gebruiken om deze code te scannen.</translation>
 <translation id="4477015793815781985">Neem Ctrl, Alt of ⌘ op</translation>
@@ -3408,7 +3410,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4768332406694066911">Je hebt certificaten van deze organisaties waarmee je wordt geïdentificeerd</translation>
 <translation id="4770119228883592393">Rechten gevraagd, druk op ⌘ + Option + pijl-omlaag om te reageren</translation>
 <translation id="4773112038801431077">Linux upgraden</translation>
-<translation id="4774357366578243684">Als je wachtwoorden op al je apparaten wilt gebruiken, verplaats je ze naar je Google-account</translation>
 <translation id="477647109558161443">Een snelkoppeling maken</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3768,7 +3769,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil meerdere bestanden downloaden</translation>
 <translation id="5192062846343383368">Open de Family Link-app om de instellingen voor toezicht te bekijken</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>
-<translation id="5195083053116174857">Kiezen welke wachtwoorden worden verplaatst</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="5199729219167945352">Experimenten</translation>
@@ -3807,6 +3807,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5235050375939235066">App verwijderen?</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235750401727657667">De pagina vervangen die je ziet als je een nieuw tabblad opent</translation>
+<translation id="5236374273162681467">Je kunt ze naar je Google-account verplaatsen zodat je ze makkelijk kunt gebruiken op al je apparaten</translation>
 <translation id="5238278114306905396">De app '<ph name="EXTENSION_NAME" />' is automatisch verwijderd.</translation>
 <translation id="5241128660650683457">Al je gegevens lezen voor de websites die je bezoekt</translation>
 <translation id="5242724311594467048"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
@@ -4316,6 +4317,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5814126672212206791">Verbindingstype</translation>
 <translation id="5815645614496570556">X.400-adres</translation>
 <translation id="5816434091619127343">Met de aangevraagde printerwijzigingen wordt de printer wordt onbruikbaar.</translation>
+<translation id="5817069030404929329">Wachtwoorden op dit apparaat verplaatsen naar je Google-account?</translation>
 <translation id="5817918615728894473">Koppelen</translation>
 <translation id="5821565227679781414">Snelle link maken</translation>
 <translation id="5825412242012995131">Aan (aanbevolen)</translation>
@@ -5018,7 +5020,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6611972847767394631">Hier vind je je tabbladen</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="6615455863669487791">Tonen</translation>
-<translation id="661587753387495724">Wachtwoorden worden verplaatst van je apparaat naar je Google-account</translation>
 <translation id="6618097958368085618">Toch behouden</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

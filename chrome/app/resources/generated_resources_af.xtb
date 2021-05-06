@@ -1836,7 +1836,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
 <translation id="2981113813906970160">Wys groot muismerker</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> het 'n kennisgewing na jou foon toe gestuur. Tik op Ja om te bevestig dat dit jy is. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} wagwoord is toeganklik op hierdie toestel}other{{COUNT} wagwoorde is toeganklik op hierdie toestel}}</translation>
 <translation id="2985348301114641460">Stuur 'n versoek na jou administrateur om "<ph name="EXTENSION_NAME" />" te installeer?</translation>
 <translation id="2987620471460279764">Teks van ander toestel af gedeel</translation>
 <translation id="2988018669686457659">Reserweleweraar</translation>
@@ -1937,6 +1936,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3088325635286126843">Hernoem …</translation>
 <translation id="3089064280130434511">Keer werwe om vensters op jou skerms oop te maak en te plaas</translation>
 <translation id="3089137131053189723">Soektog is uitgevee</translation>
+<translation id="3090589793601454425">Moenie skuif nie</translation>
 <translation id="3090819949319990166">Kan nie eksterne crx-lêer na <ph name="TEMP_CRX_FILE" /> kopieer nie.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" saamgebind</translation>
 <translation id="3093714882666365141">Moenie werwe toelaat om betalinghanteerders te installeer nie</translation>
@@ -2181,6 +2181,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3396800784455899911">Deur die "Aanvaar en gaan voort"-knoppie te klik, stem jy in tot die verwerking wat hierbo vir hierdie Google-dienste beskryf word.</translation>
 <translation id="3399432415385675819">Kennisgewings sal gedeaktiveer word</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – deurweef</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} wagwoord word op hierdie toestel geberg}other{{COUNT} wagwoorde word op hierdie toestel geberg}}</translation>
 <translation id="3402255108239926910">Kies 'n avatar</translation>
 <translation id="3402585168444815892">Skryf tans in by demonstrasiemodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4474155171896946103">Boekmerk alle oortjies …</translation>
 <translation id="4475552974751346499">Deursoek aflaaie</translation>
+<translation id="4475830133618397783">Kies watter wagwoorde om te skuif. Jy kan toegang tot hulle kry wanneer ook al jy aangemeld is.</translation>
 <translation id="4476590490540813026">Atleet</translation>
 <translation id="4476659815936224889">Om hierdie kode te skandeer, moet jy 'n QR-skandeerderprogram op jou foon of sommige kameraprogramme gebruik.</translation>
 <translation id="4477015793815781985">Sluit Ctrl, Alt of ⌘ in</translation>
@@ -3409,7 +3411,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4768332406694066911">Jy het sertifikate van hierdie organisasies af wat jou identifiseer</translation>
 <translation id="4770119228883592393">Toestemming is versoek; druk ⌘ + Option + afpyl om te antwoord</translation>
 <translation id="4773112038801431077">Gradeer Linux op</translation>
-<translation id="4774357366578243684">Skuif jou wagwoorde na jou Google-rekening om hulle op al jou toestelle te gebruik</translation>
 <translation id="477647109558161443">Skep 'n werkskermkortpad</translation>
 <translation id="4776917500594043016">Wagwoord vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Winkel</translation>
@@ -3769,7 +3770,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil veelvuldige lêers aflaai</translation>
 <translation id="5192062846343383368">Maak die Family Link-program oop om jou toesiginstellings te sien</translation>
 <translation id="5193988420012215838">Gekopieer na jou knipbord</translation>
-<translation id="5195083053116174857">Kies watter wagwoorde om te skuif</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en Programaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
 <translation id="5199729219167945352">Eksperimente</translation>
@@ -3808,6 +3808,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5235050375939235066">Deïnstalleer program?</translation>
 <translation id="523505283826916779">Toeganklikheidsinstellings</translation>
 <translation id="5235750401727657667">Vervang die bladsy wat jy sien wanneer jy 'n nuwe oortjie oopmaak</translation>
+<translation id="5236374273162681467">Jy kan hulle na jou Google-rekening toe skuif om hulle maklik op al jou toestelle te gebruik</translation>
 <translation id="5238278114306905396">Die program "<ph name="EXTENSION_NAME" />" is outomaties verwyder.</translation>
 <translation id="5241128660650683457">Lees al jou data op die webwerwe wat jy besoek</translation>
 <translation id="5242724311594467048">Aktiveer "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4318,6 +4319,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5814126672212206791">Verbindingtipe</translation>
 <translation id="5815645614496570556">X.400-adres</translation>
 <translation id="5816434091619127343">Die drukkerveranderinge wat versoek is, sal die drukker onbruikbaar maak.</translation>
+<translation id="5817069030404929329">Skuif wagwoorde van hierdie toestel na jou Google-rekening toe?</translation>
 <translation id="5817918615728894473">Bind saam</translation>
 <translation id="5821565227679781414">Skep kortpad</translation>
 <translation id="5825412242012995131">Aan (aanbeveel)</translation>
@@ -5020,7 +5022,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6611972847767394631">Vind jou oortjies hier</translation>
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="6615455863669487791">Wys my</translation>
-<translation id="661587753387495724">Wagwoorde sal vanaf jou toestel na jou Google-rekening geskuif word</translation>
 <translation id="6618097958368085618">Hou in elk geval</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6619058681307408113">Lyndrukkerdaemoon (LPD)</translation>

@@ -1836,7 +1836,6 @@ Pretende pará-lo?</translation>
 <translation id="2979639724566107830">Abrir numa nova janela</translation>
 <translation id="2981113813906970160">Mostrar cursor grande do rato</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> enviou uma notificação para o seu telemóvel. Toque em Sim para confirmar a sua identidade. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{É possível aceder a {COUNT} palavra-passe neste dispositivo}other{É possível aceder a {COUNT} palavras-passe neste dispositivo}}</translation>
 <translation id="2985348301114641460">Pretende enviar um pedido ao seu administrador para instalar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Texto partilhado de outro dispositivo</translation>
 <translation id="2988018669686457659">Renderizador sobresselente</translation>
@@ -1937,6 +1936,7 @@ Pretende pará-lo?</translation>
 <translation id="3088325635286126843">&amp;Mudar o nome...</translation>
 <translation id="3089064280130434511">Impedir que os sites abram e coloquem janelas nos seus ecrãs</translation>
 <translation id="3089137131053189723">Pesquisa limpa.</translation>
+<translation id="3090589793601454425">Não mover</translation>
 <translation id="3090819949319990166">Não é possível copiar o ficheiro crx externo para <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem controladores de pagamentos</translation>
@@ -2181,6 +2181,7 @@ Pretende pará-lo?</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e continuar", está a aceitar o processamento descrito acima para estes serviços Google.</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – entrelaçado</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} palavra-passe está armazenada neste dispositivo}other{{COUNT} palavras-passe estão armazenadas neste dispositivo}}</translation>
 <translation id="3402255108239926910">Escolha um avatar</translation>
 <translation id="3402585168444815892">A inscrever-se no modo de demonstração…</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ Pretende pará-lo?</translation>
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4474155171896946103">Adicionar todos os separadores aos marcadores...</translation>
 <translation id="4475552974751346499">Pesquisar transferências</translation>
+<translation id="4475830133618397783">Escolha as palavras-passe a mover. Pode aceder às mesmas sempre que tiver sessão iniciada.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para ler este código, pode utilizar uma aplicação de leitura de códigos QR no telemóvel ou algumas aplicações de câmara.</translation>
 <translation id="4477015793815781985">Inclua Ctrl, Alt ou ⌘.</translation>
@@ -3409,7 +3411,6 @@ Pretende pará-lo?</translation>
 <translation id="4768332406694066911">Tem certificados destas entidades que o identificam</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
 <translation id="4773112038801431077">Atualize o Linux</translation>
-<translation id="4774357366578243684">Para utilizá-las em todos os seus dispositivos, mova-as para a sua Conta Google.</translation>
 <translation id="477647109558161443">Criar um atalho no ambiente de trabalho</translation>
 <translation id="4776917500594043016">Palavra-passe para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3769,7 +3770,6 @@ Pretende pará-lo?</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> pretende transferir vários ficheiros.</translation>
 <translation id="5192062846343383368">Abra a aplicação Family Link para ver as suas definições de supervisão.</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência.</translation>
-<translation id="5195083053116174857">Escolha as palavras-passe a mover</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="5199729219167945352">Experiências</translation>
@@ -3808,6 +3808,7 @@ Pretende pará-lo?</translation>
 <translation id="5235050375939235066">Pretende desinstalar a aplicação?</translation>
 <translation id="523505283826916779">Definições de acessibilidade</translation>
 <translation id="5235750401727657667">Substituir a página visualizada ao abrir um novo separador</translation>
+<translation id="5236374273162681467">Para as utilizar facilmente em todos os seus dispositivos, pode movê-las para a sua Conta Google</translation>
 <translation id="5238278114306905396">A aplicação "<ph name="EXTENSION_NAME" />" foi automaticamente removida.</translation>
 <translation id="5241128660650683457">Ler todos os dados nos Sites visitados</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4318,6 +4319,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5814126672212206791">Tipo de ligação</translation>
 <translation id="5815645614496570556">Endereço X.400</translation>
 <translation id="5816434091619127343">As alterações solicitadas à impressora deixariam-na inutilizável.</translation>
+<translation id="5817069030404929329">Pretende mover as palavras-passe deste dispositivo para a sua Conta Google?</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5821565227679781414">Criar Atalho</translation>
 <translation id="5825412242012995131">Ativado (recomendado)</translation>
@@ -5020,7 +5022,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6611972847767394631">Encontre os seus separadores aqui</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="6615455863669487791">Mostrar</translation>
-<translation id="661587753387495724">As palavras-passe serão movidas do seu dispositivo para a sua Conta Google</translation>
 <translation id="6618097958368085618">Manter na mesma</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

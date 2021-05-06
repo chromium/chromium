@@ -1836,7 +1836,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981113813906970160">Visa stor muspekare</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> har skickat en avisering till din telefon. Tryck på Ja för att bekräfta att det är du. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} lösenord är tillgängligt på den här enheten}other{{COUNT} lösenord är tillgängliga på den här enheten}}</translation>
 <translation id="2985348301114641460">Vill du skicka en begäran om att installera <ph name="EXTENSION_NAME" /> till administratören?</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
 <translation id="2988018669686457659">Renderare i reserv</translation>
@@ -1937,6 +1936,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3088325635286126843">&amp;Byt namn ...</translation>
 <translation id="3089064280130434511">Blockera webbplatser från att öppna och placera ut fönster på skärmen</translation>
 <translation id="3089137131053189723">Sökningen har rensats</translation>
+<translation id="3090589793601454425">Flytta inte</translation>
 <translation id="3090819949319990166">Det går inte att kopiera den externa CRX-filen till <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> har kopplats</translation>
 <translation id="3093714882666365141">Tillåt inte att webbplatser installerar betalningshanterare</translation>
@@ -2181,6 +2181,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – flätade</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} lösenord har sparats på den här enheten}other{{COUNT} lösenord har sparats på den här enheten}}</translation>
 <translation id="3402255108239926910">Välj en avatar</translation>
 <translation id="3402585168444815892">Registrerar dig för demoläget</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4474155171896946103">Skapa bokmärken för alla flikar ...</translation>
 <translation id="4475552974751346499">Sök i nedladdningar</translation>
+<translation id="4475830133618397783">Välj vilka lösenord som ska flyttas. Du kommer åt dem när du är inloggad.</translation>
 <translation id="4476590490540813026">Idrottare</translation>
 <translation id="4476659815936224889">Du kan skanna koden på telefonen med en app för att skanna QR-koder eller med vissa kameraappar.</translation>
 <translation id="4477015793815781985">Använd Ctrl, Alt eller ⌘</translation>
@@ -3409,7 +3411,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
 <translation id="4770119228883592393">Behörighet har begärts, tryck på ⌘ + Alt + nedåtpil för att svara</translation>
 <translation id="4773112038801431077">Uppgradera Linux</translation>
-<translation id="4774357366578243684">Flytta dem till Google-kontot så att du kan använda dem på alla enheter</translation>
 <translation id="477647109558161443">Skapa en skrivbordsgenväg</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butik</translation>
@@ -3769,7 +3770,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vill ladda ned flera filer</translation>
 <translation id="5192062846343383368">Öppna Family Link-appen om du vill se inställningarna för kontroll</translation>
 <translation id="5193988420012215838">Kopierat till urklipp</translation>
-<translation id="5195083053116174857">Välj vilka lösenord som ska flyttas</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
 <translation id="5199729219167945352">Experiment</translation>
@@ -3808,6 +3808,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5235050375939235066">Vill du avinstallera appen?</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5235750401727657667">Ersätt den aktuella sidan när du öppnar en ny flik</translation>
+<translation id="5236374273162681467">Du kan flytta lösenorden till Google-kontot så att du enkelt kan använda dem på alla dina enheter</translation>
 <translation id="5238278114306905396">Appen <ph name="EXTENSION_NAME" /> togs bort automatiskt.</translation>
 <translation id="5241128660650683457">Läsa all din data på webbplatserna som du besöker</translation>
 <translation id="5242724311594467048">Vill du aktivera <ph name="EXTENSION_NAME" />?</translation>
@@ -4317,6 +4318,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5814126672212206791">Anslutningstyp</translation>
 <translation id="5815645614496570556">X.400-adress</translation>
 <translation id="5816434091619127343">De begärda ändringarna av skrivaren innebär att skrivaren inte kan användas.</translation>
+<translation id="5817069030404929329">Vill du flytta lösenord från den här enheten till ditt Google-konto?</translation>
 <translation id="5817918615728894473">Koppla</translation>
 <translation id="5821565227679781414">Skapa genväg</translation>
 <translation id="5825412242012995131">På (rekommenderas)</translation>
@@ -5019,7 +5021,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6611972847767394631">Här finns dina flikar</translation>
 <translation id="6612358246767739896">Skyddat innehåll</translation>
 <translation id="6615455863669487791">Visa mig</translation>
-<translation id="661587753387495724">Lösenorden flyttas från enheten till Google-kontot</translation>
 <translation id="6618097958368085618">Behåll ändå</translation>
 <translation id="6618744767048954150">Körs</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

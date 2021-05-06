@@ -1835,7 +1835,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2979639724566107830">Ireki beste leiho batean</translation>
 <translation id="2981113813906970160">Erakutsi saguaren erakusle handia</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> webguneak jakinarazpen bat bidali dizu telefonora. Zeu zarela berresteko, sakatu Bai. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} pasahitz atzi daiteke gailuan}other{{COUNT} pasahitz atzi daitezke gailuan}}</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" instalatzeko eskaera bidali nahi diozu administratzaileari?</translation>
 <translation id="2987620471460279764">Beste gailu batetik partekatutako testua</translation>
 <translation id="2988018669686457659">Aurretiko errendatzailea</translation>
@@ -1936,6 +1935,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3088325635286126843">&amp;Aldatu izena…</translation>
 <translation id="3089064280130434511">Ez utzi webguneei pantailetan leihoak irekitzen eta kokatzen</translation>
 <translation id="3089137131053189723">Garbitu da bilaketa</translation>
+<translation id="3090589793601454425">Ez eraman</translation>
 <translation id="3090819949319990166">Ezin da kanpoko crx fitxategia <ph name="TEMP_CRX_FILE" /> fitxategian kopiatu.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" parekatu da</translation>
 <translation id="3093714882666365141">Ez eman ordainketa-kudeatzaileak instalatzeko baimena webguneei</translation>
@@ -2180,6 +2180,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3396800784455899911">"Onartu eta egin aurrera" botoia sakatuta, onartu egingo duzu Google-ren zerbitzuok prozesatzeko modua, arestian aipatu bezala.</translation>
 <translation id="3399432415385675819">Desgaitu egingo dira jakinarazpenak</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) - gurutzatuta</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} pasahitz dago gordeta gailu honetan}other{{COUNT} pasahitz daude gordeta gailu honetan}}</translation>
 <translation id="3402255108239926910">Aukeratu abatarra</translation>
 <translation id="3402585168444815892">Demo moduan erregistratzen</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3147,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4474155171896946103">Egin laster-markak fitxa guztiei…</translation>
 <translation id="4475552974751346499">Bilatu deskargak</translation>
+<translation id="4475830133618397783">Aukeratu mugitu nahi dituzun pasahitzak. Saioa hasita daukazunean atzitu ahalko dituzu.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Kode hau eskaneatzeko, QR kodeak eskaneatzeko berariazko aplikazio bat edo kamera-aplikazio batzuk erabil ditzakezu.</translation>
 <translation id="4477015793815781985">Erabili Ktrl, Alt edo ⌘</translation>
@@ -3408,7 +3410,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4768332406694066911">Identifikatzen zaituzten erakunde hauen ziurtagiriak dituzu</translation>
 <translation id="4770119228883592393">Baimena eskatu da. Erantzuteko, sakatu ⌘, Aukera eta behera egiteko gezi-tekla.</translation>
 <translation id="4773112038801431077">Bertsio-berritu Linux</translation>
-<translation id="4774357366578243684">Gailu guztietan erabiltzeko, eraman itzazu Google-ko kontura</translation>
 <translation id="477647109558161443">Sortu mahaigaineko lasterbidea</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuaren pasahitza</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3768,7 +3769,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="51918995459521422"><ph name="ORIGIN" /> webguneak fitxategi bat baino gehiago deskargatu nahi ditu</translation>
 <translation id="5192062846343383368">Zabaldu Family Link aplikazioa gainbegiratze-ezarpenak ikusteko.</translation>
 <translation id="5193988420012215838">Arbelean kopiatuta</translation>
-<translation id="5195083053116174857">Aukeratu mugitu nahi dituzun pasahitzak</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilera-datuak. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea.</translation>
 <translation id="5199729219167945352">Esperimentuak</translation>
@@ -3807,6 +3807,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5235050375939235066">Aplikazioa desinstalatu nahi duzu?</translation>
 <translation id="523505283826916779">Erabilerraztasun-ezarpenak</translation>
 <translation id="5235750401727657667">Aldatu fitxa berriak irekitzean erakusten den orria</translation>
+<translation id="5236374273162681467">Gailu guztietan erraz erabili ahal izateko, Google-ko kontura eraman ditzakezu</translation>
 <translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" aplikazioa automatikoki kendu da.</translation>
 <translation id="5241128660650683457">Irakurri bisitatzen dituzun webguneetan dituzun datu guztiak</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" gaitu nahi duzu?</translation>
@@ -4316,6 +4317,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5814126672212206791">Konexio mota</translation>
 <translation id="5815645614496570556">X.400 helbidea</translation>
 <translation id="5816434091619127343">Eskatutako inprimagailuaren aldaketen ondorioz erabilezin gera liteke inprimagailua.</translation>
+<translation id="5817069030404929329">Gailu honetako pasahitzak Google-ko kontura eraman nahi dituzu?</translation>
 <translation id="5817918615728894473">Parekatu</translation>
 <translation id="5821565227679781414">Sortu lasterbidea</translation>
 <translation id="5825412242012995131">Aktibatuta (gomendatua)</translation>
@@ -5018,7 +5020,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6611972847767394631">Bilatu fitxak hemen</translation>
 <translation id="6612358246767739896">Eduki babestua</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
-<translation id="661587753387495724">Gailutik Google-ko kontura eramango dira pasahitzak</translation>
 <translation id="6618097958368085618">Gorde hala ere</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

@@ -1833,7 +1833,6 @@
 <translation id="2979639724566107830">নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="2981113813906970160">ডাঙৰ মাউছ কাৰ্ছৰ দেখুৱাওক</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" />এ আপোনাৰ ফ’নটোলৈ এটা জাননী পঠিয়াইছে। এয়া আপুনিয়েই বুলি নিশ্চিত কৰিবলৈ হয়ত টিপক। <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{এইটো ডিভাইচত এক্সেছ কৰিব পৰা {COUNT} টা পাছৱৰ্ড}one{এইটো ডিভাইচত এক্সেছ কৰিব পৰা {COUNT} টা পাছৱৰ্ড}other{এইটো ডিভাইচত এক্সেছ কৰিব পৰা {COUNT} টা পাছৱৰ্ড}}</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ইনষ্টল কৰিবলৈ আপোনাৰ প্ৰশাসকলৈ এটা অনুৰোধ পঠিয়াবনে?</translation>
 <translation id="2987620471460279764">অন্য ডিভাইচৰ পৰা শ্বেয়াৰ কৰা পাঠ</translation>
 <translation id="2988018669686457659">স্পেয়াৰ ৰেণ্ডাৰাৰ</translation>
@@ -3402,7 +3401,6 @@
 <translation id="4768332406694066911">আপোনাক চিনি পোৱা এই প্ৰতিষ্ঠানবোৰে প্ৰদান কৰা প্ৰমাণপত্ৰ আছে</translation>
 <translation id="4770119228883592393">অনুমতিৰ বাবে অনুৰোধ জনোৱা হৈছে, সঁহাৰি জনাবলৈ ⌘ + অপশ্বন + ডাউন এৰ’ত টিপক</translation>
 <translation id="4773112038801431077">Linux আপগ্ৰে’ড কৰক</translation>
-<translation id="4774357366578243684">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ সেইসমূহক আপোনাৰ Google একাউণ্টলৈ স্থানান্তৰ কৰক</translation>
 <translation id="477647109558161443">ডেস্কটপৰ শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ৰ পাছৱর্ড</translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3762,7 +3760,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" />এ একাধিক ফাইল ডাউনল'ড কৰিব খোজে</translation>
 <translation id="5192062846343383368">আপোনাৰ তদাৰকী কৰা ছেটিংসমূহ Family Link এপ্‌টো খোলক</translation>
 <translation id="5193988420012215838">আপোনাৰ ক্লিপব'ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
-<translation id="5195083053116174857">স্থানান্তৰ কৰিব লগা পাছৱৰ্ড বাছনি কৰক</translation>
 <translation id="5197255632782567636">ইন্টাৰনেট</translation>
 <translation id="5198430103906431024">ব্যৱহাৰ আৰু ডায়গনষ্টিক ডেটা পঠিয়াওক। এই ডিভাইচটোৱে বর্তমান স্বয়ংক্ৰিয়ভাৱে Googleলৈ ডায়গন’ষ্টিক, ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আছে। এই কার্যটোৱে ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান একত্ৰিত ডেটাই Google এপ্‌ আৰু Android বিকাশকৰ্তাৰ দৰে অংশীদাৰকো সহায় কৰিব। যদি আপোনাৰ অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপৰ ছেটিংটো অন কৰা হয় তেন্তে এই ডেটাখিনি আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে।</translation>
 <translation id="5199729219167945352">পৰীক্ষা-নিৰীক্ষা</translation>
@@ -5008,7 +5005,6 @@
 <translation id="6611972847767394631">ইয়াত আপোনাৰ টেবসমূহ বিচাৰক</translation>
 <translation id="6612358246767739896">সুৰক্ষিত সমল</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
-<translation id="661587753387495724">পাছৱৰ্ডসমূহ আপোনাৰ ডিভাইচটোৰ পৰা আপোনাৰ Google একাউণ্টলৈ স্থানান্তৰ কৰা হ’ব</translation>
 <translation id="6618097958368085618">যি কি নহ’লেও ৰাখক</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

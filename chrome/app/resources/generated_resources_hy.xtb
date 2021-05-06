@@ -1837,7 +1837,6 @@
 <translation id="2979639724566107830">Բացել նոր պատուհանում</translation>
 <translation id="2981113813906970160">Ցույց տալ մկնիկի մեծ նշորդը</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> կայքը ծանուցում է ուղարկել ձեր հեռախոսին։ Հպեք «Այո», որպեսզի հաստատեք ձեր ինքնությունը։ <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} գաղտնաբառ հասանելի է այս սարքում}one{{COUNT} գաղտնաբառ հասանելի է այս սարքում}other{{COUNT} գաղտնաբառ հասանելի է այս սարքում}}</translation>
 <translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ընդլայնումը տեղադրելու հայտ ուղարկե՞լ ձեր ադմինիստրատորին</translation>
 <translation id="2987620471460279764">Այլ սարքից ուղարկված տեքստ</translation>
 <translation id="2988018669686457659">Պահեստային արտապատկերում</translation>
@@ -1938,6 +1937,7 @@
 <translation id="3088325635286126843">&amp;Վերանվանել...</translation>
 <translation id="3089064280130434511">Արգելել կայքերին բացել և տեղակայել պատուհաններ ձեր էկրաններին</translation>
 <translation id="3089137131053189723">Որոնման դաշտը մաքրվեց</translation>
+<translation id="3090589793601454425">Չտեղափոխել</translation>
 <translation id="3090819949319990166">Չհաջողվեց պատճենել արտաքին CRX ֆայլը <ph name="TEMP_CRX_FILE" />-ում:</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» սարքը զուգակցված է</translation>
 <translation id="3093714882666365141">Թույլ չտալ կայքերին տեղադրել վճարումների մշակիչներ</translation>
@@ -2182,6 +2182,7 @@
 <translation id="3396800784455899911">Սեղմելով «Ընդունել և շարունակել» կոճակը՝ դուք ընդունում եք Google-ի վերոնշյալ ծառայությունների մշակման պայմանները։</translation>
 <translation id="3399432415385675819">Ծանուցումները կանջատվեն</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Հց), միահյուսված</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Այս սարքում պահված է {COUNT} գաղտնաբառ}one{Այս սարքում պահված է {COUNT} գաղտնաբառ}other{Այս սարքում պահված է {COUNT} գաղտնաբառ}}</translation>
 <translation id="3402255108239926910">Ընտրեք ավատար</translation>
 <translation id="3402585168444815892">Գրանցում դեմո ռեժիմում</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,9 +3146,10 @@
 <translation id="4470957202018033307">Արտաքին հիշողության կարգավորումներ</translation>
 <translation id="4471354919263203780">Խոսքի ճանաչման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
 <translation id="447252321002412580">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
-<translation id="4472575034687746823">Սկսել աշխատանքը</translation>
+<translation id="4472575034687746823">Սկսել</translation>
 <translation id="4474155171896946103">Էջանշել բոլոր ներդիրները…</translation>
 <translation id="4475552974751346499">Որոնել ներբեռնումները</translation>
+<translation id="4475830133618397783">Ընտրեք, թե որ գաղտնաբառերը պետք է տեղափոխվեն։ Դրանք հասանելի կլինեն ձեզ ամեն անգամ, երբ մտնեք Google հաշիվ։</translation>
 <translation id="4476590490540813026">Մարզիկ</translation>
 <translation id="4476659815936224889">Դուք կարող եք սկանավորել այս կոդը հեռախոսի QR սկաների կամ տեսախցիկի որոշ հավելվածների միջոցով:</translation>
 <translation id="4477015793815781985">Սկզբում սեղմեք Ctrl, Alt կամ ⌘</translation>
@@ -3410,7 +3412,6 @@
 <translation id="4768332406694066911">Դուք այս կազմակերպություններից այնպիսի հավաստագրեր ունեք, որոնք ձեզ կարող են նույնականացնել</translation>
 <translation id="4770119228883592393">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վար սլաք։</translation>
 <translation id="4773112038801431077">Լինուքսի նորացում</translation>
-<translation id="4774357366578243684">Տեղափոխեք դրանք ձեր Google հաշիվ՝ ձեր սարքերում օգտագործելու համար</translation>
 <translation id="477647109558161443">Ստեղծել աշխատասեղանի դյուրանցում</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="4777825441726637019">Play Խանութ</translation>
@@ -3771,7 +3772,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> հավելվածն ուզում է ներբեռնել մի քանի ֆայլ</translation>
 <translation id="5192062846343383368">Բացեք Family Link հավելվածը՝ ծնողական վերահսկողության կարգավորումները տեսնելու համար</translation>
 <translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>
-<translation id="5195083053116174857">Ընտրեք, թե որ գաղտնաբառերը պետք է տեղափոխվեն</translation>
 <translation id="5197255632782567636">Համացանց</translation>
 <translation id="5198430103906431024">Օգտագործման և դիագնոստիկ տվյալների ուղարկում։ Այս սարքը Google-ին ավտոմատ ուղարկում է ախտորոշման, ինչպես նաև սարքի և հավելվածի օգտագործման մասին տվյալներ։ Դա կօգնի բարելավել համակարգի ու հավելվածների աշխատանքի կայունությունը։ Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Եթե միացնեք Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը, այս տվյալները կպահվեն ձեր Google հաշվում։</translation>
 <translation id="5199729219167945352">Փորձեր</translation>
@@ -3810,6 +3810,7 @@
 <translation id="5235050375939235066">Ապատեղադրե՞լ հավելվածը</translation>
 <translation id="523505283826916779">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="5235750401727657667">Փոխել նոր ներդիր բացելիս ցուցադրվող էջը</translation>
+<translation id="5236374273162681467">Տեղափոխեք ձեր գաղտնաբառերը Google հաշիվ, որպեսզի կարողանաք դրանք օգտագործել բոլոր սարքերում</translation>
 <translation id="5238278114306905396">«<ph name="EXTENSION_NAME" />» հավելվածն ավտոմատ հեռացվել է:</translation>
 <translation id="5241128660650683457">Կարդալ ձեր այցելած կայքերի բոլոր տվյալները</translation>
 <translation id="5242724311594467048">Միացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը:</translation>
@@ -4321,6 +4322,7 @@
 <translation id="5814126672212206791">Կապի տեսակը</translation>
 <translation id="5815645614496570556">X.400 հասցե</translation>
 <translation id="5816434091619127343">Հրահանգված փոփոխությունների կիրառման դեպքում տպիչը հնարավոր չի լինի օգտագործել։</translation>
+<translation id="5817069030404929329">Գաղտնաբառերը տեղափոխե՞լ այս սարքից ձեր Google հաշիվ։</translation>
 <translation id="5817918615728894473">Զուգակցել</translation>
 <translation id="5821565227679781414">Ստեղծել դյուրանցում</translation>
 <translation id="5825412242012995131">Միաց. (խորհուրդ է տրվում)</translation>
@@ -5023,7 +5025,6 @@
 <translation id="6611972847767394631">Ձեր ներդիրներն այստեղ են</translation>
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
-<translation id="661587753387495724">Գաղտնաբառերը ձեր սարքից կտեղափոխվեն ձեր Google հաշիվ</translation>
 <translation id="6618097958368085618">Տեղադրել</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

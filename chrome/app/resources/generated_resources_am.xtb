@@ -1836,7 +1836,6 @@
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
 <translation id="2981113813906970160">ትልቅ የመዳፊት ጠቋሚ አሳይ</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> ማሳወቂያ ወደ ስልክዎ ልኳል። እርስዎ መሆንዎን ለማረጋገጥ አዎ የሚለውን መታ ያድርጉ። <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተደራሽ ነው}one{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተደራሽ ናቸው}other{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተደራሽ ናቸው}}</translation>
 <translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ለመጫን ለእርስዎ አስተዳዳሪ ጥያቄ ይላክ?</translation>
 <translation id="2987620471460279764">ከሌሎች መሣሪያዎች የተጋራ ጽሑፍ</translation>
 <translation id="2988018669686457659">አነስተኛ ምስል ሰሪ</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3088325635286126843">እንደገና &amp;ሰይም...</translation>
 <translation id="3089064280130434511">ጣቢያዎች መስኮቶችን እንዳይከፍቱና በማያ ገጽዎችዎ ላይ እንዳያስቀምጧቸው ያግዷቸው</translation>
 <translation id="3089137131053189723">ፍለጋ ጸድቷል</translation>
+<translation id="3090589793601454425">አይውሰዱ</translation>
 <translation id="3090819949319990166">ውጫዊ የcrx ፋይል ወደ <ph name="TEMP_CRX_FILE" /> መቅዳት አልተቻለም።</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» ተጣምሯል</translation>
 <translation id="3093714882666365141">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን እንዲጭኑ አይፍቀዱ</translation>
@@ -2181,6 +2181,7 @@
 <translation id="3396800784455899911">የ«እስማማለሁ እና ቀጥል» አዝራርን ጠቅ በማድረግ ለእነዚህ የGoogle አገልግሎቶች ከላይ በተብራራው ማስሄድ መስማማትዎን ያረጋግጣሉ።</translation>
 <translation id="3399432415385675819">ማሳወቂያዎች ይሰናከላሉ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - የተጠላለፈ</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል}one{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተቀምጠዋል}other{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተቀምጠዋል}}</translation>
 <translation id="3402255108239926910">አምሳያ ይምረጡ</translation>
 <translation id="3402585168444815892">በማሳያ ሁነታ ላይ ያስመዝግቡ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />፣ <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4474155171896946103">ለሁሉም ትሮች ዕልባት አብጅ...</translation>
 <translation id="4475552974751346499">የሚወርዱ ፈልግ</translation>
+<translation id="4475830133618397783">የትኛውን የይለፍ ቃል እንደሚያዘዋውሩ ይምረጡ በማንኛውም ጊዜ በመለያ ሲገቡ ሊደርሱበት ይችላሉ።</translation>
 <translation id="4476590490540813026">አትሌት</translation>
 <translation id="4476659815936224889">ይህን ኮድ ለመቃኘት በእርስዎ ስልክ ላይ ያለውን የQR መቃኛ መተግበሪያ ወይም አንዳንድ የካሜራ መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
 <translation id="4477015793815781985">Ctrl፣ Alt ወይም ⌘ ያካትቱ</translation>
@@ -3407,7 +3409,6 @@
 <translation id="4768332406694066911">እርስዎን የሚለዩ ከእነዚህ ድርጅቶች የመጡ የዕውቅና ማረጋገጫዎች አለዎት</translation>
 <translation id="4770119228883592393">ፍቃድ ተጠይቋል፣ መልስ ለመስጠት ⌘ + አማራጭ + የታች ቀስት ይጫኑ</translation>
 <translation id="4773112038801431077">Linuxን አልቅ</translation>
-<translation id="4774357366578243684">በሁሉም መሣሪያዎችዎ ላይ እነሱን ለመጠቀም፣ እነሱን ወደ የእርስዎ የGoogle መለያ ይውሰዷቸው</translation>
 <translation id="477647109558161443">የዴስክቶፕ አቋራጭ ይፍጠሩ</translation>
 <translation id="4776917500594043016">የ<ph name="USER_EMAIL_ADDRESS" /> ይለፍ ቃል</translation>
 <translation id="4777825441726637019">Play  መደብር</translation>
@@ -3767,7 +3768,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> በርካታ ፋይሎችን ለማውረድ ይፈልጋል</translation>
 <translation id="5192062846343383368">የእርስዎን የበላይ ተቆጣጣሪ ቅንብሮች ለመመልከት የ Family Link መተግበሪያውን ይክፈቱ</translation>
 <translation id="5193988420012215838">ወደ የእርስዎ ቅንጥብ ሰሌዳ ላይ ተቀድቷል</translation>
-<translation id="5195083053116174857">የትኛውን የይለፍ ቃል እንደሚወስዱ ይምረጡ</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
 <translation id="5198430103906431024">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="5199729219167945352">ሙከራዎች</translation>
@@ -3806,6 +3806,7 @@
 <translation id="5235050375939235066">መተግበሪያ ይራገፍ?</translation>
 <translation id="523505283826916779">የተደራሽነት ቅንብሮች</translation>
 <translation id="5235750401727657667">አዲስ ትር በሚከፈትበት ጊዜ የሚመለከቱትን ገጽ ይተኩ</translation>
+<translation id="5236374273162681467">በሁሉም መሣሪያዎችዎ ላይ በቀላሉ ለመጠቀም ወደ Google መለያዎ ሊወስዷቸው ይችላሉ</translation>
 <translation id="5238278114306905396">መተግበሪያ «<ph name="EXTENSION_NAME" />» በራስ-ሰር ተወግዷል።</translation>
 <translation id="5241128660650683457">በሚጎበኙዋቸው የድር ጣቢያዎች ላይ ያሉ ሁሉንም የእርስዎን ውሂቦች ያንብቡ</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» ይንቃ?</translation>
@@ -4315,6 +4316,7 @@
 <translation id="5814126672212206791">የግንኙነት ዓይነት</translation>
 <translation id="5815645614496570556">X.400 አድራሻ</translation>
 <translation id="5816434091619127343">የተጠየቁት የአታሚ ለውጦች አታሚው ጥቅም እንዳይሰጥ ያደርጉታል።</translation>
+<translation id="5817069030404929329">የይለፍ ቃ፤አት ከዚህ መሣሪያ ወደ Google መለያዎ ይወሰዱ?</translation>
 <translation id="5817918615728894473">አጣምር</translation>
 <translation id="5821565227679781414">አቋራጭ ፍጠር</translation>
 <translation id="5825412242012995131">በርቷል (የሚመከር)</translation>
@@ -5017,7 +5019,6 @@
 <translation id="6611972847767394631">የእርስዎን ትሮች እዚህ ያግኙ</translation>
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
-<translation id="661587753387495724">የይለፍ ቃላት ከመሣሪያዎ ወደ የእርስዎ የGoogle መለያ ይወሰዳሉ</translation>
 <translation id="6618097958368085618">ለማንኛውም አስቀምጥ</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
 <translation id="6619058681307408113">የመስመር ህትመት ዴሞን (LPD)</translation>

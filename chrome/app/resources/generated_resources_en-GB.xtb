@@ -1836,7 +1836,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> sent a notification to your phone. Tap 'Yes' to confirm that it's you. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} password is accessible on this device}other{{COUNT} passwords are accessible on this device}}</translation>
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
 <translation id="2988018669686457659">Spare renderer</translation>
@@ -1937,6 +1936,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3088325635286126843">&amp;Rename...</translation>
 <translation id="3089064280130434511">Block sites from opening and placing windows on your screens</translation>
 <translation id="3089137131053189723">Search cleared</translation>
+<translation id="3090589793601454425">Don't move</translation>
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
@@ -2181,6 +2181,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – interlaced</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} password is stored on this device}other{{COUNT} passwords are stored on this device}}</translation>
 <translation id="3402255108239926910">Pick an avatar</translation>
 <translation id="3402585168444815892">Enrolling in demo mode</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4474155171896946103">Bookmark all tabs...</translation>
 <translation id="4475552974751346499">Search downloads</translation>
+<translation id="4475830133618397783">Choose which passwords to move. You can access them whenever you're signed in.</translation>
 <translation id="4476590490540813026">Athlete</translation>
 <translation id="4476659815936224889">To scan this code, you can use a QR scanner app on your phone, or some camera apps.</translation>
 <translation id="4477015793815781985">Include Ctrl, Alt or ⌘</translation>
@@ -3409,7 +3411,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
 <translation id="4770119228883592393">Permission requested, press ⌘ + Option + Down arrow to respond</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
-<translation id="4774357366578243684">To use them on all your devices, move them to your Google Account</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3769,7 +3770,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="5192062846343383368">Open the Family Link app to see your supervision settings</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
-<translation id="5195083053116174857">Choose which passwords to move</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="5199729219167945352">Experiments</translation>
@@ -3808,6 +3808,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5235050375939235066">Uninstall app?</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5235750401727657667">Replace the page that you see when opening a new tab</translation>
+<translation id="5236374273162681467">To easily use them on all your devices, you can move them to your Google Account</translation>
 <translation id="5238278114306905396">The app "<ph name="EXTENSION_NAME" />" was automatically removed.</translation>
 <translation id="5241128660650683457">Read all your data on the websites that you visit</translation>
 <translation id="5242724311594467048">Enable "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4317,6 +4318,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5814126672212206791">Connection type</translation>
 <translation id="5815645614496570556">X.400 Address</translation>
 <translation id="5816434091619127343">Requested printer changes would make the printer unusable.</translation>
+<translation id="5817069030404929329">Move passwords from this device to your Google Account?</translation>
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5821565227679781414">Create Shortcut</translation>
 <translation id="5825412242012995131">On (recommended)</translation>
@@ -5019,7 +5021,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="6615455863669487791">Show me</translation>
-<translation id="661587753387495724">Passwords will be moved from your device to your Google Account</translation>
 <translation id="6618097958368085618">Keep Anyway</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

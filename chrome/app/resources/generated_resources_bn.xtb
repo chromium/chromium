@@ -1835,7 +1835,6 @@
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="2981113813906970160">বড় মাউস কার্সার দেখান</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> আপনার ফোনে বিজ্ঞপ্তি পাঠিয়েছে। এটি যে আপনি তা কনফার্ম করতে 'হ্যাঁ' বোতামে ট্যাপ করুন। <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{এই ডিভাইস থেকে {COUNT}টি পাসওয়ার্ড অ্যাক্সেস করা যায়}one{এই ডিভাইস থেকে {COUNT}টি পাসওয়ার্ড অ্যাক্সেস করা যায়}other{এই ডিভাইস থেকে {COUNT}টি পাসওয়ার্ড অ্যাক্সেস করা যায়}}</translation>
 <translation id="2985348301114641460">আপনার অ্যাডমিনিস্ট্রেটরকে "<ph name="EXTENSION_NAME" />" ইনস্টল করবার জন্য অনুরোধ পাঠাবেন?</translation>
 <translation id="2987620471460279764">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="2988018669686457659">অতিরিক্ত রেন্ডারার</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3088325635286126843">&amp;পুনঃনামকরণ...</translation>
 <translation id="3089064280130434511">কোনও সাইটকে আপনার স্ক্রিনে উইন্ডো খোলা ও রাখা থেকে ব্লক করুন</translation>
 <translation id="3089137131053189723">সার্চ বিভাগ খালি করা হয়েছে।</translation>
+<translation id="3090589793601454425">সরাতে চাই না</translation>
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" />-এ বহিরাগত crx ফাইলটি কপি করতে পারবেন না৷</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" যুক্ত করা হয়েছে</translation>
 <translation id="3093714882666365141">পেমেন্ট হ্যান্ডলার ইনস্টল করার অনুমতি দেয় না</translation>
@@ -2180,6 +2180,7 @@
 <translation id="3396800784455899911">'স্বীকার করে চালিয়ে যান' বোতামে ক্লিক করার অর্থ এই Google পরিষেবাগুলির জন্য উপরোক্ত বর্ণিত প্রক্রিয়াগুলিতে আপনি সম্মতি দেন।</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT}টি পাসওয়ার্ড এই ডিভাইসে সেভ করা আছে}one{{COUNT}টি পাসওয়ার্ড এই ডিভাইসে সেভ করা আছে}other{{COUNT}টি পাসওয়ার্ড এই ডিভাইসে সেভ করা আছে}}</translation>
 <translation id="3402255108239926910">অবতার বেছে নিন</translation>
 <translation id="3402585168444815892">ডেমো মোডে এনরোল করা হচ্ছে</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@
 <translation id="4472575034687746823">শুরু করুন</translation>
 <translation id="4474155171896946103">সব কটি ট্যাব বুকমার্ক করুন...</translation>
 <translation id="4475552974751346499">ডাউনলোডগুলি খুঁজুন</translation>
+<translation id="4475830133618397783">যেসব পাসওয়ার্ড সরাতে চান সেগুলি বেছে নিন। আপনি যেকোনও সময় সাইন-ইন করে এগুলি অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="4476590490540813026">ক্রীড়াবিদ</translation>
 <translation id="4476659815936224889">এই কোড স্ক্যান করতে আপনার ফোনে QR স্ক্যানার অ্যাপ অথবা কিছু ক্যামেরা অ্যাপ ব্যবহার করতে পারেন।</translation>
 <translation id="4477015793815781985">Ctrl, Alt অথবা ⌘ ব্যবহার করতে হবে</translation>
@@ -3407,7 +3409,6 @@
 <translation id="4768332406694066911">আপনার পরিচয় শনাক্ত করে এমন সংস্থাগুলি থেকে শংসাপত্র আপনার কাছে আছে</translation>
 <translation id="4770119228883592393">অনুমতি চাওয়া হয়েছে, উত্তর দিতে ⌘ + 'বিকল্প' বোতাম + 'নিম্নমুখী তীরচিহ্ন' বোতাম প্রেস করুন</translation>
 <translation id="4773112038801431077">Linux আপগ্রেড করুন</translation>
-<translation id="4774357366578243684">আপনার সব ডিভাইসে একাধিক পাসওয়ার্ড ব্যবহার করতে চাইলে, সেগুলি Google অ্যাকাউন্টে সরান</translation>
 <translation id="477647109558161443">ডেস্কটপ শর্টকাট তৈরি করুন</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
 <translation id="4777825441726637019">Play স্টোর</translation>
@@ -3767,7 +3768,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> একাধিক ফাইল ডাউনলোড করতে চায়</translation>
 <translation id="5192062846343383368">আপনার তত্ত্বাবধান সেটিংস দেখতে Family Link অ্যাপ খুলুন</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
-<translation id="5195083053116174857">কোন পাসওয়ার্ডগুলি সরাবেন তা বেছে নিন</translation>
 <translation id="5197255632782567636">ইন্টারনেট</translation>
 <translation id="5198430103906431024">ব্যবহার এবং ডায়াগনস্টিক বিষয়ক ডেটা পাঠান। বর্তমানে এই ডিভাইসটি অটোমেটিক Google-কে ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা পাঠাচ্ছে। এটি সিস্টেম ও অ্যাপের স্টেবিলিটি বাড়াতে এবং অন্যান্য উন্নতিতে সাহায্য করবে। কিছু একত্রিত করা ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। আপনার অতিরিক্ত 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং চালু থাকলে, এই ডেটা আপনার Google অ্যাকাউন্টে সেভ করা হতে পারে।</translation>
 <translation id="5199729219167945352">পরীক্ষাদি</translation>
@@ -3806,6 +3806,7 @@
 <translation id="5235050375939235066">অ্যাপ আনইনস্টল করবেন?</translation>
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="5235750401727657667">নতুন ট্যাব খোলার সময় যে পৃষ্ঠাটি আপনি দেখেন সেটি বদলে দিন</translation>
+<translation id="5236374273162681467">আপনি সেগুলি সব ডিভাইসে সহজে ব্যবহার করতে আপনার Google অ্যাকাউন্টে সরাতে পারেন</translation>
 <translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" অ্যাপ্লিকেশন স্বয়ংক্রিয়ভাবে সরানো হয়েছে৷</translation>
 <translation id="5241128660650683457">আপনার দেখা ওয়েবসাইটগুলির সমস্ত ডেটা পড়ুন</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
@@ -4316,6 +4317,7 @@
 <translation id="5814126672212206791">সংযোগের প্রকার</translation>
 <translation id="5815645614496570556">X.400 ঠিকানা</translation>
 <translation id="5816434091619127343">অনুরোধ করা প্রিন্টার পরিবর্তন করলে তা প্রিন্টার ব্যবহারের সুবিধা অব্যবহারযোগ্য করে তুলবে।</translation>
+<translation id="5817069030404929329">এই ডিভাইস থেকে আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সরাতে চান?</translation>
 <translation id="5817918615728894473">যুক্ত করুন</translation>
 <translation id="5821565227679781414">শর্টকাট তৈরি করুন</translation>
 <translation id="5825412242012995131">চালু আছে (সাজেস্ট করা)</translation>
@@ -5018,7 +5020,6 @@
 <translation id="6611972847767394631">এখানে আপনার ট্যাবগুলি দেখুন</translation>
 <translation id="6612358246767739896">সুরক্ষিত কন্টেন্ট</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
-<translation id="661587753387495724">আপনার ডিভাইস থেকে Google অ্যাকাউন্টে পাসওয়ার্ড সরানো হবে</translation>
 <translation id="6618097958368085618">তবুও রাখতে চাই</translation>
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6619058681307408113">লাইন প্রিন্টার ডেমন (LPD)</translation>

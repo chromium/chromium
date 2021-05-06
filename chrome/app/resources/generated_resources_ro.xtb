@@ -1837,7 +1837,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
 <translation id="2981113813906970160">Afișați cursorul de mouse mare</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> a trimis o notificare către telefonul tău. Atinge Da pentru a-ți confirma identitatea. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} parolă poate fi accesată de pe acest dispozitiv}few{{COUNT} parole pot fi accesate de pe acest dispozitiv}other{{COUNT} de parole pot fi accesate de pe acest dispozitiv}}</translation>
 <translation id="2985348301114641460">Trimiți o solicitare administratorului privind instalarea „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2987620471460279764">Text trimis de pe alt dispozitiv</translation>
 <translation id="2988018669686457659">Program de redare de rezervă</translation>
@@ -1938,6 +1937,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3088325635286126843">&amp;Redenumiți...</translation>
 <translation id="3089064280130434511">Împiedică site-urile să deschidă și să plaseze ferestre în ecrane</translation>
 <translation id="3089137131053189723">Căutarea a fost ștearsă</translation>
+<translation id="3090589793601454425">Nu le muta</translation>
 <translation id="3090819949319990166">Fișierul crx extern nu se poate copia în <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” conectată</translation>
 <translation id="3093714882666365141">Nu permite site-urilor să instaleze handlere pentru plăți</translation>
@@ -2182,6 +2182,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3396800784455899911">Dacă dai clic pe butonul „Acceptă și continuă” înseamnă că ești de acord cu procesarea descrisă mai sus pentru aceste servicii Google.</translation>
 <translation id="3399432415385675819">Notificările vor fi dezactivate</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertzi) – întrețesut</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} parolă este stocată pe acest dispozitiv}few{{COUNT} parole sunt stocate pe acest dispozitiv}other{{COUNT} de parole sunt stocate pe acest dispozitiv}}</translation>
 <translation id="3402255108239926910">Alege un avatar</translation>
 <translation id="3402585168444815892">Se înregistrează în modul demonstrativ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3148,6 +3149,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4474155171896946103">Marchează toate filele...</translation>
 <translation id="4475552974751346499">Caută în descărcări</translation>
+<translation id="4475830133618397783">Alege parolele pe care vrei să le muți. Le poți accesa oricând te conectezi.</translation>
 <translation id="4476590490540813026">Atletă</translation>
 <translation id="4476659815936224889">Pentru a scana codul, poți folosi o aplicație de scanare a codurilor QR pe telefon sau anumite aplicații pentru camera foto.</translation>
 <translation id="4477015793815781985">Include Ctrl, Alt sau ⌘</translation>
@@ -3410,7 +3412,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4768332406694066911">Ai certificate de la aceste organizații care te identifică</translation>
 <translation id="4770119228883592393">Permisiune necesară, apasă ⌘ + Option + săgeată în jos pentru a răspunde</translation>
 <translation id="4773112038801431077">Fă upgrade pentru Linux</translation>
-<translation id="4774357366578243684">Pentru a le folosi pe toate dispozitivele, mută-le în Contul Google</translation>
 <translation id="477647109558161443">Creează o comandă rapidă pe desktop</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Magazin Play</translation>
@@ -3770,7 +3771,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vrea să descarce mai multe fișiere</translation>
 <translation id="5192062846343383368">Deschide aplicația Family Link și vezi setările de supraveghere</translation>
 <translation id="5193988420012215838">Copiat în clipboard</translation>
-<translation id="5195083053116174857">Alege parolele pe care vrei să le muți</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="5199729219167945352">Experimente</translation>
@@ -3809,6 +3809,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5235050375939235066">Dezinstalezi aplicația?</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5235750401727657667">Înlocuiește pagina pe care o vezi la deschiderea unei file noi</translation>
+<translation id="5236374273162681467">Ca să le folosești cu ușurință pe toate dispozitivele, le poți muta în Contul Google</translation>
 <translation id="5238278114306905396">Aplicația „<ph name="EXTENSION_NAME" />” a fost eliminată automat.</translation>
 <translation id="5241128660650683457">Citește toate datele de pe site-urile pe care le vizitezi</translation>
 <translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
@@ -4318,6 +4319,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5814126672212206791">Tipul de conexiune</translation>
 <translation id="5815645614496570556">Adresă X.400</translation>
 <translation id="5816434091619127343">Modificările solicitate ar face imprimanta inutilizabilă.</translation>
+<translation id="5817069030404929329">Muți parole de pe acest dispozitiv în Contul Google?</translation>
 <translation id="5817918615728894473">Asociază</translation>
 <translation id="5821565227679781414">Creați o comandă rapidă</translation>
 <translation id="5825412242012995131">Activat (recomandat)</translation>
@@ -5020,7 +5022,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6611972847767394631">Regăsește filele aici</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>
 <translation id="6615455863669487791">Afișează</translation>
-<translation id="661587753387495724">Parolele vor fi mutate de pe dispozitiv în Contul Google</translation>
 <translation id="6618097958368085618">Păstrează oricum</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

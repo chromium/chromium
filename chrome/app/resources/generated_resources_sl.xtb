@@ -1839,7 +1839,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
 <translation id="2981113813906970160">Pokaži velik miškin kazalec</translation>
 <translation id="2983175648295374032">Spletno mesto <ph name="WEBSITE" /> je poslalo obvestilo v vaš telefon. Dotaknite se »Da«, če želite potrdite, da ste to res vi. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} geslo je dostopno v tej napravi}one{{COUNT} geslo je dostopno v tej napravi}two{{COUNT} gesli sta dostopni v tej napravi}few{{COUNT} gesla so dostopna v tej napravi}other{{COUNT} gesel je dostopnih v tej napravi}}</translation>
 <translation id="2985348301114641460">Želite skrbniku poslati zahtevo za namestitev razširitve »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="2987620471460279764">Besedilo, deljeno iz druge naprave</translation>
 <translation id="2988018669686457659">Rezervni upodabljalnik</translation>
@@ -1940,6 +1939,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3088325635286126843">&amp;Preimenuj ...</translation>
 <translation id="3089064280130434511">Preprečevanje spletnim mestom odpiranja in postavljanja oken na zaslone</translation>
 <translation id="3089137131053189723">Iskanje je izbrisano</translation>
+<translation id="3090589793601454425">Brez premikanja</translation>
 <translation id="3090819949319990166">Zunanje datoteke crx ni mogoče kopirati v <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Naprava »<ph name="DEVICE_NAME" />« je seznanjena</translation>
 <translation id="3093714882666365141">Spletnim mestom ne dovoli namestitve rutin za obravnavo plačil.</translation>
@@ -2184,6 +2184,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3396800784455899911">Če kliknete gumb »Sprejmi in nadaljuj«, se strinjate z obdelavo, ki je opisana zgoraj za te Googlove storitve.</translation>
 <translation id="3399432415385675819">Obvestila bodo onemogočena</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prepleteno</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} geslo je shranjeno v tej napravi}one{{COUNT} geslo je shranjeno v tej napravi}two{{COUNT} gesli sta shranjeni v tej napravi}few{{COUNT} gesla so shranjena v tej napravi}other{{COUNT} gesel je shranjenih v tej napravi}}</translation>
 <translation id="3402255108239926910">Izberite avatar</translation>
 <translation id="3402585168444815892">Včlanitev v predstavitveni način</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3150,6 +3151,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4474155171896946103">Dodaj vse zavihke med zaznamke ...</translation>
 <translation id="4475552974751346499">Iskanje v prenosih</translation>
+<translation id="4475830133618397783">Izberite, katera gesla želite premakniti. Do njih lahko dostopate, kadar koli ste prijavljeni.</translation>
 <translation id="4476590490540813026">Športnik</translation>
 <translation id="4476659815936224889">Če želite optično prebrati to kodo, lahko uporabite aplikacijo za optično branje kod QR v telefonu ali nekatere aplikacije fotoaparata.</translation>
 <translation id="4477015793815781985">Vključevati morajo Ctrl, Alt ali ⌘</translation>
@@ -3412,7 +3414,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4768332406694066911">Imate potrdila teh organizacij, ki vas identificirajo</translation>
 <translation id="4770119228883592393">Zahtevano je dovoljenje; pritisnite ⌘ + Option + puščico dol, če se želite odzvati.</translation>
 <translation id="4773112038801431077">Nadgradnja Linuxa</translation>
-<translation id="4774357366578243684">Če jih želite uporabljati v vseh napravah, jih premaknite v račun Google.</translation>
 <translation id="477647109558161443">Ustvari bližnjico na namizju</translation>
 <translation id="4776917500594043016">Geslo za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
@@ -3772,7 +3773,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi prenesti več datotek</translation>
 <translation id="5192062846343383368">Če si želite ogledati nastavitve nadzora, odprite aplikacijo Family Link</translation>
 <translation id="5193988420012215838">Kopirano v odložišče</translation>
-<translation id="5195083053116174857">Izberite, katera gesla želite premakniti</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="5199729219167945352">Poskusi</translation>
@@ -3811,6 +3811,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5235050375939235066">Želite odstraniti aplikacijo?</translation>
 <translation id="523505283826916779">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="5235750401727657667">Zamenjaj prikazano stran pri odpiranju novega zavihka</translation>
+<translation id="5236374273162681467">Če jih želite preprosto uporabljati v vseh napravah, jih lahko preselite v račun Google.</translation>
 <translation id="5238278114306905396">Aplikacija »<ph name="EXTENSION_NAME" />« je bila samodejno odstranjena.</translation>
 <translation id="5241128660650683457">Branje vseh vaših podatkov na spletnih mestih, ki jih obiščete</translation>
 <translation id="5242724311594467048">Ali želite omogočiti »<ph name="EXTENSION_NAME" />«?</translation>
@@ -4322,6 +4323,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5814126672212206791">Vrsta povezave</translation>
 <translation id="5815645614496570556">Naslov X.400</translation>
 <translation id="5816434091619127343">Če uveljavite zahtevane spremembe tiskalnika, bo ta neuporaben.</translation>
+<translation id="5817069030404929329">Želite premakniti gesla iz te naprave v račun Google?</translation>
 <translation id="5817918615728894473">Seznani</translation>
 <translation id="5821565227679781414">Ustvari bližnjico</translation>
 <translation id="5825412242012995131">Vklop (priporočeno)</translation>
@@ -5024,7 +5026,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6611972847767394631">Poiščite svoje zavihke tukaj</translation>
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
-<translation id="661587753387495724">Gesla bodo iz naprave premaknjena v račun Google</translation>
 <translation id="6618097958368085618">Vseeno obdrži</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

@@ -1833,7 +1833,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2979639724566107830">Otwórz w nowym oknie</translation>
 <translation id="2981113813906970160">Pokaż duży kursor myszy</translation>
 <translation id="2983175648295374032">Strona <ph name="WEBSITE" /> wysłała powiadomienie na Twój telefon. Kliknij Tak, aby potwierdzić, że to Ty. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Na tym urządzeniu dostępne jest {COUNT} hasło}few{Na tym urządzeniu są dostępne {COUNT} hasła}many{Na tym urządzeniu jest dostępnych {COUNT} haseł}other{Na tym urządzeniu jest dostępne {COUNT} hasła}}</translation>
 <translation id="2985348301114641460">Wysłać do administratora prośbę o zainstalowanie: „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
 <translation id="2988018669686457659">Zapasowy mechanizm renderowania</translation>
@@ -1934,6 +1933,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3088325635286126843">&amp;Zmień nazwę</translation>
 <translation id="3089064280130434511">Nie zezwalaj stronom na otwieranie i umieszczanie okien na Twoich ekranach</translation>
 <translation id="3089137131053189723">Wyszukiwanie zostało wyczyszczone</translation>
+<translation id="3090589793601454425">Nie przenoś</translation>
 <translation id="3090819949319990166">Nie można skopiować zewnętrznego pliku CRX jako <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Sparowano „<ph name="DEVICE_NAME" />”</translation>
 <translation id="3093714882666365141">Nie zezwalaj witrynom na instalowanie modułów do obsługi płatności</translation>
@@ -2178,6 +2178,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – z przeplotem</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Na tym urządzeniu jest zapisane {COUNT} hasło}few{Na tym urządzeniu są zapisane {COUNT} hasła}many{Na tym urządzeniu jest zapisanych {COUNT} haseł}other{Na tym urządzeniu jest zapisane {COUNT} hasła}}</translation>
 <translation id="3402255108239926910">Wybierz awatara</translation>
 <translation id="3402585168444815892">Rejestruję w trybie demonstracyjnym</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3144,6 +3145,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4474155171896946103">Dodaj wszystkie karty do zakładek...</translation>
 <translation id="4475552974751346499">Przeszukaj pobrane pliki</translation>
+<translation id="4475830133618397783">Wybierz hasła do przeniesienia. Zawsze będziesz mieć do nich dostęp po zalogowaniu.</translation>
 <translation id="4476590490540813026">Sportowiec</translation>
 <translation id="4476659815936224889">Aby zeskanować ten kod, skorzystaj ze skanera kodów QR w telefonie lub z aplikacji aparatu.</translation>
 <translation id="4477015793815781985">Uwzględnij klawisze Ctrl, Alt lub ⌘</translation>
@@ -3406,7 +3408,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
 <translation id="4770119228883592393">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij ⌘ + Option + strzałka w dół.</translation>
 <translation id="4773112038801431077">Uaktualnij Linuksa</translation>
-<translation id="4774357366578243684">Aby używać ich na wszystkich urządzeniach, przenieś je na swoje konto Google</translation>
 <translation id="477647109558161443">Utwórz skrót na pulpicie</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Sklep Play</translation>
@@ -3766,7 +3767,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="51918995459521422"><ph name="ORIGIN" /> chce pobrać wiele plików</translation>
 <translation id="5192062846343383368">Otwórz aplikację Family Link, by zobaczyć ustawienia nadzoru</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>
-<translation id="5195083053116174857">Wybierz hasła do przeniesienia</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="5199729219167945352">Eksperymenty</translation>
@@ -3805,6 +3805,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5235050375939235066">Odinstalować aplikację?</translation>
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
 <translation id="5235750401727657667">Zmiana strony, która wyświetla się, gdy otwierasz nową kartę</translation>
+<translation id="5236374273162681467">Aby łatwo korzystać z nich na wszystkich swoich urządzeniach, możesz przenieść je na swoje konto Google</translation>
 <translation id="5238278114306905396">Aplikacja „<ph name="EXTENSION_NAME" />” została automatycznie usunięta.</translation>
 <translation id="5241128660650683457">Odczyt wszystkich Twoich danych na odwiedzanych stronach internetowych</translation>
 <translation id="5242724311594467048">Włączyć rozszerzenie „<ph name="EXTENSION_NAME" />”?</translation>
@@ -4314,6 +4315,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5814126672212206791">Typ połączenia</translation>
 <translation id="5815645614496570556">Adres X.400</translation>
 <translation id="5816434091619127343">Te zmiany uniemożliwiłyby korzystanie z drukarki.</translation>
+<translation id="5817069030404929329">Czy przenieść hasła z tego urządzenia na konto Google?</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="5821565227679781414">Utwórz skrót</translation>
 <translation id="5825412242012995131">Włącz (zalecane)</translation>
@@ -5016,7 +5018,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6611972847767394631">Tu znajdziesz karty</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
-<translation id="661587753387495724">Hasła zostaną przeniesione z urządzenia na Twoje konto Google</translation>
 <translation id="6618097958368085618">Zachowaj mimo to</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

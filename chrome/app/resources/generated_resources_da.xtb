@@ -1837,7 +1837,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2981113813906970160">Vis stor musemarkør</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> har sendt en notifikation til din telefon. Tryk på Ja for at bekræfte din identitet. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Der er {COUNT} tilgængelig adgangskode på denne enhed}one{Der er {COUNT} tilgængelig adgangskode på denne enhed}other{Der er {COUNT} tilgængelige adgangskoder på denne enhed}}</translation>
 <translation id="2985348301114641460">Vil du sende en anmodning om at installere "<ph name="EXTENSION_NAME" />" til din administrator?</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
 <translation id="2988018669686457659">Spare Renderer</translation>
@@ -1938,6 +1937,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3088325635286126843">&amp;Omdøb...</translation>
 <translation id="3089064280130434511">Bloker websites fra at åbne og placere vinduer på dine skærme</translation>
 <translation id="3089137131053189723">Søgningen blev ryddet</translation>
+<translation id="3090589793601454425">Flyt ikke</translation>
 <translation id="3090819949319990166">Ekstern crx-fil kan ikke kopieres til <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" er parret</translation>
 <translation id="3093714882666365141">Tillad ikke, at websites installerer betalingshandlers</translation>
@@ -2182,6 +2182,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3396800784455899911">Når du klikker på knappen "Acceptér og fortsæt", accepterer du den behandling, der er beskrevet ovenfor, for disse Google-tjenester.</translation>
 <translation id="3399432415385675819">Notifikationer deaktiveres</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – sammenflettet</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} adgangskode er gemt på denne enhed}one{{COUNT} adgangskode er gemt på denne enhed}other{{COUNT} adgangskoder er gemt på denne enhed}}</translation>
 <translation id="3402255108239926910">Vælg en avatar</translation>
 <translation id="3402585168444815892">Tilmelder dig i demotilstand</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3148,6 +3149,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4474155171896946103">Tilføj alle faner som bogmærker...</translation>
 <translation id="4475552974751346499">Søg i downloads</translation>
+<translation id="4475830133618397783">Vælg, hvilke adgangskoder der skal flyttes. Du har altid adgang til dem – du skal bare være logget ind.</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Du kan scanne denne kode ved at bruge en app til scanning af QR-koder på din telefon eller visse kameraapps.</translation>
 <translation id="4477015793815781985">Medtag Ctrl, Alt eller ⌘</translation>
@@ -3410,7 +3412,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4768332406694066911">Du har certifikater fra disse organisationer, der identificerer dig</translation>
 <translation id="4770119228883592393">Der er anmodet om tilladelse. Tryk på ⌘ + Option + pil ned for at svare</translation>
 <translation id="4773112038801431077">Opgrader Linux</translation>
-<translation id="4774357366578243684">Flyt dem til din Google-konto, så du kan bruge dem på alle dine enheder</translation>
 <translation id="477647109558161443">Opret en genvej på skrivebordet</translation>
 <translation id="4776917500594043016">Adgangskode for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butik</translation>
@@ -3770,7 +3771,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vil downloade flere filer</translation>
 <translation id="5192062846343383368">Åbn Family Link-appen for at se dine indstillinger for forældrestyring</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
-<translation id="5195083053116174857">Vælg, hvilke adgangskoder der skal flyttes</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="5199729219167945352">Eksperimenter</translation>
@@ -3809,6 +3809,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5235050375939235066">Vil du afinstallere appen?</translation>
 <translation id="523505283826916779">Indstillinger for hjælpefunktioner</translation>
 <translation id="5235750401727657667">Skift den side, du får vist, når du åbner en ny fane</translation>
+<translation id="5236374273162681467">Du kan nemt bruge dem på alle dine enheder ved at flytte dem til din Google-konto</translation>
 <translation id="5238278114306905396">Appen "<ph name="EXTENSION_NAME" />" blev automatisk fjernet.</translation>
 <translation id="5241128660650683457">Læs alle dine data på de websites, du besøger</translation>
 <translation id="5242724311594467048">Skal "<ph name="EXTENSION_NAME" />" aktiveres?</translation>
@@ -4318,6 +4319,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5814126672212206791">Forbindelsestype</translation>
 <translation id="5815645614496570556">X.400-adresse</translation>
 <translation id="5816434091619127343">De printerændringer, du har anmodet om, vil gøre printeren ubrugelig.</translation>
+<translation id="5817069030404929329">Vil du flytte adgangskoder fra denne enhed til din Google-konto?</translation>
 <translation id="5817918615728894473">Start parring</translation>
 <translation id="5821565227679781414">Opret genvej</translation>
 <translation id="5825412242012995131">Til (anbefales)</translation>
@@ -5020,7 +5022,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6611972847767394631">Find dine faner her</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
-<translation id="661587753387495724">Adgangskoderne flyttes fra din enhed til din Google-konto</translation>
 <translation id="6618097958368085618">Behold alligevel</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

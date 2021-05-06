@@ -1837,7 +1837,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="2979639724566107830">Otvori u novom prozoru</translation>
 <translation id="2981113813906970160">Prikaži veliki pokazivač miša</translation>
 <translation id="2983175648295374032">Web-lokacija <ph name="WEBSITE" /> poslala je obavijest na vaš telefon. Da biste potvrdili da ste to vi, dodirnite Da. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Na ovom uređaju dostupna je {COUNT} zaporka}one{Na ovom uređaju dostupna je {COUNT} zaporka}few{Na ovom uređaju dostupne su {COUNT} zaporke}other{Na ovom uređaju dostupno je {COUNT} zaporki}}</translation>
 <translation id="2985348301114641460">Poslati administratoru zahtjev za instaliranje proširenja "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Tekst podijeljen s drugog uređaja</translation>
 <translation id="2988018669686457659">Pričuvni ispunjivač</translation>
@@ -1938,6 +1937,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3088325635286126843">&amp;Preimenuj...</translation>
 <translation id="3089064280130434511">Onemogući web-lokacijama otvaranje i postavljanje prozora na zaslonu</translation>
 <translation id="3089137131053189723">Pretraživanje izbrisano</translation>
+<translation id="3090589793601454425">Ne premještaj</translation>
 <translation id="3090819949319990166">Nije moguće kopiranje crx datoteke u <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Upareno: "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Ne dopuštaj web-lokacijama instaliranje rukovatelja plaćanja</translation>
@@ -2182,6 +2182,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3396800784455899911">Klikom na gumb "Prihvati i nastavi" prihvaćate prethodno opisanu obradu za ove Googleove usluge.</translation>
 <translation id="3399432415385675819">Obavijesti će se onemogućiti</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herca) – isprepleteno</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} zaporka pohranjena je na ovom uređaju}one{{COUNT} zaporka pohranjena je na ovom uređaju}few{{COUNT} zaporke pohranjene su na ovom uređaju}other{{COUNT} zaporki pohranjeno je na ovom uređaju}}</translation>
 <translation id="3402255108239926910">Odaberite avatar</translation>
 <translation id="3402585168444815892">Prijava u demo način</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3148,6 +3149,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4472575034687746823">Početak korištenja</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
 <translation id="4475552974751346499">Pretraži preuzimanja</translation>
+<translation id="4475830133618397783">Odaberite zaporke za premještanje. Možete im pristupati kad ste prijavljeni.</translation>
 <translation id="4476590490540813026">Sportaš</translation>
 <translation id="4476659815936224889">Taj kôd možete skenirati pomoću aplikacije za skeniranje QR kodova na svojem telefonu ili pomoću nekih aplikacija za kamere.</translation>
 <translation id="4477015793815781985">Mora sadržavati Ctrl, Alt ili ⌘</translation>
@@ -3410,7 +3412,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4768332406694066911">Imate certifikate ovih organizacija koji vas identificiraju</translation>
 <translation id="4770119228883592393">Zatraženo je dopuštenje. Da biste odgovorili, pritisnite ⌘ + Option + strelica prema dolje</translation>
 <translation id="4773112038801431077">Nadogradnja Linuxa</translation>
-<translation id="4774357366578243684">Da biste ih upotrebljavali na svim svojim uređajima, premjestite ih na svoj Google račun</translation>
 <translation id="477647109558161443">Izradi novi prečac na radnoj površini</translation>
 <translation id="4776917500594043016">Zaporka za adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
@@ -3770,7 +3771,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi preuzeti više datoteka</translation>
 <translation id="5192062846343383368">Otvorite aplikaciju Family Link da biste vidjeli postavke nadzora</translation>
 <translation id="5193988420012215838">Kopirano u međuspremnik</translation>
-<translation id="5195083053116174857">Odaberite zaporke za premještanje</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Slanje podataka o upotrebi i dijagnostici. Ovaj uređaj trenutačno Googleu automatski šalje dijagnostičke podatke te podatke o upotrebi uređaja i aplikacija. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun.</translation>
 <translation id="5199729219167945352">Eksperimenti</translation>
@@ -3809,6 +3809,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5235050375939235066">Želite li deinstalirati aplikaciju?</translation>
 <translation id="523505283826916779">Postavke pristupačnosti</translation>
 <translation id="5235750401727657667">Zamijenite stranicu koja se prikazuje prilikom otvaranja nove kartice</translation>
+<translation id="5236374273162681467">Da biste ih lako koristili na svim svojim uređajima, možete ih premjestiti na svoj Google račun</translation>
 <translation id="5238278114306905396">Aplikacija "<ph name="EXTENSION_NAME" />" automatski je uklonjena.</translation>
 <translation id="5241128660650683457">čitati sve vaše podatke s web-lokacija koje posjetite</translation>
 <translation id="5242724311594467048">Omogućiti proširenje "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4318,6 +4319,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5814126672212206791">Vrsta veze</translation>
 <translation id="5815645614496570556">X.400 adresa</translation>
 <translation id="5816434091619127343">Tražene izmjene pisača učinile bi pisač neupotrebljivim.</translation>
+<translation id="5817069030404929329">Želite li premjestiti zaporke s ovog uređaja na svoj Google račun?</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5821565227679781414">Stvori prečac</translation>
 <translation id="5825412242012995131">Uključeno (preporučeno)</translation>
@@ -5020,7 +5022,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6611972847767394631">Ovdje možete pronaći svoje kartice</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
-<translation id="661587753387495724">Zaporke će se premjestiti s uređaja na vaš Google račun</translation>
 <translation id="6618097958368085618">Svejedno zadrži</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

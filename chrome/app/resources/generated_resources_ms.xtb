@@ -1836,7 +1836,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2979639724566107830">Buka dalam tetingkap baharu</translation>
 <translation id="2981113813906970160">Paparkan kursor tetikus besar</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> telah menghantar pemberitahuan ke telefon anda. Ketik Ya untuk mengesahkan orang itu ialah anda. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} kata laluan dapat diakses pada peranti ini}other{{COUNT} kata laluan dapat diakses pada peranti ini}}</translation>
 <translation id="2985348301114641460">Hantar permintaan kepada pentadbir anda untuk memasang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Teks yang dikongsi daripada peranti lain</translation>
 <translation id="2988018669686457659">Pemapar Rizab</translation>
@@ -1937,6 +1936,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3088325635286126843">&amp;Namakan semula...</translation>
 <translation id="3089064280130434511">Sekat tapak daripada membuka dan meletakkan tetingkap pada skrin anda</translation>
 <translation id="3089137131053189723">Carian dikosongkan</translation>
+<translation id="3090589793601454425">Jangan alihkan</translation>
 <translation id="3090819949319990166">Tidak dapat menyalin fail crx luar ke <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" digandingkan</translation>
 <translation id="3093714882666365141">Jangan benarkan laman memasang pengendali pembayaran</translation>
@@ -2181,6 +2181,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3396800784455899911">Dengan mengklik butang "Terima dan teruskan", anda bersetuju membenarkan pemprosesan yang dihuraikan di atas untuk perkhidmatan Google ini.</translation>
 <translation id="3399432415385675819">Pemberitahuan akan dilumpuhkan</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - berselang-seli</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} kata laluan disimpan pada peranti ini}other{{COUNT} kata laluan disimpan pada peranti ini}}</translation>
 <translation id="3402255108239926910">Pilih avatar</translation>
 <translation id="3402585168444815892">Mendaftar dalam Mod Tunjuk Cara</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4472575034687746823">Bermula</translation>
 <translation id="4474155171896946103">Tanda halaman semua tab...</translation>
 <translation id="4475552974751346499">Cari muat turun</translation>
+<translation id="4475830133618397783">Pilih kata laluan yang hendak dialihkan. Anda boleh mengakses kata laluan itu pada bila-bila masa anda log masuk.</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Untuk mengimbas kos ini, anda boleh menggunakan apl pengimbas QR pada telefon anda atau pada sesetengah apl kamera.</translation>
 <translation id="4477015793815781985">Sertakan Ctrl, Alt atau ⌘</translation>
@@ -3409,7 +3411,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4768332406694066911">Anda mempunyai sijil daripada organisasi ini yang mengenal pasti anda</translation>
 <translation id="4770119228883592393">Kebenaran diminta, tekan ⌘ + Pilihan + Anak panah ke bawah untuk memberikan respons</translation>
 <translation id="4773112038801431077">Tingkatkan Linux</translation>
-<translation id="4774357366578243684">Alihkan kata laluan tersebut ke Akaun Google anda untuk digunakan pada semua peranti anda</translation>
 <translation id="477647109558161443">Buat pintasan desktop</translation>
 <translation id="4776917500594043016">Kata laluan untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Gedung Play</translation>
@@ -3769,7 +3770,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
 <translation id="5192062846343383368">Buka apl Family Link untuk melihat tetapan pengawasan anda</translation>
 <translation id="5193988420012215838">Disalin ke papan keratan anda</translation>
-<translation id="5195083053116174857">Pilih kata laluan yang hendak dialihkan</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="5199729219167945352">Eksperimen</translation>
@@ -3808,6 +3808,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5235050375939235066">Nyahpasang apl?</translation>
 <translation id="523505283826916779">Tetapan kebolehcapaian</translation>
 <translation id="5235750401727657667">Gantikan halaman yang anda lihat semasa membuka tab baharu</translation>
+<translation id="5236374273162681467">Alihkan kata laluan tersebut ke Akaun Google anda untuk digunakan pada semua peranti anda dengan mudah</translation>
 <translation id="5238278114306905396">Apl "<ph name="EXTENSION_NAME" />" telah dialih keluar secara automatik.</translation>
 <translation id="5241128660650683457">Baca semua data anda di tapak web yang anda lawati</translation>
 <translation id="5242724311594467048">Dayakan "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4317,6 +4318,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5814126672212206791">Jenis sambungan</translation>
 <translation id="5815645614496570556">Alamat X.400</translation>
 <translation id="5816434091619127343">Perubahan pencetak yang diminta akan menjadikan pencetak tidak boleh digunakan.</translation>
+<translation id="5817069030404929329">Alihkan kata laluan daripada peranti ini ke Akaun Google anda?</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
 <translation id="5821565227679781414">Cipta Pintasan</translation>
 <translation id="5825412242012995131">Hidup (Disyorkan)</translation>
@@ -5019,7 +5021,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6611972847767394631">Cari tab anda di sini</translation>
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
-<translation id="661587753387495724">Kata laluan akan dialihkan daripada peranti anda ke Akaun Google anda</translation>
 <translation id="6618097958368085618">Simpan Juga</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6619058681307408113">Daemon Pencetak Talian (LPD)</translation>

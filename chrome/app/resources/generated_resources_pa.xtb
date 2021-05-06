@@ -1835,7 +1835,6 @@
 <translation id="2979639724566107830">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="2981113813906970160">ਵੱਡਾ ਮਾਊਸ ਕਰਸਰ ਦਿਖਾਓ</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> ਨੇ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਕੋਈ ਸੂਚਨਾ ਭੇਜੀ ਹੈ। ਆਪਣੀ ਪਛਾਣ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ 'ਹਾਂ' 'ਤੇ ਟੈਪ ਕਰੋ। <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਪਹੁੰਚਯੋਗ ਹੈ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਪਹੁੰਚਯੋਗ ਹੈ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਪਹੁੰਚਯੋਗ ਹਨ}}</translation>
 <translation id="2985348301114641460">ਕੀ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਭੇਜਣੀ ਹੈ?</translation>
 <translation id="2987620471460279764">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="2988018669686457659">ਵਾਧੂ ਰੈਂਡਰਰ</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3088325635286126843">&amp;ਮੁੜ ਨਾਮ ਦਿਓ...</translation>
 <translation id="3089064280130434511">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੀਆਂ ਸਕ੍ਰੀਨਾਂ 'ਤੇ ਵਿੰਡੋ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਰੱਖਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="3089137131053189723">ਖੋਜ ਕਲੀਅਰ ਕੀਤੀ ਗਈ</translation>
+<translation id="3090589793601454425">ਨਾ ਲਿਜਾਓ</translation>
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> 'ਤੇ ਬਾਹਰੀ crx ਫਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ਪੇਅਰ ਕੀਤਾ</translation>
 <translation id="3093714882666365141">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -2180,6 +2180,7 @@
 <translation id="3396800784455899911">"ਸਵੀਕਾਰ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ" ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ, ਤੁਸੀਂ ਇਹਨਾਂ Google ਸੇਵਾਵਾਂ ਲਈ ਉਪਰੋਕਤ ਵਰਣਨ ਕੀਤੀ ਪ੍ਰਕਿਰਿਆ ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="3399432415385675819">ਸੂਚਨਾਵਾਂ ਨੂੰ ਅਯੋਗ ਬਣਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ਹਰਟਜ਼) - ਇੰਟਰਲੇਸਡ</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਸਟੋਰ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਸਟੋਰ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਸਟੋਰ ਕੀਤੇ ਗਏ ਹਨ}}</translation>
 <translation id="3402255108239926910">ਕੋਈ ਅਵਤਾਰ ਚੁਣੋ</translation>
 <translation id="3402585168444815892">ਡੈਮੋ ਮੋਡ ਵਿੱਚ ਦਰਜ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3147,7 @@
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4474155171896946103">ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੁੱਕਮਾਰਕ ਕਰੋ...</translation>
 <translation id="4475552974751346499">ਡਾਊਨਲੋਡਾਂ ਖੋਜੋ</translation>
+<translation id="4475830133618397783">ਲਿਜਾਉਣ ਲਈ ਪਾਸਵਰਡਾਂ ਨੂੰ ਚੁਣੋ। ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਹੋਵੋ, ਉਸ ਸਮੇਂ ਤੁਸੀਂ ਉਹਨਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4476590490540813026">ਐਥਲੀਟ</translation>
 <translation id="4476659815936224889">ਇਹ ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, ਤੁਸੀਂ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ QR ਸਕੈਨਰ ਐਪ, ਜਾਂ ਕੁਝ ਕੈਮਰਾ ਐਪਾਂ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4477015793815781985">Ctrl, Alt, ਜਾਂ ⌘ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -3408,7 +3410,6 @@
 <translation id="4768332406694066911">ਤੁਹਾਡੇ ਕੋਲ ਇਹਨਾਂ ਸੰਸਥਾਵਾਂ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਹਨ ਜੋ ਤੁਹਾਡੀ ਪਛਾਣ ਕਰਦੇ ਹਨ</translation>
 <translation id="4770119228883592393">ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ ⌘ + Option + ਹੇਠਾਂ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4773112038801431077">Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ</translation>
-<translation id="4774357366578243684">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਉਹਨਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਉਹਨਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="477647109558161443">ਡੈਸਕਟਾਪ ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਪਾਸਵਰਡ</translation>
 <translation id="4777825441726637019">Play ਸਟੋਰ</translation>
@@ -3768,7 +3769,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5192062846343383368">ਆਪਣੀਆਂ ਨਿਗਰਾਨੀ ਸੈਟਿੰਗਾਂ ਦੇਖਣ ਲਈ Family Link ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="5193988420012215838">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="5195083053116174857">ਲਿਜਾਉਣ ਲਈ ਪਾਸਵਰਡਾਂ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="5197255632782567636">ਇੰਟਰਨੈਟ</translation>
 <translation id="5198430103906431024">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ ਭੇਜੋ। ਇਹ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ, ਡੀਵਾਈਸ ਅਤੇ ਐਪ ਵਰਤੋਂ ਡਾਟਾ Google ਨੂੰ ਭੇਜ ਰਿਹਾ ਹੈ। ਇਸ ਨਾਲ ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਥਿਰਤਾ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲੇਗੀ। ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗੀ। ਜੇ ਤੁਹਾਡੀ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਸੈਟਿੰਗ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5199729219167945352">ਪ੍ਰਯੋਗ</translation>
@@ -3807,6 +3807,7 @@
 <translation id="5235050375939235066">ਐਪ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="523505283826916779">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5235750401727657667">ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹਣ ਸਮੇਂ ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦੇਣ ਵਾਲੇ ਪੰਨੇ ਨੂੰ ਬਦਲੋ</translation>
+<translation id="5236374273162681467">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇਹਨਾਂ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਵਰਤਣ ਲਈ, ਤੁਸੀਂ ਇਹਨਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="5238278114306905396">ਐਪ "<ph name="EXTENSION_NAME" />" ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਹਟਾਇਆ ਗਿਆ ਸੀ।</translation>
 <translation id="5241128660650683457">ਉਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਸਾਰਾ ਡਾਟਾ ਪੜ੍ਹੋ ਜਿਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ</translation>
 <translation id="5242724311594467048">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
@@ -4316,6 +4317,7 @@
 <translation id="5814126672212206791">ਕਨੈਕਸ਼ਨ ਕਿਸਮ</translation>
 <translation id="5815645614496570556">X.400 ਪਤਾ</translation>
 <translation id="5816434091619127343">ਬੇਨਤੀ ਕੀਤੇ ਪ੍ਰਿੰਟਰ ਬਦਲਾਵਾਂ ਨਾਲ ਪ੍ਰਿੰਟਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੇਗੀ।</translation>
+<translation id="5817069030404929329">ਕੀ ਪਾਸਵਰਡਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਉਣਾ ਹੈ?</translation>
 <translation id="5817918615728894473">ਜੋੜਾ</translation>
 <translation id="5821565227679781414">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="5825412242012995131">ਚਾਲੂ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -5018,7 +5020,6 @@
 <translation id="6611972847767394631">ਆਪਣੀਆਂ ਟੈਬਾਂ ਇੱਥੇ ਲੱਭੋ</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
-<translation id="661587753387495724">ਪਾਸਵਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="6618097958368085618">ਫਿਰ ਵੀ ਰੱਖੋ</translation>
 <translation id="6618744767048954150">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6619058681307408113">ਲਾਈਨ ਪ੍ਰਿੰਟਰ ਡੀਮਨ (LPD)</translation>

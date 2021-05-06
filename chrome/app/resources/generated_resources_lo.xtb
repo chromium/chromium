@@ -1834,7 +1834,6 @@
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
 <translation id="2981113813906970160">ສະ​ແດງເຄີເຊີເມົາສ໌ໃຫຍ່</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> ໄດ້ສົ່ງການແຈ້ງເຕືອນຫາໂທລະສັບຂອງທ່ານແລ້ວ. ແຕະແມ່ນເພື່ອຢືນຢັນວ່າເປັນທ່ານ. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{ມີລະຫັດຜ່ານ {COUNT} ລາຍການສາມາດເຂົ້າເຖິງໄດ້ໃນອຸປະກອນນີ້}other{ມີລະຫັດຜ່ານ {COUNT} ລາຍການສາມາດເຂົ້າເຖິງໄດ້ໃນອຸປະກອນນີ້}}</translation>
 <translation id="2985348301114641460">ສົ່ງຄຳຂໍຫາຜູ້ເບິ່ງແຍງລະບົບເພື່ອຕິດຕັ້ງ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="2987620471460279764">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກອຸປະກອນອື່ນ</translation>
 <translation id="2988018669686457659">ຕົວສະແດງພາບສຳຮອງ</translation>
@@ -1935,6 +1934,7 @@
 <translation id="3088325635286126843">ປ່ຽນຊື່ໃໝ່...</translation>
 <translation id="3089064280130434511">ບລັອກເວັບໄຊບໍ່ໃຫ້ເປີດ ແລະ ວາງໜ້າຈໍໃສ່ໃນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="3089137131053189723">ລຶບລ້າງການຊອກຫາແລ້ວ</translation>
+<translation id="3090589793601454425">ຢ່າຍ້າຍ</translation>
 <translation id="3090819949319990166">ບໍ່​ສາ​ມາດ​ກັອບປີ້​ໄຟລ​໌ crx ທາງນອກໃສ່ <ph name="TEMP_CRX_FILE" /> ໄດ້.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ຈັບຄູ່ແລ້ວ</translation>
 <translation id="3093714882666365141">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
@@ -2179,6 +2179,7 @@
 <translation id="3396800784455899911">ໂດຍການຄລິກປຸ່ມ "ຍອມຮັບ ແລະ ສືບຕໍ່", ແມ່ນຖືວ່າທ່ານເຫັນດີນຳການປະມວນຜົນຂໍ້ມູນທີ່ອະທິບາຍຢູ່ຂ້າງເທິງສຳລັບການບໍລິການ Google ເຫຼົ່ານີ້.</translation>
 <translation id="3399432415385675819">ການແຈ້ງເຕືອນຈະຖືກປິດ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ເຮີດຊ) - ອິນເຕີເລດ</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}other{ຈັດເກັບລະຫັດຜ່ານ {COUNT} ອັນຢູ່ອຸປະກອນນີ້ແລ້ວ}}</translation>
 <translation id="3402255108239926910">ເລືອກຮູບແທນຕົວ</translation>
 <translation id="3402585168444815892">ການລົງທະບຽນໃນໂໝດສາທິດ</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
 <translation id="4475552974751346499">ຄົ້ນ​ຫາການດາວ​ໂຫຼດ​</translation>
+<translation id="4475830133618397783">ເລືອກວ່າຈະຍ້າຍລະຫັດຜ່ານໃດ. ທ່ານສາມາດເຂົ້າເຖິງພວກມັນຕອນໃດກໍໄດ້ທີ່ທ່ານເຂົ້າສູ່ລະບົບໄວ້.</translation>
 <translation id="4476590490540813026">ນັກກິລາ</translation>
 <translation id="4476659815936224889">ເພື່ອສະແກນລະຫັດນີ້, ທ່ານສາມາດໃຊ້ແອັບໂປຣແກຣມສະແກນ QR ໃນໂທລະສບຂອງທ່ານ ຫຼື ບາງແອັບກ້ອງຖ່າຍຮູບອື່ນ.</translation>
 <translation id="4477015793815781985">ລວມມີ Ctrl, Alt ຫຼື ⌘</translation>
@@ -3407,7 +3409,6 @@
 <translation id="4768332406694066911">ທ່ານມີໃບຢັ້ງຢືນຈາກ​ໜ່ວຍ​ງານເຫຼົ່ານີ້ທີ່ລະບຸຕົວຕົນຂອງທ່ານ</translation>
 <translation id="4770119228883592393">ຂໍການອະນຸຍາດແລ້ວ, ກະລຸນາກົດ ⌘ + ຕົວເລືອກ + ລູກສອນລົງເພື່ອຕອບກັບ</translation>
 <translation id="4773112038801431077">ອັບເກຣດ Linux</translation>
-<translation id="4774357366578243684">ເພື່ອໃຊ້ພວກມັນໃນອຸປະກອນຂອງທ່ານທັງໝົດ, ກະລຸນາຍ້າຍພວກມັນໄປຍັງບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="477647109558161443">ສ້າງທາງລັດເດັສທັອບ</translation>
 <translation id="4776917500594043016">ລະ​ຫັດ​ຜ່ານ​ສໍາ​ລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3767,7 +3768,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> ຕ້ອງການດາວໂຫຼດຫຼາຍໄຟລ໌</translation>
 <translation id="5192062846343383368">ເປີດແອັບ Family Link ເພື່ອເບິ່ງການຕັ້ງຄ່າການຄວບຄຸມເບິ່ງແຍງຂອງທ່ານ</translation>
 <translation id="5193988420012215838">ອັດສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານ</translation>
-<translation id="5195083053116174857">ເລືອກວ່າຈະຍ້າຍລະຫັດຜ່ານໃດ</translation>
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
 <translation id="5198430103906431024">ສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິເຄາະ. ອຸປະກອນນີ້ກຳລັງສົ່ງຂໍ້ມູນການວິເຄາະ, ຂໍ້ມູນອຸປະກອນ ແລະ ການໃຊ້ແອັບໃຫ້ Google ໂດຍອັດຕະໂນມັດໃນຂະນະນີ້. ນີ້ຈະຊ່ວຍປັບປຸງຄວາມສະຖຽນຂອງລະບົບ ແລະ ແອັບ ແລະ ການປັບປຸງອື່ນໆ. ບາງຂໍ້ມູນແບບຮວມກັນຍັງຈະຊ່ວຍແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ນຳອີກ ເຊັ່ນ: ຜູ້ພັດທະນາ Android. ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມຂອງທ່ານ, ລະບົບອາດຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="5199729219167945352">ການທົດລອງ</translation>
@@ -3806,6 +3806,7 @@
 <translation id="5235050375939235066">ຖອນຕິດຕັ້ງແອັບບໍ?</translation>
 <translation id="523505283826916779">ການ​ຕັ້ງຄ່າ​ການ​ເຂົ້າ​ເຖິງ</translation>
 <translation id="5235750401727657667">ປ່ຽນແທນໜ້າເວັບທີ່ທ່ານເຫັນໃນເວລາທີ່ເປີດແຖບໃໝ່</translation>
+<translation id="5236374273162681467">ເພື່ອໃຊ້ພວກມັນຢ່າງງ່າຍດາຍຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ, ທ່ານສາມາດຍ້າຍພວກມັນໄປໃສ່ບັນຊີ Google ຂອງທ່ານໄດ້</translation>
 <translation id="5238278114306905396">ແອັບ "<ph name="EXTENSION_NAME" />"​ຖືກ​ໂຍກ​ຍ້າຍ​ອອກ​​ໂດຍອັດ​ຕະ​ໂນ​ມັດ​.</translation>
 <translation id="5241128660650683457">ອ່ານ​ທຸກ​ຂໍ້​ມູນ​ຂອງ​ທ່ານ​ຢູ່​ເທິງ​ເວັບ​ໄຊ​ທ໌​ທີ່​ທ່ານ​ເຂົ້າ​ເບິ່ງ</translation>
 <translation id="5242724311594467048">ເປີດໃຊ້ງານ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
@@ -4315,6 +4316,7 @@
 <translation id="5814126672212206791">ປະເພດການເຊື່ອມຕໍ່</translation>
 <translation id="5815645614496570556">ທີ່​ຢູ່ X.400</translation>
 <translation id="5816434091619127343">ການປ່ຽນແປງເຄື່ອງພິມທີ່ຮ້ອງຂໍມາຈະເຮັດໃຫ້ເຄື່ອງພິມບໍ່ສະຖຽນ.</translation>
+<translation id="5817069030404929329">ຍ້າຍລະຫັດຜ່ານຈາກອຸປະກອນນີ້ໄປໃສ່ບັນຊີ Google ຂອງທ່ານບໍ?</translation>
 <translation id="5817918615728894473">ຈັບ​ຄູ່</translation>
 <translation id="5821565227679781414">ສ້າງ​ທາງ​ລັດ</translation>
 <translation id="5825412242012995131">ເປີດ (ແນະນຳ)</translation>
@@ -5017,7 +5019,6 @@
 <translation id="6611972847767394631">ຊອກຫາແຖບຂອງທ່ານຢູ່ທີ່ນີ້</translation>
 <translation id="6612358246767739896">ເນື້ອ​ໃນ​ທີ່ຖືກ​ປົກ​ປ້ອງ</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
-<translation id="661587753387495724">ລະບົບຈະຍ້າຍລະຫັດຜ່ານຈາກອຸປະກອນຂອງທ່ານໄປຍັງບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6618097958368085618">ຢືນຢັນໃຫ້ເກັບໄວ້</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6619058681307408113">ເຄື່ອງພິມແດມອນແບບໃຊ້ສາຍ (LPD)</translation>

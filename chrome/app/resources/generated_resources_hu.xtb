@@ -1835,7 +1835,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2979639724566107830">Megnyitás új ablakban</translation>
 <translation id="2981113813906970160">Nagy egérmutató megjelenítése</translation>
 <translation id="2983175648295374032">A(z) <ph name="WEBSITE" /> értesítést küldött a telefonjára. Az Igen gombra kattintva igazolhatja a személyazonosságát. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} jelszó áll rendelkezésre ezen az eszközön}other{{COUNT} jelszó áll rendelkezésre ezen az eszközön}}</translation>
 <translation id="2985348301114641460">Kérelmet küld a rendszergazdának a bővítmény (<ph name="EXTENSION_NAME" />) telepítésére vonatkozóan?</translation>
 <translation id="2987620471460279764">Más eszközről megosztott szöveg</translation>
 <translation id="2988018669686457659">Tartalék megjelenítő</translation>
@@ -1936,6 +1935,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3088325635286126843">Át&amp;nevezés...</translation>
 <translation id="3089064280130434511">Ablakok megnyitásának és képernyőkön való elhelyezésének letiltása a webhelyek számára</translation>
 <translation id="3089137131053189723">Keresés törölve</translation>
+<translation id="3090589793601454425">Ne helyezze át</translation>
 <translation id="3090819949319990166">A külső crx-fájl nem másolható a következő helyre: <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” párosítva</translation>
 <translation id="3093714882666365141">A webhelyek nem telepíthetnek fizetéskezelőket</translation>
@@ -2180,6 +2180,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3396800784455899911">Az „Elfogadás és folytatás” gombra kattintva elfogadja az ezen Google-szolgáltatásokkal kapcsolatos, fent részletezett feldolgozási folyamatot.</translation>
 <translation id="3399432415385675819">Az értesítések le lesznek tiltva</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – váltottsoros</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} jelszót tárol ez az eszköz}other{{COUNT} jelszót tárol ez az eszköz}}</translation>
 <translation id="3402255108239926910">Válasszon avatart</translation>
 <translation id="3402585168444815892">Regisztráció a demó módra</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4474155171896946103">Összes lap hozzáadása a könyvjelzőkhöz...</translation>
 <translation id="4475552974751346499">Letöltések keresése</translation>
+<translation id="4475830133618397783">Válassza ki az áthelyezni kívánt jelszavakat. Bármikor hozzájuk férhet, ha be van jelentkezve.</translation>
 <translation id="4476590490540813026">Atléta</translation>
 <translation id="4476659815936224889">A kód beolvasásához használhat a telefonján QR-kódok olvasására szolgáló alkalmazást, illetve bizonyos kameraalkalmazásokat.</translation>
 <translation id="4477015793815781985">Használja a Ctrl, az Alt vagy a ⌘ billentyűk egyikét</translation>
@@ -3407,7 +3409,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4768332406694066911">Ezektől a szervezetektől olyan tanúsítványai vannak, amelyek azonosítják</translation>
 <translation id="4770119228883592393">Engedély kérelmezve, a válaszhoz nyomja le a ⌘ + Option + lefelé mutató nyíl billentyűkombinációt</translation>
 <translation id="4773112038801431077">A Linux frissítése</translation>
-<translation id="4774357366578243684">Helyezze át őket Google-fiókjába, hogy az összes eszközén használhatók legyenek.</translation>
 <translation id="477647109558161443">Asztali parancsikon létrehozása</translation>
 <translation id="4776917500594043016">A(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz tartozó jelszó</translation>
 <translation id="4777825441726637019">Play Áruház</translation>
@@ -3767,7 +3768,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="51918995459521422">A(z) <ph name="ORIGIN" /> több fájlt szeretne letölteni</translation>
 <translation id="5192062846343383368">A Family Link alkalmazást megnyitva ellenőrizheti a felügyeleti beállításokat</translation>
 <translation id="5193988420012215838">Vágólapra másolva</translation>
-<translation id="5195083053116174857">Válassza ki az áthelyezni kívánt jelszavakat</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti.</translation>
 <translation id="5199729219167945352">Kísérletek</translation>
@@ -3806,6 +3806,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5235050375939235066">Eltávolítja az alkalmazást?</translation>
 <translation id="523505283826916779">Kisegítő beállítások</translation>
 <translation id="5235750401727657667">Új lap megnyitásakor látható oldal cseréje</translation>
+<translation id="5236374273162681467">Ha áthelyezi a jelszavakat Google-fiókjába, könnyűszerrel használhatja őket az összes eszközén.</translation>
 <translation id="5238278114306905396">A(z) „<ph name="EXTENSION_NAME" />” alkalmazás automatikusan törölve.</translation>
 <translation id="5241128660650683457">Az összes adat beolvasása a felkeresett webhelyekről</translation>
 <translation id="5242724311594467048">Engedélyezi a következőt: „<ph name="EXTENSION_NAME" />”?</translation>
@@ -4317,6 +4318,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5814126672212206791">Csatlakozás típusa</translation>
 <translation id="5815645614496570556">X.400 cím</translation>
 <translation id="5816434091619127343">A kívánt nyomtatómódosítások használhatatlanná tehetik a nyomtatót.</translation>
+<translation id="5817069030404929329">Biztosan áthelyezi a jelszavakat erről az eszközről a Google-fiókjába?</translation>
 <translation id="5817918615728894473">Párosítás</translation>
 <translation id="5821565227679781414">Parancsikon létrehozása</translation>
 <translation id="5825412242012995131">Be (javasolt)</translation>
@@ -5019,7 +5021,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6611972847767394631">Itt találhatja lapjait</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
-<translation id="661587753387495724">A jelszavak át lesznek helyezve az eszközéről a Google-fiókjába</translation>
 <translation id="6618097958368085618">Megtartás</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

@@ -1833,7 +1833,6 @@
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2981113813906970160">મોટું માઉસ કર્સર બતાવો</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> દ્વારા તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું. આ તમે જ છો, તે કન્ફર્મ કરવા માટે 'હા' પર ટૅપ કરો. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{આ ડિવાઇસ પર {COUNT} પાસવર્ડ ઍક્સેસ કરી શકાય છે}one{આ ડિવાઇસ પર {COUNT} પાસવર્ડ ઍક્સેસ કરી શકાય છે}other{આ ડિવાઇસ પર {COUNT} પાસવર્ડ ઍક્સેસ કરી શકાય છે}}</translation>
 <translation id="2985348301114641460">તમારા વ્યવસ્થાપકને "<ph name="EXTENSION_NAME" />" ઇન્સ્ટૉલ કરવાની વિનંતી મોકલીએ?</translation>
 <translation id="2987620471460279764">બીજા ડિવાઇસ પરથી શેર થયેલી ટેક્સ્ટ</translation>
 <translation id="2988018669686457659">સ્પેર રેન્ડરર</translation>
@@ -3177,7 +3176,7 @@
 <translation id="4510479820467554003">માતાપિતાના એકાઉન્ટની સૂચિ</translation>
 <translation id="4510614391273086606">Linux ફાઇલો અને ઍપને તેની બૅકઅપ લીધેલી સ્થિતિમાં રિસ્ટોર કરવામાં આવી રહ્યાં છે.</translation>
 <translation id="451102079304155829">કાર્ટ</translation>
-<translation id="4513946894732546136">પ્રતિસાદ</translation>
+<translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> દ્વારા સંચાલિત</translation>
 <translation id="4514610446763173167">વીડિઓ ચલાવવા અથવા થોભાવવા માટે તેને ટૉગલ કરો</translation>
 <translation id="451515744433878153">દૂર કરો</translation>
@@ -3406,7 +3405,6 @@
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4773112038801431077">Linux અપગ્રેડ કરો</translation>
-<translation id="4774357366578243684">તમારા બધા ડિવાઇસ પર તેમનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટમાં ખસેડો</translation>
 <translation id="477647109558161443">ડેસ્કટૉપ શૉર્ટકટ બનાવો</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777825441726637019">Play સ્ટોર</translation>
@@ -3766,7 +3764,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માગે છે</translation>
 <translation id="5192062846343383368">તમારા નિરીક્ષણ સેટિંગ જોવા માટે Family Link ઍપ ખોલો</translation>
 <translation id="5193988420012215838">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવી</translation>
-<translation id="5195083053116174857">કયો પાસવર્ડ ખસેડવાનો છે તે પસંદ કરો</translation>
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
 <translation id="5198430103906431024">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="5199729219167945352">પ્રયોગો</translation>
@@ -5018,7 +5015,6 @@ USB ડિવાઇસ</translation>
 <translation id="6611972847767394631">તમારા ટૅબ અહીં મેળવો</translation>
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
-<translation id="661587753387495724">પાસવર્ડને તમારા ડિવાઇસમાંથી તમારા Google એકાઉન્ટમાં ખસેડવામાં આવશે</translation>
 <translation id="6618097958368085618">તો પણ રાખો</translation>
 <translation id="6618744767048954150">હજીપણ તપાસ થઈ રહી છે</translation>
 <translation id="6619058681307408113">લાઇન પ્રિન્ટર ડેમન (LPD)</translation>

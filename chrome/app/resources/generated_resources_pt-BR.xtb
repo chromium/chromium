@@ -1837,7 +1837,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
 <translation id="2981113813906970160">Mostrar cursor grande do mouse</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> enviou uma notificação para seu smartphone. Toque em "Sim" para confirmar sua identidade. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} senha está acessível neste dispositivo}one{{COUNT} senha está acessível neste dispositivo}other{{COUNT} senhas estão acessíveis neste dispositivo}}</translation>
 <translation id="2985348301114641460">Enviar uma solicitação ao administrador para instalar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Texto compartilhado de outro dispositivo</translation>
 <translation id="2988018669686457659">Renderizador reserva</translation>
@@ -1938,6 +1937,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3088325635286126843">&amp;Renomear...</translation>
 <translation id="3089064280130434511">Impedir que sites abram e posicionem janelas nas suas telas</translation>
 <translation id="3089137131053189723">Pesquisa apagada</translation>
+<translation id="3090589793601454425">Não mover</translation>
 <translation id="3090819949319990166">Não foi possível copiar o arquivo externo crx em <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" pareado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem gerenciadores de pagamento</translation>
@@ -2183,6 +2183,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e concluir", você aceita o processo descrito acima para esses serviços do Google.</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) - entrelaçado</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} senha está armazenada no dispositivo}one{{COUNT} senha está armazenada no dispositivo}other{{COUNT} senhas estão armazenadas no dispositivo}}</translation>
 <translation id="3402255108239926910">Escolha um avatar</translation>
 <translation id="3402585168444815892">Inscrevendo-se no modo de demonstração</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3149,6 +3150,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4474155171896946103">Adicionar todas as guias aos favoritos...</translation>
 <translation id="4475552974751346499">Pesquisar downloads</translation>
+<translation id="4475830133618397783">Escolha quais senhas serão movidas. Você poderá acessá-las sempre que sua conta estiver conectada.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para ler esse código, você pode usar um app leitor de QR ou alguns apps de câmera no seu smartphone.</translation>
 <translation id="4477015793815781985">Inclua Ctrl, Alt ou ⌘</translation>
@@ -3411,7 +3413,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4768332406694066911">Você tem certificados das seguintes empresas que identificam você</translation>
 <translation id="4770119228883592393">Permissão solicitada. Pressione ⌘ + Option + seta para baixo para responder</translation>
 <translation id="4773112038801431077">Fazer upgrade do Linux</translation>
-<translation id="4774357366578243684">Para usá-las em todos os seus dispositivos, mova-as para sua Conta do Google</translation>
 <translation id="477647109558161443">Criar um atalho na área de trabalho</translation>
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3771,7 +3772,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="51918995459521422">Solicitação do download de vários arquivos feita por <ph name="ORIGIN" /></translation>
 <translation id="5192062846343383368">Abra o app Family Link para ver as configurações de supervisão</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência</translation>
-<translation id="5195083053116174857">Escolha quais senhas serão movidas</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
 <translation id="5199729219167945352">Experimentos</translation>
@@ -3810,6 +3810,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5235050375939235066">Desinstalar app?</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5235750401727657667">Substituir a página que você vê ao abrir uma nova guia</translation>
+<translation id="5236374273162681467">Para usá-las com facilidade em todos os seus dispositivos, mova-as para sua Conta do Google</translation>
 <translation id="5238278114306905396">O aplicativo "<ph name="EXTENSION_NAME" />" foi removido automaticamente.</translation>
 <translation id="5241128660650683457">Ler todos os dados sobre os websites que você visita</translation>
 <translation id="5242724311594467048">Ativar "<ph name="EXTENSION_NAME" />"?</translation>
@@ -4320,6 +4321,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5814126672212206791">Tipo de conexão</translation>
 <translation id="5815645614496570556">Endereço X.400</translation>
 <translation id="5816434091619127343">As alterações solicitadas inutilizariam a impressora.</translation>
+<translation id="5817069030404929329">Mover senhas deste dispositivo para a Conta do Google?</translation>
 <translation id="5817918615728894473">Parear</translation>
 <translation id="5821565227679781414">Criar atalho</translation>
 <translation id="5825412242012995131">Ativado (recomendado)</translation>
@@ -5022,7 +5024,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6611972847767394631">Veja suas guias aqui</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="6615455863669487791">Exibir</translation>
-<translation id="661587753387495724">As senhas serão movidas do dispositivo para sua Conta do Google</translation>
 <translation id="6618097958368085618">Manter assim mesmo</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6619058681307408113">Daemon de impressora de linha (LPD)</translation>

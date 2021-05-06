@@ -1835,7 +1835,6 @@
 <translation id="2979639724566107830">नवीन विंडोमध्ये उघडा</translation>
 <translation id="2981113813906970160">मोठा माउस कर्सर दर्शवा</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> ने तुमच्या फोनवर सूचना पाठवली आहे. हे तुम्ही आहात याची खात्री करण्यासाठी होय वर टॅप करा. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{या डिव्हाइसवर {COUNT} पासवर्ड अ‍ॅक्सेस करण्यायोग्य आहे}other{या डिव्हाइसवर {COUNT} पासवर्ड अ‍ॅक्सेस करण्यायोग्य आहेत}}</translation>
 <translation id="2985348301114641460">तुमच्या अ‍ॅडमिनिस्ट्रेटरला "<ph name="EXTENSION_NAME" />" इंस्टॉल करण्याची विनंती पाठवायची?</translation>
 <translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="2988018669686457659">स्पेअर रेंडरर</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3088325635286126843">&amp;पुनर्नामित करा...</translation>
 <translation id="3089064280130434511">तुमच्या स्क्रीनवर विंडो उघडणे आणि ठेवणे यांपासून साइटना ब्लॉक करा</translation>
 <translation id="3089137131053189723">शोध साफ केला</translation>
+<translation id="3090589793601454425">हलवू नका</translation>
 <translation id="3090819949319990166">बाह्य crx फाइल <ph name="TEMP_CRX_FILE" /> वर कॉपी करू शकत नाही.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडले</translation>
 <translation id="3093714882666365141">साइटना पेमेंट हँडलर इंस्टॉल करण्याची अनुमती देऊ नका</translation>
@@ -2180,6 +2180,7 @@
 <translation id="3396800784455899911">"स्वीकारा आणि सुरू ठेवा" या बटणावर क्लिक करून तुम्ही या Google सेवांसाठी वर वर्णन केलेल्या प्रक्रियांना सहमती दर्शवता.</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - हस्तक्षेप केला</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{या डिव्हाइसवर {COUNT} पासवर्ड स्टोअर केला आहे}other{या डिव्हाइसवर {COUNT} पासवर्ड स्टोअर केले आहेत}}</translation>
 <translation id="3402255108239926910">अवतार निवडा</translation>
 <translation id="3402585168444815892">डेमो मोड मध्ये नोंदणी करत आहे</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3144,6 +3145,7 @@
 <translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4474155171896946103">सर्व टॅब बुकमार्क करा...</translation>
 <translation id="4475552974751346499">डाउनलोड शोधा</translation>
+<translation id="4475830133618397783">कोणते पासवर्ड हलवायचे आहेत ते निवडा. तुम्ही साइन इन केले असेल तेव्हा, तुम्ही ते अ‍ॅक्सेस करू शकता.</translation>
 <translation id="4476590490540813026">व्यायामपटू</translation>
 <translation id="4476659815936224889">हा कोड स्कॅन करण्यासाठी, तुम्ही तुमच्या फोनवरील QR स्कॅनर अ‍ॅप किंवा काही कॅमेरा अ‍ॅप्स वापरू शकता.</translation>
 <translation id="4477015793815781985">Ctrl, Alt किंवा ⌘ चा समावेश करा</translation>
@@ -3406,7 +3408,6 @@
 <translation id="4768332406694066911">आपल्‍याकडे या संस्थांकडील प्रमाणपत्रे आहेत जी आपल्‍याला ओळखतात</translation>
 <translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो दाबा</translation>
 <translation id="4773112038801431077">Linux अपग्रेड करा</translation>
-<translation id="4774357366578243684">तुमच्या सर्व डिव्हाइसवर पासवर्ड वापरण्यासाठी, त्यांना तुमच्या Google खाते वर हलवा</translation>
 <translation id="477647109558161443">डेस्कटॉप शॉर्टकट तयार करा</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> साठी पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
@@ -3766,7 +3767,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> ला एकाहून अधिक फाइल डाउनलोड करायच्या आहेत</translation>
 <translation id="5192062846343383368">तुमची पर्यवेक्षण सेटिंग्ज पाहण्यासाठी Family Link अ‍ॅप उघडा</translation>
 <translation id="5193988420012215838">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
-<translation id="5195083053116174857">कोणते पासवर्ड हलवायचे आहेत ते निवडा</translation>
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5198430103906431024">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा आपोआप पाठवत आहे. हे सिस्टम व अ‍ॅप स्थिरता आणि इतर सुधारणांमध्ये मदत करेल. काही एकत्रित केलेला डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल. तुमचे अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो.</translation>
 <translation id="5199729219167945352">प्रयोग</translation>
@@ -3805,6 +3805,7 @@
 <translation id="5235050375939235066">अ‍ॅप अनइंस्टॉल करायचे?</translation>
 <translation id="523505283826916779">ॲक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="5235750401727657667">एखादा नवीन टॅब उघडताना दिसत असलेले पेज बदला</translation>
+<translation id="5236374273162681467">तुमच्या सर्व डिव्हाइसवर ते सहजरीत्या वापरण्यासाठी, तुम्ही ते तुमच्या Google खाते मध्ये हलवू शकता</translation>
 <translation id="5238278114306905396">अ‍ॅप "<ph name="EXTENSION_NAME" />" स्वयंचलितपणे काढण्यात आला.</translation>
 <translation id="5241128660650683457">तुम्ही भेट देता त्या वेबसाइटवर तुमचा सर्व डेटा वाचा</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" सुरू करायचे?</translation>
@@ -4314,6 +4315,7 @@
 <translation id="5814126672212206791">कनेक्शन प्रकार</translation>
 <translation id="5815645614496570556">X.400 पत्ता</translation>
 <translation id="5816434091619127343">विनंती केलेले प्रिंटर बदल प्रिंटरला वापरता न येण्याजोगा बनवतील.</translation>
+<translation id="5817069030404929329">या डिव्हाइसवरून तुमच्या Google खाते वर पासवर्ड हलवायचे आहेत का?</translation>
 <translation id="5817918615728894473">जोडा</translation>
 <translation id="5821565227679781414">शॉर्टकट तयार करा</translation>
 <translation id="5825412242012995131">सुरू आहे (शिफारस केलेले)</translation>
@@ -5017,7 +5019,6 @@
 <translation id="6611972847767394631">येथे तुमचे टॅब शोधा</translation>
 <translation id="6612358246767739896">संरक्षित आशय</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
-<translation id="661587753387495724">पासवर्ड तुमच्या डिव्हाइसवरून तुमच्या Google खाते वर हलवले जातील</translation>
 <translation id="6618097958368085618">तरीही राहू द्या</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6619058681307408113">लाइन प्रिंटर डिमन (LPD)</translation>

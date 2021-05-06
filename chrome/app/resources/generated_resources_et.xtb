@@ -1836,7 +1836,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2979639724566107830">Ava uues aknas</translation>
 <translation id="2981113813906970160">Kuva suur hiirekursor</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> saatis teie telefoni märguande. Oma isiku kinnitamiseks puudutage valikut Jah. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} parool on selles seadmes juurdepääsetav}other{{COUNT} parooli on selles seadmes juurdepääsetavad}}</translation>
 <translation id="2985348301114641460">Kas saata administraatorile taotlus laienduse „<ph name="EXTENSION_NAME" />” installimiseks?</translation>
 <translation id="2987620471460279764">Muust seadmest jagatud tekst</translation>
 <translation id="2988018669686457659">Varurenderdaja</translation>
@@ -1937,6 +1936,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3088325635286126843">&amp;Nimeta ümber ...</translation>
 <translation id="3089064280130434511">Saitide jaoks blokeeritakse teie ekraanikuvadel akende avamine ja nende sinna paigutamine</translation>
 <translation id="3089137131053189723">Otsing on tühjendatud</translation>
+<translation id="3090589793601454425">Ära teisalda</translation>
 <translation id="3090819949319990166">Välist crx-faili ei saa faili <ph name="TEMP_CRX_FILE" /> kopeerida.</translation>
 <translation id="3090871774332213558">Seade „<ph name="DEVICE_NAME" />” on seotud</translation>
 <translation id="3093714882666365141">Ära luba saitidel maksetöötlejaid installida</translation>
@@ -2181,6 +2181,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3396800784455899911">Kui klõpsate nupul „Nõustu ja jätka”, nõustute nende Google'i teenuste puhul andmete ülalkirjeldatud töötlemisega.</translation>
 <translation id="3399432415385675819">Märguanded keelatakse</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertsi) – ülereaskannimine</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Sellesse seadmesse on salvestatud {COUNT} parool}other{Sellesse seadmesse on salvestatud {COUNT} parooli}}</translation>
 <translation id="3402255108239926910">Valige avatar</translation>
 <translation id="3402585168444815892">Demorežiimis registreerumine</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3144,9 +3145,10 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4470957202018033307">Välise salvestusruumi eelistused</translation>
 <translation id="4471354919263203780">Kõnetuvastuse failide allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="447252321002412580">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
-<translation id="4472575034687746823">Alustamine</translation>
+<translation id="4472575034687746823">Alustage</translation>
 <translation id="4474155171896946103">Lisa kõik vahelehed järjehoidjatesse...</translation>
 <translation id="4475552974751346499">Otsi allalaadimisi</translation>
+<translation id="4475830133618397783">Valige, millised paroolid teisaldada. Pääsete neile juurde kõikjal, kus olete sisse logitud.</translation>
 <translation id="4476590490540813026">Sportlane</translation>
 <translation id="4476659815936224889">Selle koodi skannimiseks võite oma telefonis kasutada QR-skannerit või mõnda kaamerarakendust.</translation>
 <translation id="4477015793815781985">Kaasake Ctrl, Alt või ⌘</translation>
@@ -3409,7 +3411,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4768332406694066911">Teil on nende organisatsioonide sertifikaadid, mis teid tuvastavad</translation>
 <translation id="4770119228883592393">Taotleti luba, vastamiseks vajutage klahvikombinatsiooni ⌘ + Option + allanool</translation>
 <translation id="4773112038801431077">Üleminek Linuxi uuemale versioonile</translation>
-<translation id="4774357366578243684">Selleks et neid kasutada kõigis oma seadmetes, teisaldage need oma Google'i kontole</translation>
 <translation id="477647109558161443">Loo töölaua otsetee</translation>
 <translation id="4776917500594043016">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> parool</translation>
 <translation id="4777825441726637019">Play pood</translation>
@@ -3769,7 +3770,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="51918995459521422"><ph name="ORIGIN" /> soovib alla laadida mitu faili</translation>
 <translation id="5192062846343383368">Avage rakendus Family Link, et näha järelevalve seadeid</translation>
 <translation id="5193988420012215838">Kopeeritud lõikelauale</translation>
-<translation id="5195083053116174857">Valige, millised paroolid teisaldada</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole.</translation>
 <translation id="5199729219167945352">Katsed</translation>
@@ -3808,6 +3808,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5235050375939235066">Kas desinstallida rakendus?</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
 <translation id="5235750401727657667">Asendatakse leht, mida uue vahelehe avamisel näete</translation>
+<translation id="5236374273162681467">Selleks et neid kasutada kõigis oma seadmetes, võite need teisaldada oma Google'i kontole</translation>
 <translation id="5238278114306905396">Rakendus „<ph name="EXTENSION_NAME" />” eemaldati automaatselt.</translation>
 <translation id="5241128660650683457">Lugege kõiki teie külastatud veebisaitide andmeid</translation>
 <translation id="5242724311594467048">Kas lubada laiendus „<ph name="EXTENSION_NAME" />”?</translation>
@@ -4317,6 +4318,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5814126672212206791">Ühenduse tüüp</translation>
 <translation id="5815645614496570556">X.400 aadress</translation>
 <translation id="5816434091619127343">Nõutud printeri muudatuste korral ei saaks printerit kasutada.</translation>
+<translation id="5817069030404929329">Kas teisaldada paroolid sellest seadmest teie Google'i kontole?</translation>
 <translation id="5817918615728894473">Seo</translation>
 <translation id="5821565227679781414">Loo otsetee</translation>
 <translation id="5825412242012995131">Sees (soovitatav)</translation>
@@ -5019,7 +5021,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6611972847767394631">Oma vahekaardid leiate siit</translation>
 <translation id="6612358246767739896">Kaitstud sisu</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
-<translation id="661587753387495724">Paroolid teisaldatakse teie seadmest teie Google'i kontole</translation>
 <translation id="6618097958368085618">Säilita ikkagi</translation>
 <translation id="6618744767048954150">Pooleli</translation>
 <translation id="6619058681307408113">Reaprinteriprotokoll (LPD)</translation>

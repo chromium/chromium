@@ -1836,7 +1836,6 @@
 <translation id="2979639724566107830">เปิดในหน้าต่างใหม่</translation>
 <translation id="2981113813906970160">แสดงเคอร์เซอร์เมาส์ขนาดใหญ่</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> ได้ส่งการแจ้งเตือนไปยังโทรศัพท์ของคุณ แตะ "ใช่" เพื่อยืนยันว่าเป็นคุณ <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{มีรหัสผ่าน {COUNT} รายการที่เข้าถึงได้ในอุปกรณ์นี้}other{มีรหัสผ่าน {COUNT} รายการที่เข้าถึงได้ในอุปกรณ์นี้}}</translation>
 <translation id="2985348301114641460">ส่งคำขอให้ผู้ดูแลระบบติดตั้ง "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="2987620471460279764">ข้อความแชร์มาจากอุปกรณ์อื่น</translation>
 <translation id="2988018669686457659">โปรแกรมแสดงภาพสำรอง</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3088325635286126843">&amp;เปลี่ยนชื่อ...</translation>
 <translation id="3089064280130434511">บล็อกเว็บไซต์ไม่ให้เปิดและวางหน้าต่างบนหน้าจอ</translation>
 <translation id="3089137131053189723">ล้างการค้นหาแล้ว</translation>
+<translation id="3090589793601454425">ไม่ต้องย้าย</translation>
 <translation id="3090819949319990166">ไม่สามารถคัดลอกไฟล์ crx ภายนอกไปยัง <ph name="TEMP_CRX_FILE" /></translation>
 <translation id="3090871774332213558">จับคู่ "<ph name="DEVICE_NAME" />" แล้ว</translation>
 <translation id="3093714882666365141">ไม่อนุญาตให้เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงิน</translation>
@@ -2181,6 +2181,7 @@
 <translation id="3396800784455899911">การคลิกปุ่ม "ยอมรับและดำเนินการต่อ" แสดงว่าคุณยอมรับการดำเนินการของบริการต่างๆ ของ Google ตามที่ชี้แจ้งไว้ด้านบน</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> เฮิรตซ์) - อินเตอร์เลซ</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{มีรหัสผ่าน {COUNT} รายการจัดเก็บอยู่ในอุปกรณ์นี้}other{มีรหัสผ่าน {COUNT} รายการจัดเก็บอยู่ในอุปกรณ์นี้}}</translation>
 <translation id="3402255108239926910">เลือกรูปโปรไฟล์</translation>
 <translation id="3402585168444815892">ลงทะเบียนในโหมดสาธิต</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3147,6 +3148,7 @@
 <translation id="4472575034687746823">เริ่มต้น</translation>
 <translation id="4474155171896946103">บุ๊กมาร์กแท็บทั้งหมด...</translation>
 <translation id="4475552974751346499">ค้นสิ่งที่ดาวน์โหลดไว้</translation>
+<translation id="4475830133618397783">เลือกรหัสผ่านที่จะย้าย ซึ่งคุณสามารถเข้าถึงได้ทุกครั้งที่ลงชื่อเข้าใช้</translation>
 <translation id="4476590490540813026">นักกีฬา</translation>
 <translation id="4476659815936224889">หากต้องการสแกนโค้ดนี้ คุณใช้แอปสแกนคิวอาร์โค้ดในโทรศัพท์หรือแอปกล้องถ่ายรูปบางแอปสแกนได้</translation>
 <translation id="4477015793815781985">รวม Ctrl, Alt หรือ ⌘</translation>
@@ -3409,7 +3411,6 @@
 <translation id="4768332406694066911">คุณมีใบรับรองจากองค์กรเหล่านี้ซึ่งระบุถึงตัวคุณ</translation>
 <translation id="4770119228883592393">ขอสิทธิ์ กด ⌘ + Option + ลูกศรลงเพื่อตอบกลับ</translation>
 <translation id="4773112038801431077">อัปเกรด Linux</translation>
-<translation id="4774357366578243684">หากต้องการใช้รหัสผ่านเหล่านี้ในอุปกรณ์ทุกเครื่อง ให้ย้ายรหัสผ่านไปไว้ในบัญชี Google</translation>
 <translation id="477647109558161443">สร้างทางลัดบนเดสก์ท็อป</translation>
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3769,7 +3770,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> ต้องการดาวน์โหลดหลายไฟล์</translation>
 <translation id="5192062846343383368">เปิดแอป Family Link เพื่อดูการตั้งค่าการควบคุมดูแล</translation>
 <translation id="5193988420012215838">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
-<translation id="5195083053116174857">เลือกรหัสผ่านที่จะย้าย</translation>
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5198430103906431024">ส่งข้อมูลการใช้งานและการวินิจฉัย ปัจจุบันอุปกรณ์นี้ส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาซอฟต์แวร์ Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปไว้ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ</translation>
 <translation id="5199729219167945352">การทดลอง</translation>
@@ -3808,6 +3808,7 @@
 <translation id="5235050375939235066">ถอนการติดตั้งแอปไหม</translation>
 <translation id="523505283826916779">การตั้งค่าสำหรับการเข้าถึง</translation>
 <translation id="5235750401727657667">แทนที่หน้าที่คุณจะเห็นเมื่อเปิดแท็บใหม่</translation>
+<translation id="5236374273162681467">หากต้องการใช้รหัสผ่านเหล่านี้ในอุปกรณ์ทุกเครื่องได้โดยง่าย ให้ย้ายไปไว้ในบัญชี Google</translation>
 <translation id="5238278114306905396">แอปพลิเคชัน "<ph name="EXTENSION_NAME" />" ถูกลบโดยอัตโนมัติ</translation>
 <translation id="5241128660650683457">อ่านข้อมูลทั้งหมดของคุณบนเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="5242724311594467048">เปิดใช้งาน "<ph name="EXTENSION_NAME" />" ไหม</translation>
@@ -4317,6 +4318,7 @@
 <translation id="5814126672212206791">ประเภทการเชื่อมต่อ</translation>
 <translation id="5815645614496570556">ที่อยู่ X.400</translation>
 <translation id="5816434091619127343">การเปลี่ยนแปลงเครื่องพิมพ์ที่ขอจะทำให้เครื่องพิมพ์ใช้ไม่ได้</translation>
+<translation id="5817069030404929329">ย้ายรหัสผ่านจากอุปกรณ์นี้ไปไว้ในบัญชี Google ไหม</translation>
 <translation id="5817918615728894473">จับคู่</translation>
 <translation id="5821565227679781414">สร้างทางลัด</translation>
 <translation id="5825412242012995131">เปิด (แนะนำ)</translation>
@@ -5019,7 +5021,6 @@
 <translation id="6611972847767394631">ค้นหาแท็บของคุณที่นี่</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
-<translation id="661587753387495724">ระบบจะย้ายรหัสผ่านจากอุปกรณ์ไปยังบัญชี Google ของคุณ</translation>
 <translation id="6618097958368085618">อย่างไรก็เก็บไว้</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

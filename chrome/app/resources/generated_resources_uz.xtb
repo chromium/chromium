@@ -1834,7 +1834,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2979639724566107830">Yangi oynada ochish</translation>
 <translation id="2981113813906970160">Sichqonchaning katta kursorini ko‘rsatish</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> telefoningizga bildirishnoma yubordi. Ha ustiga bosib, shaxsingizni tasdiqlang. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Bu qurilmada {COUNT} ta parol saqlanadi}other{Bu qurilmada {COUNT} ta parol saqlanadi}}</translation>
 <translation id="2985348301114641460">Administratorga “<ph name="EXTENSION_NAME" />” kengaytmasini oʻrnatish talabi yuborilsinmi?</translation>
 <translation id="2987620471460279764">Boshqa qurilmadan ulashilgan matn</translation>
 <translation id="2988018669686457659">Taqsimlab renderlash vositasi</translation>
@@ -1935,6 +1934,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3088325635286126843">&amp;Qayta nomlash...</translation>
 <translation id="3089064280130434511">Saytlarning ekranlarda oynalar ochishi va joylashtirishini taqiqlash</translation>
 <translation id="3089137131053189723">Qidiruv tozalandi</translation>
+<translation id="3090589793601454425">Olinmasin</translation>
 <translation id="3090819949319990166">Tashqi CRX faylni <ph name="TEMP_CRX_FILE" /> jildiga nusxalab bo‘lmadi.</translation>
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />” qurilmasi ulandi</translation>
 <translation id="3093714882666365141">Saytlarga toʻlov vositalarini oʻrnatishni taqiqlash</translation>
@@ -2179,6 +2179,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3396800784455899911">“Roziman va davom etish” tugmasini bosish orqali siz yuqorida keltirilgan Google xizmatlari shartlariga rozilik bildirgan hisoblanasiz.</translation>
 <translation id="3399432415385675819">Bildirishnomalar kelmay qoladi</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Gs) – maydalangan</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Bu qurilmada {COUNT} ta parol saqlangan}other{Bu qurilmada {COUNT} ta parol saqlangan}}</translation>
 <translation id="3402255108239926910">Avatar tanlang</translation>
 <translation id="3402585168444815892">Demo rejimda ishlash uchun qayd etish</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4472575034687746823">Boshlash</translation>
 <translation id="4474155171896946103">Barcha ichki oynalarni xatcho‘plarga qo‘shish...</translation>
 <translation id="4475552974751346499">Yuklamalardan qidirish</translation>
+<translation id="4475830133618397783">Olinadigan parollarni tanlang. Ulardan hisobingiz bilan kirgan joylarda foydalanishingiz mumkin.</translation>
 <translation id="4476590490540813026">Sportchi</translation>
 <translation id="4476659815936224889">QR kodni telefoningizdagi mos autentifikator yoki kamera ilovasi yordamida skanerlang.</translation>
 <translation id="4477015793815781985">Birikma Ctrl, Alt yoki ⌘ tugmalaridan iborat bo‘lishi zarur</translation>
@@ -3407,7 +3409,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4768332406694066911">Sizda haqiqiyligingizni tasdiqlovchi quyidagi tashkilotlar sertifikatlari mavjud</translation>
 <translation id="4770119228883592393">Ruxsat talabi keldi, javob berish uchun ⌘ + Option + Pastga strelka tugmalarini bosing</translation>
 <translation id="4773112038801431077">Linux tizimini yangilash</translation>
-<translation id="4774357366578243684">Ulardan barcha qurilmalarda foydalanish uchun ularni Google hisobingizga oling</translation>
 <translation id="477647109558161443">Ish stolida yorliq yaratish</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> e-pochtasi paroli</translation>
 <translation id="4777825441726637019">Play Market</translation>
@@ -3767,7 +3768,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="51918995459521422"><ph name="ORIGIN" /> bir nechta faylni yuklab olmoqchi</translation>
 <translation id="5192062846343383368">Nazorat sozlamalarini koʻrish uchun Family Link ilovasini oching</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>
-<translation id="5195083053116174857">Olinadigan parollarni tanlang</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilsa, bu maʼlumotlar Google hisobingizda saqlanadi.</translation>
 <translation id="5199729219167945352">Sinov jarayonidagi funksiyalar</translation>
@@ -3806,6 +3806,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5235050375939235066">Ilova o‘chirib tashlansinmi?</translation>
 <translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="5235750401727657667">Yangi varaqda chiqadigan sahifani almashtirish</translation>
+<translation id="5236374273162681467">Ulardan barcha qurilmalarda osongina foydalanish uchun ularni Google hisobingizga oling</translation>
 <translation id="5238278114306905396">“<ph name="EXTENSION_NAME" />” ilovasi avtomatik o‘chirildi.</translation>
 <translation id="5241128660650683457">Tashrif buyuriladigan saytlardagi ma’lumotlaringizni ko‘rish</translation>
 <translation id="5242724311594467048">“<ph name="EXTENSION_NAME" />” kengaytmasi ishga tushirilsinmi?</translation>
@@ -4315,6 +4316,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5814126672212206791">Ulanish turi</translation>
 <translation id="5815645614496570556">X.400 manzili</translation>
 <translation id="5816434091619127343">So‘ralgan o‘zgartirishlar printerni ishdan chiqarishi mumkin.</translation>
+<translation id="5817069030404929329">Parollar bu qurilmadan Google hisobignizga olinsinmi?</translation>
 <translation id="5817918615728894473">Ulanish</translation>
 <translation id="5821565227679781414">Yorliq yaratish</translation>
 <translation id="5825412242012995131">Yoqilgan (tavsiya etiladi)</translation>
@@ -5017,7 +5019,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6611972847767394631">Varaqlarni bu yerdan toping</translation>
 <translation id="6612358246767739896">Himoyalangan kontent</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
-<translation id="661587753387495724">Qurilmadagi parollar Google hisobingizga olinadi</translation>
 <translation id="6618097958368085618">Baribir davom etsin</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>

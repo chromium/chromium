@@ -1836,7 +1836,6 @@
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" />에서 휴대전화로 알림을 보냈습니다. 예를 탭하여 본인임을 확인하세요. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{이 기기에서 비밀번호 {COUNT}개에 액세스할 수 있습니다.}other{이 기기에서 비밀번호 {COUNT}개에 액세스할 수 있습니다.}}</translation>
 <translation id="2985348301114641460">관리자에게 '<ph name="EXTENSION_NAME" />' 설치 요청을 전송하시겠습니까?</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2988018669686457659">예비 렌더러</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3088325635286126843">이름 바꾸기(&amp;R)...</translation>
 <translation id="3089064280130434511">사이트가 열릴 때 화면에 창을 배치하지 않도록 차단</translation>
 <translation id="3089137131053189723">검색 기록이 삭제되었습니다</translation>
+<translation id="3090589793601454425">이동 안함</translation>
 <translation id="3090819949319990166">외부 crx 파일을 <ph name="TEMP_CRX_FILE" />에 복사할 수 없습니다.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' 페어링됨</translation>
 <translation id="3093714882666365141">사이트에서 결제 핸들러를 설치하도록 허용하지 않음</translation>
@@ -2181,6 +2181,7 @@
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz) - 인터레이스</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{기기에 비밀번호 {COUNT}개가 저장되어 있습니다.}other{기기에 비밀번호 {COUNT}개가 저장되어 있습니다.}}</translation>
 <translation id="3402255108239926910">아바타 선택</translation>
 <translation id="3402585168444815892">데모 모드에 등록</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@
 <translation id="4472575034687746823">시작하기</translation>
 <translation id="4474155171896946103">모든 탭 북마크...</translation>
 <translation id="4475552974751346499">다운로드 검색</translation>
+<translation id="4475830133618397783">이동할 비밀번호를 선택하세요. 로그인한 모든 기기에서 비밀번호에 액세스할 수 있습니다.</translation>
 <translation id="4476590490540813026">운동선수</translation>
 <translation id="4476659815936224889">스마트폰의 QR 스캐너 앱 또는 일부 카메라 앱을 사용하여 이 코드를 스캔할 수 있습니다.</translation>
 <translation id="4477015793815781985">Ctrl, Alt 또는 ⌘ 키를 포함하세요</translation>
@@ -3407,7 +3409,6 @@
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>
-<translation id="4774357366578243684">모든 기기에서 비밀번호를 사용하려면 Google 계정으로 비밀번호를 옮기세요.</translation>
 <translation id="477647109558161443">바탕화면 바로가기 만들기</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
@@ -3767,7 +3768,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
-<translation id="5195083053116174857">이동할 비밀번호 선택</translation>
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5198430103906431024">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="5199729219167945352">실험실 기능</translation>
@@ -3806,6 +3806,7 @@
 <translation id="5235050375939235066">앱을 제거하시겠습니까?</translation>
 <translation id="523505283826916779">접근성 설정</translation>
 <translation id="5235750401727657667">새 탭을 열 때 표시되는 페이지 변경</translation>
+<translation id="5236374273162681467">모든 기기에서 비밀번호를 간편하게 사용하려면 비밀번호를 Google 계정으로 이동하세요.</translation>
 <translation id="5238278114306905396">'<ph name="EXTENSION_NAME" />' 앱이 자동으로 삭제되었습니다.</translation>
 <translation id="5241128660650683457">방문하는 웹사이트의 모든 데이터 읽기</translation>
 <translation id="5242724311594467048">'<ph name="EXTENSION_NAME" />'을(를) 사용하시겠습니까?</translation>
@@ -4315,6 +4316,7 @@
 <translation id="5814126672212206791">연결 유형</translation>
 <translation id="5815645614496570556">X.400 주소</translation>
 <translation id="5816434091619127343">프린터 변경을 요청하면 프린터를 사용할 수 없게 됩니다.</translation>
+<translation id="5817069030404929329">기기의 비밀번호를 Google 계정으로 옮기시겠습니까?</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="5821565227679781414">바로가기 만들기</translation>
 <translation id="5825412242012995131">사용(권장)</translation>
@@ -5017,7 +5019,6 @@
 <translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="6615455863669487791">보기</translation>
-<translation id="661587753387495724">비밀번호가 기기에서 Google 계정으로 이동됩니다.</translation>
 <translation id="6618097958368085618">보관</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6619058681307408113">라인 프린터 데몬(LPD)</translation>

@@ -1318,6 +1318,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2428939361789119025">Vypnout Wi-Fi</translation>
 <translation id="2428978615149723410">tyto karty</translation>
 <translation id="2431027948063157455">Načtení Asistenta Google se nezdařilo, zkontrolujte připojení k síti a zkuste to znovu.</translation>
+<translation id="243179355394256322">Vaše organizace omezuje registraci zařízení pouze na oprávněné uživatele. Tento uživatel není oprávněn registrovat zařízení. Zkontrolujte, zda má uživatel v administrátorské konzoli v sekci Uživatelé administrátorské právo Registrovat hardware Google Meet.</translation>
 <translation id="2433452467737464329">Chcete-li stránku obnovovat automaticky, přidejte do adresy URL následující parametr dotazu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2433836460518180625">Jen odemknout zařízení</translation>
@@ -1834,7 +1835,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2981113813906970160">Zobrazit velký kurzor myši</translation>
 <translation id="2983175648295374032">Web <ph name="WEBSITE" /> vám do telefonu poslal oznámení. Potvrďte svou totožnost klepnutím na Ano. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{Na tomto zařízení je přístupné {COUNT} heslo}few{Na tomto zařízení jsou přístupná {COUNT} hesla}many{Na tomto zařízení je přístupných {COUNT} hesla}other{Na tomto zařízení je přístupných {COUNT} hesel}}</translation>
 <translation id="2985348301114641460">Požádat administrátora o instalaci rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Text sdílený z jiného zařízení</translation>
 <translation id="2988018669686457659">Rezervní vykreslovací proces</translation>
@@ -1935,6 +1935,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3088325635286126843">&amp;Přejmenovat...</translation>
 <translation id="3089064280130434511">Blokovat webům otevírání a umísťování oken na obrazovkách</translation>
 <translation id="3089137131053189723">Vyhledávání bylo vymazáno</translation>
+<translation id="3090589793601454425">Nepřesouvat</translation>
 <translation id="3090819949319990166">Obsah externího souboru CRX nelze zkopírovat do souboru <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Zařízení „<ph name="DEVICE_NAME" />“ bylo spárováno</translation>
 <translation id="3093714882666365141">Nepovolovat webům instalovat obslužné nástroje pro platby</translation>
@@ -2179,6 +2180,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3396800784455899911">Kliknutím na tlačítko Přijmout a pokračovat vyjadřujete souhlas se zpracováním popsaným výše pro tyto služby Google.</translation>
 <translation id="3399432415385675819">Oznámení budou zakázána</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prokládané</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} heslo je uložená na tomto zařízení}few{{COUNT} hesla jsou uložená na tomto zařízení}many{{COUNT} hesla je uloženého na tomto zařízení}other{{COUNT} hesel je uložených na tomto zařízení}}</translation>
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402585168444815892">Registrace v ukázkovém režimu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3144,6 +3146,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4474155171896946103">Přidat do záložek všechny karty...</translation>
 <translation id="4475552974751346499">Hledat stažené soubory</translation>
+<translation id="4475830133618397783">Vyberte, která hesla chcete přesunout. Budete k ním mít přístup vždy, když budete přihlášeni.</translation>
 <translation id="4476590490540813026">Sportovkyně</translation>
 <translation id="4476659815936224889">K naskenování tohoto kódu můžete použít aplikaci na skenování QR kódů na telefonu nebo některé aplikace pro fotografování.</translation>
 <translation id="4477015793815781985">Zahrňte klávesu Ctrl, Alt, nebo ⌘</translation>
@@ -3406,7 +3409,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4768332406694066911">Od následujících organizací máte certifikáty, které vás identifikují</translation>
 <translation id="4770119228883592393">Odpovězte na žádost o oprávnění stisknutím kláves ⌘ + Option + šipka dolů</translation>
 <translation id="4773112038801431077">Aktualizovat Linux</translation>
-<translation id="4774357366578243684">Pokud je chcete používat na všech svých zařízeních, přesuňte je do svého účtu Google</translation>
 <translation id="477647109558161443">Vytvořit zástupce na ploše</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Obchod Play</translation>
@@ -3766,7 +3768,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> se pokouší stáhnout několik souborů</translation>
 <translation id="5192062846343383368">Chcete-li zobrazit nastavení dohledu, otevřete aplikaci Family Link</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>
-<translation id="5195083053116174857">Vyberte, která hesla chcete přesunout</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="5199729219167945352">Experimenty</translation>
@@ -3805,6 +3806,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5235050375939235066">Odinstalovat aplikaci?</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
 <translation id="5235750401727657667">Nahradit stránku, která se zobrazí po otevření nové karty</translation>
+<translation id="5236374273162681467">Pokud chcete mít možnost snadno je používat na všech svých zařízeních, můžete si je přesunout do účtu Google</translation>
 <translation id="5238278114306905396">Aplikace <ph name="EXTENSION_NAME" /> byla automaticky odebrána.</translation>
 <translation id="5241128660650683457">Čtení veškerých dat na navštívených webových stránkách</translation>
 <translation id="5242724311594467048">Aktivovat rozšíření <ph name="EXTENSION_NAME" />?</translation>
@@ -4314,6 +4316,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5814126672212206791">Typ připojení</translation>
 <translation id="5815645614496570556">Adresa X.400</translation>
 <translation id="5816434091619127343">Po provedení požadovaných změn by tiskárna nebyla použitelná.</translation>
+<translation id="5817069030404929329">Přesunout hesla z tohoto zařízení do vašeho účtu Google?</translation>
 <translation id="5817918615728894473">Spárovat</translation>
 <translation id="5821565227679781414">Vytvořit zástupce</translation>
 <translation id="5825412242012995131">Zapnout (doporučeno)</translation>
@@ -4413,6 +4416,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5932124097031739492">Linux byl úspěšně upgradován.</translation>
 <translation id="5932224571077948991">Web zobrazuje rušivé nebo zavádějící reklamy</translation>
 <translation id="59324397759951282">Zařízení USB od výrobce <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nemáte dostatečný počet licencí k registraci tohoto hardwarového zařízení Google Meet. Kontaktujte oddělení prodeje a zakupte další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>
 <translation id="5932881020239635062">Sériové číslo</translation>
 <translation id="5933376509899483611">Časové pásmo</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používá vaši kameru a mikrofon.</translation>
@@ -5015,7 +5019,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6611972847767394631">Zde naleznete své karty</translation>
 <translation id="6612358246767739896">Chráněný obsah</translation>
 <translation id="6615455863669487791">Ukázat</translation>
-<translation id="661587753387495724">Hesla budou přesunuta ze zařízení do účtu Google</translation>
 <translation id="6618097958368085618">Přesto ponechat</translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -5400,6 +5403,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7029307918966275733">Plugin Crostini není nainstalován. Chcete-li zobrazit seznam přispěvatelů, nainstalujte Crostini.</translation>
 <translation id="7029809446516969842">Hesla</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – připojeno k sériovému portu</translation>
+<translation id="7034692021407794547">Administrátor s oprávněním Správa fakturace musí nejdříve v administrátorské konzoli v sekci Hardware Google Meet přijmout smluvní podmínky hardwaru Google Meet.</translation>
 <translation id="7036706669646341689">Pro Linux je doporučeno <ph name="DISK_SIZE" /> místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="7037509989619051237">Text k náhledu</translation>
 <translation id="7038632520572155338">Přístup pomocí přepínačů</translation>

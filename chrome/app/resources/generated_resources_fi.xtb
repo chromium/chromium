@@ -1836,7 +1836,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2979639724566107830">Avaa uudessa ikkunassa</translation>
 <translation id="2981113813906970160">Näytä suuri hiiren osoitin</translation>
 <translation id="2983175648295374032"><ph name="WEBSITE" /> lähetti ilmoituksen puhelimeesi. Vahvista henkilöllisyytesi valitsemalla Kyllä. <ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} salasana on käytettävissä tällä laitteella}other{{COUNT} salasanaa on käytettävissä tällä laitteella}}</translation>
 <translation id="2985348301114641460">Lähetetäänkö järjestelmänvalvojallesi pyyntö asentaa <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Toiselta laitteelta jaettu teksti</translation>
 <translation id="2988018669686457659">Varahahmontaja</translation>
@@ -1937,6 +1936,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3088325635286126843">Nimeä uudelleen...</translation>
 <translation id="3089064280130434511">Estä sivustoja avaamasta ikkunoita ja sijoittamasta niitä näytöillesi</translation>
 <translation id="3089137131053189723">Haku tyhjennetty</translation>
+<translation id="3090589793601454425">Älä siirrä</translation>
 <translation id="3090819949319990166">Ulkoista crx-tiedostoa ei voi kopioida kohteeseen <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Laitepari muodostettu laitteen <ph name="DEVICE_NAME" /> kanssa</translation>
 <translation id="3093714882666365141">Älä salli sivustojen asentaa maksujen käsittelijöitä</translation>
@@ -2181,6 +2181,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3396800784455899911">Kun valitset Hyväksy ja jatka, hyväksyt käsittelyn näissä Google-palveluissa edellä kuvatuilla tavoilla.</translation>
 <translation id="3399432415385675819">Ilmoitukset poistetaan käytöstä.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertsiä) – lomitettu</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Tälle laitteelle on tallennettu {COUNT} salasana}other{Tälle laitteelle on tallennettu {COUNT} salasanaa}}</translation>
 <translation id="3402255108239926910">Valitse avatar</translation>
 <translation id="3402585168444815892">Liitytään demotilaan</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3144,6 +3145,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4474155171896946103">Lisää kaikki välilehdet kirjanmerkkeihin...</translation>
 <translation id="4475552974751346499">Haku latauksista</translation>
+<translation id="4475830133618397783">Valitse siirrettävät salasanat. Sinulla on pääsy niihin aina, kun olet kirjautuneena sisään.</translation>
 <translation id="4476590490540813026">Urheilija</translation>
 <translation id="4476659815936224889">Voit skannata koodin puhelimen QR-skannaussovelluksella tai joillakin kamerasovelluksilla.</translation>
 <translation id="4477015793815781985">Sisällytä Ctrl, Alt tai ⌘</translation>
@@ -3406,7 +3408,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4768332406694066911">Sinulla on varmenteita seuraavilta sinut tunnistavilta organisaatioilta</translation>
 <translation id="4770119228883592393">Lupaa pyydetty, vastaa painamalla ⌘ + Option + alanuoli</translation>
 <translation id="4773112038801431077">Päivitä Linux</translation>
-<translation id="4774357366578243684">Siirrä ne Google-tilillesi, jotta voit käyttää niitä kaikilla laitteillasi</translation>
 <translation id="477647109558161443">Luo työpöytäkuvake</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
 <translation id="4777825441726637019">Play Kauppa</translation>
@@ -3766,7 +3767,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> haluaa ladata useita tiedostoja</translation>
 <translation id="5192062846343383368">Avaa Family Link ‑sovellus, niin näet valvonta-asetukset</translation>
 <translation id="5193988420012215838">Kopioitu leikepöydälle</translation>
-<translation id="5195083053116174857">Valitse siirrettävät salasanat</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi.</translation>
 <translation id="5199729219167945352">Kokeilut</translation>
@@ -3805,6 +3805,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5235050375939235066">Poistetaanko sovellus?</translation>
 <translation id="523505283826916779">Esteettömyysasetukset</translation>
 <translation id="5235750401727657667">Korvaa sivu, joka näkyy uuden välilehden avaamisen yhteydessä</translation>
+<translation id="5236374273162681467">Voit siirtää ne Google-tilillesi, jolloin ne ovat käytettävissä kaikilla laitteillasi</translation>
 <translation id="5238278114306905396">Sovellus <ph name="EXTENSION_NAME" /> poistettiin automaattisesti.</translation>
 <translation id="5241128660650683457">Lukea kaikkia tietojasi vierailemissasi sivustoissa</translation>
 <translation id="5242724311594467048">Otetaanko <ph name="EXTENSION_NAME" /> käyttöön?</translation>
@@ -4314,6 +4315,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5814126672212206791">Yhteyden tyyppi</translation>
 <translation id="5815645614496570556">X.400-osoite</translation>
 <translation id="5816434091619127343">Tulostimeen pyydetyt muutokset estäisivät sen käytön.</translation>
+<translation id="5817069030404929329">Siirretäänkö salasanat tältä laitteelta Google-tilillesi?</translation>
 <translation id="5817918615728894473">Muodosta laitepari</translation>
 <translation id="5821565227679781414">Luo pikakuvake</translation>
 <translation id="5825412242012995131">Käytössä (suositus)</translation>
@@ -5016,7 +5018,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6611972847767394631">Löydät välilehdet täältä</translation>
 <translation id="6612358246767739896">Suojattu sisältö</translation>
 <translation id="6615455863669487791">Näytä</translation>
-<translation id="661587753387495724">Salasanat siirretään laitteeltasi Google-tilillesi</translation>
 <translation id="6618097958368085618">Säilytä silti</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6619058681307408113">Line Printer Daemon ‑protokolla (LPD)</translation>

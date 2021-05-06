@@ -1835,7 +1835,6 @@
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983175648295374032">「<ph name="WEBSITE" />」已傳送通知到你的手機。請輕觸 [是] 以確認身分。<ph name="LINK" /></translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{這部裝置上有 {COUNT} 個可用的密碼}other{這部裝置上有 {COUNT} 個可用的密碼}}</translation>
 <translation id="2985348301114641460">要傳送「<ph name="EXTENSION_NAME" />」的安裝要求給系統管理員嗎？</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2988018669686457659">備用轉譯器</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3088325635286126843">重新命名(&amp;R)...</translation>
 <translation id="3089064280130434511">禁止網站在你的畫面中開啟與放置視窗</translation>
 <translation id="3089137131053189723">已清除搜尋內容</translation>
+<translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」已配對</translation>
 <translation id="3093714882666365141">禁止網站安裝付款處理常式</translation>
@@ -2180,6 +2180,7 @@
 <translation id="3396800784455899911">點選 [接受並繼續] 按鈕即表示您同意上述的 Google 服務處理程序。</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{這部裝置中已經儲存了 {COUNT} 組密碼}other{這部裝置中已經儲存了 {COUNT} 組密碼}}</translation>
 <translation id="3402255108239926910">請選擇顯示圖片</translation>
 <translation id="3402585168444815892">正在註冊展示模式</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />，<ph name="TIME_LEFT" /></translation>
@@ -3145,6 +3146,7 @@
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4474155171896946103">將所有分頁加入書籤...</translation>
 <translation id="4475552974751346499">搜尋下載內容</translation>
+<translation id="4475830133618397783">請選擇要移動的密碼。你只要登入帳戶，即可隨時存取這些密碼。</translation>
 <translation id="4476590490540813026">運動員</translation>
 <translation id="4476659815936224889">如要掃描這個圖碼，你可以使用手機上的 QR 掃描器或相機應用程式。</translation>
 <translation id="4477015793815781985">必須包含 Ctrl、Alt 或 ⌘ 鍵</translation>
@@ -3407,7 +3409,6 @@
 <translation id="4768332406694066911">您有這些機構核發給您的憑證</translation>
 <translation id="4770119228883592393">已要求權限，按下 ⌘ + Option + 向下鍵即可回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
-<translation id="4774357366578243684">如要在所有裝置上使用這些密碼，請將密碼移至 Google 帳戶</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>
@@ -3767,7 +3768,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想要下載多個檔案</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
-<translation id="5195083053116174857">選擇要移動的密碼</translation>
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5198430103906431024">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
 <translation id="5199729219167945352">實驗性功能</translation>
@@ -3806,6 +3806,7 @@
 <translation id="5235050375939235066">要解除安裝應用程式嗎？</translation>
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
+<translation id="5236374273162681467">如想在所有裝置上輕鬆使用密碼，可以將這些密碼移至你的 Google 帳戶</translation>
 <translation id="5238278114306905396">「<ph name="EXTENSION_NAME" />」應用程式已自動移除。</translation>
 <translation id="5241128660650683457">讀取你在造訪的網站上產生的所有資料</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
@@ -4315,6 +4316,7 @@
 <translation id="5814126672212206791">連線類型</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
 <translation id="5816434091619127343">要求的印表機變更會讓這部印表機無法使用。</translation>
+<translation id="5817069030404929329">要將密碼從這部裝置移至你的 Google 帳戶嗎？</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5821565227679781414">建立捷徑</translation>
 <translation id="5825412242012995131">啟用 (建議設定)</translation>
@@ -5017,7 +5019,6 @@
 <translation id="6611972847767394631">你可以在這裡找到已開啟的分頁</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="6615455863669487791">顯示</translation>
-<translation id="661587753387495724">密碼會從你的裝置移至 Google 帳戶</translation>
 <translation id="6618097958368085618">確定保留</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6619058681307408113">線上印表機服務精靈 (LPD)</translation>
