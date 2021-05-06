@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 113: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
-CONSOLE WARNING: line 27: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+CONSOLE WARNING: line 113: SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+CONSOLE WARNING: line 27: SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 Test sharing SharedArrayBuffers between dedicated workers.
 
 Running SharedArrayBuffer test case

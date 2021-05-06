@@ -519,7 +519,7 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "%s. See "
               "https://developer.chrome.com/blog/enabling-shared-array-buffer/"
               " for more details.",
-              MilestoneString(kM91).Ascii().c_str())};
+              MilestoneString(kM92).Ascii().c_str())};
 
     case WebFeature::kV8RTCRtpSender_CreateEncodedAudioStreams_Method:
       return {"V8RTCRtpSender_CreateEncodedAudioStreams_Method", kM88,
