@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -139,7 +140,8 @@ void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
     base::Time key_date;
     if (base::Time::FromUTCString(it.key().c_str(), &key_date) &&
         key_date > week_ago)
-      user_pref_new_dict.Set(it.key(), it.value().CreateDeepCopy());
+      user_pref_new_dict.Set(it.key(),
+                             base::Value::ToUniquePtrValue(it.value().Clone()));
   }
   local_state_->Set(pref_name, user_pref_new_dict);
 }
