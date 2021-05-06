@@ -25,6 +25,7 @@
   self.helpButtonAvailable = YES;
   self.primaryActionAvailable = YES;
   self.secondaryActionAvailable = YES;
+  self.imageHasFixedSize = YES;
   self.showDismissBarButton = NO;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
   self.capitalizeTitle = NO;
