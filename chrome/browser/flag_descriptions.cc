@@ -3147,9 +3147,6 @@ const char kOfflineIndicatorV2Name[] = "Offline indicator V2";
 const char kOfflineIndicatorV2Description[] =
     "Show a persistent offline indicator when offline.";
 
-const char kOfflinePagesCtName[] = "Enable Offline Pages CT features.";
-const char kOfflinePagesCtDescription[] = "Enable Offline Pages CT features.";
-
 const char kOfflinePagesCtV2Name[] = "Enable Offline Pages CT V2 features.";
 const char kOfflinePagesCtV2Description[] =
     "V2 features include attributing pages to the app that initiated the "
