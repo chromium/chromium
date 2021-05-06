@@ -60,6 +60,12 @@ const int kEstimatedBytesPerMegapixel = 100000;
 constexpr base::TimeDelta kKeepAliveInterval =
     base::TimeDelta::FromMilliseconds(2000);
 
+// Baseline bandwidth to use for scheduling captures. This is only used
+// until the next OnTargetBitrateChanged() notification, typically after
+// 2 or 3 capture/encode cycles. Any realistic value should work OK - the
+// chosen value is the current upper limit for relay connections.
+constexpr int kBaselineBandwidthKbps = 8000;
+
 int64_t GetRegionArea(const webrtc::DesktopRegion& region) {
   int64_t result = 0;
   for (webrtc::DesktopRegion::Iterator r(region); !r.IsAtEnd(); r.Advance()) {
@@ -74,9 +80,18 @@ int64_t GetRegionArea(const webrtc::DesktopRegion& region) {
 WebrtcFrameSchedulerSimple::WebrtcFrameSchedulerSimple(
     const SessionOptions& options)
     : tick_clock_(base::DefaultTickClock::GetInstance()),
-      pacing_bucket_(LeakyBucket::kUnlimitedDepth, 0),
+      pacing_bucket_(LeakyBucket::kUnlimitedDepth,
+                     kBaselineBandwidthKbps * 1000 / 8),
       updated_region_area_(kStatsWindow),
-      bandwidth_estimator_(new WebrtcBandwidthEstimator()) {}
+      bandwidth_estimator_(new WebrtcBandwidthEstimator()) {
+  // Set up bandwidth-estimators with an initial rate so that captures can be
+  // scheduled when the encoder is ready. With the standard encoding pipeline
+  // (has_internal_source == false), WebRTC does not create the encoder until
+  // after the first frame is captured and sent to the VideoTrack's output
+  // sink. Bandwidth updates cannot be received until after this occurs.
+  bandwidth_estimator_->OnBitrateEstimation(kBaselineBandwidthKbps);
+  processing_time_estimator_.SetBandwidthKbps(kBaselineBandwidthKbps);
+}
 
 WebrtcFrameSchedulerSimple::~WebrtcFrameSchedulerSimple() {
   DCHECK(thread_checker_.CalledOnValidThread());
