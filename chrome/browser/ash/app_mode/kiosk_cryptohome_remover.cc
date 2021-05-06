@@ -76,7 +76,7 @@ void UpdateFromListValue(const std::string& list_pref_name) {
   {
     DictionaryPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    for (auto& element : *users_to_remove) {
+    for (const auto& element : users_to_remove->GetList()) {
       dict_update->SetKey(element.GetString(), base::Value(""));
     }
   }
