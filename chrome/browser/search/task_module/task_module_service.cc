@@ -331,5 +331,5 @@ bool TaskModuleService::IsTaskDismissed(
       GetDismissedTasksPrefName(task_module_type));
   DCHECK(dismissed_tasks);
   return dismissed_tasks->Find(base::Value(task_name)) !=
-         dismissed_tasks->end();
+         dismissed_tasks->GetList().end();
 }
