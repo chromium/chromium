@@ -792,14 +792,12 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             ComputeTimeline(&element, timeline_name, scroll_timeline_rule,
                             nullptr /* existing_timeline */);
         base::Optional<TimelinePhase> inherited_phase;
-        base::Optional<AnimationTimeDelta> inherited_time;
-        if (timeline) {
-          if (timeline->IsMonotonicallyIncreasing()) {
-            inherited_time = AnimationTimeDelta();
-          } else {
-            inherited_phase = base::make_optional(timeline->Phase());
-            inherited_time = timeline->CurrentTime();
-          }
+        base::Optional<AnimationTimeDelta> inherited_time =
+            AnimationTimeDelta();
+
+        if (timeline && !timeline->IsMonotonicallyIncreasing()) {
+          inherited_phase = base::make_optional(timeline->Phase());
+          inherited_time = timeline->CurrentTime();
         }
         update.StartAnimation(
             name, name_index, i,
