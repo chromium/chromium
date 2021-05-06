@@ -88,7 +88,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public Account[] getAccountsSync() {
+    public Account[] getAccountsSync() throws AccountManagerDelegateException {
         if (!hasGetAccountsPermission() || !isGooglePlayServicesAvailable()) {
             // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
             // so don't report any accounts if Google Play Services are out of date.
