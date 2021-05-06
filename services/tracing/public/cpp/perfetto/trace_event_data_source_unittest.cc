@@ -35,6 +35,7 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
@@ -343,7 +344,9 @@ class TraceEventDataSourceTest : public TracingUnitTest {
                         int32_t tid_override = 0,
                         int32_t pid_override = 0,
                         const perfetto::Track& track = perfetto::Track(),
-                        int64_t explicit_thread_time = 0) {
+                        int64_t explicit_thread_time = 0,
+                        base::Location from_here = base::Location::Current()) {
+    SCOPED_TRACE(from_here.ToString());
     // All TrackEvents need incremental state for delta timestamps / interning.
     EXPECT_EQ(packet->sequence_flags(),
               static_cast<uint32_t>(perfetto::protos::pbzero::TracePacket::
@@ -539,34 +542,38 @@ class TraceEventDataSourceTest : public TracingUnitTest {
 
   void ExpectEventCategories(
       const perfetto::protos::TracePacket* packet,
-      std::initializer_list<std::pair<uint32_t, std::string>> entries) {
-    ExpectInternedNames(packet->interned_data().event_categories(), entries);
+      std::initializer_list<std::pair<uint32_t, std::string>> entries,
+      base::Location from_here = base::Location::Current()) {
+    ExpectInternedNames(packet->interned_data().event_categories(), entries,
+                        from_here);
   }
 
   void ExpectEventNames(
       const perfetto::protos::TracePacket* packet,
-      std::initializer_list<std::pair<uint32_t, std::string>> entries) {
-    ExpectInternedNames(packet->interned_data().event_names(), entries);
+      std::initializer_list<std::pair<uint32_t, std::string>> entries,
+      base::Location from_here = base::Location::Current()) {
+    ExpectInternedNames(packet->interned_data().event_names(), entries,
+                        from_here);
   }
 
   void ExpectDebugAnnotationNames(
       const perfetto::protos::TracePacket* packet,
-      std::initializer_list<std::pair<uint32_t, std::string>> entries) {
+      std::initializer_list<std::pair<uint32_t, std::string>> entries,
+      base::Location from_here = base::Location::Current()) {
     ExpectInternedNames(packet->interned_data().debug_annotation_names(),
-                        entries);
+                        entries, from_here);
   }
 
   template <typename T>
   void ExpectInternedNames(
       const google::protobuf::RepeatedPtrField<T>& field,
-      std::initializer_list<std::pair<uint32_t, std::string>> entries) {
-    ASSERT_EQ(field.size(), static_cast<int>(entries.size()));
-    int i = 0;
-    for (const auto& entry : entries) {
-      EXPECT_EQ(field[i].iid(), entry.first);
-      EXPECT_EQ(field[i].name(), entry.second);
-      i++;
+      std::initializer_list<std::pair<uint32_t, std::string>> expected_entries,
+      base::Location from_here = base::Location::Current()) {
+    std::vector<std::pair<uint32_t, std::string>> entries;
+    for (int i = 0; i < field.size(); ++i) {
+      entries.emplace_back(field[i].iid(), field[i].name());
     }
+    EXPECT_THAT(entries, testing::ElementsAreArray(expected_entries));
   }
 
  protected:
@@ -2026,6 +2033,26 @@ TEST_F(TraceEventDataSourceTest, TypedEventInterning) {
             e_packet->interned_data().log_message_body()[0].iid());
   ASSERT_EQ("Hello interned world!",
             e_packet->interned_data().log_message_body()[0].body());
+}
+
+TEST_F(TraceEventDataSourceTest, TypedAndUntypedEventsWithDebugAnnotations) {
+  StartTraceEventDataSource();
+
+  TRACE_EVENT_INSTANT1("browser", "Event1", TRACE_EVENT_SCOPE_THREAD, "arg1",
+                       1);
+  TRACE_EVENT_INSTANT("browser", "Event2", "arg2", 2);
+
+  size_t packet_index = ExpectStandardPreamble();
+  auto* e_packet1 = producer_client()->GetFinalizedPacket(packet_index++);
+
+  ExpectEventCategories(e_packet1, {{1u, "browser"}});
+  ExpectEventNames(e_packet1, {{1u, "Event1"}});
+  ExpectDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
+
+  auto* e_packet2 = producer_client()->GetFinalizedPacket(packet_index++);
+
+  ExpectEventNames(e_packet2, {{2u, "Event2"}});
+  ExpectDebugAnnotationNames(e_packet2, {{2u, "arg2"}});
 }
 
 // TODO(eseckler): Add startup tracing unittests.

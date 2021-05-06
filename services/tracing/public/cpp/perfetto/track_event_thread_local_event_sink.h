@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
   enum class IndexType {
     kName = 0,
     kCategory = 1,
-    kAnnotationName = 2,
     kSourceLocation = 3,
     kLogMessage = 4
   };
@@ -142,20 +141,33 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
       base::TimeTicks timestamp,
       bool force_absolute_timestamp = false);
 
+  // Add a copy of this string to |copied_strings_| and return a pointer which
+  // is valid until |copied_strings_| are cleared.
+  const char* CopyString(const std::string& value);
+
   // TODO(eseckler): Make it possible to register new indexes for use from
   // TRACE_EVENT macros.
   InterningIndex<TypeList<const char*>, SizeList<128>>
       interned_event_categories_;
   InterningIndex<TypeList<const char*, std::string>, SizeList<512, 64>>
       interned_event_names_;
-  InterningIndex<TypeList<const char*, std::string>, SizeList<512, 64>>
-      interned_annotation_names_;
   InterningIndex<TypeList<std::tuple<const char*, const char*, int>>,
                  SizeList<512>>
       interned_source_locations_;
   InterningIndex<TypeList<std::string>, SizeList<128>>
       interned_log_message_bodies_;
   InternedIndexesUpdates pending_interning_updates_;
+
+  // Master copies of the interned strings. Stored here to ensure that a stable
+  // const char* pointer is available to be used in TrackEventInternedDataIndex.
+  // TODO(altimin): Stop interning copied strings and write them into the proto
+  // directly.
+  std::set<std::string> copied_strings_;
+
+  // Write interned data (both from |incremental_state_| and interned indexes
+  // into the given packet.
+  void WriteInternedDataIntoTracePacket(
+      perfetto::protos::pbzero::TracePacket* packet);
 
   // Track event interning state.
   // TODO(skyostil): Merge the above interning indices into this.
