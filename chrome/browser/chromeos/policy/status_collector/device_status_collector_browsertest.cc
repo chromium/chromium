@@ -220,8 +220,8 @@ constexpr uint32_t kFakeBrightness = 124;
 // Fan test values:
 constexpr uint32_t kFakeSpeedRpm = 1225;
 // Stateful partition test values:
-constexpr int64_t kAvailableSpace = 777;
-constexpr int64_t kTotalSpace = 999;
+constexpr uint64_t kAvailableSpace = 777;
+constexpr uint64_t kTotalSpace = 999;
 constexpr char kFilesystem[] = "ext4";
 constexpr char kMountSource[] = "/dev/mmcblk0p1";
 // Bluetooth test values:
