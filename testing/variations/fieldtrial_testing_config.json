@@ -6747,6 +6747,27 @@
             ]
         }
     ],
+    "SafeBrowsingCSDRequestWithToken": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingCSDRequestWithToken"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [
@@ -6757,6 +6778,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingDelayedWarnings"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingPasswordProtectionRequestWithToken": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingPasswordProtectionRequestWithToken"
                     ]
                 }
             ]
