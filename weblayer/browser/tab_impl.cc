@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "base/time/default_tick_clock.h"
 #include "cc/layers/layer.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 #include "components/autofill/core/browser/autofill_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/blocked_content/popup_blocker.h"
@@ -1407,7 +1409,10 @@ void TabImpl::InitializeAutofill() {
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
       i18n::GetApplicationLocale(), enable_autofill_download_manager,
-      autofill_provider_.get());
+      autofill_provider_
+          ? base::BindRepeating(&autofill::AndroidAutofillManager::Create,
+                                autofill_provider_.get())
+          : autofill::AutofillManager::AutofillManagerFactoryCallback());
 }
 
 find_in_page::FindTabHelper* TabImpl::GetFindTabHelper() {

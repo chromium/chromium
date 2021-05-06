@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
+#include "base/bind.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -119,18 +121,8 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents, autofill_client_.get(), "en-US",
         BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-        autofill_provider_.get());
-  }
-
-  void ReplaceAutofillDriver() {
-    content::WebContents* web_contents = WebContents();
-    // Set AutofillProvider for current WebContents.
-    ContentAutofillDriverFactory* factory =
-        ContentAutofillDriverFactory::FromWebContents(web_contents);
-    ContentAutofillDriver* driver =
-        factory->DriverForFrame(web_contents->GetMainFrame());
-    driver->SetAutofillProviderForTesting(autofill_provider_.get(),
-                                          autofill_client_.get());
+        base::BindRepeating(&AndroidAutofillManager::Create,
+                            autofill_provider_.get()));
   }
 
   void TearDownOnMainThread() override {
@@ -166,7 +158,6 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
   }
 
   void SetLabelChangeExpectationAndTriggerQuery() {
-    ReplaceAutofillDriver();
     // One query for the single click, and a second query when the typing is
     // simulated.
     base::RunLoop run_loop;

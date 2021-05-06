@@ -4,11 +4,23 @@
 
 #include "components/autofill/core/browser/android_autofill_manager.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/autofill_provider.h"
 
 namespace autofill {
 
 using base::TimeTicks;
+
+// static
+std::unique_ptr<AutofillManager> AndroidAutofillManager::Create(
+    AutofillProvider* provider,
+    AutofillDriver* driver,
+    AutofillClient* client,
+    const std::string& /*app_locale*/,
+    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+  return base::WrapUnique(new AndroidAutofillManager(driver, client, provider,
+                                                     enable_download_manager));
+}
 
 AndroidAutofillManager::AndroidAutofillManager(
     AutofillDriver* driver,
@@ -21,7 +33,7 @@ AndroidAutofillManager::AndroidAutofillManager(
                       version_info::Channel::UNKNOWN),
       provider_(provider) {}
 
-AndroidAutofillManager::~AndroidAutofillManager() {}
+AndroidAutofillManager::~AndroidAutofillManager() = default;
 
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,

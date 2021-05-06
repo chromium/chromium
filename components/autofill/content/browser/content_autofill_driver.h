@@ -29,7 +29,6 @@ class RenderFrameHost;
 namespace autofill {
 
 class AutofillClient;
-class AutofillProvider;
 class LogManager;
 
 // Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
@@ -63,7 +62,8 @@ class ContentAutofillDriver : public AutofillDriver,
       AutofillClient* client,
       const std::string& app_locale,
       AutofillManager::AutofillDownloadManagerState enable_download_manager,
-      AutofillProvider* provider);
+      AutofillManager::AutofillManagerFactoryCallback
+          autofill_manager_factory_callback);
   ~ContentAutofillDriver() override;
 
   // Gets the driver for |render_frame_host|.
@@ -159,9 +159,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void RemoveKeyPressHandler();
 
-  void SetAutofillProviderForTesting(AutofillProvider* provider,
-                                     AutofillClient* client);
-
   // Sets the manager to |manager|. Takes ownership of |manager|.
   void SetBrowserAutofillManager(
       std::unique_ptr<BrowserAutofillManager> manager);
@@ -187,11 +184,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
   void RemoveHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
-
-  void SetAutofillProvider(
-      AutofillProvider* provider,
-      AutofillClient* client,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.

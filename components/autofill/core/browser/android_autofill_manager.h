@@ -16,11 +16,13 @@ class AutofillProvider;
 // This class forwards AutofillManager calls to AutofillProvider.
 class AndroidAutofillManager : public AutofillManager {
  public:
-  AndroidAutofillManager(
+  static std::unique_ptr<AutofillManager> Create(
+      AutofillProvider* provider,
       AutofillDriver* driver,
       AutofillClient* client,
-      AutofillProvider* provider,
+      const std::string& app_locale,
       AutofillManager::AutofillDownloadManagerState enable_download_manager);
+
   ~AndroidAutofillManager() override;
 
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
@@ -42,6 +44,12 @@ class AndroidAutofillManager : public AutofillManager {
   bool has_server_prediction() const { return has_server_prediction_; }
 
  protected:
+  AndroidAutofillManager(
+      AutofillDriver* driver,
+      AutofillClient* client,
+      AutofillProvider* provider,
+      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
                            mojom::SubmissionSource source) override;
