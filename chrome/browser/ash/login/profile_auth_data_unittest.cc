@@ -47,8 +47,8 @@ namespace {
 const char kProxyAuthURL[] = "https://example.com/";
 const char kProxyAuthRealm[] = "realm";
 const char kProxyAuthChallenge[] = "challenge";
-const char kProxyAuthPassword1[] = "password 1";
-const char kProxyAuthPassword2[] = "password 2";
+const char16_t kProxyAuthPassword1[] = u"password 1";
+const char16_t kProxyAuthPassword2[] = u"password 2";
 
 const char kGAIACookieURL[] = "https://google.com/";
 const char kSAMLIdPCookieURL[] = "https://example.com/";
@@ -105,7 +105,7 @@ class ProfileAuthDataTest : public testing::Test {
  private:
   void PopulateBrowserContext(TestingProfile* browser_context,
                               network::NetworkContext* network_context,
-                              const std::string& proxy_auth_password,
+                              const std::u16string& proxy_auth_password,
                               const std::string& cookie_value);
 
   net::HttpAuthCache* GetAuthCache(network::NetworkContext* network_context);
@@ -178,8 +178,7 @@ void ProfileAuthDataTest::VerifyTransferredUserProxyAuthEntry() {
                    kProxyAuthRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
                    net::NetworkIsolationKey());
   ASSERT_TRUE(entry);
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyAuthPassword1),
-            entry->credentials().password());
+  EXPECT_EQ(kProxyAuthPassword1, entry->credentials().password());
 }
 
 void ProfileAuthDataTest::VerifyUserCookies(
@@ -208,14 +207,13 @@ void ProfileAuthDataTest::VerifyUserCookies(
 void ProfileAuthDataTest::PopulateBrowserContext(
     TestingProfile* browser_context,
     network::NetworkContext* network_context,
-    const std::string& proxy_auth_password,
+    const std::u16string& proxy_auth_password,
     const std::string& cookie_value) {
   GetAuthCache(network_context)
       ->Add(GURL(kProxyAuthURL), net::HttpAuth::AUTH_PROXY, kProxyAuthRealm,
             net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
             kProxyAuthChallenge,
-            net::AuthCredentials(std::u16string(),
-                                 base::ASCIIToUTF16(proxy_auth_password)),
+            net::AuthCredentials(std::u16string(), proxy_auth_password),
             std::string());
 
   network::mojom::CookieManager* cookies = GetCookies(browser_context);

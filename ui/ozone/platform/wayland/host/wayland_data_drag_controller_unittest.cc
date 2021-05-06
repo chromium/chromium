@@ -51,6 +51,8 @@ namespace {
 
 constexpr char kSampleTextForDragAndDrop[] =
     "This is a sample text for drag-and-drop.";
+constexpr char16_t kSampleTextForDragAndDrop16[] =
+    u"This is a sample text for drag-and-drop.";
 
 constexpr FilenameToURLPolicy kFilenameToURLPolicy =
     FilenameToURLPolicy::CONVERT_FILENAMES;
@@ -165,8 +167,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   WaylandWindow* window() { return window_.get(); }
 
   std::u16string sample_text_for_dnd() const {
-    static auto text = base::ASCIIToUTF16(kSampleTextForDragAndDrop);
-    return text;
+    return kSampleTextForDragAndDrop16;
   }
 
   void RunDragLoopWithSampleData(WaylandWindow* origin_window, int operations) {

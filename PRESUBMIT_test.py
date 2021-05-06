@@ -2334,8 +2334,6 @@ class BannedTypeCheckTest(unittest.TestCase):
                ['using namespace std;  // nocheck']),
       MockFile('some/cpp/comment/file.cc',
                ['  // A comment about `using namespace std;`']),
-      MockFile('ascii/to/utf16/banned.cc', ['ASCIIToUTF16("Hello World")']),
-      MockFile('ascii/to/utf16/allowed.cc', ['ASCIIToUTF16("Hello" + kWorld)']),
       MockFile('utf8/to/utf16/banned.cc', [r'UTF8ToUTF16("Hello \" World")']),
       MockFile('utf8/to/utf16/allowed.cc', ['UTF8ToUTF16(kHello + "World")']),
     ]
@@ -2353,9 +2351,6 @@ class BannedTypeCheckTest(unittest.TestCase):
     self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[1].message)
-    self.assertTrue('ascii/to/utf16/banned.cc' in results[0].message)
-    self.assertFalse('ascii/to/utf16/allowed.cc' in results[0].message)
-    self.assertFalse('ascii/to/utf16/allowed.cc' in results[1].message)
     self.assertTrue('utf8/to/utf16/banned.cc' in results[0].message)
     self.assertFalse('utf8/to/utf16/allowed.cc' in results[0].message)
     self.assertFalse('utf8/to/utf16/allowed.cc' in results[1].message)

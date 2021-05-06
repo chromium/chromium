@@ -193,13 +193,17 @@ TEST_F(MediaPlayerImplTest, WatchInfoChangeReturnsInitialState) {
 
   media_session::MediaMetadata metadata;
   constexpr char kExpectedTitle[] = "Love Like A Sunset, Pt.1";
-  metadata.title = base::ASCIIToUTF16(kExpectedTitle);
+  constexpr char16_t kExpectedTitle16[] = u"Love Like A Sunset, Pt.1";
+  metadata.title = kExpectedTitle16;
   constexpr char kExpectedArtist[] = "Phoenix";
-  metadata.artist = base::ASCIIToUTF16(kExpectedArtist);
+  constexpr char16_t kExpectedArtist16[] = u"Phoenix";
+  metadata.artist = kExpectedArtist16;
   constexpr char kExpectedAlbum[] = "Wolfgang Amadeus Phoenix";
-  metadata.album = base::ASCIIToUTF16(kExpectedAlbum);
+  constexpr char16_t kExpectedAlbum16[] = u"Wolfgang Amadeus Phoenix";
+  metadata.album = kExpectedAlbum16;
   constexpr char kExpectedSourceTitle[] = "Unknown";
-  metadata.source_title = base::ASCIIToUTF16(kExpectedSourceTitle);
+  constexpr char16_t kExpectedSourceTitle16[] = u"Unknown";
+  metadata.source_title = kExpectedSourceTitle16;
   fake_session_.observer()->MediaSessionMetadataChanged(metadata);
 
   std::vector<media_session::mojom::MediaSessionAction> actions = {

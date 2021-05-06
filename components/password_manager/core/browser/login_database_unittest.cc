@@ -2026,8 +2026,11 @@ TEST_F(LoginDatabaseTest, EncryptionDisabled) {
 // accessible (this doesn't work for any plain-text value).
 TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
   const char k_obfuscated_pw[] = "v10pass1";
+  const char16_t k_obfuscated_pw16[] = u"v10pass1";
   const char k_plain_text_pw1[] = "v10pass2";
+  const char16_t k_plain_text_pw116[] = u"v10pass2";
   const char k_plain_text_pw2[] = "v11pass3";
+  const char16_t k_plain_text_pw216[] = u"v11pass3";
 
   base::FilePath file = temp_dir_.GetPath().AppendASCII("TestUnencryptedDB");
   {
@@ -2035,15 +2038,15 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     ASSERT_TRUE(db.Init());
     // Add obfuscated (new) entries.
     PasswordForm password_form = GenerateExamplePasswordForm();
-    password_form.password_value = ASCIIToUTF16(k_obfuscated_pw);
+    password_form.password_value = k_obfuscated_pw16;
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
     // Add plain-text (old) entries.
     db.disable_encryption();
     password_form.username_value = u"other_username";
-    password_form.password_value = ASCIIToUTF16(k_plain_text_pw1);
+    password_form.password_value = k_plain_text_pw116;
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
     password_form.username_value = u"other_username2";
-    password_form.password_value = ASCIIToUTF16(k_plain_text_pw2);
+    password_form.password_value = k_plain_text_pw216;
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
 
@@ -2061,9 +2064,9 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
                                    k_plain_text_pw2));
   // LoginDatabase serves the original values.
   ASSERT_THAT(forms, SizeIs(3));
-  EXPECT_EQ(k_obfuscated_pw, UTF16ToASCII(forms[0]->password_value));
-  EXPECT_EQ(k_plain_text_pw1, UTF16ToASCII(forms[1]->password_value));
-  EXPECT_EQ(k_plain_text_pw2, UTF16ToASCII(forms[2]->password_value));
+  EXPECT_EQ(k_obfuscated_pw16, forms[0]->password_value);
+  EXPECT_EQ(k_plain_text_pw116, forms[1]->password_value);
+  EXPECT_EQ(k_plain_text_pw216, forms[2]->password_value);
 }
 #endif  // defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 

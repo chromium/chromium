@@ -31,7 +31,7 @@ namespace content {
 
 #if defined(OS_ANDROID)
 // Title set by android cleaner page after short timeout.
-const char kClean[] = "CLEAN";
+const char16_t kClean[] = u"CLEAN";
 #endif
 
 void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -102,7 +102,7 @@ void MediaBrowserTest::CleanupTest() {
 #if defined(OS_ANDROID)
   // We only do this cleanup on Android, as a workaround for a test-only OOM
   // bug. See http://crbug.com/727542
-  const std::u16string cleaner_title = base::ASCIIToUTF16(kClean);
+  const std::u16string cleaner_title = kClean;
   TitleWatcher clean_title_watcher(shell()->web_contents(), cleaner_title);
   GURL cleaner_url = content::GetFileUrlWithQuery(
       media::GetTestDataFilePath("cleaner.html"), "");

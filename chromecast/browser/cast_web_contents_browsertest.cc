@@ -764,13 +764,15 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessageToMainFrame) {
   // would post a message to the test page to redirect it to |title1.html|.
   // ===========================================================================
   constexpr char kOriginalTitle[] = "postmessage";
+  constexpr char16_t kOriginalTitle16[] = u"postmessage";
   constexpr char kPage1Path[] = "title1.html";
   constexpr char kPage1Title[] = "title 1";
+  constexpr char16_t kPage1Title16[] = u"title 1";
 
   EXPECT_CALL(mock_cast_wc_observer_,
-              UpdateTitle(base::ASCIIToUTF16(kPage1Title)));
+              UpdateTitle(std::u16string(kPage1Title16)));
   EXPECT_CALL(mock_cast_wc_observer_,
-              UpdateTitle(base::ASCIIToUTF16(kOriginalTitle)));
+              UpdateTitle(std::u16string(kOriginalTitle16)));
 
   embedded_test_server()->ServeFilesFromSourceDirectory(GetTestDataPath());
   StartTestServer();
@@ -791,11 +793,12 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessagePassMessagePort) {
   // through the port.
   // ===========================================================================
   constexpr char kOriginalTitle[] = "messageport";
+  constexpr char16_t kOriginalTitle16[] = u"messageport";
   constexpr char kHelloMsg[] = "hi";
   constexpr char kPingMsg[] = "ping";
 
   EXPECT_CALL(mock_cast_wc_observer_,
-              UpdateTitle(base::ASCIIToUTF16(kOriginalTitle)));
+              UpdateTitle(std::u16string(kOriginalTitle16)));
 
   // Load test page.
   embedded_test_server()->ServeFilesFromSourceDirectory(GetTestDataPath());
@@ -860,10 +863,11 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   // MessagePort disconnection event.
   // ===========================================================================
   constexpr char kOriginalTitle[] = "messageport";
+  constexpr char16_t kOriginalTitle16[] = u"messageport";
   constexpr char kHelloMsg[] = "hi";
 
   EXPECT_CALL(mock_cast_wc_observer_,
-              UpdateTitle(base::ASCIIToUTF16(kOriginalTitle)));
+              UpdateTitle(std::u16string(kOriginalTitle16)));
   // Load test page.
   embedded_test_server()->ServeFilesFromSourceDirectory(GetTestDataPath());
   StartTestServer();

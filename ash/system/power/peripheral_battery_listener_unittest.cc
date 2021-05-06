@@ -459,7 +459,7 @@ TEST_F(PeripheralBatteryListenerTest,
       OnUpdatedBatteryLevel(AllOf(
           AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
           AFIELD(&BI::type, Eq(BI::PeripheralType::kOther)),
-          AFIELD(&BI::name, Eq(base::ASCIIToUTF16(kBluetoothDeviceName1))),
+          AFIELD(&BI::name, Eq(kBluetoothDeviceName116)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
   EXPECT_CALL(listener_observer_mock,
@@ -469,7 +469,7 @@ TEST_F(PeripheralBatteryListenerTest,
       OnUpdatedBatteryLevel(AllOf(
           AFIELD(&BI::key, Eq(kBluetoothDeviceId2)), AFIELD(&BI::level, Eq(0)),
           AFIELD(&BI::type, Eq(BI::PeripheralType::kOther)),
-          AFIELD(&BI::name, Eq(base::ASCIIToUTF16(kBluetoothDeviceName2))),
+          AFIELD(&BI::name, Eq(kBluetoothDeviceName216)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress2)))));
 
   battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
@@ -497,7 +497,7 @@ TEST_F(PeripheralBatteryListenerTest,
       OnUpdatedBatteryLevel(AllOf(
           AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
           AFIELD(&BI::type, Eq(BI::PeripheralType::kOther)),
-          AFIELD(&BI::name, Eq(base::ASCIIToUTF16(kBluetoothDeviceName1))),
+          AFIELD(&BI::name, Eq(kBluetoothDeviceName116)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
   EXPECT_CALL(listener_observer_mock,
@@ -507,7 +507,7 @@ TEST_F(PeripheralBatteryListenerTest,
       OnUpdatedBatteryLevel(AllOf(
           AFIELD(&BI::key, Eq(kBluetoothDeviceId2)), AFIELD(&BI::level, Eq(0)),
           AFIELD(&BI::type, Eq(BI::PeripheralType::kOther)),
-          AFIELD(&BI::name, Eq(base::ASCIIToUTF16(kBluetoothDeviceName2))),
+          AFIELD(&BI::name, Eq(kBluetoothDeviceName216)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress2)))));
 
   battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
@@ -1160,7 +1160,7 @@ TEST_F(PeripheralBatteryListenerTest, BluetoothDoesNotDiscardZeros) {
       OnUpdatedBatteryLevel(AllOf(
           AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(0)),
           AFIELD(&BI::type, Eq(BI::PeripheralType::kOther)),
-          AFIELD(&BI::name, Eq(base::ASCIIToUTF16(kBluetoothDeviceName1))),
+          AFIELD(&BI::name, Eq(kBluetoothDeviceName116)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
   battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),

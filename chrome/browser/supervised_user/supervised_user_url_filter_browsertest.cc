@@ -76,8 +76,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
 
   void SendAccessRequest(WebContents* tab) {
     tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(
-            "supervisedUserErrorPageController.requestPermission()"),
+        u"supervisedUserErrorPageController.requestPermission()",
         base::NullCallback());
     return;
   }

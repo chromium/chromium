@@ -30,8 +30,11 @@ namespace ash {
 namespace {
 
 const char kFirstSpeechResult[] = "help";
+const char16_t kFirstSpeechResult16[] = u"help";
 const char kSecondSpeechResult[] = "help oh";
+const char16_t kSecondSpeechResult16[] = u"help oh";
 const char kFinalSpeechResult[] = "hello world";
+const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
 const int kShortNoSpeechTimeoutInSeconds = 5;
 const int kVeryShortNoSpeechTimeoutInSeconds = 2;
@@ -252,17 +255,14 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFirstSpeechResult, false /* is_final */);
-  EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
-            GetLastCompositionText().text);
+  EXPECT_EQ(kFirstSpeechResult16, GetLastCompositionText().text);
 
   SendSpeechResult(kSecondSpeechResult, false /* is_final */);
-  EXPECT_EQ(base::ASCIIToUTF16(kSecondSpeechResult),
-            GetLastCompositionText().text);
+  EXPECT_EQ(kSecondSpeechResult16, GetLastCompositionText().text);
 
   SendSpeechResult(kFinalSpeechResult, true /* is_final */);
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
   if (GetParam().first == kTestDefaultListening) {
     EXPECT_TRUE(IsDictationOff());
@@ -290,8 +290,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
 
   SendSpeechResult(kFinalSpeechResult, true /* is_final */);
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
   if (GetParam().first == kTestDefaultListening) {
     EXPECT_TRUE(IsDictationOff());
@@ -331,8 +330,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
   timer->FireNow();
   EXPECT_TRUE(IsDictationOff());
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
@@ -347,13 +345,11 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFinalSpeechResult, false /* is_final */);
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            GetLastCompositionText().text);
+  EXPECT_EQ(kFinalSpeechResult16, GetLastCompositionText().text);
 
   ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
@@ -370,8 +366,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
 
   ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
@@ -380,8 +375,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   SendSpeechResult(kFirstSpeechResult, true /* is final */);
 
   // Speech goes to the default IMEInputContextHandler.
-  EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
 
   // Simulate a remote app instantiating a new IMEInputContextHandler, like
   // the keyboard shortcut viewer app creating a second InputMethodChromeOS.
@@ -399,10 +393,9 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
 
   SendSpeechResult(kSecondSpeechResult, true /* is final*/);
 
-  std::u16string expected =
-      GetParam().first == kTestDefaultListening
-          ? base::ASCIIToUTF16(kSecondSpeechResult)
-          : u" " + base::ASCIIToUTF16(kSecondSpeechResult);
+  std::u16string expected = kSecondSpeechResult16;
+  if (GetParam().first != kTestDefaultListening)
+    expected = u" " + expected;
 
   // Speech goes to the new IMEInputContextHandler.
   EXPECT_EQ(expected, input_context_handler2.last_commit_text());
@@ -422,8 +415,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
 
   // Check that dictation has turned off.
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
-            input_context_handler_->last_commit_text());
+  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, MightListenForMultipleResults) {

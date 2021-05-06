@@ -221,9 +221,10 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
 
   // Check notification is shown for offline devices with the warning time.
   std::u16string expected_title = u"Update Chrome device within 10 days";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "managed.com requires you to download an update before the deadline. The "
-      "update will download automatically when you connect to the internet.");
+  std::u16string expected_message =
+      u"managed.com requires you to download an update before the deadline. "
+      u"The update will download automatically when you connect to the "
+      u"internet.";
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
@@ -231,9 +232,9 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
       base::TimeDelta::FromDays(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
-  std::u16string expected_message_last_day = base::ASCIIToUTF16(
-      "managed.com requires you to download an update today. The "
-      "update will download automatically when you connect to the internet.");
+  std::u16string expected_message_last_day =
+      u"managed.com requires you to download an update today. The "
+      u"update will download automatically when you connect to the internet.";
   VerifyUpdateRequiredNotification(expected_title_last_day,
                                    expected_message_last_day);
 }
@@ -264,10 +265,10 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
 
   // Check notification is shown for metered network with the warning time.
   std::u16string expected_title = u"Update Chrome device within 10 days";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "managed.com requires you to connect to Wi-Fi and download an update "
-      "before the deadline. Or, download from a metered connection (charges "
-      "may apply).");
+  std::u16string expected_message =
+      u"managed.com requires you to connect to Wi-Fi and download an update "
+      u"before the deadline. Or, download from a metered connection (charges "
+      u"may apply).";
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
@@ -275,9 +276,9 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
       base::TimeDelta::FromDays(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
-  std::u16string expected_message_last_day = base::ASCIIToUTF16(
-      "managed.com requires you to connect to Wi-Fi today to download an "
-      "update. Or, download from a metered connection (charges may apply).");
+  std::u16string expected_message_last_day =
+      u"managed.com requires you to connect to Wi-Fi today to download an "
+      u"update. Or, download from a metered connection (charges may apply).";
   VerifyUpdateRequiredNotification(expected_title_last_day,
                                    expected_message_last_day);
 }
@@ -302,9 +303,9 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
 
   // Check notification is shown for end of life with the warning time.
   std::u16string expected_title = u"Return Chrome device within 10 days";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "managed.com requires you to back up your data and return this Chrome "
-      "device before the deadline.");
+  std::u16string expected_message =
+      u"managed.com requires you to back up your data and return this Chrome "
+      u"device before the deadline.";
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.
@@ -319,9 +320,9 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
   const base::TimeDelta warning_last_day = base::TimeDelta::FromDays(6);
   task_environment_.FastForwardBy(warning_last_day);
   std::u16string expected_title_last_day = u"Immediate return required";
-  std::u16string expected_message_last_day = base::ASCIIToUTF16(
-      "managed.com requires you to back up your data and return this Chrome "
-      "device today.");
+  std::u16string expected_message_last_day =
+      u"managed.com requires you to back up your data and return this Chrome "
+      u"device today.";
   VerifyUpdateRequiredNotification(expected_title_last_day,
                                    expected_message_last_day);
 }
@@ -355,9 +356,9 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
   std::u16string expected_title_last_day = u"Immediate return required";
-  std::u16string expected_message_last_day = base::ASCIIToUTF16(
-      "managed.com requires you to back up your data and return this Chrome "
-      "device today.");
+  std::u16string expected_message_last_day =
+      u"managed.com requires you to back up your data and return this Chrome "
+      u"device today.";
   VerifyUpdateRequiredNotification(expected_title_last_day,
                                    expected_message_last_day);
 }
@@ -385,9 +386,9 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
   // Check Chromebox notification is shown for end of life with the warning
   // time.
   std::u16string expected_title = u"Return Chromebox within 10 days";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "managed.com requires you to back up your data and return this Chromebox "
-      "before the deadline.");
+  std::u16string expected_message =
+      u"managed.com requires you to back up your data and return this "
+      u"Chromebox before the deadline.";
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.

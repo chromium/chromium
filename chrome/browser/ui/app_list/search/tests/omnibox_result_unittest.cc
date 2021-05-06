@@ -22,7 +22,9 @@ namespace test {
 namespace {
 
 const char kFullQuery[] = "Hello World";
+const char16_t kFullQuery16[] = u"Hello World";
 const char kExampleDescription[] = "A website";
+const char16_t kExampleDescription16[] = u"A website";
 const char kExampleUrl[] = "http://example.com/hello";
 const int kRelevance = 750;
 const double kAppListRelevance = 0.5;
@@ -84,8 +86,8 @@ TEST_F(OmniboxResultTest, Basic) {
       kFullQuery, kRelevance, kExampleUrl, kFullQuery, kExampleDescription,
       AutocompleteMatchType::HISTORY_URL, kExampleKeyword);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kExampleDescription), result->title());
-  EXPECT_EQ(base::ASCIIToUTF16(kFullQuery), result->details());
+  EXPECT_EQ(kExampleDescription16, result->title());
+  EXPECT_EQ(kFullQuery16, result->details());
   EXPECT_EQ(kAppListRelevance, result->relevance());
 
   result->Open(0);

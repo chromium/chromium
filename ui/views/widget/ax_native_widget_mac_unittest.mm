@@ -95,18 +95,18 @@ class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
  public:
   TestWidgetDelegate() = default;
 
-  static constexpr char kAccessibleWindowTitle[] = "My Accessible Window";
+  static constexpr char16_t kAccessibleWindowTitle[] = u"My Accessible Window";
 
   // WidgetDelegate:
   std::u16string GetAccessibleWindowTitle() const override {
-    return base::ASCIIToUTF16(kAccessibleWindowTitle);
+    return kAccessibleWindowTitle;
   }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
-constexpr char TestWidgetDelegate::kAccessibleWindowTitle[];
+constexpr char16_t TestWidgetDelegate::kAccessibleWindowTitle[];
 
 // Widget-level tests for accessibility properties - these are actually mostly
 // tests of accessibility behavior for individual Views *as they appear* in
@@ -347,7 +347,7 @@ TEST_F(AXNativeWidgetMacTest, NativeWindowProperties) {
   EXPECT_NSEQ(window, ax_view.accessibilityWindow);
   EXPECT_NSEQ(window, ax_view.accessibilityTopLevelUIElement);
   EXPECT_NSEQ(
-      base::SysUTF8ToNSString(TestWidgetDelegate::kAccessibleWindowTitle),
+      base::SysUTF16ToNSString(TestWidgetDelegate::kAccessibleWindowTitle),
       window.accessibilityTitle);
 }
 

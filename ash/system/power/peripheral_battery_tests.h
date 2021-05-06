@@ -17,6 +17,7 @@ constexpr char kTestBatteryPath[] =
     "/sys/class/power_supply/hid-AA:BB:CC:DD:EE:FF-battery";
 constexpr char kTestBatteryAddress[] = "aa:bb:cc:dd:ee:ff";
 constexpr char kTestDeviceName[] = "test device";
+constexpr char16_t kTestDeviceName16[] = u"test device";
 const auto kTestBatteryStatusIn = power_manager::
     PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
 const auto kTestBatteryStatusOut =
@@ -37,7 +38,9 @@ constexpr char kTestOtherChargerId[] = "PCHG1";
 constexpr char kBluetoothDeviceAddress1[] = "aa:bb:cc:dd:ee:ff";
 constexpr char kBluetoothDeviceAddress2[] = "11:22:33:44:55:66";
 constexpr char kBluetoothDeviceName1[] = "device_name_1";
+constexpr char16_t kBluetoothDeviceName116[] = u"device_name_1";
 constexpr char kBluetoothDeviceName2[] = "device_name_2";
+constexpr char16_t kBluetoothDeviceName216[] = u"device_name_2";
 constexpr char kBluetoothDeviceId1[] = "battery_bluetooth-aa:bb:cc:dd:ee:ff";
 constexpr char kBluetoothDeviceNotificationId1[] =
     "battery_notification-battery_bluetooth-aa:bb:cc:dd:ee:ff";

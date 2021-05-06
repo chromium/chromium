@@ -19,8 +19,8 @@
 
 namespace {
 constexpr char kProxy[] = "http://localserver";
-constexpr char kUsername[] = "testuser";
-constexpr char kPassword[] = "testpwd";
+constexpr char16_t kUsername[] = u"testuser";
+constexpr char16_t kPassword[] = u"testpwd";
 }  // namespace
 
 namespace ash {
@@ -76,17 +76,15 @@ class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
 // credentials as arguments.
 TEST_F(RequestSystemProxyCredentialsViewTest, AcceptCallback) {
   CreateDialog(/*show_error=*/false);
-  system_proxy_dialog_->username_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kUsername));
-  system_proxy_dialog_->password_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kPassword));
+  system_proxy_dialog_->username_textfield_for_testing()->SetText(kUsername);
+  system_proxy_dialog_->password_textfield_for_testing()->SetText(kPassword);
 
   // Simulate pressing the "OK" button.
   system_proxy_dialog_->Accept();
 
   EXPECT_TRUE(accepted_);
-  EXPECT_EQ(base::UTF16ToUTF8(system_proxy_dialog_->GetUsername()), kUsername);
-  EXPECT_EQ(base::UTF16ToUTF8(system_proxy_dialog_->GetPassword()), kPassword);
+  EXPECT_EQ(system_proxy_dialog_->GetUsername(), kUsername);
+  EXPECT_EQ(system_proxy_dialog_->GetPassword(), kPassword);
 }
 
 TEST_F(RequestSystemProxyCredentialsViewTest, CancelCallback) {

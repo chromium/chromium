@@ -37,8 +37,8 @@
 
 namespace {
 
-const char kExampleUsername[] = "concrete username";
-const char kExamplePassword[] = "concrete password";
+const char16_t kExampleUsername[] = u"concrete username";
+const char16_t kExamplePassword[] = u"concrete password";
 
 // Gets the current password store.
 scoped_refptr<password_manager::PasswordStore> GetPasswordStore() {
@@ -121,8 +121,8 @@ void SaveToPasswordStore(const password_manager::PasswordForm& form) {
 // Saves an example form in the store.
 void SaveExamplePasswordForm() {
   password_manager::PasswordForm example;
-  example.username_value = base::ASCIIToUTF16(kExampleUsername);
-  example.password_value = base::ASCIIToUTF16(kExamplePassword);
+  example.username_value = kExampleUsername;
+  example.password_value = kExamplePassword;
   example.url = GURL("https://example.com/");
   example.signon_realm = example.url.spec();
   SaveToPasswordStore(example);
@@ -131,8 +131,8 @@ void SaveExamplePasswordForm() {
 // Saves an example form in the store for the passed URL.
 void SaveLocalPasswordForm(const GURL& url) {
   password_manager::PasswordForm localForm;
-  localForm.username_value = base::ASCIIToUTF16(kExampleUsername);
-  localForm.password_value = base::ASCIIToUTF16(kExamplePassword);
+  localForm.username_value = kExampleUsername;
+  localForm.password_value = kExamplePassword;
   localForm.url = url;
   localForm.signon_realm = localForm.url.spec();
   SaveToPasswordStore(localForm);

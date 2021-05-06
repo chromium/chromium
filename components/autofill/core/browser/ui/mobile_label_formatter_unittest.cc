@@ -301,10 +301,8 @@ TEST(MobileLabelFormatterTest, GetLabels_DistinctProfiles_ShowAll) {
       profiles, "en-US", NAME_FIRST, GetAddressPlusContactFieldTypes());
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(base::ASCIIToUTF16(
-                      "address1A, address2A, (617) 666-0000, emailA@gmail.com"),
-                  base::ASCIIToUTF16(
-                      "address1B, address2B, (518) 555-0000, emailB@gmail.com"),
+      ElementsAre(u"address1A, address2A, (617) 666-0000, emailA@gmail.com",
+                  u"address1B, address2B, (518) 555-0000, emailB@gmail.com",
                   std::u16string()));
 
   // Like the previous test, but focuses on an address field rather than a name

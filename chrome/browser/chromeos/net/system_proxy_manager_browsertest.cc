@@ -75,7 +75,9 @@ constexpr char kScheme[] = "dIgEsT";
 constexpr char kProxyAuthUrl[] = "http://example.com:3128";
 constexpr char kSystemProxyNotificationId[] = "system-proxy.auth_required";
 constexpr char kUsername[] = "testuser";
+constexpr char16_t kUsername16[] = u"testuser";
 constexpr char kPassword[] = "testpwd";
+constexpr char16_t kPassword16[] = u"testpwd";
 
 constexpr char kUserProfilePath[] = "user_profile";
 constexpr char kDefaultServicePath[] = "default_wifi";
@@ -241,10 +243,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest, AuthenticationDialog) {
 
   // Expect warning is not shown.
   ASSERT_FALSE(dialog()->error_label_for_testing()->GetVisible());
-  dialog()->username_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kUsername));
-  dialog()->password_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kPassword));
+  dialog()->username_textfield_for_testing()->SetText(kUsername16);
+  dialog()->password_textfield_for_testing()->SetText(kPassword16);
 
   // Simulate clicking on "OK" button.
   dialog()->Accept();
@@ -288,10 +288,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
 
   // Expect warning is not shown.
   ASSERT_FALSE(dialog()->error_label_for_testing()->GetVisible());
-  dialog()->username_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kUsername));
-  dialog()->password_textfield_for_testing()->SetText(
-      base::ASCIIToUTF16(kPassword));
+  dialog()->username_textfield_for_testing()->SetText(kUsername16);
+  dialog()->password_textfield_for_testing()->SetText(kPassword16);
 
   base::RunLoop run_loop;
   GetSystemProxyManager()->SetSendAuthDetailsClosureForTest(
@@ -622,7 +620,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
 
 namespace {
 constexpr char kProxyUsername[] = "foo";
+constexpr char16_t kProxyUsername16[] = u"foo";
 constexpr char kProxyPassword[] = "bar";
+constexpr char16_t kProxyPassword16[] = u"bar";
 constexpr char kBadUsername[] = "bad-username";
 constexpr char kBadPassword[] = "bad-pwd";
 constexpr char kOriginHostname[] = "a.test";
@@ -678,8 +678,8 @@ class SystemProxyCredentialsReuseBrowserTest
 
   // Navigates to the test page "/simple.html" and authenticates in the proxy
   // login dialog with `username` and `password`.
-  void LoginWithDialog(const std::string& username,
-                       const std::string& password) {
+  void LoginWithDialog(const std::u16string& username,
+                       const std::u16string& password) {
     LoginPromptBrowserTestObserver login_observer;
     login_observer.Register(content::Source<content::NavigationController>(
         &GetWebContents()->GetController()));
@@ -689,8 +689,7 @@ class SystemProxyCredentialsReuseBrowserTest
     WindowedAuthSuppliedObserver auth_supplied(
         &GetWebContents()->GetController());
     LoginHandler* login_handler = login_observer.handlers().front();
-    login_handler->SetAuth(base::ASCIIToUTF16(username),
-                           base::ASCIIToUTF16(password));
+    login_handler->SetAuth(username, password);
     auth_supplied.Wait();
     EXPECT_EQ(1, login_observer.auth_supplied_count());
   }
@@ -737,7 +736,7 @@ class SystemProxyCredentialsReuseBrowserTest
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest, RegularUser) {
   SetManagedProxy();
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
-  LoginWithDialog(kProxyUsername, kProxyPassword);
+  LoginWithDialog(kProxyUsername16, kProxyPassword16);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 
@@ -762,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
       LoginState::LOGGED_IN_ACTIVE,
       LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kBadUsername, kBadPassword);
-  LoginWithDialog(kProxyUsername, kProxyPassword);
+  LoginWithDialog(kProxyUsername16, kProxyPassword16);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 
@@ -775,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
       LoginState::LOGGED_IN_ACTIVE,
       LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kProxyUsername, kProxyPassword, R"("ntlm","digest")");
-  LoginWithDialog(kProxyUsername, kProxyPassword);
+  LoginWithDialog(kProxyUsername16, kProxyPassword16);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 

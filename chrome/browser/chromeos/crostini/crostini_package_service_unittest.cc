@@ -70,22 +70,31 @@ using ::vm_tools::seneschal::SharePathResponse;
 // These are on the default VM / default container.
 constexpr char kDefaultAppFileId[] = "default_file_id";
 constexpr char kDefaultAppName[] = "The Default";
+constexpr char16_t kDefaultAppName16[] = u"The Default";
 constexpr char kSecondAppFileId[] = "second_file_id";
 constexpr char kSecondAppName[] = "Another Fine App";
+constexpr char16_t kSecondAppName16[] = u"Another Fine App";
 constexpr char kThirdAppFileId[] = "third_file_id";
 constexpr char kThirdAppName[] = "Yet Another App";
+constexpr char16_t kThirdAppName16[] = u"Yet Another App";
 // Different VM name, but container name is the default.
 constexpr char kDifferentVmAppFileId[] = "different_vm_app";
 constexpr char kDifferentVmAppName[] = "I'm in a VM!";
+constexpr char16_t kDifferentVmAppName16[] = u"I'm in a VM!";
 constexpr char kDifferentVmApp2FileId[] = "different_vm_app_2";
 constexpr char kDifferentVmApp2Name[] = "I'm in a VM also";
+constexpr char16_t kDifferentVmApp2Name16[] = u"I'm in a VM also";
 constexpr char kDifferentVmVmName[] = "second_vm_name";
 // Default VM name, but container name is different.
 constexpr char kDifferentContainerAppFileId[] = "different_container_app";
 constexpr char kDifferentContainerAppName[] =
     "Just Over The Container Boundary";
+constexpr char16_t kDifferentContainerAppName16[] =
+    u"Just Over The Container Boundary";
 constexpr char kDifferentContainerApp2FileId[] = "different_container_app_2";
 constexpr char kDifferentContainerApp2Name[] = "Severe Lack of Containers";
+constexpr char16_t kDifferentContainerApp2Name16[] =
+    u"Severe Lack of Containers";
 constexpr char kDifferentContainerContainerName[] = "second_container_name";
 constexpr char kPackageFilePath[] = "/tmp/nethack.deb";
 constexpr char kPackageFileContainerPath[] =
@@ -435,19 +444,19 @@ enum KnownApp {
 std::u16string GetAppName(KnownApp app) {
   switch (app) {
     case DEFAULT_APP:
-      return base::ASCIIToUTF16(kDefaultAppName);
+      return kDefaultAppName16;
     case SECOND_APP:
-      return base::ASCIIToUTF16(kSecondAppName);
+      return kSecondAppName16;
     case THIRD_APP:
-      return base::ASCIIToUTF16(kThirdAppName);
+      return kThirdAppName16;
     case DIFFERENT_VM:
-      return base::ASCIIToUTF16(kDifferentVmAppName);
+      return kDifferentVmAppName16;
     case DIFFERENT_VM_2:
-      return base::ASCIIToUTF16(kDifferentVmApp2Name);
+      return kDifferentVmApp2Name16;
     case DIFFERENT_CONTAINER:
-      return base::ASCIIToUTF16(kDifferentContainerAppName);
+      return kDifferentContainerAppName16;
     case DIFFERENT_CONTAINER_2:
-      return base::ASCIIToUTF16(kDifferentContainerApp2Name);
+      return kDifferentContainerApp2Name16;
     default:
       NOTREACHED();
   }

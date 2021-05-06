@@ -31,8 +31,10 @@ namespace {
 const char kStorageWithInvalidInfo[] = "usb:2,3:11111";
 const char kStorageWithValidInfo[] = "usb:2,2:88888";
 const char kStorageVendor[] = "ExampleVendor";
+const char16_t kStorageVendor16[] = u"ExampleVendor";
 const uint32_t kStorageVendorId = 0x040a;
 const char kStorageProduct[] = "ExampleCamera";
+const char16_t kStorageProduct16[] = u"ExampleCamera";
 const uint32_t kStorageProductId = 0x0160;
 const uint32_t kStorageDeviceFlags = 0x0004000;
 const uint32_t kStorageType = 3;                         // Fixed RAM
@@ -155,10 +157,8 @@ TEST_F(MtpManagerClientChromeOSTest, BasicAttachDetach) {
   EXPECT_EQ(device_id, observer().last_attached().device_id());
   EXPECT_EQ(GetDeviceLocationFromStorageName(kStorageWithValidInfo),
             observer().last_attached().location());
-  EXPECT_EQ(base::ASCIIToUTF16(kStorageVendor),
-            observer().last_attached().vendor_name());
-  EXPECT_EQ(base::ASCIIToUTF16(kStorageProduct),
-            observer().last_attached().model_name());
+  EXPECT_EQ(kStorageVendor16, observer().last_attached().vendor_name());
+  EXPECT_EQ(kStorageProduct16, observer().last_attached().model_name());
 
   // Detach the attached storage.
   mtp_device_observer()->MtpStorageDetached(kStorageWithValidInfo);

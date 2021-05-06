@@ -38,7 +38,6 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::mojom::FocusedFieldType;
-using base::ASCIIToUTF16;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -51,9 +50,8 @@ using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 AccessorySheetData empty_passwords_sheet() {
-  constexpr char kTitle[] = "Example title";
-  return AccessorySheetData(AccessoryTabType::PASSWORDS,
-                            base::ASCIIToUTF16(kTitle));
+  constexpr char16_t kTitle[] = u"Example title";
+  return AccessorySheetData(AccessoryTabType::PASSWORDS, kTitle);
 }
 
 AccessorySheetData filled_passwords_sheet() {
@@ -65,10 +63,8 @@ AccessorySheetData filled_passwords_sheet() {
 }
 
 AccessorySheetData populate_sheet(AccessoryTabType type) {
-  constexpr char kTitle[] = "Suggestions available!";
-  return AccessorySheetData::Builder(type, base::ASCIIToUTF16(kTitle))
-      .AddUserInfo()
-      .Build();
+  constexpr char16_t kTitle[] = u"Suggestions available!";
+  return AccessorySheetData::Builder(type, kTitle).AddUserInfo().Build();
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -435,8 +431,8 @@ TEST_F(ManualFillingControllerLegacyTest, OnAutomaticGenerationStatusChanged) {
 
 TEST_F(ManualFillingControllerLegacyTest,
        OnFillingTriggeredFillsAndClosesSheet) {
-  const char kTextToFill[] = "TextToFill";
-  const std::u16string text_to_fill(base::ASCIIToUTF16(kTextToFill));
+  const char16_t kTextToFill[] = u"TextToFill";
+  const std::u16string text_to_fill(kTextToFill);
   const autofill::UserInfo::Field field(text_to_fill, text_to_fill, false,
                                         true);
 

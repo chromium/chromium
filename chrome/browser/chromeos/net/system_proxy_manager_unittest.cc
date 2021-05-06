@@ -46,7 +46,9 @@ using testing::WithArg;
 
 namespace {
 constexpr char kBrowserUsername[] = "browser_username";
+constexpr char16_t kBrowserUsername16[] = u"browser_username";
 constexpr char kBrowserPassword[] = "browser_password";
+constexpr char16_t kBrowserPassword16[] = u"browser_password";
 constexpr char kPolicyUsername[] = "policy_username";
 constexpr char kPolicyPassword[] = "policy_password";
 constexpr char kKerberosActivePrincipalName[] = "kerberos_princ_name";
@@ -247,8 +249,7 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
       ->Add(GURL(kProxyAuthEmptyPath), net::HttpAuth::AUTH_PROXY, kRealm,
             net::HttpAuth::AUTH_SCHEME_DIGEST, net::NetworkIsolationKey(),
             kProxyAuthChallenge,
-            net::AuthCredentials(base::ASCIIToUTF16(kBrowserUsername),
-                                 base::ASCIIToUTF16(kBrowserPassword)),
+            net::AuthCredentials(kBrowserUsername16, kBrowserPassword16),
             std::string() /* path */);
 
   system_proxy::ProtectionSpace protection_space;

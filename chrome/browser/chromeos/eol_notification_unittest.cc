@@ -101,9 +101,9 @@ TEST_F(EolNotificationTest, TestFirstWarningNotification) {
   ASSERT_TRUE(notification);
 
   std::u16string expected_title = u"Updates end December 2019";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "You'll still be able to use this Chrome device after that time, but it "
-      "will no longer get automatic software and security updates");
+  std::u16string expected_message =
+      u"You'll still be able to use this Chrome device after that time, but it "
+      u"will no longer get automatic software and security updates";
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
 
@@ -124,9 +124,9 @@ TEST_F(EolNotificationTest, TestSecondWarningNotification) {
   ASSERT_TRUE(notification);
 
   std::u16string expected_title = u"Updates end December 2019";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "You'll still be able to use this Chrome device after that time, but it "
-      "will no longer get automatic software and security updates");
+  std::u16string expected_message =
+      u"You'll still be able to use this Chrome device after that time, but it "
+      u"will no longer get automatic software and security updates";
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
 
@@ -152,9 +152,9 @@ TEST_F(EolNotificationTest, TestFinalEolNotification) {
   ASSERT_TRUE(notification);
 
   std::u16string expected_title = u"Final software update";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "This is the last automatic software and security update for this Chrome "
-      "device. To get future updates, upgrade to a newer model.");
+  std::u16string expected_message =
+      u"This is the last automatic software and security update for this "
+      u"Chrome device. To get future updates, upgrade to a newer model.";
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
 
@@ -254,9 +254,9 @@ TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   ASSERT_TRUE(notification);
 
   std::u16string expected_title = u"Updates end December 2019";
-  std::u16string expected_message = base::ASCIIToUTF16(
-      "You'll still be able to use this Chrome device after that time, but it "
-      "will no longer get automatic software and security updates");
+  std::u16string expected_message =
+      u"You'll still be able to use this Chrome device after that time, but it "
+      u"will no longer get automatic software and security updates";
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
 
@@ -266,9 +266,9 @@ TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
   expected_title = u"Final software update";
-  expected_message = base::ASCIIToUTF16(
-      "This is the last automatic software and security update for this Chrome "
-      "device. To get future updates, upgrade to a newer model.");
+  expected_message =
+      u"This is the last automatic software and security update for this "
+      u"Chrome device. To get future updates, upgrade to a newer model.";
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
 

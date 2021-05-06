@@ -22,9 +22,9 @@ namespace {
 
 using ::chromeos::FakePowerManagerClient;
 
-constexpr char kPepperPluginName1[] = "pepper_plugin_name1";
-constexpr char kPepperPluginName2[] = "pepper_plugin_name2";
-constexpr char kBrowserPluginName[] = "browser_plugin_name";
+constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
+constexpr char16_t kPepperPluginName2[] = u"pepper_plugin_name2";
+constexpr char16_t kBrowserPluginName[] = u"browser_plugin_name";
 constexpr char kPepperPluginFilePath1[] = "/path/to/pepper_plugin1";
 constexpr char kPepperPluginFilePath2[] = "/path/to/pepper_plugin2";
 constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
@@ -71,19 +71,19 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
 TEST_F(AppSessionTest, ShouldHandlePlugin) {
   // Create an out-of-process pepper plugin.
   content::WebPluginInfo info1;
-  info1.name = base::ASCIIToUTF16(kPepperPluginName1);
+  info1.name = kPepperPluginName1;
   info1.path = base::FilePath(kPepperPluginFilePath1);
   info1.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
 
   // Create an in-of-process pepper plugin.
   content::WebPluginInfo info2;
-  info2.name = base::ASCIIToUTF16(kPepperPluginName2);
+  info2.name = kPepperPluginName2;
   info2.path = base::FilePath(kPepperPluginFilePath2);
   info2.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
 
   // Create an in-of-process browser (non-pepper) plugin.
   content::WebPluginInfo info3;
-  info3.name = base::ASCIIToUTF16(kBrowserPluginName);
+  info3.name = kBrowserPluginName;
   info3.path = base::FilePath(kBrowserPluginFilePath);
   info3.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN;
 

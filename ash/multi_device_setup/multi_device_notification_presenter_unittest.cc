@@ -33,8 +33,9 @@ namespace {
 
 const char kTestUserEmail[] = "test@example.com";
 const char kTestHostDeviceName[] = "Test Device";
+const char16_t kTestHostDeviceName16[] = u"Test Device";
 // This is the expected return value from GetChromeOSDeviceName() in tests.
-const char kTestDeviceType[] = "Chrome device";
+const char16_t kTestDeviceType[] = u"Chrome device";
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
@@ -220,8 +221,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
     std::u16string message = l10n_util::GetStringFUTF16(
-        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
-        base::ASCIIToUTF16(kTestDeviceType));
+        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE, kTestDeviceType);
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());
   }
@@ -306,25 +306,25 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
             IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_TITLE);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::
           kExistingUserHostSwitchedNotificationVisible:
         title = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_TITLE,
-            base::ASCIIToUTF16(kTestHostDeviceName));
+            kTestHostDeviceName16);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::
           kExistingUserNewChromebookNotificationVisible:
         title = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_TITLE,
-            base::ASCIIToUTF16(kTestHostDeviceName));
+            kTestHostDeviceName16);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::kNoNotificationVisible:
         NOTREACHED();

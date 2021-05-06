@@ -21,6 +21,7 @@ namespace chromeos {
 namespace {
 
 constexpr char kUser[] = "user@EXAMPLE.COM";
+constexpr char16_t kUser16[] = u"user@EXAMPLE.COM";
 
 constexpr char kNotificationId[] = "kerberos.ticket-expiry-notification";
 
@@ -69,8 +70,7 @@ TEST_F(KerberosTicketExpiryNotificationTest, ShowClose) {
   ASSERT_TRUE(Notification().has_value());
 
   // Don't check the exact text here, just check if the username is there.
-  EXPECT_NE(std::string::npos,
-            Notification()->message().find(base::ASCIIToUTF16(kUser)));
+  EXPECT_NE(std::string::npos, Notification()->message().find(kUser16));
 
   kerberos_ticket_expiry_notification::Close(profile_);
   EXPECT_FALSE(Notification().has_value());

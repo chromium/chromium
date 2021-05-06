@@ -30,9 +30,10 @@ using password_manager::PasswordFormMetricsRecorder;
 
 namespace {
 constexpr char kDefaultUrl[] = "http://example.com";
-constexpr char kUsername[] = "username";
-constexpr char kPassword[] = "password";
+constexpr char16_t kUsername[] = u"username";
+constexpr char16_t kPassword[] = u"password";
 constexpr char kAccountEmail[] = "account@example.com";
+constexpr char16_t kAccountEmail16[] = u"account@example.com";
 constexpr char kDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 }  // namespace
@@ -192,19 +193,18 @@ void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
 // Tests that message properties (title, description, icon, button text) are
 // set correctly.
 TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
-  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
-                         base::ASCIIToUTF16(kPassword));
+  SetUsernameAndPassword(kUsername, kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager), false /*user_signed_in*/);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
             GetMessageWrapper()->GetTitle());
-  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kUsername)));
-  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kPassword)));
-  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kAccountEmail)));
+  EXPECT_NE(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kUsername));
+  EXPECT_EQ(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kPassword));
+  EXPECT_EQ(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
@@ -221,25 +221,23 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
 
 // Tests that the description is set correctly when the user is signed.
 TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
-  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
-                         base::ASCIIToUTF16(kPassword));
+  SetUsernameAndPassword(kUsername, kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager), true /*user_signed_in*/);
 
-  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kUsername)));
-  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kPassword)));
-  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
-                                      base::ASCIIToUTF16(kAccountEmail)));
+  EXPECT_NE(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kUsername));
+  EXPECT_EQ(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kPassword));
+  EXPECT_NE(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
 
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
 TEST_F(SavePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
-  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
-                         base::ASCIIToUTF16(kPassword));
+  SetUsernameAndPassword(kUsername, kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager), true /*user_signed_in*/);
 

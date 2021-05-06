@@ -20,7 +20,6 @@
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using base::ASCIIToUTF16;
 using password_manager::PasswordForm;
 using testing::_;
 using testing::Invoke;
@@ -33,11 +32,13 @@ namespace autofill_assistant {
 namespace {
 const char kFakeUrl[] = "http://www.example.com/";
 const char kFakeUsername[] = "user@example.com";
-const char kFakePassword[] = "old_password";
+const char16_t kFakeUsername16[] = u"user@example.com";
+const char16_t kFakePassword[] = u"old_password";
 const char kFakeNewPassword[] = "new_password";
-const char kFormDataName[] = "the-form-name";
-const char kPasswordElement[] = "password-element";
-const char kUsernameElement[] = "username-element";
+const char16_t kFakeNewPassword16[] = u"new_password";
+const char16_t kFormDataName[] = u"the-form-name";
+const char16_t kPasswordElement[] = u"password-element";
+const char16_t kUsernameElement[] = u"username-element";
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -55,13 +56,13 @@ FormData MakeFormDataWithPasswordField() {
   FormData form_data;
   form_data.url = GURL(kFakeUrl);
   form_data.action = GURL(kFakeUrl);
-  form_data.name = ASCIIToUTF16(kFormDataName);
+  form_data.name = kFormDataName;
 
   FormFieldData field;
-  field.name = ASCIIToUTF16(kPasswordElement);
+  field.name = kPasswordElement;
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.value = ASCIIToUTF16(kFakeNewPassword);
+  field.value = kFakeNewPassword16;
   field.form_control_type = "password";
   form_data.fields.push_back(field);
 
@@ -72,10 +73,10 @@ PasswordForm MakeSimplePasswordForm() {
   PasswordForm form;
   form.url = GURL(kFakeUrl);
   form.signon_realm = form.url.GetOrigin().spec();
-  form.password_value = ASCIIToUTF16(kFakePassword);
-  form.username_value = ASCIIToUTF16(kFakeUsername);
-  form.username_element = ASCIIToUTF16(kUsernameElement);
-  form.password_element = ASCIIToUTF16(kPasswordElement);
+  form.password_value = kFakePassword;
+  form.username_value = kFakeUsername16;
+  form.username_element = kUsernameElement;
+  form.password_element = kPasswordElement;
   form.in_store = PasswordForm::Store::kProfileStore;
 
   return form;
@@ -85,7 +86,7 @@ PasswordForm MakeSimplePasswordFormWithoutUsername() {
   PasswordForm form;
   form.url = GURL(kFakeUrl);
   form.signon_realm = form.url.GetOrigin().spec();
-  form.password_value = ASCIIToUTF16(kFakeNewPassword);
+  form.password_value = kFakeNewPassword16;
   form.in_store = PasswordForm::Store::kProfileStore;
 
   return form;
@@ -177,7 +178,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
   // Commit generated password.
   EXPECT_TRUE(manager()->ReadyToCommitGeneratedPassword());
   PasswordForm new_form = MakeSimplePasswordForm();
-  new_form.password_value = ASCIIToUTF16(kFakeNewPassword);
+  new_form.password_value = kFakeNewPassword16;
   // Check that additional data is populated correctly from matched form.
   EXPECT_CALL(*store(), UpdateLoginWithPrimaryKey(FormMatches(new_form), _));
   manager()->CommitGeneratedPassword();
