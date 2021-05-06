@@ -98,13 +98,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
 
-  // A copy of the most recent passphrase type.
-  PassphraseType passphrase_type_ =
-      SyncEncryptionHandler::kInitialPassphraseType;
-
-  // The set of encrypted types.
-  ModelTypeSet encrypted_types_;
-
   NudgeHandler* const nudge_handler_;
 
   // CancelationSignal is signalled on engine shutdown. It is passed to

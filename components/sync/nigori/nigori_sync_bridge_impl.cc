@@ -620,7 +620,7 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
   MaybeNotifyBootstrapTokenUpdated();
 }
 
-base::Time NigoriSyncBridgeImpl::GetKeystoreMigrationTime() const {
+base::Time NigoriSyncBridgeImpl::GetKeystoreMigrationTime() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_.keystore_migration_time;
 }
@@ -630,9 +630,21 @@ KeystoreKeysHandler* NigoriSyncBridgeImpl::GetKeystoreKeysHandler() {
   return this;
 }
 
+ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_.GetEncryptedTypes();
+}
+
 Cryptographer* NigoriSyncBridgeImpl::GetCryptographer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.cryptographer);
   return state_.cryptographer.get();
+}
+
+PassphraseType NigoriSyncBridgeImpl::GetPassphraseType() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ProtoPassphraseInt32ToEnum(state_.passphrase_type)
+      .value_or(PassphraseType::kImplicitPassphrase);
 }
 
 bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
@@ -1014,15 +1026,6 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
 const CryptographerImpl& NigoriSyncBridgeImpl::GetCryptographerImplForTesting()
     const {
   return *state_.cryptographer;
-}
-
-sync_pb::NigoriSpecifics::PassphraseType
-NigoriSyncBridgeImpl::GetPassphraseTypeForTesting() const {
-  return state_.passphrase_type;
-}
-
-ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypesForTesting() const {
-  return state_.GetEncryptedTypes();
 }
 
 bool NigoriSyncBridgeImpl::HasPendingKeysForTesting() const {

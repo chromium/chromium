@@ -17,6 +17,8 @@ namespace syncer {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 enum class PassphraseType {
   // GAIA-based passphrase (deprecated).
+  // TODO(crbug.com/1201684): Some codepaths use this value as a synonym for
+  // an unknown passphrase type. Rename to reflect this or use base::Optional<>.
   kImplicitPassphrase = 0,
   // Keystore passphrase.
   kKeystorePassphrase = 1,

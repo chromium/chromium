@@ -38,9 +38,11 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
   void SetDecryptionPassphrase(const std::string& passphrase) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) override;
-  base::Time GetKeystoreMigrationTime() const override;
+  base::Time GetKeystoreMigrationTime() override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
+  ModelTypeSet GetEncryptedTypes() override;
   Cryptographer* GetCryptographer() override;
+  PassphraseType GetPassphraseType() override;
 
   // KeystoreKeysHandler implementation.
   bool NeedKeystoreKey() const override;

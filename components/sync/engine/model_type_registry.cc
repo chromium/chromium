@@ -45,8 +45,9 @@ void ModelTypeRegistry::ConnectDataType(
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state,
       sync_encryption_handler_->GetCryptographer(),
-      /*encryption_enabled=*/encrypted_types_.Has(type), passphrase_type_,
-      nudge_handler_, cancelation_signal_);
+      sync_encryption_handler_->GetEncryptedTypes().Has(type),
+      sync_encryption_handler_->GetPassphraseType(), nudge_handler_,
+      cancelation_signal_);
 
   // Save a raw pointer and add the worker to our structures.
   ModelTypeWorker* worker_ptr = worker.get();
@@ -162,12 +163,11 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
   // This does NOT support disabling encryption without reconnecting the
   // type, i.e. recreating its ModelTypeWorker.
   for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types.Has(worker->GetModelType()) &&
-        !encrypted_types_.Has(worker->GetModelType())) {
+    if (encrypted_types.Has(worker->GetModelType())) {
+      // No-op if the type was already encrypted.
       worker->EnableEncryption();
     }
   }
-  encrypted_types_ = encrypted_types;
 }
 
 void ModelTypeRegistry::OnCryptographerStateChanged(
@@ -180,11 +180,8 @@ void ModelTypeRegistry::OnCryptographerStateChanged(
 
 void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
                                                 base::Time passphrase_time) {
-  passphrase_type_ = type;
   for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->UpdatePassphraseType(type);
-    }
+    worker->UpdatePassphraseType(type);
   }
 }
 

@@ -34,9 +34,6 @@ enum BootstrapTokenType {
 // TODO(crbug.com/1010397): Rename this class.
 class SyncEncryptionHandler {
  public:
-  static constexpr PassphraseType kInitialPassphraseType =
-      PassphraseType::kImplicitPassphrase;
-
   // All Observer methods are done synchronously from within a transaction and
   // on the sync thread.
   class Observer {
@@ -115,17 +112,13 @@ class SyncEncryptionHandler {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Reads the nigori node, updates internal state as needed, and, if an
-  // empty/stale nigori node is detected, overwrites the existing
-  // nigori node. Upon completion, if the cryptographer is still ready
-  // attempts to re-encrypt all sync data.
-  // Note: This method is expensive (it iterates through all encrypted types),
-  // so should only be used sparingly (e.g. on startup).
   virtual void NotifyInitialStateToObservers() = 0;
 
-  // TODO(crbug.com/1178418): Add similar getters for the rest of the state
-  // notified to the observers.
+  virtual ModelTypeSet GetEncryptedTypes() = 0;
+
   virtual Cryptographer* GetCryptographer() = 0;
+
+  virtual PassphraseType GetPassphraseType() = 0;
 
   // Attempts to re-encrypt encrypted data types using the passphrase provided.
   // Notifies observers of the result of the operation via OnPassphraseAccepted
@@ -153,7 +146,7 @@ class SyncEncryptionHandler {
   // Returns the time when Nigori was migrated to keystore or when it was
   // initialized in case it happens after migration was introduced. Returns
   // base::Time() in case migration isn't completed.
-  virtual base::Time GetKeystoreMigrationTime() const = 0;
+  virtual base::Time GetKeystoreMigrationTime() = 0;
 
   // Returns KeystoreKeysHandler, allowing to pass new keystore keys and to
   // check whether keystore keys need to be requested from the server.

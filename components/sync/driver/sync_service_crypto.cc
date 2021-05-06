@@ -139,6 +139,7 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
 
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override {
+    // A null cryptographer is passed to avoid usage from another sequence.
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(

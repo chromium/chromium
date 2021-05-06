@@ -61,7 +61,7 @@ void FakeSyncEncryptionHandler::AddTrustedVaultDecryptionKeys(
   // Do nothing.
 }
 
-base::Time FakeSyncEncryptionHandler::GetKeystoreMigrationTime() const {
+base::Time FakeSyncEncryptionHandler::GetKeystoreMigrationTime() {
   return base::Time();
 }
 
@@ -69,9 +69,17 @@ KeystoreKeysHandler* FakeSyncEncryptionHandler::GetKeystoreKeysHandler() {
   return this;
 }
 
+ModelTypeSet FakeSyncEncryptionHandler::GetEncryptedTypes() {
+  return AlwaysEncryptedUserTypes();
+}
+
 Cryptographer* FakeSyncEncryptionHandler::GetCryptographer() {
   // GetCryptographer() must never return null.
   return &fake_cryptographer_;
+}
+
+PassphraseType FakeSyncEncryptionHandler::GetPassphraseType() {
+  return PassphraseType::kKeystorePassphrase;
 }
 
 }  // namespace syncer
