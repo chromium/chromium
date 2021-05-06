@@ -83,10 +83,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& item) override;
   void OnToolbarActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionLoadFailed() override;
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarVisibleCountChanged() override;
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 

@@ -119,15 +119,6 @@ void ToolbarActionsModel::OnExtensionUninstalled(
   RemovePref(extension->id());
 }
 
-void ToolbarActionsModel::OnLoadFailure(
-    content::BrowserContext* browser_context,
-    const base::FilePath& extension_path,
-    const std::string& error) {
-  for (ToolbarActionsModel::Observer& observer : observers_) {
-    observer.OnToolbarActionLoadFailed();
-  }
-}
-
 void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
   UpdatePinnedActionIds();
 }
@@ -147,9 +138,6 @@ void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
 
 void ToolbarActionsModel::OnReady() {
   InitializeActionList();
-
-  load_error_reporter_observation_.Observe(
-      extensions::LoadErrorReporter::GetInstance());
 
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering

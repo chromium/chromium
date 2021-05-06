@@ -461,18 +461,9 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
   SanityCheck();
 }
 
-void ExtensionsMenuView::OnToolbarActionLoadFailed() {
-  // Ignore. We don't handle the load / unload dance specially here for
-  // reloading extensions.
-}
-
 void ExtensionsMenuView::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   UpdateActionStates();
-}
-
-void ExtensionsMenuView::OnToolbarVisibleCountChanged() {
-  // Ignore. The ExtensionsMenuView always shows all extensions.
 }
 
 void ExtensionsMenuView::OnToolbarModelInitialized() {

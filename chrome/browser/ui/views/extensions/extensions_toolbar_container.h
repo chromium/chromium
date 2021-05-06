@@ -224,10 +224,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionLoadFailed() override;
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarVisibleCountChanged() override;
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 

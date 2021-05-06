@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_action.h"
@@ -42,7 +41,6 @@ class ExtensionMessageBubbleController;
 // actions in a particular window should check that window's instance of
 // ExtensionsContainer, which is responsible for the per-window layout.
 class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
-                            public extensions::LoadErrorReporter::Observer,
                             public extensions::ExtensionRegistryObserver,
                             public extensions::ExtensionManagement::Observer,
                             public KeyedService {
@@ -67,16 +65,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
     // toolbar.
     virtual void OnToolbarActionRemoved(const ActionId& id) = 0;
 
-    // Signals that the extension, corresponding to the toolbar action, has
-    // failed to load.
-    virtual void OnToolbarActionLoadFailed() = 0;
-
     // Signals that the browser action with |id| has been updated.
     virtual void OnToolbarActionUpdated(const ActionId& id) = 0;
-
-    // Signals when the container needs to be redrawn because of a size change,
-    // and when the model has finished loading.
-    virtual void OnToolbarVisibleCountChanged() = 0;
 
     // Signals that the toolbar model has been initialized, so that if any
     // observers were postponing animation during the initialization stage, they
@@ -146,11 +136,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
       extensions::ExtensionAction* extension_action,
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
-
-  // extensions::LoadErrorReporter::Observer:
-  void OnLoadFailure(content::BrowserContext* browser_context,
-                     const base::FilePath& extension_path,
-                     const std::string& error) override;
 
   // extensions::ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
@@ -235,10 +220,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // For observing pinned extensions changing.
   PrefChangeRegistrar pref_change_registrar_;
-
-  base::ScopedObservation<extensions::LoadErrorReporter,
-                          extensions::LoadErrorReporter::Observer>
-      load_error_reporter_observation_{this};
 
   base::ScopedObservation<extensions::ExtensionManagement,
                           extensions::ExtensionManagement::Observer>

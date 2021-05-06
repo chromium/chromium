@@ -83,12 +83,8 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
     ++removed_count_;
   }
 
-  void OnToolbarActionLoadFailed() override {}
-
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& id) override {}
-
-  void OnToolbarVisibleCountChanged() override {}
 
   void OnToolbarModelInitialized() override { ++initialized_count_; }
 

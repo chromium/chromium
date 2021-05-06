@@ -447,16 +447,12 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   UpdateContainerVisibilityAfterAnimation();
 }
 
-void ExtensionsToolbarContainer::OnToolbarActionLoadFailed() {}
-
 void ExtensionsToolbarContainer::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   ToolbarActionViewController* action = GetActionForId(action_id);
   if (action)
     action->UpdateState();
 }
-
-void ExtensionsToolbarContainer::OnToolbarVisibleCountChanged() {}
 
 void ExtensionsToolbarContainer::OnToolbarModelInitialized() {
   CreateActions();
