@@ -770,7 +770,7 @@ void GetPolicyAllowedUrls(
 
   // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
   std::vector<ContentSettingsPattern> patterns;
-  for (const auto& entry : *policy_urls) {
+  for (const auto& entry : policy_urls->GetList()) {
     std::string url;
     bool valid_string = entry.GetAsString(&url);
     if (!valid_string)

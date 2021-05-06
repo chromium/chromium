@@ -203,7 +203,7 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
   std::vector<int32_t> excluded_domain_reasons;
   std::vector<std::string> ignored_domains;
   std::vector<int32_t> ignored_domain_reasons;
-  for (const auto& item : *installed_apps) {
+  for (const auto& item : installed_apps->GetList()) {
     const base::DictionaryValue* site = nullptr;
     CHECK(item.GetAsDictionary(&site));
     bool is_checked = false;
@@ -252,7 +252,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::vector<BrowsingDataType> data_type_vector;
   const base::ListValue* data_type_list = nullptr;
   CHECK(args->GetList(1, &data_type_list));
-  for (const base::Value& type : *data_type_list) {
+  for (const base::Value& type : data_type_list->GetList()) {
     std::string pref_name;
     CHECK(type.GetAsString(&pref_name));
     BrowsingDataType data_type =
