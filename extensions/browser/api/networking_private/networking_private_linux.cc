@@ -685,7 +685,7 @@ void NetworkingPrivateLinux::SendNetworkListChangedEvent(
     const base::ListValue& network_list) {
   GuidList guidsForEventCallback;
 
-  for (const auto& network : network_list) {
+  for (const auto& network : network_list.GetList()) {
     std::string guid;
     const base::DictionaryValue* dict = nullptr;
     if (network.GetAsDictionary(&dict)) {
