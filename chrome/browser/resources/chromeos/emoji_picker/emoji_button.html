@@ -44,14 +44,22 @@
     border-radius: 50%;
   }
 
-  .has-variants {
+  /* Implement has-variants as ::after so that it still works with hover
+   * ripple.
+   */
+  .has-variants::after {
     /* 4px grey triangle in bottom-right.
-     * 315 degrees means starting at bottom-right towards top-left.
-     * Need !important to override styling in #emoji-button.
-     */
+    * 315 degrees means starting at bottom-right towards top-left.
+    */
     background: linear-gradient(
         315deg, var(--google-grey-refresh-500) 4px,
-        var(--emoji-background) 4px, var(--emoji-background)) !important;
+        var(--emoji-background) 4px, var(--emoji-background));
+    content: '';
+    display: block;
+    height: var(--emoji-size);
+    position: relative;
+    top: calc(0px - var(--emoji-size));
+    width: var(--emoji-size);
   }
 
   #tooltip {
