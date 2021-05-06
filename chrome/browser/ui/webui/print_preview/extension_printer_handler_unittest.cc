@@ -639,8 +639,8 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionId", extension_2->id())
           .Set("provisional", true)
           .Build());
-  EXPECT_TRUE(printers->Find(*extension_1_entry) != printers->end());
-  EXPECT_TRUE(printers->Find(*extension_2_entry) != printers->end());
+  EXPECT_TRUE(printers->Find(*extension_1_entry) != printers->GetList().end());
+  EXPECT_TRUE(printers->Find(*extension_2_entry) != printers->GetList().end());
 
   fake_api->TriggerNextGetPrintersCallback(base::ListValue(), true);
 
