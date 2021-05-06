@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
@@ -84,7 +83,6 @@ class SyncerProtoUtilTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<SyncCycleContext> context_;
 };
 

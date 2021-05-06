@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -21,12 +20,7 @@ using SyncChangeList = std::vector<SyncChange>;
 
 namespace {
 
-class SyncChangeTest : public testing::Test {
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-};
-
-TEST_F(SyncChangeTest, LocalDelete) {
+TEST(SyncChangeTest, LocalDelete) {
   SyncChange::SyncChangeType change_type = SyncChange::ACTION_DELETE;
   std::string tag = "client_tag";
   SyncChange e(FROM_HERE, change_type,
@@ -37,7 +31,7 @@ TEST_F(SyncChangeTest, LocalDelete) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
 }
 
-TEST_F(SyncChangeTest, LocalUpdate) {
+TEST(SyncChangeTest, LocalUpdate) {
   SyncChange::SyncChangeType change_type = SyncChange::ACTION_UPDATE;
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref_specifics = specifics.mutable_preference();
@@ -58,7 +52,7 @@ TEST_F(SyncChangeTest, LocalUpdate) {
   EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
 }
 
-TEST_F(SyncChangeTest, LocalAdd) {
+TEST(SyncChangeTest, LocalAdd) {
   SyncChange::SyncChangeType change_type = SyncChange::ACTION_ADD;
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref_specifics = specifics.mutable_preference();
@@ -79,7 +73,7 @@ TEST_F(SyncChangeTest, LocalAdd) {
   EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
 }
 
-TEST_F(SyncChangeTest, SyncerChanges) {
+TEST(SyncChangeTest, SyncerChanges) {
   SyncChangeList change_list;
 
   // Create an update.

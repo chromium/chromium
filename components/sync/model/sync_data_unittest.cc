@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,19 +20,12 @@ const char kSyncTag[] = "3984729834";
 const ModelType kDatatype = PREFERENCES;
 const char kNonUniqueTitle[] = "my preference";
 
-class SyncDataTest : public testing::Test {
- protected:
-  SyncDataTest() = default;
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  sync_pb::EntitySpecifics specifics;
-};
-
-TEST_F(SyncDataTest, NoArgCtor) {
+TEST(SyncDataTest, NoArgCtor) {
   SyncData data;
   EXPECT_FALSE(data.IsValid());
 }
 
-TEST_F(SyncDataTest, CreateLocalDelete) {
+TEST(SyncDataTest, CreateLocalDelete) {
   SyncData data = SyncData::CreateLocalDelete(kSyncTag, kDatatype);
   EXPECT_TRUE(data.IsValid());
   EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag),
@@ -42,7 +33,8 @@ TEST_F(SyncDataTest, CreateLocalDelete) {
   EXPECT_EQ(kDatatype, data.GetDataType());
 }
 
-TEST_F(SyncDataTest, CreateLocalData) {
+TEST(SyncDataTest, CreateLocalData) {
+  sync_pb::EntitySpecifics specifics;
   specifics.mutable_preference();
   SyncData data =
       SyncData::CreateLocalData(kSyncTag, kNonUniqueTitle, specifics);
@@ -55,7 +47,8 @@ TEST_F(SyncDataTest, CreateLocalData) {
   EXPECT_FALSE(data.ToString().empty());
 }
 
-TEST_F(SyncDataTest, CreateRemoteData) {
+TEST(SyncDataTest, CreateRemoteData) {
+  sync_pb::EntitySpecifics specifics;
   specifics.mutable_preference();
   SyncData data = SyncData::CreateRemoteData(
       specifics, ClientTagHash::FromUnhashed(PREFERENCES, kSyncTag));
