@@ -3984,6 +3984,10 @@ const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "
     "streaming";
 
+const char kForceEnableFaceAeName[] = "Force enable face AE";
+const char kForceEnableFaceAeDescription[] =
+    "Enable this flag to force enable face AE for camera";
+
 const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";

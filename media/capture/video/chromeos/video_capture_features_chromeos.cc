@@ -12,5 +12,9 @@ namespace features {
 const base::Feature kDisableCameraFrameRotationAtSource{
     "DisableCameraFrameRotationAtSource", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, will force enable face AE if the camera supports.
+const base::Feature kForceEnableFaceAe{"ForceEnableFaceAe",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace media

@@ -26,6 +26,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -37,8 +38,10 @@ namespace media {
 namespace {
 
 const base::FilePath::CharType kArcCamera3SocketPath[] =
-    "/var/run/camera/camera3.sock";
+    "/run/camera/camera3.sock";
 const char kArcCameraGroup[] = "arc-camera";
+const base::FilePath::CharType kForceEnableAePath[] =
+    "/run/camera/force_enable_ae";
 
 std::string GenerateRandomToken() {
   char random_bytes[16];
@@ -163,6 +166,18 @@ bool CameraHalDispatcherImpl::Start(
   // This event is for adding camera category to categories list.
   TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
+
+  base::FilePath file_path(kForceEnableAePath);
+  if (base::FeatureList::IsEnabled(media::features::kForceEnableFaceAe)) {
+    if (!base::PathExists(file_path)) {
+      base::File file(file_path, base::File::FLAG_CREATE_ALWAYS);
+      file.Close();
+    }
+  } else {
+    if (base::PathExists(file_path)) {
+      base::DeleteFile(file_path);
+    }
+  }
 
   jda_factory_ = std::move(jda_factory);
   jea_factory_ = std::move(jea_factory);

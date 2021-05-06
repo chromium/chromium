@@ -2299,6 +2299,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 
+extern const char kForceEnableFaceAeName[];
+extern const char kForceEnableFaceAeDescription[];
+
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
 

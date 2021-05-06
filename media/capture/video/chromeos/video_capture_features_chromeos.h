@@ -12,6 +12,7 @@ namespace media {
 namespace features {
 
 CAPTURE_EXPORT extern const base::Feature kDisableCameraFrameRotationAtSource;
+CAPTURE_EXPORT extern const base::Feature kForceEnableFaceAe;
 
 }  // namespace features
 }  // namespace media
