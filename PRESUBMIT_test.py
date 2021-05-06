@@ -3749,50 +3749,6 @@ class CheckForUseOfChromeAppsDeprecationsTest(unittest.TestCase):
                                                      mock_output_api)
     self.assertEqual(0, len(errors))
 
-  def testWarningChromeApps(self):
-    mock_input_api = MockInputApi()
-    mock_input_api.files = [
-        MockAffectedFile(
-            'foo.js',
-            ['A', 'chrome.app.window.init()', 'B'],
-            ['A', 'chrome.window.init()', 'B'],
-            scm_diff='\n'.join([
-                '--- foo.js.old  2020-12-02 20:40:54.430676385 +0100',
-                '+++ foo.js.new  2020-12-02 20:41:02.086700197 +0100',
-                '@@ -1,3 +1,3 @@',
-                ' A',
-                '+chrome.app.window.init()',
-                ' B']),
-            action='M')
-    ]
-    mock_output_api = MockOutputApi()
-    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
-                                                     mock_output_api)
-    self.assertEqual(1, len(errors))
-    self.assertTrue( self.ERROR_MSG_PIECE in errors[0].message)
-    self.assertTrue( 'foo.js' in errors[0].message)
-
-  def testOKChromeAppsRemoved(self):
-    mock_input_api = MockInputApi()
-    mock_input_api.files = [
-        MockAffectedFile(
-            'foo.js',
-            ['A', 'B'],
-            ['A', 'chrome.app.window.init()', 'B'],
-            scm_diff='\n'.join([
-                '--- foo.js.old  2020-12-02 20:40:54.430676385 +0100',
-                '+++ foo.js.new  2020-12-02 20:41:02.086700197 +0100',
-                '@@ -1,3 +1,2 @@',
-                ' A',
-                '-chrome.app.window.init()',
-                ' B']),
-            action='D')
-    ]
-    mock_output_api = MockOutputApi()
-    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
-                                                     mock_output_api)
-    self.assertEqual(0, len(errors))
-
 class CheckDeprecationOfPreferencesTest(unittest.TestCase):
   # Test that a warning is generated if a preference registration is removed
   # from a random file.

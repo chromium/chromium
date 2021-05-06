@@ -4692,65 +4692,6 @@ def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
       r'.+%s' % _IMPLEMENTATION_EXTENSIONS ),
     files_to_skip = [r"^ppapi[\\/]"] )
 
-  # Chrome Apps: any JS/TS file that references an API in the list below.
-  # This should include the list of Chrome Apps APIs that are not Chrome
-  # Extensions APIs as documented in:
-  # https://developer.chrome.com/docs/apps/migration/
-  detection_list_chrome_apps = [
-    'chrome.accessibilityFeatures',
-    'chrome.alarms',
-    'chrome.app.runtime',
-    'chrome.app.window',
-    'chrome.audio',
-    'chrome.bluetooth',
-    'chrome.bluetoothLowEnergy',
-    'chrome.bluetoothSocket',
-    'chrome.browser',
-    'chrome.commands',
-    'chrome.contextMenus',
-    'chrome.documentScan',
-    'chrome.events',
-    'chrome.extensionTypes',
-    'chrome.fileSystem',
-    'chrome.fileSystemProvider',
-    'chrome.gcm',
-    'chrome.hid',
-    'chrome.i18n',
-    'chrome.identity',
-    'chrome.idle',
-    'chrome.instanceID',
-    'chrome.mdns',
-    'chrome.mediaGalleries',
-    'chrome.networking.onc',
-    'chrome.notifications',
-    'chrome.permissions',
-    'chrome.power',
-    'chrome.printerProvider',
-    'chrome.runtime',
-    'chrome.serial',
-    'chrome.sockets.tcp',
-    'chrome.sockets.tcpServer',
-    'chrome.sockets.udp',
-    'chrome.storage',
-    'chrome.syncFileSystem',
-    'chrome.system.cpu',
-    'chrome.system.display',
-    'chrome.system.memory',
-    'chrome.system.network',
-    'chrome.system.storage',
-    'chrome.tts',
-    'chrome.types',
-    'chrome.usb',
-    'chrome.virtualKeyboard',
-    'chrome.vpnProvider',
-    'chrome.wallpaper'
-  ]
-  _JS_FILES = r'\.(js|ts)$'
-  problems += _CheckForDeprecatedTech(input_api, output_api,
-    detection_list = detection_list_chrome_apps,
-    files_to_check = [ r'.+%s' % _JS_FILES ],
-    files_to_skip = files_to_skip)
-
   if problems:
     return [output_api.PresubmitPromptWarning('You are adding/modifying code'
     'related to technologies which will soon be deprecated (Chrome Apps, NaCl,'
