@@ -39,7 +39,7 @@ We use the hash due to 32-character limit for ProgID's. The registry work is
 done in
 [ShellUtil::AddFileAssociations](https://source.chromium.org/chromium/chromium/src/+/master:chrome/installer/util/shell_util.cc?q=%20ShellUtil::AddFileAssociations):
 
-* Register the ProgID by adding `key HKCU\Software\Classes\<progID>` to the registry.
+* Register the ProgID by adding key `HKCU\Software\Classes\<progID>` to the registry.
 * Set the application name and icon for the PWA with these two keys:
     * `HKCU\Software\Classes\<progID>\Application::ApplicationIcon = <path to icon in PWA install dir>,0`
     * `HKCU\Software\Classes\<progID>\Application::ApplicationName = <PWA name>`
@@ -47,14 +47,14 @@ done in
     * `HKCU\Software\Classes\<progID>\shell\open\command = <launcher_app_path_in_profile> --app-id=<app_id> --profile-directory=<profile_dir>`
 * Add a key to keep track of the file extensions registered for a progId,
 for ease of uninstallation:
-    * `HKCU\Software\Classes\<progId>\File Extensions = <semicolon delimited list of extensions>`
+    * `HKCU\Software\Classes\<progID>\File Extensions = <semicolon delimited list of extensions>`
 
 When Chrome is launched, it writes its path into the "Last Browser" file in
 the User Data dir.
 When the launcher app is run, it launches Chrome using the path written into the
 "Last Browser" file. Because the launcher app is in a sub-directory of the profile
 directory, the "Last Browser" file is in its great grandparent directory.
- 
+
 When a new version of Chrome is installed, we need to update the hard links
 to and copies of the installed launcher apps to use the newly installed canonical
 launcher app. This is done by having the launcher app pass its version to Chrome, when
@@ -70,9 +70,8 @@ handle, we update the registry.
 adding the profile name in parentheses to the PWA name, e.g,
 "Example PWA (profile1)". If a PWA is uninstalled from a  profile, and there is
 one remaining install in another profile, we remove the profile name from the
-application name. 
+application name.
  * Windows 7 does not support some of the registry entries needed to set the
  name and icon for a PWA. So, the file open context menu item for a PWA on
  Windows 7 gets its name from the launcher app created for the PWA, and uses a
  generic PWA icon.
-
