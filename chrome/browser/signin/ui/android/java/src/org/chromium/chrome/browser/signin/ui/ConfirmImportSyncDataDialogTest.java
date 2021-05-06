@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,7 +55,7 @@ import org.chromium.ui.test.util.DummyUiActivity;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/1197194): Batch this test suite
+@Batch(Batch.PER_CLASS)
 public class ConfirmImportSyncDataDialogTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
