@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -71,23 +72,25 @@ void InitializeOverridesList(base::ListValue* list) {
   base::ListValue migrated;
   std::set<std::string> seen_entries;
   for (auto& val : *list) {
-    std::unique_ptr<base::DictionaryValue> new_dict(
-        new base::DictionaryValue());
+    base::Value new_dict(base::Value::Type::DICTIONARY);
     std::string entry_name;
-    base::DictionaryValue* existing_dict = nullptr;
-    if (val.GetAsDictionary(&existing_dict)) {
-      bool success = existing_dict->GetString(kEntry, &entry_name);
-      if (!success)  // See comment about CHECK(success) in ForEachOverrideList.
+    if (val.is_dict()) {
+      const std::string* tmp = val.FindStringKey(kEntry);
+      if (!tmp)  // See comment about CHECK(success) in
+                 // ForEachOverrideList.
         continue;
-      new_dict->Swap(existing_dict);
-    } else if (val.GetAsString(&entry_name)) {
-      new_dict->SetString(kEntry, entry_name);
-      new_dict->SetBoolean(kActive, true);
+      entry_name = *tmp;
+      new_dict = val.Clone();
+    } else if (val.is_string()) {
+      entry_name = val.GetString();
+      new_dict.SetStringKey(kEntry, entry_name);
+      new_dict.SetBoolKey(kActive, true);
     } else {
       NOTREACHED();
       continue;
     }
 
+    // |entry_name| will be set by this point.
     if (seen_entries.count(entry_name) == 0) {
       seen_entries.insert(entry_name);
       migrated.Append(std::move(new_dict));
@@ -102,24 +105,26 @@ void InitializeOverridesList(base::ListValue* list) {
 void AddOverridesToList(base::ListValue* list, const GURL& override_url) {
   const std::string& spec = override_url.spec();
   for (auto& val : *list) {
-    base::DictionaryValue* dict = nullptr;
-    std::string entry;
-    if (!val.GetAsDictionary(&dict) || !dict->GetString(kEntry, &entry)) {
+    std::string* entry = nullptr;
+    if (val.is_dict()) {
+      entry = val.FindStringKey(kEntry);
+    }
+    if (!entry) {
       NOTREACHED();
       continue;
     }
-    if (entry == spec) {
-      dict->SetBoolean(kActive, true);
+    if (*entry == spec) {
+      val.SetBoolKey(kActive, true);
       return;  // All done!
     }
-    GURL entry_url(entry);
+    GURL entry_url(*entry);
     if (!entry_url.is_valid()) {
       NOTREACHED();
       continue;
     }
     if (entry_url.host() == override_url.host()) {
-      dict->SetBoolean(kActive, true);
-      dict->SetString(kEntry, spec);
+      val.SetBoolKey(kActive, true);
+      val.SetStringKey(kEntry, spec);
       return;
     }
   }
@@ -138,16 +143,15 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
   base::ListValue migrated;
   std::set<std::string> seen_hosts;
   for (auto& val : *list) {
-    base::DictionaryValue* dict = nullptr;
-    std::string entry;
-    if (!val.GetAsDictionary(&dict) || !dict->GetString(kEntry, &entry)) {
+    std::string* entry = nullptr;
+    if (val.is_dict()) {
+      entry = val.FindStringKey(kEntry);
+    }
+    if (!entry) {
       NOTREACHED();
       continue;
     }
-    std::unique_ptr<base::DictionaryValue> new_dict(
-        new base::DictionaryValue());
-    new_dict->Swap(dict);
-    GURL override_url(entry);
+    GURL override_url(*entry);
     if (!override_url.is_valid())
       continue;
 
@@ -159,7 +163,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
     if (!seen_hosts.insert(override_url.host()).second)
       continue;
 
-    migrated.Append(std::move(new_dict));
+    migrated.Append(val.Clone());
   }
 
   list->Swap(&migrated);
@@ -197,22 +201,20 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::ListValue* overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = std::find_if(
-      overrides_list->begin(), overrides_list->end(),
-      [&override_url](const base::Value& value) {
-        std::string entry;
-        const base::DictionaryValue* dict = nullptr;
-        return value.GetAsDictionary(&dict) &&
-               dict->GetString(kEntry, &entry) && entry == override_url;
-      });
+  auto iter = std::find_if(overrides_list->begin(), overrides_list->end(),
+                           [&override_url](const base::Value& value) {
+                             if (!value.is_dict())
+                               return false;
+                             const std::string* entry =
+                                 value.FindStringKey(kEntry);
+                             return entry && *entry == override_url;
+                           });
   if (iter != overrides_list->end()) {
     switch (behavior) {
       case UPDATE_DEACTIVATE: {
-        base::DictionaryValue* dict = nullptr;
-        bool success = iter->GetAsDictionary(&dict);
         // See comment about CHECK(success) in ForEachOverrideList.
-        if (success) {
-          dict->SetBoolean(kActive, false);
+        if (iter->is_dict()) {
+          iter->SetBoolKey(kActive, false);
           break;
         }
         // Else fall through and erase the broken pref.
@@ -291,14 +293,13 @@ bool ValidateOverrideURL(const base::Value* override_url_value,
                          const extensions::ExtensionSet& extensions,
                          GURL* override_url,
                          const Extension** extension) {
-  const base::DictionaryValue* dict = nullptr;
-  std::string override;
-  bool is_active = false;
-  if (!override_url_value || !override_url_value->GetAsDictionary(&dict) ||
-      !dict->GetBoolean(kActive, &is_active) || !is_active ||
-      !dict->GetString(kEntry, &override)) {
+  if (!override_url_value || !override_url_value->is_dict() ||
+      !override_url_value->FindBoolKey(kActive).value_or(false) ||
+      !override_url_value->FindStringKey(kEntry)) {
     return false;
   }
+  const std::string* const_override = override_url_value->FindStringKey(kEntry);
+  std::string override = *const_override;
   if (!source_url.query().empty())
     override += "?" + source_url.query();
   if (!source_url.ref().empty())
@@ -464,19 +465,17 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     if (!dict_iter.value().GetAsList(&url_list))
       continue;
 
-    for (auto list_iter = url_list->begin(); list_iter != url_list->end();
-         ++list_iter) {
-      const base::DictionaryValue* dict = nullptr;
-      if (!list_iter->GetAsDictionary(&dict))
+    for (const auto& list_iter : *url_list) {
+      const std::string* override = nullptr;
+      if (list_iter.is_dict())
+        override = list_iter.FindStringKey(kEntry);
+      if (!override)
         continue;
-      std::string override;
-      if (!dict->GetString(kEntry, &override))
-        continue;
-      if (base::StartsWith(url->spec(), override,
+      if (base::StartsWith(url->spec(), *override,
                            base::CompareCase::SENSITIVE)) {
         GURL original_url(content::kChromeUIScheme + std::string("://") +
                           dict_iter.key() +
-                          url->spec().substr(override.length()));
+                          url->spec().substr(override->length()));
         *url = original_url;
         return true;
       }
