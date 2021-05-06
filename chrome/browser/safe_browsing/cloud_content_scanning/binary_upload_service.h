@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <string>
 #include <utility>
 
@@ -35,6 +36,10 @@ class BinaryUploadService : public KeyedService {
  public:
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
+
+  // The maximum number of uploads that can happen in parallel.
+  // TODO(crbug.com/1191061): Tweak this number to an "optimal" value.
+  constexpr static size_t kParallelActiveRequestsMax = 50;
 
   explicit BinaryUploadService(Profile* profile);
 
@@ -235,6 +240,10 @@ class BinaryUploadService : public KeyedService {
       std::pair<std::string, enterprise_connectors::AnalysisConnector>;
   friend class BinaryUploadServiceTest;
 
+  // Queue the file for deep scanning. This method should be the only caller of
+  // UploadForDeepScanning to avoid consuming too many user resources.
+  void QueueForDeepScanning(std::unique_ptr<Request> request);
+
   // Upload the given file contents for deep scanning. The results will be
   // returned asynchronously by calling |request|'s |callback|. This must be
   // called on the UI thread.
@@ -285,10 +294,19 @@ class BinaryUploadService : public KeyedService {
   // Called at the end of the FinishRequest method.
   void FinishRequestCleanup(Request* request, const std::string& instance_id);
 
+  // Tries to start uploads from |request_queue_| depending on the number of
+  // currently active requests. This should be called whenever
+  // |active_requests_| shrinks so queued requests are started as soon as
+  // possible.
+  void PopRequestQueue();
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<BinaryFCMService> binary_fcm_service_;
 
   Profile* const profile_;
+
+  // Request queued for upload.
+  std::queue<std::unique_ptr<Request>> request_queue_;
 
   // Resources associated with an in-progress request.
   base::flat_map<Request*, std::unique_ptr<Request>> active_requests_;

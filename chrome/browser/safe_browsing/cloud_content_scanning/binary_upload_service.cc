@@ -267,7 +267,15 @@ void BinaryUploadService::MaybeUploadForDeepScanningCallback(
                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
-  UploadForDeepScanning(std::move(request));
+  QueueForDeepScanning(std::move(request));
+}
+
+void BinaryUploadService::QueueForDeepScanning(
+    std::unique_ptr<BinaryUploadService::Request> request) {
+  if (active_requests_.size() >= kParallelActiveRequestsMax)
+    request_queue_.push(std::move(request));
+  else
+    UploadForDeepScanning(std::move(request));
 }
 
 void BinaryUploadService::UploadForDeepScanning(
@@ -458,6 +466,10 @@ void BinaryUploadService::FinishRequest(
   std::string instance_id = request->fcm_notification_token();
   request->FinishRequest(result, response);
   FinishRequestCleanup(request, instance_id);
+
+  // Now that a request has been cleaned up, we can try to allocate resources
+  // for queued uploads.
+  PopRequestQueue();
 }
 
 void BinaryUploadService::FinishRequestCleanup(Request* request,
@@ -736,7 +748,7 @@ void BinaryUploadService::IsAuthorized(
           url);
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
-      UploadForDeepScanning(std::move(request));
+      QueueForDeepScanning(std::move(request));
     }
     return;
   }
@@ -812,6 +824,15 @@ GURL BinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
     return GURL(kSbAppUploadUrl);
   } else {
     return GURL(kSbEnterpriseUploadUrl);
+  }
+}
+
+void BinaryUploadService::PopRequestQueue() {
+  while (active_requests_.size() < kParallelActiveRequestsMax &&
+         !request_queue_.empty()) {
+    std::unique_ptr<Request> request = std::move(request_queue_.front());
+    request_queue_.pop();
+    UploadForDeepScanning(std::move(request));
   }
 }
 

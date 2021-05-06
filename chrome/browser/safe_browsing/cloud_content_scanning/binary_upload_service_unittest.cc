@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -131,14 +132,16 @@ class BinaryUploadServiceTest : public testing::Test {
     fake_factory_ = FakeMultipartUploadRequestFactory(should_succeed, response);
   }
 
-  void ExpectInstanceID(std::string id) {
+  void ExpectInstanceID(std::string id, int times = 1) {
     EXPECT_CALL(*fcm_service_, GetInstanceID(_))
-        .WillOnce(
+        .Times(times)
+        .WillRepeatedly(
             Invoke([id](BinaryFCMService::GetInstanceIDCallback callback) {
               std::move(callback).Run(id);
             }));
     EXPECT_CALL(*fcm_service_, UnregisterInstanceID(id, _))
-        .WillOnce(
+        .Times(times)
+        .WillRepeatedly(
             Invoke([](const std::string& token,
                       BinaryFCMService::UnregisterInstanceIDCallback callback) {
               std::move(callback).Run(true);
@@ -766,6 +769,47 @@ TEST_F(BinaryUploadServiceTest, GetUploadUrl) {
       safe_browsing::BinaryUploadService::GetUploadUrl(
           /*is_consumer_scan_eligible */ true),
       GURL("https://safebrowsing.google.com/safebrowsing/uploads/consumer"));
+}
+
+TEST_F(BinaryUploadServiceTest, RequestQueue) {
+  BinaryUploadService::Result scanning_result =
+      BinaryUploadService::Result::UNKNOWN;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::vector<MockRequest*> requests;
+
+  ExpectInstanceID("valid id",
+                   2 * BinaryUploadService::kParallelActiveRequestsMax);
+  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
+
+  // Uploading 2*max requests before any response is received ensures that the
+  // queue is populated and processed correctly.
+  for (size_t i = 0; i < 2 * BinaryUploadService::kParallelActiveRequestsMax;
+       ++i) {
+    std::unique_ptr<MockRequest> request =
+        MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
+    request->add_tag("dlp");
+    request->add_tag("malware");
+    requests.push_back(request.get());
+    UploadForDeepScanning(std::move(request));
+  }
+
+  content::RunAllTasksUntilIdle();
+
+  for (MockRequest* request : requests) {
+    enterprise_connectors::ContentAnalysisResponse simulated_response;
+    auto* dlp_result = simulated_response.add_results();
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    dlp_result->set_tag("dlp");
+    auto* malware_result = simulated_response.add_results();
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    malware_result->set_tag("malware");
+    ReceiveMessageForRequest(request, simulated_response);
+  }
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
 }  // namespace safe_browsing
