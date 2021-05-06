@@ -22,15 +22,17 @@ enum TimeUnit {
 }
 
 message HistogramValueFeature {
-  optional fixed64 name_hash = 1;
+  optional string name = 1;
+  optional fixed64 name_hash = 2;
 }
 
 message HistogramEnumFeature {
-  optional fixed64 name_hash = 1;
+  optional string name = 1;
+  optional fixed64 name_hash = 2;
 
   // Matches are only valid when the enum ID matches any of these.
   // Works like an OR condition, e.g.: [url, search, …] or just [url].
-  repeated int32 enum_ids = 2;
+  repeated int32 enum_ids = 3;
 }
 
 message UserActionFeature {
