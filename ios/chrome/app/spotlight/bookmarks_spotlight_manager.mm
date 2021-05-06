@@ -201,21 +201,31 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 
 - (void)removeNodeFromIndex:(const bookmarks::BookmarkNode*)node {
   if (node->is_url()) {
-    GURL url(node->url());
-    NSString* title = base::SysUTF16ToNSString(node->GetTitle());
-    NSString* spotlightID = [self spotlightIDForURL:url title:title];
-    __weak BookmarksSpotlightManager* weakself = self;
-    BlockWithError completion = ^(NSError* error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakself refreshItemsWithURL:url title:nil];
-        [_delegate bookmarkUpdated];
-      });
-    };
-    spotlight::DeleteItemsWithIdentifiers(@[ spotlightID ], completion);
+    [self removeURLNodeFromIndex:node];
     return;
   }
   for (const auto& child : node->children())
     [self removeNodeFromIndex:child.get()];
+}
+
+// Helper to remove URL nodes at the leaves of the bookmark index.
+- (void)removeURLNodeFromIndex:(const bookmarks::BookmarkNode*)node {
+  DCHECK(node->is_url());
+  const GURL URL(node->url());
+  NSString* title = base::SysUTF16ToNSString(node->GetTitle());
+  NSString* spotlightID = [self spotlightIDForURL:URL title:title];
+  __weak BookmarksSpotlightManager* weakSelf = self;
+  spotlight::DeleteItemsWithIdentifiers(@[ spotlightID ], ^(NSError*) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf onCompletedDeleteItemsWithURL:URL];
+    });
+  });
+}
+
+// Completion helper for URL node deletion.
+- (void)onCompletedDeleteItemsWithURL:(const GURL&)URL {
+  [self refreshItemsWithURL:URL title:nil];
+  [_delegate bookmarkUpdated];
 }
 
 - (BOOL)shouldReindex {
@@ -305,40 +315,38 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 }
 
 - (void)clearAndReindexModel {
+  __weak BookmarksSpotlightManager* weakSelf = self;
   [self cancelAllLargeIconPendingTasks];
-  __weak BookmarksSpotlightManager* weakself = self;
-  BlockWithError completion = ^(NSError* error) {
-    if (!error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        BookmarksSpotlightManager* strongSelf = weakself;
-        if (!strongSelf)
-          return;
+  [self clearAllSpotlightItems:^(NSError* error) {
+    if (error)
+      return;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf completedClearAllSpotlightItems];
+    });
+  }];
+}
 
-        NSDate* startOfReindexing = [NSDate date];
-        strongSelf->_nodesIndexed = 0;
-        [strongSelf refreshNodeInIndex:strongSelf->_bookmarkModel->root_node()
-                               initial:YES];
-        NSDate* endOfReindexing = [NSDate date];
-        NSTimeInterval indexingDuration =
-            [endOfReindexing timeIntervalSinceDate:startOfReindexing];
-        UMA_HISTOGRAM_TIMES(
-            "IOS.Spotlight.BookmarksIndexingDuration",
-            base::TimeDelta::FromMillisecondsD(1000 * indexingDuration));
-        UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
-                                  [strongSelf pendingLargeIconTasksCount]);
-        [[NSUserDefaults standardUserDefaults]
-            setObject:endOfReindexing
-               forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
+- (void)completedClearAllSpotlightItems {
+  NSDate* startOfReindexing = [NSDate date];
+  _nodesIndexed = 0;
+  [self refreshNodeInIndex:_bookmarkModel->root_node() initial:YES];
+  NSDate* endOfReindexing = [NSDate date];
+  NSTimeInterval indexingDuration =
+      [endOfReindexing timeIntervalSinceDate:startOfReindexing];
+  UMA_HISTOGRAM_TIMES(
+      "IOS.Spotlight.BookmarksIndexingDuration",
+      base::TimeDelta::FromMillisecondsD(1000 * indexingDuration));
+  UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
+                            [self pendingLargeIconTasksCount]);
+  [[NSUserDefaults standardUserDefaults]
+      setObject:endOfReindexing
+         forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
 
-        [[NSUserDefaults standardUserDefaults]
-            setObject:[NSNumber numberWithInteger:
-                                    spotlight::kCurrentSpotlightIndexVersion]
-               forKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
-        [_delegate bookmarkUpdated];
-      });
-    }
-  };
-  [self clearAllSpotlightItems:completion];
+  [[NSUserDefaults standardUserDefaults]
+      setObject:@(spotlight::kCurrentSpotlightIndexVersion)
+         forKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
+
+  [_delegate bookmarkUpdated];
 }
 
 @end
