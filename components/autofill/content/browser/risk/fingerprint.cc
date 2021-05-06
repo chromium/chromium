@@ -89,7 +89,7 @@ std::string GetOperatingSystemVersion() {
 // Adds the list of |fonts| to the |machine|.
 void AddFontsToFingerprint(const base::ListValue& fonts,
                            Fingerprint::MachineCharacteristics* machine) {
-  for (const auto& it : fonts) {
+  for (const auto& it : fonts.GetList()) {
     // Each item in the list is a two-element list such that the first element
     // is the font family and the second is the font name.
     const base::ListValue* font_description = nullptr;
