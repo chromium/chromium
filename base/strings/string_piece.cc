@@ -5,6 +5,7 @@
 #include "base/strings/string_piece.h"
 
 #include <algorithm>
+#include <climits>
 #include <limits>
 #include <ostream>
 #include <string>
