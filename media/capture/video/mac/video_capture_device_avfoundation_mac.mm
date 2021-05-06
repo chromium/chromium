@@ -813,7 +813,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // https://crbug.com/959962 (ignoring color space)
   gfx::ColorSpace overriddenColorSpace = colorSpace;
   if (colorSpace == kColorSpaceRec709Apple) {
-    overriddenColorSpace = gfx::ColorSpace::CreateSRGB();
+    overriddenColorSpace = gfx::ColorSpace(
+        gfx::ColorSpace::PrimaryID::BT709,
+        gfx::ColorSpace::TransferID::IEC61966_2_1,
+        gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
     IOSurfaceSetValue(ioSurface, CFSTR("IOSurfaceColorSpace"),
                       kCGColorSpaceSRGB);
   }
