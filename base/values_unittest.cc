@@ -18,6 +18,7 @@
 #include "base/as_const.h"
 #include "base/bits.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1422,10 +1423,10 @@ TEST(ValuesTest, List) {
   base::Value sought_value(42);
   base::Value not_found_value(false);
 
-  ASSERT_NE(mixed_list->end(), mixed_list->Find(sought_value));
+  ASSERT_TRUE(Contains(mixed_list->GetList(), sought_value));
   ASSERT_TRUE((*mixed_list->Find(sought_value)).GetAsInteger(&int_value));
   ASSERT_EQ(42, int_value);
-  ASSERT_EQ(mixed_list->end(), mixed_list->Find(not_found_value));
+  ASSERT_FALSE(Contains(mixed_list->GetList(), not_found_value));
 }
 
 TEST(ValuesTest, BinaryValue) {
