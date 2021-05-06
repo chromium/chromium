@@ -79,15 +79,26 @@ base::FilePath GetDownloadsPath(Profile* profile) {
   return result;
 }
 
+// Converts an `absolute_file_path` to its drive path.
+base::FilePath ConvertAbsoluteFilePathToDrivePath(
+    Profile* profile,
+    const base::FilePath& absolute_file_path) {
+  base::FilePath drive_path("/");
+  EXPECT_TRUE(drive::DriveIntegrationServiceFactory::FindForProfile(profile)
+                  ->GetMountPointPath()
+                  .AppendRelativePath(absolute_file_path, &drive_path));
+  return drive_path;
+}
+
 // Creates a DriveFs file change with the specified params. A `stable_id` of `0`
 // signifies absence of a known `stable_id` for backwards compatibility with
 // earlier versions of the `DriveFsHost`.
 drivefs::mojom::FileChangePtr CreateDriveFsChange(
     drivefs::mojom::FileChange::Type type,
-    const base::FilePath& file_path,
+    const base::FilePath& drive_path,
     int64_t stable_id = 0) {
   auto change = drivefs::mojom::FileChange::New();
-  change->path = file_path;
+  change->path = drive_path;
   change->stable_id = stable_id;
   change->type = type;
   return change;
@@ -508,9 +519,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // the consistent `stable_id` to link the `kDelete` with the `kCreate` change.
   std::vector<drivefs::mojom::FileChangePtr> changes;
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src),
+      /*stable_id=*/1));
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kCreate,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst),
+      /*stable_id=*/1));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));
@@ -528,9 +543,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // `dst` has been created. Note the different `stable_id` to indicate that the
   // `kDelete` and `kCreate` changes refer to different documents.
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src),
+      /*stable_id=*/1));
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/2));
+      drivefs::mojom::FileChange::Type::kCreate,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst),
+      /*stable_id=*/2));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));
@@ -551,10 +570,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // `dst` has been created. Note the absence of `stable_id`. The `kDelete` and
   // `kCreate` events may constitute a move of the same document, but because
   // `stable_id` is absent, we can't assume that to be the case.
-  changes.push_back(
-      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kDelete, src));
-  changes.push_back(
-      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kCreate, dst));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src)));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst)));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));
@@ -577,11 +598,17 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // then been deleted. Note the consistent `stable_id` to associate all changes
   // with the same document.
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kDelete, src, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src),
+      /*stable_id=*/1));
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kCreate, dst, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kCreate,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst),
+      /*stable_id=*/1));
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kDelete, dst, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst),
+      /*stable_id=*/1));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));
@@ -610,9 +637,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // `dst_dir`. Note the consistent `stable_id` to link the `kDelete` with the
   // `kCreate` change.
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kDelete, src_dir, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src_dir),
+      /*stable_id=*/1));
   changes.push_back(CreateDriveFsChange(
-      drivefs::mojom::FileChange::Type::kCreate, dst_dir, /*stable_id=*/1));
+      drivefs::mojom::FileChange::Type::kCreate,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), dst_dir),
+      /*stable_id=*/1));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));
@@ -628,8 +659,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   std::swap(src, dst);
 
   // Prep a batch of `changes` to indicate that `src_dir` has been deleted.
-  changes.push_back(
-      CreateDriveFsChange(drivefs::mojom::FileChange::Type::kDelete, src_dir));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->profile(), src_dir)));
 
   // Simulate the `changes` being sent from the server.
   drivefs_delegate()->OnFilesChanged(std::move(changes));

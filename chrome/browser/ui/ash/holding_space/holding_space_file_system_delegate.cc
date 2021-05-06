@@ -31,6 +31,24 @@ namespace ash {
 
 namespace {
 
+// Returns the absolute file path for the specified `drive_path`.
+// NOTE: This method requires that the `DriveIntegrationService` be mounted.
+base::FilePath ConvertDrivePathToAbsoluteFilePath(
+    Profile* profile,
+    const base::FilePath& drive_path) {
+  const auto* drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (drive_integration_service) {
+    base::FilePath absolute_file_path =
+        drive_integration_service->GetMountPointPath();
+    if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
+      return absolute_file_path;
+  }
+  NOTREACHED();
+  return base::FilePath();
+}
+
+// Returns a mojo connection to the ARC file system.
 arc::ConnectionHolder<arc::mojom::FileSystemInstance,
                       arc::mojom::FileSystemHost>*
 GetArcFileSystem() {
@@ -39,7 +57,7 @@ GetArcFileSystem() {
   return arc::ArcServiceManager::Get()->arc_bridge_service()->file_system();
 }
 
-// Returns whether
+// Returns whether:
 // *   the ARC is enabled for `profile`, and
 // *   connection to ARC file system service is *not* established at the time.
 bool IsArcFileSystemDisconnected(Profile* profile) {
@@ -159,6 +177,12 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
   std::set<base::FilePath> deleted_paths;
 
   for (const auto& change : changes) {
+    // Holding space requires absolute file paths.
+    const base::FilePath absolute_file_path =
+        ConvertDrivePathToAbsoluteFilePath(profile(), change.path);
+    if (absolute_file_path.empty())
+      continue;
+
     switch (change.type) {
       case drivefs::mojom::FileChange::Type::kCreate: {
         if (change.stable_id) {
@@ -168,7 +192,7 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
           // a delete of the underlying file.
           auto it = deleted_paths_by_stable_id.find(change.stable_id);
           if (it != deleted_paths_by_stable_id.end()) {
-            OnFilePathMoved(/*src=*/it->second, /*dst=*/change.path);
+            OnFilePathMoved(/*src=*/it->second, /*dst=*/absolute_file_path);
             deleted_paths_by_stable_id.erase(it);
           }
         }
@@ -181,13 +205,13 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
         // follows (or is confirmed *not* to follow). When `stable_id` is absent
         // it is not possible to detect a move.
         if (change.stable_id)
-          deleted_paths_by_stable_id[change.stable_id] = change.path;
+          deleted_paths_by_stable_id[change.stable_id] = absolute_file_path;
         else
-          deleted_paths.insert(change.path);
+          deleted_paths.insert(absolute_file_path);
         break;
       }
       case drivefs::mojom::FileChange::Type::kModify: {
-        OnFilePathModified(change.path);
+        OnFilePathModified(absolute_file_path);
         break;
       }
     }
