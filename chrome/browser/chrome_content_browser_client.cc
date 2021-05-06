@@ -646,6 +646,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+#include "chrome/browser/offline_pages/offline_page_navigation_throttle.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_url_loader_request_interceptor.h"
 #endif
@@ -4182,6 +4183,13 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
           handle),
       &throttles);
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  MaybeAddThrottle(
+      offline_pages::OfflinePageNavigationThrottle::MaybeCreateThrottleFor(
+          handle),
+      &throttles);
+#endif
 
   return throttles;
 }

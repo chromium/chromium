@@ -4365,6 +4365,7 @@ test("unit_tests") {
       "../browser/offline_pages/background_loader_offliner_unittest.cc",
       "../browser/offline_pages/download_archive_manager_unittest.cc",
       "../browser/offline_pages/offline_page_mhtml_archiver_unittest.cc",
+      "../browser/offline_pages/offline_page_navigation_throttle_unittest.cc",
       "../browser/offline_pages/offline_page_request_handler_unittest.cc",
       "../browser/offline_pages/offline_page_tab_helper_unittest.cc",
       "../browser/offline_pages/offline_page_utils_unittest.cc",

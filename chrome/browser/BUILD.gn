@@ -5941,6 +5941,8 @@ static_library("browser") {
       "offline_pages/offline_page_mhtml_archiver.cc",
       "offline_pages/offline_page_mhtml_archiver.h",
       "offline_pages/offline_page_model_factory.h",
+      "offline_pages/offline_page_navigation_throttle.cc",
+      "offline_pages/offline_page_navigation_throttle.h",
       "offline_pages/offline_page_origin_utils.h",
       "offline_pages/offline_page_request_handler.cc",
       "offline_pages/offline_page_request_handler.h",
