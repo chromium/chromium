@@ -58,8 +58,8 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // Check if the name or the wildcard is in the blocklist.
   base::Value name_value(native_host_name);
   base::Value wildcard_value("*");
-  if (blocklist->Find(name_value) == blocklist->end() &&
-      blocklist->Find(wildcard_value) == blocklist->end()) {
+  if (blocklist->Find(name_value) == blocklist->GetList().end() &&
+      blocklist->Find(wildcard_value) == blocklist->GetList().end()) {
     return allow_result;
   }
 
@@ -68,7 +68,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
           pref_names::kNativeMessagingAllowlist)) {
     const base::ListValue* allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (allowlist && allowlist->Find(name_value) != allowlist->end())
+    if (allowlist && allowlist->Find(name_value) != allowlist->GetList().end())
       return allow_result;
   }
 

@@ -110,10 +110,9 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
     return false;
   }
   allowed_origins_.ClearPatterns();
-  for (auto it = allowed_origins_list->begin();
-       it != allowed_origins_list->end(); ++it) {
+  for (const auto& entry : allowed_origins_list->GetList()) {
     std::string pattern_string;
-    if (!it->GetAsString(&pattern_string)) {
+    if (!entry.GetAsString(&pattern_string)) {
       *error_message = "allowed_origins must be list of strings.";
       return false;
     }
