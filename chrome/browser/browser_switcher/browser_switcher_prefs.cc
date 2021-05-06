@@ -29,7 +29,7 @@ namespace {
 std::vector<std::string> GetCachedRules(PrefService* prefs,
                                         const std::string& pref_name) {
   std::vector<std::string> rules;
-  for (const auto& url : *prefs->GetList(pref_name))
+  for (const auto& url : prefs->GetList(pref_name)->GetList())
     rules.push_back(url.GetString());
   return rules;
 }
@@ -270,7 +270,7 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
     return;
   const base::ListValue* params =
       prefs_->GetList(prefs::kAlternativeBrowserParameters);
-  for (const auto& param : *params) {
+  for (const auto& param : params->GetList()) {
     std::string param_string = param.GetString();
     alt_browser_params_.push_back(param_string);
   }
@@ -287,7 +287,7 @@ void BrowserSwitcherPrefs::UrlListChanged() {
       prefs_->GetList(prefs::kUrlList)->GetList().size());
 
   bool has_wildcard = false;
-  for (const auto& url : *prefs_->GetList(prefs::kUrlList)) {
+  for (const auto& url : prefs_->GetList(prefs::kUrlList)->GetList()) {
     std::string canonical = url.GetString();
     CanonicalizeRule(&canonical);
     rules_.sitelist.push_back(std::move(canonical));
@@ -310,7 +310,7 @@ void BrowserSwitcherPrefs::GreylistChanged() {
       prefs_->GetList(prefs::kUrlGreylist)->GetList().size());
 
   bool has_wildcard = false;
-  for (const auto& url : *prefs_->GetList(prefs::kUrlGreylist)) {
+  for (const auto& url : prefs_->GetList(prefs::kUrlGreylist)->GetList()) {
     std::string canonical = url.GetString();
     CanonicalizeRule(&canonical);
     rules_.greylist.push_back(std::move(canonical));
@@ -340,7 +340,7 @@ void BrowserSwitcherPrefs::ChromeParametersChanged() {
   if (!prefs_->IsManagedPreference(prefs::kChromeParameters))
     return;
   const base::ListValue* params = prefs_->GetList(prefs::kChromeParameters);
-  for (const auto& param : *params) {
+  for (const auto& param : params->GetList()) {
     std::string param_string = param.GetString();
     chrome_params_.push_back(param_string);
   }
