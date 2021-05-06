@@ -102,7 +102,7 @@ bool ExtractFormsData(NSString* forms_json,
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : *forms_list) {
+  for (const auto& form_dict : forms_list->GetList()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
                         frame_origin, &form))
@@ -165,7 +165,7 @@ bool ExtractFormData(const base::Value& form_value,
   const base::ListValue* fields_list = nullptr;
   if (!form_dictionary->GetList("fields", &fields_list))
     return false;
-  for (const auto& field_dict : *fields_list) {
+  for (const auto& field_dict : fields_list->GetList()) {
     const base::DictionaryValue* field;
     autofill::FormFieldData field_data;
     if (field_dict.GetAsDictionary(&field) &&
@@ -228,7 +228,7 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   // Load option values where present.
   const base::ListValue* option_values = nullptr;
   if (field.GetList("option_values", &option_values)) {
-    for (const auto& optionValue : *option_values) {
+    for (const auto& optionValue : option_values->GetList()) {
       std::u16string value;
       if (optionValue.GetAsString(&value))
         field_data->option_values.push_back(std::move(value));
@@ -238,7 +238,7 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   // Load option contents where present.
   const base::ListValue* option_contents = nullptr;
   if (field.GetList("option_contents", &option_contents)) {
-    for (const auto& option_content : *option_contents) {
+    for (const auto& option_content : option_contents->GetList()) {
       std::u16string content;
       if (option_content.GetAsString(&content))
         field_data->option_contents.push_back(std::move(content));
@@ -304,7 +304,7 @@ bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids) {
   if (!ids_value->GetAsList(&ids_list))
     return false;
 
-  for (const auto& unique_id : *ids_list) {
+  for (const auto& unique_id : ids_list->GetList()) {
     std::string id_string;
     if (!unique_id.GetAsString(&id_string))
       return false;
