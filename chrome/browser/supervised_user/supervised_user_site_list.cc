@@ -44,7 +44,7 @@ std::unique_ptr<base::Value> ReadFileOnBlockingThread(
 std::vector<std::string> ConvertListValues(const base::ListValue* list_values) {
   std::vector<std::string> converted;
   if (list_values) {
-    for (const auto& entry : *list_values) {
+    for (const auto& entry : list_values->GetList()) {
       std::string entry_string;
       if (!entry.GetAsString(&entry_string)) {
         LOG(ERROR) << "Invalid allowlist entry";
