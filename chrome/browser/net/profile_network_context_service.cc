@@ -111,7 +111,7 @@ const char kHttpCacheFinchExperimentGroups[] =
 
 std::vector<std::string> TranslateStringArray(const base::ListValue* list) {
   std::vector<std::string> strings;
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     DCHECK(value.is_string());
     strings.push_back(value.GetString());
   }
@@ -720,7 +720,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
-  for (const auto& value : *hsts_policy_bypass_list) {
+  for (const auto& value : hsts_policy_bypass_list->GetList()) {
     std::string string_value;
     if (!value.GetAsString(&string_value)) {
       continue;
