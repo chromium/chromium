@@ -11,6 +11,9 @@
 
 #include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -18,12 +21,6 @@
 #include "url/gurl.h"
 
 class Profile;
-class WebAppHoverButton;
-
-namespace views {
-class Checkbox;
-class ScrollView;
-}  // namespace views
 
 // This class extends DialogDelegateView and needs to be owned
 // by the views framework.
@@ -34,9 +31,10 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
   WebAppProtocolHandlerIntentPickerView(
       const GURL& url,
       Profile* profile,
-      const base::CommandLine& command_line,
-      std::vector<std::string> app_ids,
-      base::OnceCallback<void(bool accepted)> close_callback);
+      const web_app::AppId& app_id,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      chrome::WebAppProtocolHandlerAcceptanceCallback close_callback);
 
   WebAppProtocolHandlerIntentPickerView(
       const WebAppProtocolHandlerIntentPickerView&) = delete;
@@ -44,42 +42,33 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
       const WebAppProtocolHandlerIntentPickerView&) = delete;
   ~WebAppProtocolHandlerIntentPickerView() override;
 
-  static void Show(const GURL& url,
-                   Profile* profile,
-                   const base::CommandLine& command_line,
-                   std::vector<std::string> app_ids,
-                   base::OnceCallback<void(bool accepted)> close_callback);
+  static void Show(
+      const GURL& url,
+      Profile* profile,
+      const web_app::AppId& app_id,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      chrome::WebAppProtocolHandlerAcceptanceCallback close_callback);
 
  private:
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
 
-  const std::string& GetSelectedAppId() const;
+  const web_app::AppId& GetSelectedAppId() const;
   void OnAccepted();
   void OnCanceled();
   void OnClosed();
   void Initialize();
-
-  // Unselects the current focused app item on the list and
-  // refocus on the selected app item based on the index provided.
-  void SetSelectedAppIndex(size_t index, const ui::Event& event);
 
   // Runs the close_callback_ provided during Show() if it exists.
   void RunCloseCallback(bool accepted);
 
   const GURL url_;
   Profile* const profile_;
-  const base::CommandLine command_line_;
-  const std::vector<std::string> app_ids_;
-  base::OnceCallback<void(bool)> close_callback_;
+  const web_app::AppId app_id_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-
-  std::vector<WebAppHoverButton*> hover_buttons_;
-  views::Checkbox* remember_selection_checkbox_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
-
-  // Pre-select the first app on the list.
-  size_t selected_app_tag_ = 0;
+  chrome::WebAppProtocolHandlerAcceptanceCallback close_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_PROTOCOL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_

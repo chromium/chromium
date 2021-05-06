@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
@@ -33,7 +34,6 @@ class SettingsOverriddenDialogController;
 #endif
 
 namespace base {
-class CommandLine;
 class FilePath;
 }
 
@@ -122,13 +122,19 @@ void ShowWebAppInstallDialog(content::WebContents* web_contents,
                              AppInstallationAcceptanceCallback callback);
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Callback used to indicate whether a user has accepted the launch of a
+// web app. The boolean parameter is true when the user accepts the dialog.
+using WebAppProtocolHandlerAcceptanceCallback =
+    base::OnceCallback<void(bool accepted)>;
+
 // Shows the Web App Protocol Handler Intent Picker view.
-// |close_callback| may be null.
+// |profile| is kept alive throughout the processing and running of
+// |close_callback|. |close_callback| may be null.
 void ShowWebAppProtocolHandlerIntentPicker(
     const GURL& url,
     Profile* profile,
-    const base::CommandLine& command_line,
-    base::OnceCallback<void(bool accepted)> close_callback);
+    const web_app::AppId& app_id,
+    WebAppProtocolHandlerAcceptanceCallback close_callback);
 #endif
 
 // Sets whether |ShowWebAppDialog| should accept immediately without any

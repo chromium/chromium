@@ -71,7 +71,10 @@ enum class ProfileKeepAliveOrigin {
   // A DevTools window is open.
   kDevToolsWindow = 14,
 
-  kMaxValue = kDevToolsWindow,
+  // A web app permission dialog window is open.
+  kWebAppPermissionDialogWindow = 15,
+
+  kMaxValue = kWebAppPermissionDialogWindow,
 };
 
 std::ostream& operator<<(std::ostream& out,

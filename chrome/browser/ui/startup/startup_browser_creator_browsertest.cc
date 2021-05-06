@@ -102,6 +102,11 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#endif
+
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1604,9 +1609,11 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     return app_id;
   }
 
-  void SetUpCommandlineAndStart(const std::string& url) {
+  void SetUpCommandlineAndStart(const std::string& url,
+                                const web_app::AppId& app_id) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendArg(url);
+    command_line.AppendSwitchASCII(switches::kAppId, app_id);
 
     std::vector<Profile*> last_opened_profiles;
     StartupBrowserCreator browser_creator;
@@ -1618,8 +1625,12 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
-                       WebAppLaunch_WebAppIsLaunchedWithProtocolUrl) {
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserWebAppProtocolHandlingTest,
+    WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppProtocolHandlerIntentPickerView");
+
   // Register web app as a protocol handler that should handle the launch.
   blink::Manifest::ProtocolHandler protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -1628,7 +1639,35 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with a handled protocol URL param.
-  SetUpCommandlineAndStart("web+test://parameterString");
+  SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+  // The waiter will get the dialog when it shows up and close it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+
+  // Check that no extra window is launched.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserWebAppProtocolHandlingTest,
+    WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppProtocolHandlerIntentPickerView");
+
+  // Register web app as a protocol handler that should handle the launch.
+  blink::Manifest::ProtocolHandler protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = u"web+test";
+  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  // Launch the browser via a command line with a handled protocol URL param.
+  SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+  // The waiter will get the dialog when it shows up and accepts it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
@@ -1650,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
 
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsNotLaunchedWithUnhandledProtocolUrl) {
+    WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
   // Register web app as a protocol handler that should *not* handle the launch.
   blink::Manifest::ProtocolHandler protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -1659,26 +1698,26 @@ IN_PROC_BROWSER_TEST_F(
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with an unhandled protocol URL param.
-  SetUpCommandlineAndStart("web+unhandled://parameterString");
+  SetUpCommandlineAndStart("web+unhandled://parameterString", app_id);
 
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
 
-  // Check an app window is not launched.
+  // Check an app window is launched.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   Browser* app_browser;
   app_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(app_browser);
-  EXPECT_FALSE(web_app::AppBrowserController::IsWebApp(app_browser));
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
-  // Check the browser launches to a blank new tab page.
+  // Check the app is launched to the home page and not the translated URL.
   TabStripModel* tab_strip = app_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
-  EXPECT_EQ(chrome::kChromeUINewTabURL, web_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 class StartupBrowserCreatorExtensionsCheckupExperimentTest
     : public extensions::ExtensionBrowserTest {
