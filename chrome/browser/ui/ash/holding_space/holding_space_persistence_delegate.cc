@@ -95,13 +95,13 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
   // Update the `item` in persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   auto item_it = std::find_if(
-      update->begin(), update->end(),
+      update->GetList().begin(), update->GetList().end(),
       [&item](const base::Value& persisted_item) {
         return HoldingSpaceItem::DeserializeId(base::Value::AsDictionaryValue(
                    persisted_item)) == item->id();
       });
 
-  DCHECK(item_it != update->end());
+  DCHECK(item_it != update->GetList().end());
   *item_it = item->Serialize();
 }
 
