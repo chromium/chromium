@@ -126,6 +126,16 @@ Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
   return node ? node : GetClosestNodeForLayoutObject(layout_object->Parent());
 }
 
+// Return true if display locked, false otherwise.
+// Also returns false if not a safe time to perform the check.
+bool IsDisplayLocked(const Node* node) {
+  if (!node)
+    return false;
+  if (node->GetDocument().IsFlatTreeTraversalForbidden())
+    return false;  // Cannot safely perform this check now.
+  return DisplayLockUtilities::NearestLockedExclusiveAncestor(*node);
+}
+
 bool IsActive(Document& document) {
   return document.IsActive() && !document.IsDetached();
 }
@@ -606,7 +616,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   if (!ax_id)
     return node ? Get(node) : nullptr;
 
-  if ((node && DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) ||
+  if (IsDisplayLocked(node) ||
       !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
     // Change from AXLayoutObject -> AXNodeObject.
     // We previously saved the node in the cache with its layout object,
@@ -669,14 +679,12 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     }
   }
 
-  if (layout_id &&
-      DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+  if (layout_id && IsDisplayLocked(node)) {
     // Change from AXLayoutObject -> AXNodeObject.
     // The node is in a display locked subtree, but we've previously put it in
     // the cache with its layout object.
     Invalidate(layout_id);
-  } else if (layout_object && node_id && !layout_id &&
-             !DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+  } else if (layout_object && node_id && !layout_id && !IsDisplayLocked(node)) {
     // Change from AXNodeObject -> AXLayoutObject.
     // Has a layout object but no layout_id, meaning that when the AXObject was
     // originally created only for Node*, the LayoutObject* didn't exist yet.
@@ -970,7 +978,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // a locked subtree, which are created based on its node.
   LayoutObject* layout_object = node->GetLayoutObject();
   if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
-      !DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+      !IsDisplayLocked(node)) {
     return CreateAndInit(layout_object, parent_if_known, use_axid);
   }
 
