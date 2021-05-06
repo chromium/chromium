@@ -14,6 +14,7 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
 suite('InternetSubpage', function() {
@@ -525,6 +526,141 @@ suite('InternetSubpage', function() {
               assertEquals(1, allNetworkLists[2].networks.length);
             });
           });
+
+      test('Always-on VPN settings reflects OFF mode', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setAlwaysOnVpn({
+          mode: mojom.AlwaysOnVpnMode.kOff,
+          serviceGuid: '',
+        });
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              assertEquals(mojom.AlwaysOnVpnMode.kOff, networkAlwaysOnVpn.mode);
+              assertEquals('', networkAlwaysOnVpn.service);
+            });
+      });
+
+      test('Always-on VPN settings reflects BEST-EFFORT mode', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setAlwaysOnVpn({
+          mode: mojom.AlwaysOnVpnMode.kBestEffort,
+          serviceGuid: 'vpn1_guid',
+        });
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              assertEquals(
+                  mojom.AlwaysOnVpnMode.kBestEffort, networkAlwaysOnVpn.mode);
+              assertEquals('vpn1_guid', networkAlwaysOnVpn.service);
+            });
+      });
+
+      test('Always-on VPN settings reflects STRICT mode', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setAlwaysOnVpn({
+          mode: mojom.AlwaysOnVpnMode.kStrict,
+          serviceGuid: 'vpn2_guid',
+        });
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              assertEquals(
+                  mojom.AlwaysOnVpnMode.kStrict, networkAlwaysOnVpn.mode);
+              assertEquals('vpn2_guid', networkAlwaysOnVpn.service);
+            });
+      });
+
+      test('Enabled always-on and select a service', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              networkAlwaysOnVpn.mode = mojom.AlwaysOnVpnMode.kBestEffort;
+              networkAlwaysOnVpn.service = 'vpn1_guid';
+              return flushAsync();
+            })
+            .then(() => mojoApi_.getAlwaysOnVpn())
+            .then(result => {
+              assertEquals(
+                  mojom.AlwaysOnVpnMode.kBestEffort, result.properties.mode);
+              assertEquals('vpn1_guid', result.properties.serviceGuid);
+            });
+      });
+
+      test('Enable always-on with STRICT mode and select a service', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              networkAlwaysOnVpn.mode = mojom.AlwaysOnVpnMode.kStrict;
+              networkAlwaysOnVpn.service = 'vpn2_guid';
+              return flushAsync();
+            })
+            .then(() => mojoApi_.getAlwaysOnVpn())
+            .then(result => {
+              assertEquals(
+                  mojom.AlwaysOnVpnMode.kStrict, result.properties.mode);
+              assertEquals('vpn2_guid', result.properties.serviceGuid);
+            });
+      });
+
+      test('Always-on VPN is not shown without networks', () => {
+        return initSubpage().then(() => {
+          const networkAlwaysOnVpn = internetSubpage.$$('#alwaysOnVpnSelector');
+          assert(!networkAlwaysOnVpn);
+        });
+      });
+
+      test('Always-on VPN list contains compatible networks', () => {
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setAlwaysOnVpn({
+          mode: mojom.AlwaysOnVpnMode.kBestEffort,
+          serviceGuid: '',
+        });
+        return initSubpage()
+            .then(() => {
+              initVpn();
+              return flushAsync();
+            })
+            .then(() => {
+              const networkAlwaysOnVpn =
+                  internetSubpage.$$('#alwaysOnVpnSelector');
+              assert(networkAlwaysOnVpn);
+              // The list should contain 2 compatible networks.
+              assertEquals(5, networkAlwaysOnVpn.networks.length);
+            });
+      });
     });
   });
 });

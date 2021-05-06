@@ -133,7 +133,7 @@ void ShillProfileClientImpl::SetObjectPathProperty(
                                shill::kSetPropertyFunction);
 
   dbus::MessageWriter writer(&method_call);
-  writer.AppendString(shill::kAlwaysOnVpnServiceProperty);
+  writer.AppendString(name);
   writer.AppendVariantOfObjectPath(property);
   GetHelper(profile_path)
       ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),

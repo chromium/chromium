@@ -205,6 +205,7 @@ js_library("internet_subpage.m") {
   deps = [
     ":cellular_networks_list.m",
     ":internet_page_browser_proxy.m",
+    ":network_always_on_vpn.m",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",

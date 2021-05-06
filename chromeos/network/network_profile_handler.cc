@@ -229,10 +229,10 @@ void NetworkProfileHandler::GetAlwaysOnVpnConfigurationCallback(
     base::Value properties) {
   // A profile always contains the mode.
   std::string* mode =
-      properties.FindStringPath(shill::kAlwaysOnVpnModeProperty);
+      properties.FindStringKey(shill::kAlwaysOnVpnModeProperty);
   DCHECK(mode);
   std::string* service =
-      properties.FindStringPath(shill::kAlwaysOnVpnServiceProperty);
+      properties.FindStringKey(shill::kAlwaysOnVpnServiceProperty);
   std::move(callback).Run(*mode, service ? *service : std::string());
 }
 

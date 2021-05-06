@@ -9,6 +9,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
@@ -25,6 +26,7 @@
 <link rel="import" href="./cellular_networks_list.html">
 <link rel="import" href="../route_origin_behavior.html">
 <link rel="import" href="internet_page_browser_proxy.html">
+<link rel="import" href="network_always_on_vpn.html">
 
 <dom-module id="settings-internet-subpage">
   <template>
@@ -73,6 +75,10 @@
 
       network-list {
         flex: 1;
+      }
+
+      network-always-on-vpn {
+        width: 100%;
       }
 
       #gmscore-notifications-container {
@@ -236,6 +242,21 @@
           </template>
         </template>
       </div>
+
+      <template is="dom-if"
+          if="[[shouldShowVpnPreferences_(isManaged_, deviceState)]]">
+        <div class="settings-box first">
+          <h2>$i18n{networkVpnPreferences}</h2>
+        </div>
+        <div class="settings-box first">
+          <network-always-on-vpn id="alwaysOnVpnSelector"
+              networks="[[getAlwaysOnVpnNetworks_(deviceState,
+                networkStateList_, thirdPartyVpns_)]]"
+              mode="{{alwaysOnVpnMode_}}"
+              service="{{alwaysOnVpnService_}}">
+          </network-always-on-vpn>
+        </div>
+      </template>
 
       <template is="dom-if"
           if="[[tetherToggleIsVisible_(deviceState, tetherDeviceState)]]">

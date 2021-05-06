@@ -56,6 +56,14 @@
      */
     this.testPin = '';
 
+    /**
+     * @type {chromeos.networkConfig.mojom.AlwaysOnVpnProperties}
+     */
+    this.alwaysOnVpnProperties_ = {
+      mode: chromeos.networkConfig.mojom.AlwaysOnVpnMode.kOff,
+      serviceGuid: '',
+    };
+
     this.resetForTest();
   }
 
@@ -114,6 +122,7 @@
      'setCellularSimState',
      'startConnect',
      'configureNetwork',
+     'getAlwaysOnVpn',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -502,5 +511,23 @@
       this.methodCalled('getNetworkCertificates');
       resolve({serverCas: this.serverCas_, userCerts: this.userCerts_});
     });
+  }
+
+  /**
+   * @return {!Promise<{
+   *      result: {!chromeos.networkConfig.mojom.AlwaysOnVpnProperties}}>}
+   */
+  getAlwaysOnVpn() {
+    return new Promise(resolve => {
+      this.methodCalled('getAlwaysOnVpn');
+      resolve({properties: this.alwaysOnVpnProperties_});
+    });
+  }
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.AlwaysOnVpnProperties} properties
+   */
+  setAlwaysOnVpn(properties) {
+    this.alwaysOnVpnProperties_ = properties;
   }
 }
