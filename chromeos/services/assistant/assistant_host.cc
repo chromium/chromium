@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/proxy/assistant_proxy.h"
+#include "chromeos/services/assistant/assistant_host.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
+#include "chromeos/services/assistant/libassistant_service_host.h"
 
 namespace chromeos {
 namespace assistant {
 
-AssistantProxy::AssistantProxy() {
+AssistantHost::AssistantHost() {
   background_thread_.Start();
 }
 
-AssistantProxy::~AssistantProxy() {
+AssistantHost::~AssistantHost() {
   StopLibassistantService();
 }
 
-void AssistantProxy::Initialize(LibassistantServiceHost* host) {
+void AssistantHost::Initialize(LibassistantServiceHost* host) {
   DCHECK(host);
   libassistant_service_host_ = host;
   LaunchLibassistantService();
@@ -29,7 +29,7 @@ void AssistantProxy::Initialize(LibassistantServiceHost* host) {
   BindControllers();
 }
 
-void AssistantProxy::LaunchLibassistantService() {
+void AssistantHost::LaunchLibassistantService() {
   // A Mojom service runs on the thread where its receiver was bound.
   // So to make |libassistant_service_| run on the background thread, we must
   // create it on the background thread, as it binds its receiver in its
@@ -37,7 +37,7 @@ void AssistantProxy::LaunchLibassistantService() {
   background_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &AssistantProxy::LaunchLibassistantServiceOnBackgroundThread,
+          &AssistantHost::LaunchLibassistantServiceOnBackgroundThread,
           // This is safe because we own the background thread,
           // so when we're deleted the background thread is stopped.
           base::Unretained(this),
@@ -46,7 +46,7 @@ void AssistantProxy::LaunchLibassistantService() {
           libassistant_service_.BindNewPipeAndPassReceiver()));
 }
 
-void AssistantProxy::LaunchLibassistantServiceOnBackgroundThread(
+void AssistantHost::LaunchLibassistantServiceOnBackgroundThread(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         client) {
   DCHECK(background_task_runner()->BelongsToCurrentThread());
@@ -54,23 +54,23 @@ void AssistantProxy::LaunchLibassistantServiceOnBackgroundThread(
   libassistant_service_host_->Launch(std::move(client));
 }
 
-void AssistantProxy::StopLibassistantService() {
+void AssistantHost::StopLibassistantService() {
   libassistant_service_.reset();
 
   // |libassistant_service_| is launched on the background thread, so we have to
   // stop it there as well.
   background_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&AssistantProxy::StopLibassistantServiceOnBackgroundThread,
+      base::BindOnce(&AssistantHost::StopLibassistantServiceOnBackgroundThread,
                      base::Unretained(this)));
 }
 
-void AssistantProxy::StopLibassistantServiceOnBackgroundThread() {
+void AssistantHost::StopLibassistantServiceOnBackgroundThread() {
   DCHECK(background_task_runner()->BelongsToCurrentThread());
   libassistant_service_host_->Stop();
 }
 
-void AssistantProxy::BindControllers() {
+void AssistantHost::BindControllers() {
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
       pending_audio_input_controller_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
@@ -125,102 +125,102 @@ void AssistantProxy::BindControllers() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-AssistantProxy::background_task_runner() {
+AssistantHost::background_task_runner() {
   return background_thread_.task_runner();
 }
 
 mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
-AssistantProxy::ExtractAudioInputController() {
+AssistantHost::ExtractAudioInputController() {
   DCHECK(audio_input_controller_.is_valid());
   return std::move(audio_input_controller_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
-AssistantProxy::ExtractAudioOutputDelegate() {
+AssistantHost::ExtractAudioOutputDelegate() {
   DCHECK(pending_audio_output_delegate_receiver_.is_valid());
   return std::move(pending_audio_output_delegate_receiver_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::DeviceSettingsDelegate>
-AssistantProxy::ExtractDeviceSettingsDelegate() {
+AssistantHost::ExtractDeviceSettingsDelegate() {
   DCHECK(pending_device_settings_delegate_receiver_.is_valid());
   return std::move(pending_device_settings_delegate_receiver_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
-AssistantProxy::ExtractMediaDelegate() {
+AssistantHost::ExtractMediaDelegate() {
   DCHECK(media_delegate_.is_valid());
   return std::move(media_delegate_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
-AssistantProxy::ExtractNotificationDelegate() {
+AssistantHost::ExtractNotificationDelegate() {
   DCHECK(notification_delegate_.is_valid());
   return std::move(notification_delegate_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
-AssistantProxy::ExtractPlatformDelegate() {
+AssistantHost::ExtractPlatformDelegate() {
   DCHECK(platform_delegate_.is_valid());
   return std::move(platform_delegate_);
 }
 
 mojo::PendingRemote<
     chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
-AssistantProxy::ExtractSpeakerIdEnrollmentController() {
+AssistantHost::ExtractSpeakerIdEnrollmentController() {
   DCHECK(speaker_id_enrollment_controller_.is_valid());
   return std::move(speaker_id_enrollment_controller_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
-AssistantProxy::ExtractTimerDelegate() {
+AssistantHost::ExtractTimerDelegate() {
   DCHECK(timer_delegate_.is_valid());
   return std::move(timer_delegate_);
 }
 
 chromeos::libassistant::mojom::ConversationController&
-AssistantProxy::conversation_controller() {
+AssistantHost::conversation_controller() {
   DCHECK(conversation_controller_.is_bound());
   return *conversation_controller_;
 }
 
 chromeos::libassistant::mojom::DisplayController&
-AssistantProxy::display_controller() {
+AssistantHost::display_controller() {
   DCHECK(display_controller_.is_bound());
   return *display_controller_.get();
 }
 
 chromeos::libassistant::mojom::ServiceController&
-AssistantProxy::service_controller() {
+AssistantHost::service_controller() {
   DCHECK(service_controller_.is_bound());
   return *service_controller_.get();
 }
 
 chromeos::libassistant::mojom::MediaController&
-AssistantProxy::media_controller() {
+AssistantHost::media_controller() {
   DCHECK(media_controller_.is_bound());
   return *media_controller_.get();
 }
 
 chromeos::libassistant::mojom::SettingsController&
-AssistantProxy::settings_controller() {
+AssistantHost::settings_controller() {
   DCHECK(settings_controller_.is_bound());
   return *settings_controller_;
 }
 
 chromeos::libassistant::mojom::TimerController&
-AssistantProxy::timer_controller() {
+AssistantHost::timer_controller() {
   DCHECK(timer_controller_.is_bound());
   return *timer_controller_.get();
 }
 
-void AssistantProxy::AddSpeechRecognitionObserver(
+void AssistantHost::AddSpeechRecognitionObserver(
     mojo::PendingRemote<
         chromeos::libassistant::mojom::SpeechRecognitionObserver> observer) {
   libassistant_service_->AddSpeechRecognitionObserver(std::move(observer));
 }
 
-void AssistantProxy::AddAuthenticationStateObserver(
+void AssistantHost::AddAuthenticationStateObserver(
     mojo::PendingRemote<
         chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
   libassistant_service_->AddAuthenticationStateObserver(std::move(observer));

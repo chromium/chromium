@@ -10,7 +10,7 @@
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
+#include "chromeos/services/assistant/libassistant_service_host.h"
 
 namespace chromeos {
 namespace libassistant {

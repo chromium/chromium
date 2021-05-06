@@ -19,6 +19,8 @@ component("lib") {
   defines = [ "IS_ASSISTANT_SERVICE_IMPL" ]
 
   sources = [
+    "assistant_host.cc",
+    "assistant_host.h",
     "assistant_interaction_logger.cc",
     "assistant_interaction_logger.h",
     "assistant_manager_service.cc",
@@ -29,6 +31,9 @@ component("lib") {
     "assistant_settings_impl.h",
     "device_settings_host.cc",
     "device_settings_host.h",
+    "libassistant_service_host.h",
+    "libassistant_service_host_impl.cc",
+    "libassistant_service_host_impl.h",
     "media_host.cc",
     "media_host.h",
     "media_session/assistant_media_session.cc",
@@ -50,7 +55,6 @@ component("lib") {
   ]
 
   deps = [
-    ":libassistant_service_host",
     "//ash/components/audio",
     "//ash/constants",
     "//base",
@@ -58,7 +62,6 @@ component("lib") {
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/services/assistant/proxy",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/strings",
@@ -71,6 +74,14 @@ component("lib") {
     "//ui/accessibility:ax_assistant",
   ]
 
+  if (enable_cros_libassistant) {
+    deps += [ "//chromeos/services/libassistant" ]
+
+    if (enable_libassistant_sandbox) {
+      deps += [ "//chromeos/services/assistant/public/cpp" ]
+    }
+  }
+
   public_deps = [
     "//ash/public/cpp:cpp",
     "//chromeos/services/assistant/public/cpp",
@@ -79,27 +90,6 @@ component("lib") {
     "//mojo/public/cpp/bindings",
     "//services/audio/public/cpp",
   ]
-}
-
-source_set("libassistant_service_host") {
-  sources = [
-    "libassistant_service_host_impl.cc",
-    "libassistant_service_host_impl.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/assistant:buildflags",
-    "//chromeos/services/assistant/proxy",
-  ]
-
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/libassistant" ]
-
-    if (enable_libassistant_sandbox) {
-      deps += [ "//chromeos/services/assistant/public/cpp" ]
-    }
-  }
 }
 
 source_set("tests") {
@@ -116,7 +106,6 @@ source_set("tests") {
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/power",
-    "//chromeos/services/assistant/proxy",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/libassistant/public/mojom",

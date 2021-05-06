@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PROXY_ASSISTANT_PROXY_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PROXY_ASSISTANT_PROXY_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
+#define CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
 
 #include <memory>
 
@@ -34,12 +34,12 @@ class LibassistantServiceHost;
 
 // The proxy to the Assistant service, which serves as the main
 // access point to the entire Assistant API.
-class AssistantProxy {
+class AssistantHost {
  public:
-  AssistantProxy();
-  AssistantProxy(AssistantProxy&) = delete;
-  AssistantProxy& operator=(AssistantProxy&) = delete;
-  ~AssistantProxy();
+  AssistantHost();
+  AssistantHost(AssistantHost&) = delete;
+  AssistantHost& operator=(AssistantHost&) = delete;
+  ~AssistantHost();
 
   void Initialize(LibassistantServiceHost* host);
 
@@ -125,7 +125,6 @@ class AssistantProxy {
   mojo::Remote<chromeos::libassistant::mojom::TimerController>
       timer_controller_;
 
-
   // Will be unbound after they are extracted.
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
       audio_input_controller_;
@@ -155,4 +154,4 @@ class AssistantProxy {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PROXY_ASSISTANT_PROXY_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_

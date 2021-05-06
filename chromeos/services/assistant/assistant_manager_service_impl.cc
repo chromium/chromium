@@ -158,7 +158,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     base::Optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
     : assistant_settings_(std::make_unique<AssistantSettingsImpl>(context)),
-      assistant_proxy_(std::make_unique<AssistantProxy>()),
+      assistant_host_(std::make_unique<AssistantHost>()),
       platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
       context_(context),
       device_settings_host_(std::make_unique<DeviceSettingsHost>(context)),
@@ -184,38 +184,37 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
         std::make_unique<LibassistantServiceHostImpl>();
   }
 
-  assistant_proxy_->Initialize(libassistant_service_host_.get());
+  assistant_host_->Initialize(libassistant_service_host_.get());
 
   service_controller().AddAndFireStateObserver(
       state_observer_receiver_.BindNewPipeAndPassRemote());
-  assistant_proxy_->AddSpeechRecognitionObserver(
+  assistant_host_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
   AddRemoteConversationObserver(this);
 
-  audio_output_delegate_->Bind(assistant_proxy_->ExtractAudioOutputDelegate());
-  platform_delegate_->Bind(assistant_proxy_->ExtractPlatformDelegate());
+  audio_output_delegate_->Bind(assistant_host_->ExtractAudioOutputDelegate());
+  platform_delegate_->Bind(assistant_host_->ExtractPlatformDelegate());
   audio_input_host_ = std::make_unique<AudioInputHostImpl>(
-      assistant_proxy_->ExtractAudioInputController(),
+      assistant_host_->ExtractAudioInputController(),
       context_->cras_audio_handler(), context_->power_manager_client(),
       context_->assistant_state()->locale().value());
 
   assistant_settings_->Initialize(
-      assistant_proxy_->ExtractSpeakerIdEnrollmentController(),
-      &assistant_proxy_->settings_controller());
+      assistant_host_->ExtractSpeakerIdEnrollmentController(),
+      &assistant_host_->settings_controller());
 
-  media_host_->Initialize(&assistant_proxy_->media_controller(),
-                          assistant_proxy_->ExtractMediaDelegate());
-  timer_host_->Initialize(&assistant_proxy_->timer_controller(),
-                          assistant_proxy_->ExtractTimerDelegate());
+  media_host_->Initialize(&assistant_host_->media_controller(),
+                          assistant_host_->ExtractMediaDelegate());
+  timer_host_->Initialize(&assistant_host_->timer_controller(),
+                          assistant_host_->ExtractTimerDelegate());
 
-  device_settings_host_->Bind(
-      assistant_proxy_->ExtractDeviceSettingsDelegate());
+  device_settings_host_->Bind(assistant_host_->ExtractDeviceSettingsDelegate());
 }
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
   // Destroy the Assistant Proxy first so the background thread is flushed
   // before any of the other objects are destroyed.
-  assistant_proxy_ = nullptr;
+  assistant_host_ = nullptr;
 }
 
 void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
@@ -290,7 +289,7 @@ AssistantSettings* AssistantManagerServiceImpl::GetAssistantSettings() {
 void AssistantManagerServiceImpl::AddAuthenticationStateObserver(
     AuthenticationStateObserver* observer) {
   DCHECK(observer);
-  assistant_proxy_->AddAuthenticationStateObserver(
+  assistant_host_->AddAuthenticationStateObserver(
       observer->BindNewPipeAndPassRemote());
 }
 
@@ -572,7 +571,7 @@ void AssistantManagerServiceImpl::AddRemoteConversationObserver(
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
 AssistantManagerServiceImpl::GetPendingNotificationDelegate() {
-  return assistant_proxy_->ExtractNotificationDelegate();
+  return assistant_host_->ExtractNotificationDelegate();
 }
 
 void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {
@@ -638,12 +637,12 @@ AssistantManagerServiceImpl::main_task_runner() {
 
 chromeos::libassistant::mojom::DisplayController&
 AssistantManagerServiceImpl::display_controller() {
-  return assistant_proxy_->display_controller();
+  return assistant_host_->display_controller();
 }
 
 chromeos::libassistant::mojom::ServiceController&
 AssistantManagerServiceImpl::service_controller() {
-  return assistant_proxy_->service_controller();
+  return assistant_host_->service_controller();
 }
 
 void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
@@ -653,16 +652,16 @@ void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
 
 chromeos::libassistant::mojom::ConversationController&
 AssistantManagerServiceImpl::conversation_controller() {
-  return assistant_proxy_->conversation_controller();
+  return assistant_host_->conversation_controller();
 }
 
 chromeos::libassistant::mojom::SettingsController&
 AssistantManagerServiceImpl::settings_controller() {
-  return assistant_proxy_->settings_controller();
+  return assistant_host_->settings_controller();
 }
 
 base::Thread& AssistantManagerServiceImpl::background_thread() {
-  return assistant_proxy_->background_thread();
+  return assistant_host_->background_thread();
 }
 
 void AssistantManagerServiceImpl::SetStateAndInformObservers(State new_state) {

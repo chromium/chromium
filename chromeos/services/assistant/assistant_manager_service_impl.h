@@ -18,10 +18,10 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
+#include "chromeos/services/assistant/assistant_host.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
-#include "chromeos/services/assistant/proxy/assistant_proxy.h"
-#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
+#include "chromeos/services/assistant/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -46,8 +46,8 @@ class AssistantStateBase;
 namespace chromeos {
 namespace assistant {
 
+class AssistantHost;
 class AssistantMediaSession;
-class AssistantProxy;
 class AudioInputHost;
 class AudioOutputDelegateImpl;
 class DeviceSettingsHost;
@@ -230,7 +230,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   State state_ = State::STOPPED;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
-  std::unique_ptr<AssistantProxy> assistant_proxy_;
+  std::unique_ptr<AssistantHost> assistant_host_;
   std::unique_ptr<PlatformDelegateImpl> platform_delegate_;
   std::unique_ptr<AudioInputHost> audio_input_host_;
 
