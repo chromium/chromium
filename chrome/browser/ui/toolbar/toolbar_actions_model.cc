@@ -359,16 +359,19 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
                                               bool is_now_visible) {
   DCHECK_NE(is_now_visible, IsActionPinned(action_id));
   DCHECK(!IsActionForcePinned(action_id));
-  auto new_pinned_action_ids = pinned_action_ids_;
+
+  auto stored_pinned_action_ids = extension_prefs_->GetPinnedExtensions();
+  DCHECK_NE(is_now_visible,
+            base::Contains(stored_pinned_action_ids, action_id));
   if (is_now_visible) {
-    new_pinned_action_ids.push_back(action_id);
+    stored_pinned_action_ids.push_back(action_id);
   } else {
-    base::Erase(new_pinned_action_ids, action_id);
+    base::Erase(stored_pinned_action_ids, action_id);
   }
-  extension_prefs_->SetPinnedExtensions(new_pinned_action_ids);
+  extension_prefs_->SetPinnedExtensions(stored_pinned_action_ids);
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
-  DCHECK(pinned_action_ids_ == new_pinned_action_ids);
+  DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 }
 
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(
