@@ -306,7 +306,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                                     suggestionsAvailable);
                        }];
 
-  if ([formQuery.type isEqual:@"input"] && self.isPasswordGenerated &&
+  if (self.isPasswordGenerated &&
+      ([formQuery.type isEqual:@"input"] ||
+       [formQuery.type isEqual:@"keyup"]) &&
       formQuery.uniqueFieldID == self.passwordGeneratedIdentifier) {
     // On other platforms, when the user clicks on generation field, we show
     // password in clear text. And the user has the possibility to edit it. On
