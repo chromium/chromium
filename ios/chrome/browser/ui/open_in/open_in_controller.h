@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
 
 #include "base/memory/ref_counted.h"
 #import "ios/chrome/browser/ui/open_in/open_in_toolbar.h"

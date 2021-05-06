@@ -9,7 +9,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"

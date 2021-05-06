@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <vector>
 
 @protocol SaveCardInfoBarViewDelegate;
 @class SaveCardMessageWithLinks;

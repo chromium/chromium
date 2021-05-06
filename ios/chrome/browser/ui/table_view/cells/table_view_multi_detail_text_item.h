@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_DETAIL_TEXT_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_DETAIL_TEXT_ITEM_H_
 
-#include <string>
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_OVERLAY_REQUEST_IMPL_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_OVERLAY_REQUEST_IMPL_H_
 
-#include <memory>
 
 #include "ios/chrome/browser/overlays/overlay_callback_manager_impl.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"

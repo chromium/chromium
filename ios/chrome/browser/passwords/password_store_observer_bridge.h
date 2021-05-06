@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
 
 #include "base/scoped_observer.h"
 #include "components/password_manager/core/browser/password_store.h"

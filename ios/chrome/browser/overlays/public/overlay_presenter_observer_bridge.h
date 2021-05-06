@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <string>
 
 #include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_GOOGLE_GOOGLE_LOGO_SERVICE_H_
 #define IOS_CHROME_BROWSER_GOOGLE_GOOGLE_LOGO_SERVICE_H_
 
-#include <memory>
 
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service_impl.h"

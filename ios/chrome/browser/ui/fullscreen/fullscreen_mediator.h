@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

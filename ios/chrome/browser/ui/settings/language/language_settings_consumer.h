@@ -7,7 +7,6 @@
 
 #include <Foundation/Foundation.h>
 
-#include <string>
 
 // The consumer protocol for the LanguageSettingsDataSource.
 @protocol LanguageSettingsConsumer

@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
 #include "base/scoped_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"

@@ -7,7 +7,6 @@
 
 #include <Foundation/Foundation.h>
 
-#include <string>
 
 @class LanguageItem;
 @protocol LanguageSettingsConsumer;

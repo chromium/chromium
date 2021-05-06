@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"

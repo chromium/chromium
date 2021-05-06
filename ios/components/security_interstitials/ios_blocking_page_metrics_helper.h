@@ -5,7 +5,6 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_BLOCKING_PAGE_METRICS_HELPER_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_BLOCKING_PAGE_METRICS_HELPER_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "components/security_interstitials/core/metrics_helper.h"

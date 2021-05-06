@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_OFFLINE_URL_UTILS_H_
 #define IOS_CHROME_BROWSER_READING_LIST_OFFLINE_URL_UTILS_H_
 
-#include <string>
 
 #include "base/files/file_path.h"
 #include "url/gurl.h"

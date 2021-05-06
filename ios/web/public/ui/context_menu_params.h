@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <string>
 
 #include "ios/web/public/navigation/referrer.h"
 #include "url/gurl.h"

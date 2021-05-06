@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
 
-#include <memory>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"

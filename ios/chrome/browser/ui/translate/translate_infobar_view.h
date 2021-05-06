@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <vector>
 
 // States in which the infobar can be.
 typedef NS_ENUM(NSInteger, TranslateInfobarViewState) {

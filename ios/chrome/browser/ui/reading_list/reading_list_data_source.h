@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_DATA_SOURCE_H_
 #define IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_DATA_SOURCE_H_
 
-#include <memory>
 
 @protocol ReadingListDataSink;
 @protocol ReadingListListItem;

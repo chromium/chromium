@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_KEYS_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_KEYS_HELPER_H_
 
-#include <string>
 
 @class NSString;
 @class NSArray;

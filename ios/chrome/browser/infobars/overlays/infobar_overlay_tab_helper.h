@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 
-#include <memory>
 
 #include "base/scoped_observer.h"
 #include "components/infobars/core/infobar_manager.h"

@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_DELEGATE_H_
 #define IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_DELEGATE_H_
 
-#include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "ios/web/public/init/web_main_delegate.h"

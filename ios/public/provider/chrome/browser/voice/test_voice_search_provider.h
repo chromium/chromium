@@ -5,7 +5,6 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_VOICE_TEST_VOICE_SEARCH_PROVIDER_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_VOICE_TEST_VOICE_SEARCH_PROVIDER_H_
 
-#include <memory>
 
 #include "base/macros.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"

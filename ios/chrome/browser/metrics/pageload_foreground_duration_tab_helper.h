@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_METRICS_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 
-#include <memory>
-
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #import "ios/web/public/web_state.h"
