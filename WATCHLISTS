@@ -104,9 +104,6 @@
     'android_webview_network_service': {
       'filepath': 'android_webview/browser/network_service/',
     },
-    'animation_worklet': {
-      'filepath': 'third_party/blink/renderer/modules/animationworklet/',
-    },
     'app_service': {
       'filepath': 'chrome/browser/apps/app_service/'\
                   '|chrome/browser/ui/app_list/app_service/'\
@@ -1987,6 +1984,11 @@
     'webgpu': {
         'filepath': 'third_party/blink/renderer/modules/webgpu/',
     },
+    'webid': {
+        'filepath': 'third_party/blink/renderer/modules/webid/'\
+                    '|third_party/blink/public/mojom/webid/'\
+                    '|chrome/browser/.*webid',
+    },
     'weblayer': {
         'filepath': 'weblayer/',
     },
@@ -2086,7 +2088,6 @@
                        'webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': ['timvolodine@chromium.org'],
-    'animation_worklet': ['majidvp@chromium.org'],
     'app_service': ['dominickn+watch-app_service@chromium.org',
                     'nancylingwang@chromium.org'],
     'app_shortcuts': ['dominickn+watch-app_shortcuts@chromium.org',
@@ -2313,8 +2314,7 @@
                        'jophba+watch@chromium.org',
                        'mfoltz+watch@chromium.org'],
     'cc': ['cc-bugs@chromium.org'],
-    'cc-animation': ['gerchiko@microsoft.com',
-                     'majidvp@chromium.org'],
+    'cc-animation': ['gerchiko@microsoft.com'],
     'cc-display': ['penghuang+viz@chromium.org'],
     'cc-scheduler': ['scheduler-bugs+cc@chromium.org'],
     'certificate_transparency': ['certificate-transparency-chrome@googlegroups.com',
@@ -2839,6 +2839,7 @@
     'webcodecs': ['feature-media-reviews@chromium.org'],
     'webgpu': ['cwallez+watch@chromium.org',
                'kainino+watch@chromium.org'],
+    'webid': ['majidvp+watch@chromium.org'],
     'weblayer': ['cricke+watch@chromium.org'],
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
