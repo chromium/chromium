@@ -270,6 +270,15 @@ InstallStageTracker::GetManifestInvalidAppStatusError(
   return AppStatusError::kUnknown;
 }
 
+void InstallStageTracker::ReportFetchErrorCodes(
+    const ExtensionId& id,
+    const ExtensionDownloaderDelegate::FailureData& failure_data) {
+  InstallationData& data = installation_data_map_[id];
+  data.network_error_code = failure_data.network_error_code;
+  data.response_code = failure_data.response_code;
+  data.fetch_tries = failure_data.fetch_tries;
+}
+
 void InstallStageTracker::ReportFetchError(
     const ExtensionId& id,
     FailureReason reason,
@@ -278,9 +287,7 @@ void InstallStageTracker::ReportFetchError(
          reason == FailureReason::CRX_FETCH_FAILED);
   InstallationData& data = installation_data_map_[id];
   data.failure_reason = reason;
-  data.network_error_code = failure_data.network_error_code;
-  data.response_code = failure_data.response_code;
-  data.fetch_tries = failure_data.fetch_tries;
+  ReportFetchErrorCodes(id, failure_data);
   NotifyObserversOfFailure(id, reason, data);
 }
 

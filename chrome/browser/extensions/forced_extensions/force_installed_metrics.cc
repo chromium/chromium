@@ -185,6 +185,56 @@ void ReportCrxFetchFailedErrorCodes(
                                 ExtensionDownloader::kMaxRetries);
 }
 
+// Reports the network error code, HTTP error code and number of fetch tries
+// made when extension is stuck in DOWNLOAD_MANIFEST_RETRY downloading stage.
+void ReportManifestFetchRetryErrorCodes(
+    const InstallStageTracker::InstallationData& installation,
+    bool is_from_store) {
+  base::UmaHistogramSparse(
+      "Extensions.ForceInstalledManifestFetchRetryNetworkErrorCode",
+      installation.network_error_code.value());
+
+  if (installation.response_code) {
+    if (is_from_store) {
+      base::UmaHistogramSparse(
+          "Extensions.WebStore_ForceInstalledManifestFetchRetryHttpErrorCode2",
+          installation.response_code.value());
+    } else {
+      base::UmaHistogramSparse(
+          "Extensions.OffStore_ForceInstalledManifestFetchRetryHttpErrorCode2",
+          installation.response_code.value());
+    }
+  }
+  base::UmaHistogramExactLinear(
+      "Extensions.ForceInstalledManifestFetchRetryFetchTries",
+      installation.fetch_tries.value(), ExtensionDownloader::kMaxRetries);
+}
+
+// Reports the network error code, HTTP error code and number of fetch tries
+// made when extension is stuck in DOWNLOAD_CRX_RETRY downloading stage.
+void ReportCrxFetchRetryErrorCodes(
+    const InstallStageTracker::InstallationData& installation,
+    bool is_from_store) {
+  base::UmaHistogramSparse(
+      "Extensions.ForceInstalledCrxFetchRetryNetworkErrorCode",
+      installation.network_error_code.value());
+
+  if (installation.response_code) {
+    if (is_from_store) {
+      base::UmaHistogramSparse(
+          "Extensions.WebStore_ForceInstalledCrxFetchRetryHttpErrorCode2",
+          installation.response_code.value());
+    } else {
+      base::UmaHistogramSparse(
+          "Extensions.OffStore_ForceInstalledCrxFetchRetryHttpErrorCode2",
+          installation.response_code.value());
+    }
+  }
+  base::UmaHistogramExactLinear(
+      "Extensions.ForceInstalledCrxFetchRetryFetchTries",
+      installation.fetch_tries.value(), ExtensionDownloader::kMaxRetries);
+}
+
 // Reports installation stage and downloading stage for extensions which are
 // currently in progress of the installation.
 void ReportCurrentStage(
@@ -226,6 +276,19 @@ void ReportDetailedFailureReasons(
   // HTTP error code and number of fetch tries made.
   if (failure_reason == FailureReason::MANIFEST_FETCH_FAILED)
     ReportManifestFetchFailedErrorCodes(installation, is_from_store);
+
+  if (failure_reason == FailureReason::IN_PROGRESS) {
+    if (installation.downloading_stage ==
+        ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST_RETRY) {
+      ReportManifestFetchRetryErrorCodes(installation, is_from_store);
+    }
+
+    if (failure_reason == FailureReason::IN_PROGRESS &&
+        installation.downloading_stage ==
+            ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX_RETRY) {
+      ReportCrxFetchRetryErrorCodes(installation, is_from_store);
+    }
+  }
 
   if (installation.install_error_detail) {
     CrxInstallErrorDetail detail = installation.install_error_detail.value();

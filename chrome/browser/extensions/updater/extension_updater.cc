@@ -541,6 +541,11 @@ void ExtensionUpdater::OnExtensionDownloadFailed(
     service_->FinishDelayedInstallationIfReady(id, install_immediately);
 }
 
+void ExtensionUpdater::OnExtensionDownloadRetry(const ExtensionId& id,
+                                                const FailureData& data) {
+  InstallStageTracker::Get(profile_)->ReportFetchErrorCodes(id, data);
+}
+
 void ExtensionUpdater::OnExtensionDownloadFinished(
     const CRXFileInfo& file,
     bool file_ownership_passed,

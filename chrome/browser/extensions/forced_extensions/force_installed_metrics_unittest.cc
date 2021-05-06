@@ -73,6 +73,14 @@ constexpr char kFailureCrxInstallErrorStats[] =
     "Extensions.ForceInstalledFailureCrxInstallError";
 constexpr char kTotalCountStats[] =
     "Extensions.ForceInstalledTotalCandidateCount";
+constexpr char kNetworkErrorCodeCrxFetchRetryStats[] =
+    "Extensions.ForceInstalledCrxFetchRetryNetworkErrorCode";
+constexpr char kHttpErrorCodeCrxFetchRetryStatsCWS[] =
+    "Extensions.WebStore_ForceInstalledCrxFetchRetryHttpErrorCode2";
+constexpr char kHttpErrorCodeCrxFetchRetryStatsSH[] =
+    "Extensions.OffStore_ForceInstalledCrxFetchRetryHttpErrorCode2";
+constexpr char kFetchRetriesCrxFetchRetryStats[] =
+    "Extensions.ForceInstalledCrxFetchRetryFetchTries";
 constexpr char kNetworkErrorCodeCrxFetchFailedStats[] =
     "Extensions.ForceInstalledNetworkErrorCode";
 constexpr char kHttpErrorCodeCrxFetchFailedStats[] =
@@ -83,6 +91,14 @@ constexpr char kHttpErrorCodeCrxFetchFailedStatsSH[] =
     "Extensions.OffStore_ForceInstalledHttpErrorCode2";
 constexpr char kFetchRetriesCrxFetchFailedStats[] =
     "Extensions.ForceInstalledFetchTries";
+constexpr char kNetworkErrorCodeManifestFetchRetryStats[] =
+    "Extensions.ForceInstalledManifestFetchRetryNetworkErrorCode";
+constexpr char kHttpErrorCodeManifestFetchRetryStatsCWS[] =
+    "Extensions.WebStore_ForceInstalledManifestFetchRetryHttpErrorCode2";
+constexpr char kHttpErrorCodeManifestFetchRetryStatsSH[] =
+    "Extensions.OffStore_ForceInstalledManifestFetchRetryHttpErrorCode2";
+constexpr char kFetchRetriesManifestFetchRetryStats[] =
+    "Extensions.ForceInstalledManifestFetchRetryFetchTries";
 constexpr char kNetworkErrorCodeManifestFetchFailedStats[] =
     "Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode";
 constexpr char kHttpErrorCodeManifestFetchFailedStats[] =
@@ -1139,6 +1155,99 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedSelfHosted) {
                                       -net::Error::ERR_INVALID_ARGUMENT, 1);
   histogram_tester_.ExpectBucketCount(kFetchRetriesManifestFetchFailedStats,
                                       kFetchTries, 2);
+}
+
+// Error Codes in case of CWS extensions stuck in DOWNLOADING_MANIFEST_RETRY
+// stage.
+TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchRetryCWS) {
+  SetupForceList(/*is_from_store=*/true);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
+  install_stage_tracker()->ReportDownloadingStage(
+      kExtensionId2,
+      ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST_RETRY);
+  install_stage_tracker()->ReportFetchErrorCodes(kExtensionId2, data);
+  // ForceInstalledMetrics timer is still running as |kExtensionId2| is still in
+  // progress.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchRetryStats,
+                                      net::Error::OK, 1);
+  histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchRetryStatsCWS,
+                                      kHttpCodeForbidden, 1);
+  histogram_tester_.ExpectBucketCount(kFetchRetriesManifestFetchRetryStats,
+                                      kFetchTries, 1);
+}
+
+// Error Codes in case of self hosted extensions stuck in
+// DOWNLOADING_MANIFEST_RETRY stage.
+TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchRetrySelfHosted) {
+  SetupForceList(/*is_from_store=*/false);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
+  install_stage_tracker()->ReportDownloadingStage(
+      kExtensionId2,
+      ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST_RETRY);
+  install_stage_tracker()->ReportFetchErrorCodes(kExtensionId2, data);
+  // ForceInstalledMetrics timer is still running as |kExtensionId2| is still in
+  // progress.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchRetryStats,
+                                      net::Error::OK, 1);
+  histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchRetryStatsSH,
+                                      kHttpCodeForbidden, 1);
+  histogram_tester_.ExpectBucketCount(kFetchRetriesManifestFetchRetryStats,
+                                      kFetchTries, 1);
+}
+
+// Error Codes in case of CWS extensions stuck in DOWNLOADING_CRX_RETRY stage.
+TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchRetryCWS) {
+  SetupForceList(/*is_from_store=*/true);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
+  install_stage_tracker()->ReportDownloadingStage(
+      kExtensionId2, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX_RETRY);
+  install_stage_tracker()->ReportFetchErrorCodes(kExtensionId2, data);
+  // ForceInstalledMetrics timer is still running as |kExtensionId2| is still in
+  // progress.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchRetryStats,
+                                      net::Error::OK, 1);
+  histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchRetryStatsCWS,
+                                      kHttpCodeForbidden, 1);
+  histogram_tester_.ExpectBucketCount(kFetchRetriesCrxFetchRetryStats,
+                                      kFetchTries, 1);
+}
+
+// Error Codes in case of self hosted extensions stuck in DOWNLOADING_CRX_RETRY
+// stage.
+TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchRetrySelfHosted) {
+  SetupForceList(/*is_from_store=*/false);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
+  install_stage_tracker()->ReportDownloadingStage(
+      kExtensionId2, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX_RETRY);
+  install_stage_tracker()->ReportFetchErrorCodes(kExtensionId2, data);
+  // ForceInstalledMetrics timer is still running as |kExtensionId2| is still in
+  // progress.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchRetryStats,
+                                      net::Error::OK, 1);
+  histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchRetryStatsSH,
+                                      kHttpCodeForbidden, 1);
+  histogram_tester_.ExpectBucketCount(kFetchRetriesCrxFetchRetryStats,
+                                      kFetchTries, 1);
 }
 
 // Errors occurred because the fetched update manifest for webstore extension

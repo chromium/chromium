@@ -281,7 +281,7 @@ class ExtensionDownloader {
   void CreateManifestLoader();
 
   // Retries the active request with some backoff delay.
-  void RetryManifestFetchRequest();
+  void RetryManifestFetchRequest(int network_error_code, int response_code);
 
   // Reports failures if we failed to fetch the manifest or the fetched manifest
   // was invalid.

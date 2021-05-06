@@ -1719,8 +1719,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="ErrorType">
     <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="CrxFetchRetry" summary="CRX_DOWNLOAD_RETRY stage."/>
     <variant name="ManifestFetchFailed"
         summary="MANIFEST_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchRetry"
+        summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
 </histogram>
 
@@ -1738,8 +1741,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="ErrorType">
     <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="CrxFetchRetry" summary="CRX_DOWNLOAD_RETRY stage."/>
     <variant name="ManifestFetchFailed"
         summary="MANIFEST_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchRetry"
+        summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
 </histogram>
 
@@ -3834,8 +3840,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
   <token key="ErrorType">
     <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="CrxFetchRetry" summary="CRX_DOWNLOAD_RETRY stage."/>
     <variant name="ManifestFetchFailed"
         summary="MANIFEST_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchRetry"
+        summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
 </histogram>
 

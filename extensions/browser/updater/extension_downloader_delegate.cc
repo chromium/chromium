@@ -5,6 +5,7 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 
 #include "base/version.h"
+#include "net/base/net_errors.h"
 
 namespace extensions {
 
@@ -14,6 +15,22 @@ ExtensionDownloaderDelegate::PingResult::~PingResult() = default;
 
 ExtensionDownloaderDelegate::FailureData::FailureData()
     : network_error_code(0), fetch_tries(0) {}
+
+// static
+ExtensionDownloaderDelegate::FailureData
+ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
+    int net_error,
+    int response_code,
+    int failure_count) {
+  return ExtensionDownloaderDelegate::FailureData(
+      -net_error,
+      (net_error == net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE &&
+       response_code > 0)
+          ? base::Optional<int>(response_code)
+          : base::nullopt,
+      failure_count);
+}
+
 ExtensionDownloaderDelegate::FailureData::FailureData(
     const FailureData& other) = default;
 ExtensionDownloaderDelegate::FailureData::FailureData(const int net_error_code,
@@ -59,6 +76,10 @@ void ExtensionDownloaderDelegate::OnExtensionDownloadFailed(
     Error error,
     const PingResult& ping_result,
     const std::set<int>& request_id,
+    const FailureData& data) {}
+
+void ExtensionDownloaderDelegate::OnExtensionDownloadRetry(
+    const ExtensionId& id,
     const FailureData& data) {}
 
 void ExtensionDownloaderDelegate::OnExtensionDownloadRetryForTests() {}

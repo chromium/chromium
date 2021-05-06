@@ -307,12 +307,11 @@ class InstallStageTracker : public KeyedService {
         downloading_cache_status;
     base::Optional<FailureReason> failure_reason;
     base::Optional<CrxInstallErrorDetail> install_error_detail;
-    // Network error codes when failure_reason is CRX_FETCH_FAILED or
-    // MANIFEST_FETCH_FAILED.
+    // Network error codes and fetch tries when applicable:
+    // * failure_reason is CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED
+    // * `downloading_stage` is DOWNLOAD_MANIFEST_RETRY or DOWNLOAD_CRX_RETRY.
     base::Optional<int> network_error_code;
     base::Optional<int> response_code;
-    // Number of fetch tries made when failure reason is CRX_FETCH_FAILED or
-    // MANIFEST_FETCH_FAILED.
     base::Optional<int> fetch_tries;
     // Unpack failure reason in case of
     // CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE.
@@ -425,6 +424,9 @@ class InstallStageTracker : public KeyedService {
   void ReportInstallationStage(const ExtensionId& id, Stage stage);
   void ReportInstallCreationStage(const ExtensionId& id,
                                   InstallCreationStage stage);
+  void ReportFetchErrorCodes(
+      const ExtensionId& id,
+      const ExtensionDownloaderDelegate::FailureData& failure_data);
   void ReportFetchError(
       const ExtensionId& id,
       FailureReason reason,

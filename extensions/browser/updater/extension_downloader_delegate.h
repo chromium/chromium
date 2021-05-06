@@ -161,6 +161,9 @@ class ExtensionDownloaderDelegate {
   struct FailureData {
     FailureData();
     FailureData(const FailureData& other);
+    static FailureData CreateFromNetworkResponse(int net_error,
+                                                 int response_code,
+                                                 int failure_count);
     FailureData(const int net_error_code, const int fetch_attempts);
     FailureData(const int net_error_code,
                 const base::Optional<int> response,
@@ -227,6 +230,11 @@ class ExtensionDownloaderDelegate {
                                          const PingResult& ping_result,
                                          const std::set<int>& request_ids,
                                          const FailureData& data);
+
+  // Invoked when an manifest or CRX of extension fails to download, but a retry
+  // is triggered.
+  virtual void OnExtensionDownloadRetry(const ExtensionId& id,
+                                        const FailureData& data);
 
   // Invoked if the extension had an update available and its crx was
   // successfully downloaded to |path|. |ownership_passed| is true if delegate
