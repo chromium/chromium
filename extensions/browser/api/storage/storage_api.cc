@@ -31,8 +31,8 @@ void AddAllStringValues(const base::ListValue& from,
                         std::vector<std::string>* to) {
   DCHECK(to->empty());
   std::string as_string;
-  for (auto it = from.begin(); it != from.end(); ++it) {
-    if (it->GetAsString(&as_string)) {
+  for (const auto& entry : from.GetList()) {
+    if (entry.GetAsString(&as_string)) {
       to->push_back(as_string);
     }
   }
