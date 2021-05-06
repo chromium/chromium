@@ -33,23 +33,26 @@ declare namespace chrome {
     }
 
     export function getHistogram(
-        name: string, callback: (p1: Histogram) => void);
-    export function getIsCrashReportingEnabled(callback: (p1: boolean) => void);
-    export function getFieldTrial(name: string, callback: (p1: string) => void);
+        name: string, callback: (p1: Histogram) => void): void;
+    export function getIsCrashReportingEnabled(callback: (p1: boolean) => void):
+        void;
+    export function getFieldTrial(name: string, callback: (p1: string) => void):
+        void;
     export function getVariationParams(
-        name: string, callback: (p1: Object|undefined) => void);
-    export function recordPercentage(metricName: string, value: number);
-    export function recordCount(metricName: string, value: number);
-    export function recordSmallCount(metricName: string, value: number);
-    export function recordMediumCount(metricName: string, value: number);
-    export function recordTime(metricName: string, value: number);
-    export function recordMediumTime(metricName: string, value: number);
-    export function recordLongTime(metricName: string, value: number);
-    export function recordSparseHashable(metricName: string, value: string);
-    export function recordSparseValue(metricName: string, value: number);
-    export function recordValue(metric: MetricType, value: number);
-    export function recordBoolean(metricName: string, value: boolean);
+        name: string, callback: (p1: Object|undefined) => void): void;
+    export function recordPercentage(metricName: string, value: number): void;
+    export function recordCount(metricName: string, value: number): void;
+    export function recordSmallCount(metricName: string, value: number): void;
+    export function recordMediumCount(metricName: string, value: number): void;
+    export function recordTime(metricName: string, value: number): void;
+    export function recordMediumTime(metricName: string, value: number): void;
+    export function recordLongTime(metricName: string, value: number): void;
+    export function recordSparseHashable(metricName: string, value: string):
+        void;
+    export function recordSparseValue(metricName: string, value: number): void;
+    export function recordValue(metric: MetricType, value: number): void;
+    export function recordBoolean(metricName: string, value: boolean): void;
     export function recordEnumerationValue(
-        metricName: string, value: number, enumSize: number);
+        metricName: string, value: number, enumSize: number): void;
   }
 }

@@ -35,18 +35,19 @@ declare namespace chrome {
 
     export function get(
         idOrIdList: string|string[],
-        callback: (p1: BookmarkTreeNode[]) => void);
+        callback: (p1: BookmarkTreeNode[]) => void): void;
 
     export function getChildren(
-        id: string, callback: (p1: BookmarkTreeNode[]) => void);
+        id: string, callback: (p1: BookmarkTreeNode[]) => void): void;
 
     export function getRecent(
-        numberOfItems: number, callback: (p1: BookmarkTreeNode[]) => void);
+        numberOfItems: number,
+        callback: (p1: BookmarkTreeNode[]) => void): void;
 
-    export function getTree(callback: (p1: BookmarkTreeNode[]) => void);
+    export function getTree(callback: (p1: BookmarkTreeNode[]) => void): void;
 
     export function getSubTree(
-        id: string, callback: (p1: BookmarkTreeNode[]) => void);
+        id: string, callback: (p1: BookmarkTreeNode[]) => void): void;
 
     export function search(
         query: string|{
@@ -54,21 +55,22 @@ declare namespace chrome {
           url: string|undefined,
           title: string|undefined
         },
-        callback: (p1: BookmarkTreeNode[]) => void);
+        callback: (p1: BookmarkTreeNode[]) => void): void;
 
     export function create(
-        bookmark: CreateDetails, callback?: (p1: BookmarkTreeNode) => void);
+        bookmark: CreateDetails,
+        callback?: (p1: BookmarkTreeNode) => void): void;
 
     export function move(
         id: string,
         destination: {parentId: string|undefined, index: number|undefined},
-        callback?: (p1: BookmarkTreeNode) => void);
+        callback?: (p1: BookmarkTreeNode) => void): void;
 
     export function update(
         id: string, changes: {title: string|undefined, url: string|undefined},
-        callback?: (p1: BookmarkTreeNode) => void);
+        callback?: (p1: BookmarkTreeNode) => void): void;
 
-    export function remove(id: string, callback?: () => void);
-    export function removeTree(id: string, callback?: () => void);
+    export function remove(id: string, callback?: () => void): void;
+    export function removeTree(id: string, callback?: () => void): void;
   }
 }
