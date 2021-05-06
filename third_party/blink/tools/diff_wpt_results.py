@@ -24,9 +24,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import contextlib
 import json
+import logging
 import os
 import sys
+import tempfile
 
 from blinkpy.common.host import Host
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
@@ -39,6 +42,8 @@ CSV_HEADING = ('Test name, Test Result, Baseline Result, '
                'Baseline Flaky Results, Unreliable Comparison\n')
 YES = 'Yes'
 NO = 'No'
+_log = logging.getLogger(os.path.basename(__file__))
+
 
 def map_tests_to_results(output_mp, input_mp, path=''):
     if 'actual' in input_mp:
@@ -50,10 +55,10 @@ def map_tests_to_results(output_mp, input_mp, path=''):
 
 class WPTResultsDiffer(object):
 
-    def __init__(self, args, actual_results_map,
+    def __init__(self, args, host, actual_results_map,
                  baseline_results_map, csv_output):
         self._args = args
-        self._host = Host()
+        self._host = host
         self._actual_results_map = actual_results_map
         self._baseline_results_map = baseline_results_map
         self._csv_output = csv_output
@@ -134,14 +139,44 @@ class WPTResultsDiffer(object):
         self._csv_output.write(file_output)
 
 
+@contextlib.contextmanager
+def _get_test_results(host, product, results_path=None):
+    if results_path:
+        json_results_obj = open(results_path, 'r')
+    else:
+        _log.info(('Retrieving test results for '
+                   'product %s using the bb command'), product)
+        specifiers = [product]
+        builders = host.builders.filter_builders(
+            include_specifiers=specifiers)
+        assert len(builders) == 1
+
+        builder_name = builders[0]
+        latest_build = host.bb_agent.get_latest_finished_build(
+            builder_name)
+        _log.debug('The latest build for %s is %d',
+                   builder_name, latest_build.build_number)
+
+        build_results = host.bb_agent.get_build_test_results(
+            latest_build, PRODUCTS_TO_STEPNAMES[product])
+        json_results_obj = tempfile.TemporaryFile()
+        json_results_obj.write(json.dumps(build_results))
+        json_results_obj.seek(0)
+
+    try:
+        yield json_results_obj
+    finally:
+        json_results_obj.close()
+
+
 def main(args):
     parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
-    parser.add_argument('--baseline-test-results', required=True,
+    parser.add_argument('--baseline-test-results', required=False,
                         help='Path to baseline test results JSON file')
     parser.add_argument('--baseline-product', required=True, action='store',
                         choices=PRODUCTS,
                         help='Name of the baseline WPT product')
-    parser.add_argument('--test-results-to-compare', required=True,
+    parser.add_argument('--test-results-to-compare', required=False,
                         help='Path to actual test results JSON file')
     parser.add_argument('--product-to-compare', required=True, action='store',
                         choices=PRODUCTS,
@@ -150,11 +185,20 @@ def main(args):
                         help='Path to CSV output file')
     args = parser.parse_args()
 
+    # TODO(rmhasan): Set the log level using a command line argument
+    logging.basicConfig(level=logging.INFO)
+
     assert args.product_to_compare != args.baseline_product, (
         'Product to compare and the baseline product cannot be the same')
 
-    with open(args.test_results_to_compare, 'r') as actual_results_content, \
-            open(args.baseline_test_results, 'r') as baseline_results_content, \
+    host = Host()
+    actual_results_getter = _get_test_results(
+        host, args.product_to_compare, args.test_results_to_compare)
+    baseline_results_getter = _get_test_results(
+        host, args.baseline_product, args.baseline_test_results)
+
+    with actual_results_getter as actual_results_content,            \
+            baseline_results_getter as baseline_results_content,     \
             open(args.csv_output, 'w') as csv_output:
 
         # Read JSON results files. They must follow the Chromium
@@ -172,7 +216,7 @@ def main(args):
                              baseline_results_json['tests'])
 
         # Create a CSV file which compares tests results to baseline results
-        WPTResultsDiffer(args, tests_to_actual_results,
+        WPTResultsDiffer(args, host, tests_to_actual_results,
                          tests_to_baseline_results, csv_output).create_csv()
 
     return 0

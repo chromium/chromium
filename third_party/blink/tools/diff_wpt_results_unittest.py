@@ -25,11 +25,18 @@
 
 import copy
 import io
+import logging
+import json
 import unittest
+
+from blinkpy.common.host import Host
+from blinkpy.common.host_mock import MockHost
+from blinkpy.common.system.executive_mock import MockExecutive
 
 from collections import namedtuple
 from diff_wpt_results import (
-    map_tests_to_results, WPTResultsDiffer, CSV_HEADING)
+    map_tests_to_results, WPTResultsDiffer, CSV_HEADING,
+    _get_test_results)
 
 MockArgs = namedtuple('MockArgs', ['product_to_compare', 'baseline_product'])
 TEST_PRODUCT = 'android_weblayer'
@@ -42,6 +49,7 @@ class MockWPTResultsDiffer(WPTResultsDiffer):
         super(MockWPTResultsDiffer, self).__init__(
             MockArgs(product_to_compare=TEST_PRODUCT,
                      baseline_product=TEST_BASELINE_PRODUCT),
+            MockHost(),
             actual_results_map, baseline_results_map, csv_output)
 
     def _get_bot_expectations(self, product):
@@ -125,6 +133,47 @@ class CreateCsvTest(unittest.TestCase):
             self.assertEquals(content, CSV_HEADING +
                               'test.html,PASS,MISSING,MISSING RESULTS,{},{},No\n')
 
+    def test_use_bb_to_get_results(self):
+        actual_mp = {'tests': {'test.html': {'actual': 'PASS'}}}
+        baseline_mp = copy.deepcopy(actual_mp)
+        baseline_mp['tests']['test.html']['actual'] = 'FAIL'
+        host = Host()
+
+        def process_cmds(cmd_args):
+            if 'token' in cmd_args:
+                return '00000'
+            elif 'weblayer_shell_wpt' in cmd_args:
+                return json.dumps(actual_mp)
+            elif 'chrome_public_wpt' in cmd_args:
+                return json.dumps(baseline_mp)
+            else:
+                return '{"number": 400, "id":"abcd"}'
+
+        host.executive = MockExecutive(run_command_fn=process_cmds)
+
+        with io.StringIO() as csv_out,                                         \
+                _get_test_results(host, 'android_weblayer') as test_results,   \
+                _get_test_results(host, 'chrome_android') as baseline_results:
+
+            actual_results_json = json.loads(test_results.read())
+            baseline_results_json = json.loads(baseline_results.read())
+
+            tests_to_actual_results = {}
+            tests_to_baseline_results = {}
+            map_tests_to_results(tests_to_actual_results,
+                                 actual_results_json['tests'])
+            map_tests_to_results(tests_to_baseline_results,
+                                 baseline_results_json['tests'])
+
+            MockWPTResultsDiffer(tests_to_actual_results,
+                                 tests_to_baseline_results,
+                                 csv_out).create_csv()
+            csv_out.seek(0)
+            content = csv_out.read()
+            self.assertEquals(content, CSV_HEADING +
+                              ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
+                               '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
 
 if __name__ == '__main__':
+    logging.basicConfig()
     unittest.main()
