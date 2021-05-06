@@ -79,6 +79,11 @@
     top:0;
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
   }
+
+  #results {
+    margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
+    overflow-y: scroll;
+  }
 </style>
 
 <div id="search-shadow">
@@ -86,24 +91,24 @@
 </div>
 
 <template is="dom-if" if="[[search]]">
-
-  <div class="sr-only" role="heading" aria-level="1">
-    Emoji Search Results
-  </div>
-  <template is="dom-repeat" items="[[results]]">
-    <div class="result" tabindex="0" on-click="onResultClick">
-      <emoji-button tabindex="-1"
-          emoji="[[item.item.base.string]]"
-          variants="[[item.item.alternates]]">
-      </emoji-button>
-      <div class="name">[[item.item.base.name]]</div>
+  <div id="results" on-scroll="onSearchScroll">
+    <div class="sr-only" role="heading" aria-level="1">
+      Emoji Search Results
     </div>
-  </template>
-  <template is="dom-if" if="[[!results.length]]">
-    <div class="no-result">
-      <img src="no_results.svg">
-      No emoji found
+    <template is="dom-repeat" items="[[results]]">
+      <div class="result" tabindex="0" on-click="onResultClick">
+        <emoji-button tabindex="-1"
+            emoji="[[item.item.base.string]]"
+            variants="[[item.item.alternates]]">
+        </emoji-button>
+        <div class="name">[[item.item.base.name]]</div>
       </div>
-  </template>
-
+    </template>
+    <template is="dom-if" if="[[!results.length]]">
+      <div class="no-result">
+        <img src="no_results.svg">
+        No emoji found
+        </div>
+    </template>
+  </div>
 </template>

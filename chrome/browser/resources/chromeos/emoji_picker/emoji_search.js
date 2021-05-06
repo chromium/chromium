@@ -165,7 +165,9 @@ export class EmojiSearch extends PolymerElement {
 
   onSearchScroll() {
     this.$['search-shadow'].style.boxShadow =
-        this.scrollTop > 0 ? 'var(--cr-elevation-3)' : 'none';
+        this.shadowRoot.getElementById('results').scrollTop > 0 ?
+        'var(--cr-elevation-3)' :
+        'none';
   }
 
   /**
