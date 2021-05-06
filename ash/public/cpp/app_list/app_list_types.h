@@ -186,11 +186,12 @@ enum SearchResultDisplayIndex {
 };
 
 // The rich entity subtype of Omnibox results.
-enum SearchResultOmniboxType {
+enum SearchResultOmniboxDisplayType {
   kDefault,
   kAnswer,
   kCalculatorAnswer,
   kRichImage,
+  kFavicon,
   kOmniboxTypeMax,  // Do not use.
 };
 
@@ -304,7 +305,8 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   SearchResultDisplayIndex display_index = SearchResultDisplayIndex::kUndefined;
 
   // The rich entity subtype of Omnibox results.
-  SearchResultOmniboxType omnibox_type = SearchResultOmniboxType::kDefault;
+  SearchResultOmniboxDisplayType omnibox_type =
+      SearchResultOmniboxDisplayType::kDefault;
 
   // A score to settle conflicts between two apps with the same requested
   // |display_index|.

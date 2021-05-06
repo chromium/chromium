@@ -92,6 +92,15 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
                      search_list_image_icon_dimension_);
   }
 
+  int search_list_favicon_dimension() const {
+    return search_list_favicon_dimension_;
+  }
+
+  gfx::Size search_list_favicon_size() const {
+    return gfx::Size(search_list_favicon_dimension_,
+                     search_list_favicon_dimension_);
+  }
+
   int search_list_icon_vertical_bar_dimension() const {
     return search_list_icon_vertical_bar_dimension_;
   }
@@ -165,6 +174,9 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The dimension of image icons for list views in search result page view.
   const int search_list_image_icon_dimension_ = 32;
+
+  // The favicon dimension of list views in search result page view.
+  const int search_list_favicon_dimension_ = 18;
 
   // The vertical bar icon dimension of list views in search result page view.
   const int search_list_icon_vertical_bar_dimension_ = 48;

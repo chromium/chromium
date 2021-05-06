@@ -42,7 +42,7 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
-  using OmniboxType = ash::SearchResultOmniboxType;
+  using OmniboxType = ash::SearchResultOmniboxDisplayType;
 
   SearchResult();
   virtual ~SearchResult();

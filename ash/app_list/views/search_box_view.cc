@@ -772,7 +772,7 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
   if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
       (!selected_result->is_omnibox_search() ||
        selected_result->omnibox_type() ==
-           SearchResultOmniboxType::kCalculatorAnswer) &&
+           SearchResultOmniboxDisplayType::kCalculatorAnswer) &&
       !selected_result->details().empty()) {
     // For url (non-search) results, use details to ensure that the url is
     // displayed. For calculator results, use details to ensure that the

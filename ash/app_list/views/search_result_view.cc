@@ -406,6 +406,8 @@ void SearchResultView::OnMetadataChanged() {
   // clearing it out. It should work correctly as long as the SearchResult does
   // not forget to SetIcon when it's ready.
   if (result() && !result()->icon().isNull()) {
+    // TODO(crbug.com/1201151): These nested if/elses can be flattened into one
+    // switch statement pending decisions on rich entity icons.
     if (IsRichImage()) {
       gfx::ImageSkia image = result()->icon();
 
@@ -426,11 +428,19 @@ void SearchResultView::OnMetadataChanged() {
       icon_->SetVisible(false);
       image_icon_->SetVisible(true);
     } else {
-      const int dimension =
-          IsAnswer()
-              ? SharedAppListConfig::instance()
-                    .search_list_answer_icon_dimension()
-              : SharedAppListConfig::instance().search_list_icon_dimension();
+      int dimension;
+      if (IsAnswer()) {
+        dimension =
+            SharedAppListConfig::instance().search_list_answer_icon_dimension();
+      } else if (result()->omnibox_type() ==
+                 SearchResultOmniboxDisplayType::kFavicon) {
+        dimension =
+            SharedAppListConfig::instance().search_list_favicon_dimension();
+      } else {
+        dimension =
+            SharedAppListConfig::instance().search_list_icon_dimension();
+      }
+
       SetIconImage(result()->icon(), icon_, gfx::Size(dimension, dimension));
       icon_->SetVisible(true);
       image_icon_->SetVisible(false);
@@ -558,14 +568,14 @@ void SearchResultView::OnGetContextMenu(
 
 bool SearchResultView::IsAnswer() const {
   return app_list_features::IsOmniboxRichEntitiesEnabled() && result() &&
-         (result()->omnibox_type() == SearchResultOmniboxType::kAnswer ||
+         (result()->omnibox_type() == SearchResultOmniboxDisplayType::kAnswer ||
           result()->omnibox_type() ==
-              SearchResultOmniboxType::kCalculatorAnswer);
+              SearchResultOmniboxDisplayType::kCalculatorAnswer);
 }
 
 bool SearchResultView::IsRichImage() const {
   return app_list_features::IsOmniboxRichEntitiesEnabled() && result() &&
-         result()->omnibox_type() == SearchResultOmniboxType::kRichImage;
+         result()->omnibox_type() == SearchResultOmniboxDisplayType::kRichImage;
 }
 
 }  // namespace ash

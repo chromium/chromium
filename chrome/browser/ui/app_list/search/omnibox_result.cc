@@ -72,10 +72,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Types of generic icon to show with a result.
 enum class IconType {
-  kDomainIcon,
-  kSearchIcon,
-  kHistoryIcon,
-  kEqualIcon,
+  kDomain,
+  kSearch,
+  kHistory,
+  kCalculator,
 };
 
 const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
@@ -94,7 +94,7 @@ const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL:
-      return IconType::kDomainIcon;
+      return IconType::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -106,34 +106,34 @@ const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return IconType::kSearchIcon;
+      return IconType::kSearch;
 
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return IconType::kHistoryIcon;
+      return IconType::kHistory;
 
     case AutocompleteMatchType::CALCULATOR:
-      return IconType::kEqualIcon;
+      return IconType::kCalculator;
 
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
-      return IconType::kDomainIcon;
+      return IconType::kDomain;
   }
 }
 
 // AutocompleteMatchType::Type to vector icon, used for app list.
 const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
   switch (MatchTypeToIconType(type)) {
-    case IconType::kDomainIcon:
+    case IconType::kDomain:
       return ash::kDomainIcon;
-    case IconType::kSearchIcon:
+    case IconType::kSearch:
       return ash::kSearchIcon;
-    case IconType::kHistoryIcon:
+    case IconType::kHistory:
       return ash::kHistoryIcon;
-    case IconType::kEqualIcon:
+    case IconType::kCalculator:
       return ash::kEqualIcon;
   }
 }
@@ -350,8 +350,7 @@ GURL OmniboxResult::DestinationURL() const {
 }
 
 void OmniboxResult::UpdateIcon() {
-  // TODO(crbug.com/1201151): Refactor this method once we've decided whether or
-  // not to use favicons for bookmarks.
+  // TODO(crbug.com/1201151): Refactor this method.
 
   if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
       IsRichEntityResult()) {
@@ -372,32 +371,33 @@ void OmniboxResult::UpdateIcon() {
       // All remaining rich entity icons will have their image downloaded.
       FetchRichEntityImage(match_.image_url);
     }
-  } else {
-    if (favicon_cache_ &&
-        MatchTypeToIconType(match_.type) == IconType::kDomainIcon) {
-      // If we have a favicon available for this URL, use it. Otherwise fall
-      // back on using a generic icon.
-      const auto icon = favicon_cache_->GetFaviconForPageUrl(
-          match_.destination_url,
-          base::BindOnce(&OmniboxResult::OnFaviconFetched,
-                         weak_factory_.GetWeakPtr()));
-      if (!icon.IsEmpty()) {
-        SetIcon(icon.AsImageSkia());
-        return;
-      }
-    }
-
-    BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(profile_);
-    bool is_bookmarked =
-        bookmark_model && bookmark_model->IsBookmarked(match_.destination_url);
-
-    const gfx::VectorIcon& icon =
-        is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
-    SetIcon(gfx::CreateVectorIcon(
-        icon, ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        kListIconColor));
+    return;
   }
+
+  const IconType icon_type = MatchTypeToIconType(match_.type);
+  if (favicon_cache_ && icon_type == IconType::kDomain) {
+    // If we have a favicon available for this URL, use it. Otherwise fall
+    // back on using a generic icon.
+    const auto icon = favicon_cache_->GetFaviconForPageUrl(
+        match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
+                                               weak_factory_.GetWeakPtr()));
+    if (!icon.IsEmpty()) {
+      SetOmniboxType(OmniboxType::kFavicon);
+      SetIcon(icon.AsImageSkia());
+      return;
+    }
+  }
+
+  BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  bool is_bookmarked =
+      bookmark_model && bookmark_model->IsBookmarked(match_.destination_url);
+
+  const gfx::VectorIcon& icon =
+      is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
+  SetIcon(gfx::CreateVectorIcon(
+      icon, ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+      kListIconColor));
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
@@ -480,6 +480,7 @@ void OmniboxResult::FetchRichEntityImage(const GURL& url) {
 void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.IsEmpty());
+  SetOmniboxType(OmniboxType::kFavicon);
   SetIcon(icon.AsImageSkia());
 }
 
