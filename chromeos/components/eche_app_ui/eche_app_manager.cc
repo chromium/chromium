@@ -7,6 +7,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
+#include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/eche_app_ui/system_info_provider.h"
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
@@ -23,6 +24,7 @@ const char kMetricNameLatency[] = "Eche.Connectivity.Latency";
 namespace eche_app {
 
 EcheAppManager::EcheAppManager(
+    PrefService* pref_service,
     std::unique_ptr<SystemInfo> system_info,
     phonehub::PhoneHubManager* phone_hub_manager,
     device_sync::DeviceSyncClient* device_sync_client,
@@ -57,7 +59,8 @@ EcheAppManager::EcheAppManager(
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
                                                connection_manager_.get())),
       system_info_provider_(
-          std::make_unique<SystemInfoProvider>(std::move(system_info))) {}
+          std::make_unique<SystemInfoProvider>(std::move(system_info))),
+      uid_(std::make_unique<EcheUidProvider>(pref_service)) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
@@ -71,7 +74,13 @@ void EcheAppManager::BindSystemInfoProviderInterface(
   system_info_provider_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindUidGeneratorInterface(
+    mojo::PendingReceiver<mojom::UidGenerator> receiver) {
+  uid_->Bind(std::move(receiver));
+}
+
 void EcheAppManager::Shutdown() {
+  uid_.reset();
   system_info_provider_.reset();
   signaler_.reset();
   eche_connector_.reset();

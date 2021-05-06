@@ -14,6 +14,8 @@
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace chromeos {
 
 namespace device_sync {
@@ -34,13 +36,15 @@ namespace eche_app {
 class SystemInfo;
 class EcheSignaler;
 class SystemInfoProvider;
+class EcheUidProvider;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
 // KeyedService instances.
 class EcheAppManager : public KeyedService {
  public:
-  EcheAppManager(std::unique_ptr<SystemInfo> system_info,
+  EcheAppManager(PrefService* pref_service,
+                 std::unique_ptr<SystemInfo> system_info,
                  phonehub::PhoneHubManager*,
                  device_sync::DeviceSyncClient*,
                  multidevice_setup::MultiDeviceSetupClient*,
@@ -54,6 +58,8 @@ class EcheAppManager : public KeyedService {
 
   void BindSignalingMessageExchangerInterface(
       mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
+  void BindUidGeneratorInterface(
+      mojo::PendingReceiver<mojom::UidGenerator> receiver);
 
   void BindSystemInfoProviderInterface(
       mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
@@ -69,6 +75,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  std::unique_ptr<EcheUidProvider> uid_;
 };
 
 }  // namespace eche_app

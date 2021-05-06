@@ -16,6 +16,9 @@ signalMessageExchanger.setSignalingMessageObserver(
 // Returns a remote for SystemInfoProvider interface which gets system info
 // from the browser.
 const systemInfo = chromeos.echeApp.mojom.SystemInfoProvider.getRemote();
+// Returns a remote for UidGenerator interface which gets an uid from the
+// browser.
+const uidGenerator = chromeos.echeApp.mojom.UidGenerator.getRemote();
 
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new class {
@@ -35,6 +38,10 @@ const EcheApiBindingImpl = new class {
   getSystemInfo() {
     return systemInfo.getSystemInfo();
   }
+
+  getLocalUid() {
+    return uidGenerator.getUid();
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -47,6 +54,8 @@ echeapi.webrtc.tearDownSignal =
 echeapi.webrtc.registerSignalReceiver =
     EcheApiBindingImpl.onWebRtcSignalReceived.bind(EcheApiBindingImpl);
 echeapi.system = {};
+echeapi.system.getLocalUid =
+    EcheApiBindingImpl.getLocalUid.bind(EcheApiBindingImpl);
 echeapi.system.getSystemInfo =
     EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;

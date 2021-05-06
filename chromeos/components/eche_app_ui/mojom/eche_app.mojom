@@ -31,3 +31,9 @@ interface SystemInfoProvider {
   // output parameter is JSON encoded set of data.
   GetSystemInfo() => (string system_info);
 };
+
+// Interface for generating uid. The uid is unique and persistent.
+interface UidGenerator {
+  // Get the uid.
+  GetUid() => (string local_uid);
+};

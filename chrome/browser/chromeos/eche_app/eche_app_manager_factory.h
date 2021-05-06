@@ -33,6 +33,8 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 
   std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
 };

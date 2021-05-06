@@ -794,6 +794,10 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::eche_app::EcheAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
+      chromeos::eche_app::mojom::UidGenerator, chromeos::eche_app::EcheAppUI>(
+      map);
+
+  RegisterWebUIControllerInterfaceBinder<
       media_app_ui::mojom::PageHandlerFactory, chromeos::MediaAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

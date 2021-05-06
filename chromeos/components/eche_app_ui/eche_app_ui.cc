@@ -19,10 +19,12 @@ namespace eche_app {
 
 EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                      BindSignalingMessageExchangerCallback exchanger_callback,
-                     BindSystemInfoProviderCallback system_info_callback)
+                     BindSystemInfoProviderCallback system_info_callback,
+                     BindUidGeneratorCallback generator_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
-      bind_system_info_callback_(std::move(system_info_callback)) {
+      bind_system_info_callback_(std::move(system_info_callback)),
+      bind_generator_callback_(std::move(generator_callback)) {
   auto html_source =
       base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
 
@@ -59,6 +61,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::SystemInfoProvider> receiver) {
   bind_system_info_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::UidGenerator> receiver) {
+  bind_generator_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
