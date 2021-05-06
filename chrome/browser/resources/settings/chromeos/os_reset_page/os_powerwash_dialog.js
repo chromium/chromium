@@ -27,7 +27,18 @@ Polymer({
     requestTpmFirmwareUpdate: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /**
+     * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @private
+     */
+    installedESimProfiles: {
+      type: Array,
+      value() {
+        return [];
+      },
+    },
   },
 
   /** @override */
@@ -46,5 +57,13 @@ Polymer({
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowESimWarning_() {
+    return !!this.installedESimProfiles.length;
   },
 });

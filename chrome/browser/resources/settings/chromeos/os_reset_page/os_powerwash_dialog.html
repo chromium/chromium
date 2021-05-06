@@ -3,10 +3,20 @@
     ignore-enter-key>
   <div slot="title">$i18n{powerwashDialogTitle}</div>
   <div slot="body">
-    <settings-localized-link
-        localized-string="$i18n{powerwashDialogExplanation}"
-        link-url="$i18nRaw{powerwashLearnMoreUrl}">
-    </settings-localized-link>
+    <!-- TODO(crbug.com/1196511): UI still in progress. -->
+    <template is="dom-if"
+        if="[[shouldShowESimWarning_(installedESimProfiles)]]">
+
+    </template>
+    <template is="dom-if"
+        if="[[!shouldShowESimWarning_(installedESimProfiles)]]">
+      <div id="powerwashContainer">
+        <settings-localized-link
+          localized-string="$i18n{powerwashDialogExplanation}"
+          link-url="$i18nRaw{powerwashLearnMoreUrl}">
+        </settings-localized-link>
+      </div>
+    </template>
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelTap_"

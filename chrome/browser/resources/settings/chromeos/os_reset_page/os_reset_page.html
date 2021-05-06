@@ -20,6 +20,8 @@
   </div>
 </div>
 <template is="dom-if" if="[[showPowerwashDialog_]]" restamp>
-  <os-settings-powerwash-dialog on-close="onPowerwashDialogClose_">
+  <os-settings-powerwash-dialog
+      installed-e-sim-profiles="[[installedESimProfiles_]]"
+      on-close="onPowerwashDialogClose_">
   </os-settings-powerwash-dialog>
 </template>

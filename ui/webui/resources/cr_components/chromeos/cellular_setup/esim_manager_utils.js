@@ -15,20 +15,41 @@ cr.define('cellular_setup', function() {
    */
   /* #export */ function getPendingESimProfiles(euicc) {
     return euicc.getProfileList().then(response => {
-      return filterForPendingProfiles_(response.profiles);
+      return filterByProfileProperties_(response.profiles, properties => {
+        return properties.state ===
+            chromeos.cellularSetup.mojom.ProfileState.kPending;
+      });
     });
   }
 
   /**
+   * Fetches the EUICC's eSIM profiles with status not 'Pending'.
+   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @return {!Promise<!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>>}
+   */
+  /* #export */ function getNonPendingESimProfiles(euicc) {
+    return euicc.getProfileList().then(response => {
+      return filterByProfileProperties_(response.profiles, properties => {
+        return properties.state !==
+            chromeos.cellularSetup.mojom.ProfileState.kPending;
+      });
+    });
+  }
+
+  /**
+   * Filters each profile in profiles by callback, which is given the profile's
+   * properties as an argument and returns true or false. Does not guarantee
+   * that profiles retains the same order.
    * @private
    * @param {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>} profiles
+   * @param {function(chromeos.cellularSetup.mojom.ESimProfileProperties)}
+   *     callback
    * @return {!Promise<Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>>}
    */
-  function filterForPendingProfiles_(profiles) {
+  function filterByProfileProperties_(profiles, callback) {
     const profilePromises = profiles.map(profile => {
       return profile.getProperties().then(response => {
-        if (response.properties.state !==
-            chromeos.cellularSetup.mojom.ProfileState.kPending) {
+        if (!callback(response.properties)) {
           return null;
         }
         return profile;
@@ -107,6 +128,7 @@ cr.define('cellular_setup', function() {
     getEuicc,
     getESimProfile,
     getPendingESimProfiles,
+    getNonPendingESimProfiles,
     getNumESimProfiles,
   };
 });
