@@ -121,7 +121,6 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
   sources = [
-    "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineTest.java",
@@ -159,6 +158,7 @@ android_library("junit") {
 android_library("javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialogTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialogIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SignOutDialogRenderTest.java",
