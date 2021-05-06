@@ -22,9 +22,11 @@ content::DownloadManager* download_manager_for_testing = nullptr;
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
 
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
-    HoldingSpaceKeyedService* service,
-    HoldingSpaceModel* model)
-    : HoldingSpaceKeyedServiceDelegate(service, model) {}
+    Profile* profile,
+    HoldingSpaceModel* model,
+    ItemDownloadedCallback item_downloaded_callback)
+    : HoldingSpaceKeyedServiceDelegate(profile, model),
+      item_downloaded_callback_(item_downloaded_callback) {}
 
 HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
@@ -119,8 +121,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
 
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
     content::DownloadManager* manager) {
-  download_manager_observation_.Reset();
-  download_item_observations_.RemoveAllObservations();
+  RemoveObservers();
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
@@ -149,13 +150,17 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
   }
 }
 
-// TODO(crbug.com/1184438): Support in-progress downloads.
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
   if (!is_restoring_persistence())
-    service()->AddDownload(type, file_path, /*progress=*/1.f);
+    item_downloaded_callback_.Run(type, file_path);
+}
+
+void HoldingSpaceDownloadsDelegate::RemoveObservers() {
+  download_manager_observation_.Reset();
+  download_item_observations_.RemoveAllObservations();
 }
 
 }  // namespace ash

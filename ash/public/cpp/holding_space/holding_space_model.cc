@@ -88,28 +88,7 @@ void HoldingSpaceModel::UpdateBackingFileForItem(
   HoldingSpaceItem* item = item_it->get();
   DCHECK(item->IsInitialized());
 
-  if (!item->UpdateBackingFile(file_path, file_system_url))
-    return;
-
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceItemUpdated(item);
-}
-
-void HoldingSpaceModel::UpdateProgressForItem(
-    const std::string& id,
-    const base::Optional<float>& progress) {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return item->id() == id;
-      });
-  DCHECK(item_it != items_.end());
-
-  HoldingSpaceItem* item = item_it->get();
-  DCHECK(item->IsInitialized());
-
-  if (!item->UpdateProgress(progress))
-    return;
+  item->UpdateBackingFile(file_path, file_system_url);
 
   for (auto& observer : observers_)
     observer.OnHoldingSpaceItemUpdated(item);

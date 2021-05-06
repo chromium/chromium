@@ -26,11 +26,11 @@ void HoldingSpaceKeyedServiceDelegate::NotifyPersistenceRestored() {
 }
 
 HoldingSpaceKeyedServiceDelegate::HoldingSpaceKeyedServiceDelegate(
-    HoldingSpaceKeyedService* service,
+    Profile* profile,
     HoldingSpaceModel* model)
-    : service_(service), model_(model) {
-  // It's expected that `profile()` already be ready prior to delegate creation.
-  DCHECK(GetProfileManager()->IsValidProfile(profile()));
+    : profile_(profile), model_(model) {
+  // It is expected that `profile` already be ready prior to delegate creation.
+  DCHECK(GetProfileManager()->IsValidProfile(profile));
   holding_space_model_observation_.Observe(model);
 }
 

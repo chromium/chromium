@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -23,7 +22,8 @@ namespace ash {
 
 class HoldingSpaceImage;
 
-// Contains data needed to display a single item in the holding space UI.
+// Contains data needed to display a single item in the temporary holding space
+// UI.
 class ASH_PUBLIC_EXPORT HoldingSpaceItem {
  public:
   // Items types supported by the holding space.
@@ -59,16 +59,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const GURL& file_system_url,
       ImageResolver image_resolver);
 
-  // Creates a HoldingSpaceItem that's backed by a file system URL.
-  // NOTE: `file_system_url` is expected to be non-empty.
-  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
-  static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
-      Type type,
-      const base::FilePath& file_path,
-      const GURL& file_system_url,
-      const base::Optional<float>& progress,
-      ImageResolver image_resolver);
-
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownload(HoldingSpaceItem::Type type);
 
@@ -101,15 +91,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // `Deserialize()`.
   void Initialize(const GURL& file_system_url);
 
-  // Updates the file backing the item to `file_path` and `file_system_url`,
-  // returning `false` to indicate no-op.
-  bool UpdateBackingFile(const base::FilePath& file_path,
+  // Updates the file backing the item to `file_path` and `file_system_url`.
+  void UpdateBackingFile(const base::FilePath& file_path,
                          const GURL& file_system_url);
-
-  // Updates the `progress_` of the item, returning `false` to indicate no-op.
-  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
-  // NOTE: Once set to `1.f`, `progress_` becomes read-only.
-  bool UpdateProgress(const base::Optional<float>& progress);
 
   // Invalidates the current holding space image, so fresh image representations
   // are loaded when the image is next needed.
@@ -130,8 +114,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const GURL& file_system_url() const { return file_system_url_; }
 
-  const base::Optional<float>& progress() const { return progress_; }
-
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
  private:
@@ -141,8 +123,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
                    const std::u16string& text,
-                   std::unique_ptr<HoldingSpaceImage> image,
-                   const base::Optional<float>& progress);
+                   std::unique_ptr<HoldingSpaceImage> image);
 
   const Type type_;
 
@@ -160,11 +141,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // The image representation of the item.
   std::unique_ptr<HoldingSpaceImage> image_;
-
-  // The progress of the item.
-  // If present, the value is >= `0.f` and <= `1.f`.
-  // If absent, `progress_` is indeterminate.
-  base::Optional<float> progress_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

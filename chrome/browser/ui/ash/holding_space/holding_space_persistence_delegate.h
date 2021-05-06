@@ -34,13 +34,19 @@ class HoldingSpacePersistenceDelegate
   // NOTE: Any changes to persistence must be backwards compatible.
   static constexpr char kPersistencePath[] = "ash.holding_space.items";
 
+  // Callback to invoke when the specified holding space item has been restored
+  // from persistence.
+  using ItemRestoredCallback =
+      base::RepeatingCallback<void(HoldingSpaceItemPtr)>;
+
   // Callback to invoke when holding space persistence has been restored.
   using PersistenceRestoredCallback = base::OnceClosure;
 
   HoldingSpacePersistenceDelegate(
-      HoldingSpaceKeyedService* service,
+      Profile* profile,
       HoldingSpaceModel* model,
       ThumbnailLoader* thumbnail_loader,
+      ItemRestoredCallback item_restored_callback,
       PersistenceRestoredCallback persistence_restored_callback);
   HoldingSpacePersistenceDelegate(const HoldingSpacePersistenceDelegate&) =
       delete;
@@ -65,6 +71,9 @@ class HoldingSpacePersistenceDelegate
 
   // Owned by `HoldingSpaceKeyedService`.
   ThumbnailLoader* const thumbnail_loader_;
+
+  // Callback to invoke when an item has been restored from persistence.
+  ItemRestoredCallback item_restored_callback_;
 
   // Callback to invoke when holding space persistence has been restored.
   PersistenceRestoredCallback persistence_restored_callback_;

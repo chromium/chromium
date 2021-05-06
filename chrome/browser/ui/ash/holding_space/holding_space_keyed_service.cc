@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
@@ -217,10 +216,9 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 
 void HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
-    const base::FilePath& download_file,
-    const base::Optional<float>& progress) {
+    const base::FilePath& download_file) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
-  AddItemOfType(type, download_file, progress);
+  AddItemOfType(type, download_file);
 }
 
 void HoldingSpaceKeyedService::AddNearbyShare(
@@ -269,17 +267,15 @@ void HoldingSpaceKeyedService::AddItems(
   holding_space_model_.AddItems(std::move(items));
 }
 
-void HoldingSpaceKeyedService::AddItemOfType(
-    HoldingSpaceItem::Type type,
-    const base::FilePath& file_path,
-    const base::Optional<float>& progress) {
+void HoldingSpaceKeyedService::AddItemOfType(HoldingSpaceItem::Type type,
+                                             const base::FilePath& file_path) {
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, file_path);
   if (file_system_url.is_empty())
     return;
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      type, file_path, file_system_url, progress,
+      type, file_path, file_system_url,
       base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
@@ -335,15 +331,21 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
   delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
-      this, &holding_space_model_));
+      profile_, &holding_space_model_,
+      /*item_downloaded_callback=*/
+      base::BindRepeating(&HoldingSpaceKeyedService::AddDownload,
+                          weak_factory_.GetWeakPtr())));
 
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
-      this, &holding_space_model_));
+      profile_, &holding_space_model_));
 
   // The `HoldingSpacePersistenceDelegate` manages holding space persistence.
   delegates_.push_back(std::make_unique<HoldingSpacePersistenceDelegate>(
-      this, &holding_space_model_, &thumbnail_loader_,
+      profile_, &holding_space_model_, &thumbnail_loader_,
+      /*item_restored_callback=*/
+      base::BindRepeating(&HoldingSpaceKeyedService::AddItem,
+                          weak_factory_.GetWeakPtr()),
       /*persistence_restored_callback=*/
       base::BindOnce(&HoldingSpaceKeyedService::OnPersistenceRestored,
                      weak_factory_.GetWeakPtr())));
