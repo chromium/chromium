@@ -43,6 +43,41 @@ TestNativeWindow::~TestNativeWindow() {
     DestroyWindow(hwnd());
 }
 
+// Test wrapper around native window HWND.
+class TestWin32Window {
+ public:
+  TestWin32Window() {}
+  ~TestWin32Window();
+
+  HWND Create(DWORD style);
+
+  DISALLOW_COPY_AND_ASSIGN(TestWin32Window);
+
+ private:
+  HWND hwnd_ = NULL;
+};
+
+TestWin32Window::~TestWin32Window() {
+  if (hwnd_)
+    DestroyWindow(hwnd_);
+}
+
+HWND TestWin32Window::Create(DWORD style) {
+  const wchar_t class_name[] = L"TestWin32Window";
+  WNDCLASSEX wcex = {sizeof(wcex)};
+  wcex.lpfnWndProc = DefWindowProc;
+  wcex.hInstance = ::GetModuleHandle(nullptr);
+  wcex.lpszClassName = class_name;
+  wcex.style = CS_HREDRAW | CS_VREDRAW;
+  RegisterClassEx(&wcex);
+  HWND hwnd_ =
+      CreateWindowEx(0, class_name, class_name, style, 0, 0, 100, 100, nullptr,
+                     nullptr, GetModuleHandle(nullptr), nullptr);
+  ShowWindow(hwnd_, SW_SHOWNORMAL);
+  EXPECT_TRUE(UpdateWindow(hwnd_));
+  return hwnd_;
+}
+
 // This class currently tests the behavior of
 // NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque with hwnds
 // with various attributes (e.g., minimized, transparent, etc).
@@ -173,10 +208,18 @@ TEST_F(NativeWindowOcclusionTrackerTest, ComplexRegionWindow) {
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
-TEST_F(NativeWindowOcclusionTrackerTest, PopupWindow) {
+TEST_F(NativeWindowOcclusionTrackerTest, PopupChromeWindow) {
   HWND hwnd = CreateNativeWindow(WS_POPUP, /*ex_style=*/0);
   gfx::Rect win_rect;
-  // Popup Windows are not considered visible.
+  // Chrome Popup Windows of class Chrome_WidgetWin_ are considered visible.
+  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
+TEST_F(NativeWindowOcclusionTrackerTest, PopupWindow) {
+  TestWin32Window test_window;
+  HWND hwnd = test_window.Create(WS_POPUPWINDOW);
+  gfx::Rect win_rect;
+  // Normal Popup Windows are not considered visible.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 

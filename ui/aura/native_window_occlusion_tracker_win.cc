@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -167,11 +168,6 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   if (IsIconic(hwnd))
     return false;
 
-  LONG styles = ::GetWindowLong(hwnd, GWL_STYLE);
-  // Ignore popup windows since they're transient.
-  if (styles & WS_POPUP)
-    return false;
-
   LONG ex_styles = ::GetWindowLong(hwnd, GWL_EXSTYLE);
   // Filter out "transparent" windows, windows where the mouse clicks fall
   // through them.
@@ -229,7 +225,17 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
     return false;
   if (IsRectEmpty(&win_rect))
     return false;
+
+  // Ignore popup windows since they're transient unless it is a Chrome Widget
+  // Window.
+  if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
+    if (!base::StartsWith(gfx::GetClassName(hwnd), L"Chrome_WidgetWin_")) {
+      return false;
+    }
+  }
+
   *window_rect = gfx::Rect(win_rect);
+
   return true;
 }
 
@@ -668,9 +674,14 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   if (id_object != OBJID_WINDOW)
     return;
 
-  // We generally ignore events for poup windows, except for when the taskbar
-  // is hidden, in which case we recalculate occlusion.
-  bool calculate_occlusion = !(::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP);
+  // We generally ignore events for popup windows, except for when the taskbar
+  // is hidden or when the popup is a Chrome Widget, in which case we
+  // recalculate occlusion.
+  bool calculate_occlusion = true;
+  if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
+    calculate_occlusion =
+        base::StartsWith(gfx::GetClassName(hwnd), L"Chrome_WidgetWin_");
+  }
 
   // Detect if either the alt tab view or the task list thumbnail is being
   // shown. If so, mark all non-hidden windows as occluded, and remember that
