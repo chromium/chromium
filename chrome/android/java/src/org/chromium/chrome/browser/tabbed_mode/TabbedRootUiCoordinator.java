@@ -459,7 +459,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (FeedFeatures.isWebFeedUIEnabled()) {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mTabSupplier, mToolbarManager.getMenuButtonView(),
+                    mAppMenuCoordinator.getAppMenuHandler(), mTabSupplier,
+                    mToolbarManager.getMenuButtonView(),
                     ()
                             -> mActivity.getTabCreator(/*incognito=*/false).launchNTP(),
                     mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),

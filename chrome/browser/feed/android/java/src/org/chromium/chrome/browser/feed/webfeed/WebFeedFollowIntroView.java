@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
@@ -29,6 +30,7 @@ class WebFeedFollowIntroView {
     private static final int sAcceleratorTimeout = 10 * 1000; // 10 seconds
 
     private final Activity mActivity;
+    private final AppMenuHandler mAppMenuHandler;
     private final Handler mHandler = new Handler();
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final View mMenuButtonAnchorView;
@@ -39,10 +41,13 @@ class WebFeedFollowIntroView {
      * Constructs an instance of {@link WebFeedFollowIntroView}.
      *
      * @param activity The current {@link Activity}.
+     * @param appMenuHandler The {@link AppMenuHandler} to highlight the Web Feed menu item.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
      */
-    WebFeedFollowIntroView(Activity activity, View menuButtonAnchorView) {
+    WebFeedFollowIntroView(
+            Activity activity, AppMenuHandler appMenuHandler, View menuButtonAnchorView) {
         mActivity = activity;
+        mAppMenuHandler = appMenuHandler;
         mMenuButtonAnchorView = menuButtonAnchorView;
     }
 
@@ -104,8 +109,10 @@ class WebFeedFollowIntroView {
     }
 
     private void turnOnHighlightForFollowMenuItem() {
-        // TODO(crbug/1152592): Figure out how to highlight footer.
+        mAppMenuHandler.setMenuHighlight(R.id.follow_chip_view);
     }
 
-    private void turnOffHighlightForFollowMenuItem() {}
+    private void turnOffHighlightForFollowMenuItem() {
+        mAppMenuHandler.clearMenuHighlight();
+    }
 }

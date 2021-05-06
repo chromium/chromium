@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -267,8 +268,14 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mHighlightedItemId = highlightedItemId;
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
-            ViewHighlighter.turnOnHighlight(
-                    viewToHighlight, new HighlightParams(HighlightShape.RECTANGLE));
+            HighlightParams highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
+            // TODO(crbug.com/1152592): ChipView highlighting should be larger than the actual chip.
+            // Currently, the highlighting is constrained to within the chip.
+            if (viewToHighlight instanceof ChipView) {
+                ChipView chipViewToHighlight = (ChipView) viewToHighlight;
+                highlightParams.setCornerRadius(chipViewToHighlight.getCornerRadius());
+            }
+            ViewHighlighter.turnOnHighlight(viewToHighlight, highlightParams);
         }
 
         // Set the adapter after the header is added to avoid crashes on JellyBean.

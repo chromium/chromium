@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -78,6 +79,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     private int mNumVisitMin;
     private int mDailyVisitMin;
+    private AppMenuHandler mAppMenuHandler;
     private ChromeTabbedActivity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
@@ -89,6 +91,7 @@ public final class WebFeedFollowIntroControllerTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
+        mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
@@ -101,10 +104,11 @@ public final class WebFeedFollowIntroControllerTest {
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mTabSupplier, mActivity.getToolbarManager().getMenuButtonView(), mFeedLauncher,
-                    mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
-                    mWebFeedBridge);
+            mWebFeedFollowIntroController =
+                    new WebFeedFollowIntroController(mActivity, mAppMenuHandler, mTabSupplier,
+                            mActivity.getToolbarManager().getMenuButtonView(), mFeedLauncher,
+                            mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
+                            mWebFeedBridge);
         });
 
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();

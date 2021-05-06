@@ -78,6 +78,10 @@
     <color name="menu_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
     <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
     <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
+    <color name="menu_footer_chip_background_color_dark">@color/modern_blue_600_alpha_10</color>
+    <color name="menu_footer_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
+    <color name="menu_footer_chip_background_color_disabled_dark">@color/modern_grey_100</color>
+    <color name="menu_footer_chip_background_color_disabled_light">@color/white_alpha_6</color>
 
     <!-- IPH Highlight Colors -->
     <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>

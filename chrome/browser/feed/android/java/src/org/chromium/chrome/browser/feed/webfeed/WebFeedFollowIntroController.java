@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -83,6 +84,7 @@ public class WebFeedFollowIntroController {
      * Constructs an instance of {@link WebFeedFollowIntroController}.
      *
      * @param activity The current {@link Activity}.
+     * @param appMenuHandler The {@link AppMenuHandler} to highlight the Web Feed menu item.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
      * @param feedLauncher The {@link FeedLauncher} to launch the feed.
@@ -90,15 +92,17 @@ public class WebFeedFollowIntroController {
      * @param snackbarManager The {@link SnackbarManager} to show snackbars.
      * @param webFeedBridge The {@link WebFeedBridge} to connect to the Web Feed backend.
      */
-    public WebFeedFollowIntroController(Activity activity, ObservableSupplier<Tab> tabSupplier,
-            View menuButtonAnchorView, FeedLauncher feedLauncher, ModalDialogManager dialogManager,
+    public WebFeedFollowIntroController(Activity activity, AppMenuHandler appMenuHandler,
+            ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView,
+            FeedLauncher feedLauncher, ModalDialogManager dialogManager,
             SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mActivity = activity;
         mFeatureEngagementTracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 activity, feedLauncher, dialogManager, snackbarManager, webFeedBridge);
-        mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
+        mWebFeedFollowIntroView =
+                new WebFeedFollowIntroView(mActivity, appMenuHandler, menuButtonAnchorView);
 
         mAppearanceThresholdMs = TimeUnit.MINUTES.toMillis(
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
