@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -219,7 +220,9 @@ void V8Window::NamedPropertyGetterCustom(
     // context container's name content attribute value.
     if (BindingSecurity::ShouldAllowNamedAccessTo(window, child->DomWindow()) ||
         name == child->Owner()->BrowsingContextContainerName()) {
-      V8SetReturnValueFast(info, child->DomWindow(), window);
+      bindings::V8SetReturnValue(
+          info, child->DomWindow(), window,
+          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
       return;
     }
 
@@ -234,7 +237,9 @@ void V8Window::NamedPropertyGetterCustom(
       // TODO(yukishiino): Makes iframe.name update the browsing context name
       // appropriately and makes the new name available in the named access on
       // window.  Then, removes the following two lines.
-      V8SetReturnValueFast(info, child->DomWindow(), window);
+      bindings::V8SetReturnValue(
+          info, child->DomWindow(), window,
+          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
       return;
     }
   }
@@ -251,7 +256,7 @@ void V8Window::NamedPropertyGetterCustom(
     //   undefined, [[Writable]]: false, [[Enumerable]]: false,
     //   [[Configurable]]: true }.
     if (name == "then") {
-      V8SetReturnValueFast(info, v8::Undefined(info.GetIsolate()), window);
+      bindings::V8SetReturnValue(info, v8::Undefined(info.GetIsolate()));
       return;
     }
 
@@ -275,7 +280,9 @@ void V8Window::NamedPropertyGetterCustom(
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {
     UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-    V8SetReturnValueFast(info, doc->getElementById(name), window);
+    bindings::V8SetReturnValue(
+        info, doc->getElementById(name), window,
+        bindings::V8ReturnValue::kMaybeCrossOriginWindow);
     return;
   }
 
@@ -287,10 +294,13 @@ void V8Window::NamedPropertyGetterCustom(
     // multiple with the same name, but Chrome and Safari does. What's the
     // right behavior?
     if (items->HasExactlyOneItem()) {
-      V8SetReturnValueFast(info, items->item(0), window);
+      bindings::V8SetReturnValue(
+          info, items->item(0), window,
+          bindings::V8ReturnValue::kMaybeCrossOriginWindow);
       return;
     }
-    V8SetReturnValueFast(info, items, window);
+    bindings::V8SetReturnValue(
+        info, items, window, bindings::V8ReturnValue::kMaybeCrossOriginWindow);
     return;
   }
 }

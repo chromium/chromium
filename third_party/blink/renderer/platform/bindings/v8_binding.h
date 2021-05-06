@@ -161,66 +161,6 @@ inline void V8SetReturnValueStringOrNull(const CallbackInfo& info,
       info.GetReturnValue(), string.Impl());
 }
 
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& callback_info,
-                             ScriptWrappable* impl,
-                             v8::Local<v8::Object> creation_context) {
-  if (UNLIKELY(!impl)) {
-    V8SetReturnValueNull(callback_info);
-    return;
-  }
-  if (DOMDataStore::SetReturnValue(callback_info.GetReturnValue(), impl))
-    return;
-  v8::Local<v8::Value> wrapper =
-      impl->Wrap(callback_info.GetIsolate(), creation_context);
-  V8SetReturnValue(callback_info, wrapper);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& callback_info,
-                             ScriptWrappable* impl) {
-  V8SetReturnValue(callback_info, impl, callback_info.Holder());
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueForMainWorld(const CallbackInfo& callback_info,
-                                         ScriptWrappable* impl) {
-  DCHECK(DOMWrapperWorld::Current(callback_info.GetIsolate()).IsMainWorld());
-  if (UNLIKELY(!impl)) {
-    V8SetReturnValueNull(callback_info);
-    return;
-  }
-  if (DOMDataStore::SetReturnValueForMainWorld(callback_info.GetReturnValue(),
-                                               impl))
-    return;
-  v8::Local<v8::Value> wrapper =
-      impl->Wrap(callback_info.GetIsolate(), callback_info.Holder());
-  V8SetReturnValue(callback_info, wrapper);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 ScriptWrappable* impl,
-                                 const ScriptWrappable* wrappable) {
-  if (UNLIKELY(!impl)) {
-    V8SetReturnValueNull(callback_info);
-    return;
-  }
-  if (DOMDataStore::SetReturnValueFast(callback_info.GetReturnValue(), impl,
-                                       callback_info.Holder(), wrappable))
-    return;
-  v8::Local<v8::Value> wrapper =
-      impl->Wrap(callback_info.GetIsolate(), callback_info.Holder());
-  V8SetReturnValue(callback_info, wrapper);
-}
-
-template <typename CallbackInfo, typename T>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 const v8::Local<T> handle,
-                                 const ScriptWrappable*) {
-  V8SetReturnValue(callback_info, handle);
-}
-
 // Dictionary
 template <class CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
