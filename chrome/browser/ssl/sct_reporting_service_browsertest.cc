@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -30,8 +32,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/simple_connection_listener.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -117,6 +121,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         base::Unretained(this)));
     report_server()->StartAcceptingConnections();
     ASSERT_TRUE(https_server()->Start());
+
+    mock_cert_verifier()->set_default_result(net::OK);
 
     // Mock the cert verify results so that it has valid CT verification
     // results.
@@ -219,6 +225,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
                                                        .hostname());
   }
 
+  void set_error_count(int error_count) { error_count_ = error_count; }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleReportRequest(
       const net::test_server::HttpRequest& request) {
@@ -230,12 +238,19 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_OK);
+
+    if (error_count_ > 0) {
+      http_response->set_code(net::HTTP_TOO_MANY_REQUESTS);
+      --error_count_;
+    } else {
+      http_response->set_code(net::HTTP_OK);
+    }
+
     return http_response;
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  net::EmbeddedTestServer report_server_;
+  net::EmbeddedTestServer report_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // `requests_lock_` is used to force sequential access to these variables to
@@ -244,6 +259,9 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::test_server::HttpRequest last_seen_request_;
   size_t requests_seen_ = 0;
   base::OnceClosure requests_closure_;
+
+  // How many times the report server should return an error before succeeding.
+  size_t error_count_ = 0;
 };
 
 // Tests that reports should not be sent when extended reporting is not opted
@@ -371,7 +389,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       ->FlushNetworkInterfaceForTesting();
 
   // The mock cert verify result will be lost when the network service restarts,
-  // so set back up the necessary rule for the test host.
+  // so set back up the necessary rules.
+  mock_cert_verifier()->set_default_result(net::OK);
+
   net::CertVerifyResult verify_result;
   verify_result.verified_cert = https_server()->GetCertificate().get();
   verify_result.is_issued_by_known_root = true;
@@ -529,12 +549,6 @@ class SCTReportingServiceZeroSamplingRateBrowserTest
         {{features::kSCTAuditing,
           {{features::kSCTAuditingSamplingRate.name, "0.0"}}}},
         {});
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        true);
-  }
-  ~SCTReportingServiceZeroSamplingRateBrowserTest() override {
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
   }
 
   SCTReportingServiceZeroSamplingRateBrowserTest(
@@ -556,4 +570,186 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceZeroSamplingRateBrowserTest,
 
   // Check that no reports are observed.
   EXPECT_EQ(0u, requests_seen());
+}
+
+// Test fixture with SCT auditing and retry/persist enabled.
+class SCTReportingServiceWithRetryAndPersistBrowserTest
+    : public SCTReportingServiceBrowserTest {
+ public:
+  SCTReportingServiceWithRetryAndPersistBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSCTAuditing,
+          {{features::kSCTAuditingSamplingRate.name, "1.0"}}},
+         {network::features::kSCTAuditingRetryAndPersistReports, {}}},
+        {});
+  }
+  ~SCTReportingServiceWithRetryAndPersistBrowserTest() override = default;
+
+  SCTReportingServiceWithRetryAndPersistBrowserTest(
+      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
+  const SCTReportingServiceWithRetryAndPersistBrowserTest& operator=(
+      const SCTReportingServiceWithRetryAndPersistBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    // ConnectionListener must be set before the report server is started. Lets
+    // tests wait for one connection to be made to the report server (e.g. a
+    // failed connection due to the cert error that won't trigger the
+    // WaitForRequests() helper from the parent class).
+    report_connection_listener_ =
+        std::make_unique<net::test_server::SimpleConnectionListener>(
+            1, net::test_server::SimpleConnectionListener::
+                   ALLOW_ADDITIONAL_CONNECTIONS);
+    report_server()->SetConnectionListener(report_connection_listener());
+
+    // Parent test fixture setup will start the report server.
+    SCTReportingServiceBrowserTest::SetUpOnMainThread();
+
+    // Set up NetworkServiceTest once.
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test_.BindNewPipeAndPassReceiver());
+
+    // Override the retry delay to 0 so that retries happen immediately.
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test()->SetSCTAuditingRetryDelay(base::TimeDelta());
+  }
+
+  void TearDownOnMainThread() override {
+    // Reset the retry delay override.
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test()->SetSCTAuditingRetryDelay(base::nullopt);
+
+    SCTReportingServiceBrowserTest::TearDownOnMainThread();
+  }
+
+  net::test_server::SimpleConnectionListener* report_connection_listener() {
+    return report_connection_listener_.get();
+  }
+
+  network::mojom::NetworkServiceTest* network_service_test() {
+    return network_service_test_.get();
+  }
+
+  uint64_t GetSCTAuditingPendingReportsCount() {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    uint64_t count;
+    network_service_test()->GetSCTAuditingPendingReportsCount(&count);
+    return count;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<net::test_server::SimpleConnectionListener>
+      report_connection_listener_;
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
+};
+
+// Tests the simple case where a report succeeds on the first try.
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+                       SucceedOnFirstTry) {
+  // Succeed on the first try.
+  set_error_count(0);
+
+  SetExtendedReportingEnabled(true);
+
+  // Visit an HTTPS page and wait for the report to be sent.
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("a.test", "/"));
+  WaitForRequests(1);
+
+  // Check that one report was sent and contains the expected details.
+  EXPECT_EQ(1u, requests_seen());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
+}
+
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+                       RetryOnceAndSucceed) {
+  // Succeed on the second try.
+  set_error_count(1);
+
+  SetExtendedReportingEnabled(true);
+
+  // Visit an HTTPS page and wait for the report to be sent twice.
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("a.test", "/"));
+  WaitForRequests(2);
+
+  // Check that the report was sent twice and contains the expected details.
+  EXPECT_EQ(2u, requests_seen());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
+}
+
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+                       FailAfterMaxRetries) {
+  // Don't succeed for max_retries+1.
+  set_error_count(16);
+
+  SetExtendedReportingEnabled(true);
+
+  // Set the callback to run when a reporter completes.
+  base::RunLoop run_loop;
+  network_service_test()->SetSCTAuditingReportCompletionCallback(
+      run_loop.QuitClosure());
+
+  // Visit an HTTPS page and wait for the report to be sent.
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("a.test", "/"));
+
+  // Wait until the reporter completes.
+  run_loop.Run();
+
+  // Check that the report was sent 16x and contains the expected details.
+  EXPECT_EQ(16u, requests_seen());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
+
+  // Check that the pending reporter completed and was deleted.
+  EXPECT_EQ(0u, GetSCTAuditingPendingReportsCount());
+}
+
+// Test that a cert error on the first attempt to send a report will trigger
+// retries that succeed if the server starts using a good cert.
+IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
+                       CertificateErrorTriggersRetry) {
+  {
+    // Override the retry delay to 1s so that the retries don't all happen
+    // immediately and the test can reset the default verifier result in
+    // between retry attempts.
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test()->SetSCTAuditingRetryDelay(
+        base::TimeDelta::FromSeconds(1));
+
+    // Default test fixture teardown will reset the delay back to the default.
+  }
+
+  // The first request to the report server will trigger a certificate error via
+  // the mock cert verifier.
+  mock_cert_verifier()->set_default_result(net::ERR_CERT_COMMON_NAME_INVALID);
+
+  SetExtendedReportingEnabled(true);
+
+  // Visit an HTTPS page, which will trigger a report being sent to the report
+  // server but that report request will result in a cert error.
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("a.test", "/"));
+
+  report_connection_listener()->WaitForConnections();
+
+  // After seeing one connection, replace the mock cert verifier result with a
+  // successful result.
+  mock_cert_verifier()->set_default_result(net::OK);
+
+  WaitForRequests(1);
+
+  // The second try should have resulted in the first successful report being
+  // seen by the HandleRequest() handler.
+  EXPECT_EQ(1u, requests_seen());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }

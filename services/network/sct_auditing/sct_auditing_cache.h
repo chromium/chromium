@@ -11,7 +11,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/mru_cache.h"
+#include "base/optional.h"
 #include "base/time/time.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/sct_auditing_delegate.h"
@@ -27,6 +29,67 @@ class X509Certificate;
 
 namespace network {
 
+class SimpleURLLoader;
+
+// Owns an SCT auditing report and handles sending it and retrying on failures.
+// An SCTAuditingReporter begins trying to send the report to the report server
+// on creation, retrying over time based on the backoff policy defined in
+// `kBackoffPolicy`, and then runs the ReporterDoneCallback provided by the
+// SCTAuditingCache to notify the cache when it has completed (either success or
+// running out of retries). If an SCTAuditingReporter instance is deleted, any
+// outstanding requests are canceled, pending retry tasks will fail, and
+// `done_callback` will not called.
+//
+// An SCTAuditingReporter instance is uniquely identified by its `reporter_key`
+// hash, which is the SHA256HashValue of the set of SCTs included in the
+// SCTClientReport that the reporter owns.
+//
+// Declared here for testing visibility.
+class SCTAuditingReporter {
+ public:
+  // Callback to notify the SCTAuditingCache that this reporter has completed.
+  // The SHA256HashValue `reporter_key` is passed to uniquely identify this
+  // reporter instance.
+  using ReporterDoneCallback = base::OnceCallback<void(net::SHA256HashValue)>;
+
+  SCTAuditingReporter(
+      net::SHA256HashValue reporter_key,
+      std::unique_ptr<sct_auditing::SCTClientReport> report,
+      mojom::URLLoaderFactory& url_loader_factory,
+      const GURL& report_uri,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      ReporterDoneCallback done_callback);
+  ~SCTAuditingReporter();
+
+  SCTAuditingReporter(const SCTAuditingReporter&) = delete;
+  SCTAuditingReporter& operator=(const SCTAuditingReporter&) = delete;
+
+  static const net::BackoffEntry::Policy kDefaultBackoffPolicy;
+
+  sct_auditing::SCTClientReport* report() { return report_.get(); }
+
+ private:
+  void ScheduleReport();
+  void SendReport();
+  void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
+
+  net::SHA256HashValue reporter_key_;
+  std::unique_ptr<sct_auditing::SCTClientReport> report_;
+  mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
+  std::unique_ptr<SimpleURLLoader> url_loader_;
+  net::NetworkTrafficAnnotationTag traffic_annotation_;
+  GURL report_uri_;
+  ReporterDoneCallback done_callback_;
+
+  net::BackoffEntry::Policy backoff_policy_;
+  std::unique_ptr<net::BackoffEntry> backoff_entry_;
+
+  size_t num_retries_;
+  size_t max_retries_;
+
+  base::WeakPtrFactory<SCTAuditingReporter> weak_factory_{this};
+};
+
 // SCTAuditingCache tracks SCTs seen during CT verification. The cache supports
 // a configurable sample rate to reduce load, and deduplicates SCTs seen more
 // than once. The cache evicts least-recently-used entries after it reaches its
@@ -35,7 +98,9 @@ namespace network {
 // The SCTAuditingCache also handles sending reports to a specified report URI
 // using a specified URLLoaderFactory (for a specific NetworkContext). These
 // are configured by the embedder via the network service's
-// ConfigureSCTAuditing() API.
+// ConfigureSCTAuditing() API. The actual reporting and retrying logic is
+// handled by one SCTAuditingReporter per report. Pending reporters are owned
+// by the SCTAuditingCache and tracked in the `pending_reporters_` set.
 //
 // A single SCTAuditingCache should be shared among all contexts that want to
 // deduplicate reports and use a single sampling mechanism. Currently, one
@@ -60,12 +125,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps);
 
-  sct_auditing::SCTClientReport* GetPendingReport(
-      const net::SHA256HashValue& cache_key);
-
-  // Sends the report associated with `cache_key` to the configured report URI.
-  void SendReport(const net::SHA256HashValue& cache_key);
-
   void ClearCache();
 
   void set_enabled(bool enabled) { enabled_ = enabled; }
@@ -80,20 +139,38 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
     url_loader_factory_.Bind(std::move(factory));
   }
 
-  base::MRUCache<net::SHA256HashValue,
-                 std::unique_ptr<sct_auditing::SCTClientReport>>*
-  GetCacheForTesting() {
-    return &cache_;
+  base::MRUCache<net::SHA256HashValue, bool>* GetCacheForTesting() {
+    return &dedupe_cache_;
   }
 
- private:
-  void OnReportComplete(const net::SHA256HashValue& cache_key,
-                        int net_error,
-                        int http_response_code);
+  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>*
+  GetPendingReportersForTesting() {
+    return &pending_reporters_;
+  }
 
-  base::MRUCache<net::SHA256HashValue,
-                 std::unique_ptr<sct_auditing::SCTClientReport>>
-      cache_;
+  void SetRetryDelayForTesting(base::Optional<base::TimeDelta> delay);
+
+  void SetCompletionCallbackForTesting(base::OnceClosure callback);
+
+ private:
+  void OnReporterFinished(net::SHA256HashValue reporter_key);
+
+  // Value `bool` is ignored in the dedupe cache. This cache only stores
+  // recently seen hashes of SCTs in order to deduplicate on SCTs, and the bool
+  // will always be `true`.
+  base::MRUCache<net::SHA256HashValue, bool> dedupe_cache_;
+  // Tracks high-water-mark of the dedupe cache.
+  size_t dedupe_cache_size_hwm_;
+
+  // The pending reporters set is an MRUCache, so that the total number of
+  // pending reporters can be capped. The MRUCache means that reporters will be
+  // evicted (and canceled) oldest first. If a new report is triggered for the
+  // same SCTs it will get deduplicated if a previous report is still pending,
+  // but the last-seen time will be updated.
+  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>
+      pending_reporters_;
+  // Tracks high-water-mark of pending reporters.
+  size_t pending_reporters_hwm_;
 
   bool enabled_ = false;
   double sampling_rate_ = 0;
@@ -101,7 +178,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
-  size_t cache_size_hwm_;
+  base::OnceClosure completion_callback_for_testing_;
 
   base::WeakPtrFactory<SCTAuditingCache> weak_factory_{this};
 };

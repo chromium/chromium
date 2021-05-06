@@ -43,6 +43,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/sct_auditing/sct_auditing_cache.h"
 
 #if defined(OS_ANDROID)
 #include "base/test/android/url_utils.h"
@@ -241,6 +242,31 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
         network::NetworkService::GetNetworkServiceForTesting()
             ->first_party_sets()
             ->size());
+  }
+
+  void SetSCTAuditingRetryDelay(
+      base::Optional<base::TimeDelta> delay,
+      SetSCTAuditingRetryDelayCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->sct_auditing_cache()
+        ->SetRetryDelayForTesting(delay);
+    std::move(callback).Run();
+  }
+
+  void GetSCTAuditingPendingReportsCount(
+      GetSCTAuditingPendingReportsCountCallback callback) override {
+    std::move(callback).Run(
+        network::NetworkService::GetNetworkServiceForTesting()
+            ->sct_auditing_cache()
+            ->GetPendingReportersForTesting()
+            ->size());
+  }
+
+  void SetSCTAuditingReportCompletionCallback(
+      SetSCTAuditingReportCompletionCallbackCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->sct_auditing_cache()
+        ->SetCompletionCallbackForTesting(std::move(callback));
   }
 
   void GetEnvironmentVariableValue(

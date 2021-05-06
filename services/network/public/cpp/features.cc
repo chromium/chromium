@@ -222,5 +222,8 @@ const base::Feature kAcceptCHFrame{"AcceptCHFrame",
 const base::Feature kFtpProtocol{"FtpProtocol",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSCTAuditingRetryAndPersistReports{
+    "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
