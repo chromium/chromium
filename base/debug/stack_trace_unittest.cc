@@ -63,25 +63,8 @@ TEST_F(StackTraceTest, OutputToStream) {
   ASSERT_TRUE(addresses);
   ASSERT_GT(frames_found, 5u) << "Too few frames found.";
 
-#if defined(OFFICIAL_BUILD) && defined(OS_APPLE)
-  // Official Mac OS X builds contain enough information to unwind the stack,
-  // but not enough to symbolize the output.
-  return;
-#endif  // defined(OFFICIAL_BUILD) && defined(OS_APPLE)
-
-#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
-  // Under Fuchsia and Android, StackTrace emits executable build-Ids and
-  // address offsets which are symbolized on the test host system, rather than
-  // being symbolized in-process.
-  return;
-#endif  // defined(OS_FUCHSIA) || defined(OS_ANDROID)
-
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-  // Sanitizer configurations (ASan, TSan, MSan) emit unsymbolized stacks.
-  return;
-#endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||
-        // defined(MEMORY_SANITIZER)
+  if (!StackTrace::WillSymbolizeToStreamForTesting())
+    return;
 
   // Check if the output has symbol initialization warning.  If it does, fail.
   ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"),

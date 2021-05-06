@@ -205,6 +205,35 @@ StackTrace::StackTrace(const void* const* trace, size_t count) {
   count_ = count;
 }
 
+// static
+bool StackTrace::WillSymbolizeToStreamForTesting() {
+#if defined(__UCLIBC__) || defined(_AIX)
+  // StackTrace::OutputToStream() is not implemented under uclibc, nor AIX.
+  // See https://crbug.com/706728
+  return false;
+#elif defined(OFFICIAL_BUILD) && \
+    ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
+  // On some platforms stack traces require an extra data table that bloats our
+  // binaries, so they're turned off for official builds.
+  return false;
+#elif defined(OFFICIAL_BUILD) && defined(OS_APPLE)
+  // Official Mac OS X builds contain enough information to unwind the stack,
+  // but not enough to symbolize the output.
+  return false;
+#elif defined(OS_FUCHSIA) || defined(OS_ANDROID)
+  // Under Fuchsia and Android, StackTrace emits executable build-Ids and
+  // address offsets which are symbolized on the test host system, rather than
+  // being symbolized in-process.
+  return false;
+#elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+  // Sanitizer configurations (ASan, TSan, MSan) emit unsymbolized stacks.
+  return false;
+#else
+  return true;
+#endif
+}
+
 const void *const *StackTrace::Addresses(size_t* count) const {
   *count = count_;
   if (count_)
@@ -232,7 +261,7 @@ std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {
-#if !defined(__UCLIBC__) & !defined(_AIX)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   s.OutputToStream(&os);
 #else
   os << "StackTrace::OutputToStream not implemented.";
