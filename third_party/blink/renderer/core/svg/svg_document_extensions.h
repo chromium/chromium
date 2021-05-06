@@ -49,11 +49,15 @@ class CORE_EXPORT SVGDocumentExtensions final
   // needs applying.
   void AddWebAnimationsPendingSVGElement(SVGElement&);
 
-  static void ServiceOnAnimationFrame(Document&);
+  // True if a SMIL animation frame is successfully scheduled.
+  static bool ServiceSmilOnAnimationFrame(Document&);
+  static void ServiceWebAnimationsOnAnimationFrame(Document&);
 
   void StartAnimations();
   void PauseAnimations();
-  void ServiceAnimations();
+  // True if a SMIL animation frame is successfully scheduled.
+  bool ServiceSmilAnimations();
+  void ServiceWebAnimations();
 
   void DispatchSVGLoadEventToOutermostSVGElements();
 

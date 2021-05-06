@@ -2768,14 +2768,10 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
         next_frame_has_pending_raf |= document.NextFrameHasPendingRAF();
       });
 
-  if (GetLayoutView()->GetDocument().View() &&
-      GetLayoutView()->GetDocument().View()->GetCompositorAnimationHost()) {
-    GetLayoutView()
-        ->GetDocument()
-        .View()
-        ->GetCompositorAnimationHost()
-        ->SetAnimationCounts(total_animations_count, current_frame_had_raf,
-                             next_frame_has_pending_raf);
+  if (auto* animation_host = GetCompositorAnimationHost()) {
+    animation_host->SetAnimationCounts(total_animations_count,
+                                       current_frame_had_raf,
+                                       next_frame_has_pending_raf);
   }
 
   // Initialize animation properties in the newly created paint property
@@ -3658,7 +3654,9 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
   GetFrame().AnimateSnapFling(start_time);
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
-  SVGDocumentExtensions::ServiceOnAnimationFrame(*document);
+  if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document))
+    GetPage()->Animator().SetHasSmilAnimation();
+  SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
   document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   document->ServiceScriptedAnimations(start_time);
 }

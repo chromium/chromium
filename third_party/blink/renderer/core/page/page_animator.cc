@@ -105,9 +105,11 @@ void PageAnimator::ReportFrameAnimations(cc::AnimationHost* animation_host) {
   if (animation_host) {
     animation_host->SetHasCanvasInvalidation(has_canvas_invalidation_);
     animation_host->SetHasInlineStyleMutation(has_inline_style_mutation_);
+    animation_host->SetHasSmilAnimation(has_smil_animation_);
   }
   has_canvas_invalidation_ = false;
   has_inline_style_mutation_ = false;
+  has_smil_animation_ = false;
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -121,6 +123,10 @@ void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
 
 void PageAnimator::SetHasInlineStyleMutation() {
   has_inline_style_mutation_ = true;
+}
+
+void PageAnimator::SetHasSmilAnimation() {
+  has_smil_animation_ = true;
 }
 
 DISABLE_CFI_PERF

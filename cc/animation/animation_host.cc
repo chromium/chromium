@@ -152,6 +152,14 @@ void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {
   has_inline_style_mutation_ = has_inline_style_mutation;
 }
 
+bool AnimationHost::HasSmilAnimation() const {
+  return has_smil_animation_;
+}
+
+void AnimationHost::SetHasSmilAnimation(bool has_smil_animation) {
+  has_smil_animation_ = has_smil_animation;
+}
+
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
     // kReservedElementId is reserved for a paint worklet element that animates
@@ -268,6 +276,7 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl) {
   host_impl->next_frame_has_pending_raf_ = next_frame_has_pending_raf_;
   host_impl->has_canvas_invalidation_ = has_canvas_invalidation_;
   host_impl->has_inline_style_mutation_ = has_inline_style_mutation_;
+  host_impl->has_smil_animation_ = has_smil_animation_;
 
   if (needs_push_properties_) {
     needs_push_properties_ = false;
@@ -776,10 +785,9 @@ void AnimationHost::SetMutationUpdate(
   }
 }
 
-void AnimationHost::SetAnimationCounts(
-    size_t total_animations_count,
-    bool current_frame_had_raf,
-    bool next_frame_has_pending_raf) {
+void AnimationHost::SetAnimationCounts(size_t total_animations_count,
+                                       bool current_frame_had_raf,
+                                       bool next_frame_has_pending_raf) {
   // Though these changes are pushed as part of AnimationHost::PushPropertiesTo
   // we don't SetNeedsPushProperties as pushing the values requires a commit.
   // Instead we allow them to be pushed whenever the next required commit

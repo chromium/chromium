@@ -46,18 +46,31 @@ void SVGDocumentExtensions::AddWebAnimationsPendingSVGElement(
   web_animations_pending_svg_elements_.insert(&element);
 }
 
-void SVGDocumentExtensions::ServiceOnAnimationFrame(Document& document) {
+bool SVGDocumentExtensions::ServiceSmilOnAnimationFrame(Document& document) {
   if (!document.SvgExtensions())
-    return;
-  document.AccessSVGExtensions().ServiceAnimations();
+    return false;
+  return document.AccessSVGExtensions().ServiceSmilAnimations();
 }
 
-void SVGDocumentExtensions::ServiceAnimations() {
+void SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(
+    Document& document) {
+  if (!document.SvgExtensions())
+    return;
+  document.AccessSVGExtensions().ServiceWebAnimations();
+}
+
+bool SVGDocumentExtensions::ServiceSmilAnimations() {
+  bool did_schedule_animation_frame = false;
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
-  for (const auto& container : time_containers)
-    container->TimeContainer()->ServiceAnimations();
+  for (const auto& container : time_containers) {
+    did_schedule_animation_frame |=
+        container->TimeContainer()->ServiceAnimations();
+  }
+  return did_schedule_animation_frame;
+}
 
+void SVGDocumentExtensions::ServiceWebAnimations() {
   SVGElementSet web_animations_pending_svg_elements;
   web_animations_pending_svg_elements.swap(
       web_animations_pending_svg_elements_);

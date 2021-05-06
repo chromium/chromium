@@ -209,6 +209,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
+  bool HasSmilAnimation() const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
@@ -220,6 +221,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
   void SetHasInlineStyleMutation(bool has_inline_style_mutation);
+  void SetHasSmilAnimation(bool has_svg_smil_animation);
 
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
@@ -273,6 +275,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool next_frame_has_pending_raf_ = false;
   bool has_canvas_invalidation_ = false;
   bool has_inline_style_mutation_ = false;
+  bool has_smil_animation_ = false;
 
   PendingThroughputTrackerInfos pending_throughput_tracker_infos_;
 

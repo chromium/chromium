@@ -67,7 +67,8 @@ class CORE_EXPORT SMILTimeContainer final
   void Unpause();
   void SetElapsed(SMILTime);
 
-  void ServiceAnimations();
+  // True if an animation frame is successfully scheduled.
+  bool ServiceAnimations();
   bool HasAnimations() const;
 
   void ResetDocumentTime();
@@ -99,7 +100,7 @@ class CORE_EXPORT SMILTimeContainer final
   mojom::blink::ImageAnimationPolicy AnimationPolicy() const;
   bool AnimationsDisabled() const;
   class TimingUpdate;
-  void UpdateAnimationsAndScheduleFrameIfNeeded(TimingUpdate&);
+  bool UpdateAnimationsAndScheduleFrameIfNeeded(TimingUpdate&);
   void PrepareSeek(TimingUpdate&);
   void ResetIntervals();
   void UpdateIntervals(TimingUpdate&);

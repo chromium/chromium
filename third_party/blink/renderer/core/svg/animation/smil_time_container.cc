@@ -447,7 +447,7 @@ void SMILTimeContainer::ServiceOnNextFrame() {
   }
 }
 
-void SMILTimeContainer::ServiceAnimations() {
+bool SMILTimeContainer::ServiceAnimations() {
   // If a synchronization is pending, we can flush it now.
   if (frame_scheduling_state_ == kSynchronizeAnimations) {
     DCHECK(wakeup_timer_.IsActive());
@@ -455,24 +455,24 @@ void SMILTimeContainer::ServiceAnimations() {
     frame_scheduling_state_ = kAnimationFrame;
   }
   if (frame_scheduling_state_ != kAnimationFrame)
-    return;
+    return false;
   frame_scheduling_state_ = kIdle;
   // TODO(fs): The timeline should not be running if we're in an inactive
   // document, so this should be turned into a DCHECK.
   if (!GetDocument().IsActive())
-    return;
+    return false;
   TimingUpdate update(*this, Elapsed(), TimingUpdate::kNormal);
-  UpdateAnimationsAndScheduleFrameIfNeeded(update);
+  return UpdateAnimationsAndScheduleFrameIfNeeded(update);
 }
 
-void SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
+bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     TimingUpdate& update) {
   DCHECK(GetDocument().IsActive());
   DCHECK(!wakeup_timer_.IsActive());
   // If the priority queue is empty, there are no timed elements to process and
   // no animations to apply, so we are done.
   if (priority_queue_.IsEmpty())
-    return;
+    return false;
   AnimationTargetsMutationsForbidden scope(this);
   UpdateTimedElements(update);
   ApplyTimedEffects(update.TargetTime());
@@ -480,14 +480,15 @@ void SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
   DCHECK(!HasPendingSynchronization());
 
   if (!IsTimelineRunning())
-    return;
+    return false;
   SMILTime next_progress_time = NextProgressTime(update.TargetTime());
   if (!next_progress_time.IsFinite())
-    return;
+    return false;
   SMILTime delay_time = next_progress_time - update.TargetTime();
   DCHECK(delay_time.IsFinite());
   ScheduleAnimationFrame(
       base::TimeDelta::FromMicroseconds(delay_time.InMicroseconds()));
+  return true;
 }
 
 SMILTime SMILTimeContainer::NextProgressTime(SMILTime presentation_time) const {
