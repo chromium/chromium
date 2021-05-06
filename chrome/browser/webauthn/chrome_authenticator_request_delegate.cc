@@ -76,7 +76,8 @@ bool IsWebauthnRPIDListedInEnterprisePolicy(
   const PrefService* prefs = profile->GetPrefs();
   const base::ListValue* permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  return std::any_of(permit_attestation->begin(), permit_attestation->end(),
+  return std::any_of(permit_attestation->GetList().begin(),
+                     permit_attestation->GetList().end(),
                      [&relying_party_id](const base::Value& v) {
                        return v.GetString() == relying_party_id;
                      });
@@ -865,7 +866,7 @@ ChromeAuthenticatorRequestDelegate::GetCablePairings() {
   const base::ListValue* pref_pairings =
       prefs->GetList(kWebAuthnCablePairingsPrefName);
 
-  for (const auto& pairing : *pref_pairings) {
+  for (const auto& pairing : pref_pairings->GetList()) {
     if (!pairing.is_dict()) {
       continue;
     }
