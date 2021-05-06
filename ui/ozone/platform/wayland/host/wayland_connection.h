@@ -270,7 +270,6 @@ class WaylandConnection {
 
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
-  std::unique_ptr<WaylandClipboard> clipboard_;
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
   std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
@@ -282,12 +281,16 @@ class WaylandConnection {
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
 
+  // Clipboard-related objects. |clipboard_| must be declared after all
+  // DeviceManager instances it depends on, otherwise tests may crash with
+  // UAFs while attempting to access already destroyed manager pointers.
   std::unique_ptr<GtkPrimarySelectionDeviceManager>
       gtk_primary_selection_device_manager_;
-  std::unique_ptr<GtkShell1> gtk_shell1_;
-
   std::unique_ptr<ZwpPrimarySelectionDeviceManager>
       zwp_primary_selection_device_manager_;
+  std::unique_ptr<WaylandClipboard> clipboard_;
+
+  std::unique_ptr<GtkShell1> gtk_shell1_;
 
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
   std::unique_ptr<WaylandWindowDragController> window_drag_controller_;
