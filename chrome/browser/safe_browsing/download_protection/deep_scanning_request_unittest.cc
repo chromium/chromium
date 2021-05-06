@@ -453,6 +453,10 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
 #endif
+
+    SetAnalysisConnector(profile_->GetPrefs(),
+                         enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForDlpAndMalware);
   }
 
   void TearDown() override {
@@ -470,10 +474,6 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 };
 
 TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
-  SetAnalysisConnector(profile_->GetPrefs(),
-                       enterprise_connectors::FILE_DOWNLOADED,
-                       kScanForDlpAndMalware);
-
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -787,6 +787,38 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
   }
+}
+
+TEST_F(DeepScanningReportingTest, Timeout) {
+  DeepScanningRequest request(
+      &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+      base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                          base::Unretained(this)),
+      &download_protection_service_, settings().value());
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      BinaryUploadService::Result::TIMEOUT,
+      enterprise_connectors::ContentAnalysisResponse());
+
+  EventReportValidator validator(client_.get());
+  validator.ExpectUnscannedFileEvent(
+      /*url*/ "https://example.com/download.exe",
+      /*filename*/ download_path_.AsUTF8Unsafe(),
+      // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
+      /*sha256*/
+      "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      /*reason*/ "TIMEOUT",
+      /*mimetypes*/ ExeMimeTypes(),
+      /*size*/ std::string("download contents").size(),
+      /*result*/
+      EventResultToString(EventResult::ALLOWED),
+      /*username*/ kUserName);
+
+  request.Start();
+
+  EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
 }
 
 class DeepScanningDownloadRestrictionsTest

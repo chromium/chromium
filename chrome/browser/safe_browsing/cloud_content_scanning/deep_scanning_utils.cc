@@ -23,33 +23,27 @@ constexpr int kMinBytesPerSecond = 1;
 constexpr int kMaxBytesPerSecond = 100 * 1024 * 1024;  // 100 MB/s
 
 std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
-  std::string unscanned_reason;
   switch (result) {
     case BinaryUploadService::Result::SUCCESS:
     case BinaryUploadService::Result::UNAUTHORIZED:
       // Don't report an unscanned file event on these results.
-      break;
+      return "";
 
     case BinaryUploadService::Result::FILE_TOO_LARGE:
-      unscanned_reason = "FILE_TOO_LARGE";
-      break;
+      return "FILE_TOO_LARGE";
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-      unscanned_reason = "TOO_MANY_REQUESTS";
-      break;
+      return "TOO_MANY_REQUESTS";
     case BinaryUploadService::Result::TIMEOUT:
+      return "TIMEOUT";
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-      unscanned_reason = "SERVICE_UNAVAILABLE";
-      break;
+      return "SERVICE_UNAVAILABLE";
     case BinaryUploadService::Result::FILE_ENCRYPTED:
-      unscanned_reason = "FILE_PASSWORD_PROTECTED";
-      break;
+      return "FILE_PASSWORD_PROTECTED";
     case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      unscanned_reason = "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
+      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
   }
-
-  return unscanned_reason;
 }
 
 crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
