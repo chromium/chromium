@@ -161,11 +161,10 @@ void AddStrings(content::WebUIDataSource* html_source) {
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
               prefs::kBrowserProfilePickerAvailabilityOnStartup));
-  bool disable_ask_on_startup =
-      availability_on_startup !=
-          ProfilePicker::AvailabilityOnStartup::kEnabled ||
-      !base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature);
-  html_source->AddBoolean("disableAskOnStartup", disable_ask_on_startup);
+  bool ask_on_startup_allowed =
+      availability_on_startup ==
+          ProfilePicker::AvailabilityOnStartup::kEnabled &&
+      base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature);
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
@@ -190,6 +189,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           profiles::IsProfileCreationAllowed());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
+  html_source->AddBoolean("isAskOnStartupAllowed", ask_on_startup_allowed);
 }
 
 }  // namespace

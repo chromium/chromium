@@ -19,7 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationBehavior, Routes} from './navigation_behavior.js';
-import {isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
+import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 
 Polymer({
   is: 'profile-picker-main-view',
@@ -57,14 +57,6 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('askOnStartup');
-      }
-    },
-
-    /** @private */
-    disableAskOnStartup_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('disableAskOnStartup');
       }
     },
   },
@@ -186,7 +178,7 @@ Polymer({
    * @private
    */
   computeHideAskOnStartup_() {
-    return this.disableAskOnStartup_ || !this.profilesList_ ||
+    return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
   },
 });

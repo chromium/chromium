@@ -62,7 +62,7 @@ suite('ProfilePickerMainViewTest', function() {
     loadTimeData.overrideValues({
       isGuestModeEnabled: true,
       isProfileCreationAllowed: true,
-      disableAskOnStartup: false
+      isAskOnStartupAllowed: true
     });
   }
 
@@ -263,7 +263,7 @@ suite('ProfilePickerMainViewTest', function() {
 
   test('AskOnStartupMulipleProfiles', async function() {
     // Disable AskOnStartup
-    loadTimeData.overrideValues({disableAskOnStartup: true});
+    loadTimeData.overrideValues({isAskOnStartupAllowed: false});
     resetTest();
 
     await browserProxy.whenCalled('initializeMainView');
@@ -276,8 +276,7 @@ suite('ProfilePickerMainViewTest', function() {
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
 
-    // Checkbox hidden even if there are multiple profiles because of
-    // disableAskOnStartup.
+    // Checkbox hidden even if there are multiple profiles.
     assertTrue(mainViewElement.$$('cr-checkbox').hidden);
   });
 

@@ -30,3 +30,8 @@ export function isForceSigninEnabled() {
 export function isSignInProfileCreationSupported() {
   return loadTimeData.getBoolean('signInProfileCreationFlowSupported');
 }
+
+/** @return {boolean} */
+export function isAskOnStartupAllowed() {
+  return loadTimeData.getBoolean('isAskOnStartupAllowed');
+}
