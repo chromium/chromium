@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
 #include "base/callback.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget_observer.h"
@@ -54,6 +55,10 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
       const gfx::Size& size,
       gfx::NativeWindow window,
       base::OnceCallback<void(void)> dialog_closed_callback);
+
+ protected:
+  // ui::WebDialogDelegate overrides
+  ui::ModalType GetDialogModalType() const override;
 
  private:
   InlineLoginDialogChromeOSOnboarding(

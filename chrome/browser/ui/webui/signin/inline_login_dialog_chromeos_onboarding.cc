@@ -84,6 +84,12 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
   return dialog;
 }
 
+ui::ModalType InlineLoginDialogChromeOSOnboarding::GetDialogModalType() const {
+  // Override the default system-modal behavior of the dialog so that the
+  // shelf can be accessed during onboarding.
+  return ui::ModalType::MODAL_TYPE_WINDOW;
+}
+
 InlineLoginDialogChromeOSOnboarding::InlineLoginDialogChromeOSOnboarding(
     const gfx::Size& size,
     base::OnceCallback<void(void)> dialog_closed_callback)
