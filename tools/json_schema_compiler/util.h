@@ -72,7 +72,7 @@ template <class T>
 bool PopulateArrayFromList(const base::ListValue& list, std::vector<T>* out) {
   out->clear();
   T item;
-  for (const auto& value : list) {
+  for (const auto& value : list.GetList()) {
     if (!PopulateItem(value, &item))
       return false;
     // T might not be movable, but in that case it should be copyable, and this
