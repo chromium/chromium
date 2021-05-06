@@ -1326,9 +1326,14 @@ mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
     return mojom::blink::CaptureLinks::kUndefined;
   }
 
-  AddErrorInfo(
-      "property 'capture_links' ignored, type string or array of strings "
-      "expected.");
+  if (object->Get("capture_links")) {
+    // There was something defined that wasn't handled already, it must be the
+    // wrong type.
+    AddErrorInfo(
+        "property 'capture_links' ignored, type string or array of strings "
+        "expected.");
+  }
+
   return mojom::blink::CaptureLinks::kUndefined;
 }
 
