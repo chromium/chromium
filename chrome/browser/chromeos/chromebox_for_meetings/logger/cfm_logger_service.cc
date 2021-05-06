@@ -101,12 +101,13 @@ void CfmLoggerService::OnBindService(
 }
 
 void CfmLoggerService::OnAdaptorConnect(bool success) {
-  if (success) {
-    VLOG(3) << "Adaptor is connected.";
-    delegate_->Init();
-  } else {
+  if (!success) {
     LOG(ERROR) << "Adaptor connection failed.";
+    return;
   }
+
+  VLOG(3) << "Adaptor is connected.";
+  delegate_->Init();
 }
 
 void CfmLoggerService::OnAdaptorDisconnect() {

@@ -36,6 +36,11 @@ mojom::LoggerStatusPtr LoggerUninitializedStatus() {
                                   "Meet logger service not yet initialised.");
 }
 
+::reporting::Status LogPolicyDisabled() {
+  return ::reporting::Status(reporting::error::UNAUTHENTICATED,
+                             "System log upload policy not enabled");
+}
+
 constexpr auto kHandlerDestination =
     ::reporting::Destination::MEET_DEVICE_TELEMETRY;
 
@@ -117,7 +122,8 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
 
   auto config_result = reporting::ReportQueueConfiguration::Create(
       dm_token_, kHandlerDestination,
-      base::BindRepeating([]() { return ::reporting::Status::StatusOK(); }));
+      base::BindRepeating(&ReportingPipeline::CheckPolicy,
+                          base::Unretained(this)));
 
   if (!config_result.ok()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
@@ -143,6 +149,21 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
                 std::move(config), std::move(queue_callback));
           },
           std::move(config_result).ValueOrDie(), std::move(queue_callback)));
+}
+
+::reporting::Status ReportingPipeline::CheckPolicy() const {
+  auto* chrome_device_settings =
+      ash::DeviceSettingsService::Get()->device_settings();
+  bool policy_enabled = false;
+
+  if (chrome_device_settings &&
+      chrome_device_settings->has_device_log_upload_settings()) {
+    auto device_upload_settings =
+        chrome_device_settings->device_log_upload_settings();
+    policy_enabled = device_upload_settings.system_log_upload_enabled();
+  }
+
+  return policy_enabled ? ::reporting::Status::StatusOK() : LogPolicyDisabled();
 }
 
 void ReportingPipeline::OnReportQueueUpdated(
