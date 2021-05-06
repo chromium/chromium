@@ -22,6 +22,7 @@ class HTMLFormElement;
 class HistoryItem;
 class KURL;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class SerializedScriptValue;
 
 // TODO(japhet): This should probably move to frame_loader_types.h and possibly

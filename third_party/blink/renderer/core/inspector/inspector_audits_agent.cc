@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
