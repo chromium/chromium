@@ -1187,7 +1187,6 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
 void NGBlockNode::PlaceChildrenInLayoutBox(
     const NGPhysicalBoxFragment& physical_fragment,
     const NGBlockBreakToken* previous_break_token) const {
-  LayoutBox* rendered_legend = nullptr;
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
     // NGInlineNode at the moment.
@@ -1195,12 +1194,18 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
       continue;
 
     const auto& box_fragment = *To<NGPhysicalBoxFragment>(child_fragment.get());
-    if (box_fragment.IsFirstForNode()) {
-      if (box_fragment.IsRenderedLegend())
-        rendered_legend = To<LayoutBox>(box_fragment.GetMutableLayoutObject());
-      CopyChildFragmentPosition(box_fragment, child_fragment.offset,
-                                physical_fragment, previous_break_token);
-    }
+    if (!box_fragment.IsFirstForNode())
+      continue;
+
+    // The offset for an OOF positioned node that is added as a child of a
+    // fragmentainer box is handled by
+    // NGOutOfFlowLayoutPart::AddOOFToFragmentainer().
+    if (UNLIKELY(physical_fragment.IsFragmentainerBox() &&
+                 child_fragment->IsOutOfFlowPositioned()))
+      continue;
+
+    CopyChildFragmentPosition(box_fragment, child_fragment.offset,
+                              physical_fragment, previous_break_token);
   }
 }
 
@@ -1281,16 +1286,12 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
     const auto* child_box = To<LayoutBox>(child_fragment.GetLayoutObject());
     if (child_box && child_box != box_) {
+      CopyChildFragmentPosition(child_fragment, child.offset,
+                                physical_fragment);
       if (!child_box->IsColumnSpanAll()) {
-        // TODO(almaher): In order for legacy tree operations to work properly,
-        // we need to CopyChildFragmentPosition(). We should probably also
-        // update the LayoutBox size at the last fragment of an OOF node.
-        // (See comments in CL:2597769).
         DCHECK(child_box->IsOutOfFlowPositioned());
         continue;
       }
-      CopyChildFragmentPosition(child_fragment, child.offset,
-                                physical_fragment);
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
       if (!child_fragment.BreakToken()) {
         // Last fragment for this spanner. Update its placeholder.

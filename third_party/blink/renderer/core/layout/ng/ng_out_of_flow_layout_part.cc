@@ -347,7 +347,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
 
     ContainingBlockInfo containing_block_info{
         writing_direction, LogicalRect(container_offset, content_size),
-        candidate.containing_block.relative_offset};
+        candidate.containing_block.relative_offset,
+        candidate.containing_block.offset};
 
     return containing_blocks_map_
         .insert(containing_block, containing_block_info)
@@ -754,14 +755,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       NodeInfo node_info = SetupNodeInfo(descendant);
       NodeToLayout node_to_layout = {
           node_info, CalculateOffset(node_info, /* only_layout */ nullptr)};
-
-      // Determine the additional offset to add to the static position of any
-      // fixedpos descendants.
-      if (descendant.fixedpos_containing_block.fragment) {
-        node_to_layout.additional_fixedpos_offset =
-            node_to_layout.offset_info.offset -
-            descendant.fixedpos_containing_block.offset;
-      }
+      node_to_layout.containing_block_fragment =
+          descendant.containing_block.fragment;
+      node_to_layout.offset_info.original_offset =
+          node_to_layout.offset_info.offset;
 
       // Determine in which fragmentainer this OOF element will start its layout
       // and adjust the offset to be relative to that fragmentainer.
@@ -1278,9 +1275,11 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
       adjusted_offset, allow_first_tier_oof_cache_);
 
-  LogicalOffset additional_fixedpos_offset =
-      descendant.additional_fixedpos_offset;
+  LogicalOffset additional_fixedpos_offset;
   if (descendant.node_info.fixedpos_containing_block.fragment) {
+    additional_fixedpos_offset =
+        descendant.offset_info.original_offset -
+        descendant.node_info.fixedpos_containing_block.offset;
     // Currently, |additional_fixedpos_offset| is the offset from the top of
     // |descendant| to the fixedpos containing block. Adjust this so that it
     // includes the block contribution of |descendant| from previous
@@ -1321,6 +1320,24 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
 
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+
+  // Copy the offset of the OOF node back to legacy such that it is relative
+  // to its containing block rather than the fragmentainer that it is being
+  // added to.
+  if (!descendant.break_token) {
+    const NGPhysicalBoxFragment& container =
+        To<NGPhysicalBoxFragment>(*descendant.containing_block_fragment);
+    LogicalOffset legacy_offset =
+        descendant.offset_info.original_offset -
+        descendant.node_info.container_info.offset_to_border_box;
+    descendant.node_info.node.CopyChildFragmentPosition(
+        physical_fragment,
+        legacy_offset.ConvertToPhysical(container.Style().GetWritingDirection(),
+                                        container.Size(),
+                                        physical_fragment.Size()),
+        container, /* previous_container_break_token */ nullptr);
+  }
+
   const NGBlockBreakToken* break_token =
       To<NGBlockBreakToken>(physical_fragment.BreakToken());
   if (break_token) {
@@ -1575,6 +1592,7 @@ void NGOutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
   visitor->Trace(node_info);
   visitor->Trace(offset_info);
   visitor->Trace(break_token);
+  visitor->Trace(containing_block_fragment);
 }
 
 }  // namespace blink

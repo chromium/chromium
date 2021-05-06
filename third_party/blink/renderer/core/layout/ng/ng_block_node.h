@@ -202,6 +202,14 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
     return false;
   }
 
+  // After we run the layout algorithm, this function copies back the fragment
+  // position to the layout box.
+  void CopyChildFragmentPosition(
+      const NGPhysicalBoxFragment& child_fragment,
+      PhysicalOffset,
+      const NGPhysicalBoxFragment& container_fragment,
+      const NGBlockBreakToken* previous_container_break_token = nullptr) const;
+
   String ToString() const;
 
  private:
@@ -239,11 +247,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGConstraintSpace&,
       const NGPhysicalBoxFragment&,
       const NGBlockBreakToken* previous_container_break_token) const;
-  void CopyChildFragmentPosition(
-      const NGPhysicalBoxFragment& child_fragment,
-      PhysicalOffset,
-      const NGPhysicalBoxFragment& container_fragment,
-      const NGBlockBreakToken* previous_container_break_token = nullptr) const;
 
   void CopyBaselinesFromLegacyLayout(const NGConstraintSpace&,
                                      NGBoxFragmentBuilder*) const;

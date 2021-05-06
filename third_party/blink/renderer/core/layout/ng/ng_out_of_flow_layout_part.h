@@ -89,6 +89,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The relative positioned offset to be applied after fragmentation is
     // completed.
     LogicalOffset relative_offset;
+    // The offset of the container to its border box, including the block
+    // contribution from previous fragmentainers.
+    LogicalOffset offset_to_border_box;
   };
 
   // This stores the information needed to update a multicol child inside an
@@ -173,6 +176,10 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // |initial_layout_result| for more details.
     bool has_cached_layout_result = false;
 
+    // The offset from the OOF to the top of the fragmentation context root.
+    // This should only be used when laying out a fragmentainer descendant.
+    LogicalOffset original_offset;
+
     void Trace(Visitor* visitor) const;
   };
 
@@ -184,13 +191,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     OffsetInfo offset_info;
     Member<const NGBlockBreakToken> break_token;
 
-    // If an OOF element is fragmented, it gets laid out once it reaches the
-    // fragmentation context root. If that element has any fixedpos descendants
-    // whose containing block lives inside the same fragmentation context root,
-    // we'll need to adjust its static position to be relative to that
-    // containing block. |additional_fixedpos_offset| is used to make this
-    // adjustment.
-    LogicalOffset additional_fixedpos_offset;
+    // The physical fragment of the containing block used when laying out a
+    // fragmentainer descendant. This is the containing block as defined by the
+    // spec: https://www.w3.org/TR/css-position-3/#absolute-cb.
+    // TODO(almaher): Ensure that this is correct in the case of an inline
+    // ancestor.
+    Member<const NGPhysicalFragment> containing_block_fragment = nullptr;
 
     void Trace(Visitor* visitor) const;
   };
