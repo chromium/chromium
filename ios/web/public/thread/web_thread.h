@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_THREAD_WEB_THREAD_H_
 #define IOS_WEB_PUBLIC_THREAD_WEB_THREAD_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 

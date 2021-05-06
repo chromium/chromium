@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "net/base/load_timing_info.h"
 #include "net/http/http_response_info.h"

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
 #include <string>
 
 #import "base/ios/block_types.h"

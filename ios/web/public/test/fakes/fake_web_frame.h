@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_FRAME_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_FRAME_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback_forward.h"

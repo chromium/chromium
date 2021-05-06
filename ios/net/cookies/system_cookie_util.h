@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include <memory>
+
 #include "net/cookies/canonical_cookie.h"
 
 @class NSHTTPCookie;

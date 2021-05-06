@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_ENTERPRISE_POLICY_TEST_HELPER_H_
 #define IOS_CHROME_BROWSER_POLICY_ENTERPRISE_POLICY_TEST_HELPER_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 

@@ -7,6 +7,8 @@
 
 #import <WebKit/WebKit.h>
 
+#include <memory>
+
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/web_state/ui/crw_web_view_handler.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"

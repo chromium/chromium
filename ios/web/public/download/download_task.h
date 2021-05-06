@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 
 #include "base/macros.h"

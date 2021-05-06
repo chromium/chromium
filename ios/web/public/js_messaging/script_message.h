@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_H_
 
+#include <memory>
+
 #include "base/optional.h"
 #include "base/values.h"
 #include "url/gurl.h"

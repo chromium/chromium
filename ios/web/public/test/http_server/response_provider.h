@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_HTTP_SERVER_RESPONSE_PROVIDER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"

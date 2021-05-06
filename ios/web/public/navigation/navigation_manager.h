@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/deprecated/navigation_item_list.h"

@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_HTTP_SERVER_HTTP_SERVER_UTIL_H_
 
 #include <map>
+#include <memory>
 
 #include "url/gurl.h"
 

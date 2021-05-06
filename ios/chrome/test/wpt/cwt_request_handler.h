@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
+
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"

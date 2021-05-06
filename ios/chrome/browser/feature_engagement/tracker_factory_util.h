@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_UTIL_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_UTIL_H_
 
+#include <memory>
+
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/web/public/browser_state.h"
 
