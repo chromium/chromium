@@ -213,10 +213,11 @@
         deep-link-focus-id$="[[Setting.kOnScreenKeyboard]]">
     </settings-toggle-button>
     <settings-toggle-button
+        id="enableDictation"
         class="hr"
         pref="{{prefs.settings.a11y.dictation}}"
         label="$i18n{dictationLabel}"
-        sub-label="$i18n{dictationDescription}"
+        sub-label="[[dictationSubtitle_]]"
         deep-link-focus-id$="[[Setting.kDictation]]">
     </settings-toggle-button>
     <settings-toggle-button

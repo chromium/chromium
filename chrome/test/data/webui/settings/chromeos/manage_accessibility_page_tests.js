@@ -264,4 +264,17 @@ suite('ManageAccessibilityPageTests', function() {
         deepLinkElement, getDeepActiveElement(),
         'Switch access toggle should be focused for settingId=1522.');
   });
+
+  test('Dictation subtitle', async () => {
+    initPage();
+    const dictationSetting = page.$$('#enableDictation');
+    assertEquals('Enable dictation (speak to type)', dictationSetting.label);
+    assertEquals(
+        'Send your voice to Google to allow dictation into any text field.',
+        dictationSetting.subLabel);
+    cr.webUIListenerCallback('dictation-setting-subtitle-changed', 'Testing');
+    Polymer.dom.flush();
+    assertEquals('Enable dictation (speak to type)', dictationSetting.label);
+    assertEquals('Testing', dictationSetting.subLabel);
+  });
 });

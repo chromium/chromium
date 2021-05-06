@@ -8,13 +8,17 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "ui/accessibility/accessibility_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace settings {
@@ -32,11 +36,20 @@ void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
 }  // namespace
 
 AccessibilityHandler::AccessibilityHandler(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
+      OnSodaInstalled();
+    else
+      speech::SodaInstaller::GetInstance()->AddObserver(this);
+  }
+}
 
 AccessibilityHandler::~AccessibilityHandler() {
   if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
     a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
+  if (::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void AccessibilityHandler::RegisterMessages() {
@@ -123,6 +136,30 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   extensions::ExtensionTabUtil::OpenOptionsPage(
       extension,
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
+}
+
+// SodaInstaller::Observer:
+void AccessibilityHandler::OnSodaInstalled() {
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  FireWebUIListener(
+      "dictation-setting-subtitle-changed",
+      base::Value(l10n_util::GetStringUTF16(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_COMPLETE)));
+}
+
+void AccessibilityHandler::OnSodaProgress(int progress) {
+  FireWebUIListener(
+      "dictation-setting-subtitle-changed",
+      base::Value(l10n_util::GetStringFUTF16Int(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
+          progress)));
+}
+
+void AccessibilityHandler::OnSodaError() {
+  FireWebUIListener(
+      "dictation-setting-subtitle-changed",
+      base::Value(l10n_util::GetStringUTF16(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR)));
 }
 
 }  // namespace settings
