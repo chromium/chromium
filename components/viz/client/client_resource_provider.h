@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/client/viz_client_export.h"
 #include "components/viz/common/display/renderer_settings.h"

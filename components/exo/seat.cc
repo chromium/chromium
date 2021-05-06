@@ -5,11 +5,6 @@
 #include "components/exo/seat.h"
 
 #include <memory>
-#include "ui/gfx/geometry/point_f.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -18,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
@@ -39,6 +35,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/geometry/point_f.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace {

@@ -16,6 +16,10 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace gpu {
 class GpuMemoryBufferFactory;
 class SyncPointManager;

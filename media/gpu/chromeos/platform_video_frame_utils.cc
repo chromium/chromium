@@ -16,6 +16,7 @@
 #include "base/files/scoped_file.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "gpu/ipc/common/gpu_client_ids.h"

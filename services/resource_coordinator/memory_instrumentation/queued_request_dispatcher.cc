@@ -15,6 +15,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "services/resource_coordinator/memory_instrumentation/aggregate_metrics_processor.h"
 #include "services/resource_coordinator/memory_instrumentation/memory_dump_map_converter.h"

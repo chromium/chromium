@@ -40,6 +40,7 @@ class UnguessableToken;
 
 namespace trace_event {
 
+class TraceEventMemoryOverhead;
 class TracedValue;
 
 // ProcessMemoryDump is as a strongly typed container which holds the dumps

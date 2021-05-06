@@ -5,6 +5,7 @@
 #include "components/services/heap_profiling/json_exporter.h"
 
 #include <inttypes.h>
+
 #include <map>
 #include <unordered_map>
 
@@ -13,6 +14,7 @@
 #include "base/json/string_escape.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_traced_value.h"
 

@@ -1,10 +1,12 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "content/browser/devtools/devtools_instrumentation.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/traced_value.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
