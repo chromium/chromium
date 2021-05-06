@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -88,7 +86,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
 
     @VisibleForTesting
     public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
-    private static final String FRAGMENT_CANCEL_SYNC = "cancel_sync_dialog";
 
     private static final String PREF_USER_CATEGORY = "user_category";
     private static final String PREF_SIGNIN = "sign_in";
@@ -278,11 +275,7 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (!mIsFromSigninScreen) return false; // Let Settings activity handle it.
-            showCancelSyncDialog();
-            return true;
-        } else if (item.getItemId() == R.id.menu_id_targeted_help) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
             HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
                     getString(R.string.help_context_sync_and_services), getProfile(), null);
             return true;
@@ -620,16 +613,10 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onBackPressed() {
-        if (!mIsFromSigninScreen) return false; // Let parent activity handle it.
-        showCancelSyncDialog();
-        return true;
-    }
-
-    private void showCancelSyncDialog() {
-        RecordUserAction.record("Signin_Signin_BackOnAdvancedSyncSettings");
-        CancelSyncDialog dialog = new CancelSyncDialog();
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), FRAGMENT_CANCEL_SYNC);
+        if (mIsFromSigninScreen) {
+            RecordUserAction.record("Signin_Signin_BackOnAdvancedSyncSettings");
+        }
+        return false;
     }
 
     private void confirmSettings() {
@@ -647,39 +634,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
                 .getSigninManager(getProfile())
                 .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         getActivity().finish();
-    }
-
-    /**
-     * The dialog that offers the user to cancel sync. Only shown when
-     * {@link SyncAndServicesSettings} is opened from the sign-in screen. Shown when the user
-     * tries to close the settings page without confirming settings.
-     */
-    public static class CancelSyncDialog extends DialogFragment {
-        public CancelSyncDialog() {
-            // Fragment must have an empty public constructor
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                    .setTitle(R.string.cancel_sync_dialog_title)
-                    .setMessage(R.string.cancel_sync_dialog_message)
-                    .setNegativeButton(R.string.back, (dialog, which) -> onBackPressed())
-                    .setPositiveButton(
-                            R.string.cancel_sync_button, (dialog, which) -> onCancelSyncPressed())
-                    .create();
-        }
-
-        private void onBackPressed() {
-            RecordUserAction.record("Signin_Signin_CancelCancelAdvancedSyncSettings");
-            dismiss();
-        }
-
-        public void onCancelSyncPressed() {
-            RecordUserAction.record("Signin_Signin_ConfirmCancelAdvancedSyncSettings");
-            SyncAndServicesSettings fragment = (SyncAndServicesSettings) getTargetFragment();
-            fragment.cancelSync();
-        }
     }
 
     /**
