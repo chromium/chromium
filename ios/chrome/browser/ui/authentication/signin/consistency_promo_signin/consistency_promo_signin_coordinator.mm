@@ -13,15 +13,17 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_signin_error/consistency_signin_error_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,7 +33,6 @@
     BottomSheetPresentationControllerPresentationDelegate,
     ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
-    ConsistencySigninErrorCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
@@ -46,9 +47,8 @@
 // Coordinator for the first screen.
 @property(nonatomic, strong)
     ConsistencyDefaultAccountCoordinator* defaultAccountCoordinator;
-// Coordinator for error screens.
-@property(nonatomic, strong)
-    ConsistencySigninErrorCoordinator* signinErrorCoordinator;
+// Coordinator to display modal alerts to the user.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // Chrome interface to the iOS shared authentication library.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 // Manager for user's Google identities.
@@ -58,6 +58,8 @@
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
 // |self.defaultAccountCoordinator.selectedIdentity|.
 @property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
+// Coordinator to add an account to the device.
+@property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
 
 @end
 
@@ -120,6 +122,36 @@
 
 #pragma mark - Private
 
+// Displays the sign-in coordinator to add an account to the device.
+- (void)displayAddAccount {
+  DCHECK(!self.addAccountCoordinator);
+  self.addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:self.navigationController
+                                          browser:self.browser
+                                      accessPoint:signin_metrics::AccessPoint::
+                                                      ACCESS_POINT_WEB_SIGNIN];
+  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
+  self.addAccountCoordinator.signinCompletion = ^(
+      SigninCoordinatorResult signinResult,
+      SigninCompletionInfo* signinCompletionInfo) {
+    if (!weakSelf) {
+      return;
+    }
+    ConsistencyPromoSigninCoordinator* strongSelf = weakSelf;
+    [strongSelf.addAccountCoordinator stop];
+    strongSelf.addAccountCoordinator = nil;
+    [strongSelf.navigationController
+        dismissViewControllerAnimated:YES
+                           completion:^() {
+                             [strongSelf finishedWithResult:signinResult
+                                                   identity:signinCompletionInfo
+                                                                .identity];
+                           }];
+  };
+
+  [self.addAccountCoordinator start];
+}
+
 // Dismisses the bottom sheet view controller.
 - (void)dismissNavigationViewController {
   __weak __typeof(self) weakSelf = self;
@@ -143,17 +175,38 @@
 
 // Displays the error panel.
 - (void)displayCookieErrorWithState:(GoogleServiceAuthError::State)errorState {
-  DCHECK(!self.signinErrorCoordinator);
+  DCHECK(!self.alertCoordinator);
   [self.defaultAccountCoordinator stopSigninSpinner];
-  self.signinErrorCoordinator = [[ConsistencySigninErrorCoordinator alloc]
+  NSString* errorMessage;
+  if (errorState == GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
+    errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_WRONG_CREDENTIALS);
+  } else {
+    errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_AUTH_FAILURE);
+  }
+  self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
-                      errorState:errorState];
-  self.signinErrorCoordinator.delegate = self;
-  [self.signinErrorCoordinator start];
-  [self.navigationController
-      pushViewController:self.signinErrorCoordinator.viewController
-                animated:YES];
+                           title:l10n_util::GetNSString(
+                                     IDS_IOS_SIGN_IN_FAILURE_TITLE)
+                         message:errorMessage];
+
+  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_DISMISS)
+                action:^{
+                  [weakSelf dismissNavigationViewController];
+                }
+                 style:UIAlertActionStyleCancel];
+
+  if (errorState == GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
+    [self.alertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_AGAIN)
+                  action:^{
+                    [weakSelf displayAddAccount];
+                  }
+                   style:UIAlertActionStyleDefault];
+  }
+  [self.alertCoordinator start];
 }
 
 #pragma mark - SwipeGesture
@@ -206,19 +259,6 @@
 - (void)bottomSheetPresentationControllerDismissViewController:
     (BottomSheetPresentationController*)controller {
   [self dismissNavigationViewController];
-
-  [self.signinErrorCoordinator stop];
-  self.signinErrorCoordinator = nil;
-}
-
-#pragma mark - ConsistencySigninErrorCoordinatorDelegate
-
-- (void)consistencySigninErrorCoordinatorRetrySignin {
-  DCHECK(self.signinErrorCoordinator);
-  [self.navigationController popViewControllerAnimated:YES];
-
-  [self.signinErrorCoordinator stop];
-  self.signinErrorCoordinator = nil;
 }
 
 #pragma mark - ConsistencyAccountChooserCoordinatorDelegate
@@ -285,11 +325,11 @@
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
   DCHECK(!self.accountChooserCoordinator);
-  if (self.signinErrorCoordinator) {
+  if (self.alertCoordinator) {
     // TODO(crbug.com/1204528): This case should not happen, but
     // |onAccountsInCookieUpdated:error:| can be called twice when there is an
     // error. Once this bug is fixed, this |if| should be replaced with
-    // |DCHECK(!self.signinErrorCoordinator)|.
+    // |DCHECK(!self.alertCoordinator)|.
     return;
   }
   __weak __typeof(self) weakSelf = self;
