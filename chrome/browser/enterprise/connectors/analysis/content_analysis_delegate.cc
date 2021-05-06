@@ -97,9 +97,16 @@ StringAnalysisRequest::StringAnalysisRequest(
     data_.contents = std::move(text);
     result_ = BinaryUploadService::Result::SUCCESS;
   }
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::TOTAL_TEXT_UPLOADS);
 }
 
-StringAnalysisRequest::~StringAnalysisRequest() = default;
+StringAnalysisRequest::~StringAnalysisRequest() {
+  safe_browsing::DecrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
+}
 
 void StringAnalysisRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(result_, data_);
@@ -441,6 +448,8 @@ void ContentAnalysisDelegate::CompleteFileRequestCallback(
     }
   }
 
+  safe_browsing::DecrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS);
   MaybeCompleteScanRequest();
 }
 
@@ -473,6 +482,11 @@ bool ContentAnalysisDelegate::UploadData() {
 
   // Create a text request and a file request for each file.
   PrepareTextRequest();
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS,
+      data_.paths.size());
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::TOTAL_FILE_UPLOADS, data_.paths.size());
   for (const base::FilePath& path : data_.paths)
     PrepareFileRequest(path);
 

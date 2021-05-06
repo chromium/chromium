@@ -143,6 +143,19 @@ std::string BinaryUploadServiceResultToString(
 std::string GetProfileEmail(Profile* profile);
 std::string GetProfileEmail(signin::IdentityManager* identity_manager);
 
+// Helper enum and function to manipulate crash keys relevant to scanning.
+// If a key would be set to 0, it is unset.
+enum class ScanningCrashKey {
+  PENDING_FILE_UPLOADS,
+  PENDING_TEXT_UPLOADS,
+  PENDING_FILE_DOWNLOADS,
+  TOTAL_FILE_UPLOADS,
+  TOTAL_TEXT_UPLOADS,
+  TOTAL_FILE_DOWNLOADS
+};
+void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
+void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_

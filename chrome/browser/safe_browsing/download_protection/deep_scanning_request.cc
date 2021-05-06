@@ -210,6 +210,8 @@ void DeepScanningRequest::Start() {
   // Indicate we're now scanning the file.
   callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
 
+  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
+  IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, item_->GetFullPath(),
       item_->GetTargetFilePath().BaseName(),
@@ -350,6 +352,7 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   item_->RemoveObserver(this);
   download_service_->RequestFinished(this);
+  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
 }
 
 bool DeepScanningRequest::MaybeShowDeepScanFailureModalDialog(

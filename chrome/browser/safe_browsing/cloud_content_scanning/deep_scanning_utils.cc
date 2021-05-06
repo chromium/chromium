@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace safe_browsing {
@@ -49,6 +50,78 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
   }
 
   return unscanned_reason;
+}
+
+crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
+  static crash_reporter::CrashKeyString<7> pending_file_uploads(
+      "pending-file-upload-scans");
+  static crash_reporter::CrashKeyString<7> pending_text_uploads(
+      "pending-text-upload-scans");
+  static crash_reporter::CrashKeyString<7> pending_file_downloads(
+      "pending-file-download-scans");
+  static crash_reporter::CrashKeyString<7> total_file_uploads(
+      "total-file-upload-scans");
+  static crash_reporter::CrashKeyString<7> total_text_uploads(
+      "total-text-upload-scans");
+  static crash_reporter::CrashKeyString<7> total_file_downloads(
+      "total-file-download-scans");
+  switch (key) {
+    case ScanningCrashKey::PENDING_FILE_UPLOADS:
+      return &pending_file_uploads;
+    case ScanningCrashKey::PENDING_TEXT_UPLOADS:
+      return &pending_text_uploads;
+    case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
+      return &pending_file_downloads;
+    case ScanningCrashKey::TOTAL_FILE_UPLOADS:
+      return &total_file_uploads;
+    case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
+      return &total_text_uploads;
+    case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
+      return &total_file_downloads;
+  }
+}
+
+int* GetScanCrashKeyCount(ScanningCrashKey key) {
+  static int pending_file_uploads = 0;
+  static int pending_text_uploads = 0;
+  static int pending_file_downloads = 0;
+  static int total_file_uploads = 0;
+  static int total_text_uploads = 0;
+  static int total_file_downloads = 0;
+  switch (key) {
+    case ScanningCrashKey::PENDING_FILE_UPLOADS:
+      return &pending_file_uploads;
+    case ScanningCrashKey::PENDING_TEXT_UPLOADS:
+      return &pending_text_uploads;
+    case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
+      return &pending_file_downloads;
+    case ScanningCrashKey::TOTAL_FILE_UPLOADS:
+      return &total_file_uploads;
+    case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
+      return &total_text_uploads;
+    case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
+      return &total_file_downloads;
+  }
+}
+
+void ModifyKey(ScanningCrashKey key, int delta) {
+  int* key_value = GetScanCrashKeyCount(key);
+
+  // Since the crash key string length is determined at compile time, ensure the
+  // given number is restricted to 6 digits (char 7 is for null terminating the
+  // string).
+  int new_value = (*key_value) + delta;
+  new_value = std::max(0, new_value);
+  new_value = std::min(999999, new_value);
+
+  *key_value = new_value;
+  crash_reporter::CrashKeyString<7>* crash_key = GetScanCrashKey(key);
+  DCHECK(crash_key);
+
+  if (new_value == 0)
+    crash_key->Clear();
+  else
+    crash_key->Set(base::NumberToString(new_value));
 }
 
 }  // namespace
@@ -347,6 +420,16 @@ std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                    .email
              : std::string();
+}
+
+void IncrementCrashKey(ScanningCrashKey key, int delta) {
+  DCHECK_GE(delta, 0);
+  ModifyKey(key, delta);
+}
+
+void DecrementCrashKey(ScanningCrashKey key, int delta) {
+  DCHECK_GE(delta, 0);
+  ModifyKey(key, -delta);
 }
 
 }  // namespace safe_browsing
