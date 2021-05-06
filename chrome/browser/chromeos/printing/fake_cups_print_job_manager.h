@@ -19,11 +19,17 @@ namespace chromeos {
 class FakeCupsPrintJobManager : public CupsPrintJobManager {
  public:
   explicit FakeCupsPrintJobManager(Profile* profile);
+  FakeCupsPrintJobManager(const FakeCupsPrintJobManager&) = delete;
+  FakeCupsPrintJobManager& operator=(const FakeCupsPrintJobManager&) = delete;
   ~FakeCupsPrintJobManager() override;
 
-  bool CreatePrintJob(const std::string& printer_name,
+  bool CreatePrintJob(const std::string& printer_id,
                       const std::string& title,
-                      int total_page_number);
+                      int job_id,
+                      int total_page_number,
+                      ::printing::PrintJob::Source source,
+                      const std::string& source_id,
+                      const printing::proto::PrintSettings& settings) override;
 
   void CancelPrintJob(CupsPrintJob* job) override;
   bool SuspendPrintJob(CupsPrintJob* job) override;
@@ -35,10 +41,7 @@ class FakeCupsPrintJobManager : public CupsPrintJobManager {
   using PrintJobs = std::vector<std::unique_ptr<CupsPrintJob>>;
 
   PrintJobs print_jobs_;
-  static int next_job_id_;
   base::WeakPtrFactory<FakeCupsPrintJobManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCupsPrintJobManager);
 };
 
 }  // namespace chromeos

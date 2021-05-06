@@ -248,8 +248,27 @@ void LocalPrinterAsh::ShowSystemPrintSettings(
 
 void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
                                      CreatePrintJobCallback callback) {
-  // TODO: implement this function.
-  NOTREACHED();
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  chromeos::CupsPrintJobManager* print_job_manager =
+      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  chromeos::printing::proto::PrintSettings settings;
+  settings.set_color(
+      printing::IsColorModelSelected(job->color_mode)
+          ? chromeos::printing::proto::PrintSettings_ColorMode_COLOR
+          : chromeos::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
+  settings.set_duplex(
+      static_cast<chromeos::printing::proto::PrintSettings_DuplexMode>(
+          job->duplex_mode));
+  settings.set_copies(job->copies);
+  chromeos::printing::proto::MediaSize media_size;
+  media_size.set_width(job->media_size.width());
+  media_size.set_height(job->media_size.height());
+  media_size.set_vendor_id(job->media_vendor_id);
+  *settings.mutable_media_size() = media_size;
+  print_job_manager->CreatePrintJob(job->device_name, job->title, job->job_id,
+                                    job->page_count, job->source,
+                                    job->source_id, std::move(settings));
+  std::move(callback).Run();
 }
 
 void LocalPrinterAsh::GetPrintServersConfig(

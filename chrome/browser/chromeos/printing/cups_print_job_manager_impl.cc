@@ -249,16 +249,15 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
     }
   }
 
- private:
-  // Begin monitoring a print job for a given |printer_name| with the given
+  // Begin monitoring a print job for a given |printer_id| with the given
   // |title| with the pages |total_page_number|.
-  bool CreatePrintJob(const std::string& printer_name,
+  bool CreatePrintJob(const std::string& printer_id,
                       const std::string& title,
                       int job_id,
                       int total_page_number,
                       ::printing::PrintJob::Source source,
                       const std::string& source_id,
-                      const printing::proto::PrintSettings& settings) {
+                      const printing::proto::PrintSettings& settings) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -274,7 +273,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
       return false;
     }
 
-    base::Optional<Printer> printer = manager->GetPrinter(printer_name);
+    base::Optional<Printer> printer = manager->GetPrinter(printer_id);
     if (!printer) {
       LOG(WARNING)
           << "Printer was removed while job was in progress.  It cannot "
@@ -306,6 +305,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
     return true;
   }
 
+ private:
   void FinishPrintJob(CupsPrintJob* job) {
     // Copy job_id and printer_id.  |job| is about to be freed.
     const int job_id = job->job_id();

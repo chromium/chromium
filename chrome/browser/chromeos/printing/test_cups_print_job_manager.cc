@@ -30,6 +30,17 @@ bool TestCupsPrintJobManager::ResumePrintJob(CupsPrintJob* job) {
   return true;
 }
 
+bool TestCupsPrintJobManager::CreatePrintJob(
+    const std::string& printer_id,
+    const std::string& title,
+    int job_id,
+    int total_page_number,
+    ::printing::PrintJob::Source source,
+    const std::string& source_id,
+    const printing::proto::PrintSettings& settings) {
+  return false;
+}
+
 void TestCupsPrintJobManager::CreatePrintJob(CupsPrintJob* job) {
   job->set_state(CupsPrintJob::State::STATE_NONE);
   NotifyJobCreated(job->GetWeakPtr());
