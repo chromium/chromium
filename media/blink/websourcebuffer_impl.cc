@@ -50,14 +50,11 @@ static base::TimeDelta DoubleToTimeDelta(double time) {
   if (time == std::numeric_limits<double>::infinity())
     return kInfiniteDuration;
 
-  // Don't use base::TimeDelta::Max() here, as we want the largest finite time
-  // delta.
-  base::TimeDelta max_time = base::TimeDelta::FromInternalValue(
-      std::numeric_limits<int64_t>::max() - 1);
-  double max_time_in_seconds = max_time.InSecondsF();
+  constexpr double max_time_in_seconds =
+      base::TimeDelta::FiniteMax().InSecondsF();
 
   if (time >= max_time_in_seconds)
-    return max_time;
+    return base::TimeDelta::FiniteMax();
 
   return base::TimeDelta::FromMicroseconds(
       time * base::Time::kMicrosecondsPerSecond);

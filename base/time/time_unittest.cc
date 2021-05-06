@@ -1936,6 +1936,17 @@ TEST(TimeDelta, MinConversions) {
             std::numeric_limits<int64_t>::min());
 }
 
+TEST(TimeDelta, FiniteMaxMin) {
+  constexpr TimeDelta kFiniteMax = TimeDelta::FiniteMax();
+  constexpr TimeDelta kUnit = TimeDelta::FromMicroseconds(1);
+  static_assert(kFiniteMax + kUnit == TimeDelta::Max(), "");
+  static_assert(kFiniteMax - kUnit < kFiniteMax, "");
+
+  constexpr TimeDelta kFiniteMin = TimeDelta::FiniteMin();
+  static_assert(kFiniteMin - kUnit == TimeDelta::Min(), "");
+  static_assert(kFiniteMin + kUnit > kFiniteMin, "");
+}
+
 TEST(TimeDelta, NumericOperators) {
   constexpr double d = 0.5;
   EXPECT_EQ(TimeDelta::FromMilliseconds(500),

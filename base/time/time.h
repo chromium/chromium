@@ -191,6 +191,14 @@ class BASE_EXPORT TimeDelta {
   // minimum time delta to a time or another time delta has an undefined result.
   static constexpr TimeDelta Min();
 
+  // Returns the maximum time delta which is not equivalent to infinity. Only
+  // subtracting a finite time delta from this time delta has a defined result.
+  static constexpr TimeDelta FiniteMax();
+
+  // Returns the minimum time delta which is not equivalent to -infinity. Only
+  // adding a finite time delta to this time delta has a defined result.
+  static constexpr TimeDelta FiniteMin();
+
   // Returns the internal numeric value of the TimeDelta object. Please don't
   // use this and do arithmetic on it, as it is more error prone than using the
   // provided operators.
@@ -967,6 +975,16 @@ constexpr TimeDelta TimeDelta::Max() {
 // static
 constexpr TimeDelta TimeDelta::Min() {
   return TimeDelta(std::numeric_limits<int64_t>::min());
+}
+
+// static
+constexpr TimeDelta TimeDelta::FiniteMax() {
+  return TimeDelta(std::numeric_limits<int64_t>::max() - 1);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FiniteMin() {
+  return TimeDelta(std::numeric_limits<int64_t>::min() + 1);
 }
 
 // For logging use only.
