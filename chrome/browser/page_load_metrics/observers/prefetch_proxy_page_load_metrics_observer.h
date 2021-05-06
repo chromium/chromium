@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 
 namespace content {
-class BrowserContext;
 class NavigationHandle;
 }  // namespace content
 
@@ -43,18 +42,6 @@ class PrefetchProxyPageLoadMetricsObserver
 
  private:
   void RecordMetrics();
-
-  // Starts an async call to the cookie manager to determine if there are likely
-  // to be cookies set on a mainframe request. This is called on navigation
-  // start and redirects but should not be called on commit because it'll get
-  // cookies from the mainframe response, if any.
-  void CheckForCookiesOnURL(content::BrowserContext* browser_context,
-                            const GURL& url);
-
-  // Used as a callback for the cookie manager query.
-  void OnCookieResult(base::Time query_start_time,
-                      const net::CookieAccessResultList& cookies,
-                      const net::CookieAccessResultList& excluded_cookies);
 
   // Sets |prefetch_metrics_| for this page load. Done in a separate method so
   // that this can be done in an event notification.
@@ -100,11 +87,6 @@ class PrefetchProxyPageLoadMetricsObserver
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.
   base::Optional<int> min_days_since_last_visit_to_origin_;
-
-  // Set to true if any main frame request in the redirect chain had cookies set
-  // on the request. Set to false if there were no cookies set. Not set if we
-  // didn't get a response from the CookieManager before recording metrics.
-  base::Optional<bool> mainframe_had_cookies_;
 
   // Metrics related to Prefetch Proxy prefetching on a SRP, for plumbing
   // into UKM.

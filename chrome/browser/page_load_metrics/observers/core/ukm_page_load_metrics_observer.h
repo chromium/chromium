@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
@@ -200,6 +201,19 @@ class UkmPageLoadMetricsObserver
   // becomes hidden, or at the end of the session if the page is never hidden.
   void RecordSiteEngagement() const;
 
+  // Starts an async call to the cookie manager to determine if there are likely
+  // to be cookies set on a mainframe request |url|. This is called on
+  // navigation start and redirects but should not be called on commit because
+  // it'll get cookies from the mainframe response, if any.
+  void UpdateMainFrameRequestHadCookie(content::BrowserContext* browser_context,
+                                       const GURL& url);
+
+  // Used as a callback for the cookie manager query.
+  void OnMainFrameRequestHadCookieResult(
+      base::Time query_start_time,
+      const net::CookieAccessResultList& cookies,
+      const net::CookieAccessResultList& excluded_cookies);
+
   // Guaranteed to be non-null during the lifetime of |this|.
   network::NetworkQualityTracker* network_quality_tracker_;
 
@@ -261,6 +275,11 @@ class UkmPageLoadMetricsObserver
   // The number of main frame redirects that occurred before commit.
   uint32_t main_frame_request_redirect_count_ = 0;
 
+  // Set to true if any main frame request in the redirect chain had cookies set
+  // on the request. Set to false if there were no cookies set. Not set if we
+  // didn't get a response from the CookieManager before recording metrics.
+  base::Optional<bool> main_frame_request_had_cookies_;
+
   // The browser context this navigation is operating in.
   content::BrowserContext* browser_context_ = nullptr;
 
@@ -298,6 +317,8 @@ class UkmPageLoadMetricsObserver
   base::Optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
+
+  base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

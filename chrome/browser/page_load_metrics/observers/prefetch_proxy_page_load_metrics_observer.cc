@@ -16,9 +16,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "net/cookies/cookie_options.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -57,17 +55,12 @@ PrefetchProxyPageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   navigation_start_ = base::Time::Now();
-
-  CheckForCookiesOnURL(navigation_handle->GetWebContents()->GetBrowserContext(),
-                       navigation_handle->GetURL());
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrefetchProxyPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
-  CheckForCookiesOnURL(navigation_handle->GetWebContents()->GetBrowserContext(),
-                       navigation_handle->GetURL());
   return CONTINUE_OBSERVING;
 }
 
@@ -184,26 +177,6 @@ void PrefetchProxyPageLoadMetricsObserver::OnOriginLastVisitResult(
   }
 }
 
-void PrefetchProxyPageLoadMetricsObserver::CheckForCookiesOnURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  content::StoragePartition* partition =
-      browser_context->GetStoragePartitionForUrl(url);
-
-  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, net::CookieOptions::MakeAllInclusive(),
-      base::BindOnce(&PrefetchProxyPageLoadMetricsObserver::OnCookieResult,
-                     weak_factory_.GetWeakPtr(), base::Time::Now()));
-}
-
-void PrefetchProxyPageLoadMetricsObserver::OnCookieResult(
-    base::Time query_start_time,
-    const net::CookieAccessResultList& cookies,
-    const net::CookieAccessResultList& excluded_cookies) {
-  mainframe_had_cookies_ =
-      mainframe_had_cookies_.value_or(false) || !cookies.empty();
-}
-
 void PrefetchProxyPageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
@@ -234,12 +207,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   task_tracker_.TryCancelAll();
-
-  if (mainframe_had_cookies_.has_value()) {
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies",
-        mainframe_had_cookies_.value());
-  }
 
   if (min_days_since_last_visit_to_origin_.has_value()) {
     int days_since_last_visit = min_days_since_last_visit_to_origin_.value();
@@ -285,10 +252,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordPrefetchProxyEvent() {
           maxxed_days_since_last_visit, kDaysSinceLastVisitBucketSpacing);
       builder.Setdays_since_last_visit_to_origin(ukm_days_since_last_visit);
     }
-  }
-  if (mainframe_had_cookies_.has_value()) {
-    int ukm_mainpage_had_cookies = mainframe_had_cookies_.value() ? 1 : 0;
-    builder.Setmainpage_request_had_cookies(ukm_mainpage_had_cookies);
   }
 
   int ukm_loaded_css_js_from_cache_before_fcp =

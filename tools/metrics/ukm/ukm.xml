@@ -11286,6 +11286,13 @@ be describing additional metrics about the same event.
       there were no redirects.
     </summary>
   </metric>
+  <metric name="MainFrameResource.RequestHadCookies" enum="Boolean">
+    <summary>
+      A boolean indicating if any mainpage request in the redirect chain or
+      committed request had cookies set on it. Only set when a query result was
+      received from the cookie manager before event recording.
+    </summary>
+  </metric>
   <metric name="MainFrameResource.RequestStartToReceiveHeadersEnd">
     <summary>
       The duration from when the request was started to the time when its
@@ -13027,6 +13034,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="mainpage_request_had_cookies" enum="Boolean">
+    <obsolete>
+      Replaced by PageLoad.MainFrameResource.RequestHadCookies in M92.
+    </obsolete>
     <summary>
       A boolean indicating if any mainpage request in the redirect chain or
       committed request had cookies set on it. Only set when a query result was

@@ -589,28 +589,3 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_NoUKM) {
 
   VerifyNoUKM();
 }
-
-// The rest of cookie testing is done in
-// PrefetchProxyPageLoadMetricsObserverBrowserTest.
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, HadCookies_None) {
-  StartTest(true /* data_saver_enabled */);
-
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", 0);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kmainpage_request_had_cookiesName, base::nullopt);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, HadCookies_NoUKM) {
-  StartTest(false /* data_saver_enabled */);
-
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", 0);
-
-  VerifyNoUKM();
-}

@@ -41,9 +41,11 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/mime_util.h"
 #include "net/base/load_timing_info.h"
+#include "net/cookies/cookie_options.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -206,6 +208,10 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
   downstream_kbps_estimate_ =
       network_quality_tracker_->GetDownstreamThroughputKbps();
   page_transition_ = navigation_handle->GetPageTransition();
+  UpdateMainFrameRequestHadCookie(
+      navigation_handle->GetWebContents()->GetBrowserContext(),
+      navigation_handle->GetURL());
+
   return CONTINUE_OBSERVING;
 }
 
@@ -213,7 +219,32 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 UkmPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   main_frame_request_redirect_count_++;
+  UpdateMainFrameRequestHadCookie(
+      navigation_handle->GetWebContents()->GetBrowserContext(),
+      navigation_handle->GetURL());
+
   return CONTINUE_OBSERVING;
+}
+
+void UkmPageLoadMetricsObserver::UpdateMainFrameRequestHadCookie(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  content::StoragePartition* partition =
+      browser_context->GetStoragePartitionForUrl(url);
+
+  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
+      url, net::CookieOptions::MakeAllInclusive(),
+      base::BindOnce(
+          &UkmPageLoadMetricsObserver::OnMainFrameRequestHadCookieResult,
+          weak_factory_.GetWeakPtr(), base::Time::Now()));
+}
+
+void UkmPageLoadMetricsObserver::OnMainFrameRequestHadCookieResult(
+    base::Time query_start_time,
+    const net::CookieAccessResultList& cookies,
+    const net::CookieAccessResultList& excluded_cookies) {
+  main_frame_request_had_cookies_ =
+      main_frame_request_had_cookies_.value_or(false) || !cookies.empty();
 }
 
 UkmPageLoadMetricsObserver::ObservePolicy
@@ -905,6 +936,10 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   if (main_frame_request_redirect_count_ > 0) {
     builder.SetMainFrameResource_RedirectCount(
         main_frame_request_redirect_count_);
+  }
+  if (main_frame_request_had_cookies_.has_value()) {
+    builder.SetMainFrameResource_RequestHadCookies(
+        main_frame_request_had_cookies_.value() ? 1 : 0);
   }
 }
 
