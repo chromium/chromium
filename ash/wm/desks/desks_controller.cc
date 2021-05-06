@@ -560,8 +560,17 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
     return false;
 
   // Try replacing an ongoing desk animation of the same source.
-  if (animation_ && animation_->Replace(going_left, source)) {
-    return true;
+  if (animation_) {
+    if (animation_->Replace(going_left, source))
+      return true;
+
+    // We arrive here if `DeskActivationAnimation::Replace()` fails
+    // due to trying to replace an animation before the original animation has
+    // finished taking their screenshots. We can continue with creating a new
+    // animation in `ActivateDesk()`, but we need to clean up some desk state.
+    ActivateDeskInternal(desks()[animation_->ending_desk_index()].get(),
+                         /*update_window_activation=*/false);
+    animation_.reset();
   }
 
   const Desk* desk_to_activate = going_left ? GetPreviousDesk() : GetNextDesk();

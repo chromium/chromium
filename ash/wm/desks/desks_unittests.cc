@@ -5367,6 +5367,61 @@ TEST_F(DesksTest, DragNewDeskWhileSnappingBack) {
   EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_1);
 }
 
+// Tests that the right desk containers are visible when switching between desks
+// really fast. Regression test for https://crbug.com/1194757.
+TEST_F(DesksTest, FastDeskSwitches) {
+  // Add 3 more desks and add a couple windows on each one.
+  CreateTestWindow();
+  CreateTestWindow();
+
+  for (int i = 0; i < 3; ++i) {
+    NewDesk();
+    CreateTestWindow();
+    CreateTestWindow();
+  }
+
+  // Start at the rightmost, 4th desk.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(4u, desks_controller->desks().size());
+  desks_controller->ActivateDesk(desks_controller->desks()[3].get(),
+                                 DesksSwitchSource::kUserSwitch);
+
+  ui::ScopedAnimationDurationScaleMode normal_anim(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Activate the first 2 desks very quickly, without waiting for screenshots to
+  // be taken.
+  desks_controller->ActivateAdjacentDesk(
+      /*going_left=*/true, DesksSwitchSource::kDeskSwitchShortcut);
+  desks_controller->ActivateAdjacentDesk(
+      /*going_left=*/true, DesksSwitchSource::kDeskSwitchShortcut);
+
+  // Let the last desk animation to complete.
+  desks_controller->ActivateAdjacentDesk(
+      /*going_left=*/true, DesksSwitchSource::kDeskSwitchShortcut);
+  // Note that `DeskController::ActivateAdjacentDesk()` will trigger two
+  // `OnDeskSwitchAnimationFinished()` calls. The first is from the previous
+  // animation which we destroy since its screenshots have not been taken yet.
+  // The second is the animation to the first desk that we want to wait to take
+  // the screenshots and animate.
+  DeskSwitchAnimationWaiter waiter;
+  waiter.Wait();
+
+  // Check the desk containers. Test that only the first desk container is
+  // visible, but they should all be opaque.
+  std::vector<aura::Window*> desk_containers =
+      desks_util::GetDesksContainers(Shell::GetPrimaryRootWindow());
+  ASSERT_EQ(8u, desk_containers.size());
+  EXPECT_TRUE(desk_containers[0]->IsVisible());
+  EXPECT_EQ(1.f, desk_containers[0]->layer()->opacity());
+
+  for (size_t i = 1; i < desk_containers.size(); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Desk #%lu", i + 1));
+    EXPECT_FALSE(desk_containers[i]->IsVisible());
+    EXPECT_EQ(1.f, desk_containers[i]->layer()->opacity());
+  }
+}
+
 // A test class that uses a mock time test environment.
 class DesksMockTimeTest : public DesksTest {
  public:
