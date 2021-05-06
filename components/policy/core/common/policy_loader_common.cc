@@ -57,7 +57,7 @@ void FilterSensitivePolicies(PolicyMap* policy) {
       return;
 
     base::Value filtered_values(base::Value::Type::LIST);
-    for (const auto& list_entry : *policy_list_value) {
+    for (const auto& list_entry : policy_list_value->GetList()) {
       if (!list_entry.is_string())
         continue;
       std::string entry = list_entry.GetString();

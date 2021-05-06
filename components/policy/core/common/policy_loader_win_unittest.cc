@@ -331,11 +331,9 @@ void RegistryTestHarness::InstallStringListPolicy(
       KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   int index = 1;
-  for (base::ListValue::const_iterator element(policy_value->begin());
-       element != policy_value->end();
-       ++element) {
+  for (const auto& element : policy_value->GetList()) {
     std::string element_value;
-    if (!element->GetAsString(&element_value))
+    if (!element.GetAsString(&element_value))
       continue;
     std::string name(base::NumberToString(index++));
     key.WriteValue(base::UTF8ToWide(name).c_str(),

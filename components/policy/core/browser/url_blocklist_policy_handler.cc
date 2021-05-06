@@ -93,7 +93,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // We start with the DisabledSchemes because we have size limit when
   // handling URLBlocklists.
   if (disabled_schemes) {
-    for (const auto& entry : *disabled_schemes) {
+    for (const auto& entry : disabled_schemes->GetList()) {
       std::string entry_value;
       if (entry.GetAsString(&entry_value)) {
         entry_value.append("://*");
@@ -103,7 +103,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 
   if (url_blocklist) {
-    for (const auto& entry : *url_blocklist) {
+    for (const auto& entry : url_blocklist->GetList()) {
       if (entry.is_string())
         merged_url_blocklist.push_back(entry.Clone());
     }

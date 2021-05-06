@@ -248,12 +248,13 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
     return false;
   }
 
-  for (auto entry = list_value->begin(); entry != list_value->end(); ++entry) {
+  int index = -1;
+  for (const auto& entry : list_value->GetList()) {
+    ++index;
     std::string entry_value;
-    if (!entry->GetAsString(&entry_value)) {
+    if (!entry.GetAsString(&entry_value)) {
       if (errors) {
-        errors->AddError(policy_name(), entry - list_value->begin(),
-                         IDS_POLICY_TYPE_ERROR,
+        errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                          base::Value::GetTypeName(base::Value::Type::STRING));
       }
       continue;
@@ -263,11 +264,8 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
     if (mapped_value) {
       if (output)
         output->Append(std::move(mapped_value));
-    } else {
-      if (errors) {
-        errors->AddError(policy_name(), entry - list_value->begin(),
-                         IDS_POLICY_OUT_OF_RANGE_ERROR);
-      }
+    } else if (errors) {
+      errors->AddError(policy_name(), index, IDS_POLICY_OUT_OF_RANGE_ERROR);
     }
   }
 
