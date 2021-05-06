@@ -63,41 +63,6 @@ namespace content {
 
 namespace {
 
-blink::mojom::WebBluetoothResult TranslateConnectErrorAndRecord(
-    BluetoothDevice::ConnectErrorCode error_code) {
-  switch (error_code) {
-    case BluetoothDevice::ERROR_UNKNOWN:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNKNOWN);
-      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_ERROR;
-    case BluetoothDevice::ERROR_INPROGRESS:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::IN_PROGRESS);
-      return blink::mojom::WebBluetoothResult::CONNECT_ALREADY_IN_PROGRESS;
-    case BluetoothDevice::ERROR_FAILED:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::FAILED);
-      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
-    case BluetoothDevice::ERROR_AUTH_FAILED:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_FAILED);
-      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_FAILED;
-    case BluetoothDevice::ERROR_AUTH_CANCELED:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_CANCELED);
-      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_CANCELED;
-    case BluetoothDevice::ERROR_AUTH_REJECTED:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_REJECTED);
-      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_REJECTED;
-    case BluetoothDevice::ERROR_AUTH_TIMEOUT:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_TIMEOUT);
-      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_TIMEOUT;
-    case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
-      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNSUPPORTED_DEVICE);
-      return blink::mojom::WebBluetoothResult::CONNECT_UNSUPPORTED_DEVICE;
-    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
-      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
-  }
-  NOTREACHED();
-  return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
-}
-
 blink::mojom::WebBluetoothResult TranslateGATTError(
     BluetoothRemoteGattService::GattErrorCode error_code) {
   switch (error_code) {
@@ -174,6 +139,43 @@ bool IsValidRequestScanOptions(
 }
 
 }  // namespace
+
+// static
+blink::mojom::WebBluetoothResult
+WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
+    BluetoothDevice::ConnectErrorCode error_code) {
+  switch (error_code) {
+    case BluetoothDevice::ERROR_UNKNOWN:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNKNOWN);
+      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_ERROR;
+    case BluetoothDevice::ERROR_INPROGRESS:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::IN_PROGRESS);
+      return blink::mojom::WebBluetoothResult::CONNECT_ALREADY_IN_PROGRESS;
+    case BluetoothDevice::ERROR_FAILED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::FAILED);
+      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
+    case BluetoothDevice::ERROR_AUTH_FAILED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_FAILED);
+      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_FAILED;
+    case BluetoothDevice::ERROR_AUTH_CANCELED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_CANCELED);
+      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_CANCELED;
+    case BluetoothDevice::ERROR_AUTH_REJECTED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_REJECTED);
+      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_REJECTED;
+    case BluetoothDevice::ERROR_AUTH_TIMEOUT:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_TIMEOUT);
+      return blink::mojom::WebBluetoothResult::CONNECT_AUTH_TIMEOUT;
+    case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNSUPPORTED_DEVICE);
+      return blink::mojom::WebBluetoothResult::CONNECT_UNSUPPORTED_DEVICE;
+    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
+      NOTREACHED();
+      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
+  }
+  NOTREACHED();
+  return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
+}
 
 class WebBluetoothServiceImpl::AdvertisementClient {
  public:
@@ -452,7 +454,8 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
     : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
       connected_devices_(new FrameConnectedBluetoothDevices(render_frame_host)),
       render_frame_host_(render_frame_host),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver)),
+      pairing_manager_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(web_contents());
 
@@ -2273,6 +2276,68 @@ bool WebBluetoothServiceImpl::HasActiveDiscoverySession() {
           ble_scan_discovery_session_->IsActive()) ||
          (watch_advertisements_discovery_session_ &&
           watch_advertisements_discovery_session_->IsActive());
+}
+
+blink::WebBluetoothDeviceId WebBluetoothServiceImpl::GetCharacteristicDeviceID(
+    const std::string& characteristic_instance_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  blink::WebBluetoothDeviceId device_id;
+
+  auto characteristic_iter =
+      characteristic_id_to_service_id_.find(characteristic_instance_id);
+  if (characteristic_iter == characteristic_id_to_service_id_.end())
+    return device_id;
+  auto device_iter =
+      service_id_to_device_address_.find(characteristic_iter->second);
+  if (device_iter == service_id_to_device_address_.end())
+    return device_id;
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothNewPermissionsBackend)) {
+    BluetoothDelegate* delegate =
+        GetContentClient()->browser()->GetBluetoothDelegate();
+    if (delegate) {
+      device_id = delegate->GetWebBluetoothDeviceId(render_frame_host_,
+                                                    device_iter->second);
+    }
+  } else {
+    const blink::WebBluetoothDeviceId* device_id_ptr =
+        allowed_devices().GetDeviceId(device_iter->second);
+    if (device_id_ptr)
+      device_id = *device_id_ptr;
+  }
+  return device_id;
+}
+
+void WebBluetoothServiceImpl::PairDevice(
+    const blink::WebBluetoothDeviceId& device_id,
+    BluetoothDevice::PairingDelegate* pairing_delegate,
+    base::OnceClosure callback,
+    BluetoothDevice::ConnectErrorCallback error_callback) {
+  if (!device_id.IsValid()) {
+    std::move(error_callback)
+        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  CacheQueryResult query_result = QueryCacheForDevice(device_id);
+  if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
+    std::move(error_callback)
+        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  BluetoothDevice* device = query_result.device;
+  if (!device) {
+    std::move(error_callback)
+        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  DCHECK(!device->IsPaired());
+
+  device->Pair(pairing_delegate, std::move(callback),
+               std::move(error_callback));
 }
 
 }  // namespace content

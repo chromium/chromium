@@ -17,6 +17,8 @@
 #include "base/scoped_observation.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
+#include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
+#include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
@@ -66,8 +68,12 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
     : public blink::mojom::WebBluetoothService,
       public WebContentsObserver,
       public device::BluetoothAdapter::Observer,
-      public BluetoothDelegate::FramePermissionObserver {
+      public BluetoothDelegate::FramePermissionObserver,
+      public WebBluetoothPairingManagerDelegate {
  public:
+  static blink::mojom::WebBluetoothResult TranslateConnectErrorAndRecord(
+      device::BluetoothDevice::ConnectErrorCode error_code);
+
   // |render_frame_host|: The RFH that owns this instance.
   // |receiver|: The instance will be bound to this receiver's pipe.
   WebBluetoothServiceImpl(
@@ -396,6 +402,15 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // |watch_advertisements_discovery_session_| is active.
   bool HasActiveDiscoverySession();
 
+  // WebBluetoothPairingManagerDelegate implementation:
+  blink::WebBluetoothDeviceId GetCharacteristicDeviceID(
+      const std::string& characteristic_instance_id) override;
+  void PairDevice(
+      const blink::WebBluetoothDeviceId& device_id,
+      device::BluetoothDevice::PairingDelegate* pairing_delegate,
+      base::OnceClosure callback,
+      device::BluetoothDevice::ConnectErrorCallback error_callback) override;
+
   // Used to open a BluetoothChooser and start a device discovery session.
   std::unique_ptr<BluetoothDeviceChooserController> device_chooser_controller_;
 
@@ -469,6 +484,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                           &BluetoothDelegate::RemoveFramePermissionObserver>
       observer_{this};
 
+  WebBluetoothPairingManager pairing_manager_;
   base::WeakPtrFactory<WebBluetoothServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebBluetoothServiceImpl);

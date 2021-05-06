@@ -34,6 +34,16 @@ Permissions] design document.
 [Web Bluetooth Persistent Permissions]:
 https://docs.google.com/document/d/1h3uAVXJARHrNWaNACUPiQhLt7XI-fFFQoARSs1WgMDM/edit?usp=sharing
 
+## Secure Characteristics
+
+The Bluetooth client implementation will authenticate (i.e. pair) when needed.
+This allows clients to read values that do not require pairing without going
+through the pairing process. In practice this means that pairing will be
+initiated during a read/write operation. Some operating system Bluetooth
+implementations (like macOS and Android) do this transparently for the
+application. Other OS's (like Windows and Linux/BlueZ) need to explicitly
+pair when a read/write fails due to an authentication error.
+
 ## Testing
 
 The Web Bluetooth Service is primarily tested using Blink Web Tests and Web
