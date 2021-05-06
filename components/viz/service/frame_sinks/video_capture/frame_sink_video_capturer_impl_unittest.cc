@@ -249,6 +249,10 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     client_ = nullptr;
   }
 
+  void OnClientCaptureStarted() override { ++number_clients_capturing_; }
+
+  void OnClientCaptureStopped() override { --number_clients_capturing_; }
+
   gfx::Size GetActiveFrameSize() override { return source_size(); }
 
   void RequestCopyOfOutput(
@@ -296,7 +300,11 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     task_runner_ = std::move(runner);
   }
 
+  int number_clients_capturing() const { return number_clients_capturing_; }
+
  private:
+  // Number of clients that have started capturing.
+  int number_clients_capturing_ = 0;
   CapturableFrameSink::Client* client_ = nullptr;
   YUVColor color_ = {0xde, 0xad, 0xbf};
   SizeSet size_set_;
@@ -1295,6 +1303,23 @@ TEST_F(FrameSinkVideoCapturerTest, CaptureCounterSkipsWhenFramesAreDropped) {
               *received_frame->metadata().capture_counter);
   }
   StopCapture();
+}
+
+TEST_F(FrameSinkVideoCapturerTest, ClientCaptureStartsAndStops) {
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kFrameSinkId, SubtreeCaptureId());
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
+
+  // Start capturing. frame_sink_ should now have one client capturing.
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+
+  // Stop capturing. frame_sink_ should now have no client capturing.
+  StopCapture();
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
 }
 
 }  // namespace viz

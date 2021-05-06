@@ -260,11 +260,7 @@ void CompositorFrameSinkSupport::OnSurfaceAggregatedDamage(
 }
 
 bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
-  for (auto* client : capture_clients_) {
-    if (client->IsVideoCaptureStarted())
-      return true;
-  }
-  return false;
+  return number_clients_capturing_ > 0;
 }
 
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
@@ -872,6 +868,8 @@ void CompositorFrameSinkSupport::AttachCaptureClient(
     CapturableFrameSink::Client* client) {
   DCHECK(!base::Contains(capture_clients_, client));
   capture_clients_.push_back(client);
+  if (client->IsVideoCaptureStarted())
+    OnClientCaptureStarted();
 }
 
 void CompositorFrameSinkSupport::DetachCaptureClient(
@@ -880,6 +878,23 @@ void CompositorFrameSinkSupport::DetachCaptureClient(
       std::find(capture_clients_.begin(), capture_clients_.end(), client);
   if (it != capture_clients_.end())
     capture_clients_.erase(it);
+  if (client->IsVideoCaptureStarted())
+    OnClientCaptureStopped();
+}
+
+void CompositorFrameSinkSupport::OnClientCaptureStarted() {
+  if (number_clients_capturing_++ == 0) {
+    // First client started capturing.
+    frame_sink_manager_->OnCaptureStarted(frame_sink_id_);
+  }
+}
+
+void CompositorFrameSinkSupport::OnClientCaptureStopped() {
+  DCHECK_GT(number_clients_capturing_, 0u);
+  if (--number_clients_capturing_ == 0) {
+    // The last client has stopped capturing.
+    frame_sink_manager_->OnCaptureStopped(frame_sink_id_);
+  }
 }
 
 gfx::Size CompositorFrameSinkSupport::GetActiveFrameSize() {

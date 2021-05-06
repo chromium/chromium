@@ -182,6 +182,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // CapturableFrameSink implementation.
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
+  void OnClientCaptureStarted() override;
+  void OnClientCaptureStopped() override;
   gfx::Size GetActiveFrameSize() override;
   void RequestCopyOfOutput(
       PendingCopyOutputRequest pending_copy_output_request) override;
@@ -380,6 +382,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Number of frames skipped during throttling since last BeginFrame sent.
   uint64_t frames_throttled_since_last_ = 0;
+
+  // Number of clients that have started video capturing.
+  uint32_t number_clients_capturing_ = 0;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 

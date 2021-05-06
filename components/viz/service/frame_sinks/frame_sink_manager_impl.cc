@@ -201,6 +201,9 @@ void FrameSinkManagerImpl::RegisterFrameSinkHierarchy(
   DCHECK(!base::Contains(children, child_frame_sink_id));
   children.insert(child_frame_sink_id);
 
+  // Now the hierarchy has been updated, update throttling.
+  UpdateThrottling();
+
   for (auto& observer : observer_list_) {
     observer.OnRegisteredFrameSinkHierarchy(parent_frame_sink_id,
                                             child_frame_sink_id);
@@ -238,6 +241,9 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   auto& mapping = iter->second;
   DCHECK(base::Contains(mapping.children, child_frame_sink_id));
   mapping.children.erase(child_frame_sink_id);
+
+  // Now the hierarchy has been updated, update throttling.
+  UpdateThrottling();
 
   // Delete the FrameSinkSourceMapping for |parent_frame_sink_id| if empty.
   if (mapping.children.empty() && !mapping.source) {
@@ -598,6 +604,17 @@ void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
   }
 }
 
+void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
+  if (captured_frame_sink_ids_.insert(id).second) {
+    ClearThrottling(id);
+  }
+}
+
+void FrameSinkManagerImpl::OnCaptureStopped(const FrameSinkId& id) {
+  captured_frame_sink_ids_.erase(id);
+  UpdateThrottling();
+}
+
 void FrameSinkManagerImpl::CacheBackBuffer(
     uint32_t cache_id,
     const FrameSinkId& root_frame_sink_id) {
@@ -637,14 +654,30 @@ void FrameSinkManagerImpl::UpdateThrottlingRecursively(
 
 void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
                                     base::TimeDelta interval) {
+  frame_sink_ids_to_throttle_ = ids;
+  throttle_interval_ = interval;
+  UpdateThrottling();
+}
+
+void FrameSinkManagerImpl::UpdateThrottling() {
+  // Clear previous throttling effect on all frame sinks.
   for (auto& support_map_item : support_map_) {
     support_map_item.second->ThrottleBeginFrame(base::TimeDelta());
   }
+  if (throttle_interval_.is_zero())
+    return;
 
-  // Set the |interval| for frame sinks whose ids are listed in |ids|.
-  for (const auto& id : ids) {
-    UpdateThrottlingRecursively(id, interval);
+  for (const auto& id : frame_sink_ids_to_throttle_) {
+    UpdateThrottlingRecursively(id, throttle_interval_);
   }
+  // Clear throttling on frame sinks currently being captured.
+  for (const auto& id : captured_frame_sink_ids_) {
+    UpdateThrottlingRecursively(id, base::TimeDelta());
+  }
+}
+
+void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
+  UpdateThrottlingRecursively(id, base::TimeDelta());
 }
 
 }  // namespace viz

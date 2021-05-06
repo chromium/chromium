@@ -227,6 +227,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // so there's no point for caller to wait for the copy of output.
   void DiscardPendingCopyOfOutputRequests(const BeginFrameSource* source);
 
+  // Called when video capture starts on the target frame sink with |id|.
+  void OnCaptureStarted(const FrameSinkId& id);
+  // Called when video capture stops on the target frame sink with |id|.
+  void OnCaptureStopped(const FrameSinkId& id);
+
  private:
   friend class FrameSinkManagerTest;
 
@@ -284,6 +289,16 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void UpdateThrottlingRecursively(const FrameSinkId& id,
                                    base::TimeDelta interval);
 
+  // Called when throttling needs to be updated. Some examples can trigger such
+  // an update include: starting of video capturing requires throttling on the
+  // frame sink being captured to be stopped; a frame sink hierarchical change
+  // requires throttling on affected frame sinks to be started or stopped.
+  void UpdateThrottling();
+
+  // Clears throttling operation on the frame sink with |id| and all its
+  // descendants.
+  void ClearThrottling(const FrameSinkId& id);
+
   // SharedBitmapManager for the viz display service for receiving software
   // resources in CompositorFrameSinks.
   SharedBitmapManager* const shared_bitmap_manager_;
@@ -335,6 +350,16 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   base::flat_set<std::unique_ptr<FrameSinkVideoCapturerImpl>,
                  base::UniquePtrComparator>
       video_capturers_;
+
+  // The ids of the frame sinks that are currently being captured.
+  // These frame sinks should not be throttled.
+  base::flat_set<FrameSinkId> captured_frame_sink_ids_;
+
+  // Ids of the frame sinks that have been requested to throttle.
+  std::vector<FrameSinkId> frame_sink_ids_to_throttle_;
+
+  // The throttling interval which defines how often BeginFrames are sent.
+  base::TimeDelta throttle_interval_ = BeginFrameArgs::DefaultInterval();
 
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
 

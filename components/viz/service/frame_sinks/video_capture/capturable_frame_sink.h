@@ -53,6 +53,10 @@ class CapturableFrameSink {
   virtual void AttachCaptureClient(Client* client) = 0;
   virtual void DetachCaptureClient(Client* client) = 0;
 
+  // Called when a video capture client starts or stops capturing.
+  virtual void OnClientCaptureStarted() = 0;
+  virtual void OnClientCaptureStopped() = 0;
+
   // Returns the currently-active frame size, or an empty size if there is no
   // active frame.
   virtual gfx::Size GetActiveFrameSize() = 0;
