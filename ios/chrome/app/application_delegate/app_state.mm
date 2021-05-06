@@ -285,7 +285,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     __block base::OnceClosure criticalClosure = base::MakeCriticalClosure(
         "applicationDidEnterBackground:_savingCookies", base::BindOnce(^{
           DCHECK_CURRENTLY_ON(web::WebThread::UI);
-          _savingCookies = NO;
+          self->_savingCookies = NO;
         }));
     base::PostTask(
         FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
