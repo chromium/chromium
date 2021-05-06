@@ -11572,7 +11572,7 @@
           'caption': '''Hide and block the disabled features''',
         },
       ],
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:91-'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
