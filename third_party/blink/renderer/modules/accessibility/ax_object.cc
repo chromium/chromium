@@ -640,10 +640,8 @@ bool AXObject::IsMissingParent() const {
   if (!parent_)
     return !IsRoot();
 
-  DCHECK(!parent_->IsDetached())
-      << "Parent was detached:\n"
-      << "* Child = " << ToString(true, true)
-      << "\n* Parent = " << parent_->ToString(true, true);
+  if (parent_->IsDetached())
+    return true;
 
   return false;
 }
@@ -4093,29 +4091,11 @@ AXObject* AXObject::ParentObject() const {
   // detached, but the children still exist. One example of this is when
   // a <select size="1"> changes to <select size="2">, where the
   // Role::kMenuListPopup is detached.
-  if (!parent_) {
+  if (IsMissingParent()) {
     DCHECK(!IsVirtualObject())
         << "A virtual object must have a parent, and cannot exist without one. "
            "The parent is set when the object is constructed.";
-    if (IsMissingParent())
-      RepairMissingParent();
-  } else {
-    // If the cached parent is detached, it means that when ClearChildren() was
-    // called, the parent did not find this as a child, and could not
-    // DetachFromParent() on the child.
-    // Hint: one way to debug this illegal condition when it it occurs, is to
-    // locally patch ComputeAccessibilityIsIgnoredButIncludedInTree() so
-    // that it returns true for all objects. This should allow ClearChildren()
-    // on the parent to find the children and call DetachFromParent() on them.
-    DCHECK(!parent_->IsDetached())
-        << "Cached parent cannot be detached:"
-        << "\n* |this| = " << ToString(true, true)
-        << "\n* GetNode() = " << GetNode()
-        << "\n* GetLayoutObject() = " << GetLayoutObject()
-        << "\n* Parent: " << parent_->ToString(true, true)
-        << "\n* GetParentNodeForComputeParent() = "
-        << GetParentNodeForComputeParent(GetNode())
-        << "\n* OwnerShadowHost(): " << GetNode()->OwnerShadowHost();
+    RepairMissingParent();
   }
 
   return parent_;
