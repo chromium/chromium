@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 604 tests; 349 PASS, 255 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 604 tests; 348 PASS, 256 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -493,7 +493,7 @@ FAIL Parsing: <\\\.\Y:> against <about:blank> assert_unreached: Expected URL to 
 FAIL Parsing: <file:///y:> against <about:blank> assert_equals: href expected "file:///y:" but got "file:///Y:"
 FAIL Parsing: <file:///y:/> against <about:blank> assert_equals: href expected "file:///y:/" but got "file:///Y:/"
 PASS Parsing: <file:///./y> against <about:blank>
-PASS Parsing: <file:///./y:> against <about:blank>
+FAIL Parsing: <file:///./y:> against <about:blank> assert_equals: href expected "file:///y:" but got "file:///Y:"
 FAIL Parsing: <\\\.\y:> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <file://localhost//a//../..//foo> against <about:blank> assert_equals: href expected "file://///foo" but got "file://localhost///foo"
 FAIL Parsing: <file://localhost////foo> against <about:blank> assert_equals: href expected "file://////foo" but got "file://localhost////foo"

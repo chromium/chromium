@@ -7024,7 +7024,6 @@ crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap
 crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Pass Failure ]
 
 # Sheriff 2021-05-05
-crbug.com/1205779 [ Win7 ] external/wpt/url/a-element.html [ Failure ]
 crbug.com/1205780 [ Win7 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/1205780 [ Mac10.14 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/1205780 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure Pass ]
