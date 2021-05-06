@@ -38,10 +38,6 @@ default_args = {
   v8_enable_gdbjit = false
   v8_imminent_deprecation_warnings = false
 
-  # TODO(jochen): Remove this. http://crbug.com/v8/5830,
-  # http://crbug.com/728583.
-  v8_check_microtasks_scopes_consistency = false
-
   # Don't include webrtc's builtin task queue implementation.
   rtc_link_task_queue_impl = false
 
