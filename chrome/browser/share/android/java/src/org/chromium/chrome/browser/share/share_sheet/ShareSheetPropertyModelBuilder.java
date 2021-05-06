@@ -64,7 +64,7 @@ public class ShareSheetPropertyModelBuilder {
     // Variations parameter name for the comma-separated list of third-party activity names.
     private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";
 
-    static final HashSet<Integer> ALL_CONTENT_TYPES = new HashSet<>(
+    static final HashSet<Integer> ALL_CONTENT_TYPES_FOR_TEST = new HashSet<>(
             Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE,
                     ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT,
                     ContentType.IMAGE, ContentType.OTHER_FILE_TYPE));
@@ -98,9 +98,7 @@ public class ShareSheetPropertyModelBuilder {
     /**
      * Returns a set of {@link ContentType}s for the current share.
      *
-     * <p>If {@link ChromeFeatureList.CHROME_SHARING_HUB_V15} is not enabled, this returns a set
-     * of all of the {@link ContentType}s. Otherwise, it adds {@link ContentType}s according to
-     * the following logic:
+     * Adds {@link ContentType}s according to the following logic:
      *
      * <ul>
      *     <li>If a URL is present, {@code isUrlOfVisiblePage} determines whether to add
@@ -112,9 +110,6 @@ public class ShareSheetPropertyModelBuilder {
      * </ul>
      */
     static Set<Integer> getContentTypes(ShareParams params, ChromeShareExtras chromeShareExtras) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
-            return ALL_CONTENT_TYPES;
-        }
         Set<Integer> contentTypes = new HashSet<>();
         if (!TextUtils.isEmpty(params.getUrl())) {
             if (chromeShareExtras.isUrlOfVisiblePage()) {
@@ -220,9 +215,7 @@ public class ShareSheetPropertyModelBuilder {
     /**
      * Returns a list of compatible {@link ResolveInfo}s for the set of {@link ContentType}s.
      *
-     * <p>If {@link ChromeFeatureList.CHROME_SHARING_HUB_V15} is not enabled, this returns a list
-     * of all of text-sharing apps. Otherwise, it adds {@link ResolveInfo}s according to the
-     * following following logic:
+     * Adds {@link ResolveInfo}s according to the following logic:
      *
      * <ul>
      *     <li>If the {@link ContentType}s contain URL or Text, add text-sharing apps.
@@ -231,10 +224,6 @@ public class ShareSheetPropertyModelBuilder {
      * </ul>
      */
     private List<ResolveInfo> getCompatibleApps(Set<Integer> contentTypes, String fileContentType) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
-            return mPackageManager.queryIntentActivities(
-                    ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
-        }
         List<ResolveInfo> resolveInfoList = new ArrayList<>();
         if (!Collections.disjoint(contentTypes,
                     Arrays.asList(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.LINK_PAGE_VISIBLE,

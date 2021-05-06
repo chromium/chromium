@@ -180,9 +180,7 @@ class ChromeProvidedSharingOptionsProvider {
         }
 
         FirstPartyOptionBuilder setContentTypesToDisableFor(Integer... contentTypesToDisableFor) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
-                mContentTypesToDisableFor = contentTypesToDisableFor;
-            }
+            mContentTypesToDisableFor = contentTypesToDisableFor;
             return this;
         }
 
@@ -247,20 +245,16 @@ class ChromeProvidedSharingOptionsProvider {
             mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
-            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
-            mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
-            mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
-        }
+        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID)
                 && !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
             mOrderedFirstPartyOptions.add(createHighlightsFirstPartyOption());
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_QRCODE)
-                && !mTabProvider.get().getWebContents().isIncognito()) {
+        if (!mTabProvider.get().getWebContents().isIncognito()) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
         if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {

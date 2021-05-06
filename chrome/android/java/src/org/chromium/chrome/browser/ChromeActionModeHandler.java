@@ -169,7 +169,7 @@ public class ChromeActionModeHandler {
                 AppHooks.get().getLocaleManager().showSearchEnginePromoIfNeeded(
                         TabUtils.getActivity(mTab), callback);
                 mHelper.finishActionMode();
-            } else if (mShareDelegateSupplier.get().isSharingHubV15Enabled()
+            } else if (mShareDelegateSupplier.get().isSharingHubEnabled()
                     && item.getItemId() == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
                 RecordHistogram.recordMediumTimesHistogram("ContextMenu.TimeToSelectShare",

@@ -2913,10 +2913,6 @@ const char kChromeShareLongScreenshotName[] = "Chrome Share Long Screenshots";
 const char kChromeShareLongScreenshotDescription[] =
     "Enables UI to edit and share long screenshots on Android";
 
-const char kChromeShareQRCodeName[] = "Chrome Share QRCodes";
-const char kChromeShareQRCodeDescription[] =
-    "Enables UI to generate and scan QR Codes on Android";
-
 const char kChromeShareScreenshotName[] = "Chrome Share Screenshots";
 const char kChromeShareScreenshotDescription[] =
     "Enables UI to edit and share screenshots";
@@ -2924,10 +2920,6 @@ const char kChromeShareScreenshotDescription[] =
 const char kChromeSharingHubName[] = "Chrome Sharing Hub";
 const char kChromeSharingHubDescription[] =
     "Enables the Chrome Sharing Hub/custom share sheet for Android.";
-
-const char kChromeSharingHubV15Name[] = "Chrome Sharing Hub V1.5";
-const char kChromeSharingHubV15Description[] =
-    "Enables v1.5 of the Chrome Sharing Hub for Android.";
 
 const char kClipboardSuggestionContentHiddenName[] =
     "Clipboard suggestion content hidden";

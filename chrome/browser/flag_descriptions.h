@@ -1690,17 +1690,11 @@ extern const char kChromeShareHighlightsAndroidDescription[];
 extern const char kChromeShareLongScreenshotName[];
 extern const char kChromeShareLongScreenshotDescription[];
 
-extern const char kChromeShareQRCodeName[];
-extern const char kChromeShareQRCodeDescription[];
-
 extern const char kChromeShareScreenshotName[];
 extern const char kChromeShareScreenshotDescription[];
 
 extern const char kChromeSharingHubName[];
 extern const char kChromeSharingHubDescription[];
-
-extern const char kChromeSharingHubV15Name[];
-extern const char kChromeSharingHubV15Description[];
 
 extern const char kClipboardSuggestionContentHiddenName[];
 extern const char kClipboardSuggestionContentHiddenDescription[];

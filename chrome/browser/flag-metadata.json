@@ -569,11 +569,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "chrome-share-qr-code",
-    "owners": [ "kmilka", "tgupta" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "chrome-share-screenshot",
     "owners": [ "jeffreycohen", "kristipark", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 92
@@ -581,12 +576,7 @@
   {
     "name": "chrome-sharing-hub",
     "owners": [ "kmilka", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
-    "name": "chrome-sharing-hub-v1-5",
-    "owners": [ "sophey", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "chrome-tips-in-main-menu",

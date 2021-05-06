@@ -21,7 +21,6 @@ import android.view.View;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadController;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.chrome.browser.share.qrcode.QRCodeGenerationRequest;
@@ -35,6 +34,8 @@ import java.lang.ref.WeakReference;
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
  */
 class QrCodeShareMediator {
+    private static final int MAX_URL_LENGTH = 122;
+
     private final Context mContext;
     private final PropertyModel mPropertyModel;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -85,13 +86,10 @@ class QrCodeShareMediator {
                             mPropertyModel.set(QrCodeShareViewProperties.QRCODE_BITMAP, bitmap);
                             return;
                         }
-                        int maxUrlLength = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                                ChromeFeatureList.CHROME_SHARE_QRCODE, "max_url_length",
-                                /*defaultValue=*/122);
                         String errorMessage;
-                        if (data != null && data.length() > maxUrlLength) {
+                        if (data != null && data.length() > MAX_URL_LENGTH) {
                             errorMessage = mContext.getResources().getString(
-                                    R.string.qr_code_error_too_long, maxUrlLength);
+                                    R.string.qr_code_error_too_long, MAX_URL_LENGTH);
                         } else {
                             errorMessage = mContext.getResources().getString(
                                     R.string.qr_code_error_unknown);

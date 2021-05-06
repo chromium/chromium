@@ -105,7 +105,7 @@ public final class ShareSheetCoordinatorTest {
 
         List<PropertyModel> propertyModels = mShareSheetCoordinator.createFirstPartyPropertyModels(
                 mActivity, mParams, /*chromeShareExtras=*/null,
-                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES);
+                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST);
         assertEquals("Property model list should be empty.", 0, propertyModels.size());
     }
 
@@ -113,7 +113,7 @@ public final class ShareSheetCoordinatorTest {
     @MediumTest
     public void testCreateThirdPartyPropertyModels() {
         List<PropertyModel> propertyModels = mShareSheetCoordinator.createThirdPartyPropertyModels(
-                mActivity, mParams, ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES,
+                mActivity, mParams, ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
                 /*saveLastUsed=*/false);
 
         assertEquals("Incorrect number of property models.", 3, propertyModels.size());

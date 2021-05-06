@@ -18,7 +18,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -96,7 +95,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                 ProfileSyncService.get() != null && ProfileSyncService.get().isSyncRequested();
         mDelegate.share(params, chromeShareExtras, mBottomSheetController, mLifecycleDispatcher,
                 mTabProvider, this::printTab, shareOrigin, isSyncEnabled, mShareStartTime,
-                isSharingHubV1Enabled());
+                isSharingHubEnabled());
         mShareStartTime = 0;
     }
 
@@ -286,14 +285,8 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @Override
-    public boolean isSharingHubV1Enabled() {
-        return !mIsCustomTab && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB);
-    }
-
-    @Override
-    public boolean isSharingHubV15Enabled() {
-        return isSharingHubV1Enabled()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15);
+    public boolean isSharingHubEnabled() {
+        return !mIsCustomTab;
     }
 
     /**

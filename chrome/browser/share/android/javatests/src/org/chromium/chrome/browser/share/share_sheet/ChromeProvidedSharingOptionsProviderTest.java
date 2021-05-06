@@ -134,68 +134,50 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_SCREENSHOT, ChromeFeatureList.CHROME_SHARE_QRCODE})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_screenshotQrCodeEnabled_includesBoth() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
+    public void getPropertyModels_screenshotEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_screenshot),
-                        mActivity.getResources().getString(R.string.sharing_copy_url),
+                        mActivity.getResources().getString(R.string.sharing_copy_image),
+                        mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.sharing_highlights),
                         mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-            ChromeFeatureList.CHROME_SHARE_QRCODE, ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_screenshotQrCodeDisabled_doesNotIncludeEither() {
-        setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
-                        mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title)));
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-            ChromeFeatureList.CHROME_SHARE_QRCODE, ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_printingEnabled_includesPrinting() {
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
+    public void getPropertyModels_printingEnabled_includesPrinting() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/false);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image),
+                        mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.sharing_highlights),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
                         mActivity.getResources().getString(R.string.print_share_activity_title)));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    @Features.DisableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_SCREENSHOT, ChromeFeatureList.CHROME_SHARE_QRCODE,
-                    ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     public void
     getPropertyModels_sharingHub15Enabled_includesCopyText() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -210,10 +192,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    @Features.DisableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_QRCODE, ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-                    ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     public void
     getPropertyModels_linkAndTextShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -228,15 +208,14 @@ public class ChromeProvidedSharingOptionsProviderTest {
         assertCorrectModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title)));
+                                R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    @Features.DisableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_QRCODE, ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-                    ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     public void
     getPropertyModels_linkShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -250,15 +229,14 @@ public class ChromeProvidedSharingOptionsProviderTest {
         assertCorrectModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
                         mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title)));
+                                R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    @Features.DisableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_QRCODE, ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-                    ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     public void
     getPropertyModels_textShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -276,31 +254,28 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_QRCODE,
-            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID,
-            ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    public void getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*isMultiWindow=*/true);
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
+                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image),
+                        mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title)));
+                                R.string.send_tab_to_self_share_activity_title),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_SCREENSHOT, ChromeFeatureList.CHROME_SHARE_QRCODE})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_filtersByContentType() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
+    public void getPropertyModels_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
         List<PropertyModel> propertyModels =
@@ -317,11 +292,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.CHROME_SHARE_SCREENSHOT, ChromeFeatureList.CHROME_SHARE_QRCODE})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
-    public void
-    getPropertyModels_multipleTypes_filtersByContentType() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
+    public void getPropertyModels_multipleTypes_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
         List<PropertyModel> propertyModels =
@@ -332,6 +304,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         assertCorrectModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_screenshot),
                         mActivity.getResources().getString(R.string.sharing_copy_url),
+                        mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
                         mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
@@ -339,27 +312,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(
-            {ChromeFeatureList.CHROME_SHARING_HUB_V15, ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
-    public void
-    getPropertyModels_sharingHub15Disabled_noHighlights() {
-        setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT), /*isMultiWindow=*/false);
-
-        assertEquals("Incorrect number of property models.", 0, propertyModels.size());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15,
-            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
-    public void
-    getPropertyModels_sharingHub15HighlightsEnabled() {
+    public void getPropertyModels_highlightsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
         List<PropertyModel> propertyModels =
@@ -373,11 +328,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15,
-            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
-    public void
-    getShareDetailsMetrics_LinkGeneration() {
+    public void getShareDetailsMetrics_LinkGeneration() {
         String detailMetrics = "LinkGeneration.DetailsMetrics";
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, /*sharedDetailsMetrics=*/detailMetrics);

@@ -202,12 +202,6 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         String title = mParams.getTitle();
         String subtitle =
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mParams.getUrl());
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
-            fetchFavicon(mParams.getUrl());
-            setTitleStyle(R.style.TextAppearance_TextMediumThick_Primary);
-            setTextForPreview(title, subtitle);
-            return;
-        }
 
         if (contentTypes.contains(ContentType.IMAGE)) {
             setImageForPreviewFromUri(mParams.getFileUris().get(0));

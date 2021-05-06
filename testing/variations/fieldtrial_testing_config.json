@@ -1799,10 +1799,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ChromeShareHighlightsAndroid",
-                        "ChromeShareQRCode",
-                        "ChromeShareScreenshot",
-                        "ChromeSharingHub",
-                        "ChromeSharingHubV15"
+                        "ChromeShareScreenshot"
                     ],
                     "min_os_version": "5.1"
                 }

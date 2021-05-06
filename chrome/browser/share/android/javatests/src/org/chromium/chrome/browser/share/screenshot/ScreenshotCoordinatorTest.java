@@ -41,8 +41,7 @@ import org.chromium.components.module_installer.engine.InstallListener;
  * Tests for {@link ScreenshotCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
-        ChromeFeatureList.CHROME_SHARING_HUB})
+@Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
 public class ScreenshotCoordinatorTest {
     // clang-format on
     @Mock
