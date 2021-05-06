@@ -44,6 +44,8 @@ void DiscoverFeedService::Shutdown() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
   }
+  // Stop the Discover feed to disconnects its services.
+  ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
 }
 
 void DiscoverFeedService::OnPrimaryAccountChanged(

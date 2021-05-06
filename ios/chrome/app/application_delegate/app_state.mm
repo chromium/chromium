@@ -446,11 +446,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
       ->GetAppDistributionProvider()
       ->CancelDistributionNotifications();
 
-  if (IsDiscoverFeedEnabled()) {
-    // Stop the Discover feed so it disconnects its services.
-    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
-  }
-
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
