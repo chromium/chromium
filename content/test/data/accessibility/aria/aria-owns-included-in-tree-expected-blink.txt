@@ -3,6 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++splitter horizontal name='Control: elements that are not in tree'
+++++++++genericContainer ignored
 ++++++++layoutTable
 ++++++++++genericContainer ignored
 ++++++++++++layoutTableRow
@@ -20,8 +21,9 @@ rootWebArea
 ++++++++++textField
 ++++++++++++genericContainer
 ++++++++splitter horizontal name='Owning an element with unincluded ancestors serializes cleanly'
-++++++++group
-++++++++++checkBox checkedState=false
+++++++++genericContainer ignored
+++++++++++group
+++++++++++++checkBox checkedState=false
 ++++++++splitter horizontal name='All the above in one'
 ++++++++none ignored
 ++++++++++genericContainer

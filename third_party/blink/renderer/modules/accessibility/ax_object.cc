@@ -2388,11 +2388,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
-  // <slot>s and their children are included in the tree.
-  if (CachedParentObject() &&
-      IsA<HTMLSlotElement>(CachedParentObject()->GetNode()))
-    return true;
-
   // Allow the browser side ax tree to access "visibility: [hidden|collapse]"
   // and "display: none" nodes. This is useful for APIs that return the node
   // referenced by aria-labeledby and aria-describedby.
@@ -2416,17 +2411,34 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (GetLayoutObject() && IsAriaHidden())
     return true;
 
+  // Custom elements and their children are included in the tree.
+  // <slot>s and their children are included in the tree.
+  // This checks to see if this a child one of those.
+  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
+    if (parent_node->IsCustomElement() || IsA<HTMLSlotElement>(parent_node))
+      return true;
+  }
+
   Element* element = GetElement();
   if (!element)
     return false;
 
-  // <slot>s and their children are included in the tree.
-  // TODO(accessibility) Consider including all shadow content; however, this
-  // can actually be a lot of nodes inside of a web component, e.g. svg.
-  if (IsA<HTMLSlotElement>(element))
+  // Custom elements and their children are included in the tree.
+  if (element->IsCustomElement())
     return true;
 
-  if (element->IsCustomElement())
+  // <slot>s and their children are included in the tree.
+  // Detailed explanation:
+  // <slot> elements are placeholders marking locations in a shadow tree where
+  // users of a web component can insert their own custom nodes. Inserted nodes
+  // (also known as distributed nodes) become children of their respective slots
+  // in the accessibility tree. In other words, the accessibility tree mirrors
+  // the flattened DOM tree or the layout tree, not the original DOM tree.
+  // Distributed nodes still maintain their parent relations and computed style
+  // information with their original location in the DOM. Therefore, we need to
+  // ensure that in the accessibility tree no remnant information from the
+  // unflattened DOM tree remains, such as the cached parent.
+  if (IsA<HTMLSlotElement>(element))
     return true;
 
   // Include all pseudo element content. Any anonymous subtree is included
