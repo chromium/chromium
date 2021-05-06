@@ -1112,7 +1112,7 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
     // Makes sure that it quits the runloop that runs while a Mojo call waits
     // for a reply if |print_manager_host_| is disconnected before the reply.
     print_manager_host_.set_disconnect_handler(
-        base::BindOnce(&PrintRenderFrameHelper::QuitRunLoopForMojoReply,
+        base::BindOnce(&PrintRenderFrameHelper::QuitActiveRunLoops,
                        weak_ptr_factory_.GetWeakPtr()));
   }
   return print_manager_host_;
@@ -1160,24 +1160,31 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (!web_frame->GetDocument().GetFrame())
     return;
 
+  if (in_scripted_print_)
+    return;
+
+  in_scripted_print_ = true;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_preview_context_.InitWithFrame(web_frame);
     RequestPrintPreview(PRINT_PREVIEW_SCRIPTED);
 #endif
   } else {
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     web_frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
     if (!weak_this)
       return;
 
     Print(web_frame, blink::WebNode(), PrintRequestType::kScripted);
+    if (!weak_this)
+      return;
 
-    if (weak_this)
-      web_frame->DispatchAfterPrintEvent();
+    web_frame->DispatchAfterPrintEvent();
   }
-  // WARNING: |this| may be gone at this point. Do not do any more work here and
-  // just return.
+  if (!weak_this)
+    return;
+
+  in_scripted_print_ = false;
 }
 
 void PrintRenderFrameHelper::WillBeDestroyed() {
@@ -1226,6 +1233,17 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > 1)
     return;
+
+  if (scripted_print_preview_quit_closure_) {
+    // If an in-progress print preview already created a nested loop, avoid
+    // creating yet another nested loop. Instead, quit the current nested loop,
+    // and call this method again.
+    DCHECK(!do_deferred_print_for_system_dialog_);
+    do_deferred_print_for_system_dialog_ = true;
+    std::move(scripted_print_preview_quit_closure_).Run();
+    return;
+  }
+
   blink::WebLocalFrame* frame = print_preview_context_.source_frame();
   if (!frame) {
     NOTREACHED();
@@ -2272,6 +2290,7 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
 
   mojom::PrintPagesParamsPtr print_settings;
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+  get_print_settings_from_user_quit_closure_ = loop.QuitClosure();
   GetPrintManagerHost()->ScriptedPrint(
       std::move(params),
       base::BindOnce(
@@ -2280,7 +2299,10 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
             *output = std::move(input);
             std::move(quit_closure).Run();
           },
-          SetQuitRunLoopForMojoReply(loop.QuitClosure()), &print_settings));
+          base::BindOnce(
+              &PrintRenderFrameHelper::QuitGetPrintSettingsFromUserRunLoop,
+              weak_ptr_factory_.GetWeakPtr()),
+          &print_settings));
   // Runs the nested run loop until ScriptedPrint() gets the reply.
   loop.Run();
   return print_settings;
@@ -2437,15 +2459,26 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
             base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
                            weak_ptr_factory_.GetWeakPtr()));
       }
-      auto self = weak_ptr_factory_.GetWeakPtr();
       base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-      GetPrintManagerHost()->SetupScriptedPrintPreview(
-          SetQuitRunLoopForMojoReply(loop.QuitClosure()));
+      scripted_print_preview_quit_closure_ = loop.QuitClosure();
+      GetPrintManagerHost()->SetupScriptedPrintPreview(base::BindOnce(
+          &PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop,
+          weak_ptr_factory_.GetWeakPtr()));
       loop.Run();
 
       // Check if |this| is still valid.
-      if (self)
+      if (weak_this) {
         is_scripted_preview_delayed_ = false;
+
+        if (do_deferred_print_for_system_dialog_) {
+          // PrintForSystemDialog() quit the |loop| to avoid running 2 levels of
+          // nested loops. Resume PrintForSystemDialog().
+          do_deferred_print_for_system_dialog_ = false;
+          PrintForSystemDialog();
+          // WARNING: |this| may be gone at this point. Do not do any more work
+          // here and just return.
+        }
+      }
       return;
     }
     case PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME: {
@@ -2855,16 +2888,19 @@ void PrintRenderFrameHelper::SetPrintPagesParams(
   GetPrintManagerHost()->DidGetDocumentCookie(settings.params->document_cookie);
 }
 
-void PrintRenderFrameHelper::QuitRunLoopForMojoReply() {
-  if (quit_closure_for_mojo_reply_)
-    std::move(quit_closure_for_mojo_reply_).Run();
+void PrintRenderFrameHelper::QuitActiveRunLoops() {
+  QuitScriptedPrintPreviewRunLoop();
+  QuitGetPrintSettingsFromUserRunLoop();
 }
 
-base::OnceClosure PrintRenderFrameHelper::SetQuitRunLoopForMojoReply(
-    base::OnceClosure closure) {
-  quit_closure_for_mojo_reply_ = std::move(closure);
-  return base::BindOnce(&PrintRenderFrameHelper::QuitRunLoopForMojoReply,
-                        weak_ptr_factory_.GetWeakPtr());
+void PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop() {
+  if (scripted_print_preview_quit_closure_)
+    std::move(scripted_print_preview_quit_closure_).Run();
+}
+
+void PrintRenderFrameHelper::QuitGetPrintSettingsFromUserRunLoop() {
+  if (get_print_settings_from_user_quit_closure_)
+    std::move(get_print_settings_from_user_quit_closure_).Run();
 }
 
 PrintRenderFrameHelper::ScopedIPC::ScopedIPC(
