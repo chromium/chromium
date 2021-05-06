@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/test/stub_image.h"
@@ -1747,6 +1748,40 @@ TEST_P(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
   EXPECT_EQ(PhysicalRect(-12, -12, 224, 424),
             GetLayoutBoxByElementId("target")
                 ->PhysicalVisualOverflowRectIncludingFilters());
+}
+
+TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="img">
+  )HTML");
+  LayoutObject* target = GetLayoutBoxByElementId("img");
+  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+
+  target->SetNeedsOverflowRecalc();
+  EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+
+#if 0  // TODO(crbug.com/1205708): This should pass, but it's not ready yet.
+  UpdateAllLifecyclePhasesForTest();
+  target->SetNeedsOverflowRecalc();
+  EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+#endif
+}
+
+TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="flex" style="display: flex"></div>
+  )HTML");
+  LayoutObject* target = GetLayoutBoxByElementId("flex");
+  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+
+  target->SetNeedsOverflowRecalc();
+  EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+
+#if 0  // TODO(crbug.com/1205708): This should pass, but it's not ready yet.
+  UpdateAllLifecyclePhasesForTest();
+  target->SetNeedsOverflowRecalc();
+  EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+#endif
 }
 
 }  // namespace blink

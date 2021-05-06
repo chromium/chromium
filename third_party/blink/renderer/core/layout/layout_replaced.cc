@@ -106,6 +106,9 @@ void LayoutReplaced::UpdateLayout() {
   UpdateLogicalHeight();
 
   ClearLayoutOverflow();
+  ClearSelfNeedsLayoutOverflowRecalc();
+  ClearChildNeedsLayoutOverflowRecalc();
+
   UpdateAfterLayout();
 
   ClearNeedsLayout();
