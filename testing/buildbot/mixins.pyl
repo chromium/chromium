@@ -614,6 +614,13 @@
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-11|Mac-10.16',
+        # TODO(crbug.com/1176803): The Mac 11 pool seems to be an odd
+        # mix of machines where some of them are 3x slower than others,
+        # which really messes with the scheduling. Until we can figure
+        # out what to do about that, we'll just have those machines for
+        # one test suite, and run all of the other test suites on the
+        # faster machines.
+        'machine_type': 'n1-standard-4',
       },
     },
   },
