@@ -684,6 +684,9 @@
         },
       },
       'linux-chromeos-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
         'swarming': {
           'shards': 30,
         },

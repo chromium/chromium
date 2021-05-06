@@ -1724,13 +1724,16 @@
         ],
       },
       'linux-cfm-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',
         },
       },
       'linux-chromeos-dbg': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
