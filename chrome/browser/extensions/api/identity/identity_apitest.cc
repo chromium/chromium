@@ -636,7 +636,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       GenerateFailureResult(gaia_ids, NULL) << "Result was not an array";
 
     std::set<std::string> result_ids;
-    for (const base::Value& item : *results) {
+    for (const base::Value& item : results->GetList()) {
       std::unique_ptr<api::identity::AccountInfo> info =
           api::identity::AccountInfo::FromValue(item);
       if (info.get())
@@ -664,7 +664,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!results) {
       msg << "NULL";
     } else {
-      for (const auto& result : *results) {
+      for (const auto& result : results->GetList()) {
         std::unique_ptr<api::identity::AccountInfo> info =
             api::identity::AccountInfo::FromValue(result);
         if (info.get())
