@@ -96,7 +96,7 @@ bool DeviceTrustKeyPair::Init() {
   if (!base::Base64Decode(base64_encrypted_private_key_info, &decoded)) {
     // TODO(crbug/1176175): Handle error for when it can't get the private
     // key.
-    LOG(ERROR) << "[DeviceTrust - Init] error while decoding the private key";
+    LOG(ERROR) << "[Init] error while decoding the private key";
     return false;
   }
 
@@ -105,7 +105,7 @@ bool DeviceTrustKeyPair::Init() {
   if (!success) {
     // TODO(crbug/1176175): Handle error for when it can't get the private
     // key.
-    LOG(ERROR) << "[DeviceTrust - Init] error while decrypting the private key";
+    LOG(ERROR) << "[Init] error while decrypting the private key";
     return false;
   }
 
@@ -117,7 +117,7 @@ bool DeviceTrustKeyPair::Init() {
 
 bool DeviceTrustKeyPair::StoreKeyPair() {
   if (!key_pair_) {
-    LOG(ERROR) << "[DeviceTrust - StoreKeyPair] no `key_pair_` member";
+    LOG(ERROR) << "[StoreKeyPair] no `key_pair_` member";
     return false;
   }
 
@@ -131,8 +131,7 @@ bool DeviceTrustKeyPair::StoreKeyPair() {
   std::string encrypted_key;
   bool encrypted = OSCrypt::EncryptString(encoded_private_key, &encrypted_key);
   if (!encrypted) {
-    LOG(ERROR) << "[DeviceTrust - StoreKeyPair] error while encrypting the "
-                  "private key.";
+    LOG(ERROR) << "[StoreKeyPair] error while encrypting the private key.";
     return false;
   }
   // The string must be encoded as base64 for storage in local state.
@@ -180,6 +179,22 @@ std::string DeviceTrustKeyPair::ExportPEMPublicKey() {
   if (!CreatePEMKey(raw_public_key, KeyType::PUBLIC_KEY, public_key))
     return std::string();
   return public_key;
+}
+
+bool DeviceTrustKeyPair::SignMessage(const std::string& message,
+                                     std::vector<uint8_t>& signature) {
+  std::unique_ptr<crypto::ECSignatureCreator> signer(
+      crypto::ECSignatureCreator::Create(key_pair_.get()));
+  return signer->Sign(reinterpret_cast<const uint8_t*>(message.c_str()),
+                      message.size(), &signature);
+}
+bool DeviceTrustKeyPair::GetSignatureInBase64(const std::string& message,
+                                              std::string* signature) {
+  std::vector<uint8_t> signature_vector;
+  if (!SignMessage(message, signature_vector))
+    return false;
+  *signature = BytesToEncodedString(signature_vector);
+  return true;
 }
 
 }  // namespace enterprise_connectors

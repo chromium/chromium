@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -47,6 +46,10 @@ class DeviceTrustService : public KeyedService {
   std::string GetAttestationCredentialForTesting() const;
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
+  // Starts flow that actually builds a response. This method is called
+  // from a non_UI thread.
+  std::string BuildChallengeResponse(const std::string& challenge);
+
  private:
   friend class DeviceTrustFactory;
 
@@ -73,6 +76,7 @@ class DeviceTrustService : public KeyedService {
 
   std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
   SignalReportCallback signal_report_callback_;
+  std::unique_ptr<attestation::AttestationService> attestation_service_;
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 

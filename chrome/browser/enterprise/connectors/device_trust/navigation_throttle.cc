@@ -5,13 +5,18 @@
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/interface.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_matcher/url_matcher.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,6 +24,13 @@
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
+
+// Const headers used in the handshake flow.
+constexpr char kDeviceTrustHeader[] = "X-Device-Trust";
+constexpr char kDeviceTrustHeaderValue[] = "VerifiedAccess";
+constexpr char kVerifiedAccessChallengeHeader[] = "X-Verified-Access-Challenge";
+constexpr char kVerifiedAccessResponseHeader[] =
+    "X-Verified-Access-Challenge-Response";
 
 // static
 std::unique_ptr<DeviceTrustNavigationThrottle>
@@ -106,18 +118,57 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 
   // If we are starting an attestation flow.
   if (navigation_handle()->GetResponseHeaders() == nullptr) {
-    navigation_handle()->SetRequestHeader("X-Device-Trust", "VerifiedAccess");
+    navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
+                                          kDeviceTrustHeaderValue);
     return PROCEED;
   }
 
   // If a challenge is coming from the Idp.
-  if (!navigation_handle()->GetRequestHeaders().HasHeader(
-          "x-verified-access-challenge")) {
-    navigation_handle()->RemoveRequestHeader("X-Device-Trust");
-    return PROCEED;
-  }
+  if (navigation_handle()->GetResponseHeaders()->HasHeader(
+          kVerifiedAccessChallengeHeader)) {
+    // Remove request header since is not needed for challenge response.
+    navigation_handle()->RemoveRequestHeader(kDeviceTrustHeader);
 
+    // Get challenge.
+    const net::HttpResponseHeaders* headers =
+        navigation_handle()->GetResponseHeaders();
+    std::string challenge;
+    if (headers->GetNormalizedHeader(kVerifiedAccessChallengeHeader,
+                                     &challenge)) {
+      // Post a task to get the challenge response. It will defer the navigation
+      // and it will be resumed after it's built.
+      // `StartSignChallengeAndReplyWithResponse` won't run in the main thread,
+      // and then reply to `ReplyChallengeResponseAndResume` which makes use of
+      // `weak_ptr_factory_.GetWeakPtr()` so it won't run in case the object is
+      // destroyed.
+      AttestationCallback reply = base::BindOnce(
+          &DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume,
+          weak_ptr_factory_.GetWeakPtr());
+
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+          base::BindOnce(&DeviceTrustNavigationThrottle::
+                             StartSignChallengeAndReplyWithResponse,
+                         base::Unretained(this), challenge),
+          std::move(reply));
+
+      return DEFER;
+    }
+  }
   return PROCEED;
+}
+
+std::string
+DeviceTrustNavigationThrottle::StartSignChallengeAndReplyWithResponse(
+    const std::string& challenge) {
+  return device_trust_service_->BuildChallengeResponse(challenge);
+}
+
+void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
+    std::string challenge_response) {
+  navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
+                                        challenge_response);
+  Resume();
 }
 
 }  // namespace enterprise_connectors
