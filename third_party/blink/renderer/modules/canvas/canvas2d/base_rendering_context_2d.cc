@@ -1787,32 +1787,11 @@ ImageData* BaseRenderingContext2D::createImageData(
 ImageData* BaseRenderingContext2D::createImageData(
     int sw,
     int sh,
+    ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
-  ImageDataSettings* image_data_settings = ImageDataSettings::Create();
-  image_data_settings->setColorSpace(kSRGBCanvasColorSpaceName);
-  image_data_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), base::nullopt,
                                       image_data_settings, exception_state,
                                       ImageData::Context2DErrorMode);
-}
-
-ImageData* BaseRenderingContext2D::createImageData(
-    unsigned sw,
-    unsigned sh,
-    ImageDataSettings* image_data_settings,
-    ExceptionState& exception_state) const {
-  return ImageData::ValidateAndCreate(sw, sh, base::nullopt,
-                                      image_data_settings, exception_state,
-                                      ImageData::Context2DErrorMode);
-}
-
-ImageData* BaseRenderingContext2D::getImageData(
-    int sx,
-    int sy,
-    int sw,
-    int sh,
-    ExceptionState& exception_state) {
-  return getImageDataInternal(sx, sy, sw, sh, nullptr, exception_state);
 }
 
 ImageData* BaseRenderingContext2D::getImageData(

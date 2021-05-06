@@ -224,15 +224,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                                ExceptionState&);
 
   ImageData* createImageData(ImageData*, ExceptionState&) const;
-  ImageData* createImageData(int width, int height, ExceptionState&) const;
-  ImageData* createImageData(unsigned,
-                             unsigned,
+  ImageData* createImageData(int sw,
+                             int sh,
                              ImageDataSettings*,
                              ExceptionState&) const;
 
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame
-  ImageData* getImageData(int sx, int sy, int sw, int sh, ExceptionState&);
   ImageData* getImageData(int sx,
                           int sy,
                           int sw,

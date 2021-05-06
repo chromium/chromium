@@ -19,8 +19,8 @@ class ImageDataTest : public testing::Test {};
 // allocated to the ImageData, then an exception must raise.
 TEST_F(ImageDataTest, CreateImageDataTooBig) {
   DummyExceptionStateForTesting exception_state;
-  ImageData* too_big_image_data =
-      ImageData::Create(32767, 32767, exception_state);
+  ImageData* too_big_image_data = ImageData::Create(
+      32767, 32767, ImageDataSettings::Create(), exception_state);
   if (!too_big_image_data) {
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_EQ(exception_state.CodeAs<ESErrorType>(), ESErrorType::kRangeError);

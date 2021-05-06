@@ -232,8 +232,9 @@ void CanvasRenderingContext2DTest::SetUp() {
 
   canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
 
-  full_image_data_ = ImageData::Create(10, 10, ASSERT_NO_EXCEPTION);
-  partial_image_data_ = ImageData::Create(2, 2, ASSERT_NO_EXCEPTION);
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  full_image_data_ = ImageData::Create(10, 10, settings, ASSERT_NO_EXCEPTION);
+  partial_image_data_ = ImageData::Create(2, 2, settings, ASSERT_NO_EXCEPTION);
 
   NonThrowableExceptionState exception_state;
   auto* opaque_gradient =
@@ -1091,7 +1092,8 @@ TEST_F(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
 
   DrawSomething();
   NonThrowableExceptionState exception_state;
-  Context2D()->getImageData(0, 0, 1, 1, exception_state);
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 

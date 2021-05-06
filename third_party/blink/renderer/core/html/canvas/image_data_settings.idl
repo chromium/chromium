@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/junov/CanvasColorSpace/blob/master/CanvasColorSpaceProposal.md#imageda
-
-enum CanvasColorSpace {
+enum PredefinedColorSpace {
     "srgb", // default
     "rec2020",
     "display-p3",
@@ -17,6 +15,6 @@ enum ImageDataStorageFormat {
 };
 
 dictionary ImageDataSettings {
-  CanvasColorSpace colorSpace = "srgb";
-  ImageDataStorageFormat storageFormat = "uint8";
+  PredefinedColorSpace colorSpace = "srgb";
+  [RuntimeEnabled=CanvasColorManagement] ImageDataStorageFormat storageFormat = "uint8";
 };

@@ -27,7 +27,6 @@
  */
 
 // https://html.spec.whatwg.org/C/#dom-imagedata
-// https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md#imagedata
 
 typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
 
@@ -35,17 +34,17 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     Exposed=(Window,Worker),
     Serializable
 ] interface ImageData {
-    [RaisesException] constructor(unsigned long sw, unsigned long sh, optional ImageDataSettings settings);
-    [RaisesException] constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
-    [RaisesException] constructor(Uint16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
-    [RaisesException] constructor(Float32Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
+    [RaisesException] constructor(unsigned long sw, unsigned long sh, optional ImageDataSettings settings = {});
+    [RaisesException] constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
+    [RaisesException] constructor(Uint16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
+    [RaisesException] constructor(Float32Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
 
     // TODO(crbug.com/1198606): Remove this.
     [RuntimeEnabled=CanvasColorManagement] ImageDataSettings getSettings();
 
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
-    [RuntimeEnabled=CanvasColorManagement] readonly attribute CanvasColorSpace colorSpace;
+    readonly attribute PredefinedColorSpace colorSpace;
     [RuntimeEnabled=CanvasColorManagement] readonly attribute ImageDataStorageFormat storageFormat;
     readonly attribute ImageDataArray data;
 };

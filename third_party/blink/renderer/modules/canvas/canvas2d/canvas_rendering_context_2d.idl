@@ -143,14 +143,10 @@ interface CanvasRenderingContext2D {
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
-    [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh);
-    [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
+    [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, optional ImageDataSettings imageDataSettings = {});
+    [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, optional ImageDataSettings imageDataSettings = {});
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
-
-    // https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
 
     // Context state
     // Should be merged with WebGL counterpart in CanvasRenderingContext, once no-longer experimental

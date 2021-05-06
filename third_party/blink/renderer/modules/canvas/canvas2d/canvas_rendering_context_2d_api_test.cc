@@ -230,8 +230,9 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   NonThrowableExceptionState exception_state;
 
   // create a 100x50 imagedata and fill it with white pixels
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* image_data =
-      Context2D()->createImageData(100, 50, exception_state);
+      Context2D()->createImageData(100, 50, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
@@ -257,13 +258,17 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   // createImageData(width, height) takes the absolute magnitude of the size
   // arguments
 
-  ImageData* imgdata1 = Context2D()->createImageData(10, 20, exception_state);
+  ImageData* imgdata1 =
+      Context2D()->createImageData(10, 20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata2 = Context2D()->createImageData(-10, 20, exception_state);
+  ImageData* imgdata2 =
+      Context2D()->createImageData(-10, 20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata3 = Context2D()->createImageData(10, -20, exception_state);
+  ImageData* imgdata3 =
+      Context2D()->createImageData(10, -20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata4 = Context2D()->createImageData(-10, -20, exception_state);
+  ImageData* imgdata4 =
+      Context2D()->createImageData(-10, -20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   EXPECT_EQ(800u, imgdata1->data().GetAsUint8ClampedArray()->length());
@@ -275,8 +280,9 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* too_big_image_data =
-      Context2D()->createImageData(1000000, 1000000, exception_state);
+      Context2D()->createImageData(1000000, 1000000, settings, exception_state);
   EXPECT_EQ(nullptr, too_big_image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
@@ -285,8 +291,9 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
 TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
-  ImageData* image_data =
-      Context2D()->getImageData(0, 0, 1000000, 1000000, exception_state);
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  ImageData* image_data = Context2D()->getImageData(0, 0, 1000000, 1000000,
+                                                    settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
@@ -296,15 +303,16 @@ TEST_F(CanvasRenderingContext2DAPITest,
        GetImageDataIntegerOverflowNegativeParams) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* image_data = Context2D()->getImageData(
-      1, -2147483647, 1, -2147483647, exception_state);
+      1, -2147483647, 1, -2147483647, settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
 
   exception_state.ClearException();
   image_data = Context2D()->getImageData(-2147483647, 1, -2147483647, 1,
-                                         exception_state);
+                                         settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());

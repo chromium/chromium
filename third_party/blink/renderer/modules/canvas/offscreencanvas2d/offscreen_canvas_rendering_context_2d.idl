@@ -92,15 +92,10 @@
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
-    [RaisesException] ImageData createImageData(long sw, long sh);
-    [HighEntropy, MeasureAs=OffscreenCanvasGetImageData, RaisesException] ImageData getImageData(long sx, long sy, long sw, long sh);
+    [RaisesException] ImageData createImageData(long sw, long sh, optional ImageDataSettings imageDataSettings = {});
+    [HighEntropy, MeasureAs=OffscreenCanvasGetImageData, RaisesException] ImageData getImageData(long sx, long sy, long sw, long sh, optional ImageDataSettings imageDataSettings = {});
     [RaisesException] void putImageData(ImageData imagedata, long dx, long dy);
     [RaisesException] void putImageData(ImageData imagedata, long dx, long dy, long dirtyX, long dirtyY, long dirtyWidth, long dirtyHeight);
-
-    // If OffscreenCanva ships before color managed canvas, this method must remain behind flag.
-    // https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData getImageData(long sx, long sy, long sw, long sh, ImageDataSettings imageDataSettings);
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData createImageData(long sw, long sh, ImageDataSettings imageDataSettings);
 
     // Line caps/joins
     attribute unrestricted double lineWidth; // (default 1)
