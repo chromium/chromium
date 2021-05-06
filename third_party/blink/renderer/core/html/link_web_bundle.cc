@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -38,7 +40,10 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
       : link_web_bundle_(&link_web_bundle),
         url_(url),
         security_origin_(SecurityOrigin::Create(url)),
-        web_bundle_token_(base::UnguessableToken::Create()) {
+        web_bundle_token_(base::UnguessableToken::Create()),
+        task_runner_(
+            document.GetFrame()->GetTaskRunner(TaskType::kInternalLoading)),
+        receivers_(this, document.GetExecutionContext()) {
     ResourceRequest request(url);
     request.SetUseStreamOnResponse(true);
     // TODO(crbug.com/1082020): Revisit these once the fetch and process the
@@ -65,8 +70,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     request.SetPriority(ResourceLoadPriority::kHigh);
 
     mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle;
-    web_bundle_handles_.Add(this,
-                            web_bundle_handle.InitWithNewPipeAndPassReceiver());
+    receivers_.Add(web_bundle_handle.InitWithNewPipeAndPassReceiver(),
+                   task_runner_);
     request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
         url_, web_bundle_token_, std::move(web_bundle_handle)));
 
@@ -83,6 +88,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   void Trace(Visitor* visitor) const override {
     visitor->Trace(link_web_bundle_);
     visitor->Trace(loader_);
+    visitor->Trace(receivers_);
   }
 
   bool HasLoaded() const { return !failed_; }
@@ -98,7 +104,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   // network::mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)
       override {
-    web_bundle_handles_.Add(this, std::move(receiver));
+    receivers_.Add(std::move(receiver), task_runner_);
   }
   void OnWebBundleError(network::mojom::WebBundleErrorType type,
                         const std::string& message) override {
@@ -134,9 +140,11 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   KURL url_;
   scoped_refptr<SecurityOrigin> security_origin_;
   base::UnguessableToken web_bundle_token_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // we need ReceiverSet here because WebBundleHandle is cloned when
   // ResourceRequest is copied.
-  mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
+  HeapMojoReceiverSet<network::mojom::WebBundleHandle, WebBundleLoader>
+      receivers_;
 };
 
 // static
