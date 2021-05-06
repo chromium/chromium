@@ -286,16 +286,14 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
 
 bool IsShadowContentRelevantForAccessibility(const Node* node) {
   DCHECK(node->ContainingShadowRoot());
-  // All author shadow content is relevant.
-  if (!node->IsInUserAgentShadowRoot())
-    return true;
 
   // Don't use non-<option> descendants of an AXMenuList.
   // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
   // for handling the user-agent shadow DOM exposed by a <select> element.
   // That class adds a mock AXMenuListPopup, which adds AXMenuListOption
   // children for <option> descendants only.
-  if (AXObjectCacheImpl::UseAXMenuList() && !IsA<HTMLOptionElement>(node)) {
+  if (AXObjectCacheImpl::UseAXMenuList() && node->IsInUserAgentShadowRoot() &&
+      !IsA<HTMLOptionElement>(node)) {
     // Find any ancestor <select> if it is present.
     Node* host = node->OwnerShadowHost();
     auto* select_element = DynamicTo<HTMLSelectElement>(host);

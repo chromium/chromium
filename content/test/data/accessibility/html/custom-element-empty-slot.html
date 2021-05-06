@@ -1,0 +1,25 @@
+<!--
+@BLINK-ALLOW:htmlTag=*
+-->
+<!-- An empty slot is not exposed in accessibility -->
+<template id="template">
+  <div><slot name="my-slot"></slot></div>
+</template>
+
+<my-element></my-element>
+
+<script>
+customElements.define(
+    'my-element',
+    class extends HTMLElement {
+        constructor() {
+            super();
+            let template = document.getElementById('template');
+            let templateContent = template.content;
+
+            const shadowRoot = this.attachShadow({mode: 'open'})
+                  .appendChild(templateContent.cloneNode(true));
+        }
+    }
+);
+</script>
