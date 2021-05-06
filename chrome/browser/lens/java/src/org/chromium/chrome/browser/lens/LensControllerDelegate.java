@@ -95,4 +95,15 @@ public class LensControllerDelegate {
     protected @StringRes int getTranslateWithGoogleLensTextResourceId() {
         return R.string.contextmenu_translate_image_with_google_lens;
     }
+
+    /** Enables lens debug mode for chrome://internals/lens. */
+    public void enableDebugMode() {}
+
+    /** Disables lens debug mode for chrome://internals/lens. */
+    public void disableDebugMode() {}
+
+    /** Gets debug data to populate chrome://internals/lens. */
+    public String[][] getDebugData() {
+        return new String[0][0];
+    }
 }

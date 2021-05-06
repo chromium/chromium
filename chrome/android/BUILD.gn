@@ -3521,6 +3521,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
     "java/src/org/chromium/chrome/browser/instantapps/InstantAppsSettings.java",
     "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",
+    "java/src/org/chromium/chrome/browser/lens/LensDebugBridge.java",
     "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
     "java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
     "java/src/org/chromium/chrome/browser/locale/LocaleTemplateUrlLoader.java",

@@ -13,6 +13,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/internals/lens/lens_internals_ui_message_handler.h"
 #include "chrome/browser/ui/webui/internals/notifications/notifications_internals_ui_message_handler.h"
 #include "chrome/browser/ui/webui/internals/query_tiles/query_tiles_internals_ui_message_handler.h"
 #else
@@ -65,6 +66,8 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with |kChromeInternalsPathURLs|.
 #if defined(OS_ANDROID)
+  // chrome://internals/lens
+  AddLensInternals(web_ui);
   // chrome://internals/notifications
   source_->AddResourcePath(
       "notifications",
@@ -95,6 +98,13 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 InternalsUI::~InternalsUI() = default;
 
 #if defined(OS_ANDROID)
+void InternalsUI::AddLensInternals(content::WebUI* web_ui) {
+  source_->AddResourcePath("lens", IDR_LENS_INTERNALS_LENS_INTERNALS_HTML);
+
+  web_ui->AddMessageHandler(
+      std::make_unique<LensInternalsUIMessageHandler>(profile_));
+}
+
 void InternalsUI::AddQueryTilesInternals(content::WebUI* web_ui) {
   source_->AddResourcePath("query_tiles_internals.js",
                            IDR_QUERY_TILES_INTERNALS_JS);
