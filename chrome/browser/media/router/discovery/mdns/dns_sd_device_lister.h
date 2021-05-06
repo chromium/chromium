@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/local_discovery/service_discovery_device_lister.h"
+#include "chrome/browser/local_discovery/service_discovery_device_lister.h"  // nogncheck
 #include "chrome/common/buildflags.h"
 
 namespace local_discovery {
