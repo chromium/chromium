@@ -169,10 +169,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Returns true if the given |extension| should be added to the toolbar.
   bool ShouldAddExtension(const extensions::Extension* extension);
 
-  // Adds or removes the given |extension| from the toolbar model.
-  void AddExtension(const extensions::Extension* extension);
-  void RemoveExtension(const extensions::Extension* extension);
-
   // Returns true if |action_id| is in the toolbar model.
   bool HasAction(const ActionId& action_id) const;
 

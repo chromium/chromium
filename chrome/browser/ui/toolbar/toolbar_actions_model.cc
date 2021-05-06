@@ -99,15 +99,15 @@ void ToolbarActionsModel::OnExtensionLoaded(
   // We don't want to add the same extension twice. It may have already been
   // added by EXTENSION_BROWSER_ACTION_VISIBILITY_CHANGED below, if the user
   // hides the browser action and then disables and enables the extension.
-  if (!HasAction(extension->id()))
-    AddExtension(extension);
+  if (!HasAction(extension->id()) && ShouldAddExtension(extension))
+    AddAction(extension->id());
 }
 
 void ToolbarActionsModel::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  RemoveExtension(extension);
+  RemoveAction(extension->id());
 }
 
 void ToolbarActionsModel::OnExtensionUninstalled(
@@ -176,13 +176,6 @@ bool ToolbarActionsModel::ShouldAddExtension(
   // In this case, we don't care about the browser action visibility, because
   // we want to show each extension regardless.
   return extension_action_manager_->GetExtensionAction(*extension) != nullptr;
-}
-
-void ToolbarActionsModel::AddExtension(const extensions::Extension* extension) {
-  if (!ShouldAddExtension(extension))
-    return;
-
-  AddAction(extension->id());
 }
 
 void ToolbarActionsModel::AddAction(const ActionId& action_id) {
@@ -297,11 +290,6 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
   DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
-}
-
-void ToolbarActionsModel::RemoveExtension(
-    const extensions::Extension* extension) {
-  RemoveAction(extension->id());
 }
 
 // Combine the currently enabled extensions that have browser actions (which
