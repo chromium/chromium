@@ -42,4 +42,9 @@ interface TestViewStructureInterface {
      * Dump HTML tag names in toString.
      */
     public void dumpHtmlTags();
+
+    /**
+     * Get the Android View-style class name.
+     */
+    public String getClassName();
 }

@@ -47,14 +47,15 @@
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF8ToJavaString;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfStringArray;
 using base::android::ToJavaIntArray;
 
 namespace content {
@@ -102,20 +103,23 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_CreateJavaAXSnapshot(
   // HTML/CSS attributes.
   ScopedJavaLocalRef<jstring> j_html_tag =
       ConvertUTF8ToJavaString(env, node->html_tag);
-  ScopedJavaLocalRef<jstring> j_html_id =
-      ConvertUTF8ToJavaString(env, node->html_id);
-  ScopedJavaLocalRef<jstring> j_html_class =
-      ConvertUTF8ToJavaString(env, node->html_class);
   ScopedJavaLocalRef<jstring> j_css_display =
       ConvertUTF8ToJavaString(env, node->css_display);
+
+  std::vector<std::vector<std::u16string>> html_attrs;
+  for (const auto& attr : node->html_attributes) {
+    html_attrs.push_back(
+        {base::UTF8ToUTF16(attr.first), base::UTF8ToUTF16(attr.second)});
+  }
+  ScopedJavaLocalRef<jobjectArray> j_attrs =
+      ToJavaArrayOfStringArray(env, html_attrs);
 
   ScopedJavaLocalRef<jobject> j_node =
       Java_WebContentsImpl_createAccessibilitySnapshotNode(
           env, node->rect.x(), node->rect.y(), node->rect.width(),
           node->rect.height(), is_root, j_text, node->color, node->bgcolor,
           node->text_size, node->bold, node->italic, node->underline,
-          node->line_through, j_class, j_html_tag, j_html_id, j_html_class,
-          j_css_display);
+          node->line_through, j_class, j_html_tag, j_css_display, j_attrs);
 
   if (node->selection.has_value()) {
     Java_WebContentsImpl_setAccessibilitySnapshotSelection(

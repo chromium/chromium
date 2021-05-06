@@ -53,9 +53,10 @@ struct AssistantNode {
 
   // HTML and CSS attributes.
   std::string html_tag;
-  std::string html_id;
-  std::string html_class;
   std::string css_display;
+
+  // HTML attributes: map from lowercase ASCII HTML attribute name to value.
+  base::StringPairs html_attributes;
 
   // Accessibility functionality of the node inferred from DOM or based on HTML
   // role attribute.

@@ -78,9 +78,8 @@ public class OWebContentsAccessibility extends WebContentsAccessibilityImpl {
         // Store the tag name in HtmlInfo.
         ViewStructure.HtmlInfo.Builder htmlBuilder = viewNode.newHtmlInfoBuilder(node.htmlTag);
         if (htmlBuilder != null) {
-            htmlBuilder.addAttribute("id", node.htmlId);
-            htmlBuilder.addAttribute("class", node.htmlClass);
             htmlBuilder.addAttribute("display", node.cssDisplay);
+            for (String[] attr : node.htmlAttributes) htmlBuilder.addAttribute(attr[0], attr[1]);
             viewNode.setHtmlInfo(htmlBuilder.build());
         }
 

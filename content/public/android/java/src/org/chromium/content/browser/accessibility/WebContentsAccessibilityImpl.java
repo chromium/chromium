@@ -691,6 +691,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // versions, and for scenarios where HtmlInfo is stripped.
         Bundle extras = viewNode.getExtras();
         extras.putCharSequence("htmlTag", node.htmlTag);
+        for (String[] attr : node.htmlAttributes) extras.putCharSequence(attr[0], attr[1]);
 
         for (int i = 0; i < node.children.size(); i++) {
             createVirtualStructure(viewNode.asyncNewChild(i), node.children.get(i), true);

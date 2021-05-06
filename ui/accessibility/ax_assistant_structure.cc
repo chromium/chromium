@@ -317,11 +317,14 @@ void WalkAXTreeDepthFirst(const AXNode* node,
 
   result->html_tag =
       node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  node->GetHtmlAttribute("id", &result->html_id);
-  result->html_class =
-      node->GetStringAttribute(ax::mojom::StringAttribute::kClassName);
   result->css_display =
       node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+  result->html_attributes = node->data().html_attributes;
+
+  std::string class_name =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kClassName);
+  if (!class_name.empty())
+    result->html_attributes.push_back({"class", class_name});
 
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
     AXNode* child = node->GetUnignoredChildAtIndex(i);

@@ -179,4 +179,29 @@ public class AssistViewStructureTest {
                         + "      android.widget.EditText htmlTag='input'\n"
                         + "        android.view.View htmlTag='div'\n");
     }
+
+    /**
+     * Test that the snapshot contains HTML attributes.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testHtmlAttributes() throws Throwable {
+        TestViewStructureInterface node =
+                getViewStructureFromHtml("<button id='a' class='b' aria-label='c'>D</button>");
+
+        while (node != null
+                && (node.getClassName() == null
+                        || !node.getClassName().equals("android.widget.Button"))) {
+            node = node.getChild(0);
+        }
+
+        Bundle extras = node.getExtras();
+        Assert.assertEquals("a", extras.getCharSequence("id").toString());
+        Assert.assertEquals("b", extras.getCharSequence("class").toString());
+        Assert.assertEquals("c", extras.getCharSequence("aria-label").toString());
+        Assert.assertNull(extras.getCharSequence("disabled"));
+        Assert.assertNull(extras.getCharSequence("onclick"));
+    }
 }

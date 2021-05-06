@@ -47,6 +47,11 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
         return builder.toString();
     }
 
+    @Override
+    public String getClassName() {
+        return mClassName;
+    }
+
     private void recursiveDumpToString(StringBuilder builder, int indent, boolean dumpHtmlTags) {
         for (int i = 0; i < indent; i++) {
             builder.append("  ");
