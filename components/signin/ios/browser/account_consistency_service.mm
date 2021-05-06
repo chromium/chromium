@@ -389,7 +389,7 @@ BOOL AccountConsistencyService::RestoreGaiaCookies(
   // Only processes a single restoration attempt for a given amount of time to
   // avoid redirect loops.
   if (last_gaia_cookie_update_time_.is_null() ||
-      base::Time::Now() - last_gaia_cookie_update_time_ <
+      base::Time::Now() - last_gaia_cookie_update_time_ >
           GetDelayThresholdToUpdateGaiaCookie()) {
     gaia_cookies_restored_callbacks_.push_back(
         std::move(cookies_restored_callback));
