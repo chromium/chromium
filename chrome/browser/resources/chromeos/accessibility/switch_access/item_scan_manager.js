@@ -289,7 +289,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
       FocusRingManager.setFocusedNode(this.node_);
     }
     this.group_.refresh();
-    ActionManager.refreshMenu();
+    ActionManager.refreshMenuUnconditionally();
   }
 
   /**

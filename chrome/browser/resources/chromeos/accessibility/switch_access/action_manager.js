@@ -107,9 +107,8 @@ export class ActionManager {
     }
   }
 
-
   /** Refreshes the current menu, if needed. */
-  static refreshMenu() {
+  static refreshMenuUnconditionally() {
     if (!MenuManager.isMenuOpen()) {
       return;
     }
@@ -124,7 +123,7 @@ export class ActionManager {
    */
   static refreshMenuForNode(node) {
     if (node.equals(ActionManager.instance.actionNode_)) {
-      ActionManager.refreshMenu();
+      ActionManager.refreshMenuUnconditionally();
     }
   }
 
