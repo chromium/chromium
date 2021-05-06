@@ -138,4 +138,8 @@
     <!-- Settings -->
     <color name="preference_highlighted_bg_color_dark">@color/modern_blue_600_alpha_12</color>
     <color name="preference_highlighted_bg_color_light">@color/white_alpha_24</color>
+
+    <!-- Rating star colors -->
+    <color name="rating_star_yellow_dark">@color/modern_yellow_500</color>
+    <color name="rating_star_yellow_light">@color/modern_yellow_300</color>
 </resources>

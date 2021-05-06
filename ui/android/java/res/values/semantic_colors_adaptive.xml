@@ -121,4 +121,5 @@
     <color name="menu_chip_background_color">@color/menu_chip_background_color_dark</color>
     <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_dark</color>
     <color name="iph_highlight_blue">@color/iph_highlight_blue_dark</color>
+    <color name="rating_star_yellow">@color/rating_star_yellow_dark</color>
 </resources>

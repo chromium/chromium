@@ -115,6 +115,7 @@ public class ChromeCachedFlags {
                 LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH,
                 LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH,
                 MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_SECONDS,
                 MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE,
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,

@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsTabMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageScheduler.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageViewModel.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMetrics.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsDataProvider.java",
@@ -19,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantViewerConfig.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/RatingStarSpan.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
   ]
 
@@ -120,6 +122,7 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageViewTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinatorTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventLoadCallbackHelper.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorageTest.java",
@@ -136,6 +139,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/messages/android:java",
+    "//components/messages/android/internal:java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",

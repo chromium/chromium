@@ -5,14 +5,9 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -24,21 +19,16 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
-import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Coordinator for managing merchant trust signals experience.
  */
 public class MerchantTrustSignalsCoordinator {
-    private static final int BASELINE_RATING = 5;
-
     private final MerchantTrustSignalsMediator mMediator;
     private final MerchantTrustMessageScheduler mMessageScheduler;
     private final MerchantTrustDetailsTabCoordinator mDetailsTabCoordinator;
@@ -102,8 +92,10 @@ public class MerchantTrustSignalsCoordinator {
                     return;
                 }
 
-                mMessageScheduler.schedule(getMessagePropertyModel(item, trustSignals), item,
-                        MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY.getValue(),
+                mMessageScheduler.schedule(
+                        MerchantTrustMessageViewModel.create(mContext, trustSignals,
+                                this::onMessageDismissed, this::onMessagePrimaryAction),
+                        item, MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY.getValue(),
                         this::onMessageEnqueued);
             });
         }
@@ -133,51 +125,19 @@ public class MerchantTrustSignalsCoordinator {
         });
     }
 
-    private void launchDetailsPage(GURL url) {
-        mDetailsTabCoordinator.requestOpenSheet(url,
-                mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title));
-    }
-
-    private PropertyModel getMessagePropertyModel(
-            MerchantTrustMessageContext messageContext, MerchantTrustSignals trustSignals) {
-        return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                .with(MessageBannerProperties.ICON,
-                        ResourcesCompat.getDrawable(mContext.getResources(),
-                                R.drawable.ic_logo_googleg_24dp, mContext.getTheme()))
-                .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
-                .with(MessageBannerProperties.TITLE,
-                        mContext.getResources().getString(R.string.merchant_viewer_message_title))
-                .with(MessageBannerProperties.DESCRIPTION, getMessageDescription(trustSignals))
-                .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                        mContext.getResources().getString(R.string.merchant_viewer_message_action))
-                .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
-                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> {
-                            mMetrics.recordMetricsForMessageTapped();
-                            launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
-                        })
-                .build();
-    }
-
     @VisibleForTesting
     void onMessageDismissed(@DismissReason int dismissReason) {
         mMetrics.recordMetricsForMessageDismissed(dismissReason);
     }
 
-    private Spannable getMessageDescription(MerchantTrustSignals trustSignals) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
-        numberFormatter.setMaximumFractionDigits(1);
-        builder.append(mContext.getResources().getString(
-                R.string.merchant_viewer_message_description_rating,
-                numberFormatter.format(trustSignals.getMerchantStarRating()),
-                numberFormatter.format(BASELINE_RATING)));
-        builder.append(" ");
-        builder.setSpan(new StyleSpan(Typeface.BOLD), 0, builder.length(),
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        builder.append(mContext.getResources().getQuantityString(
-                R.plurals.merchant_viewer_message_description_reviews,
-                trustSignals.getMerchantCountRating(), trustSignals.getMerchantCountRating()));
-        return builder;
+    @VisibleForTesting
+    void onMessagePrimaryAction(MerchantTrustSignals trustSignals) {
+        mMetrics.recordMetricsForMessageTapped();
+        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
+    }
+
+    private void launchDetailsPage(GURL url) {
+        mDetailsTabCoordinator.requestOpenSheet(url,
+                mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title));
     }
 }

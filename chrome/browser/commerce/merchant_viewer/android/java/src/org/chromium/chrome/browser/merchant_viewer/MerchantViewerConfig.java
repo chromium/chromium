@@ -17,6 +17,8 @@ public class MerchantViewerConfig {
             "trust_signals_message_window_duration_ms";
     private static final String TRUST_SIGNALS_SHEET_USE_PAGE_TITLE_PARAM =
             "trust_signals_sheet_use_page_title";
+    private static final String TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM =
+            "trust_signals_message_use_rating_bar";
 
     public static final IntCachedFieldTrialParameter DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY =
             new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
@@ -29,4 +31,8 @@ public class MerchantViewerConfig {
     public static final BooleanCachedFieldTrialParameter TRUST_SIGNALS_SHEET_USE_PAGE_TITLE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                     TRUST_SIGNALS_SHEET_USE_PAGE_TITLE_PARAM, true);
+
+    public static final BooleanCachedFieldTrialParameter TRUST_SIGNALS_MESSAGE_USE_RATING_BAR =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM, true);
 }
