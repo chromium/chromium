@@ -258,6 +258,27 @@ TEST_F(VisibleUnitsParagraphTest, isStartOfParagraph) {
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*three, 0)));
 }
 
+TEST_F(VisibleUnitsParagraphTest, StartOfNextParagraphAfterTableCell) {
+  SetBodyContent(
+      "<input style='display: table-cell' type='file' "
+      "maxlength='100'><select>");
+
+  const Position& input =
+      Position::BeforeNode(*GetDocument().QuerySelector("input"));
+  const Position& select =
+      Position::BeforeNode(*GetDocument().QuerySelector("select"));
+
+  const VisiblePosition& input_position = CreateVisiblePosition(input);
+  const VisiblePosition& after_input =
+      VisiblePosition::AfterNode(*input.AnchorNode());
+  const VisiblePosition& select_position = CreateVisiblePosition(select);
+
+  const VisiblePosition& next_paragraph = StartOfNextParagraph(input_position);
+  EXPECT_LT(input_position.DeepEquivalent(), next_paragraph.DeepEquivalent());
+  EXPECT_LE(after_input.DeepEquivalent(), next_paragraph.DeepEquivalent());
+  EXPECT_EQ(select_position.DeepEquivalent(), next_paragraph.DeepEquivalent());
+}
+
 TEST_F(VisibleUnitsParagraphTest,
        endOfParagraphWithDifferentUpAndDownVisiblePositions) {
   InsertStyleElement("span, div { display: inline-block; width: 50vw; }");

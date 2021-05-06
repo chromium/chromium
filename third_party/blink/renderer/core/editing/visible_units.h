@@ -202,7 +202,7 @@ EndOfParagraph(const VisiblePosition&,
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfParagraph(const VisiblePositionInFlatTree&,
                EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
-VisiblePosition StartOfNextParagraph(const VisiblePosition&);
+CORE_EXPORT VisiblePosition StartOfNextParagraph(const VisiblePosition&);
 CORE_EXPORT bool IsStartOfParagraph(
     const VisiblePosition&,
     EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);

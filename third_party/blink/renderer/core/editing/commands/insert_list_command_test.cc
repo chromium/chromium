@@ -176,4 +176,25 @@ TEST_F(InsertListCommandTest, NestedSpansJustInsideBody) {
       "<ul><li><br>a</li></ul><span><span><span>^a</span></span></span>b|",
       GetSelectionTextFromBody());
 }
+
+TEST_F(InsertListCommandTest, ListifyInputInTableCell) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "^<ruby><div style='display: table-cell'><input style='display: "
+          "table-cell' type='file' maxlength='100'><select>|"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<ruby><div style=\"display: "
+      "table-cell\"><ul><li>^<br></li><li><ruby><div style=\"display: "
+      "table-cell\">|<input maxlength=\"100\" style=\"display: table-cell\" "
+      "type=\"file\"></div></ruby></li><li><select></select></li></ul></div></"
+      "ruby>",
+      GetSelectionTextFromBody());
+}
 }

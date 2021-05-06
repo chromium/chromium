@@ -340,6 +340,12 @@ VisiblePosition StartOfNextParagraph(const VisiblePosition& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
   VisiblePosition paragraph_end(
       EndOfParagraph(visible_position, kCanSkipOverEditingBoundary));
+  // EndOfParagraph preserves the candidate_type, so if we are already at the
+  // end node we must ensure we get the next position to avoid infinite loops.
+  if (paragraph_end.DeepEquivalent() == visible_position.DeepEquivalent()) {
+    paragraph_end = VisiblePosition::AfterNode(
+        *visible_position.DeepEquivalent().AnchorNode());
+  }
   VisiblePosition after_paragraph_end(
       NextPositionOf(paragraph_end, kCannotCrossEditingBoundary));
   // It may happen that an element's next visually equivalent candidate is set
