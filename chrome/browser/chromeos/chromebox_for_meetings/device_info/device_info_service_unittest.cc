@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -26,6 +27,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -58,6 +60,8 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     DeviceInfoService::Initialize();
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &fake_statistics_provider_);
   }
 
   void TearDown() override {
@@ -131,12 +135,13 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
 
  protected:
   FakeCfmServiceContext context_;
-  mojo::Remote<mojom::MeetDevicesInfo> device_info_remote_;
-  mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
-  mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
+  FakeServiceConnectionImpl fake_service_connection_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   chromeos::FakeSessionManagerClient session_manager_client_;
-  FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::system::FakeStatisticsProvider fake_statistics_provider_;
+  mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
+  mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
+  mojo::Remote<mojom::MeetDevicesInfo> device_info_remote_;
   policy::DevicePolicyBuilder device_policy_;
 
   // Require a full task environment for testing device policy
@@ -204,6 +209,25 @@ TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
       base::BindLambdaForTesting([&](mojom::SysInfoPtr info_ptr) {
         ASSERT_FALSE(info_ptr.is_null());
         EXPECT_EQ(info_ptr->release_version, kReleaseVersion);
+        mojo_loop.Quit();
+      }));
+  mojo_loop.Run();
+}
+
+TEST_F(CfmDeviceInfoServiceTest, TestMachineStatisticsInfo) {
+  const std::string kExpectedHwid = "kExpectedHwid";
+
+  fake_statistics_provider_.SetMachineStatistic(
+      chromeos::system::kHardwareClassKey, kExpectedHwid);
+
+  const auto& details_remote = GetDeviceInfoRemote();
+  base::RunLoop().RunUntilIdle();
+
+  base::RunLoop mojo_loop;
+  details_remote->GetMachineStatisticsInfo(base::BindLambdaForTesting(
+      [&](mojom::MachineStatisticsInfoPtr stats_ptr) {
+        ASSERT_FALSE(stats_ptr.is_null());
+        EXPECT_EQ(stats_ptr->hwid, kExpectedHwid);
         mojo_loop.Quit();
       }));
   mojo_loop.Run();
