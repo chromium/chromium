@@ -12932,6 +12932,18 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Not Associated"/>
   <int value="14" label="Not Authenticated"/>
   <int value="15" label="Too Many STAs"/>
+  <int value="16" label="NeedHomeNetwork"/>
+  <int value="17" label="OTASP Failed"/>
+  <int value="18" label="Out Of Range"/>
+  <int value="19" label="PPP Auth"/>
+  <int value="20" label="Pin Missing"/>
+  <int value="21" label="Unknown"/>
+  <int value="22" label="Not Associated"/>
+  <int value="23" label="Not Authenticated"/>
+  <int value="24" label="Too Many STAs"/>
+  <int value="25" label="Disconnect"/>
+  <int value="26" label="Sim Locked"/>
+  <int value="27" label="Not Registered"/>
 </enum>
 
 <enum name="ConnectionInfo">

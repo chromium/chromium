@@ -30,9 +30,6 @@ namespace chromeos {
 
 namespace {
 
-// TODO(b/162987250): Use shill constant once cros_system_api roll occurs.
-const char kErrorDisconnect[] = "disconnect-failure";
-
 void IgnoreDisconnectError(const std::string& error_name,
                            std::unique_ptr<base::DictionaryValue> error_data) {}
 
@@ -46,7 +43,7 @@ const NetworkState* GetNetworkStateFromId(const std::string& network_id) {
 bool PreviousConnectAttemptHadError(const NetworkState* network) {
   const std::string& network_error = network->GetError();
   if (network_error.empty() || !network->IsSecure() ||
-      network_error == kErrorDisconnect) {
+      network_error == shill::kErrorDisconnect) {
     return false;
   }
   NET_LOG(USER) << "Previous connect attempt for: " << NetworkId(network)

@@ -1558,6 +1558,9 @@
   <message name="IDS_CHROMEOS_NETWORK_ERROR_CERTIFICATES_NOT_LOADED" desc="Network error details in notifications: Certificates not loaded">
     Certificates not loaded
   </message>
+  <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not registered.">
+    Modem not registered
+  </message>
   <message name="IDS_NETWORK_ERROR_CANNOT_CHANGE_SHARED_CONFIG" desc="Network error message shown when attempting to change a shared network configuration if the operation is not allowed">
     Changing shared network configurations is not allowed
   </message>

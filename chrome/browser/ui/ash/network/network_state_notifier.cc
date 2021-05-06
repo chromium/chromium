@@ -38,14 +38,11 @@ const int kMinTimeBetweenOutOfCreditsNotifySeconds = 10 * 60;
 const char kNotifierNetwork[] = "ash.network";
 const char kNotifierNetworkError[] = "ash.network.error";
 
-// TODO(b:184776317): Use string from service_constants.h
-const char kErrorSimLocked[] = "sim-locked";
-
-// Ignore in-progress error.
+// Ignore in-progress errors and disconnect errors (which may occur when a new
+// connect request occurs while a previous connect is in-progress).
 bool ShillErrorIsIgnored(const std::string& shill_error) {
-  if (shill_error == shill::kErrorResultInProgress)
-    return true;
-  return false;
+  return shill_error == shill::kErrorResultInProgress ||
+         shill_error == shill::kErrorDisconnect;
 }
 
 std::string GetStringFromDictionary(const base::Optional<base::Value>& dict,
@@ -146,7 +143,7 @@ bool IsSimLockConnectionFailure(const std::string& connection_error_name,
   if (connection_error_name == NetworkConnectionHandler::kErrorSimLocked)
     return true;
 
-  return network_state && network_state->GetError() == kErrorSimLocked;
+  return network_state && network_state->GetError() == shill::kErrorSimLocked;
 }
 
 }  // namespace
