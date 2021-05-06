@@ -19,7 +19,7 @@ ScopedJavaLocalRef<jobject> CreateJavaTemplateAndMaybeAddToList(
     ScopedJavaLocalRef<jobject> jlist,
     const NoteTemplate& note_template) {
   return Java_NoteTemplateConversionBridge_createTemplateAndMaybeAddToList(
-      env, jlist, ConvertUTF8ToJavaString(env, note_template.localized_name));
+      env, jlist, ConvertUTF8ToJavaString(env, note_template.localized_name()));
 }
 
 }  // namespace

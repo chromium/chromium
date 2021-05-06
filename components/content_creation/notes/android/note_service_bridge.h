@@ -24,6 +24,10 @@ class NoteServiceBridge : public base::SupportsUserData::Data {
   explicit NoteServiceBridge(NoteService* note_service);
   ~NoteServiceBridge() override;
 
+  // Not copyable or movable.
+  NoteServiceBridge(const NoteServiceBridge&) = delete;
+  NoteServiceBridge& operator=(const NoteServiceBridge&) = delete;
+
   void GetTemplates(JNIEnv* env,
                     const JavaParamRef<jobject>& jcaller,
                     const JavaParamRef<jobject>& jcallback);
@@ -33,8 +37,6 @@ class NoteServiceBridge : public base::SupportsUserData::Data {
 
   // Not owned.
   NoteService* note_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteServiceBridge);
 };
 
 }  // namespace content_creation

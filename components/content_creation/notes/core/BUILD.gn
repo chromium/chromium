@@ -6,11 +6,11 @@ static_library("core") {
   sources = [
     "note_service.cc",
     "note_service.h",
-    "notes_types.h",
   ]
 
   deps = [
     "//base",
+    "//components/content_creation/notes/core/templates",
     "//components/keyed_service/core",
   ]
 }
@@ -18,12 +18,17 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "note_service_unittest.cc" ]
+  sources = [
+    "note_service_unittest.cc",
+    "templates/template_store_unittest.cc",
+  ]
 
   deps = [
     ":core",
     "//base",
     "//base/test:test_support",
+    "//components/content_creation/notes/core/templates",
+    "//components/content_creation/notes/core/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

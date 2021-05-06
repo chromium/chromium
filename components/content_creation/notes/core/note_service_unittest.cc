@@ -6,27 +6,42 @@
 
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "components/content_creation/notes/core/notes_types.h"
+#include "base/test/task_environment.h"
+#include "components/content_creation/notes/core/templates/note_template.h"
+#include "components/content_creation/notes/core/test/mocks.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
 
 namespace content_creation {
 
 class NoteServiceTest : public testing::Test {
+  void SetUp() override {
+    auto mock_template_store = std::make_unique<test::MockTemplateStore>();
+    mock_template_store_ = mock_template_store.get();
+
+    note_service_ =
+        std::make_unique<NoteService>(std::move(mock_template_store));
+  }
+
  protected:
-  NoteService note_service_;
+  // Have to use TaskEnvironment since the TemplateStore posts tasks to the
+  // thread pool.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  std::unique_ptr<NoteService> note_service_;
+  test::MockTemplateStore* mock_template_store_;
 };
 
-TEST_F(NoteServiceTest, GetTemplatesSuccess) {
-  bool invoked = false;
+TEST_F(NoteServiceTest, GetTemplatesSuccess_Empty) {
+  EXPECT_CALL(*mock_template_store_, GetTemplates(_)).Times(1);
 
-  note_service_.GetTemplates(base::BindLambdaForTesting(
-      [&invoked](std::vector<NoteTemplate> templates) {
-        EXPECT_EQ(0U, templates.size());
-        invoked = true;
-      }));
-
-  EXPECT_TRUE(invoked);
+  note_service_->GetTemplates(base::BindLambdaForTesting(
+      [](std::vector<NoteTemplate> templates) { /* No-op */ }));
 }
 
 }  // namespace content_creation

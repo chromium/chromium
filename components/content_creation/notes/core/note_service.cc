@@ -4,20 +4,17 @@
 
 #include "components/content_creation/notes/core/note_service.h"
 
-#include <memory>
-
 #include "base/callback.h"
 
 namespace content_creation {
 
-NoteService::NoteService() = default;
+NoteService::NoteService(std::unique_ptr<TemplateStore> template_store)
+    : template_store_(std::move(template_store)) {}
 
 NoteService::~NoteService() = default;
 
 void NoteService::GetTemplates(GetTemplatesCallback callback) {
-  // TODO(crbug.com/1194168): Make sure to post the resolution of this callback
-  // to prevent rooting any bugs around timing.
-  std::move(callback).Run(std::vector<NoteTemplate>());
+  template_store_->GetTemplates(std::move(callback));
 }
 
 }  // namespace content_creation

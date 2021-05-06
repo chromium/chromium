@@ -10,6 +10,7 @@ source_set("internal") {
   deps = [
     "//base",
     "//components/content_creation/notes/core",
+    "//components/content_creation/notes/core/templates",
     "//components/keyed_service/core",
   ]
 

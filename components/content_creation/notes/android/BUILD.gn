@@ -41,5 +41,6 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//components/content_creation/notes/core",
+    "//components/content_creation/notes/core/templates",
   ]
 }

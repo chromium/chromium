@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "components/content_creation/notes/android/jni_headers/NoteServiceBridge_jni.h"
 #include "components/content_creation/notes/android/note_template_conversion_bridge.h"
-#include "components/content_creation/notes/core/notes_types.h"
+#include "components/content_creation/notes/core/templates/note_template.h"
 
 using base::android::AttachCurrentThread;
 
