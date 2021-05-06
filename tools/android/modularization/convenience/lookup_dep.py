@@ -40,6 +40,9 @@ def main():
   arg_parser.add_argument('-C',
                           '--output-directory',
                           help='Build output directory.')
+  arg_parser.add_argument('--build',
+                          action='store_true',
+                          help='Build all .build_config files.')
   arg_parser.add_argument('classes',
                           nargs='+',
                           help='Java classes to search for')
@@ -60,9 +63,25 @@ def main():
   constants.CheckOutputDirectory()
   out_dir: str = constants.GetOutDirectory()
 
-  index = ClassLookupIndex(pathlib.Path(out_dir))
-  for class_name in arguments.classes:
-    class_entries = index.match(class_name)
+  index = ClassLookupIndex(pathlib.Path(out_dir), arguments.build)
+  matches = {c: index.match(c) for c in arguments.classes}
+
+  if not arguments.build:
+    # Try finding match without building because it is faster.
+    for class_name, match_list in matches.items():
+      if len(match_list) == 0:
+        arguments.build = True
+        break
+    if arguments.build:
+      index = ClassLookupIndex(pathlib.Path(out_dir), True)
+      matches = {c: index.match(c) for c in arguments.classes}
+
+  if not arguments.build:
+    print('Showing potentially stale results. Run lookup.dep.py with --build '
+          '(slower) to build any unbuilt GN targets and get full results.')
+    print()
+
+  for (class_name, class_entries) in matches.items():
     if not class_entries:
       print(f'Could not find build target for class "{class_name}"')
     elif len(class_entries) == 1:
@@ -90,8 +109,9 @@ class ClassLookupIndex:
 
   A class might be in multiple targets if it's bytecode rewritten."""
 
-  def __init__(self, build_output_dir: pathlib.Path):
+  def __init__(self, build_output_dir: pathlib.Path, should_build: bool):
     self._build_output_dir = build_output_dir
+    self._should_build = should_build
     self._class_index = self._index_root()
 
   def match(self, search_string: str) -> List[ClassEntry]:
@@ -132,10 +152,13 @@ class ClassLookupIndex:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
-        'build/android/list_java_targets.py', '--type=java_library',
-        '--gn-labels', '--build', '--print-build-config-paths',
+        'build/android/list_java_targets.py', '--gn-labels',
+        '--print-build-config-paths',
         f'--output-directory={self._build_output_dir}'
     ]
+    if self._should_build:
+      list_java_targets_command += ['--build']
+
     list_java_targets_run = subprocess.run(list_java_targets_command,
                                            cwd=_SRC_DIR,
                                            capture_output=True,
@@ -156,15 +179,28 @@ class ClassLookupIndex:
       assert len(target_line_parts) == 2, target_line_parts
       target, build_config_path = target_line_parts
 
+      if not os.path.exists(build_config_path):
+        assert not self._should_build
+        continue
+
+      with open(build_config_path) as build_config_contents:
+        build_config: Dict = json.load(build_config_contents)
+      deps_info = build_config['deps_info']
+      # Checking the library type here instead of in list_java_targets.py avoids
+      # reading each .build_config file twice.
+      if deps_info['type'] != 'java_library':
+        continue
+
       target = self._compute_toplevel_target(target)
       full_class_names = self._compute_full_class_names_for_build_config(
-          build_config_path)
+          deps_info)
       for full_class_name in full_class_names:
         class_index[full_class_name].append(target)
 
     return class_index
 
-  def _compute_toplevel_target(self, target: str) -> str:
+  @staticmethod
+  def _compute_toplevel_target(target: str) -> str:
     """Computes top level target from the passed-in sub-target."""
     if target.endswith('_java'):
       return target
@@ -179,13 +215,9 @@ class ClassLookupIndex:
 
     return target
 
-  def _compute_full_class_names_for_build_config(self, build_config_path: str
-                                                 ) -> Set[str]:
+  def _compute_full_class_names_for_build_config(self,
+                                                 deps_info: Dict) -> Set[str]:
     """Returns set of fully qualified class names for build config."""
-    with open(build_config_path) as build_config_contents:
-      build_config: Dict = json.load(build_config_contents)
-    deps_info = build_config['deps_info']
-
     # Read the location of the java_sources_file from the build_config
     sources_path = deps_info.get('java_sources_file')
     if sources_path:
@@ -210,26 +242,45 @@ class ClassLookupIndex:
 
     return set()
 
-  def _extract_full_class_names_from_jar(self,
-                                         jar_path: pathlib.Path) -> Set[str]:
+  @staticmethod
+  def _extract_full_class_names_from_jar(jar_path: pathlib.Path) -> Set[str]:
     """Returns set of fully qualified class names in passed-in jar."""
     out = set()
-    with zipfile.ZipFile(jar_path) as z:
-      for zip_entry_name in z.namelist():
-        if not zip_entry_name.endswith('.class'):
-          continue
-        # Remove .class suffix
-        full_java_class = zip_entry_name[:-6]
+    for zip_entry_name in ClassLookupIndex._read_jar_namelist(jar_path):
+      if not zip_entry_name.endswith('.class'):
+        continue
+      # Remove .class suffix
+      full_java_class = zip_entry_name[:-6]
 
-        full_java_class = full_java_class.replace('/', '.')
-        dollar_index = full_java_class.find('$')
-        if dollar_index >= 0:
-          full_java_class[0:dollar_index]
+      full_java_class = full_java_class.replace('/', '.')
+      dollar_index = full_java_class.find('$')
+      if dollar_index >= 0:
+        full_java_class[0:dollar_index]
 
-        out.add(full_java_class)
+      out.add(full_java_class)
     return out
 
-  def _parse_full_java_class(self, source_path: pathlib.Path) -> str:
+  @staticmethod
+  def _read_jar_namelist(jar_path: pathlib.Path) -> list[str]:
+    """Returns list of jar members by name."""
+
+    # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
+    cache_path = jar_path.with_suffix(jar_path.suffix + '.namelist_cache')
+    if (cache_path.exists()
+        and os.path.getmtime(cache_path) > os.path.getmtime(jar_path)):
+      with open(cache_path) as f:
+        return f.readlines()
+
+    with zipfile.ZipFile(jar_path) as z:
+      namelist = z.namelist()
+
+    with open(cache_path, 'w') as f:
+      f.write('\n'.join(namelist))
+
+    return namelist
+
+  @staticmethod
+  def _parse_full_java_class(source_path: pathlib.Path) -> str:
     """Guess the fully qualified class name from the path to the source file."""
     if source_path.suffix != '.java':
       logging.warning(f'"{source_path}" does not have the .java suffix')
