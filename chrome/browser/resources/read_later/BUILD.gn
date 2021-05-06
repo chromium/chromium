@@ -34,6 +34,7 @@ grit("resources") {
 generate_grd("build_grd") {
   input_files = [
     "read_later.html",
+    "side_panel/bookmarks_api_proxy.js",
     "side_panel/side_panel.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
