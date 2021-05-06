@@ -1624,13 +1624,10 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-text/word-break/word-break-norma
 crbug.com/626703 [ Win ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
 
-crbug.com/972992 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-003.html [ Failure ]
 crbug.com/1008029 [ Mac ] external/wpt/css/css-text/white-space/pre-wrap-018.html [ Failure ]
 crbug.com/1008029 external/wpt/css/css-text/white-space/pre-wrap-019.html [ Failure ]
 crbug.com/1008029 external/wpt/css/css-text/white-space/textarea-pre-wrap-012.html [ Failure ]
 crbug.com/1008029 external/wpt/css/css-text/white-space/textarea-pre-wrap-013.html [ Failure ]
-crbug.com/1071928 external/wpt/css/css-text/white-space/white-space-intrinsic-size-013.html [ Failure ]
-crbug.com/1071928 external/wpt/css/css-text/white-space/white-space-intrinsic-size-014.html [ Failure ]
 
 # Handling of trailing other space separator
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-001.html [ Failure ]
@@ -3498,7 +3495,6 @@ crbug.com/626703 external/wpt/svg/interact/manual/event-attribute-001-manual.svg
 crbug.com/626703 external/wpt/css/CSS2/text/white-space-nowrap-attribute-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-012.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-013.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/white-space/white-space-intrinsic-size-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-copy-paste-001-manual.html [ Skip ]
 crbug.com/626703 external/wpt/html/webappapis/animation-frames/cancel-handle-manual.html [ Skip ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-collapse-preserve-breaks-001.xht [ Failure ]

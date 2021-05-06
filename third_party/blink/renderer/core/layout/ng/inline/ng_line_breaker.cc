@@ -777,13 +777,6 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
       return;
     }
 
-    // If we're seeking for the first break opportunity, update the state.
-    if (UNLIKELY(state_ == LineBreakState::kOverflow)) {
-      if (item_result->can_break_after)
-        state_ = LineBreakState::kTrailing;
-      return;
-    }
-
     // Hanging trailing spaces may resolve the overflow.
     if (item_result->has_only_trailing_spaces) {
       state_ = LineBreakState::kTrailing;
@@ -792,6 +785,13 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
         unsigned end_index = item_result - line_info->Results().begin();
         Rewind(end_index, line_info);
       }
+      return;
+    }
+
+    // If we're seeking for the first break opportunity, update the state.
+    if (UNLIKELY(state_ == LineBreakState::kOverflow)) {
+      if (item_result->can_break_after)
+        state_ = LineBreakState::kTrailing;
       return;
     }
 
@@ -1106,8 +1106,6 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   while (start_offset < item.EndOffset()) {
     unsigned end_offset = break_iterator_.NextBreakOpportunity(
         start_offset + 1, item.EndOffset());
-    if (end_offset >= item.EndOffset())
-      break;
 
     unsigned non_hangable_run_end = end_offset;
     if (item.Style()->WhiteSpace() != EWhiteSpace::kBreakSpaces) {
@@ -1115,7 +1113,11 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
              IsBreakableSpace(text[non_hangable_run_end - 1])) {
         --non_hangable_run_end;
       }
+      end_offset = non_hangable_run_end;
     }
+
+    if (end_offset >= item.EndOffset())
+      break;
 
     // Inserting a hyphenation character is not supported yet.
     // TODO (jfernandez): Maybe we need to use 'end_offset' here ?
@@ -1315,11 +1317,14 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     item_result->shape_result = ShapeResultView::Create(shape_result);
     if (item_result->StartOffset() == item.StartOffset() &&
         item_result->EndOffset() == item.EndOffset()) {
-      item_result->inline_size = item_result->shape_result
-                                     ? item_result->shape_result->SnappedWidth()
-                                     : LayoutUnit();
+      item_result->inline_size =
+          item_result->shape_result && mode_ != NGLineBreakerMode::kMinContent
+              ? item_result->shape_result->SnappedWidth()
+              : LayoutUnit();
     } else {
       UpdateShapeResult(*line_info, item_result);
+      if (mode_ == NGLineBreakerMode::kMinContent)
+        item_result->inline_size = LayoutUnit();
     }
     position_ += item_result->inline_size;
     item_result->can_break_after =

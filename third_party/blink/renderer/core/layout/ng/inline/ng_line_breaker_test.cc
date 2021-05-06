@@ -583,7 +583,7 @@ TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {
   )HTML");
 
   const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(60));
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
   EXPECT_EQ(sizes.max_size, LayoutUnit(110));
 }
 

@@ -227,6 +227,7 @@ crbug.com/591099 external/wpt/css/css-text/line-breaking/line-breaking-replaced-
 crbug.com/1019695 external/wpt/css/css-text/overflow-wrap/overflow-wrap-shaping-001.html [ Failure ]
 crbug.com/1019695 external/wpt/css/css-text/overflow-wrap/overflow-wrap-shaping-002.html [ Failure ]
 crbug.com/1020749 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-004.html [ Failure ]
+crbug.com/1205334 external/wpt/css/css-text/overflow-wrap/overflow-wrap-min-content-size-009.html [ Failure ]
 
 ### external/wpt/css/css-text/shaping/
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-000.html [ Failure ]
@@ -273,6 +274,7 @@ crbug.com/1162836 external/wpt/css/css-text/hyphens/hyphens-auto-004.html [ Fail
 crbug.com/591099 external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-006.html [ Failure ]
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-break-all-inline-008.html [ Failure ]
+crbug.com/1205334 external/wpt/css/css-text/word-break/word-break-min-content-007.html [ Failure ]
 
 ### external/wpt/css/css-text-decor/
 crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-skip-ink-vertical-001.html [ Failure ]
