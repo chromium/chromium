@@ -10,6 +10,8 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_pool.h"
+#include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace mirroring {
@@ -264,6 +266,26 @@ void VideoCaptureClient::OnBufferReady(
   frame->AddDestructionObserver(
       base::BindOnce(&VideoCaptureClient::DidFinishConsumingFrame,
                      std::move(buffer_finished_callback)));
+
+  // Convert NV12 frames to I420, because NV12 is not supported by Cast
+  // Streaming.
+  // https://crbug.com/1206325
+  if (frame->format() == media::PIXEL_FORMAT_NV12) {
+    if (!nv12_to_i420_pool_)
+      nv12_to_i420_pool_ = std::make_unique<media::VideoFramePool>();
+    scoped_refptr<media::VideoFrame> new_frame =
+        nv12_to_i420_pool_->CreateFrame(
+            media::PIXEL_FORMAT_I420, frame->coded_size(),
+            frame->visible_rect(), frame->natural_size(), frame->timestamp());
+    media::Status status =
+        media::ConvertAndScaleFrame(*frame, *new_frame, nv12_to_i420_tmp_buf_);
+    if (!status.is_ok()) {
+      LOG(DFATAL) << "Unable to convert frame to I420.";
+      OnStateChanged(media::mojom::VideoCaptureState::FAILED);
+      return;
+    }
+    frame = new_frame;
+  }
 
   frame->set_metadata(buffer->info->metadata);
   if (buffer->info->color_space.has_value())

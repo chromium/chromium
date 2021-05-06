@@ -20,6 +20,7 @@
 
 namespace media {
 class VideoFrame;
+class VideoFramePool;
 struct VideoCaptureFeedback;
 }  // namespace media
 
@@ -107,6 +108,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
 
   // Latest received feedback.
   media::VideoCaptureFeedback feedback_;
+
+  // Cast Streaming does not support NV12 frames. When NV12 frames are received,
+  // these structures are used to convert them to I420 on the CPU.
+  // https://crbug.com/1206325
+  std::unique_ptr<media::VideoFramePool> nv12_to_i420_pool_;
+  std::vector<uint8_t> nv12_to_i420_tmp_buf_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
