@@ -53,6 +53,7 @@ class AppHistoryNavigateEvent final : public Event,
   ScriptPromise GetNavigationActionPromise() {
     return navigation_action_promise_;
   }
+  void ClearNavigationActionPromise();
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;

@@ -27,11 +27,11 @@ class NavigateReaction final : public ScriptFunction {
     kFulfill,
     kReject,
   };
-  static ScriptPromise React(ScriptState* script_state, ScriptPromise promise) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  static void React(ScriptState* script_state,
+                    ScriptPromise promise,
+                    ScriptPromiseResolver* resolver) {
     promise.Then(CreateFunction(script_state, resolver, ResolveType::kFulfill),
                  CreateFunction(script_state, resolver, ResolveType::kReject));
-    return resolver->Promise();
   }
 
   NavigateReaction(ScriptState* script_state,
@@ -75,10 +75,12 @@ class NavigateReaction final : public ScriptFunction {
   ScriptValue Call(ScriptValue value) final {
     DCHECK(window_);
     AppHistory::appHistory(*window_)->DispatchEvent(*InitEvent(value));
-    if (type_ == ResolveType::kFulfill)
-      resolver_->Resolve(value);
-    else
-      resolver_->Reject(value);
+    if (resolver_) {
+      if (type_ == ResolveType::kFulfill)
+        resolver_->Resolve(value);
+      else
+        resolver_->Reject(value);
+    }
     window_ = nullptr;
     return ScriptValue();
   }
@@ -208,7 +210,10 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
                                       "Invalid url");
     return ScriptPromise();
   }
-  navigate_method_call_promise_ = ScriptPromise();
+
+  base::AutoReset<Member<ScriptPromiseResolver>> promise(
+      &navigate_method_call_promise_resolver_,
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state));
   base::AutoReset<ScriptValue> event_info(&navigate_event_info_,
                                           options->navigateInfo());
   WebFrameLoadType frame_load_type = options->replace()
@@ -219,13 +224,20 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   FrameLoadRequest request(GetSupplementable(), ResourceRequest(completed_url));
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
-  if (navigate_method_call_promise_.IsEmpty()) {
+
+  // The spec says to handle the window-detach case in DispatchNavigateEvent()
+  // using navigate_method_call_promise_resolver_, but ScriptPromiseResolver
+  // clears its state on window detach, so we can't use  it to return a rejected
+  // promise in the detach case (it returns undefined  instead). Rather than
+  // bypassing ScriptPromiseResolver and managing our own v8::Promise::Resolver,
+  // special case detach here.
+  if (!GetSupplementable()->GetFrame()) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "Navigation was aborted"));
   }
-  return navigate_method_call_promise_;
+  return navigate_method_call_promise_resolver_->Promise();
 }
 
 ScriptPromise AppHistory::navigate(ScriptState* script_state,
@@ -249,6 +261,13 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   if (GetSupplementable()->document()->IsInitialEmptyDocument())
     return true;
 
+  // TODO(japhet): The draft spec says to cancel any ongoing navigate event
+  // before invoked DispatchNavigateEvent(), because not all navigations will
+  // fire a navigate event, but all should abort an ongoing navigate event.
+  // The main case were that would be a problem (browser-initiated back/forward)
+  // is not implemented yet. Move this once it is implemented.
+  CancelOngoingNavigateEvent();
+
   const KURL& current_url = GetSupplementable()->Url();
 
   auto* init = AppHistoryNavigateEventInit::Create();
@@ -270,38 +289,49 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
 
+  DCHECK(!ongoing_navigate_event_);
+  ongoing_navigate_event_ = navigate_event;
   DispatchEvent(*navigate_event);
-  ScriptPromise promise = navigate_event->GetNavigationActionPromise();
+  ongoing_navigate_event_ = nullptr;
+
   if (!GetSupplementable()->GetFrame())
     return false;
-  if (navigate_event->defaultPrevented() && promise.IsEmpty())
-    return false;
 
-  auto* script_state =
-      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
-  ScriptState::Scope scope(script_state);
-  if (promise.IsEmpty()) {
-    // Default promises for when respondWith() isn't invoked. Use a promise
-    // that never resolves for a cross-document navigation (because the context
-    // will be discarded before the promise resolves), and a resolved promise
-    // for a same-document navigation since it will complete synchronously.
-    if (event_type == NavigateEventType::kCrossDocument) {
-      if (!hung_promise_resolver_) {
-        hung_promise_resolver_ =
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-      }
-      promise = hung_promise_resolver_->Promise();
-    } else {
-      promise = ScriptPromise::CastUndefined(script_state);
-    }
-  } else {
+  ScriptPromise promise = navigate_event->GetNavigationActionPromise();
+  if (!promise.IsEmpty()) {
     DocumentLoader* loader = GetSupplementable()->document()->Loader();
     loader->RunURLAndHistoryUpdateSteps(url, state_object, type);
   }
 
-  navigate_method_call_promise_ =
-      NavigateReaction::React(script_state, promise);
+  auto* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  if (!promise.IsEmpty() || (!navigate_event->defaultPrevented() &&
+                             event_type != NavigateEventType::kCrossDocument)) {
+    if (promise.IsEmpty())
+      promise = ScriptPromise::CastUndefined(script_state);
+    NavigateReaction::React(script_state, promise,
+                            navigate_method_call_promise_resolver_);
+  }
+
+  if (navigate_event->defaultPrevented() && promise.IsEmpty()) {
+    promise = ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Navigation was aborted"));
+    NavigateReaction::React(script_state, promise,
+                            navigate_method_call_promise_resolver_);
+  }
+
   return !navigate_event->defaultPrevented();
+}
+
+void AppHistory::CancelOngoingNavigateEvent() {
+  if (!ongoing_navigate_event_)
+    return;
+  ongoing_navigate_event_->preventDefault();
+  ongoing_navigate_event_->ClearNavigationActionPromise();
+  ongoing_navigate_event_ = nullptr;
 }
 
 const AtomicString& AppHistory::InterfaceName() const {
@@ -312,9 +342,9 @@ void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(entries_);
+  visitor->Trace(ongoing_navigate_event_);
+  visitor->Trace(navigate_method_call_promise_resolver_);
   visitor->Trace(navigate_event_info_);
-  visitor->Trace(navigate_method_call_promise_);
-  visitor->Trace(hung_promise_resolver_);
 }
 
 }  // namespace blink

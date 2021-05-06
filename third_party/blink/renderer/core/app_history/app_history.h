@@ -17,6 +17,7 @@
 namespace blink {
 
 class AppHistoryEntry;
+class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
 class HTMLFormElement;
 class HistoryItem;
@@ -70,6 +71,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              WebFrameLoadType,
                              UserNavigationInvolvement,
                              SerializedScriptValue* = nullptr);
+  void CancelOngoingNavigateEvent();
 
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
@@ -83,17 +85,10 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   HeapVector<Member<AppHistoryEntry>> entries_;
   int current_index_ = -1;
 
-  ScriptValue navigate_event_info_;
-  ScriptPromise navigate_method_call_promise_;
+  Member<AppHistoryNavigateEvent> ongoing_navigate_event_;
+  Member<ScriptPromiseResolver> navigate_method_call_promise_resolver_;
 
-  // When navigate() is called and a cross-document navigation is pending, we
-  // want to return an unresolved promise. But the promise will never resolve,
-  // because the navigation won't be "done" until the navigaton commits and this
-  // context is detached. Therefore, use this resolver to create a promise that
-  // never resolves. The resolver needs to be per-AppHistory so that it isn't
-  // GCed until window detach, because ScriptPromiseResolver DCHECKs if it is
-  // GCed without resolving unless the window is detached.
-  Member<ScriptPromiseResolver> hung_promise_resolver_;
+  ScriptValue navigate_event_info_;
 };
 
 }  // namespace blink

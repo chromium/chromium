@@ -64,6 +64,10 @@ void AppHistoryNavigateEvent::respondWith(ScriptState* script_state,
   navigation_action_promise_ = newNavigationAction;
 }
 
+void AppHistoryNavigateEvent::ClearNavigationActionPromise() {
+  navigation_action_promise_ = ScriptPromise();
+}
+
 const AtomicString& AppHistoryNavigateEvent::InterfaceName() const {
   return event_interface_names::kAppHistoryNavigateEvent;
 }
