@@ -15,7 +15,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders", "os_category")
+load("./builders.star", "builders", "os", "os_category")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -273,6 +273,7 @@ def chromium_builder(*, name, tree_closing = True, **kwargs):
     )
 
 def chromiumos_builder(*, name, tree_closing = True, **kwargs):
+    kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci_builder(
         name = name,
         builder_group = "chromium.chromiumos",
