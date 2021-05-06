@@ -1419,36 +1419,38 @@ void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
 
 // Clusters --------------------------------------------------------------------
 
-void HistoryBackend::AddClusterVisit(const ClusterVisitRow& row) {
-  TRACE_EVENT0("browser", "HistoryBackend::AddClusterVisit");
+void HistoryBackend::AddAnnotatedVisit(const AnnotatedVisitRow& row) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddAnnotatedVisit");
   DCHECK(row.visit_id);
   VisitRow visit_row;
   if (!db_ || !db_->GetRowForVisit(row.visit_id, &visit_row))
     return;
-  db_->AddClusterVisit(row);
+  db_->AddAnnotatedVisit(row);
   ScheduleCommit();
 }
 
-std::vector<ClusterVisit> HistoryBackend::GetClusterVisits(int max_results) {
-  TRACE_EVENT0("browser", "HistoryBackend::GetClusterVisits");
+std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
+    int max_results) {
+  TRACE_EVENT0("browser", "HistoryBackend::GetAnnotatedVisits");
   if (!db_)
     return {};
   bool deleted_any_visits = false;
-  std::vector<ClusterVisit> cluster_visits;
-  for (const auto& row : db_->GetClusterVisits(max_results)) {
+  std::vector<AnnotatedVisit> annotated_visits;
+  for (const auto& row : db_->GetAnnotatedVisits(max_results)) {
     URLRow url_row;
     VisitRow visit_row;
     if (db_->GetRowForVisit(row.visit_id, &visit_row) &&
         db_->GetURLRow(visit_row.url_id, &url_row)) {
-      cluster_visits.push_back({url_row, visit_row, row.context_annotations});
+      annotated_visits.push_back(
+          {url_row, visit_row, row.context_annotations, {}});
     } else {
-      db_->DeleteClusterVisit(row.visit_id);
+      db_->DeleteAnnotatedVisit(row.visit_id);
       deleted_any_visits = true;
     }
   }
   if (deleted_any_visits)
     ScheduleCommit();
-  return cluster_visits;
+  return annotated_visits;
 }
 
 // Observers -------------------------------------------------------------------

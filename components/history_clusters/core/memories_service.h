@@ -61,7 +61,7 @@ class MemoriesService : public KeyedService {
   void NotifyDebugMessage(const std::string& message) const;
 
   // TODO(manukh) |MemoriesService| should be responsible for constructing the
-  //  |ClusterVisit|s rather than exposing these methods which are used by
+  //  |AnnotatedVisit|s rather than exposing these methods which are used by
   //  |HistoryClustersTabHelper| to construct the visits.
   // Gets an incomplete visit after DCHECKing it exists; this saves the call
   // sites the effort.
@@ -98,7 +98,7 @@ class MemoriesService : public KeyedService {
   // is true, this will be empty as completed visits will instead be persisted
   // to the history database.
   // TODO(tommycli): Hide this better behind a new debug flag.
-  std::vector<history::ClusterVisit> visits_;
+  std::vector<history::AnnotatedVisit> visits_;
   // A visit is constructed stepwise. Visits are initially placed in
   // |incomplete_visits_| and moved to |visits_| once completed.
   std::map<int64_t, IncompleteVisit> incomplete_visits_;

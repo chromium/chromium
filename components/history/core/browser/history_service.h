@@ -500,15 +500,15 @@ class HistoryService : public KeyedService {
 
   // Clusters ------------------------------------------------------------------
 
-  // Add a `ClusterVisitRow`.
-  void AddClusterVisit(const ClusterVisitRow& row);
+  // Add a `AnnotatedVisitRow`.
+  void AddAnnotatedVisit(const AnnotatedVisitRow& row);
 
-  // Get all `ClusterVisitRow`s and map them to `ClusterVisit`s.
-  using GetClusterVisitsCallback =
-      base::OnceCallback<void(std::vector<ClusterVisit>)>;
-  base::CancelableTaskTracker::TaskId GetClusterVisits(
+  // Get all `AnnotatedVisitRow`s and map them to `AnnotatedVisit`s.
+  using GetAnnotatedVisitsCallback =
+      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
+  base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       int max_results,
-      GetClusterVisitsCallback callback,
+      GetAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 
   // Observers -----------------------------------------------------------------

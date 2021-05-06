@@ -359,7 +359,21 @@ DeletionInfo::DeletionInfo(DeletionInfo&& other) noexcept = default;
 
 DeletionInfo& DeletionInfo::operator=(DeletionInfo&& rhs) noexcept = default;
 
-Cluster::Cluster() noexcept = default;
+// Clusters --------------------------------------------------------------------
+
+AnnotatedVisit::AnnotatedVisit() = default;
+AnnotatedVisit::AnnotatedVisit(URLRow url_row,
+                               VisitRow visit_row,
+                               VisitContextAnnotations context_annotations,
+                               VisitContentAnnotations content_annotations)
+    : url_row(url_row),
+      visit_row(visit_row),
+      context_annotations(context_annotations),
+      content_annotations(content_annotations) {}
+AnnotatedVisit::AnnotatedVisit(const AnnotatedVisit&) = default;
+AnnotatedVisit::~AnnotatedVisit() = default;
+
+Cluster::Cluster() = default;
 Cluster::Cluster(const Cluster&) = default;
 Cluster::~Cluster() = default;
 

@@ -52,11 +52,11 @@ TEST_F(ClusterVisitDatabaseTest, AddDeleteAndGet) {
   AddVisitWithDetails(1, IntToTime(30));
   AddVisitWithDetails(2, IntToTime(10));
 
-  AddClusterVisit({1, {true}});   // Ordered 2nd
-  AddClusterVisit({2, {false}});  // Ordered 1st
-  AddClusterVisit({3, {false}});  // Ordered 3rd
+  AddAnnotatedVisit({1, {true}, {}});   // Ordered 2nd
+  AddAnnotatedVisit({2, {false}, {}});  // Ordered 1st
+  AddAnnotatedVisit({3, {false}, {}});  // Ordered 3rd
 
-  std::vector<ClusterVisitRow> rows = GetClusterVisits(10);
+  std::vector<AnnotatedVisitRow> rows = GetAnnotatedVisits(10);
   ASSERT_EQ(rows.size(), 3u);
   EXPECT_EQ(rows[0].visit_id, 2);
   EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
@@ -65,17 +65,17 @@ TEST_F(ClusterVisitDatabaseTest, AddDeleteAndGet) {
   EXPECT_EQ(rows[2].visit_id, 3);
   EXPECT_FALSE(rows[2].context_annotations.omnibox_url_copied);
 
-  rows = GetClusterVisits(2);
+  rows = GetAnnotatedVisits(2);
   ASSERT_EQ(rows.size(), 2u);
   EXPECT_EQ(rows[0].visit_id, 2);
   EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);
   EXPECT_EQ(rows[1].visit_id, 1);
   EXPECT_TRUE(rows[1].context_annotations.omnibox_url_copied);
 
-  DeleteClusterVisit(1);
-  DeleteClusterVisit(3);
+  DeleteAnnotatedVisit(1);
+  DeleteAnnotatedVisit(3);
 
-  rows = GetClusterVisits(10);
+  rows = GetAnnotatedVisits(10);
   ASSERT_EQ(rows.size(), 1u);
   EXPECT_EQ(rows[0].visit_id, 2);
   EXPECT_FALSE(rows[0].context_annotations.omnibox_url_copied);

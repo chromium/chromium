@@ -31,7 +31,7 @@ struct RecordingStatus {
 };
 
 // A partially built visit with its state of completeness.
-struct IncompleteVisit : history::ClusterVisit {
+struct IncompleteVisit : history::AnnotatedVisit {
   RecordingStatus status;
 };
 

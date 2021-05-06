@@ -88,7 +88,7 @@ class MemoriesServiceTest : public testing::Test {
   }
 
   void AddVisit(int time, const GURL& url) {
-    history::ClusterVisit visit;
+    history::AnnotatedVisit visit;
     visit.url_row.set_url(url);
     visit.visit_row.visit_time = IntToTime(time);
     AddVisit(visit);
@@ -100,7 +100,7 @@ class MemoriesServiceTest : public testing::Test {
                 history::VisitID visit_id,
                 base::Time visit_time,
                 int page_end_reason) {
-    history::ClusterVisit visit;
+    history::AnnotatedVisit visit;
     visit.url_row.set_id(url_id);
     visit.url_row.set_url(url);
     visit.url_row.set_title(title);
@@ -110,7 +110,7 @@ class MemoriesServiceTest : public testing::Test {
     AddVisit(visit);
   }
 
-  void AddVisit(const history::ClusterVisit& visit) {
+  void AddVisit(const history::AnnotatedVisit& visit) {
     history_service_->AddPageWithDetails(
         visit.url_row.url(), visit.url_row.title(), visit.url_row.visit_count(),
         visit.url_row.typed_count(), visit.visit_row.visit_time,

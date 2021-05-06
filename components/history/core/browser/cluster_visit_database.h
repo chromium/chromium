@@ -34,13 +34,13 @@ class ClusterVisitDatabase {
   bool DropClusterVisitTable();
 
   // Add `row` to the table.
-  void AddClusterVisit(const ClusterVisitRow& row);
+  void AddAnnotatedVisit(const AnnotatedVisitRow& row);
 
-  // Delete a `ClusterVisitRow` from the table.
-  void DeleteClusterVisit(VisitID visit_id);
+  // Delete a `AnnotatedVisitRow` from the table.
+  void DeleteAnnotatedVisit(VisitID visit_id);
 
-  // Get the `max_results` most recent `ClusterVisitRow`s.
-  std::vector<ClusterVisitRow> GetClusterVisits(int max_results);
+  // Get the `max_results` most recent `AnnotatedVisitRow`s.
+  std::vector<AnnotatedVisitRow> GetAnnotatedVisits(int max_results);
 
  protected:
   // Returns the database for the functions in this interface.

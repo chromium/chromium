@@ -3163,7 +3163,7 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
 }
 
-TEST_F(HistoryBackendTest, ClusterVisits) {
+TEST_F(HistoryBackendTest, AnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   auto add_url_and_visit = [&](std::string url) {
     // Each it should have a unique `visit_time` to avoid deduping visits to the
@@ -3181,74 +3181,74 @@ TEST_F(HistoryBackendTest, ClusterVisits) {
     backend_->db_->DeleteVisit(row);
   };
 
-  // Happy path; cluster visits with associated URL & visits.
+  // Happy path; annotated visits with associated URL & visits.
   EXPECT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 1}));
   EXPECT_EQ(add_url_and_visit("http://2.com/"),
             (std::pair<URLID, VisitID>{2, 2}));
   EXPECT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 3}));
-  backend_->AddClusterVisit({1, {true}});
-  backend_->AddClusterVisit({3, {false}});
-  backend_->AddClusterVisit({2, {true}});
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+  backend_->AddAnnotatedVisit({1, {true}, {}});
+  backend_->AddAnnotatedVisit({3, {false}, {}});
+  backend_->AddAnnotatedVisit({2, {true}, {}});
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
-  // Cluster visits should have a visit IDs.
-  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, {true}}));
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+  // Annotated visits should have a visit IDs.
+  EXPECT_DCHECK_DEATH(backend_->AddAnnotatedVisit({0, {true}, {}}));
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
-  // Cluster visits without an associated visit should not be added.
-  backend_->AddClusterVisit({4, {true}});
+  // Annotated visits without an associated visit should not be added.
+  backend_->AddAnnotatedVisit({4, {true}, {}});
   EXPECT_EQ(add_url_and_visit("http://3.com/"),
             (std::pair<URLID, VisitID>{3, 4}));
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
-  // Cluster visits associated with a removed visit should not be added.
+  // Annotated visits associated with a removed visit should not be added.
   EXPECT_EQ(add_url_and_visit("http://4.com/"),
             (std::pair<URLID, VisitID>{4, 5}));
   delete_visit(5);
-  backend_->AddClusterVisit({5, {true}});
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+  backend_->AddAnnotatedVisit({5, {true}, {}});
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
-  // Verify only the correct cluster visits are retrieved ordered recent visits
-  // first.
-  auto cluster_visits = backend_->GetClusterVisits(10);
-  ASSERT_EQ(cluster_visits.size(), 3u);
-  EXPECT_EQ(cluster_visits[0].url_row.id(), 1);
-  EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
-  EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 3);
-  EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[0].context_annotations.omnibox_url_copied, false);
-  EXPECT_EQ(cluster_visits[1].url_row.id(), 2);
-  EXPECT_EQ(cluster_visits[1].url_row.url(), "http://2.com/");
-  EXPECT_EQ(cluster_visits[1].visit_row.visit_id, 2);
-  EXPECT_EQ(cluster_visits[1].visit_row.url_id, 2);
-  EXPECT_EQ(cluster_visits[1].context_annotations.omnibox_url_copied, true);
-  EXPECT_EQ(cluster_visits[2].url_row.id(), 1);
-  EXPECT_EQ(cluster_visits[2].url_row.url(), "http://1.com/");
-  EXPECT_EQ(cluster_visits[2].visit_row.visit_id, 1);
-  EXPECT_EQ(cluster_visits[2].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[2].context_annotations.omnibox_url_copied, true);
+  // Verify only the correct annotated visits are retrieved ordered recent
+  // visits first.
+  auto annotated_visits = backend_->GetAnnotatedVisits(10);
+  ASSERT_EQ(annotated_visits.size(), 3u);
+  EXPECT_EQ(annotated_visits[0].url_row.id(), 1);
+  EXPECT_EQ(annotated_visits[0].url_row.url(), "http://1.com/");
+  EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 3);
+  EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
+  EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, false);
+  EXPECT_EQ(annotated_visits[1].url_row.id(), 2);
+  EXPECT_EQ(annotated_visits[1].url_row.url(), "http://2.com/");
+  EXPECT_EQ(annotated_visits[1].visit_row.visit_id, 2);
+  EXPECT_EQ(annotated_visits[1].visit_row.url_id, 2);
+  EXPECT_EQ(annotated_visits[1].context_annotations.omnibox_url_copied, true);
+  EXPECT_EQ(annotated_visits[2].url_row.id(), 1);
+  EXPECT_EQ(annotated_visits[2].url_row.url(), "http://1.com/");
+  EXPECT_EQ(annotated_visits[2].visit_row.visit_id, 1);
+  EXPECT_EQ(annotated_visits[2].visit_row.url_id, 1);
+  EXPECT_EQ(annotated_visits[2].context_annotations.omnibox_url_copied, true);
 
-  // Cluster visits should be removed if their associated URL or visit is
+  // Annotated visits should be removed if their associated URL or visit is
   // removed.
   delete_url(2);
   delete_visit(3);
-  // `db_->GetClusterVisits()` should only return cluster visits with associated
-  // visits, but doesn't check for associated URLs.
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 2u);
-  // `backend_->GetClusterVisits()` should check for both associated URL and
+  // `db_->GetAnnotatedVisits()` should only return annotated visits with
+  // associated visits, but doesn't check for associated URLs.
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 2u);
+  // `backend_->GetAnnotatedVisits()` should check for both associated URL and
   // visit.
-  cluster_visits = backend_->GetClusterVisits(10);
-  ASSERT_EQ(cluster_visits.size(), 1u);
-  EXPECT_EQ(cluster_visits[0].url_row.id(), 1);
-  EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
-  EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 1);
-  EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
-  EXPECT_EQ(cluster_visits[0].context_annotations.omnibox_url_copied, true);
-  // `backend_->GetClusterVisits()` should delete visits without associated URLs
-  // and visits.
-  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 1u);
+  annotated_visits = backend_->GetAnnotatedVisits(10);
+  ASSERT_EQ(annotated_visits.size(), 1u);
+  EXPECT_EQ(annotated_visits[0].url_row.id(), 1);
+  EXPECT_EQ(annotated_visits[0].url_row.url(), "http://1.com/");
+  EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 1);
+  EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
+  EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
+  // `backend_->GetAnnotatedVisits()` should delete visits without associated
+  // URLs and visits.
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 1u);
 }
 
 }  // namespace history

@@ -85,22 +85,23 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
   return context_annotations;
 }
 
-// Convenience to construct a `ClusterVisitRow`. Assumes the visit values are
+// Convenience to construct a `AnnotatedVisitRow`. Assumes the visit values are
 // bound starting at index 0.
-ClusterVisitRow StatementToVisitRow(const sql::Statement& statement) {
+AnnotatedVisitRow StatementToVisitRow(const sql::Statement& statement) {
   return {statement.ColumnInt64(0),
           ConstructContextAnnotationsWithFlags(
               statement.ColumnInt64(1),
               base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-              statement.ColumnInt(3))};
+              statement.ColumnInt(3)),
+          {}};
 }
 
 // Like `StatementToVisitRow()` but for multiple rows.
-std::vector<ClusterVisitRow> StatementToVisitRowVector(
+std::vector<AnnotatedVisitRow> StatementToVisitRowVector(
     sql::Statement& statement) {
   if (!statement.is_valid())
     return {};
-  std::vector<ClusterVisitRow> rows;
+  std::vector<AnnotatedVisitRow> rows;
   while (statement.Step())
     rows.push_back(StatementToVisitRow(statement));
   return rows;
@@ -119,7 +120,7 @@ ClusterVisitDatabase::~ClusterVisitDatabase() = default;
 
 bool ClusterVisitDatabase::InitClusterVisitTable() {
   if (!GetDB().DoesTableExist("context_annotations")) {
-    // See `ClusterVisitRow` and `VisitContextAnnotations` for details about
+    // See `AnnotatedVisitRow` and `VisitContextAnnotations` for details about
     // these fields.
     if (!GetDB().Execute("CREATE TABLE context_annotations("
                          "visit_id INTEGER PRIMARY KEY,"
@@ -137,7 +138,7 @@ bool ClusterVisitDatabase::DropClusterVisitTable() {
   return GetDB().Execute("DROP TABLE context_annotations");
 }
 
-void ClusterVisitDatabase::AddClusterVisit(const ClusterVisitRow& row) {
+void ClusterVisitDatabase::AddAnnotatedVisit(const AnnotatedVisitRow& row) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO context_annotations (" HISTORY_CLUSTER_VISIT_ROW_FIELDS
@@ -149,23 +150,23 @@ void ClusterVisitDatabase::AddClusterVisit(const ClusterVisitRow& row) {
   statement.BindInt(3, row.context_annotations.page_end_reason);
 
   if (!statement.Run()) {
-    DVLOG(0) << "Failed to execute cluster visit insert statement:  "
+    DVLOG(0) << "Failed to execute annotated visit insert statement:  "
              << "visit_id = " << row.visit_id;
   }
 }
 
-void ClusterVisitDatabase::DeleteClusterVisit(VisitID visit_id) {
+void ClusterVisitDatabase::DeleteAnnotatedVisit(VisitID visit_id) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM context_annotations WHERE visit_id = ?"));
   statement.BindInt64(0, visit_id);
 
   if (!statement.Run()) {
-    DVLOG(0) << "Failed to execute cluster visit delete statement:  "
+    DVLOG(0) << "Failed to execute annotated visit delete statement:  "
              << "visit_id = " << visit_id;
   }
 }
 
-std::vector<ClusterVisitRow> ClusterVisitDatabase::GetClusterVisits(
+std::vector<AnnotatedVisitRow> ClusterVisitDatabase::GetAnnotatedVisits(
     int max_results) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "SELECT" HISTORY_CLUSTER_VISIT_ROW_FIELDS

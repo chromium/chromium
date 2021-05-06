@@ -23,7 +23,7 @@ namespace history_clusters {
 using DebugLoggerCallback = base::RepeatingCallback<void(const std::string&)>;
 
 // A helper class to communicate with the remote model. Forms requests from
-// `history::ClusterVisit`s and parses the response into
+// `history::AnnotatedVisit`s and parses the response into
 // `history::Cluster`s.
 class MemoriesRemoteModelHelper {
  public:
@@ -38,7 +38,7 @@ class MemoriesRemoteModelHelper {
   using MemoriesCallback =
       base::OnceCallback<void(std::vector<history::Cluster>)>;
   void GetMemories(MemoriesCallback callback,
-                   const std::vector<history::ClusterVisit>& visits);
+                   const std::vector<history::AnnotatedVisit>& visits);
 
  private:
   // Helpers for making requests used by |GetMemories()|.

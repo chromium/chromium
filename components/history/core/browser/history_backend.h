@@ -428,9 +428,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Clusters ------------------------------------------------------------------
 
-  void AddClusterVisit(const ClusterVisitRow& row);
+  void AddAnnotatedVisit(const AnnotatedVisitRow& row);
 
-  std::vector<ClusterVisit> GetClusterVisits(int max_results);
+  std::vector<AnnotatedVisit> GetAnnotatedVisits(int max_results);
 
   // Observers -----------------------------------------------------------------
 
@@ -662,7 +662,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteFTSIndexDatabases);
   FRIEND_TEST_ALL_PREFIXES(ProfileSyncServiceTypedUrlTest,
                            ProcessUserChangeRemove);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ClusterVisits);
+  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AnnotatedVisits);
 
   // Returns the name of the Favicons database.
   base::FilePath GetFaviconsFileName() const;

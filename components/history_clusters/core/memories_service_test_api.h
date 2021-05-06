@@ -17,7 +17,7 @@ class MemoriesServiceTestApi {
   explicit MemoriesServiceTestApi(MemoriesService* memories_service)
       : memories_service_(memories_service) {}
 
-  std::vector<history::ClusterVisit> GetVisits() const {
+  std::vector<history::AnnotatedVisit> GetVisits() const {
     return memories_service_->visits_;
   }
 

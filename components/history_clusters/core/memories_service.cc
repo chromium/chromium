@@ -61,9 +61,9 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 //  `MemoriesService`, but once the omnibox comes into play, we'll need a common
 //  non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
-// Translate a `ClusterVisit` to `mojom::VisitPtr`.
+// Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
 history_clusters::mojom::VisitPtr VisitToMojom(
-    const history::ClusterVisit& visit) {
+    const history::AnnotatedVisit& visit) {
   auto visit_mojom = history_clusters::mojom::Visit::New();
   visit_mojom->id = visit.visit_row.visit_id;
   visit_mojom->url = visit.url_row.url();
@@ -81,7 +81,7 @@ std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
     cluster_mojom->id = base::UnguessableToken::Create();
     for (const auto& keyword : cluster.keywords)
       cluster_mojom->keywords.push_back(keyword);
-    for (const auto& visit : cluster.cluster_visits)
+    for (const auto& visit : cluster.annotated_visits)
       cluster_mojom->top_visits.push_back(VisitToMojom(visit));
     clusters_mojom.emplace_back(std::move(cluster_mojom));
   }
@@ -173,7 +173,7 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
        !visit.status.expect_ukm_page_end_signals)) {
     if (base::FeatureList::IsEnabled(kMemories)) {
       if (StoreVisitsInHistoryDb())
-        history_service_->AddClusterVisit(history::ClusterVisitRow(visit));
+        history_service_->AddAnnotatedVisit(history::AnnotatedVisitRow(visit));
       else
         visits_.push_back(visit);
     }
@@ -203,11 +203,12 @@ void MemoriesService::QueryMemories(
                          .Then(std::move(callback)));
 
   if (StoreVisitsInHistoryDb()) {
-    history_service_->GetClusterVisits(
+    history_service_->GetAnnotatedVisits(
         MaxVisitsToCluster(),
         base::BindOnce(
-            // This echo callback is necessary to copy the |ClusterVisit| refs.
-            [](std::vector<history::ClusterVisit> visits) { return visits; })
+            // This echo callback is necessary to copy the |AnnotatedVisit|
+            // refs.
+            [](std::vector<history::AnnotatedVisit> visits) { return visits; })
             .Then(std::move(on_visits_callback)),
         task_tracker);
   } else

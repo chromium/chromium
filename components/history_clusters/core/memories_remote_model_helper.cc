@@ -25,7 +25,7 @@ const size_t kMaxExpectedResponseSize = 1024 * 1024;
 // Also writes one line of debug information per visit to `debug_string`, if
 // the parameter is non-nullptr.
 proto::GetClustersRequest CreateRequestProto(
-    const std::vector<history::ClusterVisit>& visits,
+    const std::vector<history::AnnotatedVisit>& visits,
     base::Optional<DebugLoggerCallback> debug_logger) {
   proto::GetClustersRequest request;
   request.set_experiment_name(ExperimentNameForRemoteModelEndpoint());
@@ -79,7 +79,7 @@ proto::GetClustersRequest CreateRequestProto(
 }
 
 std::vector<history::Cluster> ParseResponseProto(
-    const std::vector<history::ClusterVisit>& visits,
+    const std::vector<history::AnnotatedVisit>& visits,
     const proto::GetClustersResponse& response_proto,
     base::Optional<DebugLoggerCallback> debug_logger) {
   std::vector<history::Cluster> clusters;
@@ -92,7 +92,7 @@ std::vector<history::Cluster> ParseResponseProto(
           visits, visit_id,
           [](const auto& visit) { return visit.visit_row.visit_id; });
       if (visits_it != visits.end())
-        cluster.cluster_visits.push_back(*visits_it);
+        cluster.annotated_visits.push_back(*visits_it);
     }
     clusters.push_back(cluster);
   }
@@ -142,7 +142,7 @@ MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 
 void MemoriesRemoteModelHelper::GetMemories(
     MemoriesCallback callback,
-    const std::vector<history::ClusterVisit>& visits) {
+    const std::vector<history::AnnotatedVisit>& visits) {
   const GURL endpoint(RemoteModelEndpointForDebugging());
   if (!endpoint.is_valid() || visits.empty()) {
     std::move(callback).Run({});
@@ -171,7 +171,7 @@ void MemoriesRemoteModelHelper::GetMemories(
       base::BindOnce(
           [](std::unique_ptr<network::SimpleURLLoader> url_loader,
              base::Optional<DebugLoggerCallback> debug_logger,
-             const std::vector<history::ClusterVisit>& visits,
+             const std::vector<history::AnnotatedVisit>& visits,
              std::unique_ptr<std::string> response) {
             if (!response) {
               if (debug_logger) {

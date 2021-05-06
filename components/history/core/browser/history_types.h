@@ -714,34 +714,49 @@ struct VisitContextAnnotations {
   int page_end_reason = 0;
 };
 
-// A `VisitRow` along with its corresponding `URLRow` and
-// `VisitContextAnnotations`. This is used to cluster visits.
-struct ClusterVisit {
+// A `VisitRow` along with its corresponding `URLRow`,
+// `VisitContextAnnotations`, and `VisitContentAnnotations`.
+struct AnnotatedVisit {
+  AnnotatedVisit();
+  AnnotatedVisit(URLRow url_row,
+                 VisitRow visit_row,
+                 VisitContextAnnotations context_annotations,
+                 VisitContentAnnotations content_annotations);
+  AnnotatedVisit(const AnnotatedVisit&);
+  ~AnnotatedVisit();
+
   URLRow url_row;
   VisitRow visit_row;
   VisitContextAnnotations context_annotations;
+  VisitContentAnnotations content_annotations;
 };
 
-// The DB representation of `ClusterVisit`.
-struct ClusterVisitRow {
-  ClusterVisitRow() = default;
-  explicit ClusterVisitRow(const ClusterVisit& cluster_visit)
-      : ClusterVisitRow(cluster_visit.visit_row.visit_id,
-                        cluster_visit.context_annotations) {}
-  ClusterVisitRow(const VisitID visit_id,
-                  const VisitContextAnnotations& context_annotations)
-      : visit_id(visit_id), context_annotations(context_annotations) {}
+// The DB representation of `AnnotatedVisit`.
+struct AnnotatedVisitRow {
+  AnnotatedVisitRow() = default;
+  explicit AnnotatedVisitRow(const AnnotatedVisit& annotated_visit)
+      : AnnotatedVisitRow(annotated_visit.visit_row.visit_id,
+                          annotated_visit.context_annotations,
+                          annotated_visit.content_annotations) {}
+  AnnotatedVisitRow(const VisitID visit_id,
+                    const VisitContextAnnotations& context_annotations,
+                    const VisitContentAnnotations& content_annotations)
+      : visit_id(visit_id),
+        context_annotations(context_annotations),
+        content_annotations(content_annotations) {}
+
   VisitID visit_id;
   VisitContextAnnotations context_annotations;
+  VisitContentAnnotations content_annotations;
 };
 
 struct Cluster {
-  Cluster() noexcept;
+  Cluster();
   Cluster(const Cluster&);
   ~Cluster();
 
   std::vector<std::u16string> keywords;
-  std::vector<ClusterVisit> cluster_visits;
+  std::vector<AnnotatedVisit> annotated_visits;
 };
 
 }  // namespace history

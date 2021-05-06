@@ -47,7 +47,7 @@ class HistoryClustersTabHelper
 
   // Updates the visit with |navigation_id| with |page_end_reason|. This also
   // records the page end metrics, if necessary. It returns a copy of the
-  // completed |ClusterVisit|'s |VisitContextAnnotations|, if available.
+  // completed |AnnotatedVisit|'s |VisitContextAnnotations|, if available.
   //
   // This should only be called once per navigation, as this may flush the visit
   // to MemoriesService.
@@ -84,7 +84,7 @@ class HistoryClustersTabHelper
   //    assumed ended and its page end metrics will be recorded.
   // 2) On |OnOmniboxUrlCopied()|, the last navigation will be assumed to be the
   //    subject.
-  // 3) On |WebContentsDestroyed()|, the |ClusterVisit| corresponding to these
+  // 3) On |WebContentsDestroyed()|, the |AnnotatedVisit| corresponding to these
   //    IDs will be assumed ended and their page end metrics will be recorded if
   //    they haven't already.
   std::vector<int64_t> navigation_ids_;

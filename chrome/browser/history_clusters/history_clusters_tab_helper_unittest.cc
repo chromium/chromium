@@ -87,7 +87,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     run_loop_quit_ = run_loop_.QuitClosure();
   }
 
-  std::vector<history::ClusterVisit> GetVisits() const {
+  std::vector<history::AnnotatedVisit> GetVisits() const {
     return memories_service_test_api_->GetVisits();
   }
 
