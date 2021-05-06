@@ -4412,6 +4412,17 @@ void LocalFrameView::SetIntersectionObservationState(
   }
 }
 
+void LocalFrameView::SetVisualViewportOrOverlayNeedsRepaint() {
+  LocalFrameView* root = GetFrame().LocalFrameRoot().View();
+  DCHECK(root);
+  root->visual_viewport_or_overlay_needs_repaint_ = true;
+}
+
+bool LocalFrameView::VisualViewportOrOverlayNeedsRepaintForTesting() const {
+  DCHECK(GetFrame().IsLocalRoot());
+  return visual_viewport_or_overlay_needs_repaint_;
+}
+
 void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate() {
   LocalFrameView* root = GetFrame().LocalFrameRoot().View();
   if (root && root->paint_artifact_compositor_)

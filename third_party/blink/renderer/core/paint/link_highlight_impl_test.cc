@@ -300,7 +300,7 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   highlight->NotifyAnimationFinished(0, 0);
   EXPECT_TRUE(web_view_impl->MainFrameImpl()
                   ->GetFrameView()
-                  ->VisualViewportOrOverlayNeedsRepaint());
+                  ->VisualViewportOrOverlayNeedsRepaintForTesting());
   UpdateAllLifecyclePhases();
   // Removing the highlight layer should drop the cc layer count by one.
   EXPECT_EQ(layer_count_before_highlight, LayerCount());

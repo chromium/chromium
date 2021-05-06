@@ -621,7 +621,7 @@ void VisualViewport::InitializeScrollbars() {
   // longer supplies scrollbars.
   LocalFrame* frame = LocalMainFrame();
   if (frame && frame->View())
-    frame->View()->VisualViewportOrOverlayNeedsRepaint();
+    frame->View()->SetVisualViewportOrOverlayNeedsRepaint();
 }
 
 EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {

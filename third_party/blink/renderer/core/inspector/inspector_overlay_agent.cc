@@ -287,6 +287,7 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
   }
 
   void Invalidate() override {
+    overlay_->GetFrame()->View()->SetVisualViewportOrOverlayNeedsRepaint();
     if (layer_)
       layer_->SetNeedsDisplay();
   }

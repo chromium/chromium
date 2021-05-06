@@ -2611,7 +2611,8 @@ TEST_P(VisualViewportTest, DeviceEmulation) {
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
 
   DeviceEmulationParams params;
   params.viewport_offset = gfx::PointF();
@@ -2620,22 +2621,26 @@ TEST_P(VisualViewportTest, DeviceEmulation) {
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
 
   // Set device mulation with viewport offset should repaint visual viewport.
   params.viewport_offset = gfx::PointF(314, 159);
   WebView()->EnableDeviceEmulation(params);
 
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_TRUE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
   ASSERT_TRUE(visual_viewport.GetDeviceEmulationTransformNode());
   EXPECT_EQ(TransformationMatrix().Translate(-params.viewport_offset.x(),
                                              -params.viewport_offset.y()),
             visual_viewport.GetDeviceEmulationTransformNode()->Matrix());
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
 
   // Change device emulation with scale should not repaint visual viewport.
   params.viewport_offset = gfx::PointF();
@@ -2643,21 +2648,25 @@ TEST_P(VisualViewportTest, DeviceEmulation) {
   WebView()->EnableDeviceEmulation(params);
 
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
   ASSERT_TRUE(visual_viewport.GetDeviceEmulationTransformNode());
   EXPECT_EQ(TransformationMatrix().Scale(1.5f),
             visual_viewport.GetDeviceEmulationTransformNode()->Matrix());
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
 
   // Set an identity device emulation transform and ensure the transform
   // paint property node is cleared and repaint visual viewport.
   WebView()->EnableDeviceEmulation(DeviceEmulationParams());
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_TRUE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
   EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_FALSE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
 }
 
 TEST_P(VisualViewportTest, PaintScrollbar) {
@@ -2866,7 +2875,8 @@ TEST_P(VisualViewportTest, ScrollbarGeometryOnSizeChange) {
   // Simulate hiding of the top controls.
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 120));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(GetFrame()->View()->VisualViewportOrOverlayNeedsRepaint());
+  EXPECT_TRUE(
+      GetFrame()->View()->VisualViewportOrOverlayNeedsRepaintForTesting());
   UpdateAllLifecyclePhases();
   EXPECT_EQ(IntSize(100, 120), visual_viewport.Size());
   ASSERT_EQ(horizontal_scrollbar,

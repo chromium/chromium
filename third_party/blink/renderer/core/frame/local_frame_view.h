@@ -656,12 +656,8 @@ class CORE_EXPORT LocalFrameView final
   void CrossOriginToMainFrameChanged();
   void CrossOriginToParentFrameChanged();
 
-  void SetVisualViewportOrOverlayNeedsRepaint() {
-    visual_viewport_or_overlay_needs_repaint_ = true;
-  }
-  bool VisualViewportOrOverlayNeedsRepaint() const {
-    return visual_viewport_or_overlay_needs_repaint_;
-  }
+  void SetVisualViewportOrOverlayNeedsRepaint();
+  bool VisualViewportOrOverlayNeedsRepaintForTesting() const;
 
   LayoutUnit CaretWidth() const;
 
