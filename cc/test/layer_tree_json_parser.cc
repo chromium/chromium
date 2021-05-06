@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "cc/layers/layer.h"
@@ -128,7 +131,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   new_layer->SetTransform(layer_transform);
 
   success &= dict->GetList("Children", &list);
-  for (const auto& value : *list) {
+  for (const auto& value : list->GetList()) {
     new_layer->AddChild(ParseTreeFromValue(value, content_client));
   }
 
