@@ -49,6 +49,7 @@ public class PageInfoCookiesController
         mDelegate = delegate;
         mFullUrl = fullUrl;
         mTitle = mRowView.getContext().getResources().getString(R.string.cookies_title);
+        mBridge = mDelegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = delegate.isSiteSettingsAvailable();
@@ -112,9 +113,11 @@ public class PageInfoCookiesController
     }
 
     private void onCheckedChangedCallback(boolean state) {
-        mMainController.recordAction(state ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
-                                           : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
-        mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
+        if (mBridge != null) {
+            mMainController.recordAction(state ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
+                                               : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
+            mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
+        }
     }
 
     private void onClearCookiesClicked() {
@@ -167,11 +170,18 @@ public class PageInfoCookiesController
         }
     }
 
-    public void setCookieControlsBridge(CookieControlsBridge cookieBridge) {
-        mBridge = cookieBridge;
-    }
-
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
+    }
+
+    void onUiClosing() {
+        if (mBridge != null) {
+            mBridge.onUiClosing();
+        }
+    }
+
+    void destroy() {
+        mBridge.destroy();
+        mBridge = null;
     }
 }

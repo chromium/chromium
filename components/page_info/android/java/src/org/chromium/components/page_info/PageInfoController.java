@@ -33,10 +33,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieControlsBridge;
-import org.chromium.components.content_settings.CookieControlsEnforcement;
-import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -69,8 +65,7 @@ import java.util.List;
  * Java side of Android implementation of the page info UI.
  */
 public class PageInfoController implements PageInfoMainController, ModalDialogProperties.Controller,
-                                           SystemSettingsActivityRequiredListener,
-                                           CookieControlsObserver {
+                                           SystemSettingsActivityRequiredListener {
     @IntDef({OpenedFromSource.MENU, OpenedFromSource.TOOLBAR, OpenedFromSource.VR})
     @Retention(RetentionPolicy.SOURCE)
     public @interface OpenedFromSource {
@@ -142,9 +137,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
     // The controller for the history portions of page info.
     private PageInfoSubpageController mHistoryController;
-
-    // Bridge updating the CookieControlsView when cookie settings change.
-    private CookieControlsBridge mCookieBridge;
 
     // Dialog which is opened when clicking on forget site button.
     private Dialog mForgetSiteDialog;
@@ -224,14 +216,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 displayUrlBuilder.toString(), autocompleteSchemeClassifier);
         autocompleteSchemeClassifier.destroy();
 
-        if (mDelegate.isSiteSettingsAvailable()) {
-            viewParams.cookieControlsShown = delegate.cookieControlsShown();
-        } else {
-            viewParams.cookieControlsShown = false;
-        }
         viewParams.onUiClosingCallback = () -> {
             // |this| may have already been destroyed by the time this is called.
-            if (mCookieBridge != null) mCookieBridge.onUiClosing();
+            if (mCookiesController != null) mCookiesController.onUiClosing();
         };
 
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
@@ -255,68 +242,53 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mView = mIsV2Enabled ? new PageInfoViewV2(mContext, viewParams)
                              : new PageInfoView(mContext, viewParams);
         if (isSheet(mContext)) mView.setBackgroundColor(Color.WHITE);
-        if (mIsV2Enabled) {
-            mContainer = new PageInfoContainer(mContext);
-            PageInfoContainer.Params containerParams = new PageInfoContainer.Params();
-            containerParams.url = viewParams.url;
-            containerParams.urlOriginLength = viewParams.urlOriginLength;
-            containerParams.truncatedUrl =
-                    UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mFullUrl);
-            containerParams.backButtonClickCallback = this::exitSubpage;
-            containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
-            containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
-            containerParams.urlTitleShown = viewParams.urlTitleShown;
-            // Show close button for tablets and when accessibility is enabled to make it easier
-            // to close the UI.
-            containerParams.showCloseButton =
-                    !isSheet(mContext) || mDelegate.isAccessibilityEnabled();
-            containerParams.closeButtonClickCallback = this::dismiss;
-            mContainer.setParams(containerParams);
-            mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
-                // Return early if PageInfo has been dismissed.
-                if (mContext == null) return;
+        mContainer = new PageInfoContainer(mContext);
+        PageInfoContainer.Params containerParams = new PageInfoContainer.Params();
+        containerParams.url = viewParams.url;
+        containerParams.urlOriginLength = viewParams.urlOriginLength;
+        containerParams.truncatedUrl =
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mFullUrl);
+        containerParams.backButtonClickCallback = this::exitSubpage;
+        containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
+        containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
+        containerParams.urlTitleShown = viewParams.urlTitleShown;
+        // Show close button for tablets and when accessibility is enabled to make it easier
+        // to close the UI.
+        containerParams.showCloseButton = !isSheet(mContext) || mDelegate.isAccessibilityEnabled();
+        containerParams.closeButtonClickCallback = this::dismiss;
+        mContainer.setParams(containerParams);
+        mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
+            // Return early if PageInfo has been dismissed.
+            if (mContext == null) return;
 
-                if (favicon != null) {
-                    mContainer.setFavicon(favicon);
-                } else {
-                    mContainer.setFavicon(
-                            SettingsUtils.getTintedIcon(mContext, R.drawable.ic_globe_24dp));
-                }
-            });
-            mContainer.showPage(mView, null, null);
-
-            PageInfoViewV2 view2 = (PageInfoViewV2) mView;
-            mConnectionController = new PageInfoConnectionController(
-                    this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
-            mPermissionsController =
-                    new PageInfoPermissionsController(this, view2.getPermissionsRowView(),
-                            mDelegate, mFullUrl.getSpec(), highlightedPermission);
-            mCookiesController = new PageInfoCookiesController(
-                    this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
-
-            if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-                mHistoryController = mDelegate.createHistoryController(
-                        this, view2.getHistoryRowView(), mFullUrl.getSpec());
-                setupForgetSiteButton(view2.getForgetSiteButton());
+            if (favicon != null) {
+                mContainer.setFavicon(favicon);
+            } else {
+                mContainer.setFavicon(
+                        SettingsUtils.getTintedIcon(mContext, R.drawable.ic_globe_24dp));
             }
-        } else {
-            CookieControlsView.CookieControlsParams cookieControlsParams =
-                    new CookieControlsView.CookieControlsParams();
-            cookieControlsParams.onCheckedChangedCallback = (Boolean blockCookies) -> {
-                recordAction(blockCookies ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
-                                          : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
-                mCookieBridge.setThirdPartyCookieBlockingEnabledForSite(blockCookies);
-            };
-            mView.getCookieControlsView().setParams(cookieControlsParams);
+        });
+        mContainer.showPage(mView, null, null);
+
+        PageInfoViewV2 view2 = (PageInfoViewV2) mView;
+        mConnectionController = new PageInfoConnectionController(
+                this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
+        mPermissionsController =
+                new PageInfoPermissionsController(this, view2.getPermissionsRowView(), mDelegate,
+                        mFullUrl.getSpec(), highlightedPermission);
+        mCookiesController = new PageInfoCookiesController(
+                this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
+
+        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
+            mHistoryController = mDelegate.createHistoryController(
+                    this, view2.getHistoryRowView(), mFullUrl.getSpec());
+            setupForgetSiteButton(view2.getForgetSiteButton());
         }
 
         mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());
 
         mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);
         mNativePageInfoController = PageInfoControllerJni.get().init(this, mWebContents);
-        mCookieBridge =
-                mDelegate.createCookieControlsBridge(mIsV2Enabled ? mCookiesController : this);
-        if (mCookiesController != null) mCookiesController.setCookieControlsBridge(mCookieBridge);
 
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
@@ -365,9 +337,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mDialog.destroy();
             mDialog = null;
         }
-        if (mCookieBridge != null) {
-            mCookieBridge.destroy();
-            mCookieBridge = null;
+        if (mCookiesController != null) {
+            mCookiesController.destroy();
+            mCookiesController = null;
         }
         if (mForgetSiteDialog != null){
             mForgetSiteDialog.dismiss();
@@ -612,20 +584,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     public static PageInfoController getLastPageInfoControllerForTesting() {
         return sLastPageInfoControllerForTesting != null ? sLastPageInfoControllerForTesting.get()
                                                          : null;
-    }
-
-    @Override
-    public void onCookieBlockingStatusChanged(
-            @CookieControlsStatus int status, @CookieControlsEnforcement int enforcement) {
-        assert !mIsV2Enabled;
-        mView.getCookieControlsView().setCookieBlockingStatus(
-                status, enforcement != CookieControlsEnforcement.NO_ENFORCEMENT);
-    }
-
-    @Override
-    public void onCookiesCountChanged(int allowedCookies, int blockedCookies) {
-        assert !mIsV2Enabled;
-        mView.getCookieControlsView().setBlockedCookiesCount(blockedCookies);
     }
 
     @NativeMethods
