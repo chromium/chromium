@@ -3838,6 +3838,80 @@
             ]
         }
     ],
+    "IOSDefaultBrowserFullscreenPromoCTAExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "OpenLinks",
+                    "params": {
+                        "show_open_links_title": "true"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserFullscreenPromoCTAExperiment"
+                    ]
+                },
+                {
+                    "name": "Switch",
+                    "params": {
+                        "show_switch_title": "true"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserFullscreenPromoCTAExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDefaultBrowserNonModalPromoExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "ShortTimeout",
+                    "params": {
+                        "timeout": "15"
+                    },
+                    "enable_features": [
+                        "DefaultPromoNonModal"
+                    ]
+                },
+                {
+                    "name": "ShortTimeoutInstructions",
+                    "params": {
+                        "instructions_enabled": "true",
+                        "timeout": "15"
+                    },
+                    "enable_features": [
+                        "DefaultPromoNonModal"
+                    ]
+                },
+                {
+                    "name": "LongTimeout",
+                    "params": {
+                        "timeout": "45"
+                    },
+                    "enable_features": [
+                        "DefaultPromoNonModal"
+                    ]
+                },
+                {
+                    "name": "LongTimeoutInstructions",
+                    "params": {
+                        "instructions_enabled": "true",
+                        "timeout": "45"
+                    },
+                    "enable_features": [
+                        "DefaultPromoNonModal"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDiscoverFeed": [
         {
             "platforms": [
