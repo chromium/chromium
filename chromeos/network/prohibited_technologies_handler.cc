@@ -65,7 +65,7 @@ void ProhibitedTechnologiesHandler::SetProhibitedTechnologies(
   // Build up prohibited network type list and save it for furthur use when
   // enforced
   session_prohibited_technologies_.clear();
-  for (const auto& item : *prohibited_list) {
+  for (const auto& item : prohibited_list->GetList()) {
     std::string prohibited_technology;
     bool item_is_string = item.GetAsString(&prohibited_technology);
     DCHECK(item_is_string);

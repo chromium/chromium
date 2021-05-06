@@ -141,7 +141,7 @@ bool ParseCellularScanResults(const base::ListValue& list,
                               std::vector<CellularScanResult>* scan_results) {
   scan_results->clear();
   scan_results->reserve(list.GetSize());
-  for (const auto& value : list) {
+  for (const auto& value : list.GetList()) {
     const base::DictionaryValue* dict;
     if (!value.GetAsDictionary(&dict))
       return false;

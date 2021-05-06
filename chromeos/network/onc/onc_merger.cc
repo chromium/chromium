@@ -54,10 +54,9 @@ void MarkRecommendedFieldnames(const base::DictionaryValue& policy,
   if (!policy.GetListWithoutPathExpansion(::onc::kRecommended,
                                           &recommended_value))
     return;
-  for (base::ListValue::const_iterator it = recommended_value->begin();
-       it != recommended_value->end(); ++it) {
+  for (const auto& value : recommended_value->GetList()) {
     std::string entry;
-    if (it->GetAsString(&entry))
+    if (value.GetAsString(&entry))
       result->SetKey(entry, base::Value(true));
   }
 }

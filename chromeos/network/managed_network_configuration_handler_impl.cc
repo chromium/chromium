@@ -514,10 +514,9 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
   // This stores all GUIDs of policies that have changed or are new.
   std::set<std::string> modified_policies;
 
-  for (base::ListValue::const_iterator it = network_configs_onc.begin();
-       it != network_configs_onc.end(); ++it) {
+  for (const auto& entry : network_configs_onc.GetList()) {
     const base::DictionaryValue* network = nullptr;
-    it->GetAsDictionary(&network);
+    entry.GetAsDictionary(&network);
     DCHECK(network);
 
     std::string guid;

@@ -1251,7 +1251,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   managed_list->clear();
   // Updates managed_list and request updates for new entries.
   std::set<std::string> list_entries;
-  for (auto& iter : entries) {
+  for (const auto& iter : entries.GetList()) {
     std::string path;
     iter.GetAsString(&path);
     if (path.empty() || path == shill::kFlimflamServicePath) {

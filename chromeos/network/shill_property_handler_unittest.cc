@@ -136,10 +136,9 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     if (type.empty())
       return;
     entries_[type].clear();
-    for (base::ListValue::const_iterator iter = entries.begin();
-         iter != entries.end(); ++iter) {
+    for (const auto& entry : entries.GetList()) {
       std::string path;
-      if (iter->GetAsString(&path))
+      if (entry.GetAsString(&path))
         entries_[type].push_back(path);
     }
   }

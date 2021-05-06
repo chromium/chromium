@@ -118,10 +118,9 @@ void GeolocationHandler::HandlePropertyChanged(const std::string& key,
   bool cellular_was_enabled = cellular_enabled_;
   cellular_enabled_ = false;
   wifi_enabled_ = false;
-  for (base::ListValue::const_iterator iter = technologies->begin();
-       iter != technologies->end(); ++iter) {
+  for (const auto& entry : technologies->GetList()) {
     std::string technology;
-    iter->GetAsString(&technology);
+    entry.GetAsString(&technology);
     if (technology == shill::kTypeWifi) {
       wifi_enabled_ = true;
     } else if (technology == shill::kTypeCellular) {

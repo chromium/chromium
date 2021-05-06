@@ -200,7 +200,7 @@ CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   }
 
   base::flat_set<std::string> euicc_paths;
-  for (const auto& euicc : *euicc_paths_from_prefs) {
+  for (const auto& euicc : euicc_paths_from_prefs->GetList()) {
     if (!euicc.is_string()) {
       NET_LOG(ERROR) << "Non-string EUICC path: " << euicc;
       continue;

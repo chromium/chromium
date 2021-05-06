@@ -115,7 +115,7 @@ std::unique_ptr<base::ListValue> Mapper::MapArray(
 
   std::unique_ptr<base::ListValue> result_array(new base::ListValue);
   int original_index = 0;
-  for (const auto& entry : onc_array) {
+  for (const auto& entry : onc_array.GetList()) {
     std::unique_ptr<base::Value> result_entry;
     result_entry =
         MapEntry(original_index, *array_signature.onc_array_entry_signature,

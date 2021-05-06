@@ -167,7 +167,7 @@ class OncMaskValues : public Mapper {
 CertPEMsByGUIDMap GetServerAndCACertsByGUID(
     const base::ListValue& certificates) {
   CertPEMsByGUIDMap certs_by_guid;
-  for (const auto& entry : certificates) {
+  for (const auto& entry : certificates.GetList()) {
     const base::DictionaryValue* cert = nullptr;
     bool entry_is_dictionary = entry.GetAsDictionary(&cert);
     DCHECK(entry_is_dictionary);
@@ -272,7 +272,7 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
   }
 
   std::unique_ptr<base::ListValue> pem_list(new base::ListValue);
-  for (const auto& entry : *guid_ref_list) {
+  for (const auto& entry : guid_ref_list->GetList()) {
     std::string guid_ref;
     bool entry_is_string = entry.GetAsString(&guid_ref);
     DCHECK(entry_is_string);
@@ -502,10 +502,9 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
 const base::DictionaryValue* GetNetworkConfigByGUID(
     const base::ListValue& network_configs,
     const std::string& guid) {
-  for (base::ListValue::const_iterator it = network_configs.begin();
-       it != network_configs.end(); ++it) {
-    const base::DictionaryValue* network = NULL;
-    it->GetAsDictionary(&network);
+  for (const auto& entry : network_configs.GetList()) {
+    const base::DictionaryValue* network = nullptr;
+    entry.GetAsDictionary(&network);
     DCHECK(network);
 
     std::string current_guid;
@@ -514,7 +513,7 @@ const base::DictionaryValue* GetNetworkConfigByGUID(
     if (current_guid == guid)
       return network;
   }
-  return NULL;
+  return nullptr;
 }
 
 // Returns the first Ethernet NetworkConfiguration from |network_configs| with
@@ -522,10 +521,9 @@ const base::DictionaryValue* GetNetworkConfigByGUID(
 const base::DictionaryValue* GetNetworkConfigForEthernetWithoutEAP(
     const base::ListValue& network_configs) {
   VLOG(2) << "Search for ethernet policy without EAP.";
-  for (base::ListValue::const_iterator it = network_configs.begin();
-       it != network_configs.end(); ++it) {
-    const base::DictionaryValue* network = NULL;
-    it->GetAsDictionary(&network);
+  for (const auto& entry : network_configs.GetList()) {
+    const base::DictionaryValue* network = nullptr;
+    entry.GetAsDictionary(&network);
     DCHECK(network);
 
     std::string type;
@@ -533,7 +531,7 @@ const base::DictionaryValue* GetNetworkConfigForEthernetWithoutEAP(
     if (type != ::onc::network_type::kEthernet)
       continue;
 
-    const base::DictionaryValue* ethernet = NULL;
+    const base::DictionaryValue* ethernet = nullptr;
     network->GetDictionaryWithoutPathExpansion(::onc::network_config::kEthernet,
                                                &ethernet);
 
@@ -543,7 +541,7 @@ const base::DictionaryValue* GetNetworkConfigForEthernetWithoutEAP(
     if (auth == ::onc::ethernet::kAuthenticationNone)
       return network;
   }
-  return NULL;
+  return nullptr;
 }
 
 // Returns the NetworkConfiguration object for |network| from
@@ -810,7 +808,7 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
 
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
                              base::ListValue* network_configs) {
-  for (auto& entry : *network_configs) {
+  for (auto& entry : network_configs->GetList()) {
     base::DictionaryValue* network = nullptr;
     entry.GetAsDictionary(&network);
     DCHECK(network);
@@ -1051,8 +1049,8 @@ net::ScopedCERTCertificate DecodePEMCertificate(
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
                                      base::ListValue* network_configs) {
   bool success = true;
-  for (base::ListValue::iterator it = network_configs->begin();
-       it != network_configs->end();) {
+  for (auto it = network_configs->GetList().begin();
+       it != network_configs->GetList().end();) {
     base::DictionaryValue* network = nullptr;
     it->GetAsDictionary(&network);
     if (!ResolveServerCertRefsInNetwork(certs_by_guid, network)) {
@@ -1251,10 +1249,9 @@ int ImportNetworksForUser(const user_manager::User* user,
 
   bool ethernet_not_found = false;
   int networks_created = 0;
-  for (base::ListValue::const_iterator it = expanded_networks->begin();
-       it != expanded_networks->end(); ++it) {
-    const base::DictionaryValue* network = NULL;
-    it->GetAsDictionary(&network);
+  for (const auto& entry : expanded_networks->GetList()) {
+    const base::DictionaryValue* network = nullptr;
+    entry.GetAsDictionary(&network);
     DCHECK(network);
 
     // Remove irrelevant fields.
@@ -1402,7 +1399,7 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
 }
 
 bool HasUserPasswordSubsitutionVariable(base::ListValue* network_configs) {
-  for (auto& entry : *network_configs) {
+  for (auto& entry : network_configs->GetList()) {
     base::DictionaryValue* network = nullptr;
     entry.GetAsDictionary(&network);
     DCHECK(network);
