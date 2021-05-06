@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -44,11 +43,11 @@ void CreateSentinel() {
   base::File::Error file_error;
   FirstRun::SentinelResult sentinel_created =
       FirstRun::CreateSentinel(&file_error);
-  UMA_HISTOGRAM_ENUMERATION("FirstRun.Sentinel.Created", sentinel_created,
-                            FirstRun::SentinelResult::SENTINEL_RESULT_MAX);
+  base::UmaHistogramEnumeration("FirstRun.Sentinel.Created", sentinel_created,
+                                FirstRun::SentinelResult::SENTINEL_RESULT_MAX);
   if (sentinel_created == FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR)
-    UMA_HISTOGRAM_ENUMERATION("FirstRun.Sentinel.CreatedFileError", -file_error,
-                              -base::File::FILE_ERROR_MAX);
+    base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",
+                                  -file_error, -base::File::FILE_ERROR_MAX);
 }
 
 bool kFirstRunSentinelCreated = false;
@@ -102,8 +101,8 @@ void RecordFirstRunSignInMetrics(
         break;
     }
   }
-  UMA_HISTOGRAM_ENUMERATION("FirstRun.SignIn", sign_in_status,
-                            first_run::SIGNIN_SIZE);
+  base::UmaHistogramEnumeration("FirstRun.SignIn", sign_in_status,
+                                first_run::SIGNIN_SIZE);
 }
 
 void FinishFirstRun(ChromeBrowserState* browserState,
