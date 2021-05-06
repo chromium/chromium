@@ -13,9 +13,12 @@
 #include "base/mac/foundation_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
@@ -265,17 +268,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  if (::testing::Test::HasFailure())
-    PrintLog(scope);
-  // Copy logs from GetDataDirPath() before updater uninstalls itself
-  // and deletes the path.
-  base::Optional<base::FilePath> path = GetDataDirPath(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    CopyLog(*path);
-
-  // Uninstall the updater.
-  path = GetExecutablePath();
+  base::Optional<base::FilePath> path = GetExecutablePath();
   ASSERT_TRUE(path);
   base::CommandLine command_line(*path);
   command_line.AppendSwitch(kUninstallSwitch);
@@ -312,6 +305,21 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   ASSERT_TRUE(path);
   EXPECT_FALSE(base::PathExists(*path));
   EXPECT_FALSE(base::PathIsWritable(*path));
+}
+
+void WaitForServerExit(UpdaterScope scope) {
+  base::TimeTicks deadline =
+      base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
+  while (base::TimeTicks::Now() < deadline) {
+    std::string ps_stdout;
+    ASSERT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
+    if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
+        std::string::npos) {
+      return;
+    }
+    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  }
+  FAIL() << __func__ << " timed out.";
 }
 
 }  // namespace test

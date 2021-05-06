@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 
 class GURL;
 
@@ -35,11 +36,14 @@ class IntegrationTestCommands
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
-  virtual void SetFakeExistenceCheckerPath(const std::string& app_id) const = 0;
+  virtual void SetExistenceCheckerPath(const std::string& app_id,
+                                       const base::FilePath& path) const = 0;
   virtual void ExpectAppUnregisteredExistenceCheckerPath(
       const std::string& app_id) const = 0;
   virtual void RunWake(int exit_code) const = 0;
   virtual void PrintLog() const = 0;
+  virtual base::FilePath GetDifferentUserPath() const = 0;
+  virtual void WaitForServerExit() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

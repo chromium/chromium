@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -114,10 +115,14 @@ void ExpectActive(UpdaterScope scope, const std::string& app_id);
 // Expects that the active bit for `app_id` is unset.
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
 
-void SetFakeExistenceCheckerPath(const std::string& app_id);
+void SetExistenceCheckerPath(const std::string& app_id,
+                             const base::FilePath& path);
+
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
 
 void RegisterApp(const std::string& app_id);
+
+void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered();

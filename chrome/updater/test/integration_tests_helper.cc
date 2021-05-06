@@ -143,40 +143,39 @@ class AppTestHelper : public App {
 void AppTestHelper::FirstTaskRun() {
   std::map<std::string,
            base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>>
-      commands = {
-        // To add additional commands, first Wrap a pointer to the target
-        // function (which should be declared in integration_tests_impl.h), and
-        // then use the With* helper functions to provide its arguments.
-        {"clean", WithSystemScope(Wrap(&Clean))},
-        {"copy_log", WithSwitch("path", Wrap(&CopyLog))},
-        {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
-        {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
-        {"expect_app_unregistered_existence_checker_path",
-         WithSwitch("app_id",
-                    Wrap(&ExpectAppUnregisteredExistenceCheckerPath))},
-        {"expect_candidate_uninstalled",
-         WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
-        {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
-        {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
-        {"expect_version_active",
-         WithSwitch("version", Wrap(&ExpectVersionActive))},
-        {"expect_version_not_active",
-         WithSwitch("version", Wrap(&ExpectVersionNotActive))},
-        {"install", WithSystemScope(Wrap(&Install))},
-        {"print_log", WithSystemScope(Wrap(&PrintLog))},
-        {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+      commands =
+  {
+    // To add additional commands, first Wrap a pointer to the target
+    // function (which should be declared in integration_tests_impl.h), and
+    // then use the With* helper functions to provide its arguments.
+    {"clean", WithSystemScope(Wrap(&Clean))},
+    {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
+    {"expect_app_unregistered_existence_checker_path",
+     WithSwitch("app_id", Wrap(&ExpectAppUnregisteredExistenceCheckerPath))},
+    {"expect_candidate_uninstalled",
+     WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
+    {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
+    {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+    {"expect_version_active",
+     WithSwitch("version", Wrap(&ExpectVersionActive))},
+    {"expect_version_not_active",
+     WithSwitch("version", Wrap(&ExpectVersionNotActive))},
+    {"install", WithSystemScope(Wrap(&Install))},
+    {"print_log", WithSystemScope(Wrap(&PrintLog))},
+    {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
 #if defined(OS_MAC)
-        {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
-        {"register_test_app", WithSystemScope(Wrap(&RegisterTestApp))},
+    {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
+    {"register_test_app", WithSystemScope(Wrap(&RegisterTestApp))},
 #endif  // defined(OS_MAC)
-        {"set_fake_existence_checker_path",
-         WithSwitch("app_id", Wrap(&SetFakeExistenceCheckerPath))},
-        {"setup_fake_updater_higher_version",
-         WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
-        {"setup_fake_updater_lower_version",
-         WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
-        {"uninstall", WithSystemScope(Wrap(&Uninstall))},
-      };
+    {"set_existence_checker_path",
+     WithSwitch("path", WithSwitch("app_id", Wrap(&SetExistenceCheckerPath)))},
+    {"setup_fake_updater_higher_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
+    {"setup_fake_updater_lower_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+    {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+  };
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -157,19 +158,12 @@ void SetupFakeUpdaterHigherVersion(UpdaterScope scope) {
   SetupFakeUpdaterVersion(scope, 1);
 }
 
-void SetFakeExistenceCheckerPath(const std::string& app_id) {
+void SetExistenceCheckerPath(const std::string& app_id,
+                             const base::FilePath& path) {
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
-  auto persisted_data =
-      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
-  base::FilePath fake_ecp =
-      persisted_data->GetExistenceCheckerPath(app_id).Append(
-          FILE_PATH_LITERAL("NOT_THERE"));
-  persisted_data->SetExistenceCheckerPath(app_id, fake_ecp);
-
+  base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService())
+      ->SetExistenceCheckerPath(app_id, path);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-
-  EXPECT_EQ(fake_ecp.value(),
-            persisted_data->GetExistenceCheckerPath(app_id).value());
 }
 
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {

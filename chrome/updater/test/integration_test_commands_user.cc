@@ -9,7 +9,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
@@ -75,8 +77,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetupFakeUpdaterLowerVersion(kUpdaterScope);
   }
 
-  void SetFakeExistenceCheckerPath(const std::string& app_id) const override {
-    updater::test::SetFakeExistenceCheckerPath(app_id);
+  void SetExistenceCheckerPath(const std::string& app_id,
+                               const base::FilePath& path) const override {
+    updater::test::SetExistenceCheckerPath(app_id, path);
   }
 
   void ExpectAppUnregisteredExistenceCheckerPath(
@@ -106,6 +109,20 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void RegisterTestApp() const override {
     updater::test::RegisterTestApp(kUpdaterScope);
+  }
+
+  void WaitForServerExit() const override {
+    updater::test::WaitForServerExit(kUpdaterScope);
+  }
+
+  base::FilePath GetDifferentUserPath() const override {
+#if defined(OS_MAC)
+    // /Library is owned by root.
+    return base::FilePath(FILE_PATH_LITERAL("/Library"));
+#else
+    NOTREACHED() << __func__ << ": not implemented.";
+    return base::FilePath();
+#endif
   }
 
  private:

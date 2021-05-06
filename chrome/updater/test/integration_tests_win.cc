@@ -24,6 +24,7 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
@@ -243,15 +244,6 @@ void Install(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  if (::testing::Test::HasFailure())
-    PrintLog(scope);
-  // Copy logs from GetDataDirPath() before updater uninstalls itself
-  // and deletes the path.
-  base::Optional<base::FilePath> data_dir_path = GetDataDirPath(scope);
-  EXPECT_TRUE(data_dir_path);
-  if (data_dir_path)
-    CopyLog(*data_dir_path);
-
   // Note: updater.exe --uninstall is run from the build dir, not the install
   // dir, because it is useful for tests to be able to run it to clean the
   // system even if installation has failed or the installed binaries have
@@ -298,6 +290,12 @@ void ExpectNotActive(UpdaterScope scope, const std::string& id) {
     if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS)
       EXPECT_EQ(value, L"0");
   }
+}
+
+void WaitForServerExit(UpdaterScope scope) {
+  // TODO(crbug.com/1096654): Need to pass `scope` here.
+  // CreateGlobalPrefs will block until it can acquire the prefs lock.
+  CreateGlobalPrefs();
 }
 
 // Tests if the typelibs and some of the public, internal, and

@@ -59,12 +59,12 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    ExpectClean();
     if (::testing::Test::HasFailure())
       PrintLog();
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetDataDirPath().
     CopyLog();
-    ExpectClean();
     Clean();
   }
 
@@ -76,7 +76,12 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
 
-  void Uninstall() { test_commands_->Uninstall(); }
+  void Uninstall() {
+    if (::testing::Test::HasFailure())
+      PrintLog();
+    CopyLog();
+    test_commands_->Uninstall();
+  }
 
   void ExpectCandidateUninstalled() {
     test_commands_->ExpectCandidateUninstalled();
@@ -114,8 +119,9 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectNotActive(app_id);
   }
 
-  void SetFakeExistenceCheckerPath(const std::string& app_id) {
-    test_commands_->SetFakeExistenceCheckerPath(app_id);
+  void SetExistenceCheckerPath(const std::string& app_id,
+                               const base::FilePath& path) {
+    test_commands_->SetExistenceCheckerPath(app_id, path);
   }
 
   void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
@@ -129,6 +135,12 @@ class IntegrationTest : public ::testing::Test {
   void RegisterTestApp() { test_commands_->RegisterTestApp(); }
 
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
+
+  base::FilePath GetDifferentUserPath() {
+    return test_commands_->GetDifferentUserPath();
+  }
+
+  void WaitForServerExit() { test_commands_->WaitForServerExit(); }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
@@ -234,7 +246,8 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterApp("test1");
   RegisterApp("test2");
 
-  SetFakeExistenceCheckerPath(kTestAppId);
+  SetExistenceCheckerPath(kTestAppId,
+                          base::FilePath(FILE_PATH_LITERAL("NONE")));
 
   RunWake(0);
 
@@ -252,51 +265,36 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   ExpectVersionActive(UPDATER_VERSION_STRING);
   ExpectActiveUpdater();
 
-  SetFakeExistenceCheckerPath(kTestAppId);
+  SetExistenceCheckerPath(kTestAppId,
+                          base::FilePath(FILE_PATH_LITERAL("NONE")));
 
   RunWake(0);
 
   SleepFor(13);
 }
 
-// TODO(https://crbug.com/1166196): Fix flaky timeouts. The timeout is in
-// RunWake(0).
+// Windows does not currently have a concept of app ownership, so this
+// test need not run on Windows.
 #if defined(OS_MAC)
-#define MAYBE_UnregisterUnownedApp DISABLED_UnregisterUnownedApp
-#else
-#define MAYBE_UnregisterUnownedApp UnregisterUnownedApp
-#endif
-TEST_F(IntegrationTest, MAYBE_UnregisterUnownedApp) {
-  RegisterTestApp();
+TEST_F(IntegrationTest, UnregisterUnownedApp) {
+  Install();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
   ExpectActiveUpdater();
 
-  {
-    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
-    auto persisted_data =
-        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
-    base::FilePath fake_ecp{FILE_PATH_LITERAL("/Library")};
-    persisted_data->SetExistenceCheckerPath(kTestAppId, fake_ecp);
+  RegisterApp("test1");
+  RegisterApp("test2");
 
-    PrefsCommitPendingWrites(global_prefs->GetPrefService());
-
-    EXPECT_EQ(fake_ecp.value(),
-              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
-  }
+  SetExistenceCheckerPath("test1", GetDifferentUserPath());
 
   RunWake(0);
+  WaitForServerExit();
 
-  {
-    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
-    auto persisted_data =
-        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
-    EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),
-              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
-  }
+  ExpectAppUnregisteredExistenceCheckerPath("test1");
 
-  SleepFor(13);
+  Uninstall();
 }
+#endif  // defined(OS_MAC)
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 

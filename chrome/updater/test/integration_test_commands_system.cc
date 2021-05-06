@@ -7,11 +7,14 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -40,12 +43,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void CopyLog() const override {
     const base::Optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
     ASSERT_TRUE(path);
-
-#if defined(OS_WIN)
-    RunCommand("copy_log", {Param("path", base::WideToUTF8(path->value()))});
-#else
-    RunCommand("copy_log", {Param("path", path->value())});
-#endif  // OS_WIN
+    if (path)
+      updater::test::CopyLog(*path);
   }
 
   void Clean() const override { RunCommand("clean"); }
@@ -94,8 +93,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
-  void SetFakeExistenceCheckerPath(const std::string& app_id) const override {
-    RunCommand("set_fake_existence_checker_path", {Param("app_id", app_id)});
+  void SetExistenceCheckerPath(const std::string& app_id,
+                               const base::FilePath& path) const override {
+    RunCommand("set_existence_checker_path",
+               {Param("app_id", app_id), Param("path", path.MaybeAsASCII())});
   }
 
   void ExpectAppUnregisteredExistenceCheckerPath(
@@ -118,6 +119,20 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void RegisterTestApp() const override { RunCommand("register_test_app"); }
+
+  void WaitForServerExit() const override {
+    updater::test::WaitForServerExit(kUpdaterScope);
+  }
+
+  base::FilePath GetDifferentUserPath() const override {
+#if defined(OS_MAC)
+    // The updater_tests executable is owned by non-root.
+    return base::PathService::CheckedGet(base::FILE_EXE);
+#else
+    NOTREACHED() << __func__ << ": not implemented.";
+    return base::FilePath();
+#endif
+  }
 
  private:
   ~IntegrationTestCommandsSystem() override = default;
@@ -147,9 +162,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     for (const Param& param : params) {
       helper_command.AppendSwitchASCII(param.name, param.value);
     }
-
-    helper_command.AppendSwitch(kEnableLoggingSwitch);
-    helper_command.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
 
     int exit_code = -1;
     ASSERT_TRUE(Run(kUpdaterScope, helper_command, &exit_code));
