@@ -60,12 +60,6 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
       uint32_t frame_token,
       std::vector<CallbackType> callbacks);
 
-  // The given |frame_time| is associated with the given |frame_token| and will
-  // be exposed through |PopPendingCallbacks| if there is an exact frame token
-  // match. Note that it is an error to register distinct |frame_time|s against
-  // the same |frame_token|.
-  void RegisterFrameTime(uint32_t frame_token, base::TimeTicks frame_time);
-
   // Structured return value for |PopPendingCallbacks|. CC_EXPORT is only
   // needed for testing.
   struct CC_EXPORT PendingCallbacks {
@@ -86,21 +80,12 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     // Holds callbacks registered through
     // |RegisterCompositorPresentationCallbacks|.
     std::vector<CallbackType> compositor_thread_callbacks;
-
-    // Note: calling code needs to test against frame_time.is_null() because
-    // frame_time is not always defined. See |PopPendingCallbacks|.
-    base::TimeTicks frame_time;
   };
 
   // Call this once the presentation for the given |frame_token| has completed.
   // Yields any pending callbacks that were registered against a frame token
   // that was less than or equal to the given |frame_token|. It is the caller's
-  // responsibility to run the callbacks on the right threads/sequences. When
-  // the given |frame_token| is an exact match to a registered entry,
-  // |frame_time| will be set to the frame time supplied through
-  // |RegisterFrameTime|. Otherwise, |frame_time| will be default constructed
-  // and should not be used. Calling code can assume |frame_time| is meaningful
-  // iff frame_time.is_null() returns false.
+  // responsibility to run the callbacks on the right threads/sequences.
   PendingCallbacks PopPendingCallbacks(uint32_t frame_token);
 
  private:
@@ -117,11 +102,6 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     // A |CompositorFrameMetadata::frame_token| that we use to associate
     // presentation feedback with the relevant compositor frame.
     uint32_t token;
-
-    // A copy of the |frame_time| from the |BeginFrameArgs| associated with
-    // frame. Useful for tracking latency between frame requests and frame
-    // presentations.
-    base::TimeTicks frame_time;
 
     // The callbacks to send back to the main thread.
     std::vector<CallbackType> main_thread_callbacks;

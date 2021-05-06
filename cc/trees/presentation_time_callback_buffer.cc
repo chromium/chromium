@@ -61,20 +61,6 @@ void PresentationTimeCallbackBuffer::RegisterCompositorPresentationCallbacks(
   DCHECK_LE(frame_token_infos_.size(), 25u);
 }
 
-void PresentationTimeCallbackBuffer::RegisterFrameTime(
-    uint32_t frame_token,
-    base::TimeTicks frame_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FrameTokenInfo& frame_info = GetOrMakeRegistration(frame_token);
-
-  // Protect against clobbering previously registered frame times.
-  DCHECK(frame_info.frame_time.is_null() ||
-         frame_info.frame_time == frame_time);
-  frame_info.frame_time = frame_time;
-
-  DCHECK_LE(frame_token_infos_.size(), 25u);
-}
-
 PresentationTimeCallbackBuffer::PendingCallbacks::PendingCallbacks() = default;
 PresentationTimeCallbackBuffer::PendingCallbacks::PendingCallbacks(
     PendingCallbacks&&) = default;
@@ -93,11 +79,6 @@ PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token) {
     auto info = frame_token_infos_.begin();
     if (viz::FrameTokenGT(info->token, frame_token))
       break;
-
-    // Forward compositor frame timings on exact frame token matches. These
-    // timings correspond to frames that caused on-screen damage.
-    if (info->token == frame_token && !info->frame_time.is_null())
-      result.frame_time = info->frame_time;
 
     // Collect the main-thread callbacks. It's the caller's job to post them to
     // the main thread.
