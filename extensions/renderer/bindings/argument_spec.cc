@@ -100,7 +100,7 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
       DCHECK(!choices->empty());
       type_ = ArgumentType::CHOICES;
       choices_.reserve(choices->GetSize());
-      for (const auto& choice : *choices)
+      for (const auto& choice : choices->GetList())
         choices_.push_back(std::make_unique<ArgumentSpec>(choice));
       return;
     }

@@ -57,7 +57,7 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
     v8_arguments_.reserve(base_arguments_->GetSize());
-    for (const auto& arg : *base_arguments_)
+    for (const auto& arg : base_arguments_->GetList())
       v8_arguments_.push_back(converter->ToV8Value(&arg, context));
   }
 
