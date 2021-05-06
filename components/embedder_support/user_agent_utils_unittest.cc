@@ -98,6 +98,9 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   {
     int major, minor, patch;
     base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &patch);
+    // crbug.com/1175225
+    if (major > 10)
+      major = 10;
     ASSERT_EQ(base::StringPrintf("%d", major), pieces[0]);
   }
   int value;
