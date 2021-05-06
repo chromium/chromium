@@ -12,12 +12,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/network/geolocation_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -278,8 +277,7 @@ TEST_F(SimpleGeolocationTest, InvalidResponse) {
 }
 
 TEST_F(SimpleGeolocationTest, NoWiFi) {
-  shill_clients::InitializeFakes();
-  NetworkHandler::Initialize();
+  NetworkHandlerTestHelper network_handler_test_helper;
 
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
@@ -304,9 +302,6 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
   EXPECT_EQ(kExpectedPosition, receiver.position().ToString());
   EXPECT_FALSE(receiver.server_error());
   EXPECT_EQ(1U, url_factory.attempts());
-
-  NetworkHandler::Shutdown();
-  shill_clients::Shutdown();
 }
 
 // Test sending of WiFi Access points and Cell Towers.
@@ -318,7 +313,6 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
   ~SimpleGeolocationWirelessTest() override = default;
 
   void SetUp() override {
-    shill_clients::InitializeFakes();
     // Get the test interface for manager / device.
     manager_test_ = ShillManagerClient::Get()->GetTestInterface();
     ASSERT_TRUE(manager_test_);
@@ -329,7 +323,6 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
 
   void TearDown() override {
     geolocation_handler_.reset();
-    shill_clients::Shutdown();
   }
 
   bool GetWifiAccessPoints() {
@@ -376,6 +369,7 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
   ShillManagerClient::TestInterface* manager_test_;
   WifiAccessPointVector wifi_access_points_;
@@ -387,8 +381,6 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
 
 // Parameter is enable/disable sending of WiFi data.
 TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
-  NetworkHandler::Initialize();
-
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
@@ -448,7 +440,6 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
     // This is total.
     EXPECT_EQ(2U, url_factory.attempts());
   }
-  NetworkHandler::Shutdown();
 }
 
 // This test verifies that WiFi data is sent only if sending was requested.
@@ -457,8 +448,6 @@ INSTANTIATE_TEST_SUITE_P(EnableDisableSendingWifiData,
                          testing::Bool());
 
 TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
-  NetworkHandler::Initialize();
-
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
@@ -516,7 +505,6 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
     // This is total.
     EXPECT_EQ(2U, url_factory.attempts());
   }
-  NetworkHandler::Shutdown();
 }
 
 }  // namespace chromeos
