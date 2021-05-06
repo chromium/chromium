@@ -424,9 +424,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       writer->OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (base::ListValue::const_iterator it = list->begin();
-           it != list->end(); ++it) {
-        const base::Value& value = *it;
+      for (const auto& value : list->GetList()) {
         std::string value_string;
         if (!value.GetAsString(&value_string))
           NET_LOG(ERROR) << "List value not a string: " << value;

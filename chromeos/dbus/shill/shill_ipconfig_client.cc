@@ -110,11 +110,11 @@ void ShillIPConfigClientImpl::SetProperty(const dbus::ObjectPath& ipconfig_path,
       writer.OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (base::ListValue::const_iterator it = list_value->begin();
-           it != list_value->end(); ++it) {
-        DLOG_IF(ERROR, !it->is_string()) << "Unexpected type " << it->type();
+      for (const auto& entry : list_value->GetList()) {
+        DLOG_IF(ERROR, !entry.is_string())
+            << "Unexpected type " << entry.type();
         std::string str;
-        it->GetAsString(&str);
+        entry.GetAsString(&str);
         array_writer.AppendString(str);
       }
       variant_writer.CloseContainer(&array_writer);
