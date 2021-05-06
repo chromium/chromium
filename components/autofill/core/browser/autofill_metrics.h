@@ -1615,6 +1615,9 @@ class AutofillMetrics {
   // Logs that a specific type was edited in an update prompts.
   static void LogProfileUpdateEditedType(ServerFieldType edited_type);
 
+  // Logs when the virtual card metadata for one card have been updated.
+  static void LogVirtualCardMetadataSynced(bool existing_card);
+
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.
   static const int kNumCardUploadDecisionMetrics = 19;

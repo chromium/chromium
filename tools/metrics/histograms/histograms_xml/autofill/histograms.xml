@@ -1658,6 +1658,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata"
+    units="units" expires_after="M98">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of server cards with virtual card metadata, measured at Chrome
+    profile launch.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.StoredCreditCardDisusedCount" units="cards"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
@@ -2094,6 +2104,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Measures the frequency of various events in the Autofill user interaction
     flow. By comparing frequencies, we can compute several interesting
     &quot;user happiness&quot; metrics.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.MetadataSynced" enum="BooleanExists"
+    expires_after="M98">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of times that virtual card metadata is propagated via Chrome
+    Sync. It is logged based on whether the metadata is for an existing card or
+    a new card.
   </summary>
 </histogram>
 

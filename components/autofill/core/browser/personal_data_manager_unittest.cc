@@ -6251,6 +6251,10 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
     }
   }
 
+  // Sets the virtual card enrollment state for the first card.
+  server_cards[0].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+
   SetServerCards(server_cards);
 
   // SetServerCards modifies the metadata (use_count and use_date)
@@ -6289,6 +6293,8 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardCount.Server.Masked", 2, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.StoredCreditCardCount.Server.Unmasked", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
 }
 
 TEST_F(PersonalDataManagerTest, RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
