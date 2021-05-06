@@ -272,9 +272,9 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirect) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirect")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, FormSubmission) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/formSubmission")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/formSubmission")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Download) {
@@ -319,8 +319,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ForwardBack) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/forwardBack")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ForwardBack) {
+  ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest, ForwardBack) {
@@ -353,8 +353,8 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Failures) {
   ASSERT_TRUE(RunTest("webnavigation/failures")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, FilteredTest) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/filtered")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FilteredTest) {
+  ASSERT_TRUE(RunTest("webnavigation/filtered")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, UserAction) {
@@ -500,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, TargetBlankIncognito) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, History) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/history")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, History) {
+  ASSERT_TRUE(RunTest("webnavigation/history")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, CrossProcess) {
