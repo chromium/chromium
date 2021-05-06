@@ -904,7 +904,8 @@ void ChromeShelfController::OnAppInstalled(
 
 void ChromeShelfController::OnAppUpdated(
     content::BrowserContext* browser_context,
-    const std::string& app_id) {
+    const std::string& app_id,
+    bool reload_icon) {
   // Ensure that icon loader tracks the icon for this app - in particular, this
   // is needed when updating ChromeShelfController after user change in
   // multi-profile sessions, as icon loaders get reset when clearing the state
@@ -913,9 +914,11 @@ void ChromeShelfController::OnAppUpdated(
   if (index != kInvalidIndex) {
     ash::ShelfItem item = model_->items()[index];
     if (item.type == ash::TYPE_APP || item.type == ash::TYPE_PINNED_APP) {
-      AppIconLoader* app_icon_loader = GetAppIconLoaderForApp(app_id);
-      if (app_icon_loader)
-        app_icon_loader->FetchImage(app_id);
+      if (reload_icon) {
+        AppIconLoader* app_icon_loader = GetAppIconLoaderForApp(app_id);
+        if (app_icon_loader)
+          app_icon_loader->FetchImage(app_id);
+      }
 
       bool needs_update = false;
       ash::AppStatus app_status =
@@ -923,6 +926,13 @@ void ChromeShelfController::OnAppUpdated(
       if (app_status != item.app_status) {
         needs_update = true;
         item.app_status = app_status;
+      }
+
+      std::u16string title =
+          ShelfControllerHelper::GetAppTitle(latest_active_profile_, app_id);
+      if (item.title != title) {
+        needs_update = true;
+        item.title = title;
       }
 
       if (needs_update)
@@ -1160,7 +1170,7 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       continue;
 
     // Update apps icon if applicable.
-    OnAppUpdated(profile(), pref_shelf_id.app_id);
+    OnAppUpdated(profile(), pref_shelf_id.app_id, /*reload_icon=*/true);
 
     // Find existing pin or app from the right of current |index|.
     int app_index = index;

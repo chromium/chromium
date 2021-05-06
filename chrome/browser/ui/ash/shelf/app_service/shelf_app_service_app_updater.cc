@@ -29,7 +29,7 @@ ShelfAppServiceAppUpdater::~ShelfAppServiceAppUpdater() = default;
 
 void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() && !update.PausedChanged() &&
-      !update.ShowInShelfChanged()) {
+      !update.ShowInShelfChanged() && !update.ShortNameChanged()) {
     return;
   }
 
@@ -55,17 +55,19 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
           OnShowInShelfChanged(app_id, (update.ShowInShelf() ==
                                         apps::mojom::OptionalBool::kTrue));
         } else {
-          delegate()->OnAppUpdated(browser_context(), app_id);
+          delegate()->OnAppUpdated(browser_context(), app_id,
+                                   /*reload_icon=*/true);
         }
         return;
       default:
-        delegate()->OnAppUpdated(browser_context(), app_id);
+        delegate()->OnAppUpdated(browser_context(), app_id,
+                                 /*reload_icon=*/true);
         return;
     }
   }
 
   if (update.PausedChanged()) {
-    delegate()->OnAppUpdated(browser_context(), app_id);
+    delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/true);
     return;
   }
 
@@ -73,7 +75,11 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
       update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
     OnShowInShelfChanged(
         app_id, (update.ShowInShelf() == apps::mojom::OptionalBool::kTrue));
+    return;
   }
+
+  if (update.ShortNameChanged())
+    delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/false);
 }
 
 void ShelfAppServiceAppUpdater::OnAppRegistryCacheWillBeDestroyed(

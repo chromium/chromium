@@ -75,7 +75,11 @@ void ChromeAppIconService::OnExtensionUnloaded(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeAppIconService::OnAppUpdated(
     content::BrowserContext* browser_context,
-    const std::string& app_id) {
+    const std::string& app_id,
+    bool reload_icon) {
+  if (!reload_icon)
+    return;
+
   OnAppUpdated(app_id);
 }
 #endif

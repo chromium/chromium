@@ -99,7 +99,8 @@ class ChromeAppIconService : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ShelfAppUpdater::Delegate:
   void OnAppUpdated(content::BrowserContext* browser_context,
-                    const std::string& app_id) override;
+                    const std::string& app_id,
+                    bool reload_icon) override;
 #endif
 
   // Unowned pointer.

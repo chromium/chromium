@@ -51,10 +51,12 @@ void ShelfExtensionAppUpdater::OnExtensionUnloaded(
   if (!ShouldHandleExtension(extension))
     return;
 
-  if (reason == extensions::UnloadedExtensionReason::UNINSTALL)
+  if (reason == extensions::UnloadedExtensionReason::UNINSTALL) {
     delegate()->OnAppUninstalledPrepared(browser_context, extension->id());
-  else
-    delegate()->OnAppUpdated(browser_context, extension->id());
+  } else {
+    delegate()->OnAppUpdated(browser_context, extension->id(),
+                             /*reload_icon=*/true);
+  }
 }
 
 void ShelfExtensionAppUpdater::OnExtensionUninstalled(
@@ -102,7 +104,7 @@ void ShelfExtensionAppUpdater::StopObservingExtensionRegistry() {
 }
 
 void ShelfExtensionAppUpdater::UpdateApp(const std::string& app_id) {
-  delegate()->OnAppUpdated(browser_context(), app_id);
+  delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/true);
 }
 
 void ShelfExtensionAppUpdater::UpdateEquivalentApp(

@@ -272,7 +272,8 @@ class ChromeShelfController
   void OnAppInstalled(content::BrowserContext* browser_context,
                       const std::string& app_id) override;
   void OnAppUpdated(content::BrowserContext* browser_context,
-                    const std::string& app_id) override;
+                    const std::string& app_id,
+                    bool reload_icon) override;
   void OnAppUninstalledPrepared(content::BrowserContext* browser_context,
                                 const std::string& app_id) override;
 
