@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
@@ -30,8 +31,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -48,7 +51,9 @@
 
 namespace {
 using content::NavigationThrottle;
+using content::RenderFrameHost;
 using content::TestNavigationObserver;
+using content::URLLoaderInterceptor;
 using net::test_server::BasicHttpResponse;
 using net::test_server::DelayedHttpResponse;
 using net::test_server::EmbeddedTestServer;
@@ -101,8 +106,7 @@ class ChangePasswordNavigationThrottleBrowserTestBase
 
   void Initialize() {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(test_server_->InitializeAndListen());
-    test_server_->StartAcceptingConnections();
+    ASSERT_TRUE(test_server_->Start());
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
@@ -603,6 +607,97 @@ IN_PROC_BROWSER_TEST_P(AffiliationChangePasswordNavigationThrottleBrowserTest,
   ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
 }
 
+// Harness for testing the throttle with prerendering involved.
+class PrerenderingChangePasswordNavigationThrottleBrowserTest
+    : public AffiliationChangePasswordNavigationThrottleBrowserTest {
+ public:
+  PrerenderingChangePasswordNavigationThrottleBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PrerenderingChangePasswordNavigationThrottleBrowserTest::
+                web_contents,
+            base::Unretained(this))) {}
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(test_server_.get());
+    Initialize();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test the behavior of the throttle when navigated from a prerendering
+// context. This is a fairly narrow use case since, of prerendering-capable
+// navigations, the throttle only runs when initiated by passwords.google.com.
+// However, if that origin did prerendering the well known password change URL,
+// make sure we don't run the throttle as it doesn't currently support
+// Prerender2. This test just ensures we don't run the throttle in this case so
+// we don't get side-effects in the primary frame while prerendering the
+// .well-known URL.
+IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
+                       EnsurePrerenderCanceled) {
+  // The URL we simulate a real user navigation to.
+  const GURL kNavigateUrl = GURL("https://passwords.google.com/checkup");
+
+  // The well known password change URL. The above URL will request a prerender
+  // of this page via the <link rel='prerender'> tag in the response.
+  // TODO(bokan): Normally the change-password URL would lead to a different
+  // origin (e.g. example.com) but prerender2 doesn't yet support cross-origin
+  // prerendering. Using passwords.google.com here is a bit unrealistic but
+  // ensures we trigger prerendering. Once prerender2 supports cross-origin
+  // prerendering this should be updated to 'example.com'.
+  const GURL kWellKnownUrl =
+      GURL("https://passwords.google.com/.well-known/change-password");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        // We should cancel the prerender in WillStartRequest so we should
+        // never receive this request. Use CHECK rather than ASSERT since this
+        // is inside a lambda rather than test scope.
+        CHECK_NE(params->url_request.url, kWellKnownUrl);
+
+        // If the non-existing-resource path is requested it means the throttle
+        // is running so fail the test.
+        CHECK_NE(params->url_request.url.path(),
+                 kWellKnownNotExistingResourcePath);
+
+        if (params->url_request.url == kNavigateUrl) {
+          URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\n"
+              "Content-Type: text/html\n\n",
+              base::StringPrintf(
+                  "<!DOCTYPE html><link rel='prerender' href='%s'>",
+                  kWellKnownUrl.spec().c_str()),
+              params->client.get());
+          return true;
+        }
+
+        return false;
+      }));
+
+  // Navigate to the passwords.google.com/checkup page. Wait until it triggers
+  // a prerender from the <link> tag for the .well-known URL.
+  content::test::PrerenderHostObserver observer(*web_contents(), kWellKnownUrl);
+  NavigateParams params(browser(), kNavigateUrl, page_transition());
+  Navigate(&params);
+
+  // The throttle must cancel the prerendering so wait until we see the
+  // prerender destroyed.
+  observer.WaitForDestroyed();
+
+  // Ensure we didn't run the throttle.
+  EXPECT_TRUE(
+      test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+
+  // Ensure we canceled the prerender.
+  EXPECT_EQ(prerender_helper_.GetHostForUrl(kWellKnownUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+}
+
 constexpr ResponseDelayParams kDelayParams[] = {{0, 1}, {1, 0}};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -615,5 +710,11 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     AffiliationChangePasswordNavigationThrottleBrowserTest,
+    ::testing::Combine(::testing::Values(ui::PAGE_TRANSITION_FROM_API),
+                       ::testing::ValuesIn(kDelayParams)));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderingChangePasswordNavigationThrottleBrowserTest,
     ::testing::Combine(::testing::Values(ui::PAGE_TRANSITION_FROM_API),
                        ::testing::ValuesIn(kDelayParams)));

@@ -106,6 +106,11 @@ WellKnownChangePasswordNavigationThrottle::
       request_url_(handle->GetURL()),
       source_id_(
           ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents())) {
+  // If we're in a non-primary frame tree (e.g. prerendering) we're only
+  // constructing the throttle so it can cancel the prerender.
+  if (!handle->IsInPrimaryMainFrame())
+    return;
+
   if (base::FeatureList::IsEnabled(
           password_manager::features::kChangePasswordAffiliationInfo)) {
     affiliation_service_ =
@@ -128,6 +133,13 @@ WellKnownChangePasswordNavigationThrottle::
 
 NavigationThrottle::ThrottleCheckResult
 WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
+  // The logic in Redirect will navigate the primary FrameTree if we're in a
+  // prerender. We don't have a way to navigate the prerendered page so just
+  // cancel the prerender.
+  if (!navigation_handle()->IsInPrimaryMainFrame()) {
+    return NavigationThrottle::CANCEL;
+  }
+
   auto url_loader_factory = navigation_handle()
                                 ->GetWebContents()
                                 ->GetBrowserContext()

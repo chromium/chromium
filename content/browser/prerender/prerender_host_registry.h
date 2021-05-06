@@ -36,7 +36,7 @@ class RenderFrameHostImpl;
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
 //   activation start by ReserveHostToActivate() and activate it by
 //   ActivateReservedHost(). They can abandon the host by
-//   AbandonPreservedHost().
+//   AbandonReservedHost().
 class CONTENT_EXPORT PrerenderHostRegistry {
  public:
   using PassKey = base::PassKey<PrerenderHostRegistry>;

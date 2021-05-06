@@ -45,7 +45,6 @@ class PrerenderHostRegistryObserverImpl
     observation_.Observe(&GetPrerenderHostRegistry(&web_contents));
   }
 
-  // Returns immediately if `url` was ever triggered before.
   void WaitForTrigger(const GURL& url) {
     if (triggered_.contains(url)) {
       return;
@@ -54,6 +53,15 @@ class PrerenderHostRegistryObserverImpl
     base::RunLoop loop;
     waiting_[url] = loop.QuitClosure();
     loop.Run();
+  }
+
+  void NotifyOnTrigger(const GURL& url, base::OnceClosure callback) {
+    if (triggered_.contains(url)) {
+      std::move(callback).Run();
+      return;
+    }
+    EXPECT_FALSE(waiting_.contains(url));
+    waiting_[url] = std::move(callback);
   }
 
   void OnTrigger(const GURL& url) override {
@@ -93,11 +101,28 @@ void PrerenderHostRegistryObserver::WaitForTrigger(const GURL& gurl) {
   impl_->WaitForTrigger(gurl);
 }
 
+void PrerenderHostRegistryObserver::NotifyOnTrigger(
+    const GURL& gurl,
+    base::OnceClosure callback) {
+  impl_->NotifyOnTrigger(gurl, std::move(callback));
+}
+
 class PrerenderHostObserverImpl : public PrerenderHost::Observer {
  public:
-  explicit PrerenderHostObserverImpl(content::WebContents& web_contents,
-                                     int host_id) {
-    observation_.Observe(GetPrerenderHostById(&web_contents, host_id));
+  PrerenderHostObserverImpl(content::WebContents& web_contents, int host_id) {
+    StartObserving(
+        web_contents,
+        GetPrerenderHostById(&web_contents, host_id)->GetInitialUrl());
+  }
+
+  PrerenderHostObserverImpl(content::WebContents& web_contents,
+                            const GURL& gurl) {
+    registry_observer_ =
+        std::make_unique<PrerenderHostRegistryObserver>(web_contents);
+    registry_observer_->NotifyOnTrigger(
+        gurl,
+        base::BindOnce(&PrerenderHostObserverImpl::StartObserving,
+                       base::Unretained(this), std::ref(web_contents), gurl));
   }
 
   void OnActivated() override {
@@ -113,7 +138,8 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   }
 
   void WaitForActivation() {
-    DCHECK(observation_.IsObserving());
+    if (was_activated_)
+      return;
     EXPECT_FALSE(waiting_for_activation_);
     base::RunLoop loop;
     waiting_for_activation_ = loop.QuitClosure();
@@ -121,7 +147,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   }
 
   void WaitForDestroyed() {
-    if (!observation_.IsObserving())
+    if (did_observe_ && !observation_.IsObserving())
       return;
     EXPECT_FALSE(waiting_for_destruction_);
     base::RunLoop loop;
@@ -129,20 +155,38 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
     loop.Run();
   }
 
-  bool was_activated() { return was_activated_; }
+  bool was_activated() const { return was_activated_; }
 
  private:
+  void StartObserving(content::WebContents& web_contents, const GURL& gurl) {
+    PrerenderHost* host =
+        GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(gurl);
+    DCHECK_NE(host, nullptr);
+    did_observe_ = true;
+    observation_.Observe(host);
+
+    // This method may be bound and called from |registry_observer_| so don't
+    // add code below the reset.
+    registry_observer_.reset();
+  }
+
   base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
       this};
   base::OnceClosure waiting_for_activation_;
   base::OnceClosure waiting_for_destruction_;
+  std::unique_ptr<PrerenderHostRegistryObserver> registry_observer_;
   bool was_activated_ = false;
+  bool did_observe_ = false;
 };
 
 PrerenderHostObserver::PrerenderHostObserver(content::WebContents& web_contents,
                                              int prerender_host)
     : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents,
                                                         prerender_host)) {}
+
+PrerenderHostObserver::PrerenderHostObserver(content::WebContents& web_contents,
+                                             const GURL& gurl)
+    : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents, gurl)) {}
 
 PrerenderHostObserver::~PrerenderHostObserver() = default;
 
@@ -154,7 +198,7 @@ void PrerenderHostObserver::WaitForDestroyed() {
   impl_->WaitForDestroyed();
 }
 
-bool PrerenderHostObserver::was_activated() {
+bool PrerenderHostObserver::was_activated() const {
   return impl_->was_activated();
 }
 

@@ -29,7 +29,14 @@ class PrerenderHostRegistryObserver {
   PrerenderHostRegistryObserver(const PrerenderHostRegistryObserver&) = delete;
   PrerenderHostRegistryObserver& operator=(
       const PrerenderHostRegistryObserver&) = delete;
+
+  // Returns immediately if |gurl| was ever triggered before. Otherwise blocks
+  // on a RunLoop until a prerender of |gurl| is triggered.
   void WaitForTrigger(const GURL& gurl);
+
+  // Invokes |callback| immediately if |gurl| was ever triggered before.
+  // Otherwise invokes |callback| when a prerender for |gurl| is triggered.
+  void NotifyOnTrigger(const GURL& gurl, base::OnceClosure callback);
 
  private:
   std::unique_ptr<PrerenderHostRegistryObserverImpl> impl_;
@@ -41,13 +48,28 @@ class PrerenderHostObserverImpl;
 // destruction
 class PrerenderHostObserver {
  public:
+  // Begins observing the given PrerenderHost immediately. DCHECKs if |host_id|
+  // does not identify a live PrerenderHost.
   PrerenderHostObserver(content::WebContents& web_contents, int host_id);
+
+  // Will start observing a PrerenderHost for |gurl| as soon as it is
+  // triggered.
+  PrerenderHostObserver(content::WebContents& web_contents, const GURL& gurl);
+
   ~PrerenderHostObserver();
   PrerenderHostObserver(const PrerenderHostObserver&) = delete;
   PrerenderHostObserver& operator=(const PrerenderHostObserver&) = delete;
+
+  // Returns immediately if the PrerenderHost was already activated, otherwise
+  // spins a RunLoop until the observed host is activated.
   void WaitForActivation();
+
+  // Returns immediately if the PrerenderHost was already destroyed, otherwise
+  // spins a RunLoop until the observed host is destroyed.
   void WaitForDestroyed();
-  bool was_activated();
+
+  // True if the PrerenderHost was activated to be the primary page.
+  bool was_activated() const;
 
  private:
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
