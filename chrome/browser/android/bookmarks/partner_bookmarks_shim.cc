@@ -259,10 +259,9 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!list)
     return;
 
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end(); ++it) {
-    const base::DictionaryValue* dict = NULL;
-    if (!it->GetAsDictionary(&dict)) {
+  for (const auto& entry : list->GetList()) {
+    const base::DictionaryValue* dict = nullptr;
+    if (!entry.GetAsDictionary(&dict)) {
       NOTREACHED();
       continue;
     }
