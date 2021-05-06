@@ -9,8 +9,13 @@ import time
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
+html_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
                          'data', 'gpu', 'webcodecs')
+data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
+
+frame_sources = ["camera", "capture", "offscreen", "hw_decoder", "sw_decoder"]
+codecs = ["avc1.42001E", "vp8", "vp09.00.10.08"]
+accelerations = ["require", "deny"]
 
 
 class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -20,15 +25,26 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options):
-    yield ('WebCodecs_EncodeDecodeRender_h264_baseline',
-           'encode-decode-render.html', ('{ codec : "avc1.42001E" }'))
-    yield ('WebCodecs_EncodeDecodeRender_vp8', 'encode-decode-render.html',
-           ('{ codec : "vp8" }'))
-    yield ('WebCodecs_EncodeDecodeRender_vp9', 'encode-decode-render.html',
-           ('{ codec : "vp09.00.10.08" }'))
+    for source_type in frame_sources:
+      yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html',
+             ('{ source_type : "%s" }' % (source_type)))
+      yield ('WebCodecs_TexImage2d_' + source_type, 'tex-image-2d.html',
+             ('{ source_type : "%s" }' % (source_type)))
+
+    for codec in codecs:
+      yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html',
+             ('{ codec : "%s" }' % codec))
+
+    for source_type in frame_sources:
+      for codec in codecs:
+        for acc in accelerations:
+          args = (source_type, codec, acc)
+          yield ('WebCodecs_Encode_%s_%s_%s' % args, 'encode.html',
+                 ('{ source_type : "%s", codec : "%s", acceleration : "%s" }' %
+                  args))
 
   def RunActualGpuTest(self, test_path, *args):
-    url = self.UrlOfStaticFilePath(test_path)
+    url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
     tab = self.tab
     arg_obj = args[0]
     tab.Navigate(url)
@@ -42,9 +58,14 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls):
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
-    cls.CustomizeBrowserArgs(['--enable-blink-features=WebCodecs'])
+    cls.CustomizeBrowserArgs([
+        "--enable-blink-features=MediaStreamInsertableStreams",
+        '--enable-blink-features=WebCodecs',
+        '--use-fake-device-for-media-stream',
+        '--use-fake-ui-for-media-stream',
+    ])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([html_path, data_path])
 
   @classmethod
   def ExpectationsFiles(cls):
