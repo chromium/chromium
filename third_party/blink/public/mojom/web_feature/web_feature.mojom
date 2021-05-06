@@ -3190,6 +3190,8 @@ enum WebFeature {
   kHTMLMediaElementSetSinkId = 3877,
   kPostMessageFromSecureToSecure = 3882,
   kPostMessageFromInsecureToInsecure = 3883,
+  kWebAppManifestProtocolHandlers = 3884,
+  kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
