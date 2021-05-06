@@ -1324,11 +1324,10 @@ bool OverviewGrid::IsDesksBarViewActive() const {
   DCHECK(desks_util::ShouldDesksBarBeCreated());
 
   // The desk bar view is not active if there is only a single desk when
-  // overview is started. Once there are more than one desk, it should stay
-  // active even if the 2nd to last desk is deleted in classic desks. Zero state
-  // desks bar should not be treated as active.
+  // overview is started. Or when the desks bar view has been created and in
+  // zero state.
   return DesksController::Get()->desks().size() > 1 ||
-         (desks_bar_view_ && !desks_bar_view_->mini_views().empty());
+         (desks_bar_view_ && !desks_bar_view_->IsZeroState());
 }
 
 gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
@@ -1583,13 +1582,6 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
   DCHECK(!unclipped_size.IsEmpty());
   item->set_unclipped_size(base::make_optional(unclipped_size));
   return width;
-}
-
-void OverviewGrid::OnDesksChanged() {
-  if (MaybeUpdateDesksWidgetBounds())
-    PositionWindows(/*animate=*/false, /*ignored_items=*/{});
-  else
-    desks_bar_view_->Layout();
 }
 
 bool OverviewGrid::IsDeskNameBeingModified() const {
@@ -1960,4 +1952,5 @@ void OverviewGrid::UpdateFrameThrottling() {
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
 }
+
 }  // namespace ash

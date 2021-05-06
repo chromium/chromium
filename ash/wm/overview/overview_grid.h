@@ -315,10 +315,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // splitview or entering splitview.
   int CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item, int height);
 
-  // Called when a desk is added or removed to update the bounds of the desks
-  // widget as it may need to switch between default and compact layouts.
-  void OnDesksChanged();
-
   // Returns true if any desk name is being modified in its mini view on this
   // grid.
   bool IsDeskNameBeingModified() const;

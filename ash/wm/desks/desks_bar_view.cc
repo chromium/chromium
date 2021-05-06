@@ -366,10 +366,6 @@ bool DesksBarView::IsDeskNameBeingModified() const {
   return false;
 }
 
-float DesksBarView::GetOnHoverWindowSizeScaleFactor() const {
-  return float{height()} / overview_grid_->root_window()->bounds().height();
-}
-
 int DesksBarView::GetMiniViewIndex(const DeskMiniView* mini_view) const {
   auto begin_iter = mini_views_.cbegin();
   auto end_iter = mini_views_.cend();
@@ -680,7 +676,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
     PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
     return;
   }
-  overview_grid_->OnDesksChanged();
+  Layout();
   PerformRemoveDeskMiniViewAnimation(
       removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
@@ -695,7 +691,7 @@ void DesksBarView::OnDeskReordered(int old_index, int new_index) {
   auto* reordered_view = mini_views_[new_index];
   reordered_view->parent()->ReorderChildView(reordered_view, new_index);
 
-  overview_grid_->OnDesksChanged();
+  Layout();
 
   // Call the animation function after reorder the mini views.
   PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
@@ -772,7 +768,7 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
       highlight_controller->MoveHighlightToView(newly_added_name_view);
   }
 
-  overview_grid_->OnDesksChanged();
+  Layout();
 
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
