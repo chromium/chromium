@@ -41,6 +41,16 @@ class CfmERPLoggerService : public CfmLoggerService {
 
 static CfmLoggerService* g_logger_service = nullptr;
 
+mojom::LoggerStatusPtr LoggerDisabledStatus() {
+  // From google/rpc/code.proto:
+  // The operation is not implemented or is not supported/enabled in this
+  // service.
+  constexpr int kUnimplemented = 12;
+
+  return mojom::LoggerStatus::New(kUnimplemented,
+                                  "Meet logger service is disabled");
+}
+
 }  // namespace
 
 // static
@@ -77,8 +87,7 @@ bool CfmLoggerService::IsInitialized() {
 bool CfmLoggerService::ServiceRequestReceived(
     const std::string& interface_name) {
   // If Disabled should not be discoverable
-  if (!base::FeatureList::IsEnabled(features::kCloudLogger) ||
-      interface_name != mojom::MeetDevicesLogger::Name_) {
+  if (interface_name != mojom::MeetDevicesLogger::Name_) {
     return false;
   }
   service_adaptor_.BindServiceAdaptor();
@@ -111,6 +120,10 @@ void CfmLoggerService::OnAdaptorDisconnect() {
 void CfmLoggerService::Enqueue(const std::string& record,
                                mojom::EnqueuePriority priority,
                                EnqueueCallback callback) {
+  if (current_logger_state_ == mojom::LoggerState::kDisabled) {
+    std::move(callback).Run(LoggerDisabledStatus());
+    return;
+  }
   delegate_->Enqueue(std::move(record), std::move(priority),
                      std::move(callback));
 }
@@ -140,6 +153,10 @@ CfmLoggerService::CfmLoggerService(Delegate* delegate)
       service_adaptor_(mojom::MeetDevicesLogger::Name_, this),
       current_logger_state_(mojom::LoggerState::kUninitialized) {
   CfmHotlineClient::Get()->AddObserver(this);
+
+  if (!base::FeatureList::IsEnabled(features::kCloudLogger)) {
+    current_logger_state_ = mojom::LoggerState::kDisabled;
+  }
 }
 
 CfmLoggerService::~CfmLoggerService() {

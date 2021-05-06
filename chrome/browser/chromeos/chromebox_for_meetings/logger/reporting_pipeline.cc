@@ -28,6 +28,14 @@ namespace {
   }
 }
 
+mojom::LoggerStatusPtr LoggerUninitializedStatus() {
+  // From google/rpc/code.proto
+  constexpr int kUnavailable = 14;
+
+  return mojom::LoggerStatus::New(kUnavailable,
+                                  "Meet logger service not yet initialised.");
+}
+
 constexpr auto kHandlerDestination =
     ::reporting::Destination::MEET_DEVICE_TELEMETRY;
 
@@ -64,7 +72,7 @@ void ReportingPipeline::Enqueue(const std::string& record,
                                 CfmLoggerService::EnqueueCallback callback) {
   if (!report_queue_) {
     LOG(ERROR) << "Report Queue has not been initialised";
-    std::move(callback).Run(mojom::LoggerState::kUninitialized);
+    std::move(callback).Run(LoggerUninitializedStatus());
     return;
   }
 
@@ -73,9 +81,10 @@ void ReportingPipeline::Enqueue(const std::string& record,
       base::BindOnce(
           [](CfmLoggerService::EnqueueCallback callback,
              reporting::Status status) {
-            auto state = status.ok() ? mojom::LoggerState::kReadyForRequests
-                                     : mojom::LoggerState::kFailed;
-            std::move(callback).Run(state);
+            auto message = status.error_message();
+            std::move(callback).Run(mojom::LoggerStatus::New(
+                status.error_code(),
+                std::string(message.begin(), message.end())));
           },
           std::move(callback)));
 }
