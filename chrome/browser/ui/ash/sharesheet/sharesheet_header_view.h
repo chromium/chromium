@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_HEADER_VIEW_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/callback_list.h"
@@ -15,10 +16,6 @@
 #include "ui/views/view.h"
 
 class Profile;
-
-namespace views {
-class ImageView;
-}  // namespace views
 
 namespace ash {
 namespace sharesheet {
@@ -36,8 +33,7 @@ class SharesheetHeaderView : public views::View {
   SharesheetHeaderView& operator=(const SharesheetHeaderView&) = delete;
 
  private:
-  // Adds the view for image previews and sets the required properties.
-  void InitaliseImageView();
+  class SharesheetImagePreview;
 
   // Adds the view for text preview.
   void ShowTextPreview();
@@ -53,23 +49,24 @@ class SharesheetHeaderView : public views::View {
   // from share_target_utils.h to a common place and reuse the function here.
   std::vector<std::u16string> ExtractShareText();
 
-  void ResolveImage();
+  void ResolveImages();
+  void ResolveImage(size_t index);
   void LoadImage(const base::FilePath& file_path,
                  const gfx::Size& size,
                  HoldingSpaceImage::BitmapCallback callback);
-  void OnImageLoaded();
+  void OnImageLoaded(const gfx::Size& size, size_t index);
 
   // Contains the share title and text preview views.
   views::View* text_view_ = nullptr;
-  views::ImageView* image_preview_ = nullptr;
+  SharesheetImagePreview* image_preview_;
 
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
 
   ThumbnailLoader thumbnail_loader_;
-  base::CallbackListSubscription image_subscription_;
+  std::vector<base::CallbackListSubscription> image_subscription_;
   // TODO(crbug.com/1156343): Clean up to use our own FileThumbnailImage class.
-  std::unique_ptr<HoldingSpaceImage> image_;
+  std::vector<std::unique_ptr<HoldingSpaceImage>> images_;
 
   base::WeakPtrFactory<SharesheetHeaderView> weak_ptr_factory_{this};
 };

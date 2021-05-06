@@ -16,9 +16,23 @@ namespace sharesheet {
 constexpr int kSpacing = 24;
 
 constexpr size_t kTextPreviewMaximumLines = 3;
-constexpr gfx::Size kImagePreviewSize(::sharesheet::kIconSize,
-                                      ::sharesheet::kIconSize);
+constexpr size_t kImagePreviewMaxIcons = 4;
+// TODO(crbug.com/1189945) |kImagePreviewHalfIconSize| value should actually be
+// 19. When refactoring HoldingSpaceImage, once the DCHECK_GT(20) is removed,
+// this should be set to 19. At that point |kImagePreviewFullIconSize| can be
+// be removed and set to |::sharesheet::kIconSize|.
+constexpr size_t kImagePreviewHalfIconSize = 21;
+constexpr size_t kImagePreviewFullIconSize = 44;
+constexpr gfx::Size kImagePreviewFullSize(kImagePreviewFullIconSize,
+                                          kImagePreviewFullIconSize);
+constexpr gfx::Size kImagePreviewHalfSize(kImagePreviewFullIconSize,
+                                          kImagePreviewHalfIconSize);
+constexpr gfx::Size kImagePreviewQuarterSize(kImagePreviewHalfIconSize,
+                                             kImagePreviewHalfIconSize);
+constexpr int kImagePreviewFileEnumerationLineHeight = 10;
+constexpr int kImagePreviewBetweenChildSpacing = 2;
 constexpr int kImagePreviewCornerRadius = 4;
+constexpr int kImagePreviewIconCornerRadius = 2;
 constexpr int kImagePreviewPlaceholderIconContentSize = 20;
 constexpr SkColor kImagePreviewPlaceholderIconColor = gfx::kGoogleBlue600;
 constexpr SkColor kImagePreviewPlaceholderBackgroundColor = gfx::kGoogleBlue050;

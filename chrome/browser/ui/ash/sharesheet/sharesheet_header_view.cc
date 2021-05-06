@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -49,18 +51,152 @@ const std::u16string ConcatenateFileNames(
   return base::ASCIIToUTF16(all_file_names);
 }
 
-gfx::ImageSkia CreatePlaceholderIcon(const gfx::VectorIcon& icon) {
+gfx::ImageSkia CreatePlaceholderIcon(const gfx::VectorIcon& icon,
+                                     const gfx::Size& size) {
   gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
       icon, ash::sharesheet::kImagePreviewPlaceholderIconContentSize,
       ash::sharesheet::kImagePreviewPlaceholderIconColor);
-  return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(
-      file_type_icon, ash::sharesheet::kImagePreviewSize);
+  return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon,
+                                                           size);
+}
+
+gfx::Size GetImagePreviewSize(size_t index, int grid_icon_count) {
+  switch (grid_icon_count) {
+    case 1:
+      return ash::sharesheet::kImagePreviewFullSize;
+    case 2:
+      return ash::sharesheet::kImagePreviewHalfSize;
+    case 3:
+      if (index == 0) {
+        return ash::sharesheet::kImagePreviewHalfSize;
+      } else {
+        return ash::sharesheet::kImagePreviewQuarterSize;
+      }
+    default:
+      return ash::sharesheet::kImagePreviewQuarterSize;
+  }
 }
 
 }  // namespace
 
 namespace ash {
 namespace sharesheet {
+
+// SharesheetHeaderView::SharesheetImagePreview
+// ------------------------------------------------------
+
+class SharesheetHeaderView::SharesheetImagePreview : public views::View {
+ public:
+  explicit SharesheetImagePreview(size_t file_count) {
+    SetPaintToLayer();
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kImagePreviewCornerRadius));
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        /* inside_border_insets */ gfx::Insets(),
+        /* between_child_spacing */ kImagePreviewBetweenChildSpacing,
+        /* collapse_margins_spacing */ false));
+    SetPreferredSize(kImagePreviewFullSize);
+    SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+
+    size_t grid_icon_count =
+        (file_count > 0) ? std::min(file_count, kImagePreviewMaxIcons) : 1;
+    size_t enumeration = (file_count > kImagePreviewMaxIcons)
+                             ? file_count - kImagePreviewMaxIcons + 1
+                             : 0;
+
+    if (grid_icon_count == 1) {
+      AddImageViewTo(this, kImagePreviewFullSize);
+      return;
+    }
+
+    // If we need to have more than 1 icon, add two rows so that we can
+    // layout the icons in a grid.
+    DCHECK_GT(grid_icon_count, 1);
+    AddRowToImageContainerView();
+    AddRowToImageContainerView();
+
+    for (size_t index = 0; index < grid_icon_count; ++index) {
+      // If we have |enumeration|, add it as a label at the bottom right of
+      // SharesheetImagePreview.
+      if (enumeration != 0 && index == kImagePreviewMaxIcons - 1) {
+        // TODO(crbug.com/1189945) : Add a sharesheet context to replace
+        // |CONTEXT_DOWNLOAD_SHELF_STATUS|.
+        auto* label =
+            children()[1]->AddChildView(std::make_unique<views::Label>(
+                base::StrCat({u"+", base::NumberToString16(enumeration)}),
+                CONTEXT_DOWNLOAD_SHELF_STATUS, ash::STYLE_SHARESHEET));
+        label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
+        label->SetEnabledColor(kButtonTextColor);
+        label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+        label->SetBackground(views::CreateSolidBackground(
+            kImagePreviewPlaceholderBackgroundColor));
+        label->SetPreferredSize(kImagePreviewQuarterSize);
+        return;
+      }
+      AddImageViewAt(index, grid_icon_count,
+                     GetImagePreviewSize(index, grid_icon_count));
+    }
+  }
+
+  SharesheetImagePreview(const SharesheetImagePreview&) = delete;
+  SharesheetImagePreview& operator=(const SharesheetImagePreview&) = delete;
+  ~SharesheetImagePreview() override = default;
+
+  views::ImageView* GetImageViewAt(size_t index) {
+    if (index >= image_views_.size()) {
+      return nullptr;
+    }
+    return image_views_[index];
+  }
+
+  const size_t GetImageViewCount() { return image_views_.size(); }
+
+ private:
+  void AddRowToImageContainerView() {
+    auto* row = AddChildView(std::make_unique<views::View>());
+    row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        /* inside_border_insets */ gfx::Insets(),
+        /* between_child_spacing */ kImagePreviewBetweenChildSpacing,
+        /* collapse_margins_spacing */ false));
+  }
+
+  void AddImageViewTo(views::View* parent_view, const gfx::Size& size) {
+    auto* image_view =
+        parent_view->AddChildView(std::make_unique<views::ImageView>());
+    image_view->SetImageSize(size);
+    image_view->SetBackground(
+        views::CreateSolidBackground(kImagePreviewPlaceholderBackgroundColor));
+    image_view->SetPaintToLayer();
+    image_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kImagePreviewIconCornerRadius));
+    image_views_.push_back(image_view);
+  }
+
+  void AddImageViewAt(size_t index,
+                      size_t grid_icon_count,
+                      const gfx::Size& size) {
+    views::View* parent_view = this;
+    if (grid_icon_count > 1) {
+      int row_num = 0;
+      // For 2 icons, add to the second row for the second icons.
+      // For 3 icons, add to the second row for the second and third icons.
+      // For 4+ icons, add to the second row for the third and fourth icons.
+      if ((grid_icon_count == 2 && index == 1) ||
+          (grid_icon_count == 3 && index != 0) ||
+          (grid_icon_count >= 4 && index > 1)) {
+        row_num = 1;
+      }
+      parent_view = children()[row_num];
+    }
+    AddImageViewTo(parent_view, size);
+  }
+
+  std::vector<views::ImageView*> image_views_;
+};
+
+// SharesheetHeaderView --------------------------------------------------------
 
 SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
                                            Profile* profile)
@@ -78,9 +214,13 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  const bool has_files =
+      (intent_->file_urls.has_value() && !intent_->file_urls.value().empty());
   // The image view is initialised first to ensure its left most placement.
   if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
-    InitaliseImageView();
+    auto file_count = (has_files) ? intent_->file_urls.value().size() : 0;
+    image_preview_ =
+        AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
   }
   // A separate view is created for the share title and preview string views.
   text_view_ = AddChildView(std::make_unique<views::View>());
@@ -94,28 +234,18 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
                        kTitleTextColor, gfx::ALIGN_LEFT));
   if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
     ShowTextPreview();
-
-    if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
-      ResolveImage();
+    if (has_files) {
+      ResolveImages();
     } else {
       // TODO(crbug.com/2650014): Update to text icon.
-      image_preview_->SetImage(
-          CreatePlaceholderIcon(chromeos::kFiletypeGenericIcon));
+      DCHECK_GT(image_preview_->GetImageViewCount(), 0);
+      image_preview_->GetImageViewAt(0)->SetImage(CreatePlaceholderIcon(
+          chromeos::kFiletypeGenericIcon, kImagePreviewFullSize));
     }
   }
 }
 
 SharesheetHeaderView::~SharesheetHeaderView() = default;
-
-void SharesheetHeaderView::InitaliseImageView() {
-  image_preview_ = AddChildView(std::make_unique<views::ImageView>());
-  image_preview_->SetImageSize(kImagePreviewSize);
-  image_preview_->SetPaintToLayer();
-  image_preview_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kImagePreviewCornerRadius));
-  image_preview_->SetBackground(
-      views::CreateSolidBackground(kImagePreviewPlaceholderBackgroundColor));
-}
 
 void SharesheetHeaderView::ShowTextPreview() {
   std::vector<std::u16string> text_fields = ExtractShareText();
@@ -224,25 +354,35 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
   return text_fields;
 }
 
-// TODO(crbug.com/2650014) Optimise to load several images.
-void SharesheetHeaderView::ResolveImage() {
+void SharesheetHeaderView::ResolveImages() {
+  for (int i = 0; i < image_preview_->GetImageViewCount(); ++i) {
+    ResolveImage(i);
+  }
+}
+
+void SharesheetHeaderView::ResolveImage(size_t index) {
   base::FilePath file_path;
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileSystemContextForExtensionId(
           profile_, file_manager::kFileManagerAppId);
   storage::FileSystemURL fs_url =
-      fs_context->CrackURL(intent_->file_urls.value().front());
+      fs_context->CrackURL(intent_->file_urls.value()[index]);
   file_path = fs_url.path();
 
-  image_ = std::make_unique<HoldingSpaceImage>(
-      kImagePreviewSize, file_path,
+  const auto size =
+      GetImagePreviewSize(index, intent_->file_urls.value().size());
+  auto image = std::make_unique<HoldingSpaceImage>(
+      size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
                           weak_ptr_factory_.GetWeakPtr()),
       base::Optional<gfx::ImageSkia>(
-          CreatePlaceholderIcon(chromeos::kFiletypeImageIcon)));
-  image_subscription_ = image_->AddImageSkiaChangedCallback(base::BindRepeating(
-      &SharesheetHeaderView::OnImageLoaded, weak_ptr_factory_.GetWeakPtr()));
-  image_preview_->SetImage(image_->GetImageSkia(kImagePreviewSize));
+          CreatePlaceholderIcon(chromeos::kFiletypeImageIcon, size)));
+  DCHECK_GT(image_preview_->GetImageViewCount(), index);
+  image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
+  image_subscription_.push_back(image->AddImageSkiaChangedCallback(
+      base::BindRepeating(&SharesheetHeaderView::OnImageLoaded,
+                          weak_ptr_factory_.GetWeakPtr(), size, index)));
+  images_.push_back(std::move(image));
 }
 
 void SharesheetHeaderView::LoadImage(
@@ -256,8 +396,10 @@ void SharesheetHeaderView::LoadImage(
   thumbnail_loader_.Load({file_path, size}, std::move(callback));
 }
 
-void SharesheetHeaderView::OnImageLoaded() {
-  image_preview_->SetImage(image_->GetImageSkia(kImagePreviewSize));
+void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
+  DCHECK_GT(image_preview_->GetImageViewCount(), index);
+  image_preview_->GetImageViewAt(index)->SetImage(
+      images_[index]->GetImageSkia(size));
 }
 
 BEGIN_METADATA(SharesheetHeaderView, views::View)
