@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/test_data_util.h"
@@ -25,16 +26,33 @@ namespace media {
 
 namespace {
 
+const base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+
 class MockImageCaptureClient {
  public:
+  MockImageCaptureClient()
+      : wait_get_photo_state_(base::WaitableEvent::ResetPolicy::AUTOMATIC),
+        wait_set_photo_state_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {}
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnGetPhotoState(mojom::PhotoStatePtr state) {
     state_ = std::move(state);
+    wait_get_photo_state_.Signal();
   }
 
-  const mojom::PhotoState* state() { return state_.get(); }
+  const mojom::PhotoState* State() {
+    EXPECT_TRUE(wait_get_photo_state_.TimedWait(kWaitTimeoutSecs));
+    return state_.get();
+  }
 
-  MOCK_METHOD1(OnCorrectSetPhotoOptions, void(bool));
+  void DoOnSetPhotoOptions(bool success) {
+    EXPECT_TRUE(success);
+    wait_set_photo_state_.Signal();
+  }
+
+  void WaitSetPhotoOptions() {
+    EXPECT_TRUE(wait_set_photo_state_.TimedWait(kWaitTimeoutSecs));
+  }
 
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnPhotoTaken(mojom::BlobPtr blob) {
@@ -44,7 +62,10 @@ class MockImageCaptureClient {
   MOCK_METHOD0(OnCorrectPhotoTaken, void(void));
 
  private:
+  base::WaitableEvent wait_get_photo_state_;
   mojom::PhotoStatePtr state_;
+
+  base::WaitableEvent wait_set_photo_state_;
 };
 
 }  // namespace
@@ -82,6 +103,22 @@ class FileVideoCaptureDeviceTest : public ::testing::Test {
     run_loop_->Run();
   }
 
+  void SetPhotoOptions(double pan, double tilt, double zoom) {
+    mojom::PhotoSettingsPtr photo_settings = mojom::PhotoSettings::New();
+    photo_settings->has_pan = photo_settings->has_tilt =
+        photo_settings->has_zoom = true;
+    photo_settings->pan = pan;
+    photo_settings->tilt = tilt;
+    photo_settings->zoom = zoom;
+
+    VideoCaptureDevice::SetPhotoOptionsCallback scoped_set_callback =
+        base::BindOnce(&MockImageCaptureClient::DoOnSetPhotoOptions,
+                       base::Unretained(&image_capture_client_));
+    device_->SetPhotoOptions(std::move(photo_settings),
+                             std::move(scoped_set_callback));
+    image_capture_client_.WaitSetPhotoOptions();
+  }
+
   std::unique_ptr<NiceMockVideoCaptureDeviceClient> client_;
   MockImageCaptureClient image_capture_client_;
   std::unique_ptr<VideoCaptureDevice> device_;
@@ -97,21 +134,41 @@ TEST_F(FileVideoCaptureDeviceTest, GetPhotoState) {
 
   device_->GetPhotoState(std::move(scoped_get_callback));
 
-  const mojom::PhotoState* state = image_capture_client_.state();
+  const mojom::PhotoState* state = image_capture_client_.State();
   EXPECT_TRUE(state);
+
+  // From gcd of "bear.mjpeg" width=320, height=192.
+  const int kZoomMaxLevels = 64;
+
+  const mojom::RangePtr& pan = state->pan;
+  EXPECT_TRUE(pan);
+  EXPECT_EQ(pan->current, 0);
+  EXPECT_EQ(pan->max, kZoomMaxLevels - 1);
+  EXPECT_EQ(pan->min, 0);
+  EXPECT_EQ(pan->step, 1);
+
+  const mojom::RangePtr& tilt = state->tilt;
+  EXPECT_TRUE(tilt);
+  EXPECT_EQ(tilt->current, kZoomMaxLevels - 1);
+  EXPECT_EQ(tilt->max, kZoomMaxLevels - 1);
+  EXPECT_EQ(tilt->min, 0);
+  EXPECT_EQ(tilt->step, 1);
+
+  const mojom::RangePtr& zoom = state->zoom;
+  EXPECT_TRUE(zoom);
+  EXPECT_EQ(zoom->current, 0);
+  EXPECT_EQ(zoom->max, kZoomMaxLevels - 1);
+  EXPECT_EQ(zoom->min, 0);
+  EXPECT_EQ(zoom->step, 1);
 }
 
 TEST_F(FileVideoCaptureDeviceTest, SetPhotoOptions) {
-  mojom::PhotoSettingsPtr photo_settings = mojom::PhotoSettings::New();
-  VideoCaptureDevice::SetPhotoOptionsCallback scoped_set_callback =
-      base::BindOnce(&MockImageCaptureClient::OnCorrectSetPhotoOptions,
-                     base::Unretained(&image_capture_client_));
-  EXPECT_CALL(image_capture_client_, OnCorrectSetPhotoOptions(true)).Times(1);
-  device_->SetPhotoOptions(std::move(photo_settings),
-                           std::move(scoped_set_callback));
+  SetPhotoOptions(1.0, 1.0, 1.0);
 }
 
 TEST_F(FileVideoCaptureDeviceTest, TakePhoto) {
+  SetPhotoOptions(1.0, 1.0, 1.0);
+
   VideoCaptureDevice::TakePhotoCallback scoped_callback =
       base::BindOnce(&MockImageCaptureClient::DoOnPhotoTaken,
                      base::Unretained(&image_capture_client_));

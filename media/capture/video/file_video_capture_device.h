@@ -67,9 +67,16 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       const base::FilePath& file_path,
       VideoCaptureFormat* video_format);
 
+  // Crops frame with respect to PTZ settings.
+  std::unique_ptr<uint8_t[]> CropPTZRegion(const uint8_t* frame,
+                                           size_t frame_buffer_size);
+
   // Called on the |capture_thread_|.
   void OnAllocateAndStart(const VideoCaptureParams& params,
                           std::unique_ptr<Client> client);
+  void OnGetPhotoState(GetPhotoStateCallback callback);
+  void OnSetPhotoOptions(mojom::PhotoSettingsPtr settings,
+                         SetPhotoOptionsCallback callback);
   void OnStopAndDeAllocate();
   const uint8_t* GetNextFrame();
   void OnCaptureTask();
@@ -86,6 +93,21 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   const base::FilePath file_path_;
   std::unique_ptr<VideoFileParser> file_parser_;
   VideoCaptureFormat capture_format_;
+
+  // The max zoom-able integer level that can be zoomed-in with respect to
+  // aspect ratio of original file.
+  int zoom_max_levels_;
+  // Numerator of file aspect ratio.
+  int aspect_ratio_numerator_;
+  // Denominator of file aspect ratio.
+  int aspect_ratio_denominator_;
+  // Current zoom values.
+  int zoom_;
+  // Current pan values.
+  int pan_;
+  // Current tilt values.
+  int tilt_;
+
   // Target time for the next frame.
   base::TimeTicks next_frame_time_;
   // The system time when we receive the first frame.

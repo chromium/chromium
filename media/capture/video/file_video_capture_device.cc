@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -27,6 +28,23 @@
 #include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
+
+namespace {
+
+int gcd(int a, int b) {
+  int c;
+
+  c = a % b;
+  while (c != 0) {
+    a = b;
+    b = c;
+    c = a % b;
+  }
+
+  return (b);
+}
+
+}  // namespace
 
 static const int kY4MHeaderMaxSize = 200;
 static const char kY4MSimpleFrameDelimiter[] = "FRAME";
@@ -307,6 +325,124 @@ std::unique_ptr<VideoFileParser> FileVideoCaptureDevice::GetVideoFileParser(
   return file_parser;
 }
 
+std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
+    const uint8_t* frame,
+    size_t frame_buffer_size) {
+  CHECK(frame);
+
+  const gfx::Size& frame_size = capture_format_.frame_size;
+  uint32_t fourcc;
+  std::unique_ptr<uint8_t[]> jpeg_to_i420_buffer_;
+  switch (capture_format_.pixel_format) {
+    case PIXEL_FORMAT_MJPEG:
+      // |libyuv::ConvertToI420| don't support cropping MJPG into different
+      // width and thus require transform to i420 first.
+      if ([&frame, &frame_buffer_size, &frame_size, &jpeg_to_i420_buffer_]() {
+            const size_t i420_buffer_size =
+                VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
+            jpeg_to_i420_buffer_.reset(new uint8_t[i420_buffer_size]);
+
+            uint8_t* dst_yp = jpeg_to_i420_buffer_.get();
+            uint8_t* dst_up =
+                dst_yp + VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, frame_size)
+                             .GetArea();
+            uint8_t* dst_vp =
+                dst_up + VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, frame_size)
+                             .GetArea();
+            int dst_yp_stride = frame_size.width();
+            int dst_up_stride = dst_yp_stride / 2;
+            int dst_vp_stride = dst_yp_stride / 2;
+
+            return libyuv::ConvertToI420(
+                frame, frame_buffer_size, dst_yp, dst_yp_stride, dst_up,
+                dst_up_stride, dst_vp, dst_vp_stride, /* crop_x */ 0,
+                /* crop_y */ 0,
+                /* src_width */ frame_size.width(),
+                /* src_height */ frame_size.height(),
+                /* crop_width */ frame_size.width(),
+                /* crop_height */ frame_size.height(),
+                libyuv::RotationMode::kRotate0, libyuv::FOURCC_MJPG);
+          }()) {
+        LOG(ERROR) << "Failed to convert MJPEG to i420 for ptz transform";
+      }
+      frame = jpeg_to_i420_buffer_.get();
+      frame_buffer_size =
+          VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
+      ABSL_FALLTHROUGH_INTENDED;
+    case PIXEL_FORMAT_I420:
+      fourcc = libyuv::FOURCC_I420;
+      break;
+    default:
+      LOG(ERROR) << "Unsupported file format for ptz transform.";
+      return {};
+  }
+
+  // Crop zoomed region.
+  const int crop_width = (zoom_max_levels_ - zoom_) * aspect_ratio_numerator_;
+  const int crop_height =
+      (zoom_max_levels_ - zoom_) * aspect_ratio_denominator_;
+  const gfx::Size crop_size(crop_width, crop_height);
+  const int crop_x =
+      std::min(pan_ * aspect_ratio_numerator_, frame_size.width() - crop_width);
+  const int crop_y =
+      std::min((zoom_max_levels_ - 1 - tilt_) * aspect_ratio_denominator_,
+               frame_size.height() - crop_height);
+  const size_t crop_buffer_size =
+      VideoFrame::AllocationSize(PIXEL_FORMAT_I420, crop_size);
+  std::unique_ptr<uint8_t[]> crop_frame(new uint8_t[crop_buffer_size]);
+
+  uint8_t* crop_yp = crop_frame.get();
+  uint8_t* crop_up =
+      crop_yp +
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, crop_size).GetArea();
+  uint8_t* crop_vp =
+      crop_up +
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, crop_size).GetArea();
+  int crop_yp_stride = crop_width;
+  int crop_up_stride = crop_yp_stride / 2;
+  int crop_vp_stride = crop_yp_stride / 2;
+
+  if (libyuv::ConvertToI420(frame, frame_buffer_size, crop_yp, crop_yp_stride,
+                            crop_up, crop_up_stride, crop_vp, crop_vp_stride,
+                            crop_x, crop_y, frame_size.width(),
+                            frame_size.height(), crop_width, crop_height,
+                            libyuv::RotationMode::kRotate0, fourcc)) {
+    LOG(ERROR) << "Failed to crop image for ptz transform.";
+    return {};
+  }
+
+  if (crop_size == frame_size)
+    return crop_frame;
+
+  // Scale cropped region to original size.
+  const auto& scale_size = frame_size;
+  const size_t scale_buffer_size =
+      VideoFrame::AllocationSize(PIXEL_FORMAT_I420, scale_size);
+  std::unique_ptr<uint8_t[]> scale_frame(new uint8_t[scale_buffer_size]);
+
+  uint8_t* scale_yp = scale_frame.get();
+  uint8_t* scale_up =
+      scale_yp +
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, scale_size).GetArea();
+  uint8_t* scale_vp =
+      scale_up +
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, scale_size).GetArea();
+  int scale_yp_stride = scale_size.width();
+  int scale_up_stride = scale_yp_stride / 2;
+  int scale_vp_stride = scale_yp_stride / 2;
+
+  if (libyuv::I420Scale(crop_yp, crop_yp_stride, crop_up, crop_up_stride,
+                        crop_vp, crop_vp_stride, crop_width, crop_height,
+                        scale_yp, scale_yp_stride, scale_up, scale_up_stride,
+                        scale_vp, scale_vp_stride, scale_size.width(),
+                        scale_size.height(),
+                        libyuv::FilterMode::kFilterBilinear)) {
+    LOG(ERROR) << "Failed to scale image for ptz transform.";
+    return {};
+  }
+  return scale_frame;
+}
+
 FileVideoCaptureDevice::FileVideoCaptureDevice(
     const base::FilePath& file_path,
     std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
@@ -348,6 +484,15 @@ void FileVideoCaptureDevice::StopAndDeAllocate() {
 
 void FileVideoCaptureDevice::GetPhotoState(GetPhotoStateCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(capture_thread_.IsRunning());
+
+  capture_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&FileVideoCaptureDevice::OnGetPhotoState,
+                                base::Unretained(this), std::move(callback)));
+}
+
+void FileVideoCaptureDevice::OnGetPhotoState(GetPhotoStateCallback callback) {
+  DCHECK(capture_thread_.task_runner()->BelongsToCurrentThread());
 
   auto photo_capabilities = mojo::CreateEmptyPhotoState();
 
@@ -356,12 +501,44 @@ void FileVideoCaptureDevice::GetPhotoState(GetPhotoStateCallback callback) {
   int width = capture_format_.frame_size.width();
   photo_capabilities->width = mojom::Range::New(width, width, width, 0);
 
+  if (zoom_max_levels_ > 0) {
+    photo_capabilities->pan = mojom::Range::New();
+    photo_capabilities->pan->current = pan_;
+    photo_capabilities->pan->max = zoom_max_levels_ - 1;
+    photo_capabilities->pan->min = 0;
+    photo_capabilities->pan->step = 1;
+
+    photo_capabilities->tilt = mojom::Range::New();
+    photo_capabilities->tilt->current = tilt_;
+    photo_capabilities->tilt->max = zoom_max_levels_ - 1;
+    photo_capabilities->tilt->min = 0;
+    photo_capabilities->tilt->step = 1;
+
+    photo_capabilities->zoom = mojom::Range::New();
+    photo_capabilities->zoom->current = zoom_;
+    photo_capabilities->zoom->max = zoom_max_levels_ - 1;
+    photo_capabilities->zoom->min = 0;
+    photo_capabilities->zoom->step = 1;
+  }
+
   std::move(callback).Run(std::move(photo_capabilities));
 }
 
 void FileVideoCaptureDevice::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                                              SetPhotoOptionsCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(capture_thread_.IsRunning());
+
+  capture_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&FileVideoCaptureDevice::OnSetPhotoOptions,
+                                base::Unretained(this), std::move(settings),
+                                std::move(callback)));
+}
+
+void FileVideoCaptureDevice::OnSetPhotoOptions(
+    mojom::PhotoSettingsPtr settings,
+    SetPhotoOptionsCallback callback) {
+  DCHECK(capture_thread_.task_runner()->BelongsToCurrentThread());
 
   if (settings->has_height &&
       settings->height != capture_format_.frame_size.height()) {
@@ -383,9 +560,19 @@ void FileVideoCaptureDevice::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
       settings->has_color_temperature || settings->has_iso ||
       settings->has_brightness || settings->has_contrast ||
       settings->has_saturation || settings->has_sharpness ||
-      settings->has_focus_distance || settings->has_pan || settings->has_tilt ||
-      settings->has_zoom || settings->has_fill_light_mode) {
+      settings->has_focus_distance || settings->has_fill_light_mode) {
     return;
+  }
+
+  if (settings->has_pan) {
+    pan_ = base::ClampToRange(int(settings->pan), 0, zoom_max_levels_);
+  }
+
+  if (settings->has_tilt) {
+    tilt_ = base::ClampToRange(int(settings->tilt), 0, zoom_max_levels_);
+  }
+  if (settings->has_zoom) {
+    zoom_ = base::ClampToRange(int(settings->zoom), 0, zoom_max_levels_);
   }
 
   std::move(callback).Run(true);
@@ -417,6 +604,16 @@ void FileVideoCaptureDevice::OnAllocateAndStart(
     return;
   }
 
+  zoom_max_levels_ = gcd(capture_format_.frame_size.width(),
+                         capture_format_.frame_size.height());
+  aspect_ratio_numerator_ =
+      capture_format_.frame_size.width() / zoom_max_levels_;
+  aspect_ratio_denominator_ =
+      capture_format_.frame_size.height() / zoom_max_levels_;
+  zoom_ = 0;
+  pan_ = 0;
+  tilt_ = zoom_max_levels_ - 1;
+
   DVLOG(1) << "Opened video file " << capture_format_.frame_size.ToString()
            << ", fps: " << capture_format_.frame_rate;
   client_->OnStarted();
@@ -442,8 +639,11 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   // Give the captured frame to the client.
   int frame_size = 0;
   const uint8_t* frame_ptr = file_parser_->GetNextFrame(&frame_size);
-  DCHECK(frame_size);
   CHECK(frame_ptr);
+
+  auto ptz_frame = CropPTZRegion(frame_ptr, frame_size);
+  CHECK(ptz_frame);
+
   const base::TimeTicks current_time = base::TimeTicks::Now();
   if (first_ref_time_.is_null())
     first_ref_time_ = current_time;
@@ -462,12 +662,12 @@ void FileVideoCaptureDevice::OnCaptureTask() {
       return;
     }
     ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
-    const uint8_t* src_y_plane = frame_ptr;
+    const uint8_t* src_y_plane = ptz_frame.get();
     const uint8_t* src_u_plane =
-        frame_ptr +
+        ptz_frame.get() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea();
     const uint8_t* src_v_plane =
-        frame_ptr +
+        ptz_frame.get() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, buffer_size).GetArea();
     libyuv::I420ToNV12(
@@ -487,7 +687,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
-        frame_ptr, frame_size, capture_format_, gfx::ColorSpace(),
+        ptz_frame.get(), frame_size, capture_format_, gfx::ColorSpace(),
         0 /* clockwise_rotation */, false /* flip_y */, current_time,
         current_time - first_ref_time_);
   }
@@ -498,7 +698,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     take_photo_callbacks_.pop();
 
     mojom::BlobPtr blob =
-        RotateAndBlobify(frame_ptr, frame_size, capture_format_, 0);
+        RotateAndBlobify(ptz_frame.get(), frame_size, capture_format_, 0);
     if (!blob)
       continue;
 
