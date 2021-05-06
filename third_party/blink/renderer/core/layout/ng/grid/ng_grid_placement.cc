@@ -32,15 +32,19 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {
   DCHECK(grid_items);
-  minor_max_end_line_ = (minor_direction_ == kForColumns)
-                            ? GridPositionsResolver::ExplicitGridColumnCount(
-                                  grid_style_, column_auto_repeat_track_count_)
-                            : GridPositionsResolver::ExplicitGridRowCount(
-                                  grid_style_, row_auto_repeat_track_count_);
 
   // We need these variables in order to use |GridPositionsResolver|.
   column_start_offset_ = DetermineTrackStartOffset(*grid_items, kForColumns);
   row_start_offset_ = DetermineTrackStartOffset(*grid_items, kForRows);
+
+  minor_max_end_line_ =
+      (minor_direction_ == kForColumns)
+          ? GridPositionsResolver::ExplicitGridColumnCount(
+                grid_style_, column_auto_repeat_track_count_) +
+                column_start_offset_
+          : GridPositionsResolver::ExplicitGridRowCount(
+                grid_style_, row_auto_repeat_track_count_) +
+                row_start_offset_;
 
   // Step 1. Position anything that’s not auto-placed; if no items need
   // auto-placement, then we are done.
