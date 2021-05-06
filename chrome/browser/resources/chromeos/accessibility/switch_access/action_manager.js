@@ -98,7 +98,7 @@ export class ActionManager {
         // Exit menu, then click (so the action will hit the desired target,
         // instead of the menu).
         ActionManager.exitCurrentMenu();
-        ActionManager.instance.handlePointScanActions_(action);
+        Navigator.byPoint.performMouseAction(action);
         return;
       default:
         ActionManager.instance.handleGlobalActions_(action) ||
@@ -263,38 +263,6 @@ export class ActionManager {
         return true;
       case SwitchAccessMenuAction.ITEM_SCAN:
         Navigator.byItem.restart();
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * If the action is a point scan action, perform the action and return true.
-   * Otherwise return false.
-   * @param {!SwitchAccessMenuAction} action
-   * @return {boolean}
-   * @private
-   */
-  handlePointScanActions_(action) {
-    if (SwitchAccess.mode !== SAConstants.Mode.POINT_SCAN) {
-      return false;
-    }
-
-    switch (action) {
-      case SwitchAccessMenuAction.LEFT_CLICK:
-        EventGenerator.sendMouseClick(
-            Navigator.byPoint.currentPoint.x, Navigator.byPoint.currentPoint.y);
-        Navigator.byPoint.start();
-        return true;
-      case SwitchAccessMenuAction.RIGHT_CLICK:
-        EventGenerator.sendMouseClick(
-            Navigator.byPoint.currentPoint.x, Navigator.byPoint.currentPoint.y,
-            {
-              mouseButton:
-                  chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
-            });
-        Navigator.byPoint.start();
         return true;
       default:
         return false;

@@ -131,4 +131,10 @@ export class PointNavigatorInterface {
 
   /** Stops point scanning. */
   stop() {}
+
+  /**
+   * Performs a mouse action at the currentPoint().
+   * @param {chrome.accessibilityPrivate.SwitchAccessMenuAction} action
+   */
+  performMouseAction(action) {}
 }
