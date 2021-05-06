@@ -361,6 +361,7 @@
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
+      'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-perfetto-rel': 'perfetto_release_bot',
       'linux-upload-perfetto': 'release_bot',
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols',
@@ -2332,6 +2333,10 @@
 
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_release_not_build_ash_bot': [
+      'lacros_on_linux', 'release_bot',
     ],
 
     'lacros_on_linux_release_trybot': [

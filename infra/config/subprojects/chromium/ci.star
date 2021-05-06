@@ -3078,6 +3078,13 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "linux-lacros-version-skew-fyi",
+    console_view_entry = consoles.console_view_entry(
+        category = "default",
+    ),
+)
+
+ci.fyi_builder(
     name = "linux-blink-animation-use-time-delta",
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",

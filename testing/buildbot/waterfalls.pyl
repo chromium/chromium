@@ -3327,6 +3327,12 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
+      'linux-lacros-version-skew-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_sandbox',
+        ],
+      },
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
         'mixins': [
