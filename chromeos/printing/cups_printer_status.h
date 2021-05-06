@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 
 namespace chromeos {
 
@@ -23,31 +24,8 @@ class CHROMEOS_EXPORT CupsPrinterStatus {
   // severity, which is the level of seriousness of that state.
   class CHROMEOS_EXPORT CupsPrinterStatusReason {
    public:
-    enum class Reason {
-      kDeviceError = 0,
-      kDoorOpen,
-      kLowOnInk,
-      kLowOnPaper,
-      kNoError,
-      kOutOfInk,
-      kOutOfPaper,
-      kOutputAreaAlmostFull,
-      kOutputFull,
-      kPaperJam,
-      kPaused,
-      kPrinterQueueFull,
-      kPrinterUnreachable,
-      kStopped,
-      kTrayMissing,
-      kUnknownReason,
-    };
-
-    enum class Severity {
-      kUnknownSeverity = 0,
-      kReport,
-      kWarning,
-      kError,
-    };
+    using Reason = crosapi::mojom::StatusReason::Reason;
+    using Severity = crosapi::mojom::StatusReason::Severity;
 
     CupsPrinterStatusReason(const Reason& reason, const Severity& severity);
     ~CupsPrinterStatusReason();

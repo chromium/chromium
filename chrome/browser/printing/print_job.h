@@ -18,6 +18,10 @@
 #include "content/public/browser/notification_registrar.h"
 #include "printing/print_settings.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#endif
+
 namespace base {
 class Location;
 class RefCountedMemory;
@@ -45,17 +49,12 @@ class PrintSettings;
 class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
                  public content::NotificationObserver {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // An enumeration of components where print jobs can come from. The order of
   // these enums must match that of
   // chrome/browser/chromeos/printing/history/print_job_info.proto.
-  enum class Source {
-    PRINT_PREVIEW,
-    ARC,
-    EXTENSION,
-    PRINT_PREVIEW_INCOGNITO,
-  };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  using Source = crosapi::mojom::PrintJob::Source;
+#endif  // defined(OS_CHROMEOS)
 
   // Create a empty PrintJob. When initializing with this constructor,
   // post-constructor initialization must be done with Initialize().
@@ -121,7 +120,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // Access stored settings.
   const PrintSettings& settings() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Sets the component which initiated the print job.
   void SetSource(Source source, const std::string& source_id);
 
@@ -130,7 +129,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
 
   // Returns the ID of the source.
   const std::string& source_id() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
@@ -223,14 +222,14 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   std::vector<uint32_t> pdf_page_mapping_;
 #endif  // defined(OS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // The component which initiated the print job.
   Source source_;
 
   // ID of the source.
   // This should be blank if the source is PRINT_PREVIEW or ARC.
   std::string source_id_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   // Holds the quit closure while running a nested RunLoop to flush tasks.
   base::OnceClosure quit_closure_;

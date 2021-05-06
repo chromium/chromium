@@ -209,6 +209,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::KeystoreService,
                   &crosapi::mojom::Crosapi::BindKeystoreService,
                   Crosapi::MethodMinVersions::kBindKeystoreServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::LocalPrinter,
+                  &crosapi::mojom::Crosapi::BindLocalPrinter,
+                  Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();
   ConstructRemote<crosapi::mojom::MessageCenter,
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();

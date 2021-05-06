@@ -30,7 +30,7 @@ declare_args() {
 
 component("chromeos") {
   public_deps = []
-  deps = []
+  deps = [ "//chromeos/crosapi/mojom" ]
   sources = []
 
   if (is_chromeos_ash) {

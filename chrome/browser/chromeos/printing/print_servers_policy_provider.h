@@ -12,16 +12,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/printing/print_server.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
 namespace chromeos {
 
-enum ServerPrintersFetchingMode {
-  kStandard,
-  kSingleServerOnly,
-};
+using ServerPrintersFetchingMode =
+    crosapi::mojom::PrintServersConfig::ServerPrintersFetchingMode;
 
 // This class observes values provided by the DeviceExternalPrintServers and
 // ExternalPrintServers policies and calculates resultant list of available
