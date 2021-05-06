@@ -220,26 +220,24 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   // Set capture time to the NTP time, which is the estimated capture time
   // converted to the local clock.
   if (incoming_frame.ntp_time_ms() > 0) {
-    const base::TimeTicks capture_time =
+    video_frame->metadata().capture_begin_time =
         base::TimeTicks() + base::TimeDelta::FromMilliseconds(
                                 incoming_frame.ntp_time_ms() + ntp_offset_);
-    video_frame->metadata().capture_begin_time = capture_time;
   }
 
   // Set receive time to arrival of last packet.
   if (!incoming_frame.packet_infos().empty()) {
-    int64_t last_packet_arrival_ms =
+    webrtc::Timestamp last_packet_arrival =
         std::max_element(
             incoming_frame.packet_infos().cbegin(),
             incoming_frame.packet_infos().cend(),
             [](const webrtc::RtpPacketInfo& a, const webrtc::RtpPacketInfo& b) {
-              return a.receive_time_ms() < b.receive_time_ms();
+              return a.receive_time() < b.receive_time();
             })
-            ->receive_time_ms();
-    const base::TimeTicks receive_time =
+            ->receive_time();
+    video_frame->metadata().receive_time =
         base::TimeTicks() +
-        base::TimeDelta::FromMilliseconds(last_packet_arrival_ms);
-    video_frame->metadata().receive_time = receive_time;
+        base::TimeDelta::FromMicroseconds(last_packet_arrival.us());
   }
 
   // Use our computed render time as estimated capture time. If timestamp_us()

@@ -401,13 +401,14 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
 
   webrtc::RtpPacketInfos::vector_type packet_infos;
   for (int i = 0; i < 4; ++i) {
-    packet_infos.emplace_back(kSsrc, kCsrcs, kRtpTimestamp, absl::nullopt,
-                              absl::nullopt, kProcessingStart.ms() - 100 + i);
+    packet_infos.emplace_back(
+        kSsrc, kCsrcs, kRtpTimestamp, absl::nullopt, absl::nullopt,
+        kProcessingStart - webrtc::TimeDelta::Micros(10000 - i * 30));
   }
   // Expected receive time should be the same as the last arrival time.
   base::TimeTicks kExpectedReceiveTime =
-      base::TimeTicks() +
-      base::TimeDelta::FromMilliseconds(kProcessingStart.ms() - 100 + 3);
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(
+                              kProcessingStart.us() - (10000 - 3 * 30));
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder()
