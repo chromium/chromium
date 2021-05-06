@@ -8,12 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ostream>
 #include <type_traits>
 
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/check.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 
 #if defined(COMPILER_MSVC)

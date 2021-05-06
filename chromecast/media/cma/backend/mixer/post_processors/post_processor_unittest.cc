@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_unittest.h"
-#include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
 #include <time.h>
 
@@ -13,7 +12,9 @@
 #include <cstring>
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
 namespace chromecast {
 namespace media {

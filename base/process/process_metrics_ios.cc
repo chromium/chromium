@@ -53,10 +53,6 @@ void IncreaseFdLimitTo(unsigned int max_descriptors) {
   // Unimplemented.
 }
 
-size_t GetPageSize() {
-  return getpagesize();
-}
-
 // Bytes committed by the system.
 size_t GetSystemCommitCharge() {
   NOTIMPLEMENTED();

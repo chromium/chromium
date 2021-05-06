@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"

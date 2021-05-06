@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

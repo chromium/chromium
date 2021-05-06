@@ -78,6 +78,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/cpu.h"
 #include "base/numerics/math_constants.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

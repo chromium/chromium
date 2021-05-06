@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
 #define CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
 
+#include "base/files/file_path.h"
 #include "base/threading/sequence_bound.h"
 #include "content/common/content_export.h"
 

@@ -23,9 +23,6 @@
 namespace base {
 namespace {
 
-// System pagesize. This value remains constant on x86/64 architectures.
-const int PAGESIZE_KB = 4;
-
 // ntstatus.h conflicts with windows.h so define this locally.
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
 
@@ -201,10 +198,6 @@ size_t GetSystemCommitCharge() {
     return 0;
   }
   return (info.CommitTotal * system_info.dwPageSize) / 1024;
-}
-
-size_t GetPageSize() {
-  return PAGESIZE_KB * 1024;
 }
 
 // This function uses the following mapping between MEMORYSTATUSEX and

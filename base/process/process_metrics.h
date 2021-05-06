@@ -27,6 +27,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+// TODO(thestig): Update GetPageSize() callers and remove.
+#include "base/memory/page_size.h"
+
 #if defined(OS_APPLE)
 #include <mach/mach.h>
 #include "base/process/port_provider_mac.h"
@@ -294,12 +297,6 @@ class BASE_EXPORT ProcessMetrics {
 // Returns the memory committed by the system in KBytes.
 // Returns 0 if it can't compute the commit charge.
 BASE_EXPORT size_t GetSystemCommitCharge();
-
-// Returns the number of bytes in a memory page. Do not use this to compute
-// the number of pages in a block of memory for calling mincore(). On some
-// platforms, e.g. iOS, mincore() uses a different page size from what is
-// returned by GetPageSize().
-BASE_EXPORT size_t GetPageSize();
 
 // Returns the maximum number of file descriptors that can be open by a process
 // at once. If the number is unavailable, a conservative best guess is returned.

@@ -13,6 +13,11 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "url/gurl.h"
 
+namespace base {
+class DictionaryValue;
+class Value;
+}  // namespace base
+
 namespace apps_util {
 
 extern const char kIntentActionMain[];

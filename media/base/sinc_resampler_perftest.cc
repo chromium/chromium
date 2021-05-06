@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cpu.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/sinc_resampler.h"
