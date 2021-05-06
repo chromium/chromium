@@ -605,7 +605,7 @@ Status ParsePageRanges(const base::DictionaryValue& params,
 
   std::vector<std::string> ranges;
   std::string pages_str;
-  for (const base::Value& page_range : *page_range_list) {
+  for (const base::Value& page_range : page_range_list->GetList()) {
     if (page_range.is_int()) {
       if (page_range.GetInt() < 0) {
         return Status(kInvalidArgument,
