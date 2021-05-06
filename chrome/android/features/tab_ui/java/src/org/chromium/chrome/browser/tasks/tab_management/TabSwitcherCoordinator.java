@@ -281,8 +281,7 @@ public class TabSwitcherCoordinator
 
     @Override
     public void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader,
-            SnackbarManager.SnackbarManageable snackbarManageable,
+            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
         if (mIsInitialized) return;
 
@@ -298,7 +297,7 @@ public class TabSwitcherCoordinator
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
             mUndoGroupSnackbarController =
-                    new UndoGroupSnackbarController(context, mTabModelSelector, snackbarManageable);
+                    new UndoGroupSnackbarController(context, mTabModelSelector, snackbarManager);
         } else {
             mUndoGroupSnackbarController = null;
         }

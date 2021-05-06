@@ -146,8 +146,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         if (mTabSwitcher != null) {
             ChromeActivity activity = (ChromeActivity) context;
             mTabSwitcher.initWithNative(activity, activity.getTabContentManager(),
-                    activity.getCompositorViewHolder().getDynamicResourceLoader(), activity,
-                    activity.getModalDialogManager());
+                    activity.getCompositorViewHolder().getDynamicResourceLoader(),
+                    activity.getSnackbarManager(), activity.getModalDialogManager());
         }
 
         mMediator.initWithNative(omniboxStub);

@@ -51,8 +51,7 @@ public interface TabSwitcher {
      * Called when the native initialization is completed.
      */
     void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader,
-            SnackbarManager.SnackbarManageable snackbarManageable,
+            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager);
 
     // TODO(960196): Remove the following interfaces when the associated bug is resolved.

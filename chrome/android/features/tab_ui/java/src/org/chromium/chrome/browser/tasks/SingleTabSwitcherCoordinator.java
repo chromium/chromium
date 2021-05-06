@@ -130,8 +130,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
 
     @Override
     public void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader,
-            SnackbarManager.SnackbarManageable snackbarManageable,
+            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
         mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
         mMediator.initWithNative();

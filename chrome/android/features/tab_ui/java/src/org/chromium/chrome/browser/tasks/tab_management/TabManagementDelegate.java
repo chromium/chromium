@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
 
@@ -52,7 +53,8 @@ public interface TabManagementDelegate {
 
     /**
      * Create the {@link TasksSurface}
-     * @param activity The {@link ChromeActivity} that creates this surface.
+     * @param activity The {@link Activity} that creates this surface. Explicitly cast to {@link
+     *         ChromeActivity} for dependency acquisition.
      * @param scrimCoordinator The {@link ScrimCoordinator} that controls scrim view.
      * @param propertyModel The {@link PropertyModel} contains the {@link TasksSurfaceProperties} to
      *         communicate with this surface.
@@ -63,19 +65,20 @@ public interface TabManagementDelegate {
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @return The {@link TasksSurface}.
      */
-    TasksSurface createTasksSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
+    TasksSurface createTasksSurface(Activity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
             Supplier<Tab> parentTabSupplier, boolean hasMVTiles, WindowAndroid windowAndroid);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
-     * @param context The {@link Context} of this switcher.
+     * @param context The {@link Context} of this switcher. Explicitly cast to {@link
+     *         ChromeActivity} for dependency acquisition.
      * @param containerView The {@link ViewGroup} to add the switcher to.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(
-            ChromeActivity context, ViewGroup containerView, ScrimCoordinator scrimCoordinator);
+            Activity context, ViewGroup containerView, ScrimCoordinator scrimCoordinator);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.

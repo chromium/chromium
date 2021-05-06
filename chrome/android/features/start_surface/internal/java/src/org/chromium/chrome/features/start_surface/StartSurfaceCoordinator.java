@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,7 +19,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
@@ -57,7 +57,7 @@ import java.util.List;
  * surface and the bottom bar to switch between them.
  */
 public class StartSurfaceCoordinator implements StartSurface {
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final ScrimCoordinator mScrimCoordinator;
     private final StartSurfaceMediator mStartSurfaceMediator;
     private final @SurfaceMode int mSurfaceMode;
@@ -157,8 +157,26 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
     }
 
-    // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
-    public StartSurfaceCoordinator(@NonNull ChromeActivity activity,
+    /**
+     * @param activity The current Android {@link Activity}.
+     * @param scrimCoordinator The coordinator for the scrim widget.
+     * @param sheetController Controls the bottom sheet.
+     * @param startSurfaceOneshotSupplier Supplies the start surface.
+     * @param parentTabSupplier Supplies the current parent {@link Tab}.
+     * @param hadWarmStart Whether the application had a warm start.
+     * @param windowAndroid The current {@link WindowAndroid}.
+     * @param containerView The container {@link ViewGroup} for this ui.
+     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
+     * @param tabModelSelector The current {@link TabModelSelector}.
+     * @param browserControlsManager Manages the browser controls.
+     * @param snackbarManager Manages the snackbar.
+     * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
+     * @param omniboxStub Handles user interaction with the stubbed Omnibox.
+     * @param tabContentManager Manages the tab content.
+     * @param modalDialogManager Manages modal dialogs.
+     * @param chromeActivityNativeDelegate An activity delegate to handle native initialization.
+     */
+    public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
@@ -312,7 +330,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         if (mTabSwitcher != null) {
             mTabSwitcher.initWithNative(mActivity, mTabContentManager,
-                    mDynamicResourceLoaderSupplier.get(), mActivity, mModalDialogManager);
+                    mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
         }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);

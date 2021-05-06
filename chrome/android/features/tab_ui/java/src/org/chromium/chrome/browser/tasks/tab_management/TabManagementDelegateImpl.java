@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider.SYNTHETIC_TRIAL_POSTFIX;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
 
@@ -41,34 +42,37 @@ import org.chromium.ui.modelutil.PropertyModel;
 @UsedByReflection("TabManagementModule")
 public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
-    public TasksSurface createTasksSurface(ChromeActivity activity,
-            ScrimCoordinator scrimCoordinator, PropertyModel propertyModel,
-            @TabSwitcherType int tabSwitcherType, Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, WindowAndroid windowAndroid) {
-        return new TasksSurfaceCoordinator(activity, scrimCoordinator, propertyModel,
+    public TasksSurface createTasksSurface(Activity activity, ScrimCoordinator scrimCoordinator,
+            PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, WindowAndroid windowAndroid) {
+        assert activity instanceof ChromeActivity;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        return new TasksSurfaceCoordinator(chromeActivity, scrimCoordinator, propertyModel,
                 tabSwitcherType, parentTabSupplier, hasMVTiles, windowAndroid);
     }
 
     @Override
     public TabSwitcher createGridTabSwitcher(
-            ChromeActivity activity, ViewGroup containerView, ScrimCoordinator scrimCoordinator) {
+            Activity activity, ViewGroup containerView, ScrimCoordinator scrimCoordinator) {
         if (UmaSessionStats.isMetricsServiceAvailable()) {
             UmaSessionStats.registerSyntheticFieldTrial(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
                     "Downloaded_Enabled");
         }
 
-        return new TabSwitcherCoordinator(activity, activity.getLifecycleDispatcher(),
-                activity.getTabModelSelector(), activity.getTabContentManager(),
-                activity.getBrowserControlsManager(), activity,
-                activity.getMenuOrKeyboardActionController(), containerView,
-                activity.getShareDelegateSupplier(), activity.getMultiWindowModeStateDispatcher(),
-                scrimCoordinator,
+        assert activity instanceof ChromeActivity;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        return new TabSwitcherCoordinator(activity, chromeActivity.getLifecycleDispatcher(),
+                chromeActivity.getTabModelSelector(), chromeActivity.getTabContentManager(),
+                chromeActivity.getBrowserControlsManager(), /* tabCreatorManager= */ chromeActivity,
+                chromeActivity.getMenuOrKeyboardActionController(), containerView,
+                chromeActivity.getShareDelegateSupplier(),
+                chromeActivity.getMultiWindowModeStateDispatcher(), scrimCoordinator,
                 TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
                                 && SysUtils.isLowEndDevice()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
-                activity.getCompositorViewHolder());
+                chromeActivity.getCompositorViewHolder());
     }
 
     @Override
@@ -104,7 +108,14 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
             Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
         return StartSurfaceDelegate.createStartSurface(activity, scrimCoordinator, sheetController,
-                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid);
+                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
+                activity.getCompositorViewHolder(),
+                activity.getCompositorViewHolder()::getDynamicResourceLoader,
+                activity.getTabModelSelector(), activity.getBrowserControlsManager(),
+                activity.getSnackbarManager(), activity.getShareDelegateSupplier(),
+                activity.getToolbarManager().getOmniboxStub(), activity.getTabContentManager(),
+                activity.getModalDialogManager(),
+                /* chromeActivityNativeDelegate= */ activity);
     }
 
     @Override
