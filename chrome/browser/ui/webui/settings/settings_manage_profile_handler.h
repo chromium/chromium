@@ -56,7 +56,7 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
   void HandleGetAvailableIcons(const base::ListValue* args);
 
   // Get all the available profile icons to choose from.
-  std::unique_ptr<base::ListValue> GetAvailableIcons();
+  std::vector<base::Value> GetAvailableIcons();
 
   // Callback for the "setProfileIconToGaiaAvatar" message.
   void HandleSetProfileIconToGaiaAvatar(const base::ListValue* args);

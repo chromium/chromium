@@ -103,7 +103,8 @@ void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     return;
 
   // GAIA image is loaded asynchronously.
-  FireWebUIListener("available-icons-changed", *GetAvailableIcons());
+  FireWebUIListener("available-icons-changed",
+                    base::Value(GetAvailableIcons()));
 }
 
 void ManageProfileHandler::OnProfileAvatarChanged(
@@ -112,7 +113,8 @@ void ManageProfileHandler::OnProfileAvatarChanged(
     return;
 
   // This is necessary to send the potentially updated GAIA photo.
-  FireWebUIListener("available-icons-changed", *GetAvailableIcons());
+  FireWebUIListener("available-icons-changed",
+                    base::Value(GetAvailableIcons()));
 }
 
 void ManageProfileHandler::OnProfileThemeColorsChanged(
@@ -130,10 +132,11 @@ void ManageProfileHandler::HandleGetAvailableIcons(
   CHECK_EQ(1U, args->GetSize());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *GetAvailableIcons());
+
+  ResolveJavascriptCallback(*callback_id, base::Value(GetAvailableIcons()));
 }
 
-std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
+std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -142,7 +145,7 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
   if (!entry) {
     LOG(ERROR) << "No profile attributes entry found for profile with path: "
                << profile_->GetPath();
-    return std::make_unique<base::ListValue>();
+    return std::vector<base::Value>();
   }
 
   bool using_gaia = entry->IsUsingGAIAPicture();
@@ -150,7 +153,7 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
       using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
 
   // Obtain a list of the modern avatar icons.
-  std::unique_ptr<base::ListValue> avatars(
+  std::vector<base::Value> avatars(
       profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
 
   if (entry->GetSigninState() == SigninState::kNotSignedIn) {
@@ -158,7 +161,8 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
     auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
         colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
         selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
-    avatars->Insert(0, std::move(generic_avatar_info));
+    avatars.insert(avatars.begin(),
+                   base::Value(std::move(generic_avatar_info)));
     return avatars;
   }
 
@@ -171,7 +175,7 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
         /*label=*/
         l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
         /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
-    avatars->Insert(0, std::move(gaia_picture_info));
+    avatars.insert(avatars.begin(), base::Value(std::move(gaia_picture_info)));
   }
 
   return avatars;

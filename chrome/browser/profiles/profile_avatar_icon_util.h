@@ -10,8 +10,10 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -19,7 +21,6 @@
 
 namespace base {
 class FilePath;
-class ListValue;
 }
 
 namespace gfx {
@@ -150,18 +151,18 @@ bool IsDefaultAvatarIconIndex(size_t index);
 // is, returns true and its index through |icon_index|. If not, returns false.
 bool IsDefaultAvatarIconUrl(const std::string& icon_url, size_t *icon_index);
 
-// Returns Dict containing the avatar icon info in the format expected by the
-// WebUI component 'cr-profile-avatar-selector'.
-std::unique_ptr<base::DictionaryValue> GetAvatarIconAndLabelDict(
+// Returns dictionary containing the avatar icon info in the format expected by
+// the WebUI component 'cr-profile-avatar-selector'.
+base::flat_map<std::string, base::Value> GetAvatarIconAndLabelDict(
     const std::string& url,
     const std::u16string& label,
     size_t index,
     bool selected,
     bool is_gaia_avatar);
 
-// Returns Dict containing the default generic avatar icon, label, index and
-// selected state.
-std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
+// Returns dictionary containing the default generic avatar icon, label, index
+// and selected state.
+base::flat_map<std::string, base::Value> GetDefaultProfileAvatarIconAndLabel(
     SkColor fill_color,
     SkColor stroke_color,
     bool selected);
@@ -170,7 +171,7 @@ std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
 // well as avatar labels used for accessibility purposes. The list is ordered
 // according to the avatars' default order. If |selected_avatar_idx| is one of
 // the available indices, the corresponding avatar is marked as selected.
-std::unique_ptr<base::ListValue> GetCustomProfileAvatarIconsAndLabels(
+std::vector<base::Value> GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx = SIZE_MAX);
 
 // This method tries to find a random avatar index that is not in

@@ -692,28 +692,25 @@ bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
   return false;
 }
 
-std::unique_ptr<base::DictionaryValue> GetAvatarIconAndLabelDict(
+base::flat_map<std::string, base::Value> GetAvatarIconAndLabelDict(
     const std::string& url,
     const std::u16string& label,
     size_t index,
     bool selected,
     bool is_gaia_avatar) {
-  std::unique_ptr<base::DictionaryValue> avatar_info(
-      new base::DictionaryValue());
-  avatar_info->SetStringPath("url", url);
-  avatar_info->SetStringPath("label", label);
-  avatar_info->SetIntPath("index", index);
-  avatar_info->SetBoolPath("selected", selected);
-  avatar_info->SetBoolPath("isGaiaAvatar", is_gaia_avatar);
+  base::flat_map<std::string, base::Value> avatar_info;
+  avatar_info.emplace("url", url);
+  avatar_info.emplace("label", label);
+  avatar_info.emplace("index", static_cast<int>(index));
+  avatar_info.emplace("selected", selected);
+  avatar_info.emplace("isGaiaAvatar", is_gaia_avatar);
   return avatar_info;
 }
 
-std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
+base::flat_map<std::string, base::Value> GetDefaultProfileAvatarIconAndLabel(
     SkColor fill_color,
     SkColor stroke_color,
     bool selected) {
-  std::unique_ptr<base::DictionaryValue> avatar_info(
-      new base::DictionaryValue());
   gfx::Image icon = profiles::GetPlaceholderAvatarIconWithColors(
       fill_color, stroke_color, kAvatarIconSize);
   size_t index = profiles::GetPlaceholderAvatarIndex();
@@ -724,13 +721,13 @@ std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
       index, selected, /*is_gaia_avatar=*/false);
 }
 
-std::unique_ptr<base::ListValue> GetCustomProfileAvatarIconsAndLabels(
+std::vector<base::Value> GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx) {
-  std::unique_ptr<base::ListValue> avatars(new base::ListValue());
+  std::vector<base::Value> avatars;
 
   for (size_t i = GetModernAvatarIconStartIndex();
        i < GetDefaultAvatarIconCount(); ++i) {
-    avatars->Append(GetAvatarIconAndLabelDict(
+    avatars.emplace_back(GetAvatarIconAndLabelDict(
         profiles::GetDefaultAvatarIconUrl(i),
         l10n_util::GetStringUTF16(
             profiles::GetDefaultAvatarLabelResourceIDAtIndex(i)),

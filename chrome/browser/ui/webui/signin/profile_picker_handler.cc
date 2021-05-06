@@ -461,8 +461,9 @@ void ProfilePickerHandler::HandleGetAvailableIcons(
   AllowJavascript();
   CHECK_EQ(1U, args->GetSize());
   const base::Value& callback_id = args->GetList()[0];
-  ResolveJavascriptCallback(callback_id,
-                            *profiles::GetCustomProfileAvatarIconsAndLabels());
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(profiles::GetCustomProfileAvatarIconsAndLabels()));
 }
 
 void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
