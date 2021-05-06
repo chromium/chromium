@@ -55,7 +55,7 @@ void GinJavaMethodInvocationHelper::BuildObjectRefsFromListValue(
   DCHECK(list_value.is_list());
   const base::ListValue* list;
   list_value.GetAsList(&list);
-  for (const auto& entry : *list) {
+  for (const auto& entry : list->GetList()) {
     if (AppendObjectRef(dispatcher, entry))
       continue;
     if (entry.is_list()) {
