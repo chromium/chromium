@@ -138,7 +138,7 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
   // Parse iceServers list and store them in |ice_config|.
   bool errors_found = false;
   ice_config.max_bitrate_kbps = 0;
-  for (const auto& server : *ice_servers_list) {
+  for (const auto& server : ice_servers_list->GetList()) {
     const base::DictionaryValue* server_dict;
     if (!server.GetAsDictionary(&server_dict)) {
       errors_found = true;
@@ -167,7 +167,7 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
           ice_config.max_bitrate_kbps, static_cast<int>(new_bitrate_double));
     }
 
-    for (const auto& url : *urls_list) {
+    for (const auto& url : urls_list->GetList()) {
       std::string url_str;
       if (!url.GetAsString(&url_str)) {
         errors_found = true;
