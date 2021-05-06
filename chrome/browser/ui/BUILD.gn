@@ -2646,6 +2646,7 @@ static_library("ui") {
       "//ash/assistant/util",
       "//ash/components/account_manager",
       "//ash/components/audio",
+      "//ash/components/os_feedback_ui",
       "//ash/components/pcie_peripheral",
       "//ash/constants",
       "//ash/content/scanning",

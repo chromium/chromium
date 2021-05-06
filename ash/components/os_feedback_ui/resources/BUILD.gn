@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "index.html" ]
+  manifest_files = []
+  grd_prefix = "ash_os_feedback"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/components/account_manager",
   "+ash/components/audio",
+  "+ash/components/os_feedback_ui",
   "+components/services/app_service/public",
   "+device/bluetooth",
   "+extensions/strings/grit/extensions_strings.h",

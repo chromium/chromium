@@ -148,6 +148,8 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/os_feedback_ui/os_feedback_ui.h"
+#include "ash/components/os_feedback_ui/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/content/scanning/scanning_ui.h"
@@ -710,6 +712,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ConflictsUI>;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+    if (url.host_piece() == ash::kChromeUIOSFeedbackHost)
+      return &NewWebUI<ash::OSFeedbackUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIPasswordChangeHost) {
     if (!profile->GetPrefs()->GetBoolean(
             chromeos::prefs::kSamlInSessionPasswordChangeEnabled)) {
