@@ -52,9 +52,12 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T>
   static void FreeVectorBacking(T* array) {
-    // `array` may be null and freeing a null is valid which allows to avoid
-    // a branch here.
-    HeapVectorBacking<T>::Free(array);
+    if (!array)
+      return;
+
+    HeapVectorBacking<T>::FromArray(array)->Free(
+        ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
+            ->heap_handle());
   }
 
   template <typename T>
@@ -84,10 +87,14 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T, typename HashTable>
-  static void FreeHashTableBacking(T* backing) {
-    // `array` may be null and freeing a null is valid which allows to avoid
-    // a branch here.
-    HeapHashTableBacking<HashTable>::Free(backing);
+  static void FreeHashTableBacking(T* array) {
+    if (!array)
+      return;
+
+    HeapHashTableBacking<HashTable>::FromArray(array)->Free(
+        ThreadStateFor<ThreadingTrait<
+            HeapHashTableBacking<HashTable>>::kAffinity>::GetState()
+            ->heap_handle());
   }
 
   template <typename T, typename HashTable>

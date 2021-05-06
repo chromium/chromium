@@ -38,9 +38,8 @@ class HeapHashTableBacking final
     return reinterpret_cast<ClassType*>(array);
   }
 
-  static void Free(ValueType* array) {
-    // `array` is allowed to be null.
-    cppgc::subtle::FreeUnreferencedObject(FromArray(array));
+  void Free(cppgc::HeapHandle& heap_handle) {
+    cppgc::subtle::FreeUnreferencedObject(heap_handle, *this);
   }
 
   bool Resize(size_t new_size) {
