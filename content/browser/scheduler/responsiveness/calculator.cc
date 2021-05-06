@@ -35,8 +35,8 @@ constexpr char kLatencyEventCategory[] = "latency";
 
 // The names emitted for JankyInterval measurement events.
 constexpr char kJankyIntervalEvent[] = "JankyInterval";
-constexpr char kJankyIntervalsPerThirtySeconds2Event[] =
-    "JankyIntervalsPerThirtySeconds2";
+constexpr char kJankyIntervalsPerThirtySeconds3Event[] =
+    "JankyIntervalsPerThirtySeconds3";
 
 // Given a |jank|, finds each janky slice between |start_time| and |end_time|,
 // and adds it to |janky_slices|.
@@ -80,6 +80,10 @@ Calculator::Calculator()
                                   // Listener is destroyed at destructor, and
                                   // object will be alive for any callback.
                                   base::Unretained(this)))) {
+  // This class assumes construction and access from the UI thread from all
+  // methods that aren't explicitly flagged otherwise (i.e. *OnIOThread()).
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   OnApplicationStateChanged(
       base::android::ApplicationStatusListener::GetState());
 }
@@ -88,13 +92,15 @@ Calculator::Calculator()
 }
 #endif
 
-Calculator::~Calculator() = default;
+Calculator::~Calculator() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 void Calculator::TaskOrEventFinishedOnUIThread(
     base::TimeTicks queue_time,
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(execution_start_time, queue_time);
 
   if (execution_finish_time - queue_time >= kJankThreshold) {
@@ -114,7 +120,7 @@ void Calculator::TaskOrEventFinishedOnIOThread(
     base::TimeTicks queue_time,
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GE(execution_start_time, queue_time);
 
   if (execution_finish_time - queue_time >= kJankThreshold) {
@@ -128,7 +134,17 @@ void Calculator::TaskOrEventFinishedOnIOThread(
   }
 }
 
-void Calculator::EmitResponsiveness(JankType jank_type, size_t janky_slices) {
+void Calculator::OnFirstIdle() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(startup_stage_, StartupStage::kMessageLoopStarted);
+  startup_stage_ = StartupStage::kPastFirstIdle;
+}
+
+void Calculator::EmitResponsiveness(JankType jank_type,
+                                    size_t janky_slices,
+                                    StartupStage startup_stage) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   constexpr size_t kMaxJankySlices = 300;
   DCHECK_LE(janky_slices, kMaxJankySlices);
   switch (jank_type) {
@@ -139,9 +155,16 @@ void Calculator::EmitResponsiveness(JankType jank_type, size_t janky_slices) {
       break;
     }
     case JankType::kQueueAndExecution: {
+      // TODO(gab): Remove JankyIntervalsPerThirtySeconds2 once
+      // JankyIntervalsPerThirtySeconds3 has fully replaced it.
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds2",
           janky_slices, 1, kMaxJankySlices, 50);
+      if (startup_stage == StartupStage::kRecordingPastFirstIdle) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3",
+            janky_slices, 1, kMaxJankySlices, 50);
+      }
       break;
     }
   }
@@ -152,8 +175,8 @@ void Calculator::EmitResponsivenessTraceEvents(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     const std::set<int>& janky_slices) {
-  // Only output JankyIntervalsPerThirtySeconds2 event and only when there are
-  // janky slices during the measurement.
+  // Only output JankyIntervalsPerThirtySeconds3 event when there are janky
+  // slices during the measurement.
   if (janky_slices.empty() || jank_type != JankType::kQueueAndExecution)
     return;
 
@@ -192,10 +215,10 @@ void Calculator::EmitJankyIntervalsMeasurementTraceEvent(
     base::TimeTicks end_time,
     size_t amount_of_slices) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds2Event,
+      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds3Event,
       TRACE_ID_LOCAL(this), start_time, "amount_of_slices", amount_of_slices);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds2Event,
+      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds3Event,
       TRACE_ID_LOCAL(this), end_time);
 }
 
@@ -210,11 +233,14 @@ void Calculator::EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return last_calculation_time_;
 }
 
 void Calculator::CalculateResponsivenessIfNecessary(
     base::TimeTicks current_time) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   base::TimeTicks last_activity_time = most_recent_activity_time_;
   most_recent_activity_time_ = current_time;
 
@@ -275,6 +301,8 @@ void Calculator::CalculateResponsivenessIfNecessary(
       JankType::kQueueAndExecution,
       std::move(queue_and_execution_janks_from_multiple_threads),
       last_calculation_time_, new_calculation_time);
+  if (startup_stage_ == StartupStage::kPastFirstIdle)
+    startup_stage_ = StartupStage::kRecordingPastFirstIdle;
 
   last_calculation_time_ = new_calculation_time;
 }
@@ -284,6 +312,8 @@ void Calculator::CalculateResponsiveness(
     std::vector<JankList> janks_from_multiple_threads,
     base::TimeTicks start_time,
     base::TimeTicks end_time) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   while (start_time < end_time) {
     const base::TimeTicks current_interval_end_time =
         start_time + kMeasurementInterval;
@@ -305,13 +335,16 @@ void Calculator::CalculateResponsiveness(
       }
     }
 
-    EmitResponsiveness(jank_type, janky_slices.size());
+    EmitResponsiveness(jank_type, janky_slices.size(), startup_stage_);
 
-    // If the 'latency' tracing category is enabled, emit trace events for the
-    // measurement duration and the janky slices.
-    bool tracing_enabled;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory, &tracing_enabled);
-    if (tracing_enabled) {
+    // If the 'latency' tracing category is enabled and we are ready to emit
+    // JankyIntervalsPerThirtySeconds3, emit trace events for the measurement
+    // duration and the janky slices.
+    bool latency_category_enabled;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory,
+                                       &latency_category_enabled);
+    if (latency_category_enabled &&
+        startup_stage_ == StartupStage::kRecordingPastFirstIdle) {
       EmitResponsivenessTraceEvents(jank_type, start_time,
                                     current_interval_end_time, janky_slices);
     }
@@ -350,6 +383,7 @@ void Calculator::OnApplicationStateChanged(
 }
 #endif
 
+// static
 Calculator::JankList Calculator::TakeJanksOlderThanTime(
     JankList* janks,
     base::TimeTicks end_time) {

@@ -211,6 +211,10 @@ void Watcher::Destroy() {
   metric_source_->Destroy(std::move(on_destroy_complete));
 }
 
+void Watcher::OnFirstIdle() {
+  calculator_->OnFirstIdle();
+}
+
 void Watcher::SetUpOnIOThread() {
   currently_running_metadata_io_.reserve(5);
   DCHECK(calculator_.get());

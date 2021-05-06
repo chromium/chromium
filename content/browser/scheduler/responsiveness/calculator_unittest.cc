@@ -13,6 +13,7 @@ namespace content {
 namespace responsiveness {
 
 using JankType = Calculator::JankType;
+using StartupStage = Calculator::StartupStage;
 using ::testing::_;
 
 namespace {
@@ -22,8 +23,10 @@ constexpr int kJankThresholdInMs = 100;
 
 class FakeCalculator : public Calculator {
  public:
-  MOCK_METHOD2(EmitResponsiveness,
-               void(JankType jank_type, size_t janky_slices));
+  MOCK_METHOD3(EmitResponsiveness,
+               void(JankType jank_type,
+                    size_t janky_slices,
+                    StartupStage startup_stage));
 
   MOCK_METHOD3(EmitJankyIntervalsMeasurementTraceEvent,
                void(base::TimeTicks start_time,
@@ -90,12 +93,14 @@ class ResponsivenessCalculatorTest : public testing::Test {
   base::TimeTicks last_calculation_time_;
 };
 
-#define EXPECT_EXECUTION_JANKY_SLICES(num_slices) \
-  EXPECT_CALL(*calculator_,                       \
-              EmitResponsiveness(JankType::kExecution, num_slices));
-#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices) \
-  EXPECT_CALL(*calculator_,                                 \
-              EmitResponsiveness(JankType::kQueueAndExecution, num_slices));
+#define EXPECT_EXECUTION_JANKY_SLICES(num_slices)                  \
+  EXPECT_CALL(*calculator_,                                        \
+              EmitResponsiveness(JankType::kExecution, num_slices, \
+                                 StartupStage::kMessageLoopStarted));
+#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices)                \
+  EXPECT_CALL(*calculator_,                                                \
+              EmitResponsiveness(JankType::kQueueAndExecution, num_slices, \
+                                 StartupStage::kMessageLoopStarted));
 
 // A single event executing slightly longer than kJankThresholdInMs.
 TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
@@ -353,7 +358,7 @@ TEST_F(ResponsivenessCalculatorTest, LongDelay) {
   base_time += 10 * kMeasurementIntervalInMs;
   AddEventUI(base_time, base_time, base_time + 1);
 
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
 }
 
 // A long event means that the machine likely went to sleep.
@@ -361,7 +366,7 @@ TEST_F(ResponsivenessCalculatorTest, LongEvent) {
   int base_time = 105;
   AddEventUI(base_time, base_time, base_time + 10 * kMeasurementIntervalInMs);
 
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
 }
 
 #if defined(OS_ANDROID)
@@ -377,11 +382,55 @@ TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
   base::RunLoop().RunUntilIdle();
 
   AddEventUI(kQueueTime, kStartTime + 1, kFinishTime + 1);
-
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
   TriggerCalculation();
 }
 #endif
+
+TEST_F(ResponsivenessCalculatorTest, StartupStages) {
+  constexpr int kQueueTime = 35;
+  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + 5;
+
+  // Regular event before OnFirstIdle().
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kMessageLoopStarted));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kMessageLoopStarted));
+  TriggerCalculation();
+
+  // OnFirstIdle() during a kMeasurementInterval.
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  calculator_->OnFirstIdle();
+  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 0,
+                                               StartupStage::kPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kPastFirstIdle));
+  TriggerCalculation();
+
+  // Events in intervals after OnFirstIdle();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kRecordingPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kRecordingPastFirstIdle));
+  TriggerCalculation();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kRecordingPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kRecordingPastFirstIdle));
+  TriggerCalculation();
+}
 
 // An event execution that crosses a measurement interval boundary should count
 // towards both measurement intervals.

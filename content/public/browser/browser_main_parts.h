@@ -81,6 +81,10 @@ namespace content {
 //    as a way for embedders to override or cancel the default RunLoop if
 //    needed.
 //
+//  - OnFirstIdle: The main thread reached idle for the first time since
+//    WillRunMainMessageLoop(). In other words, it's done running any tasks
+//    posted as part of the above phases and anything else posted from these.
+//
 //  - PostMainMessageLoopRun: stop and cleanup things that can/should be cleaned
 //    up while base::ThreadPool and BrowserThread::IO are still running.
 //    Note: Also see BrowserMainLoop::ShutdownThreadsAndCleanUp() which is often
@@ -133,6 +137,7 @@ class CONTENT_EXPORT BrowserMainParts {
   virtual void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) {}
 
+  virtual void OnFirstIdle() {}
   virtual void PostMainMessageLoopRun() {}
   virtual void PostDestroyThreads() {}
 };

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
@@ -68,7 +69,7 @@ RunLoop::Delegate::~Delegate() {
 
 bool RunLoop::Delegate::ShouldQuitWhenIdle() {
   const auto* top_loop = active_run_loops_.top();
-  if (top_loop->quit_when_idle_received_) {
+  if (top_loop->quit_when_idle_) {
     TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedOnIdle",
                            TRACE_ID_LOCAL(top_loop), TRACE_EVENT_FLAG_FLOW_IN);
     return true;
@@ -138,8 +139,15 @@ void RunLoop::Run(const Location& location) {
 void RunLoop::RunUntilIdle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  quit_when_idle_received_ = true;
+  quit_when_idle_ = true;
   Run();
+
+  if (!AnyQuitCalled()) {
+    quit_when_idle_ = false;
+#if DCHECK_IS_ON()
+    run_allowed_ = true;
+#endif
+  }
 }
 
 void RunLoop::Quit() {
@@ -184,7 +192,8 @@ void RunLoop::QuitWhenIdle() {
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN);
 
-  quit_when_idle_received_ = true;
+  quit_when_idle_ = true;
+  quit_when_idle_called_ = true;
 }
 
 RepeatingClosure RunLoop::QuitClosure() {
@@ -209,6 +218,10 @@ RepeatingClosure RunLoop::QuitWhenIdleClosure() {
   return BindRepeating(
       &ProxyToTaskRunner, origin_task_runner_,
       BindRepeating(&RunLoop::QuitWhenIdle, weak_factory_.GetWeakPtr()));
+}
+
+bool RunLoop::AnyQuitCalled() {
+  return quit_called_ || quit_when_idle_called_;
 }
 
 // static
@@ -312,8 +325,8 @@ bool RunLoop::BeforeRun() {
          "ScopedDisallowRunning. Hint: if mixing "
          "TestMockTimeTaskRunners on same thread, use TestMockTimeTaskRunner's "
          "API instead of RunLoop to drive individual task runners.";
-  DCHECK(!run_called_);
-  run_called_ = true;
+  DCHECK(run_allowed_);
+  run_allowed_ = false;
 #endif  // DCHECK_IS_ON()
 
   // Allow Quit to be called before Run.

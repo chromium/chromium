@@ -178,6 +178,10 @@ class BrowserTestBase : public testing::Test {
   // added in SetUpOnMainThread.
   void InitializeNetworkProcess();
 
+  // Captures |browser_main_parts_| and forwards the call to
+  // CreatedBrowserMainParts().
+  void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
+
   // Embedded test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
@@ -222,6 +226,8 @@ class BrowserTestBase : public testing::Test {
   bool initialized_network_process_ = false;
 
   bool allow_network_access_to_host_resolutions_ = false;
+
+  BrowserMainParts* browser_main_parts_ = nullptr;
 
 #if defined(OS_POSIX)
   bool handle_sigterm_;

@@ -763,7 +763,6 @@ int BrowserMainLoop::PreCreateThreads() {
   // Make sure no accidental call to initialize GpuDataManager earlier.
   DCHECK(!GpuDataManagerImpl::Initialized());
   if (parts_) {
-
     result_code_ = parts_->PreCreateThreads();
   }
 
@@ -972,8 +971,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
 
   // If the UI thread blocks, the whole UI is unresponsive. Do not allow
   // unresponsive tasks from the UI thread and instantiate a
-  // responsiveness::Watcher to catch jank induced by any blocking tasks not
-  // instrumented with ScopedBlockingCall's assert.
+  // responsiveness::Watcher to catch jank induced by any unintentionally
+  // blocking tasks.
   base::DisallowUnresponsiveTasks();
   responsiveness_watcher_ = new responsiveness::Watcher;
   responsiveness_watcher_->SetUp();
@@ -985,12 +984,30 @@ void BrowserMainLoop::RunMainMessageLoop() {
   // Android's main message loop is the Java message loop.
   NOTREACHED();
 #else   // defined(OS_ANDROID)
-
   auto main_run_loop = std::make_unique<base::RunLoop>();
   if (parts_)
     parts_->WillRunMainMessageLoop(main_run_loop);
-  if (main_run_loop)
-    main_run_loop->Run();
+  if (!main_run_loop)
+    return;
+
+  main_run_loop->RunUntilIdle();
+  // |parts_| may have captured a quit closure in WillRunMainMessageLoop(). If
+  // the above run is quit before it reaches idle on its own,
+  // RunMainMessageLoop() must return right away.
+  if (main_run_loop->AnyQuitCalled())
+    return;
+
+  // TODO(crbug.com/1175074): Figure out why (only) blink web tests goes through
+  // this code path multiple times...
+  static bool ran_once = false;
+  if (!ran_once) {
+    ran_once = true;
+    if (parts_)
+      parts_->OnFirstIdle();
+    responsiveness_watcher_->OnFirstIdle();
+  }
+
+  main_run_loop->Run();
 #endif  // defined(OS_ANDROID)
 }
 

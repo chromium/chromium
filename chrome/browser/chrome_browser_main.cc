@@ -1746,6 +1746,10 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 #endif  // defined(OS_ANDROID)
 }
 
+void ChromeBrowserMainParts::OnFirstIdle() {
+  startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
+}
+
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);

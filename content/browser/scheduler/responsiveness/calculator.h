@@ -50,6 +50,13 @@ class CONTENT_EXPORT Calculator {
       base::TimeTicks execution_start_time,
       base::TimeTicks execution_finish_time);
 
+  // Must be invoked once-and-only-once, after the first time the
+  // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
+  // during startup). This will be used as a signal for the true end of
+  // "startup" and the beginning of recording
+  // Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.
+  void OnFirstIdle();
+
   // Change the Power state of the process. Must be called from the UI thread.
   void SetProcessSuspended(bool suspended);
 
@@ -68,10 +75,22 @@ class CONTENT_EXPORT Calculator {
     kQueueAndExecution,
   };
 
+  // Stages of startup used by this Calculator. Public for testing.
+  enum class StartupStage {
+    // From this Calculator's creation until OnFirstIdle().
+    kMessageLoopStarted,
+    // From OnFirstIdle() to the end of the kMeasurementInterval including it.
+    kPastFirstIdle,
+    // From the first kMeasurementInterval after OnFirstIdle() onward.
+    kRecordingPastFirstIdle,
+  };
+
  protected:
   // Emits an UMA metric for responsiveness of a single measurement interval.
   // Exposed for testing.
-  virtual void EmitResponsiveness(JankType jank_type, size_t janky_slices);
+  virtual void EmitResponsiveness(JankType jank_type,
+                                  size_t janky_slices,
+                                  StartupStage startup_stage);
 
   // Emits trace events for responsiveness metric. A trace event is emitted for
   // the whole duration of the metric interval and sub events are emitted for
@@ -132,10 +151,11 @@ class CONTENT_EXPORT Calculator {
   void OnApplicationStateChanged(base::android::ApplicationState state);
 #endif
 
-  // This method:
+  // This helper method:
   //   1) Removes all Janks with Jank.end_time < |end_time| from |janks|.
   //   2) Returns all Janks with Jank.start_time < |end_time|.
-  JankList TakeJanksOlderThanTime(JankList* janks, base::TimeTicks end_time);
+  static JankList TakeJanksOlderThanTime(JankList* janks,
+                                         base::TimeTicks end_time);
 
   // Janks from tasks/events with a long execution time on the UI thread. Should
   // only be accessed via the accessor, which checks that the caller is on the
@@ -152,6 +172,8 @@ class CONTENT_EXPORT Calculator {
   // the UI thread.
   bool is_application_visible_ = false;
 #endif
+
+  StartupStage startup_stage_ = StartupStage::kMessageLoopStarted;
 
   // We expect there to be low contention and this lock to cause minimal
   // overhead. If performance of this lock proves to be a problem, we can move

@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/containers/stack.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -145,6 +146,9 @@ class BASE_EXPORT RunLoop {
   // capturing lambda or test observer).
   RepeatingClosure QuitClosure();
   RepeatingClosure QuitWhenIdleClosure();
+
+  // Returns true if Quit() or QuitWhenIdle() was called.
+  bool AnyQuitCalled();
 
   // Returns true if there is an active RunLoop on this thread.
   // Safe to call before RegisterDelegateForCurrentThread().
@@ -320,16 +324,18 @@ class BASE_EXPORT RunLoop {
   const Type type_;
 
 #if DCHECK_IS_ON()
-  bool run_called_ = false;
+  bool run_allowed_ = true;
 #endif
 
   bool quit_called_ = false;
   bool running_ = false;
-  // Used to record that QuitWhenIdle() was called on this RunLoop, meaning that
-  // the Delegate should quit Run() once it becomes idle (it's responsible for
-  // probing this state via ShouldQuitWhenIdle()). This state is stored here
-  // rather than pushed to Delegate to support nested RunLoops.
-  bool quit_when_idle_received_ = false;
+
+  // Used to record that QuitWhenIdle() was called on this RunLoop.
+  bool quit_when_idle_called_ = false;
+  // Whether the Delegate should quit Run() once it becomes idle (it's
+  // responsible for probing this state via ShouldQuitWhenIdle()). This state is
+  // stored here rather than pushed to Delegate to support nested RunLoops.
+  bool quit_when_idle_ = false;
 
   // True if use of QuitCurrent*Deprecated() is allowed. Taking a Quit*Closure()
   // from a RunLoop implicitly sets this to false, so QuitCurrent*Deprecated()

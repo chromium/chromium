@@ -19,6 +19,7 @@ using StartupMetricsTest = InProcessBrowserTest;
 namespace {
 
 constexpr const char* kStartupMetrics[] = {
+    "Startup.BrowserMessageLoopFirstIdle",
     "Startup.BrowserMessageLoopStartTime",
     "Startup.BrowserWindow.FirstPaint",
     "Startup.BrowserWindowDisplay",
@@ -43,9 +44,11 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
   startup_metric_utils::RecordBrowserMainMessageLoopStart(
       base::TimeTicks::Now(), false /* is_first_run */);
 
-  // Wait for all histograms to be recorded. The test will hang if an histogram
-  // is not recorded.
+  // Wait for all histograms to be recorded. The test will hit a RunLoop timeout
+  // if a histogram is not recorded.
   for (auto* const histogram : kStartupMetrics) {
+    SCOPED_TRACE(histogram);
+
     // Continue if histograms was already recorded.
     if (base::StatisticsRecorder::FindHistogram(histogram))
       continue;

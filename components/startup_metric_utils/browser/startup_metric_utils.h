@@ -53,6 +53,11 @@ void RecordChromeMainEntryTime(base::TimeTicks ticks);
 void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
                                        bool is_first_run);
 
+// Call this with the time recorded just after the message loop first reaches
+// idle. Must be called after RecordApplicationStartTime(), because it computes
+// time deltas based on application start time.
+void RecordBrowserMainLoopFirstIdle(base::TimeTicks ticks);
+
 // Call this with the time when the first browser window became visible.
 void RecordBrowserWindowDisplay(base::TimeTicks ticks);
 

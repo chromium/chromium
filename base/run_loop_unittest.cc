@@ -467,6 +467,45 @@ TEST_P(RunLoopTest, IsNestedOnCurrentThread) {
   run_loop_.Run();
 }
 
+TEST_P(RunLoopTest, CannotRunMoreThanOnce) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+  EXPECT_DCHECK_DEATH({ run_loop_.Run(); });
+}
+
+TEST_P(RunLoopTest, CanRunUntilIdleMoreThanOnce) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+  run_loop_.RunUntilIdle();
+}
+
+TEST_P(RunLoopTest, CanRunUntilIdleThenRunIfNotQuit) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+}
+
+TEST_P(RunLoopTest, CannotRunUntilIdleThenRunIfQuit) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.RunUntilIdle();
+
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, DoNothing());
+  EXPECT_DCHECK_DEATH({ run_loop_.Run(); });
+}
+
+TEST_P(RunLoopTest, CannotRunAgainIfQuitWhenIdle) {
+  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                          run_loop_.QuitWhenIdleClosure());
+  run_loop_.RunUntilIdle();
+
+  EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
+}
+
 namespace {
 
 class MockNestingObserver : public RunLoop::NestingObserver {

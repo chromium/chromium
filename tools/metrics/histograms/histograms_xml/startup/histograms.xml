@@ -318,6 +318,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.BrowserMessageLoopFirstIdle" units="ms"
+    expires_after="2022-01-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from application start to the first time MainMessageLoopRun() reaches
+    idle. This is a new (Feb'2021) metric intended to capture UI jank caused by
+    the long queue of tasks post initialization. This is believed to capture
+    performance issues (startup responsiveness) none of the other Startup.*
+    metrics capture (crbug.com/1175074). Recording is dropped if blocking UI is
+    shown before first-idle is reached (as this blocks main loop progress on
+    unbounded user interaction).
+  </summary>
+</histogram>
+
 <histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2" units="ms"
     expires_after="2021-03-07">
   <owner>asvitkine@chromium.org</owner>

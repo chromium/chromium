@@ -476,6 +476,23 @@ void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
   }
 }
 
+void RecordBrowserMainLoopFirstIdle(base::TimeTicks ticks) {
+  DCHECK(!g_application_start_ticks.is_null());
+
+#if DCHECK_IS_ON()
+  static bool is_first_call = true;
+  DCHECK(is_first_call);
+  is_first_call = false;
+#endif  // DCHECK_IS_ON()
+
+  if (!ShouldLogStartupHistogram())
+    return;
+
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
+                                      "Startup.BrowserMessageLoopFirstIdle",
+                                      g_application_start_ticks, ticks);
+}
+
 void RecordBrowserWindowDisplay(base::TimeTicks ticks) {
   DCHECK(!ticks.is_null());
 

@@ -299,6 +299,10 @@ void BrowserMainPartsImpl::WillRunMainMessageLoop(
   }
 }
 
+void BrowserMainPartsImpl::OnFirstIdle() {
+  startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
+}
+
 void BrowserMainPartsImpl::PostMainMessageLoopRun() {
   params_->delegate->PostMainMessageLoopRun();
   browser_process_->StartTearDown();

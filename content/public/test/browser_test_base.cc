@@ -53,6 +53,7 @@
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/app/content_main.h"
+#include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -531,9 +532,9 @@ void BrowserTestBase::SetUp() {
   // FeatureList::SetInstance, which expects no instance to exist.
   base::FeatureList::ClearInstanceForTesting();
 
-  auto created_main_parts_closure =
-      std::make_unique<CreatedMainPartsClosure>(base::BindOnce(
-          &BrowserTestBase::CreatedBrowserMainParts, base::Unretained(this)));
+  auto created_main_parts_closure = std::make_unique<CreatedMainPartsClosure>(
+      base::BindOnce(&BrowserTestBase::CreatedBrowserMainPartsImpl,
+                     base::Unretained(this)));
 
   // If tracing is enabled, customise the output filename based on the name of
   // the test.
@@ -801,6 +802,25 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 #endif
 
     PreRunTestOnMainThread();
+
+    // Flush startup tasks to reach the OnFirstIdle() phase before
+    // SetUpOnMainThread() (which must be right before RunTestOnMainThread()).
+    const bool io_allowed_value_before_flush =
+        base::ThreadRestrictions::SetIOAllowed(false);
+    {
+      TRACE_EVENT0("test", "FlushStartupTasks");
+      // Since ProxyRunTestOnMainThreadLoop() replaces the main message loop, we
+      // need to invoke the OnFirstIdle() phase ourselves.
+      base::RunLoop flush_startup_tasks;
+      flush_startup_tasks.RunUntilIdle();
+      // Make sure there isn't an odd caller which reached |flush_startup_tasks|
+      // statically via base::RunLoop::QuitCurrent*Deprecated().
+      DCHECK(!flush_startup_tasks.AnyQuitCalled());
+      if (browser_main_parts_)
+        browser_main_parts_->OnFirstIdle();
+    }
+    base::ThreadRestrictions::SetIOAllowed(io_allowed_value_before_flush);
+
     std::unique_ptr<InitialNavigationObserver> initial_navigation_observer;
     if (initial_web_contents_) {
       // Some tests may add host_resolver() rules in their SetUpOnMainThread
@@ -821,8 +841,8 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     // to the network process if it's in use.
     InitializeNetworkProcess();
 
-    bool old_io_allowed_value = false;
-    old_io_allowed_value = base::ThreadRestrictions::SetIOAllowed(false);
+    const bool old_io_allowed_value =
+        base::ThreadRestrictions::SetIOAllowed(false);
     {
       TRACE_EVENT0("test", "RunTestOnMainThread");
       RunTestOnMainThread();
@@ -992,6 +1012,12 @@ void BrowserTestBase::InitializeNetworkProcess() {
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
   network_service_test->AddRules(std::move(mojo_rules), loop.QuitClosure());
   loop.Run();
+}
+
+void BrowserTestBase::CreatedBrowserMainPartsImpl(
+    BrowserMainParts* browser_main_parts) {
+  browser_main_parts_ = browser_main_parts;
+  CreatedBrowserMainParts(browser_main_parts);
 }
 
 }  // namespace content

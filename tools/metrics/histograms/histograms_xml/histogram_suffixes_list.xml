@@ -18583,6 +18583,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"/>
   <affected-histogram name="Startup.BrowserMainToRendererMain"/>
+  <affected-histogram name="Startup.BrowserMessageLoopFirstIdle"/>
   <affected-histogram
       name="Startup.BrowserMessageLoopStart.To.MainNavigationStart"/>
   <affected-histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2"/>

@@ -441,12 +441,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds2"
-    units="janks" expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+    units="janks" expires_after="2021-07-31">
+<!-- JankyIntervalsPerThirtySeconds3 is on probation to replace this -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
@@ -459,9 +458,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     for more details.
 
     Update (M82 March 2020): Stopped recording background intervals on Android.
+  </summary>
+</histogram>
 
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
+<histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3"
+    units="janks" expires_after="2021-07-31">
+<!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
+
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    This metric is emitted every 30 seconds after main message loop start, when
+    there is user activity. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;janky&quot;. An interval is janky if during it the UI or IO thread
+    executes an &quot;important&quot; task that was queued more than 100 ms ago,
+    or a non-important task or a native event handler that started executing
+    more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    JankyIntervalsPerThirtySeconds3 differs from JankyIntervalsPerThirtySeconds2
+    in that it doesn't start recording until the first 30 seconds window *after*
+    the main message loop first reached idle. This avoids considering all tasks
+    queued during startup as janky and makes for a more accurate ongoing jank
+    metric.
   </summary>
 </histogram>
 
