@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     {
         kGmailAppId,
         "https://mail.google.com/mail/installwebapp?usp=chrome_default",
-        "https://mail.google.com/?usp=installed_webapp",
+        "https://mail.google.com/mail/?usp=installed_webapp",
     },
     {
         kYoutubeAppId,

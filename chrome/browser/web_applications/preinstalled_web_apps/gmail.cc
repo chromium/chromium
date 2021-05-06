@@ -33,8 +33,9 @@ ExternalInstallOptions GetConfigForGmail() {
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
     info->title = u"Gmail";
-    info->start_url = GURL("https://mail.google.com/?usp=installed_webapp");
-    info->scope = GURL("https://mail.google.com/");
+    info->start_url =
+        GURL("https://mail.google.com/mail/?usp=installed_webapp");
+    info->scope = GURL("https://mail.google.com/mail/");
     info->display_mode = DisplayMode::kBrowser;
     info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG});
