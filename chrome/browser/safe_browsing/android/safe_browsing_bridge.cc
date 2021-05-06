@@ -4,9 +4,13 @@
 
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/profiles/profile_manager.h"
+// NOTE: This target is transitively depended on by //chrome/browser and thus
+// can't depend on it.
+#include "chrome/browser/profiles/profile_manager.h"  // nogncheck
 #include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+// NOTE: This target is transitively depended on by //chrome/browser and thus
+// can't depend on it.
+#include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
