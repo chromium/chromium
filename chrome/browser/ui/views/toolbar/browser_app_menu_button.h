@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,8 @@ enum class InProductHelpFeature;
 class BrowserAppMenuButton : public AppMenuButton {
  public:
   METADATA_HEADER(BrowserAppMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserAppMenuButton, kIdentifier);
+
   explicit BrowserAppMenuButton(ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;
   BrowserAppMenuButton& operator=(const BrowserAppMenuButton&) = delete;

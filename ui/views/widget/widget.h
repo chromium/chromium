@@ -513,8 +513,20 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the top level widget in a hierarchy (see is_top_level() for
   // the definition of top level widget.) Will return NULL if called
   // before the widget is attached to the top level widget's hierarchy.
+  //
+  // If you want to get the absolute primary application window, accounting for
+  // e.g. bubble and menu anchoring, use GetPrimaryWindowWidget() instead.
   Widget* GetTopLevelWidget();
   const Widget* GetTopLevelWidget() const;
+
+  // Returns the widget of the primary window this widget is associated with,
+  // such as an application window, accounting for anchoring and other
+  // relationships not accounted for in GetTopLevelWidget().
+  //
+  // Equivalent to GetTopLevelWidget() by default; override in derived classes
+  // that require additional logic.
+  virtual Widget* GetPrimaryWindowWidget();
+  const Widget* GetPrimaryWindowWidget() const;
 
   // Gets/Sets the WidgetDelegate.
   WidgetDelegate* widget_delegate() const { return widget_delegate_; }

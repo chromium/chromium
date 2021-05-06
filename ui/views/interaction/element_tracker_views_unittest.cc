@@ -1,0 +1,935 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/views/interaction/element_tracker_views.h"
+
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/test/bind.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/test/views_test_base.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+
+namespace views {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID2);
+
+namespace {
+
+enum ElementEventType { kShown, kActivated, kHidden };
+
+class ElementEventWatcher {
+ public:
+  ElementEventWatcher(ui::ElementIdentifier id,
+                      ui::ElementContext context,
+                      ElementEventType event_type)
+      : id_(id) {
+    auto callback = base::BindRepeating(&ElementEventWatcher::OnEvent,
+                                        base::Unretained(this));
+    ui::ElementTracker* const tracker = ui::ElementTracker::GetElementTracker();
+    switch (event_type) {
+      case ElementEventType::kShown:
+        subscription_ = tracker->AddElementShownCallback(id, context, callback);
+        break;
+      case ElementEventType::kActivated:
+        subscription_ =
+            tracker->AddElementActivatedCallback(id, context, callback);
+        break;
+      case ElementEventType::kHidden:
+        subscription_ =
+            tracker->AddElementHiddenCallback(id, context, callback);
+        break;
+    }
+  }
+
+  int event_count() const { return event_count_; }
+  View* last_view() { return last_view_; }
+
+ private:
+  void OnEvent(ui::ElementTrackerElement* element) {
+    EXPECT_EQ(id_.raw_value(), element->identifier().raw_value());
+    last_view_ = element->AsA<ElementTrackerElementViews>()->view();
+    ++event_count_;
+  }
+
+  const ui::ElementIdentifier id_;
+  ui::ElementTracker::Subscription subscription_;
+  int event_count_ = 0;
+  View* last_view_ = nullptr;
+};
+
+View* ElementToView(ui::ElementTrackerElement* element) {
+  auto* const view_element = element->AsA<ElementTrackerElementViews>();
+  return view_element ? view_element->view() : nullptr;
+}
+
+ElementTrackerViews::ViewList ElementsToViews(
+    ui::ElementTracker::ElementList elements) {
+  ElementTrackerViews::ViewList result;
+  std::transform(elements.begin(), elements.end(), std::back_inserter(result),
+                 [](ui::ElementTrackerElement* element) {
+                   return element->AsA<ElementTrackerElementViews>()->view();
+                 });
+  return result;
+}
+
+}  // namespace
+
+class ElementTrackerViewsTest : public ViewsTestBase {
+ public:
+  ElementTrackerViewsTest() = default;
+  ~ElementTrackerViewsTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = CreateWidget();
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  ui::ElementContext context() const {
+    return ui::ElementContext(widget_.get());
+  }
+
+  std::unique_ptr<Widget> CreateWidget() {
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.bounds = gfx::Rect(0, 0, 650, 650);
+    widget->Init(std::move(params));
+    return widget;
+  }
+
+ protected:
+  std::unique_ptr<Widget> widget_;
+};
+
+TEST_F(ElementTrackerViewsTest, ViewShownByAddingToWidgetSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest,
+       ViewHiddenByRemovingFromWidgetSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kHidden);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  auto* const view = widget_->SetContentsView(std::make_unique<View>());
+  auto* const button = view->AddChildView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+  view->RemoveChildViewT(button);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, ViewShownAfterAddingToWidgetSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetVisible(false);
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+  button->SetVisible(true);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest,
+       ViewHiddenAfterAddingToWidgetSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kHidden);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+  button->SetVisible(false);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, SettingIDOnVisibleViewSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+  auto button_ptr = std::make_unique<LabelButton>();
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, ClearingIDOnVisibleViewSendsNotification) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kHidden);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+  button->ClearProperty(kElementIdentifierKey);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, ChangingIDOnVisibleViewSendsNotification) {
+  ElementEventWatcher shown(kTestElementID, context(),
+                            ElementEventType::kShown);
+  ElementEventWatcher hidden(kTestElementID, context(),
+                             ElementEventType::kHidden);
+  ElementEventWatcher shown2(kTestElementID2, context(),
+                             ElementEventType::kShown);
+  ElementEventWatcher hidden2(kTestElementID2, context(),
+                              ElementEventType::kHidden);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(0, hidden.event_count());
+  EXPECT_EQ(0, shown2.event_count());
+  EXPECT_EQ(0, hidden2.event_count());
+  button->SetProperty(kElementIdentifierKey, kTestElementID2);
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(1, hidden.event_count());
+  EXPECT_EQ(1, shown2.event_count());
+  EXPECT_EQ(0, hidden2.event_count());
+  button->SetVisible(false);
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(1, hidden.event_count());
+  EXPECT_EQ(1, shown2.event_count());
+  EXPECT_EQ(1, hidden2.event_count());
+}
+
+TEST_F(ElementTrackerViewsTest, ButtonPressedSendsActivatedSignal) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kActivated);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+
+  // Test mouse click.
+  constexpr gfx::Point kPressPoint(10, 10);
+  button->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMouseReleased(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+
+  // Test accessible keypress.
+  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                    ui::EF_NONE, ui::EventTimeForNow()));
+  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                     ui::EF_NONE, ui::EventTimeForNow()));
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kActivated);
+  size_t pressed_count = 0;
+  auto button_ptr = std::make_unique<MenuButton>(
+      base::BindLambdaForTesting([&](const ui::Event&) { ++pressed_count; }));
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+
+  // Test mouse click.
+  constexpr gfx::Point kPressPoint(10, 10);
+  button->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(1U, pressed_count);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+
+  // Test accessible keypress.
+  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                    ui::EF_NONE, ui::EventTimeForNow()));
+  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                     ui::EF_NONE, ui::EventTimeForNow()));
+  EXPECT_EQ(2U, pressed_count);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, HandlesCreateWithTheSameIDMultipleTimes) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+  widget_->GetRootView()->RemoveChildViewT(button);
+
+  button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button2 = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(button2, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, HandlesReshowingTheSameView) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+
+  button->SetVisible(false);
+  EXPECT_EQ(1, watcher.event_count());
+
+  button->SetVisible(true);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, CanLookupViewByIdentifier) {
+  // Should initially be null.
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // Because the button is not attached to a widget, it will not be returned for
+  // the current context (which is associated with a widget).
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  // Adding the view to a widget will cause it to be returned in the current
+  // context.
+  auto* button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(
+      button,
+      ElementToView(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kTestElementID, context())));
+
+  // Once the view is destroyed, however, the result should be null again.
+  widget_->GetRootView()->RemoveChildViewT(button);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  // Create a second view with the same ID and verify that the new pointer is
+  // returned.
+  button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(
+      button,
+      ElementToView(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kTestElementID, context())));
+
+  // When the view is deleted, the result once again becomes null.
+  widget_->GetRootView()->RemoveChildViewT(button);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, CanLookUpElementByIdentifier) {
+  // Should initially be null.
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // Because the button is not attached to a widget, it will not be returned for
+  // the current context (which is associated with a widget).
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  // Adding the view to a widget will cause it to be returned in the current
+  // context.
+  auto* button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
+                        ->GetUniqueElement(kTestElementID, context())
+                        ->AsA<ElementTrackerElementViews>()
+                        ->view());
+
+  // Hiding the view will make the view not findable through the base element
+  // tracker.
+  button->SetVisible(false);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  // Showing the view will bring it back.
+  button->SetVisible(true);
+  EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
+                        ->GetUniqueElement(kTestElementID, context())
+                        ->AsA<ElementTrackerElementViews>()
+                        ->view());
+
+  // Once the view is destroyed, however, the result should be null again.
+  widget_->GetRootView()->RemoveChildViewT(button);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+
+  // Create a second view with the same ID and verify that the new pointer is
+  // returned.
+  button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
+                        ->GetUniqueElement(kTestElementID, context())
+                        ->AsA<ElementTrackerElementViews>()
+                        ->view());
+
+  // When the view is deleted, the result once again becomes null.
+  widget_->GetRootView()->RemoveChildViewT(button);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, CanGetFirstViewByIdentifier) {
+  // Should initially be null.
+  EXPECT_EQ(nullptr,
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                kTestElementID, context()));
+
+  // Add two buttons with the same identifier.
+  auto* contents = widget_->SetContentsView(std::make_unique<View>());
+  auto* button = contents->AddChildView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* button2 = contents->AddChildView(std::make_unique<LabelButton>());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // The first button should be returned.
+  EXPECT_EQ(
+      button,
+      ElementToView(
+          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+              kTestElementID, context())));
+
+  // Remove the first button. The second should now be returned.
+  contents->RemoveChildViewT(button);
+  EXPECT_EQ(
+      button2,
+      ElementToView(
+          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+              kTestElementID, context())));
+
+  // Remove the second button. There will be no matching views.
+  contents->RemoveChildViewT(button2);
+  EXPECT_EQ(nullptr,
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, CanGetFirstElementByIdentifier) {
+  // Should initially be null.
+  EXPECT_EQ(nullptr,
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                kTestElementID, context()));
+
+  // Add two buttons with the same identifier.
+  auto* contents = widget_->SetContentsView(std::make_unique<View>());
+  auto* button = contents->AddChildView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* button2 = contents->AddChildView(std::make_unique<LabelButton>());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // The first button should be returned.
+  EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
+                        ->GetFirstMatchingElement(kTestElementID, context())
+                        ->AsA<ElementTrackerElementViews>()
+                        ->view());
+
+  // Set the buttons' visibility; this should change whether the element tracker
+  // sees them.
+  button->SetVisible(false);
+  EXPECT_EQ(button2, ui::ElementTracker::GetElementTracker()
+                         ->GetFirstMatchingElement(kTestElementID, context())
+                         ->AsA<ElementTrackerElementViews>()
+                         ->view());
+  button2->SetVisible(false);
+  EXPECT_EQ(nullptr,
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                kTestElementID, context()));
+
+  // The second button is now the first to become visible in the base tracker.
+  button2->SetVisible(true);
+  button->SetVisible(true);
+  EXPECT_EQ(button2, ui::ElementTracker::GetElementTracker()
+                         ->GetFirstMatchingElement(kTestElementID, context())
+                         ->AsA<ElementTrackerElementViews>()
+                         ->view());
+
+  // Remove the second button. The first should now be returned.
+  contents->RemoveChildViewT(button2);
+  EXPECT_EQ(button, ui::ElementTracker::GetElementTracker()
+                        ->GetFirstMatchingElement(kTestElementID, context())
+                        ->AsA<ElementTrackerElementViews>()
+                        ->view());
+
+  // Remove the first button. There will be no matching views.
+  contents->RemoveChildViewT(button);
+  EXPECT_EQ(nullptr,
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, CanGetAllViewsByIdentifier) {
+  // Should initially be empty.
+  ElementTrackerViews::ViewList expected;
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Add two buttons with the same identifier.
+  auto* contents = widget_->SetContentsView(std::make_unique<View>());
+  auto* button = contents->AddChildView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* button2 = contents->AddChildView(std::make_unique<LabelButton>());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // All buttons should be returned.
+  expected = ElementTrackerViews::ViewList{button, button2};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Remove the first button. The second should now be returned.
+  contents->RemoveChildViewT(button);
+  expected = ElementTrackerViews::ViewList{button2};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Remove the second button. There will be no matching views.
+  contents->RemoveChildViewT(button2);
+  expected.clear();
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+}
+
+TEST_F(ElementTrackerViewsTest, CanGetAllElementsByIdentifier) {
+  // Should initially be empty.
+  ElementTrackerViews::ViewList expected;
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Add two buttons with the same identifier.
+  auto* contents = widget_->SetContentsView(std::make_unique<View>());
+  auto* button = contents->AddChildView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* button2 = contents->AddChildView(std::make_unique<LabelButton>());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // Both buttons should be returned.
+  expected = ElementTrackerViews::ViewList{button, button2};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Set the buttons' visibility; this should change whether the element tracker
+  // sees them.
+  button->SetVisible(false);
+  expected = ElementTrackerViews::ViewList{button2};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+  button2->SetVisible(false);
+  expected.clear();
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // The second button is now the first to become visible in the base tracker.
+  button2->SetVisible(true);
+  button->SetVisible(true);
+  expected = ElementTrackerViews::ViewList{button2, button};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Remove the second button. Only the first should now be returned.
+  contents->RemoveChildViewT(button2);
+  expected = ElementTrackerViews::ViewList{button};
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+
+  // Remove the first button. There will be no matching views.
+  contents->RemoveChildViewT(button);
+  expected.clear();
+  EXPECT_EQ(expected,
+            ElementsToViews(
+                ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+                    kTestElementID, context())));
+}
+
+TEST_F(ElementTrackerViewsTest, CanGetVisibilityByIdentifier) {
+  // Should initially be false.
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+
+  // Because the button is not attached to a widget, it will not be counted as
+  // visible.
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  // Adding the view to a widget will cause it to be counted as visible.
+  auto* button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  // Once the view is destroyed, however, the result should be false again.
+  widget_->GetRootView()->RemoveChildViewT(button);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  // Create a second view with the same ID but start it as not visible.
+  button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetVisible(false);
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  // Now set the visibility to true.
+  button->SetVisible(true);
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+
+  // Set visibility to false again.
+  button->SetVisible(false);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+// The following tests ensure conformity with the different platforms' Views
+// implementation to ensure that Views are reported as visible to the user at
+// the correct times, including during Widget close/delete.
+
+TEST_F(ElementTrackerViewsTest, ParentNotVisibleWhenAddedToWidget) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  contents->SetVisible(false);
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->SetVisible(true);
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, WidgetNotVisibleWhenAddedToWidget) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  widget_->Hide();
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  widget_->Show();
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, ParentHidden) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->SetVisible(false);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, WidgetHidden) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  widget_->Hide();
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, WidgetClosed) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  widget_->Close();
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, WidgetDestroyed) {
+  View* const contents = widget_->SetContentsView(std::make_unique<View>());
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+  widget_.reset();
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context()));
+}
+
+TEST_F(ElementTrackerViewsTest, WidgetShownAfterAdd) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  const ui::ElementContext context =
+      ElementTrackerViews::GetContextForView(contents);
+  auto child_ptr = std::make_unique<View>();
+  child_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context));
+  contents->AddChildView(std::move(child_ptr));
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context));
+  widget->Show();
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kTestElementID, context));
+}
+
+// Verifies that Views on different Widgets are differentiated by the system.
+class ElementTrackerTwoWidgetTest : public ElementTrackerViewsTest {
+ public:
+  ElementTrackerTwoWidgetTest() = default;
+  ~ElementTrackerTwoWidgetTest() override = default;
+
+  void SetUp() override {
+    ElementTrackerViewsTest::SetUp();
+
+    widget2_ = CreateWidget();
+    widget2_->Show();
+  }
+
+  void TearDown() override {
+    widget2_.reset();
+    ElementTrackerViewsTest::TearDown();
+  }
+
+  ui::ElementContext context2() const {
+    return ui::ElementContext(widget2_.get());
+  }
+
+ protected:
+  std::unique_ptr<Widget> widget2_;
+};
+
+TEST_F(ElementTrackerTwoWidgetTest, ViewMovedToDifferentWidgetGeneratesEvents) {
+  ElementEventWatcher shown(kTestElementID, context(),
+                            ElementEventType::kShown);
+  ElementEventWatcher hidden(kTestElementID, context(),
+                             ElementEventType::kHidden);
+  ElementEventWatcher shown2(kTestElementID, context2(),
+                             ElementEventType::kShown);
+  ElementEventWatcher hidden2(kTestElementID, context2(),
+                              ElementEventType::kHidden);
+  auto* const view = widget_->SetContentsView(std::make_unique<View>());
+  auto* const view2 = widget2_->SetContentsView(std::make_unique<View>());
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  // Add to first widget.
+  auto* const button = view->AddChildView(std::move(button_ptr));
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(0, hidden.event_count());
+  EXPECT_EQ(0, shown2.event_count());
+  EXPECT_EQ(0, hidden2.event_count());
+  // Move to second widget.
+  view2->AddChildView(button);
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(1, hidden.event_count());
+  EXPECT_EQ(1, shown2.event_count());
+  EXPECT_EQ(0, hidden2.event_count());
+  // Destroy the second widget.
+  widget2_.reset();
+  EXPECT_EQ(1, shown.event_count());
+  EXPECT_EQ(1, hidden.event_count());
+  EXPECT_EQ(1, shown2.event_count());
+  EXPECT_EQ(1, hidden2.event_count());
+}
+
+TEST_F(ElementTrackerTwoWidgetTest, CanLookUpViewsOnMultipleWidgets) {
+  auto* button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* button2 = widget2_->SetContentsView(std::make_unique<LabelButton>());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(
+      button,
+      ElementToView(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kTestElementID, context())));
+  EXPECT_EQ(
+      button2,
+      ElementToView(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kTestElementID, context2())));
+  widget_->GetRootView()->RemoveChildViewT(button);
+  widget2_->GetRootView()->RemoveChildViewT(button2);
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context()));
+  EXPECT_EQ(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kTestElementID, context2()));
+}
+
+TEST_F(ElementTrackerTwoWidgetTest,
+       MakingViewsVisibleSendsNotificationsToCorrectListeners) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kShown);
+  ElementEventWatcher watcher2(kTestElementID, context2(),
+                               ElementEventType::kShown);
+  auto* const button =
+      widget_->SetContentsView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      widget2_->SetContentsView(std::make_unique<LabelButton>());
+  EXPECT_EQ(0, watcher.event_count());
+  EXPECT_EQ(0, watcher2.event_count());
+
+  // Each listener should be notified when the appropriate button is shown.
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+  EXPECT_EQ(0, watcher2.event_count());
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+  EXPECT_EQ(1, watcher2.event_count());
+  EXPECT_EQ(button2, watcher2.last_view());
+
+  // Each listener should be notified when the appropriate button is shown.
+  button->SetVisible(false);
+  button->SetVisible(true);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(1, watcher2.event_count());
+
+  // Hide and show several times to verify events are still set.
+  button->SetVisible(false);
+  button2->SetVisible(false);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(1, watcher2.event_count());
+  button2->SetVisible(true);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(2, watcher2.event_count());
+  button->SetVisible(true);
+  EXPECT_EQ(3, watcher.event_count());
+  EXPECT_EQ(2, watcher2.event_count());
+}
+
+TEST_F(ElementTrackerTwoWidgetTest,
+       ButtonPressedSendsNotificationsToCorrectListeners) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kActivated);
+  ElementEventWatcher watcher2(kTestElementID, context2(),
+                               ElementEventType::kActivated);
+  auto* const button =
+      widget_->SetContentsView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      widget2_->SetContentsView(std::make_unique<LabelButton>());
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  button2->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  EXPECT_EQ(0, watcher2.event_count());
+
+  // Test mouse click.
+  constexpr gfx::Point kPressPoint(10, 10);
+  button->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMouseReleased(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+  EXPECT_EQ(0, watcher2.event_count());
+
+  // Click other button.
+  button2->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button2->OnMouseReleased(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+  EXPECT_EQ(1, watcher2.event_count());
+  EXPECT_EQ(button2, watcher2.last_view());
+
+  // Test accessible keypress.
+  button2->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                     ui::EF_NONE, ui::EventTimeForNow()));
+  button2->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                      ui::EF_NONE, ui::EventTimeForNow()));
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(2, watcher2.event_count());
+  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                    ui::EF_NONE, ui::EventTimeForNow()));
+  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                     ui::EF_NONE, ui::EventTimeForNow()));
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(2, watcher2.event_count());
+}
+
+}  // namespace views

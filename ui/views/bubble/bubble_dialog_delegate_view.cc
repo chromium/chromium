@@ -73,6 +73,14 @@ class BubbleWidget : public Widget {
     return bubble_delegate->anchor_widget()->GetThemeProvider();
   }
 
+  Widget* GetPrimaryWindowWidget() override {
+    BubbleDialogDelegateView* const bubble_delegate =
+        static_cast<BubbleDialogDelegateView*>(widget_delegate());
+    if (!bubble_delegate || !bubble_delegate->anchor_widget())
+      return Widget::GetPrimaryWindowWidget();
+    return bubble_delegate->anchor_widget()->GetPrimaryWindowWidget();
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BubbleWidget);
 };

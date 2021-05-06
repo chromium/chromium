@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -126,6 +127,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   // to show off to users (items marked as new will receive a "New" badge when
   // the appropriate flag is enabled).
   virtual bool IsNewFeatureAt(int index) const;
+
+  // Returns an application-window-unique identifier that can be used to track
+  // the menu item irrespective of menu-specific command IDs.
+  virtual ElementIdentifier GetElementIdentifierAt(int index) const;
 
   // Returns the model for the submenu at the specified index.
   virtual MenuModel* GetSubmenuModelAt(int index) const = 0;

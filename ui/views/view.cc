@@ -57,6 +57,7 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -2268,6 +2269,23 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
     InvalidateLayout();
   if (effects & kPropertyEffectsPaint)
     SchedulePaint();
+}
+
+void View::AfterPropertyChange(const void* key, int64_t old_value) {
+  if (key == kElementIdentifierKey) {
+    const ui::ElementIdentifier old_element_id =
+        ui::ElementIdentifier::FromRawValue(old_value);
+    if (old_element_id) {
+      views::ElementTrackerViews::GetInstance()->UnregisterView(old_element_id,
+                                                                this);
+    }
+    const ui::ElementIdentifier new_element_id =
+        GetProperty(kElementIdentifierKey);
+    if (new_element_id) {
+      views::ElementTrackerViews::GetInstance()->RegisterView(new_element_id,
+                                                              this);
+    }
+  }
 }
 
 void View::OnPropertyChanged(ui::metadata::PropertyKey property,

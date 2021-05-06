@@ -27,6 +27,10 @@ bool MenuModel::IsNewFeatureAt(int index) const {
   return false;
 }
 
+ElementIdentifier MenuModel::GetElementIdentifierAt(int index) const {
+  return ElementIdentifier();
+}
+
 // static
 bool MenuModel::GetModelAndIndexForCommandId(int command_id,
                                              MenuModel** model,

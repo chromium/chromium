@@ -16,6 +16,9 @@ namespace ui {
 
 namespace {
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
+
 constexpr int kAlertedCommandId = 2;
 
 class DelegateBase : public SimpleMenuModel::Delegate {
@@ -166,6 +169,18 @@ TEST(SimpleMenuModelTest, SetIsNewFeatureAt) {
 
   ASSERT_FALSE(simple_menu_model.IsNewFeatureAt(0));
   ASSERT_TRUE(simple_menu_model.IsNewFeatureAt(1));
+}
+
+TEST(SimpleMenuModelTest, SetElementIdentifierAt) {
+  SimpleMenuModel simple_menu_model(nullptr);
+  simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");
+  simple_menu_model.AddItem(/*command_id*/ 6, u"menu item 1");
+
+  simple_menu_model.SetElementIdentifierAt(/*index*/ 1, kTestElementID);
+
+  EXPECT_EQ(ui::ElementIdentifier(),
+            simple_menu_model.GetElementIdentifierAt(0));
+  EXPECT_EQ(kTestElementID, simple_menu_model.GetElementIdentifierAt(1));
 }
 
 TEST(SimpleMenuModelTest, HasIconsViaDelegate) {

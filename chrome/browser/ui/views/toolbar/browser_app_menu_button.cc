@@ -47,6 +47,8 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserAppMenuButton, kIdentifier);
+
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
 
@@ -55,6 +57,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  SetProperty(views::kElementIdentifierKey, kIdentifier);
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}

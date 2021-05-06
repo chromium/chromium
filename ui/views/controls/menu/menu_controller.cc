@@ -42,8 +42,10 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_constants.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_delegate.h"
@@ -1728,6 +1730,16 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
 }
 
 void MenuController::Accept(MenuItemView* item, int event_flags) {
+  // This counts as activation of a menu item. We don't put this logic in
+  // ReallyAccept() because we expect activation to happen while the element is
+  // visible to the user, but ReallyAccept() is called on Mac *after* the menu
+  // is closed.
+  if (item) {
+    const ui::ElementIdentifier id = item->GetProperty(kElementIdentifierKey);
+    if (id)
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(id, item);
+  }
+
 #if defined(OS_MAC)
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
       item, item->GetParentMenuItem()->GetSubmenu(),

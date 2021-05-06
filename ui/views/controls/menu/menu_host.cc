@@ -305,6 +305,11 @@ void MenuHost::OnDragComplete() {
     native_widget_private()->SetCapture();
 }
 
+Widget* MenuHost::GetPrimaryWindowWidget() {
+  return owner_ ? owner_->GetPrimaryWindowWidget()
+                : Widget::GetPrimaryWindowWidget();
+}
+
 void MenuHost::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
   owner_->RemoveObserver(this);

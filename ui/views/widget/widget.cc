@@ -507,6 +507,14 @@ const Widget* Widget::GetTopLevelWidget() const {
   return is_top_level() ? this : native_widget_->GetTopLevelWidget();
 }
 
+Widget* Widget::GetPrimaryWindowWidget() {
+  return GetTopLevelWidget();
+}
+
+const Widget* Widget::GetPrimaryWindowWidget() const {
+  return const_cast<Widget*>(this)->GetPrimaryWindowWidget();
+}
+
 void Widget::SetContentsView(View* view) {
   // Do not SetContentsView() again if it is already set to the same view.
   if (view == GetContentsView())

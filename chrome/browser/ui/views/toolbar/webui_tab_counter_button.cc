@@ -596,6 +596,7 @@ void WebUITabCounterButton::AddedToWidget() {
 
 void WebUITabCounterButton::AfterPropertyChange(const void* key,
                                                 int64_t old_value) {
+  View::AfterPropertyChange(key, old_value);
   if (key != kHasInProductHelpPromoKey)
     return;
   UpdateColors();

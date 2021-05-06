@@ -9,14 +9,17 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -230,6 +233,15 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     // correct ink drop animations.
     bool increment_pressed_lock_called = false;
     increment_pressed_lock_called_ = &increment_pressed_lock_called;
+
+    // Since regular Button logic isn't used, we need to instead notify that the
+    // menu button was activated here.
+    const ui::ElementIdentifier id =
+        button()->GetProperty(views::kElementIdentifierKey);
+    if (id) {
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(id,
+                                                                     button());
+    }
 
     // Allow for the button callback to delete this.
     auto ref = weak_factory_.GetWeakPtr();

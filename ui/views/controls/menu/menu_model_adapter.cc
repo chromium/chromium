@@ -4,15 +4,19 @@
 
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
+#include <list>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -118,6 +122,10 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));
+  const ui::ElementIdentifier element_id =
+      model->GetElementIdentifierAt(model_index);
+  if (element_id)
+    menu_item_view->SetProperty(kElementIdentifierKey, element_id);
 
   return menu_item_view;
 }

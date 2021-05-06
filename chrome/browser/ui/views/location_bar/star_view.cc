@@ -82,6 +82,7 @@ StarView::StarView(CommandUpdater* command_updater,
 StarView::~StarView() {}
 
 void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
+  View::AfterPropertyChange(key, old_value);
   if (key == kHasInProductHelpPromoKey) {
     views::InkDropState next_state;
     if (GetProperty(kHasInProductHelpPromoKey) || GetVisible()) {

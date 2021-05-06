@@ -374,6 +374,17 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWhenAnchorWidgetBoundsChanged) {
   EXPECT_TRUE(bubble_widget->IsVisible());
 }
 
+TEST_F(BubbleDialogDelegateViewTest, GetPrimaryWindowWidget) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  BubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  EXPECT_EQ(anchor_widget.get(), anchor_widget->GetPrimaryWindowWidget());
+  EXPECT_EQ(anchor_widget.get(), bubble_widget->GetPrimaryWindowWidget());
+}
+
 // Test that setting WidgetDelegate::SetCanActivate() to false makes the
 // widget created via BubbleDialogDelegateView::CreateBubble() not activatable.
 TEST_F(BubbleDialogDelegateViewTest, NotActivatable) {

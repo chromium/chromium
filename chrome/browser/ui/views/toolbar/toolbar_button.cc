@@ -612,6 +612,7 @@ void ToolbarButton::ShowContextMenuForViewImpl(View* source,
 }
 
 void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
+  View::AfterPropertyChange(key, old_value);
   if (key == kHasInProductHelpPromoKey)
     SetHasInProductHelpPromo(GetProperty(kHasInProductHelpPromoKey));
 }

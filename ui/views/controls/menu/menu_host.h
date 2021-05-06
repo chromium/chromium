@@ -80,6 +80,7 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnOwnerClosing() override;
   void OnDragWillStart() override;
   void OnDragComplete() override;
+  Widget* GetPrimaryWindowWidget() override;
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;

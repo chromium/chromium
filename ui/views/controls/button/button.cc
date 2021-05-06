@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/class_property.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -29,8 +30,10 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_class_properties.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/capture_client.h"
@@ -613,6 +616,14 @@ void Button::NotifyClick(const ui::Event& event) {
   if (has_ink_drop_action_on_click_) {
     AnimateInkDrop(InkDropState::ACTION_TRIGGERED,
                    ui::LocatedEvent::FromIfValid(&event));
+  }
+
+  // If we have an associated help context ID, notify that system that we have
+  // been activated.
+  const ui::ElementIdentifier element_id = GetProperty(kElementIdentifierKey);
+  if (element_id) {
+    views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
+                                                                   this);
   }
 
   if (callback_)

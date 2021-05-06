@@ -1616,6 +1616,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   static int GetHorizontalDragThreshold();
   static int GetVerticalDragThreshold();
 
+  // PropertyHandler -----------------------------------------------------------
+
+  // Note: you MUST call this base method from derived classes that override it
+  // or else your class  will not properly register for ElementTrackerViews and
+  // won't be available for interactive tests or in-product help/tutorials which
+  // use that system.
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
+
   // Property Support ----------------------------------------------------------
 
   void OnPropertyChanged(ui::metadata::PropertyKey property,

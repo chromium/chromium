@@ -6,6 +6,7 @@
 #define UI_VIEWS_VIEW_CLASS_PROPERTIES_H_
 
 #include "ui/base/class_property.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/views_export.h"
 
@@ -64,6 +65,10 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
 
+// Tag for the view associated with ui::ElementTracker.
+VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
+    kElementIdentifierKey;
+
 }  // namespace views
 
 // Declaring the template specialization here to make sure that the
@@ -77,6 +82,7 @@ DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                         views::HighlightPathGenerator*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::LayoutAlignment*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 
 #endif  // UI_VIEWS_VIEW_CLASS_PROPERTIES_H_
