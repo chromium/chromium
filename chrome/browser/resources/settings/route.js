@@ -103,12 +103,16 @@ function createBrowserSettingsRoutes() {
   r.BASIC = new Route('/');
   r.ABOUT = new Route('/help');
 
-  r.SIGN_OUT = r.BASIC.createChild('/signOut');
-  r.SIGN_OUT.isNavigableDialog = true;
-
   r.SEARCH = r.BASIC.createSection('/search', 'search');
   if (!loadTimeData.getBoolean('isGuest')) {
     r.PEOPLE = r.BASIC.createSection('/people', 'people');
+    r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
+    r.SIGN_OUT.isNavigableDialog = true;
+    // <if expr="not chromeos">
+    r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
+    r.IMPORT_DATA.isNavigableDialog = true;
+    // </if>
+
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
   }
@@ -116,9 +120,6 @@ function createBrowserSettingsRoutes() {
   const visibility = pageVisibility || {};
 
   // <if expr="not chromeos">
-  r.IMPORT_DATA = r.BASIC.createChild('/importData');
-  r.IMPORT_DATA.isNavigableDialog = true;
-
   if (visibility.people !== false) {
     r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
   }
@@ -199,10 +200,10 @@ function createBrowserSettingsRoutes() {
 
     if (visibility.reset !== false) {
       r.RESET = r.ADVANCED.createSection('/reset', 'reset');
-      r.RESET_DIALOG = r.ADVANCED.createChild('/resetProfileSettings');
+      r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
       r.RESET_DIALOG.isNavigableDialog = true;
       r.TRIGGERED_RESET_DIALOG =
-          r.ADVANCED.createChild('/triggeredResetProfileSettings');
+          r.RESET.createChild('/triggeredResetProfileSettings');
       r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
       // <if expr="_google_chrome and is_win">
       r.CHROME_CLEANUP = r.RESET.createChild('/cleanup');

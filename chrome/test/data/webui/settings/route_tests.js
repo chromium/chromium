@@ -202,10 +202,16 @@ suite('route', function() {
     assertFalse(routes.CLEAR_BROWSER_DATA.isSubpage());
 
     assertTrue(routes.RESET_DIALOG.isNavigableDialog);
-    assertTrue(routes.SIGN_OUT.isNavigableDialog);
+    assertTrue(routes.RESET_DIALOG.parent === routes.RESET);
     assertTrue(routes.TRIGGERED_RESET_DIALOG.isNavigableDialog);
+    assertTrue(routes.TRIGGERED_RESET_DIALOG.parent === routes.RESET);
+
+    assertTrue(routes.SIGN_OUT.isNavigableDialog);
+    assertTrue(routes.SIGN_OUT.parent === routes.PEOPLE);
+
     if (!isChromeOS) {
       assertTrue(routes.IMPORT_DATA.isNavigableDialog);
+      assertTrue(routes.IMPORT_DATA.parent === routes.PEOPLE);
     }
 
     assertFalse(routes.PRIVACY.isNavigableDialog);

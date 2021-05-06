@@ -30,7 +30,7 @@ import './i18n_setup.js';
 
       /**
        * @type {boolean} Whether this route corresponds to a navigable
-       *     dialog. Those routes don't always belong to a "section".
+       *     dialog. Those routes must belong to a "section".
        */
       this.isNavigableDialog = false;
 
