@@ -593,16 +593,8 @@ base::FilePath PreinstalledWebAppManager::GetConfigDir() {
 
 bool PreinstalledWebAppManager::IsNewUser() {
   PrefService* prefs = profile_->GetPrefs();
-  std::string last_version =
-      prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
-  if (!last_version.empty())
-    return false;
-  // It's not enough to check whether the last_version string has been set
-  // because users have been around before this pref was introduced (M88). We
-  // distinguish those users via the presence of any
-  // ExternallyInstalledWebAppPrefs which would have been set by past default
-  // app installs. Remove this after a few Chrome versions have passed.
-  return ExternallyInstalledWebAppPrefs(prefs).HasNoApps();
+  return prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion)
+      .empty();
 }
 
 bool PreinstalledWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(

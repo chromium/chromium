@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
@@ -563,6 +564,22 @@ const char kOnlyForNewUsersConfig[] = R"({
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyForNewUsersWithNewUser) {
+  // Install a policy app first to check that it doesn't interfere.
+  {
+    base::RunLoop run_loop;
+    WebAppPolicyManager& policy_manager =
+        WebAppProvider::Get(browser()->profile())->policy_manager();
+    policy_manager.SetOnAppsSynchronizedCompletedCallbackForTesting(
+        run_loop.QuitClosure());
+    const char kWebAppPolicy[] = R"([{
+      "url": "https://policy-example.org/",
+      "default_launch_container": "window"
+    }])";
+    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
+                               base::JSONReader::Read(kWebAppPolicy).value());
+    run_loop.Run();
+  }
+
   // New user should have the app installed.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
                                       kOnlyForNewUsersConfig),
