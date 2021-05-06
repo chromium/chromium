@@ -28,6 +28,12 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
   ~TestArcResizeLockPrefDelegate() override = default;
 
   // ArcResizeLockPrefDelegate:
+  mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const override {
+    return mojom::ArcResizeLockState::UNDEFINED;
+  }
+  void SetResizeLockState(const std::string& app_id,
+                          mojom::ArcResizeLockState state) override {}
   bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
     return base::Contains(confirmation_needed_app_ids_, app_id);
   }

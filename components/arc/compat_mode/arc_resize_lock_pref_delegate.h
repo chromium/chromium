@@ -7,12 +7,18 @@
 
 #include <string>
 
+#include "components/arc/mojom/compatibility_mode.mojom.h"
+
 namespace arc {
 
 class ArcResizeLockPrefDelegate {
  public:
   virtual ~ArcResizeLockPrefDelegate() = default;
 
+  virtual mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const = 0;
+  virtual void SetResizeLockState(const std::string& app_id,
+                                  mojom::ArcResizeLockState state) = 0;
   virtual bool GetResizeLockNeedsConfirmation(const std::string& app_id) = 0;
   virtual void SetResizeLockNeedsConfirmation(const std::string& app_id,
                                               bool is_needed) = 0;

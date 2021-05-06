@@ -625,55 +625,6 @@ void ArcAppListPrefs::SetNotificationsEnabled(const std::string& app_id,
   app_instance->SetNotificationsEnabled(app_info->package_name, enabled);
 }
 
-arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
-    const std::string& app_id) const {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-
-  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
-  if (!app_info) {
-    VLOG(2) << "Failed to get app info: " << app_id << ".";
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-  }
-
-  return app_info->resize_lock_state;
-}
-
-void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
-                                         arc::mojom::ArcResizeLockState state) {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return;
-
-  if (!IsRegistered(app_id)) {
-    VLOG(2) << "Request to set ret resize lock for non-registered app:"
-            << app_id << ".";
-    return;
-  }
-
-  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
-  if (!app_info) {
-    VLOG(2) << "Failed to get app info: " << app_id << ".";
-    return;
-  }
-
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager)
-    return;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->compatibility_mode(),
-      SetResizeLockState);
-  if (!instance)
-    return;
-
-  instance->SetResizeLockState(app_info->package_name, state);
-
-  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
-  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
-
-  NotifyAppStatesChanged(app_id);
-}
-
 void ArcAppListPrefs::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -1069,6 +1020,55 @@ void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
   // Update set of packages installed by policy.
   packages_by_policy_ =
       arc::policy_util::GetRequestedPackagesFromArcPolicy(policy);
+}
+
+arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
+    const std::string& app_id) const {
+  if (!ash::features::IsArcResizeLockEnabled())
+    return arc::mojom::ArcResizeLockState::UNDEFINED;
+
+  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+  if (!app_info) {
+    VLOG(2) << "Failed to get app info: " << app_id << ".";
+    return arc::mojom::ArcResizeLockState::UNDEFINED;
+  }
+
+  return app_info->resize_lock_state;
+}
+
+void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
+                                         arc::mojom::ArcResizeLockState state) {
+  if (!ash::features::IsArcResizeLockEnabled())
+    return;
+
+  if (!IsRegistered(app_id)) {
+    VLOG(2) << "Request to set ret resize lock for non-registered app:"
+            << app_id << ".";
+    return;
+  }
+
+  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+  if (!app_info) {
+    VLOG(2) << "Failed to get app info: " << app_id << ".";
+    return;
+  }
+
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->compatibility_mode(),
+      SetResizeLockState);
+  if (!instance)
+    return;
+
+  instance->SetResizeLockState(app_info->package_name, state);
+
+  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
+  base::DictionaryValue* app_dict = update.Get();
+  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
+
+  NotifyAppStatesChanged(app_id);
 }
 
 bool ArcAppListPrefs::GetResizeLockNeedsConfirmation(

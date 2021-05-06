@@ -12,12 +12,9 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/arc_util.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 
 namespace arc {
 class ArcAppShelfId;
@@ -47,8 +44,7 @@ class Profile;
 // AppServiceAppWindowArcTracker observes the ArcAppListPrefs to handle ARC app
 // window special cases, e.g. task id, closing ARC app windows, etc.
 class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
-                                      public arc::ArcSessionManagerObserver,
-                                      public aura::WindowObserver {
+                                      public arc::ArcSessionManagerObserver {
  public:
   explicit AppServiceAppWindowArcTracker(
       AppServiceAppWindowShelfController* app_service_controller);
@@ -81,11 +77,6 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
       const arc::mojom::RawIconPngData& icon) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
-
-  // aura::WindowObserver:
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
 
   // Attaches controller and sets window's property when |window| is an ARC
   // window and has the related task id.
@@ -165,9 +156,6 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // starts for the first time. OptIn management check is preceding step before
   // ARC container is actually started.
   base::Time opt_in_management_check_start_time_;
-
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      observed_windows_{this};
 
   base::WeakPtrFactory<AppServiceAppWindowArcTracker> weak_ptr_factory_{this};
 };

@@ -333,14 +333,6 @@ class ArcAppListPrefs : public KeyedService,
   // OnNotificationsEnabledChanged.
   void SetNotificationsEnabled(const std::string& app_id, bool enabled);
 
-  // Returns the resize lock state.
-  arc::mojom::ArcResizeLockState GetResizeLockState(
-      const std::string& app_id) const;
-  // Sets the resize lock state. This is called either by the Chrome OS
-  // settings or Ash.
-  void SetResizeLockState(const std::string& app_id,
-                          arc::mojom::ArcResizeLockState state);
-
   // Returns true if app is registered.
   bool IsRegistered(const std::string& app_id) const;
   // Returns true if app is a default app.
@@ -366,6 +358,10 @@ class ArcAppListPrefs : public KeyedService,
   void OnPolicySent(const std::string& policy) override;
 
   // arc::ArcResizeLockPrefDelegate:
+  arc::mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const override;
+  void SetResizeLockState(const std::string& app_id,
+                          arc::mojom::ArcResizeLockState state) override;
   bool GetResizeLockNeedsConfirmation(const std::string& app_id) override;
   void SetResizeLockNeedsConfirmation(const std::string& app_id,
                                       bool is_needed) override;

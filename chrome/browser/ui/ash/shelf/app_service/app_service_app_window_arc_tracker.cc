@@ -32,9 +32,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
-#include "components/exo/shell_surface_base.h"
-#include "components/exo/shell_surface_util.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -60,7 +57,6 @@ AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
   DCHECK(prefs);
   prefs->RemoveObserver(this);
-  observed_windows_.RemoveAllObservations();
 }
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
@@ -109,9 +105,6 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it != task_id_to_arc_app_window_info_.end())
     it->second->set_window(nullptr);
-
-  if (observed_windows_.IsObservingSource(window))
-    observed_windows_.RemoveObservation(window);
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
@@ -300,53 +293,6 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
       std::string(), state);
 }
 
-void AppServiceAppWindowArcTracker::OnWindowPropertyChanged(
-    aura::Window* window,
-    const void* key,
-    intptr_t old) {
-  if (key != ash::kArcResizeLockKey)
-    return;
-  const auto new_resize_lock_state =
-      window->GetProperty(ash::kArcResizeLockKey);
-  const auto* app_id = window->GetProperty(ash::kAppIDKey);
-  if (!app_id)
-    return;
-  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
-  DCHECK(prefs);
-  const auto current_resize_lock_state = prefs->GetResizeLockState(*app_id);
-  if (new_resize_lock_state &&
-      current_resize_lock_state == arc::mojom::ArcResizeLockState::READY) {
-    prefs->SetResizeLockState(*app_id, arc::mojom::ArcResizeLockState::ON);
-    auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
-    if (!shell_surface_base)
-      return;
-    if (shell_surface_base->HasOverlay())
-      return;
-
-    // Show the splash screen in current window. The splash screen is an
-    // overlay covering the entire window. User can only remove the overlay
-    // before closing the window.
-    auto splash_screen_dialog = arc::BuildSplashScreenDialogView(
-        views::Button::PressedCallback(base::BindRepeating(
-            [](aura::Window* window, const ui::Event& event) {
-              auto* shell_surface_base =
-                  exo::GetShellSurfaceBaseForWindow(window);
-              if (!shell_surface_base)
-                return;
-              if (shell_surface_base->HasOverlay()) {
-                shell_surface_base->RemoveOverlay();
-              }
-              return;
-            },
-            base::Unretained(window))));
-
-    exo::ShellSurfaceBase::OverlayParams params(
-        std::move(splash_screen_dialog));
-    params.translucent = true;
-    shell_surface_base->AddOverlay(std::move(params));
-  }
-}
-
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     aura::Window* window) {
   const int task_id = arc::GetWindowTaskId(window);
@@ -391,7 +337,6 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
           chromeos::features::kArcPreImeKeyEventSupport)) {
     window->SetProperty(aura::client::kSkipImeProcessing, true);
   }
-  observed_windows_.AddObservation(window);
 
   if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId)
     HandlePlayStoreLaunch(info);
@@ -404,8 +349,6 @@ void AppServiceAppWindowArcTracker::AddCandidateWindow(aura::Window* window) {
 void AppServiceAppWindowArcTracker::RemoveCandidateWindow(
     aura::Window* window) {
   arc_window_candidates_.erase(window);
-  if (observed_windows_.IsObservingSource(window))
-    observed_windows_.RemoveObservation(window);
 }
 
 void AppServiceAppWindowArcTracker::OnItemDelegateDiscarded(
