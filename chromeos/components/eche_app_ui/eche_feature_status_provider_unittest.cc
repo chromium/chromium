@@ -213,31 +213,35 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());
 
+  SetFeatureState(FeatureState::kNotSupportedByPhone);
+  EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
+  EXPECT_EQ(0u, GetNumObserverCalls());
+
   SetMultiDeviceState(HostStatus::kHostSetButNotYetVerified,
                       FeatureState::kNotSupportedByPhone,
                       /*supports_eche_host=*/true);
-  EXPECT_EQ(FeatureStatus::kDisconnected, GetStatus());
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
+  EXPECT_EQ(0u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
                       /*supports_eche_host=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
-  EXPECT_EQ(2u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
                       /*supports_eche_host=*/true);
-  EXPECT_EQ(3u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   EXPECT_EQ(FeatureStatus::kConnecting, GetStatus());
-  EXPECT_EQ(4u, GetNumObserverCalls());
+  EXPECT_EQ(3u, GetNumObserverCalls());
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_EQ(FeatureStatus::kConnected, GetStatus());
-  EXPECT_EQ(5u, GetNumObserverCalls());
+  EXPECT_EQ(4u, GetNumObserverCalls());
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   EXPECT_EQ(FeatureStatus::kDisconnected, GetStatus());
-  EXPECT_EQ(6u, GetNumObserverCalls());
+  EXPECT_EQ(5u, GetNumObserverCalls());
 }
 
 }  // namespace eche_app

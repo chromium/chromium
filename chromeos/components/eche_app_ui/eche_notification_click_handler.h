@@ -23,10 +23,12 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
                                      FeatureStatusProvider::Observer {
  public:
   using LaunchEcheAppFunction = base::RepeatingCallback<void(int64_t)>;
+  using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
   EcheNotificationClickHandler(phonehub::PhoneHubManager*,
                                FeatureStatusProvider*,
-                               LaunchEcheAppFunction);
+                               LaunchEcheAppFunction,
+                               CloseEcheAppFunction);
   ~EcheNotificationClickHandler() override;
 
   EcheNotificationClickHandler(const EcheNotificationClickHandler&) = delete;
@@ -45,6 +47,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
   phonehub::NotificationInteractionHandler* handler_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchEcheAppFunction launch_eche_app_function_;
+  CloseEcheAppFunction close_eche_app_function_;
   bool is_click_handler_set;
 };
 

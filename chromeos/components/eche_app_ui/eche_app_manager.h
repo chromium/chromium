@@ -45,7 +45,8 @@ class EcheAppManager : public KeyedService {
                  device_sync::DeviceSyncClient*,
                  multidevice_setup::MultiDeviceSetupClient*,
                  secure_channel::SecureChannelClient*,
-                 EcheNotificationClickHandler::LaunchEcheAppFunction);
+                 EcheNotificationClickHandler::LaunchEcheAppFunction,
+                 EcheNotificationClickHandler::CloseEcheAppFunction);
   ~EcheAppManager() override;
 
   EcheAppManager(const EcheAppManager&) = delete;

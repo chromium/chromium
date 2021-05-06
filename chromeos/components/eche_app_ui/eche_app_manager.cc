@@ -29,7 +29,8 @@ EcheAppManager::EcheAppManager(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     EcheNotificationClickHandler::LaunchEcheAppFunction
-        launch_eche_app_function)
+        launch_eche_app_function,
+    EcheNotificationClickHandler::CloseEcheAppFunction close_eche_app_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -48,7 +49,8 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_eche_app_function)),
+              launch_eche_app_function,
+              close_eche_app_function)),
       eche_connector_(
           std::make_unique<EcheConnector>(feature_status_provider_.get(),
                                           connection_manager_.get())),

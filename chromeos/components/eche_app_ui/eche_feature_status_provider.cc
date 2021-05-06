@@ -39,6 +39,8 @@ bool IsEligibleForFeature(
     FeatureState feature_state) {
   if (feature_state == FeatureState::kProhibitedByPolicy)
     return false;
+  if (feature_state == FeatureState::kNotSupportedByPhone)
+    return false;
   if (!local_device)
     return false;
   if (local_device->GetSoftwareFeatureState(SoftwareFeature::kEcheClient) ==

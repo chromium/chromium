@@ -16,6 +16,8 @@
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
@@ -31,6 +33,20 @@ namespace chromeos {
 namespace eche_app {
 
 namespace {
+
+void CloseEcheApp(Profile* profile) {
+  for (auto* browser : *(BrowserList::GetInstance())) {
+    if (browser->profile() != profile)
+      continue;
+    if (!browser->app_controller())
+      continue;
+    if (browser->app_controller()->system_app_type() !=
+        web_app::SystemAppType::ECHE)
+      continue;
+    browser->window()->Close();
+    return;
+  }
+}
 
 void LaunchEcheApp(Profile* profile, int64_t notification_id) {
   std::string url = "chrome://eche-app/#notification_id=";
@@ -92,11 +108,11 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient();
   if (!secure_channel_client)
     return nullptr;
-
   return new EcheAppManager(GetSystemInfo(profile), phone_hub_manager,
                             device_sync_client, multidevice_setup_client,
                             secure_channel_client,
-                            base::BindRepeating(&LaunchEcheApp, profile));
+                            base::BindRepeating(&LaunchEcheApp, profile),
+                            base::BindRepeating(&CloseEcheApp, profile));
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(

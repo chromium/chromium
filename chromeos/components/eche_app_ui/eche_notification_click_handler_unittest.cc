@@ -33,10 +33,17 @@ class EcheNotificationClickHandlerTest : public testing::Test {
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
         base::BindRepeating(
             &EcheNotificationClickHandlerTest::FakeLaunchEcheAppFunction,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EcheNotificationClickHandlerTest::FakeCloseEcheAppFunction,
             base::Unretained(this)));
   }
 
   void FakeLaunchEcheAppFunction(int64_t notification_id) {
+    // Do nothing.
+  }
+
+  void FakeCloseEcheAppFunction() {
     // Do nothing.
   }
 

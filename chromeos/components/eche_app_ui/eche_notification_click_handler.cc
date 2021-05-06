@@ -13,9 +13,11 @@ namespace eche_app {
 EcheNotificationClickHandler::EcheNotificationClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchEcheAppFunction launch_eche_app_function)
+    LaunchEcheAppFunction launch_eche_app_function,
+    CloseEcheAppFunction close_eche_app_function)
     : feature_status_provider_(feature_status_provider),
-      launch_eche_app_function_(std::move(launch_eche_app_function)) {
+      launch_eche_app_function_(std::move(launch_eche_app_function)),
+      close_eche_app_function_(std::move(close_eche_app_function)) {
   handler_ = phone_hub_manager->GetNotificationInteractionHandler();
   DCHECK_NE(handler_, nullptr);
   feature_status_provider_->AddObserver(this);
@@ -53,6 +55,7 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
     } else if (is_click_handler_set && !clickable) {
       handler_->RemoveNotificationClickHandler(this);
       is_click_handler_set = false;
+      close_eche_app_function_.Run();
     }
   } else {
     PA_LOG(INFO)
