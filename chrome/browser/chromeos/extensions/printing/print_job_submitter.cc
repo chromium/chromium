@@ -72,7 +72,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
           ->GetPrefs()
           ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
   base::Value value(extension_id);
-  return list->Find(value) == list->end();
+  return list->Find(value) == list->GetList().end();
 }
 
 }  // namespace
