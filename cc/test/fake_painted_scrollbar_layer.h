@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
 

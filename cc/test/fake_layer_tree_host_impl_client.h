@@ -5,8 +5,6 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
 
-#include <vector>
-
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 

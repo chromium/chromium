@@ -5,8 +5,6 @@
 #ifndef CC_TILES_TILE_DRAW_INFO_H_
 #define CC_TILES_TILE_DRAW_INFO_H_
 
-#include <memory>
-
 #include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/common/resources/platform_color.h"

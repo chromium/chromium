@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"

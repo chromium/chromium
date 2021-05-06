@@ -5,8 +5,6 @@
 #ifndef CC_PAINT_PAINT_OP_READER_H_
 #define CC_PAINT_PAINT_OP_READER_H_
 
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_export.h"

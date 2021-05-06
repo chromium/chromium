@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
-
 #include "cc/cc_export.h"
 #include "cc/trees/property_tree.h"
 #include "ui/events/types/scroll_types.h"

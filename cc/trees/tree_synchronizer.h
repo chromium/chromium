@@ -5,8 +5,6 @@
 #ifndef CC_TREES_TREE_SYNCHRONIZER_H_
 #define CC_TREES_TREE_SYNCHRONIZER_H_
 
-#include <memory>
-
 #include "cc/cc_export.h"
 
 namespace cc {

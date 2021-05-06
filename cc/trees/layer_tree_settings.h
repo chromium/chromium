@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <vector>
-
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"

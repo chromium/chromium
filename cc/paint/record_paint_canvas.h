@@ -5,8 +5,6 @@
 #ifndef CC_PAINT_RECORD_PAINT_CANVAS_H_
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/optional.h"
 #include "build/build_config.h"

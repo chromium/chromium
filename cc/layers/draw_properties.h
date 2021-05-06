@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "cc/trees/occlusion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mask_filter_info.h"

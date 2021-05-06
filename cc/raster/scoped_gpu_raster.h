@@ -5,8 +5,6 @@
 #ifndef CC_RASTER_SCOPED_GPU_RASTER_H_
 #define CC_RASTER_SCOPED_GPU_RASTER_H_
 
-#include <memory>
-
 #include "cc/cc_export.h"
 
 namespace viz {

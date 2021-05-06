@@ -5,9 +5,6 @@
 #ifndef CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"

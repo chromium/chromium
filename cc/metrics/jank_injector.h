@@ -5,8 +5,6 @@
 #ifndef CC_METRICS_JANK_INJECTOR_H_
 #define CC_METRICS_JANK_INJECTOR_H_
 
-#include <memory>
-
 #include "base/single_thread_task_runner.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

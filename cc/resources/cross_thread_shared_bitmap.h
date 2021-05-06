@@ -5,8 +5,6 @@
 #ifndef CC_RESOURCES_CROSS_THREAD_SHARED_BITMAP_H_
 #define CC_RESOURCES_CROSS_THREAD_SHARED_BITMAP_H_
 
-#include <memory>
-
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"

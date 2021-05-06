@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/cc_export.h"

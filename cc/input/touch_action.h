@@ -6,7 +6,6 @@
 #define CC_INPUT_TOUCH_ACTION_H_
 
 #include <cstdlib>
-#include <string>
 
 #include "base/notreached.h"
 

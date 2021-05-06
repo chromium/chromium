@@ -5,8 +5,6 @@
 #ifndef CC_PAINT_IMAGE_PROVIDER_H_
 #define CC_PAINT_IMAGE_PROVIDER_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/optional.h"
 #include "cc/paint/decoded_draw_image.h"

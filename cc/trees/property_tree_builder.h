@@ -5,8 +5,6 @@
 #ifndef CC_TREES_PROPERTY_TREE_BUILDER_H_
 #define CC_TREES_PROPERTY_TREE_BUILDER_H_
 
-#include <vector>
-
 #include "cc/cc_export.h"
 
 namespace cc {
