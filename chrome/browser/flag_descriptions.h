@@ -1358,6 +1358,9 @@ extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 extern const char kStoragePressureEventName[];
 extern const char kStoragePressureEventDescription[];
 
+extern const char kStoreHoursAndroidName[];
+extern const char kStoreHoursAndroidDescription[];
+
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 

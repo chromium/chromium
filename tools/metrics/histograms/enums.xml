@@ -45807,6 +45807,7 @@ from previous Chrome versions.
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
   <int value="-890517779" label="JXL:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
+  <int value="-887101831" label="StoreHoursAndroid:disabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
   <int value="-886898803" label="CooperativeScheduling:enabled"/>
@@ -46737,6 +46738,7 @@ from previous Chrome versions.
       label="ContentSuggestionsThumbnailDominantColor:enabled"/>
   <int value="-50021298" label="ash-adjustable-large-cursor"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
+  <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-45849989" label="ModeSpecificPowerButton:disabled"/>
   <int value="-45532639" label="enable-default-media-session"/>
   <int value="-45487487" label="NewTabPageCustomLinks:disabled"/>

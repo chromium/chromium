@@ -2433,6 +2433,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "enable-store-hours",
+    "owners": [ "jawaid@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "enable-subresource-redirect",
     "owners": [ "rajendrant", "mcrouse", "tbansal" ],
     "expiry_milestone": 92

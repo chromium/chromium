@@ -4857,6 +4857,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCriticalPersistedTabDataDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCriticalPersistedTabData)},
 
+    {"enable-store-hours", flag_descriptions::kStoreHoursAndroidName,
+     flag_descriptions::kStoreHoursAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kStoreHoursAndroid)},
+
     {"enable-tab-grid-layout", flag_descriptions::kTabGridLayoutAndroidName,
      flag_descriptions::kTabGridLayoutAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabGridLayoutAndroid,

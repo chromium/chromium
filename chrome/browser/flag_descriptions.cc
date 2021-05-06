@@ -2364,6 +2364,10 @@ const char kStoragePressureEventDescription[] =
     "If enabled, Chrome will dispatch a DOM event, informing applications "
     "about storage pressure (low disk space)";
 
+const char kStoreHoursAndroidName[] = "Store Hours";
+const char kStoreHoursAndroidDescription[] =
+    "When enabled, shows store hours for stores in tab grid view.";
+
 const char kSuggestionsWithSubStringMatchName[] =
     "Substring matching for Autofill suggestions";
 const char kSuggestionsWithSubStringMatchDescription[] =

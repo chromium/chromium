@@ -92,6 +92,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS,
                 ChromeFeatureList.READ_LATER,
                 ChromeFeatureList.START_SURFACE_ANDROID,
+                ChromeFeatureList.STORE_HOURS,
                 ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
                 ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                 ChromeFeatureList.TAB_GROUPS_ANDROID,
