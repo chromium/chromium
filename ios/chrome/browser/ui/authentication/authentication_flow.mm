@@ -321,7 +321,7 @@ NSError* IdentityMissingError() {
       // the flow is running.
       DCHECK([NSThread isMainThread]);
       dispatch_async(dispatch_get_main_queue(), ^{
-        _selfRetainer = nil;
+        self->_selfRetainer = nil;
       });
       [self continueSignin];
       return;
@@ -448,22 +448,25 @@ NSError* IdentityMissingError() {
 
 - (void)dismissPresentingViewControllerAnimated:(BOOL)animated
                                      completion:(ProceduralBlock)completion {
-  [_presentingViewController dismissViewControllerAnimated:animated
-                                                completion:^() {
-                                                  [_delegate didDismissDialog];
-                                                  if (completion) {
-                                                    completion();
-                                                  }
-                                                }];
+  __weak __typeof(_delegate) weakDelegate = _delegate;
+  [_presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:^() {
+                           [weakDelegate didDismissDialog];
+                           if (completion) {
+                             completion();
+                           }
+                         }];
 }
 
 - (void)presentViewController:(UIViewController*)viewController
                      animated:(BOOL)animated
                    completion:(ProceduralBlock)completion {
+  __weak __typeof(_delegate) weakDelegate = _delegate;
   [_presentingViewController presentViewController:viewController
                                           animated:animated
                                         completion:^() {
-                                          [_delegate didPresentDialog];
+                                          [weakDelegate didPresentDialog];
                                           if (completion) {
                                             completion();
                                           }
