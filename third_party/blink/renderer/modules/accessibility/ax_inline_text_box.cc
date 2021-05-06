@@ -392,4 +392,8 @@ int AXInlineTextBox::TextLength() const {
   return int{inline_text_box_->Len()};
 }
 
+void AXInlineTextBox::ClearChildren() const {
+  // An AXInlineTextBox has no children to clear.
+}
+
 }  // namespace blink
