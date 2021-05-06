@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/encryption/encryption_module.h"
-#include "components/reporting/encryption/verification.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
@@ -60,6 +59,7 @@ bool StorageSelector::is_uploader_required() {
 // static
 void StorageSelector::CreateStorageModule(
     const base::FilePath& local_reporting_path,
+    base::StringPiece verification_key,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         cb) {
@@ -89,12 +89,12 @@ void StorageSelector::CreateStorageModule(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Use Storage in a local file system.
-  StorageModule::Create(StorageOptions()
-                            .set_directory(local_reporting_path)
-                            .set_signature_verification_public_key(
-                                SignatureVerifier::VerificationKey()),
-                        std::move(async_start_upload_cb),
-                        EncryptionModule::Create(), std::move(cb));
+  StorageModule::Create(
+      StorageOptions()
+          .set_directory(local_reporting_path)
+          .set_signature_verification_public_key(verification_key),
+      std::move(async_start_upload_cb), EncryptionModule::Create(),
+      std::move(cb));
 }
 
 }  // namespace reporting

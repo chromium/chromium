@@ -122,7 +122,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   static void AsyncProvideUploader(
       Priority priority,
       Storage* storage,
-      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
+      UploaderInterfaceResultCb start_uploader_cb) {
     storage->async_start_upload_cb_.Run(
         priority,
         /*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
@@ -157,7 +157,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
  private:
   static void WrapInstantiatedUploader(
       Priority priority,
-      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
+      UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.ok()) {
       std::move(start_uploader_cb).Run(uploader_result.status());
@@ -500,11 +500,14 @@ void Storage::Create(
       } else {
         if (EncryptionModuleInterface::is_enabled()) {
           // Initiate upload with need_encryption_key flag and no records.
+          UploaderInterface::UploaderInterfaceResultCb start_uploader_cb =
+              base::BindOnce(&StorageInitContext::EncryptionKeyReceiverReady);
           storage_->async_start_upload_cb_.Run(
               /*priority=*/MANUAL_BATCH,  // Any priority would do.
               /*need_encryption_key=*/true,
-              base::BindOnce(&StorageInitContext::EncryptionKeyReceiverReady,
-                             base::Unretained(this)));
+              base::BindOnce(&StorageInitContext::WrapInstantiatedKeyUploader,
+                             /*priority=*/MANUAL_BATCH,
+                             std::move(start_uploader_cb)));
           // Continue initialization without waiting for it to respond.
           // Until the response arrives, we will reject Enqueues.
         }
@@ -527,7 +530,20 @@ void Storage::Create(
       }
     }
 
-    void EncryptionKeyReceiverReady(
+    static void WrapInstantiatedKeyUploader(
+        Priority priority,
+        UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
+        StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+      if (!uploader_result.ok()) {
+        std::move(start_uploader_cb).Run(uploader_result.status());
+        return;
+      }
+      std::move(start_uploader_cb)
+          .Run(std::make_unique<QueueUploaderInterface>(
+              priority, std::move(uploader_result.ValueOrDie())));
+    }
+
+    static void EncryptionKeyReceiverReady(
         StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
       if (uploader_result.ok()) {
         uploader_result.ValueOrDie()->Completed(Status::StatusOK());
@@ -645,9 +661,18 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
       }));
 
   // Serialize whole signed_encryption_key to a new file, discard the old
-  // one(s).
-  const Status status = key_in_storage_->UploadKeyFile(signed_encryption_key);
-  LOG_IF(ERROR, !status.ok()) << "Failed to upload the new encription key.";
+  // one(s). Do it on a thread which may block doing file operations.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](SignedEncryptionInfo signed_encryption_key,
+             KeyInStorage* key_in_storage) {
+            const Status status =
+                key_in_storage->UploadKeyFile(signed_encryption_key);
+            LOG_IF(ERROR, !status.ok())
+                << "Failed to upload the new encription key.";
+          },
+          std::move(signed_encryption_key), key_in_storage_.get()));
 }
 
 StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(Priority priority) {
