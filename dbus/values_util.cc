@@ -226,17 +226,11 @@ void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
       break;
     }
     case base::Value::Type::DOUBLE: {
-      double double_value = 0;
-      bool success = value.GetAsDouble(&double_value);
-      DCHECK(success);
-      writer->AppendDouble(double_value);
+      writer->AppendDouble(value.GetDouble());
       break;
     }
     case base::Value::Type::STRING: {
-      std::string string_value;
-      bool success = value.GetAsString(&string_value);
-      DCHECK(success);
-      writer->AppendString(string_value);
+      writer->AppendString(value.GetString());
       break;
     }
     default:

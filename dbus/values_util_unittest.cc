@@ -169,23 +169,22 @@ TEST(ValuesUtilTest, PopExtremelyLargeIntegers) {
   MessageReader reader(response.get());
   std::unique_ptr<base::Value> value;
   std::unique_ptr<base::Value> expected_value;
-  double double_value = 0;
   // Pop an int64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
   expected_value =
       std::make_unique<base::Value>(static_cast<double>(kInt64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
-  ASSERT_TRUE(value->GetAsDouble(&double_value));
-  EXPECT_NE(kInt64Value, static_cast<int64_t>(double_value));
+  ASSERT_TRUE(value->is_double());
+  EXPECT_NE(kInt64Value, static_cast<int64_t>(value->GetDouble()));
   // Pop a uint64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
   expected_value =
       std::make_unique<base::Value>(static_cast<double>(kUint64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
-  ASSERT_TRUE(value->GetAsDouble(&double_value));
-  EXPECT_NE(kUint64Value, static_cast<uint64_t>(double_value));
+  ASSERT_TRUE(value->is_double());
+  EXPECT_NE(kUint64Value, static_cast<uint64_t>(value->GetDouble()));
 }
 
 TEST(ValuesUtilTest, PopIntArray) {
