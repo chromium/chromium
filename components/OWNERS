@@ -37,6 +37,7 @@ per-file pdf_strings.grdp=file://pdf/OWNERS
 per-file policy_strings.grdp=file://components/policy/OWNERS
 per-file print_media_strings.grdp=file://components/printing/OWNERS
 per-file printing_component_strings.grdp=file://components/printing/OWNERS
+per-file privacy_sandbox_strings.grdp=file://components/privacy_sandbox/OWNERS
 per-file reset_password_strings.grdp=file://components/safe_browsing/OWNERS
 per-file security_interstitials_strings.grdp=file://components/security_interstitials/OWNERS
 per-file security_state_strings.grdp=file://components/security_state/OWNERS

@@ -19,10 +19,12 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/federated_learning/floc_id.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -30,6 +32,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace {
@@ -810,6 +813,22 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
 
   EXPECT_EQ(base::Time::Now(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
+}
+
+TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
+  // Check that the cohort identifier is correctly converted to a string when
+  // available.
+  federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
+                                     /*sorting_lsh_version=*/0);
+  floc_id.SaveToPrefs(profile()->GetTestingPrefService());
+
+  EXPECT_EQ(std::u16string(u"123456"),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
+
+  floc_id.InvalidateIdAndSaveToPrefs(profile()->GetTestingPrefService());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
+            privacy_sandbox_settings()->GetFlocIdForDisplay());
 }
 
 TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {

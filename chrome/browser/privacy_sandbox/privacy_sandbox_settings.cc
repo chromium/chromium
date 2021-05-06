@@ -8,7 +8,9 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -16,11 +18,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -183,6 +187,15 @@ bool PrivacySandboxSettings::IsFlocAllowed(
 
 base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
   return pref_service_->GetTime(prefs::kPrivacySandboxFlocDataAccessibleSince);
+}
+
+std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
+  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
+
+  if (!floc_id.IsValid())
+    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
+
+  return base::NumberToString16(floc_id.ToUint64());
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(

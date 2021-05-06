@@ -71,6 +71,11 @@ class PrivacySandboxSettings : public KeyedService,
   // which case no history is eligible.
   base::Time FlocDataAccessibleSince() const;
 
+  // Returns the current FLoC cohort identifier for the associated profile in
+  // string format suitable for direct display to the user. If the cohort is
+  // not valid, the appropriate descriptive string is returned instead.
+  std::u16string GetFlocIdForDisplay() const;
+
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
   // points |top_frame_origin| is the same as either the impression origin or
