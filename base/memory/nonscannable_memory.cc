@@ -41,7 +41,7 @@ void NonScannableAllocator::Free(void* ptr) {
 }
 
 void NonScannableAllocator::EnablePCScan() {
-  allocator_ = std::make_unique<base::PartitionAllocator>();
+  allocator_.reset(MakePCScanMetadata<base::PartitionAllocator>());
   allocator_->init(PartitionOptions(PartitionOptions::AlignedAlloc::kDisallowed,
                                     PartitionOptions::ThreadCache::kDisabled,
                                     PartitionOptions::Quarantine::kAllowed,

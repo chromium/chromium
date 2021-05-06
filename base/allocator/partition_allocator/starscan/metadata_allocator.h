@@ -43,6 +43,29 @@ class MetadataAllocator {
   }
 };
 
+// Inherit from it to make a class allocated on the metadata partition.
+struct AllocatedOnPCScanMetadataPartition {
+  static void* operator new(size_t size) {
+    return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
+  }
+  static void operator delete(void* ptr) {
+    PCScanMetadataAllocator().FreeNoHooks(ptr);
+  }
+};
+
+template <typename T, typename... Args>
+T* MakePCScanMetadata(Args&&... args) {
+  auto* memory = static_cast<T*>(
+      PCScanMetadataAllocator().AllocFlagsNoHooks(0, sizeof(T)));
+  return new (memory) T(std::forward<Args>(args)...);
+}
+
+struct PCScanMetadataDeleter final {
+  inline void operator()(void* ptr) const {
+    PCScanMetadataAllocator().FreeNoHooks(ptr);
+  }
+};
+
 }  // namespace internal
 }  // namespace base
 

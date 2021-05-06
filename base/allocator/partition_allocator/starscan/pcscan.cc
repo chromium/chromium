@@ -863,16 +863,9 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
 
 // This class is responsible for performing the entire PCScan task.
 // TODO(bikineev): Move PCScan algorithm out of PCScanTask.
-class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
+class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
+                         public AllocatedOnPCScanMetadataPartition {
  public:
-  static void* operator new(size_t size) {
-    return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
-  }
-
-  static void operator delete(void* ptr) {
-    PCScanMetadataAllocator().FreeNoHooks(ptr);
-  }
-
   // Creates and initializes a PCScan state.
   explicit PCScanTask(PCScan& pcscan);
 

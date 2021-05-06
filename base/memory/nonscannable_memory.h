@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #endif
 
 // This file contains allocation/deallocation functions for memory that doesn't
@@ -58,7 +59,7 @@ class BASE_EXPORT NonScannableAllocator final {
   NonScannableAllocator();
   ~NonScannableAllocator();
 
-  std::unique_ptr<base::PartitionAllocator> allocator_;
+  std::unique_ptr<base::PartitionAllocator, PCScanMetadataDeleter> allocator_;
   std::atomic_bool pcscan_enabled_{false};
 };
 
