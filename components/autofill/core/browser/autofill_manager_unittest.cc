@@ -90,6 +90,7 @@ using testing::AnyOf;
 using testing::AtLeast;
 using testing::Contains;
 using testing::DoAll;
+using testing::Each;
 using testing::ElementsAre;
 using testing::HasSubstr;
 using testing::Not;
@@ -2112,6 +2113,71 @@ TEST_F(AutofillManagerTest, FillTriggeredSection) {
                    false);
   ExpectFilledAddressFormElvis(response_page_id, section2, kDefaultPageID,
                                false);
+}
+
+MATCHER_P(HasValue, value, "") {
+  return arg.value == value;
+}
+
+// Test that if the form cache is outdated because a field has changed, filling
+// is aborted after that field.
+TEST_F(AutofillManagerTest, DoNotFillIfFormFieldChanged) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  ASSERT_TRUE(autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+
+  // Modify |form| so that it doesn't match |form_structure| anymore.
+  ASSERT_GE(form.fields.size(), 3u);
+  for (auto it = form.fields.begin() + 2; it != form.fields.end(); ++it)
+    *it = FormFieldData();
+
+  const char guid[] = "00000000-0000-0000-0000-000000000001";
+  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  ASSERT_TRUE(profile);
+
+  int response_query_id = 0;
+  FormData response_data;
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _))
+      .WillOnce((DoAll(testing::SaveArg<0>(&response_query_id),
+                       testing::SaveArg<2>(&response_data))));
+  autofill_manager_->FillOrPreviewDataModelForm(
+      AutofillDriver::FORM_DATA_ACTION_FILL, kDefaultPageID, form,
+      form.fields.front(), profile, nullptr, form_structure, autofill_field);
+  std::vector<FormFieldData> filled_fields(response_data.fields.begin(),
+                                           response_data.fields.begin() + 2);
+  std::vector<FormFieldData> skipped_fields(response_data.fields.begin() + 2,
+                                            response_data.fields.end());
+
+  EXPECT_THAT(filled_fields, Each(Not(HasValue(u""))));
+  EXPECT_THAT(skipped_fields, Each(HasValue(u"")));
+}
+
+// Test that if the form cache is outdated because a field was removed, filling
+// is aborted.
+TEST_F(AutofillManagerTest, DoNotFillIfFormFieldRemoved) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  ASSERT_TRUE(autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+
+  // Modify |form| so that it doesn't match |form_structure| anymore.
+  ASSERT_GE(form.fields.size(), 2u);
+  form.fields.pop_back();
+
+  const char guid[] = "00000000-0000-0000-0000-000000000001";
+  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  ASSERT_TRUE(profile);
+
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _)).Times(0);
 }
 
 // Tests that AutofillManager ignores loss of focus events sent from the

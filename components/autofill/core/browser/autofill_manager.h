@@ -369,6 +369,8 @@ class AutofillManager : public AutofillHandler,
   FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, PageLanguageGetsCorrectlySet);
   FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest,
                            PageLanguageGetsCorrectlyDetected);
+  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, DoNotFillIfFormFieldChanged);
+  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, DoNotFillIfFormFieldRemoved);
 
   // Keeps track of the filling context for a form, used to make refill attemps.
   struct FillingContext {
