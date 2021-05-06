@@ -130,7 +130,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
   }
 
   std::string input_method;
-  for (const auto& input_method_entry : *login_screen_input_methods) {
+  for (const auto& input_method_entry : login_screen_input_methods->GetList()) {
     if (input_method_entry.GetAsString(&input_method))
       allowed_input_methods.push_back(input_method);
   }
@@ -184,7 +184,7 @@ void SetKeyboardSettings(const AccountId& account_id) {
 std::vector<ash::LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales) {
   std::vector<ash::LocaleItem> result;
-  for (const auto& locale : *locales) {
+  for (const auto& locale : locales->GetList()) {
     const base::DictionaryValue* dictionary;
     if (!locale.GetAsDictionary(&dictionary))
       continue;
