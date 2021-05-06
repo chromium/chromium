@@ -181,7 +181,19 @@ void CheckFloatConversion(
   }
 }
 
-TEST(JniArray, ArrayOfStringArrayConversion) {
+TEST(JniArray, ArrayOfStringArrayConversionUTF8) {
+  std::vector<std::vector<std::string>> kArrays = {
+      {"a", "f"}, {"a", ""}, {}, {""}, {"今日は"}};
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
+
+  std::vector<std::vector<std::string>> out;
+  Java2dStringArrayTo2dStringVector(env, joa, &out);
+  ASSERT_TRUE(kArrays == out);
+}
+
+TEST(JniArray, ArrayOfStringArrayConversionUTF16) {
   std::vector<std::vector<std::u16string>> kArrays = {
       {u"a", u"f"}, {u"a", u""}, {}, {u""}};
 
