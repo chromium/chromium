@@ -871,8 +871,8 @@ void LayoutBox::UpdateFromStyle() {
 
 void LayoutBox::LayoutSubtreeRoot() {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
-      !NGBlockNode::CanUseNewLayout(*this) && GetCachedLayoutResult()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled() && !IsLayoutNGMixin() &&
+      GetCachedLayoutResult()) {
     // If this object is laid out by the legacy engine, while its containing
     // block is laid out by NG, it means that we normally (when laying out
     // starting at the real root, i.e. LayoutView) enter layout of this object
