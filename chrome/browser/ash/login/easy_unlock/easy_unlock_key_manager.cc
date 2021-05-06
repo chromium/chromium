@@ -171,10 +171,9 @@ bool EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(
     const base::ListValue& device_list,
     EasyUnlockDeviceKeyDataList* data_list) {
   EasyUnlockDeviceKeyDataList parsed_devices;
-  for (base::ListValue::const_iterator it = device_list.begin();
-       it != device_list.end(); ++it) {
+  for (const auto& entry : device_list.GetList()) {
     const base::DictionaryValue* dict;
-    if (!it->GetAsDictionary(&dict) || !dict)
+    if (!entry.GetAsDictionary(&dict) || !dict)
       return false;
 
     EasyUnlockDeviceKeyData data;
