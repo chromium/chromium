@@ -1299,6 +1299,13 @@ bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
                                          int* active_index,
                                          int index,
                                          std::string* error) {
+  // Cannot change tab highlight. This may for instance be due to user dragging
+  // in progress.
+  if (!tabstrip->delegate()->CanHighlightTabs()) {
+    *error = tabs_constants::kCannotHighlightTabs;
+    return false;
+  }
+
   // Make sure the index is in range.
   if (!tabstrip->ContainsIndex(index)) {
     *error = ErrorUtils::FormatErrorMessage(
@@ -1384,8 +1391,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 
   if (params->update_properties.highlighted.get()) {
     bool highlighted = *params->update_properties.highlighted;
-    if (highlighted != tab_strip->IsTabSelected(tab_index))
-      tab_strip->ToggleSelectionAt(tab_index);
+    if (highlighted != tab_strip->IsTabSelected(tab_index)) {
+      if (!tab_strip->ToggleSelectionAt(tab_index))
+        return RespondNow(Error(tabs_constants::kCannotHighlightTabs));
+    }
   }
 
   if (params->update_properties.pinned.get()) {
