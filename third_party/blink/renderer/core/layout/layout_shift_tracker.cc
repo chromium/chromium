@@ -352,10 +352,13 @@ void LayoutShiftTracker::ObjectShifted(
     }
   }
 
-  // Compute move distance based on unclipped rects, to accurately determine how
-  // much the element moved.
+  // Compute move distance based on starting points in root, to accurately
+  // determine how much the element moved.
   float move_distance =
       GetMoveDistance(old_starting_point_in_root, new_starting_point_in_root);
+  if (std::isnan(move_distance) || std::isinf(move_distance))
+    return;
+  DCHECK_GT(move_distance, 0.f);
   frame_max_distance_ = std::max(frame_max_distance_, move_distance);
 
   LocalFrame& frame = frame_view_->GetFrame();
