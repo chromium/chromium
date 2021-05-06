@@ -4741,6 +4741,12 @@ const char kScanAppMediaLinkDescription[] =
     "Enables showing a link in the Scan app to open scanned images in the Media"
     " app.";
 
+extern const char kScanAppSearchablePdfName[] =
+    "Enable saving scans as a searchable PDF.";
+extern const char kScanAppSearchablePdfDescription[] =
+    "Allow selecting Searchable PDF file type in Scan app"
+    " with incorporation of OCR service.";
+
 const char kScanAppStickySettingsName[] = "Enable sticky settings in Scan app";
 const char kScanAppStickySettingsDescription[] =
     "Enables sticky settings in Scan app for automatically saving scan"

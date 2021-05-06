@@ -4607,6 +4607,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "scan-app-searchable-pdf",
+    "owners": [ "kmoed", "cros-peripherals@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "scan-app-sticky-settings",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 96

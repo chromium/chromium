@@ -642,6 +642,10 @@ const base::Feature kReleaseNotesSuggestionChip{
 const base::Feature kScanAppMediaLink{"ScanAppMediaLink",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables use of Searchable PDF file type in the Scan app.
+const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables sticky settings in the Scan app.
 const base::Feature kScanAppStickySettings{"ScanAppStickySettings",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
