@@ -141,7 +141,7 @@ void PrefValueMap::GetDifferingKeys(
   while (this_pref != this_prefs.end() && other_pref != other_prefs.end()) {
     const int diff = this_pref->first.compare(other_pref->first);
     if (diff == 0) {
-      if (!this_pref->second->Equals(other_pref->second))
+      if (*this_pref->second != *other_pref->second)
         differing_keys->push_back(this_pref->first);
       ++this_pref;
       ++other_pref;

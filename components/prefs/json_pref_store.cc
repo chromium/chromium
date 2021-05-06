@@ -220,7 +220,7 @@ void JsonPrefStore::SetValue(const std::string& key,
   DCHECK(value);
   base::Value* old_value = nullptr;
   prefs_->Get(key, &old_value);
-  if (!old_value || !value->Equals(old_value)) {
+  if (!old_value || *value != *old_value) {
     prefs_->Set(key, std::move(value));
     ReportValueChanged(key, flags);
   }
@@ -234,7 +234,7 @@ void JsonPrefStore::SetValueSilently(const std::string& key,
   DCHECK(value);
   base::Value* old_value = nullptr;
   prefs_->Get(key, &old_value);
-  if (!old_value || !value->Equals(old_value)) {
+  if (!old_value || *value != *old_value) {
     prefs_->Set(key, std::move(value));
     ScheduleWrite(flags);
   }
