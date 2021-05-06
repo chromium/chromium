@@ -776,11 +776,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DefaultBrowserSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
-  defaultBrowserAgent.nonModalScheduler.webStateList =
-      mainBrowser->GetWebStateList();
-  defaultBrowserAgent.nonModalScheduler.overlayPresenter =
-      OverlayPresenter::FromBrowser(mainBrowser,
-                                    OverlayModality::kInfobarBanner);
+  defaultBrowserAgent.nonModalScheduler.browser = mainBrowser;
   [self.sceneState addAgent:defaultBrowserAgent];
   if (defaultBrowserAgent.nonModalScheduler) {
     [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];

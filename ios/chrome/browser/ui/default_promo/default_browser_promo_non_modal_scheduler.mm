@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -39,11 +41,15 @@ bool PromoCanBeDisplayed() {
 
 @interface DefaultBrowserPromoNonModalScheduler () <WebStateListObserving,
                                                     CRWWebStateObserver,
-                                                    OverlayPresenterObserving> {
+                                                    OverlayPresenterObserving,
+                                                    BrowserObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
   std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
+  // Observe the browser the web state list is tied to to deregister any
+  // observers before the browser is destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
 }
 
 // Timer for showing the promo after page load.
@@ -61,6 +67,14 @@ bool PromoCanBeDisplayed() {
 // Whether or not the promo is currently showing.
 @property(nonatomic, assign) BOOL promoIsShowing;
 
+// The web state list used to listen to page load and
+// WebState change events.
+@property(nonatomic, assign) WebStateList* webStateList;
+
+// The overlay presenter used to prevent the
+// promo from showing over an overlay.
+@property(nonatomic, assign) OverlayPresenter* overlayPresenter;
+
 @end
 
 @implementation DefaultBrowserPromoNonModalScheduler
@@ -70,6 +84,7 @@ bool PromoCanBeDisplayed() {
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
+    _browserObserver = std::make_unique<BrowserObserverBridge>(self);
   }
   return self;
 }
@@ -124,6 +139,23 @@ bool PromoCanBeDisplayed() {
 - (void)dismissPromoAnimated:(BOOL)animated {
   [self cancelDismissPromoTimer];
   [self.handler dismissDefaultBrowserNonModalPromoAnimated:animated];
+}
+
+- (void)setBrowser:(Browser*)browser {
+  if (_browser) {
+    _browser->RemoveObserver(_browserObserver.get());
+    self.webStateList = nullptr;
+    self.overlayPresenter = nullptr;
+  }
+
+  _browser = browser;
+
+  if (_browser) {
+    _browser->AddObserver(_browserObserver.get());
+    self.webStateList = _browser->GetWebStateList();
+    self.overlayPresenter = OverlayPresenter::FromBrowser(
+        _browser, OverlayModality::kInfobarBanner);
+  }
 }
 
 - (void)setWebStateList:(WebStateList*)webStateList {
@@ -191,6 +223,12 @@ bool PromoCanBeDisplayed() {
   if (level <= SceneActivationLevelBackground) {
     [self.handler dismissDefaultBrowserNonModalPromoAnimated:NO];
   }
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  self.browser = nullptr;
 }
 
 #pragma mark - Timer Management

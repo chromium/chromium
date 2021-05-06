@@ -9,9 +9,8 @@
 
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 
+class Browser;
 @class CommandDispatcher;
-class OverlayPresenter;
-class WebStateList;
 
 // A scheduler that determines when to show the non-modal default browser
 // promo based on many sources of data.
@@ -19,13 +18,9 @@ class WebStateList;
 
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 
-// The web state list that this scheduler uses to listen to page load and
-// WebState change events.
-@property(nonatomic, assign) WebStateList* webStateList;
-
-// The overlay presenter that this scheduler listens to when preventing the
-// promo from showing over an overlay.
-@property(nonatomic, assign) OverlayPresenter* overlayPresenter;
+// The browser that this scheduler uses to listen to events, such as page loads
+// and overlay events
+@property(nonatomic, assign) Browser* browser;
 
 // Handles the user pasting in the omnibox and schedules a promo if necessary.
 - (void)logUserPastedInOmnibox;
