@@ -3207,7 +3207,7 @@
       },
       'linux-blink-optional-highdpi-rel-dummy': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_web_tests_high_dpi_isolated_scripts',
@@ -3215,7 +3215,7 @@
       },
       'linux-blink-rel-dummy': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
