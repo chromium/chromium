@@ -1261,7 +1261,7 @@ TEST_F(DesksTest, MinimizedWindow) {
 
 // Tests that the app list stays open when switching desks. Regression test for
 // http://crbug.com/1138982.
-TEST_F(DesksTest, AppListStaysOpen) {
+TEST_F(DesksTest, AppListStaysOpenInClamshell) {
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -1279,6 +1279,29 @@ TEST_F(DesksTest, AppListStaysOpen) {
   // Switch back to desk 1. Test that the app list is still open.
   ActivateDesk(controller->desks()[0].get());
   EXPECT_TRUE(app_list_controller->IsVisible(base::nullopt));
+}
+
+// Tests that the app list correctly loses focus in tablet mode when switching
+// desks. Regression test for https://crbug.com/1206030.
+TEST_F(DesksTest, AppListActivationInTablet) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  // Create one app window on desk 1.
+  auto window = CreateAppWindow(gfx::Rect(400, 400));
+  ASSERT_EQ(window.get(), window_util::GetActiveWindow());
+
+  // Enter tablet mode and switch to desk 2. Verify the app list has activation
+  // as there are no app windows.
+  TabletModeControllerTestApi().EnterTabletMode();
+  ActivateDesk(controller->desks()[1].get());
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  ASSERT_EQ(app_list_controller->GetWindow(), window_util::GetActiveWindow());
+
+  // Switch back to desk 1. `window` should have activation now.
+  ActivateDesk(controller->desks()[0].get());
+  EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
 
 TEST_P(DesksTest, DragWindowToDesk) {

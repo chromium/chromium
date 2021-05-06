@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -29,6 +30,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -157,6 +159,16 @@ void MaybeUpdateShelfItems(
 bool IsParentSwitchableContainer(const aura::Window* window) {
   DCHECK(window);
   return window->parent() && IsSwitchableContainer(window->parent());
+}
+
+bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
+  DCHECK(active_window);
+  Shell* shell = Shell::Get();
+  if (!shell->tablet_mode_controller()->InTabletMode())
+    return false;
+
+  auto* app_list_controller = shell->app_list_controller();
+  return active_window == app_list_controller->GetWindow();
 }
 
 }  // namespace
@@ -523,12 +535,16 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   // ensure that after switching desks, we will try to focus a candidate window.
   // We will also update window activation if the currently active window is one
   // in a switchable container. Otherwise, do not update the window activation.
-  // This will prevent some system UI windows like the app list from closing
-  // when switching desks.
+  // This will prevent some ephemeral system UI surfaces such as the app list
+  // and system tray from closing when switching desks. An exception is the app
+  // list in tablet mode, which should gain activation when there are no
+  // windows, as it is treated like a bottom stacked window.
   aura::Window* active_window = window_util::GetActiveWindow();
   const bool update_window_activation =
       in_overview || !active_window ||
-      IsParentSwitchableContainer(active_window);
+      IsParentSwitchableContainer(active_window) ||
+      IsApplistActiveInTabletMode(active_window);
+
   const int starting_desk_index = GetDeskIndex(active_desk());
   animation_ = std::make_unique<DeskActivationAnimation>(
       this, starting_desk_index, target_desk_index, source,
