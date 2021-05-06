@@ -18,8 +18,7 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_IOS)
@@ -39,22 +38,11 @@ class NetworkMetricsProviderTest : public testing::Test {
       : task_environment_(MetricsTaskEnvironment::IO_MAINLOOP) {}
   ~NetworkMetricsProviderTest() override {}
 
-  void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::NetworkHandler::Initialize();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
  private:
   MetricsTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProviderTest);
 };
