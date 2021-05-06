@@ -1044,6 +1044,9 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
   if (RenderProcessHost::run_renderer_in_process())
     RenderProcessHostImpl::ShutDownInProcessRenderer();
 
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI))
+    BrowserProcessSubThread::ProcessHostCleanUp();
+
   if (parts_) {
     TRACE_EVENT0("shutdown",
                  "BrowserMainLoop::Subsystem:PostMainMessageLoopRun");

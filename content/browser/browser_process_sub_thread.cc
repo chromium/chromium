@@ -115,11 +115,6 @@ void BrowserProcessSubThread::CleanUp() {
       ProcessHostCleanUp();
   }
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) &&
-      BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    ProcessHostCleanUp();
-  }
-
   notification_service_.reset();
 
 #if defined(OS_WIN)
