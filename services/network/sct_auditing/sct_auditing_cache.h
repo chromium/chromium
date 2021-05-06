@@ -68,6 +68,15 @@ class SCTAuditingReporter {
 
   sct_auditing::SCTClientReport* report() { return report_.get(); }
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CompletionStatus {
+    kSuccessFirstTry = 0,
+    kSuccessAfterRetries = 1,
+    kRetriesExhausted = 2,
+    kMaxValue = kRetriesExhausted,
+  };
+
  private:
   void ScheduleReport();
   void SendReport();
@@ -127,7 +136,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
   void ClearCache();
 
-  void set_enabled(bool enabled) { enabled_ = enabled; }
+  void set_enabled(bool enabled);
   void set_sampling_rate(double rate) { sampling_rate_ = rate; }
   void set_report_uri(const GURL& report_uri) { report_uri_ = report_uri; }
   void set_traffic_annotation(
@@ -154,12 +163,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
  private:
   void OnReporterFinished(net::SHA256HashValue reporter_key);
+  void ReportHWMMetrics();
+  void SetPeriodicMetricsEnabled(bool enabled);
 
   // Value `bool` is ignored in the dedupe cache. This cache only stores
   // recently seen hashes of SCTs in order to deduplicate on SCTs, and the bool
   // will always be `true`.
   base::MRUCache<net::SHA256HashValue, bool> dedupe_cache_;
-  // Tracks high-water-mark of the dedupe cache.
+  // Tracks high-water-mark of `dedupe_cache_.size()`.
   size_t dedupe_cache_size_hwm_;
 
   // The pending reporters set is an MRUCache, so that the total number of
@@ -169,8 +180,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // but the last-seen time will be updated.
   base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>
       pending_reporters_;
-  // Tracks high-water-mark of pending reporters.
-  size_t pending_reporters_hwm_;
+  // Tracks high-water-mark of `pending_reporters_.size()`.
+  size_t pending_reporters_size_hwm_;
 
   bool enabled_ = false;
   double sampling_rate_ = 0;
@@ -179,6 +190,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
   base::OnceClosure completion_callback_for_testing_;
+
+  base::RepeatingTimer histogram_timer_;
 
   base::WeakPtrFactory<SCTAuditingCache> weak_factory_{this};
 };

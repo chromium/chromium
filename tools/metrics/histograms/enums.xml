@@ -70005,6 +70005,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="Ignore"/>
 </enum>
 
+<enum name="SCTAuditingReportCompletionStatus">
+  <int value="0" label="kSuccessFirstTry">Succeeded on first try</int>
+  <int value="1" label="kSuccessAfterRetries">Succeeded after retrying</int>
+  <int value="2" label="kRetriesExhausted">Failed after exhausting retries</int>
+</enum>
+
 <enum name="SCTCanBeChecked">
   <obsolete>
     Deprecated after 2019-04.

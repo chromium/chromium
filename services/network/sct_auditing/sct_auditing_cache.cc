@@ -48,8 +48,12 @@ constexpr int kSendSCTReportTimeoutSeconds = 30;
 base::Optional<base::TimeDelta> g_retry_delay_for_testing = base::nullopt;
 
 // Records the high-water mark of the cache size (in number of reports).
-void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t hwm) {
-  base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.CacheHWM", hwm);
+void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t cache_hwm,
+                                                size_t reporters_hwm) {
+  base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.DedupeCacheHWM",
+                               cache_hwm);
+  base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.ReportersHWM",
+                               reporters_hwm);
 }
 
 // Records whether a new report is deduplicated against an existing report in
@@ -78,6 +82,13 @@ void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
 void RecordSCTAuditingReportSucceededMetrics(bool success) {
   base::UmaHistogramBoolean("Security.SCTAuditing.OptIn.ReportSucceeded",
                             success);
+}
+
+// Records whether a report succeeded/failed with retries.
+void ReportSCTAuditingCompletionStatusMetrics(
+    SCTAuditingReporter::CompletionStatus status) {
+  base::UmaHistogramEnumeration(
+      "Security.SCTAuditing.OptIn.ReportCompletionStatus", status);
 }
 
 }  // namespace
@@ -217,20 +228,35 @@ void SCTAuditingReporter::OnSendReportComplete(
   bool success =
       url_loader_->NetError() == net::OK && response_code == net::HTTP_OK;
 
-  // TODO(crbug.com/1199016): Also track final success/failure or the number of
-  // retries required.
   RecordSCTAuditingReportSucceededMetrics(success);
 
-  if (success) {
-    // Report succeeded. This will delete |this|, so do not add code after this
-    // point.
-    std::move(done_callback_).Run(reporter_key_);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kSCTAuditingRetryAndPersistReports)) {
-    if (num_retries_ >= max_retries_) {
-      // Retry limit reached. Notify the Cache that this Reporter is done.
-      // This will delete |this|, so do not add code after this point.
+  if (base::FeatureList::IsEnabled(
+          features::kSCTAuditingRetryAndPersistReports)) {
+    if (success) {
+      // Report succeeded.
+      if (num_retries_ == 0) {
+        ReportSCTAuditingCompletionStatusMetrics(
+            CompletionStatus::kSuccessFirstTry);
+      } else {
+        ReportSCTAuditingCompletionStatusMetrics(
+            CompletionStatus::kSuccessAfterRetries);
+      }
+
+      // Notify the Cache that this Reporter is done. This will delete |this|,
+      // so do not add code after this point.
       std::move(done_callback_).Run(reporter_key_);
+      return;
+    }
+    // Sending the report failed.
+    if (num_retries_ >= max_retries_) {
+      // Retry limit reached.
+      ReportSCTAuditingCompletionStatusMetrics(
+          CompletionStatus::kRetriesExhausted);
+
+      // Notify the Cache that this Reporter is done. This will delete |this|,
+      // so do not add code after this point.
+      std::move(done_callback_).Run(reporter_key_);
+      return;
     } else {
       // Schedule a retry.
       ++num_retries_;
@@ -238,10 +264,10 @@ void SCTAuditingReporter::OnSendReportComplete(
       ScheduleReport();
     }
   } else {
-    // Report failed but retry is not enabled, so just notify the Cache that
-    // this Reporter is done. This will delete |this|, so do not add code
-    // after this point.
+    // Retry is not enabled, so just notify the Cache that this Reporter is
+    // done. This will delete |this|, so do not add code after this point.
     std::move(done_callback_).Run(reporter_key_);
+    return;
   }
 }
 
@@ -249,12 +275,9 @@ SCTAuditingCache::SCTAuditingCache(size_t cache_size)
     : dedupe_cache_(cache_size),
       dedupe_cache_size_hwm_(0),
       pending_reporters_(cache_size),
-      pending_reporters_hwm_(0) {}
+      pending_reporters_size_hwm_(0) {}
 
-SCTAuditingCache::~SCTAuditingCache() {
-  RecordSCTAuditingCacheHighWaterMarkMetrics(dedupe_cache_size_hwm_);
-  // TODO(crbug.com/1199016): Record pending_reports_hwm_ also.
-}
+SCTAuditingCache::~SCTAuditingCache() = default;
 
 void SCTAuditingCache::MaybeEnqueueReport(
     const net::HostPortPair& host_port_pair,
@@ -363,8 +386,8 @@ void SCTAuditingCache::MaybeEnqueueReport(
                      report_uri_, traffic_annotation_,
                      base::BindOnce(&SCTAuditingCache::OnReporterFinished,
                                     weak_factory_.GetWeakPtr())));
-  if (pending_reporters_.size() > pending_reporters_hwm_)
-    pending_reporters_hwm_ = pending_reporters_.size();
+  if (pending_reporters_.size() > pending_reporters_size_hwm_)
+    pending_reporters_size_hwm_ = pending_reporters_.size();
 }
 
 void SCTAuditingCache::OnReporterFinished(net::SHA256HashValue reporter_key) {
@@ -391,6 +414,11 @@ void SCTAuditingCache::ClearCache() {
   // TODO(crbug.com/1144205): Clear any persisted state.
 }
 
+void SCTAuditingCache::set_enabled(bool enabled) {
+  enabled_ = enabled;
+  SetPeriodicMetricsEnabled(enabled);
+}
+
 void SCTAuditingCache::SetRetryDelayForTesting(
     base::Optional<base::TimeDelta> delay) {
   g_retry_delay_for_testing = delay;
@@ -399,6 +427,26 @@ void SCTAuditingCache::SetRetryDelayForTesting(
 void SCTAuditingCache::SetCompletionCallbackForTesting(
     base::OnceClosure callback) {
   completion_callback_for_testing_ = std::move(callback);
+}
+
+void SCTAuditingCache::ReportHWMMetrics() {
+  if (!enabled_)
+    return;
+  RecordSCTAuditingCacheHighWaterMarkMetrics(dedupe_cache_size_hwm_,
+                                             pending_reporters_size_hwm_);
+}
+
+void SCTAuditingCache::SetPeriodicMetricsEnabled(bool enabled) {
+  // High-water-mark metrics get logged hourly (rather than once-per-session at
+  // shutdown, as Network Service shutdown is not consistent and non-browser
+  // processes can fail to report metrics during shutdown). The timer should
+  // only be running if SCT auditing is enabled.
+  if (enabled) {
+    histogram_timer_.Start(FROM_HERE, base::TimeDelta::FromHours(1), this,
+                           &SCTAuditingCache::ReportHWMMetrics);
+  } else {
+    histogram_timer_.Stop();
+  }
 }
 
 }  // namespace network

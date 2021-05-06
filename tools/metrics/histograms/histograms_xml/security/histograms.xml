@@ -445,6 +445,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.SCTAuditing.OptIn.CacheHWM" units="reports"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed in April 2021 due to issues with collecting network service metrics
+    at shutdown. Replaced by Security.SCTAuditing.OptIn.DedupeCacheHWM.
+  </obsolete>
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -452,6 +456,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     cache size over each browser session. Recorded when the SCT auditing cache
     is destroyed (normally during browser shutdown, and potentially if the
     network service crashes).
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.DedupeCacheHWM" units="reports"
+    expires_after="2021-08-09">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the high-water-mark of the number of entries in the SCT auditing
+    dedupe cache. Recorded on a timer hourly, if SCT auditing is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportCompletionStatus"
+    enum="SCTAuditingReportCompletionStatus" expires_after="2021-08-09">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the final status of an SCT auditing report, when it has been
+    successfully received or it has run out of retries.
   </summary>
 </histogram>
 
@@ -463,6 +487,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records whether a report was deduplicated (i.e., the SCTs were already in
     the cache) or not. Recorded on each new report seen by the SCT auditing
     cache (i.e., on each connection using certificate transparency).
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportersHWM" units="reporters"
+    expires_after="2021-08-09">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the high-water-mark of the number of pending reporters in the SCT
+    auditing cache. Recorded on a timer hourly, if SCT auditing is enabled.
   </summary>
 </histogram>
 
