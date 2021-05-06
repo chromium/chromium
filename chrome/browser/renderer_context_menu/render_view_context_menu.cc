@@ -1147,10 +1147,13 @@ std::string RenderViewContextMenu::GetTargetLanguage() const {
 }
 
 void RenderViewContextMenu::AppendDeveloperItems() {
-  // Do not Show Inspect Element for DevTools.
-  bool show_developer_items = !IsDevToolsURL(params_.page_url);
+  // Do not Show Inspect Element for DevTools unless DevTools runs with the
+  // debugFrontend query param.
+  bool hide_developer_items =
+      IsDevToolsURL(params_.page_url) &&
+      params_.page_url.query().find("debugFrontend=true") == std::string::npos;
 
-  if (!show_developer_items)
+  if (hide_developer_items)
     return;
 
   // In the DevTools popup menu, "developer items" is normally the only
