@@ -326,6 +326,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetMainFrame() override;
   std::vector<RenderFrameHost*> GetFramesInSubtree() override;
   bool IsDescendantOf(RenderFrameHost*) override;
+  void ForEachFrame(FrameIterationCallback on_frame) override;
+  void ForEachFrame(FrameIterationAlwaysContinueCallback on_frame) override;
   int GetFrameTreeNodeId() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   base::Optional<base::UnguessableToken> GetEmbeddingToken() override;
@@ -1741,6 +1743,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   }
   bool IsOuterDelegateFrame() { return is_outer_delegate_frame_; }
 
+  // These are the content internal equivalents of
+  // |RenderFrameHost::ForEachFrame| whose comment can be referred to for
+  // details. Content internals can also access speculative RenderFrameHostImpls
+  // if necessary by using the |ForEachFrameIncludingSpeculative| variations.
+  using FrameIterationCallbackImpl =
+      base::RepeatingCallback<FrameIterationAction(RenderFrameHostImpl*)>;
+  using FrameIterationAlwaysContinueCallbackImpl =
+      base::RepeatingCallback<void(RenderFrameHostImpl*)>;
+  void ForEachFrame(FrameIterationCallbackImpl on_frame);
+  void ForEachFrame(FrameIterationAlwaysContinueCallbackImpl on_frame);
+  void ForEachFrameIncludingSpeculative(FrameIterationCallbackImpl on_frame);
+  void ForEachFrameIncludingSpeculative(
+      FrameIterationAlwaysContinueCallbackImpl on_frame);
+
   bool DocumentUsedWebOTP() override;
 
   scoped_refptr<WebAuthRequestSecurityChecker>
@@ -2659,6 +2675,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // roots of A0. Note that this will exclude any speculative or pending RFHs.
   void ForEachImmediateLocalRoot(
       const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback);
+
+  // This is the actual implementation of the various overloads of
+  // |ForEachFrame|.
+  void ForEachFrameImpl(FrameIterationCallbackImpl on_frame,
+                        bool include_speculative);
 
   // Returns the mojom::Frame interface for this frame in the renderer process.
   // May be overridden by friend subclasses for e.g. tests which wish to

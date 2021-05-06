@@ -511,6 +511,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual RenderFrameHostImpl* GetMainFrameForInnerDelegate(
       FrameTreeNode* frame_tree_node);
 
+  // Returns FrameTreeNodes that are logically owned by another frame even
+  // though this relationship is not yet reflected in their frame trees. This
+  // can happen, for example, with unattached guests and orphaned portals.
+  virtual std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
+      RenderFrameHostImpl* owner);
+
   // Registers a new URL handler for the given protocol.
   virtual void RegisterProtocolHandler(RenderFrameHostImpl* host,
                                        const std::string& scheme,

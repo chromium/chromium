@@ -716,6 +716,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   GetRecordAggregateWatchTimeCallback() override;
   RenderFrameHostImpl* GetMainFrameForInnerDelegate(
       FrameTreeNode* frame_tree_node) override;
+  std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
+      RenderFrameHostImpl* owner) override;
   void RegisterProtocolHandler(RenderFrameHostImpl* source,
                                const std::string& protocol,
                                const GURL& url,

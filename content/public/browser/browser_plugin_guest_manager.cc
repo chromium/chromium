@@ -6,7 +6,7 @@
 
 namespace content {
 
-bool BrowserPluginGuestManager::ForEachGuest(WebContents* embedder_web_contents,
+bool BrowserPluginGuestManager::ForEachGuest(WebContents* owner_web_contents,
                                              const GuestCallback& callback) {
   return false;
 }

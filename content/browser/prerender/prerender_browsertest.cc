@@ -43,6 +43,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -805,6 +806,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderIframe) {
 // TODO(https://crbug.com/1185965): This test is disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_PrerenderBlankIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
+}
+
+// Tests that RenderFrameHost::ForEachFrame behaves correctly when prerendering.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachFrame) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  // All frames are same-origin due to prerendering restrictions for
+  // cross-origin.
+  const GURL kPrerenderingUrl =
+      GetUrl("/cross_site_iframe_factory.html?a.test(a.test(a.test),a.test)");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+  RenderFrameHostImpl* rfh_sub_1 =
+      prerendered_render_frame_host->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_sub_1_1 =
+      rfh_sub_1->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_sub_2 =
+      prerendered_render_frame_host->child_at(1)->current_frame_host();
+
+  EXPECT_THAT(CollectAllFrames(prerendered_render_frame_host),
+              testing::ElementsAre(prerendered_render_frame_host, rfh_sub_1,
+                                   rfh_sub_2, rfh_sub_1_1));
 }
 
 class MojoCapabilityControlTestContentBrowserClient

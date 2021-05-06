@@ -237,6 +237,19 @@ SiteInstance* GuestViewManager::GetGuestSiteInstance(
   return nullptr;
 }
 
+void GuestViewManager::ForEachUnattachedGuest(
+    content::WebContents* owner_web_contents,
+    base::RepeatingCallback<void(content::WebContents*)> callback) {
+  for (const auto& guest : guest_web_contents_by_instance_id_) {
+    auto* guest_view = GuestViewBase::FromWebContents(guest.second);
+
+    if (guest_view->owner_web_contents() == owner_web_contents &&
+        !guest_view->attached()) {
+      callback.Run(guest_view->web_contents());
+    }
+  }
+}
+
 bool GuestViewManager::ForEachGuest(WebContents* owner_web_contents,
                                     const GuestCallback& callback) {
   for (const auto& guest : guest_web_contents_by_instance_id_) {

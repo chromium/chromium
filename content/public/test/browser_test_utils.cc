@@ -1815,6 +1815,13 @@ RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index) {
   return rfh->frame_tree_node()->child_at(index)->current_frame_host();
 }
 
+std::vector<RenderFrameHost*> CollectAllFrames(RenderFrameHost* starting_rfh) {
+  std::vector<RenderFrameHost*> visited_frames;
+  starting_rfh->ForEachFrame(base::BindLambdaForTesting(
+      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
+}
+
 bool ExecuteWebUIResourceTest(WebContents* web_contents,
                               const std::vector<int>& js_resource_ids) {
   // Inject WebUI test runner script first prior to other scripts required to

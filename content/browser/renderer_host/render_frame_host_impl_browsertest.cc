@@ -5294,4 +5294,355 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
                    ->IsProcessShutdownDelayedForTesting());
 }
 
+// Tests that RenderFrameHost::ForEachFrame visits the correct frames in the
+// correct order.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ForEachFrame) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_d = rfh_a->child_at(1)->current_frame_host();
+
+  // When starting iteration from the primary frame, we should see the frame
+  // itself and its descendants in breadth first order.
+  EXPECT_THAT(CollectAllFrames(rfh_a),
+              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+
+  // When starting iteration from a subframe, only it and its descendants should
+  // be seen.
+  EXPECT_THAT(CollectAllFrames(rfh_b), testing::ElementsAre(rfh_b, rfh_c));
+
+  // Test that iteration stops when requested.
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrame(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return RenderFrameHost::FrameIterationAction::kStop;
+        }));
+    EXPECT_THAT(visited_frames, testing::ElementsAre(rfh_a));
+  }
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrame(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }));
+    EXPECT_THAT(visited_frames, testing::ElementsAre(rfh_a));
+  }
+
+  // Now consider stopping or skipping children at |rfh_b|. If we skip children,
+  // we skip |rfh_c|, but not |rfh_d|. If we stop iteration, we skip both
+  // |rfh_c| and |rfh_d|.
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrame(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return rfh == rfh_b
+                     ? RenderFrameHost::FrameIterationAction::kStop
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames, testing::ElementsAre(rfh_a, rfh_b));
+  }
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrame(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return rfh == rfh_b
+                     ? RenderFrameHost::FrameIterationAction::kSkipChildren
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames, testing::ElementsAre(rfh_a, rfh_b, rfh_d));
+  }
+}
+
+// Tests that RenderFrameHost::ForEachFrame does not expose speculative RFHs,
+// unless content internal code requests them.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFrameSpeculative) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
+
+  TestNavigationManager nav_manager(web_contents(), url_b);
+  shell()->LoadURL(url_b);
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  RenderFrameHostImpl* rfh_b =
+      rfh_a->frame_tree_node()->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+  EXPECT_EQ(LifecycleStateImpl::kSpeculative, rfh_b->lifecycle_state());
+
+  // ForEachFrame does not expose the speculative RFH.
+  EXPECT_THAT(CollectAllFrames(rfh_a), testing::ElementsAre(rfh_a));
+
+  // When we request the speculative RFH, we visit it.
+  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_a),
+              testing::UnorderedElementsAre(rfh_a, rfh_b));
+
+  // If ForEachFrame is called on a speculative RFH directly, do nothing.
+  rfh_b->ForEachFrame(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+    ADD_FAILURE() << "Visited speculative RFH";
+    return RenderFrameHost::FrameIterationAction::kStop;
+  }));
+
+  // If we request speculative RFHs and directly call this on a speculative RFH,
+  // just visit the given speculative RFH.
+  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_b),
+              testing::ElementsAre(rfh_b));
+}
+
+// Like ForEachFrameSpeculative, but for a speculative RFH for a subframe
+// navigation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFrameSpeculativeWithSubframes) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_c->lifecycle_state());
+
+  TestNavigationManager nav_manager(web_contents(), url_d);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh_b, url_d));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  RenderFrameHostImpl* rfh_d =
+      rfh_b->frame_tree_node()->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(rfh_d);
+  EXPECT_EQ(LifecycleStateImpl::kSpeculative, rfh_d->lifecycle_state());
+
+  // ForEachFrame does not expose the speculative RFH.
+  EXPECT_THAT(CollectAllFrames(rfh_a),
+              testing::ElementsAre(rfh_a, rfh_b, rfh_c));
+
+  // When we request the speculative RFH, we visit it.
+  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_a),
+              testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+
+  // When beginning iteration from the current RFH of the navigating frame, we
+  // also visit the speculative RFH.
+  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_b),
+              testing::UnorderedElementsAre(rfh_b, rfh_d, rfh_c));
+
+  // If ForEachFrame is called on a speculative RFH directly, do nothing.
+  rfh_d->ForEachFrame(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+    ADD_FAILURE() << "Visited speculative RFH";
+    return RenderFrameHost::FrameIterationAction::kStop;
+  }));
+
+  // If we request speculative RFHs and directly call this on a speculative RFH,
+  // just visit the given speculative RFH.
+  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_d),
+              testing::ElementsAre(rfh_d));
+
+  // Test that iteration stops when requested.
+  {
+    // We don't check the RFHs visited in the interest of not overtesting the
+    // ordering of speculative RFHs.
+    bool stopped = false;
+    rfh_a->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          EXPECT_FALSE(stopped);
+          if (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative) {
+            stopped = true;
+            return RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+  }
+
+  {
+    bool stopped = false;
+    rfh_b->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          EXPECT_FALSE(stopped);
+          if (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative) {
+            stopped = true;
+            return RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+  }
+
+  // Skipping the children of a current RFH whose FrameTreeNode has a
+  // speculative RFH skips the children but still includes the speculative RFH.
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return (rfh == rfh_b)
+                     ? RenderFrameHost::FrameIterationAction::kSkipChildren
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames,
+                testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_d));
+  }
+
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_b->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return (rfh == rfh_b)
+                     ? RenderFrameHost::FrameIterationAction::kSkipChildren
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames, testing::UnorderedElementsAre(rfh_b, rfh_d));
+  }
+
+  // Skipping the children of a speculative RFH is not useful, but is included
+  // here for completeness of testing.
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_a->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative)
+                     ? RenderFrameHost::FrameIterationAction::kSkipChildren
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames,
+                testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+  }
+
+  {
+    std::vector<RenderFrameHostImpl*> visited_frames;
+    rfh_b->ForEachFrameIncludingSpeculative(
+        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+          visited_frames.push_back(rfh);
+          return (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative)
+                     ? RenderFrameHost::FrameIterationAction::kSkipChildren
+                     : RenderFrameHost::FrameIterationAction::kContinue;
+        }));
+    EXPECT_THAT(visited_frames,
+                testing::UnorderedElementsAre(rfh_b, rfh_d, rfh_c));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFramePendingDeletion) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_c->lifecycle_state());
+  LeaveInPendingDeletionState(rfh_a);
+  LeaveInPendingDeletionState(rfh_b);
+  LeaveInPendingDeletionState(rfh_c);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_d));
+  RenderFrameHostImpl* rfh_d = root_frame_host();
+
+  // ForEachFrame on the primary RFH does not visit the pending delete RFHs.
+  EXPECT_THAT(CollectAllFrames(rfh_d), testing::ElementsAre(rfh_d));
+
+  // ForEachFrame on the pending delete RFHs only visits the pending delete
+  // RFHs.
+  EXPECT_THAT(CollectAllFrames(rfh_a),
+              testing::ElementsAre(rfh_a, rfh_b, rfh_c));
+  EXPECT_THAT(CollectAllFrames(rfh_b), testing::ElementsAre(rfh_b, rfh_c));
+}
+
+// Tests that RenderFrameHost::ForEachFrame visits the frames of an inner
+// WebContents.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFrameInnerContents) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  WebContentsImpl* inner_contents = static_cast<WebContentsImpl*>(
+      CreateAndAttachInnerContents(rfh_a->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  RenderFrameHostImpl* rfh_b = inner_contents->GetMainFrame();
+
+  EXPECT_THAT(CollectAllFrames(rfh_a), testing::ElementsAre(rfh_a, rfh_b));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFrameInnerContentsWithSubframes) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a(a),a)"));
+  GURL url_b(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(c(d),e)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a_main = root_frame_host();
+  RenderFrameHostImpl* rfh_a_sub1 =
+      rfh_a_main->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_a_sub2 =
+      rfh_a_main->child_at(1)->current_frame_host();
+  WebContentsImpl* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          rfh_a_sub1->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  RenderFrameHostImpl* rfh_b = inner_contents->GetMainFrame();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_e = rfh_b->child_at(1)->current_frame_host();
+
+  EXPECT_THAT(CollectAllFrames(rfh_a_main),
+              testing::ElementsAre(rfh_a_main, rfh_a_sub1, rfh_a_sub2, rfh_b,
+                                   rfh_c, rfh_e, rfh_d));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ForEachFrameMultipleInnerContents) {
+  // After attaching inner contents, this will be A(B(C),D)
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a,a)"));
+  GURL url_b(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+
+  WebContentsImpl* contents_b = static_cast<WebContentsImpl*>(
+      CreateAndAttachInnerContents(rfh_a->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(contents_b, url_b));
+  RenderFrameHostImpl* rfh_b = contents_b->GetMainFrame();
+
+  WebContentsImpl* contents_c = static_cast<WebContentsImpl*>(
+      CreateAndAttachInnerContents(rfh_b->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(contents_c, url_c));
+  RenderFrameHostImpl* rfh_c = contents_c->GetMainFrame();
+
+  WebContentsImpl* contents_d = static_cast<WebContentsImpl*>(
+      CreateAndAttachInnerContents(rfh_a->child_at(1)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(contents_d, url_d));
+  RenderFrameHostImpl* rfh_d = contents_d->GetMainFrame();
+
+  EXPECT_THAT(CollectAllFrames(rfh_a),
+              testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
+}
+
 }  // namespace content

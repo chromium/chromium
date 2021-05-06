@@ -150,6 +150,11 @@ RenderFrameHostImpl* RenderFrameHostDelegate::GetMainFrameForInnerDelegate(
   return nullptr;
 }
 
+std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
+    RenderFrameHostImpl* owner) {
+  return {};
+}
+
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
 RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback() {
   return base::NullCallback();

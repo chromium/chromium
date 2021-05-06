@@ -125,6 +125,9 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                                              int element_instance_id);
 
   // BrowserPluginGuestManager implementation.
+  void ForEachUnattachedGuest(
+      content::WebContents* owner_web_contents,
+      base::RepeatingCallback<void(content::WebContents*)> callback) override;
   bool ForEachGuest(content::WebContents* owner_web_contents,
                     const GuestCallback& callback) override;
   content::WebContents* GetFullPageGuest(

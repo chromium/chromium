@@ -20,6 +20,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
@@ -156,6 +157,22 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
     subframe_nav_observer.Wait();
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
   return root->child_at(root->child_count() - 1)->current_frame_host();
+}
+
+std::vector<RenderFrameHostImpl*> CollectAllFrames(
+    RenderFrameHostImpl* starting_rfh) {
+  std::vector<RenderFrameHostImpl*> visited_frames;
+  starting_rfh->ForEachFrame(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
+}
+
+std::vector<RenderFrameHostImpl*> CollectAllFramesIncludingSpeculative(
+    RenderFrameHostImpl* starting_rfh) {
+  std::vector<RenderFrameHostImpl*> visited_frames;
+  starting_rfh->ForEachFrameIncludingSpeculative(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  return visited_frames;
 }
 
 Shell* OpenBlankWindow(WebContentsImpl* web_contents) {

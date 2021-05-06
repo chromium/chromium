@@ -64,6 +64,8 @@ class CONTENT_EXPORT FrameTree {
     ~NodeIterator();
 
     NodeIterator& operator++();
+    // Advances the iterator and excludes the children of the current node
+    NodeIterator& AdvanceSkippingChildren();
 
     bool operator==(const NodeIterator& rhs) const;
     bool operator!=(const NodeIterator& rhs) const { return !(*this == rhs); }
@@ -73,26 +75,36 @@ class CONTENT_EXPORT FrameTree {
    private:
     friend class NodeRange;
 
-    NodeIterator(FrameTreeNode* starting_node,
-                 FrameTreeNode* root_of_subtree_to_skip);
+    NodeIterator(const std::vector<FrameTreeNode*>& starting_nodes,
+                 const FrameTreeNode* root_of_subtree_to_skip,
+                 bool should_descend_into_inner_trees);
+
+    void AdvanceNode();
 
     FrameTreeNode* current_node_;
-    FrameTreeNode* const root_of_subtree_to_skip_;
+    const FrameTreeNode* const root_of_subtree_to_skip_;
+    const bool should_descend_into_inner_trees_;
     base::queue<FrameTreeNode*> queue_;
   };
 
   class CONTENT_EXPORT NodeRange {
    public:
+    NodeRange(const NodeRange&);
+    ~NodeRange();
+
     NodeIterator begin();
     NodeIterator end();
 
    private:
     friend class FrameTree;
 
-    NodeRange(FrameTreeNode* root, FrameTreeNode* root_of_subtree_to_skip);
+    NodeRange(const std::vector<FrameTreeNode*>& starting_nodes,
+              const FrameTreeNode* root_of_subtree_to_skip,
+              bool should_descend_into_inner_trees);
 
-    FrameTreeNode* const root_;
-    FrameTreeNode* const root_of_subtree_to_skip_;
+    const std::vector<FrameTreeNode*> starting_nodes_;
+    const FrameTreeNode* const root_of_subtree_to_skip_;
+    const bool should_descend_into_inner_trees_;
   };
 
   class CONTENT_EXPORT Delegate {
@@ -205,6 +217,11 @@ class CONTENT_EXPORT FrameTree {
   // Returns a range to iterate over all FrameTreeNodes in a subtree of the
   // frame tree, starting from |subtree_root|.
   NodeRange SubtreeNodes(FrameTreeNode* subtree_root);
+
+  // Returns a range to iterate over all FrameTreeNodes in a subtree, starting
+  // from, but not including |parent|, as well as any FrameTreeNodes of inner
+  // frame trees.
+  static NodeRange SubtreeAndInnerTreeNodes(RenderFrameHostImpl* parent);
 
   // Adds a new child frame to the frame tree. |process_id| is required to
   // disambiguate |new_routing_id|, and it must match the process of the

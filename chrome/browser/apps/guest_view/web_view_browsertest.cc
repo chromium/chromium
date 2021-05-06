@@ -110,6 +110,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
@@ -1784,6 +1785,45 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
   // Before the embedder goes away, both the guests should go away.
   // This ensures that unattached guests are gone if opener is gone.
   GetGuestViewManager()->WaitForAllGuestsDeleted();
+}
+
+// Creates a guest in a unattached state, then confirms that calling
+// |RenderFrameHost::ForEachFrame| on the embedder will include the guest's
+// frame.
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_UnattachedVisitedByForEachFrame) {
+  TestHelper("testNewWindowDeferredAttachmentIndefinitely",
+             "web_view/newwindow", NEEDS_TEST_SERVER);
+  // The test creates two guests, one of which is created but left in an
+  // unattached state.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  content::WebContents* embedder = GetEmbedderWebContents();
+  auto* unattached_guest = extensions::WebViewGuest::FromWebContents(
+      GetGuestViewManager()->GetLastGuestCreated());
+  ASSERT_TRUE(unattached_guest);
+  ASSERT_EQ(embedder, unattached_guest->owner_web_contents());
+  ASSERT_FALSE(unattached_guest->attached());
+  ASSERT_FALSE(unattached_guest->embedder_web_contents());
+
+  std::vector<content::WebContents*> guest_contents_list;
+  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  ASSERT_EQ(2u, guest_contents_list.size());
+  content::WebContents* other_guest =
+      (guest_contents_list[0] == unattached_guest->web_contents())
+          ? guest_contents_list[1]
+          : guest_contents_list[0];
+
+  content::RenderFrameHost* embedder_main_frame = embedder->GetMainFrame();
+  content::RenderFrameHost* unattached_guest_main_frame =
+      unattached_guest->web_contents()->GetMainFrame();
+  content::RenderFrameHost* other_guest_main_frame =
+      other_guest->GetMainFrame();
+
+  EXPECT_THAT(
+      content::CollectAllFrames(embedder_main_frame),
+      testing::UnorderedElementsAre(embedder_main_frame, other_guest_main_frame,
+                                    unattached_guest_main_frame));
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestContentLoadEvent) {

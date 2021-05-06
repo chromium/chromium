@@ -616,25 +616,6 @@ class RemoterFactoryImpl final : public media::mojom::RemoterFactory {
 };
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
-using FrameCallback = base::RepeatingCallback<void(RenderFrameHostImpl*)>;
-void ForEachFrame(RenderFrameHostImpl* root_frame_host,
-                  const FrameCallback& frame_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  FrameTree* frame_tree = root_frame_host->frame_tree();
-  DCHECK_EQ(root_frame_host, frame_tree->GetMainFrame());
-
-  for (FrameTreeNode* node : frame_tree->Nodes()) {
-    RenderFrameHostImpl* frame_host = node->current_frame_host();
-    RenderFrameHostImpl* pending_frame_host =
-        node->render_manager()->speculative_frame_host();
-    if (frame_host)
-      frame_callback.Run(frame_host);
-    if (pending_frame_host)
-      frame_callback.Run(pending_frame_host);
-  }
-}
-
 RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(int process_id,
                                                     int routing_id) {
   RenderFrameHostImpl* rfh =
@@ -1701,6 +1682,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
 }
 
 std::vector<RenderFrameHost*> RenderFrameHostImpl::GetFramesInSubtree() {
+  DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
   std::vector<RenderFrameHost*> frame_hosts;
   for (FrameTreeNode* node : frame_tree_->SubtreeNodes(frame_tree_node()))
     frame_hosts.push_back(node->current_frame_host());
@@ -1717,6 +1699,138 @@ bool RenderFrameHostImpl::IsDescendantOf(RenderFrameHost* ancestor) {
       return true;
   }
   return false;
+}
+
+namespace {
+
+template <typename RfhType>
+RenderFrameHostImpl::FrameIterationCallbackImpl ContinueIterationWrapper(
+    base::RepeatingCallback<void(RfhType*)> on_frame) {
+  return base::BindRepeating(
+      [](base::RepeatingCallback<void(RfhType*)> on_frame,
+         RenderFrameHostImpl* rfh) {
+        on_frame.Run(rfh);
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      on_frame);
+}
+
+}  // namespace
+
+void RenderFrameHostImpl::ForEachFrame(FrameIterationCallback on_frame) {
+  // There's no automatic conversion from FrameIterationCallback to
+  // FrameIterationCallbackImpl, so this wrapper just forwards the
+  // RenderFrameHost argument.
+  FrameIterationCallbackImpl on_frame_impl = base::BindRepeating(
+      [](FrameIterationCallback on_frame, RenderFrameHostImpl* rfh) {
+        return on_frame.Run(rfh);
+      },
+      on_frame);
+  ForEachFrame(on_frame_impl);
+}
+
+void RenderFrameHostImpl::ForEachFrame(
+    FrameIterationAlwaysContinueCallback on_frame) {
+  ForEachFrame(ContinueIterationWrapper(on_frame));
+}
+
+void RenderFrameHostImpl::ForEachFrame(FrameIterationCallbackImpl on_frame) {
+  ForEachFrameImpl(on_frame, /* include_speculative */ false);
+}
+
+void RenderFrameHostImpl::ForEachFrame(
+    FrameIterationAlwaysContinueCallbackImpl on_frame) {
+  ForEachFrame(ContinueIterationWrapper(on_frame));
+}
+
+void RenderFrameHostImpl::ForEachFrameIncludingSpeculative(
+    FrameIterationCallbackImpl on_frame) {
+  ForEachFrameImpl(on_frame, /* include_speculative */ true);
+}
+
+void RenderFrameHostImpl::ForEachFrameIncludingSpeculative(
+    FrameIterationAlwaysContinueCallbackImpl on_frame) {
+  ForEachFrameIncludingSpeculative(ContinueIterationWrapper(on_frame));
+}
+
+void RenderFrameHostImpl::ForEachFrameImpl(FrameIterationCallbackImpl on_frame,
+                                           bool include_speculative) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!include_speculative &&
+      lifecycle_state() == LifecycleStateImpl::kSpeculative)
+    return;
+
+  // Since |this| may not be current in its FrameTree, we can't begin iterating
+  // from |frame_tree_node()|, so we special case the first invocation for
+  // |this| and then actually start iterating over the subtree starting with
+  // our children's FrameTreeNodes.
+  bool skip_children_of_starting_frame = false;
+  switch (on_frame.Run(this)) {
+    case FrameIterationAction::kContinue:
+      break;
+    case FrameIterationAction::kSkipChildren:
+      skip_children_of_starting_frame = true;
+      break;
+    case FrameIterationAction::kStop:
+      return;
+  }
+
+  // Potentially include our FrameTreeNode's speculative RenderFrameHost, but
+  // only if |this| is current in its FrameTree.
+  if (include_speculative && frame_tree_node()->current_frame_host() == this) {
+    RenderFrameHostImpl* speculative_frame_host =
+        frame_tree_node()->render_manager()->speculative_frame_host();
+    if (speculative_frame_host) {
+      DCHECK_EQ(speculative_frame_host->child_count(), 0U);
+      switch (on_frame.Run(speculative_frame_host)) {
+        case FrameIterationAction::kContinue:
+        case FrameIterationAction::kSkipChildren:
+          break;
+        case FrameIterationAction::kStop:
+          return;
+      }
+    }
+  }
+
+  if (skip_children_of_starting_frame)
+    return;
+
+  FrameTree::NodeRange ftn_range = FrameTree::SubtreeAndInnerTreeNodes(this);
+  FrameTree::NodeIterator it = ftn_range.begin();
+  const FrameTree::NodeIterator end = ftn_range.end();
+
+  while (it != end) {
+    FrameTreeNode* node = *it;
+    RenderFrameHostImpl* frame_host = node->current_frame_host();
+    if (frame_host) {
+      switch (on_frame.Run(frame_host)) {
+        case FrameIterationAction::kContinue:
+          ++it;
+          break;
+        case FrameIterationAction::kSkipChildren:
+          it.AdvanceSkippingChildren();
+          break;
+        case FrameIterationAction::kStop:
+          return;
+      }
+    }
+
+    if (include_speculative) {
+      RenderFrameHostImpl* speculative_frame_host =
+          node->render_manager()->speculative_frame_host();
+      if (speculative_frame_host) {
+        DCHECK_EQ(speculative_frame_host->child_count(), 0U);
+        switch (on_frame.Run(speculative_frame_host)) {
+          case FrameIterationAction::kContinue:
+          case FrameIterationAction::kSkipChildren:
+            break;
+          case FrameIterationAction::kStop:
+            return;
+        }
+      }
+    }
+  }
 }
 
 int RenderFrameHostImpl::GetFrameTreeNodeId() {
@@ -2800,11 +2914,16 @@ void RenderFrameHostImpl::Init() {
 
   // TODO(danakj): We only blocked the main frame, so we should only need to
   // resume that?
-  ForEachFrame(this,
-               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
-                 if (render_frame_host->IsRenderFrameCreated())
-                   render_frame_host->frame_->ResumeBlockedRequests();
-               }));
+  ForEachFrameIncludingSpeculative(base::BindRepeating(
+      [](RenderFrameHostImpl* main_rfh,
+         RenderFrameHostImpl* render_frame_host) {
+        // Inner frame trees shouldn't be possible here.
+        DCHECK_EQ(render_frame_host->frame_tree(), main_rfh->frame_tree());
+
+        if (render_frame_host->IsRenderFrameCreated())
+          render_frame_host->frame_->ResumeBlockedRequests();
+      },
+      base::Unretained(this)));
 
   if (pending_navigate_) {
     frame_tree_node()->navigator().OnBeginNavigation(

@@ -109,6 +109,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -8415,6 +8416,27 @@ RenderFrameHostImpl* WebContentsImpl::GetMainFrameForInnerDelegate(
   if (auto* web_contents = node_.GetInnerWebContentsInFrame(frame_tree_node))
     return web_contents->GetMainFrame();
   return nullptr;
+}
+
+std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
+    RenderFrameHostImpl* owner) {
+  std::vector<FrameTreeNode*> unattached_owned_nodes;
+  BrowserPluginGuestManager* guest_manager =
+      GetBrowserContext()->GetGuestManager();
+  if (owner == GetMainFrame() && guest_manager) {
+    guest_manager->ForEachUnattachedGuest(
+        this, base::BindRepeating(
+                  [](std::vector<FrameTreeNode*>& unattached_owned_nodes,
+                     WebContents* guest_contents) {
+                    unattached_owned_nodes.push_back(
+                        static_cast<WebContentsImpl*>(guest_contents)
+                            ->frame_tree_.root());
+                  },
+                  std::ref(unattached_owned_nodes)));
+  }
+  // TODO(mcnee): Also include orphaned portals here.
+  // See https://crbug.com/1196715
+  return unattached_owned_nodes;
 }
 
 void WebContentsImpl::IsClipboardPasteContentAllowed(

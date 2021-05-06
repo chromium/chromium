@@ -83,6 +83,13 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 const GURL& url,
                                 bool wait_for_navigation);
 
+// Returns the frames visited by |RenderFrameHostImpl::ForEachFrame| in the same
+// order.
+std::vector<RenderFrameHostImpl*> CollectAllFrames(
+    RenderFrameHostImpl* starting_rfh);
+std::vector<RenderFrameHostImpl*> CollectAllFramesIncludingSpeculative(
+    RenderFrameHostImpl* starting_rfh);
+
 // Open a new popup passing no URL to window.open, which results in a blank page
 // and no last committed entry. Returns the newly created shell. Also saves the
 // reference to the opened window in the "last_opened_window" variable in JS.

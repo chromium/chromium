@@ -242,6 +242,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns a vector of all RenderFrameHosts in the subtree rooted at |this|.
   // The results may be in different processes.
+  // Does not consider inner frame trees.
   // TODO(https://crbug.com/1013740): Consider exposing a way for the browser
   // process to run a function across a subtree in all renderers rather than
   // exposing the RenderFrameHosts of the frames here.
@@ -252,7 +253,36 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // GetParent().
   // This is a strict relationship, a RenderFrameHost is never an ancestor of
   // itself.
+  // This does not consider inner frame trees.
   virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
+
+  // |ForEachFrame| traverses this RenderFrameHost and all of its descendants,
+  // including frames in any inner frame trees, in breadth-first order.
+  // Examples of features that have inner frame trees are portals or GuestViews.
+  // Note: The RenderFrameHost parameter is not guaranteed to have a live
+  // RenderFrame counterpart in the renderer process. Callbacks should check
+  // IsRenderFrameLive(), as sending IPC messages to it in this case will fail
+  // silently.
+  //
+  // The callback returns a FrameIterationAction which determines if/how
+  // iteration on subsequent frames continues. The FrameIterationAction may be
+  // omitted, in which case kContinue will be assumed.
+  enum class FrameIterationAction {
+    // Includes the children of the visited frame for subsequent traversal and
+    // continues traversal to the next frame.
+    kContinue,
+    // Continues traversal to the next frame but does not include the children
+    // of the visited frame for subsequent traversal.
+    kSkipChildren,
+    // Does not continue traversal.
+    kStop
+  };
+  using FrameIterationCallback =
+      base::RepeatingCallback<FrameIterationAction(RenderFrameHost*)>;
+  using FrameIterationAlwaysContinueCallback =
+      base::RepeatingCallback<void(RenderFrameHost*)>;
+  virtual void ForEachFrame(FrameIterationCallback on_frame) = 0;
+  virtual void ForEachFrame(FrameIterationAlwaysContinueCallback on_frame) = 0;
 
   // Returns the FrameTreeNode ID for this frame. This ID is browser-global and
   // uniquely identifies a frame that hosts content. The identifier is fixed at
@@ -298,10 +328,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // of its size.
   virtual const base::Optional<gfx::Size>& GetFrameSize() = 0;
 
-  // Returns the distance from this frame to the root frame.
+  // Returns the distance from this frame to its main frame.
   virtual size_t GetFrameDepth() = 0;
 
-  // Returns true if the frame is out of process.
+  // Returns true if the frame is out of process relative to its parent.
   virtual bool IsCrossProcessSubframe() = 0;
 
   // Indicates whether this frame is in a cross-origin isolated agent cluster.

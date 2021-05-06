@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -48,6 +49,25 @@ std::set<SiteInstance*> CollectSiteInstances(FrameTree* tree) {
   return instances;
 }
 
+// If |node| is the placeholder FrameTreeNode for an embedded frame tree,
+// returns the inner tree's main frame's FrameTreeNode. Otherwise, returns null.
+FrameTreeNode* GetInnerTreeMainFrameNode(FrameTreeNode* node) {
+  // TODO(1196715): Currently, inner frame trees are only implemented using
+  // multiple WebContents. Once pages can be embedded with MPArch, traverse
+  // them here as well.
+  RenderFrameHostImpl* inner_tree_main_frame =
+      node->frame_tree()->render_frame_delegate()->GetMainFrameForInnerDelegate(
+          node);
+
+  if (inner_tree_main_frame) {
+    DCHECK_NE(node->frame_tree(), inner_tree_main_frame->frame_tree());
+    DCHECK(inner_tree_main_frame->frame_tree_node());
+  }
+
+  return inner_tree_main_frame ? inner_tree_main_frame->frame_tree_node()
+                               : nullptr;
+}
+
 }  // namespace
 
 FrameTree::NodeIterator::NodeIterator(const NodeIterator& other) = default;
@@ -58,17 +78,28 @@ FrameTree::NodeIterator& FrameTree::NodeIterator::operator++() {
   if (current_node_ != root_of_subtree_to_skip_) {
     for (size_t i = 0; i < current_node_->child_count(); ++i) {
       FrameTreeNode* child = current_node_->child_at(i);
-      queue_.push(child);
+      FrameTreeNode* inner_tree_main_ftn = GetInnerTreeMainFrameNode(child);
+      queue_.push((should_descend_into_inner_trees_ && inner_tree_main_ftn)
+                      ? inner_tree_main_ftn
+                      : child);
+    }
+
+    if (should_descend_into_inner_trees_) {
+      for (auto* unattached_node :
+           current_node_->current_frame_host()
+               ->delegate()
+               ->GetUnattachedOwnedNodes(current_node_->current_frame_host())) {
+        queue_.push(unattached_node);
+      }
     }
   }
 
-  if (!queue_.empty()) {
-    current_node_ = queue_.front();
-    queue_.pop();
-  } else {
-    current_node_ = nullptr;
-  }
+  AdvanceNode();
+  return *this;
+}
 
+FrameTree::NodeIterator& FrameTree::NodeIterator::AdvanceSkippingChildren() {
+  AdvanceNode();
   return *this;
 }
 
@@ -76,25 +107,52 @@ bool FrameTree::NodeIterator::operator==(const NodeIterator& rhs) const {
   return current_node_ == rhs.current_node_;
 }
 
-FrameTree::NodeIterator::NodeIterator(FrameTreeNode* starting_node,
-                                      FrameTreeNode* root_of_subtree_to_skip)
-    : current_node_(starting_node),
-      root_of_subtree_to_skip_(root_of_subtree_to_skip) {}
+void FrameTree::NodeIterator::AdvanceNode() {
+  if (!queue_.empty()) {
+    current_node_ = queue_.front();
+    queue_.pop();
+  } else {
+    current_node_ = nullptr;
+  }
+}
+
+FrameTree::NodeIterator::NodeIterator(
+    const std::vector<FrameTreeNode*>& starting_nodes,
+    const FrameTreeNode* root_of_subtree_to_skip,
+    bool should_descend_into_inner_trees)
+    : current_node_(nullptr),
+      root_of_subtree_to_skip_(root_of_subtree_to_skip),
+      should_descend_into_inner_trees_(should_descend_into_inner_trees),
+      queue_(base::circular_deque<FrameTreeNode*>(starting_nodes.begin(),
+                                                  starting_nodes.end())) {
+  AdvanceNode();
+}
 
 FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   // We shouldn't be attempting a frame tree traversal while the tree is
-  // being constructed.
-  DCHECK(root_->current_frame_host());
-  return NodeIterator(root_, root_of_subtree_to_skip_);
+  // being constructed or destructed.
+  DCHECK(std::all_of(
+      starting_nodes_.begin(), starting_nodes_.end(),
+      [](FrameTreeNode* ftn) { return ftn->current_frame_host(); }));
+
+  return NodeIterator(starting_nodes_, root_of_subtree_to_skip_,
+                      should_descend_into_inner_trees_);
 }
 
 FrameTree::NodeIterator FrameTree::NodeRange::end() {
-  return NodeIterator(nullptr, nullptr);
+  return NodeIterator({}, nullptr, should_descend_into_inner_trees_);
 }
 
-FrameTree::NodeRange::NodeRange(FrameTreeNode* root,
-                                FrameTreeNode* root_of_subtree_to_skip)
-    : root_(root), root_of_subtree_to_skip_(root_of_subtree_to_skip) {}
+FrameTree::NodeRange::NodeRange(
+    const std::vector<FrameTreeNode*>& starting_nodes,
+    const FrameTreeNode* root_of_subtree_to_skip,
+    bool should_descend_into_inner_trees)
+    : starting_nodes_(starting_nodes),
+      root_of_subtree_to_skip_(root_of_subtree_to_skip),
+      should_descend_into_inner_trees_(should_descend_into_inner_trees) {}
+
+FrameTree::NodeRange::NodeRange(const NodeRange&) = default;
+FrameTree::NodeRange::~NodeRange() = default;
 
 FrameTree::FrameTree(
     BrowserContext* browser_context,
@@ -183,11 +241,29 @@ FrameTree::NodeRange FrameTree::Nodes() {
 }
 
 FrameTree::NodeRange FrameTree::SubtreeNodes(FrameTreeNode* subtree_root) {
-  return NodeRange(subtree_root, nullptr);
+  return NodeRange({subtree_root}, nullptr,
+                   /* should_descend_into_inner_trees */ false);
+}
+
+FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
+    RenderFrameHostImpl* parent) {
+  std::vector<FrameTreeNode*> starting_nodes;
+  starting_nodes.reserve(parent->child_count());
+  for (size_t i = 0; i < parent->child_count(); ++i) {
+    FrameTreeNode* child = parent->child_at(i);
+    FrameTreeNode* inner_tree_main_ftn = GetInnerTreeMainFrameNode(child);
+    starting_nodes.push_back(inner_tree_main_ftn ? inner_tree_main_ftn : child);
+  }
+  const std::vector<FrameTreeNode*> unattached_owned_nodes =
+      parent->delegate()->GetUnattachedOwnedNodes(parent);
+  starting_nodes.insert(starting_nodes.end(), unattached_owned_nodes.begin(),
+                        unattached_owned_nodes.end());
+  return NodeRange(starting_nodes, nullptr,
+                   /* should_descend_into_inner_trees */ true);
 }
 
 FrameTree::NodeRange FrameTree::NodesExceptSubtree(FrameTreeNode* node) {
-  return NodeRange(root_, node);
+  return NodeRange({root_}, node, /* should_descend_into_inner_trees */ false);
 }
 
 FrameTreeNode* FrameTree::AddFrame(
