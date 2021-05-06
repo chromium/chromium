@@ -4,6 +4,11 @@
 
 import 'chrome://diagnostics/connectivity_card.js';
 
+import {Network} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeEthernetNetwork, fakeNetworkGuidInfoList} from 'chrome://diagnostics/fake_data.js';
+import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
+import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
@@ -13,6 +18,14 @@ export function connectivityCardTestSuite() {
   /** @type {?ConnectivityCardElement} */
   let connectivityCardElement = null;
 
+  /** @type {?FakeNetworkHealthProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeNetworkHealthProvider();
+    setNetworkHealthProviderForTesting(provider);
+  });
+
   setup(() => {
     document.body.innerHTML = '';
   });
@@ -20,24 +33,33 @@ export function connectivityCardTestSuite() {
   teardown(() => {
     connectivityCardElement.remove();
     connectivityCardElement = null;
+    provider.reset();
   });
 
-  function initializeConnectivityCard() {
+  /**
+   * @param {string} activeGuid
+   * @param {!Array<!Network>} networkStateList
+   */
+  function initializeConnectivityCard(activeGuid, networkStateList) {
     assertFalse(!!connectivityCardElement);
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState(activeGuid, networkStateList);
 
     // Add the connectivity card to the DOM.
     connectivityCardElement = /** @type {!ConnectivityCardElement} */ (
         document.createElement('connectivity-card'));
     assertTrue(!!connectivityCardElement);
+    connectivityCardElement.activeGuid = activeGuid;
     document.body.appendChild(connectivityCardElement);
 
     return flushTasks();
   }
 
   test('ConnectivityCardPopulated', () => {
-    return initializeConnectivityCard().then(() => {
-      dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#cardTitle'), 'Connectivity');
-    });
+    return initializeConnectivityCard('ethernetGuid', [fakeEthernetNetwork])
+        .then(() => {
+          dx_utils.assertElementContainsText(
+              connectivityCardElement.$$('#activeGuid'), 'ethernetGuid');
+        });
   });
 }
