@@ -177,6 +177,13 @@ class LocationBarView : public LocationBar,
 
   PermissionChip* chip() { return chip_; }
 
+  // Creates and displays an instance of PermissionRequestChip.
+  PermissionChip* DisplayChip(
+      permissions::PermissionPrompt::Delegate* delegate);
+
+  // Removes previously displayed PermissionChip.
+  void FinalizeChip();
+
   // LocationBar:
   void FocusLocation(bool is_user_initiated) override;
   void Revert() override;
@@ -350,6 +357,7 @@ class LocationBarView : public LocationBar,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
+  void OnChildViewRemoved(View* observed_view, View* child) override;
 
   // ChromeOmniboxEditController:
   void OnChanged() override;

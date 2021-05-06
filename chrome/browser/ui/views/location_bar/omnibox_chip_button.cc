@@ -15,9 +15,16 @@
 #include "ui/views/controls/highlight_path_generator.h"
 
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
-                                     int button_context)
-    : MdTextButton(std::move(callback), std::u16string(), button_context) {
+                                     const gfx::VectorIcon& icon,
+                                     std::u16string message,
+                                     bool is_prominent)
+    : MdTextButton(std::move(callback),
+                   std::u16string(),
+                   views::style::CONTEXT_BUTTON_MD),
+      icon_(icon) {
   views::InstallPillHighlightPathGenerator(this);
+  SetProminent(is_prominent);
+  SetText(message);
   SetCornerRadius(GetIconSize());
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
@@ -32,6 +39,8 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
   constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   animation_->SetSlideDuration(kAnimationDuration);
+
+  UpdateColors();
 }
 
 OmniboxChipButton::~OmniboxChipButton() = default;
@@ -52,11 +61,6 @@ void OmniboxChipButton::ResetAnimation(double value) {
   animation_->Reset(value);
 }
 
-void OmniboxChipButton::SetIcon(const gfx::VectorIcon* icon) {
-  icon_ = icon;
-  UpdateColors();
-}
-
 void OmniboxChipButton::SetExpandAnimationEndedCallback(
     base::RepeatingCallback<void()> callback) {
   expand_animation_ended_callback_ = callback;
@@ -74,7 +78,7 @@ gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
 }
 
 void OmniboxChipButton::OnThemeChanged() {
-  View::OnThemeChanged();
+  MdTextButton::OnThemeChanged();
   UpdateColors();
 }
 
@@ -97,22 +101,14 @@ void OmniboxChipButton::SetTheme(Theme theme) {
   UpdateColors();
 }
 
-void OmniboxChipButton::SetProminent(bool is_prominent) {
-  views::MdTextButton::SetProminent(is_prominent);
-  UpdateColors();
-}
-
 int OmniboxChipButton::GetIconSize() const {
   return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
 }
 
 void OmniboxChipButton::UpdateColors() {
-  if (!icon_)
-    return;
-
   SetEnabledTextColors(GetForegroundColor());
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(*icon_, GetForegroundColor(),
+                ui::ImageModel::FromVectorIcon(icon_, GetForegroundColor(),
                                                GetIconSize()));
   SetBgColorOverride(GetBackgroundColor());
 }

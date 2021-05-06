@@ -2348,7 +2348,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
 
   // Tab has a pending permission request.
   if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->chip()->GetVisible()) {
+      toolbar_->location_bar()->chip()) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, title);
   }
@@ -2776,7 +2776,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
 #endif
   // When permission is requested, permission chip must be first pane in the
   // pane traversal order to be easily accessible for keyboard users.
-  if (toolbar_ && toolbar_->location_bar()) {
+  if (toolbar_ && toolbar_->location_bar() &&
+      toolbar_->location_bar()->chip()) {
     panes->push_back(toolbar_->location_bar()->chip());
   }
   panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());

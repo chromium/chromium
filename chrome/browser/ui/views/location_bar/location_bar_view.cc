@@ -192,8 +192,6 @@ void LocationBarView::Init() {
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
-  chip_ = AddChildView(std::make_unique<PermissionRequestChip>(browser()));
-
   auto location_icon_view =
       std::make_unique<LocationIconView>(font_list, this, this);
   location_icon_view->set_drag_controller(this);
@@ -538,7 +536,7 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_->GetVisible() && !ShouldShowKeywordBubble()) {
+  if (chip_ && !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, edge_padding, chip_);
   }
@@ -760,6 +758,22 @@ void LocationBarView::ResetTabState(WebContents* contents) {
 bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
   return page_action_icon_controller_
       ->ActivateFirstInactiveBubbleForAccessibility();
+}
+
+PermissionChip* LocationBarView::DisplayChip(
+    permissions::PermissionPrompt::Delegate* delegate) {
+  DCHECK(!chip_);
+  DCHECK(delegate);
+  // `chip_` must come first so it's in the correct place in the focus order.
+  chip_ = AddChildViewAt(
+      std::make_unique<PermissionRequestChip>(browser(), delegate), 0);
+  return chip_;
+}
+
+void LocationBarView::FinalizeChip() {
+  DCHECK(chip_);
+  RemoveChildViewT(chip_);
+  chip_ = nullptr;
 }
 
 void LocationBarView::UpdateWithoutTabRestore() {
@@ -1179,6 +1193,11 @@ void LocationBarView::AnimationCanceled(const gfx::Animation* animation) {
   AnimationProgressed(animation);
 }
 
+void LocationBarView::OnChildViewRemoved(View* observed_view, View* child) {
+  views::AnimationDelegateViews::OnChildViewRemoved(observed_view, child);
+  PreferredSizeChanged();
+}
+
 void LocationBarView::OnChanged() {
   location_icon_view_->Update(/*suppress_animations=*/false);
   clear_all_button_->SetVisible(
@@ -1325,15 +1344,14 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 }
 
 void LocationBarView::UpdateChipVisibility() {
-  if (!chip()->GetActiveRequest()) {
-    DCHECK(!chip()->GetVisible());
+  if (!chip_) {
     return;
   }
 
   if (IsEditingOrEmpty()) {
-    chip()->Hide();
+    chip_->Hide();
   } else {
-    chip()->Reshow();
+    chip_->Reshow();
   }
 }
 
