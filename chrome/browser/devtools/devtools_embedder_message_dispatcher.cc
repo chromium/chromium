@@ -64,7 +64,7 @@ template <typename... Ts>
 struct ParamTuple {
   bool Parse(const base::ListValue& list,
              const base::ListValue::const_iterator& it) {
-    return it == list.end();
+    return it == list.GetList().end();
   }
 
   template <typename H, typename... As>
@@ -77,7 +77,8 @@ template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
   bool Parse(const base::ListValue& list,
              const base::ListValue::const_iterator& it) {
-    return it != list.end() && GetValue(*it, &head) && tail.Parse(list, it + 1);
+    return it != list.GetList().end() && GetValue(*it, &head) &&
+           tail.Parse(list, it + 1);
   }
 
   template <typename H, typename... As>
@@ -94,7 +95,7 @@ bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
                     DispatchCallback callback,
                     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin()))
+  if (!tuple.Parse(list, list.GetList().begin()))
     return false;
   tuple.Apply(handler);
   return true;
@@ -106,7 +107,7 @@ bool ParseAndHandleWithCallback(
     DispatchCallback callback,
     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin()))
+  if (!tuple.Parse(list, list.GetList().begin()))
     return false;
   tuple.Apply(handler, std::move(callback));
   return true;
