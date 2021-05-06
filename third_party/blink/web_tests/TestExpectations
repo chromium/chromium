@@ -6916,3 +6916,14 @@ crbug.com/1205780 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1206019 [ Linux ] http/tests/devtools/sources/snippet-module.js [ Failure ]
+
+# Blink_web_tests 2021-05-06
+crbug.com/1205669 [ Mac10.13 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-global-alpha.html [ Pass Timeout ]
+crbug.com/1205669 [ Mac10.13 ] external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] external/wpt/gamepad/idlharness.https.window.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] external/wpt/input-device-capabilities/idlharness.window.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] external/wpt/periodic-background-sync/idlharness.https.any.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] external/wpt/storage/idlharness.https.any.worker.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/fetch-event.https.html [ Failure ]
+crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/idlharness.any.worker.html [ Failure ]
