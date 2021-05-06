@@ -486,8 +486,6 @@ TEST_F(ToolbarActionsModelUnitTest, PinnedStateIsTransferredToIncognito) {
 
   // Pinning from the original profile transfers to the incognito profile, so
   // pinning B results in a change.
-  // TODO(devlin): That seems questionable. It's not a leak (since it's not
-  // incognito -> on-the-record), but it still seems uncharacteristic.
   toolbar_model()->SetActionVisibility(browser_action_b()->id(), true);
   EXPECT_THAT(incognito_model->pinned_action_ids(),
               ::testing::ElementsAre(browser_action_c()->id(),
@@ -532,8 +530,6 @@ TEST_F(ToolbarActionsModelUnitTest,
                              browser_action_c()->id()));
 
   // Moving extension C to index 0 affects both profiles.
-  // As above, this is questionable.
-  // TODO(https://crbug.com/1203833): Rationalize this.
   toolbar_model()->MovePinnedAction(browser_action_c()->id(), 0);
   EXPECT_THAT(
       toolbar_model()->pinned_action_ids(),

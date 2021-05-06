@@ -114,6 +114,11 @@ void ToolbarActionsModel::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
+  if (profile_->IsOffTheRecord()) {
+    // The on-the-record version will update the prefs; incognito is read-only.
+    return;
+  }
+
   // Remove the extension id from the ordered list, if it exists (the extension
   // might not be represented in the list because it might not have an icon).
   RemovePref(extension->id());
@@ -217,6 +222,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // out-of-bounds access, size_t wraps, etc). Keep this a hard CHECK (not a
   // DCHECK).
   CHECK(!pinned_action_ids_.empty());
+  DCHECK(!profile_->IsOffTheRecord())
+      << "Changing action position is disallowed in incognito.";
 
   auto current_position_on_toolbar = std::find(
       pinned_action_ids_.begin(), pinned_action_ids_.end(), action_id);
@@ -359,6 +366,8 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
                                               bool is_now_visible) {
   DCHECK_NE(is_now_visible, IsActionPinned(action_id));
   DCHECK(!IsActionForcePinned(action_id));
+  DCHECK(!profile_->IsOffTheRecord())
+      << "Changing action pin state is disallowed in incognito.";
 
   auto stored_pinned_action_ids = extension_prefs_->GetPinnedExtensions();
   DCHECK_NE(is_now_visible,

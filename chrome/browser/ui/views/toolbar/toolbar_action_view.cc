@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_source.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -66,6 +67,14 @@ ToolbarActionView::ToolbarActionView(
   view_controller_->SetDelegate(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
+  // Normally, the notify action is determined by whether a view is draggable
+  // (and is set to press for non-draggable and release for draggable views).
+  // However, ToolbarActionViews may be draggable or non-draggable depending on
+  // whether they are shown in an incognito window. We want to preserve the same
+  // trigger event to keep the UX (more) consistent. Set all ToolbarActionViews
+  // to trigger on mouse release.
+  button_controller()->set_notify_action(
+      views::ButtonController::NotifyAction::kOnRelease);
 
   context_menu_controller_ =
       std::make_unique<ExtensionContextMenuController>(view_controller);
@@ -146,6 +155,10 @@ void ToolbarActionView::UpdateState() {
 
 gfx::ImageSkia ToolbarActionView::GetIconForTest() {
   return GetImage(views::Button::STATE_NORMAL);
+}
+
+int ToolbarActionView::GetDragOperationsForTest(const gfx::Point& point) {
+  return views::View::GetDragOperations(point);
 }
 
 gfx::Size ToolbarActionView::CalculatePreferredSize() const {

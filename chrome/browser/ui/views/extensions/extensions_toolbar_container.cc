@@ -551,13 +551,17 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
 
 int ExtensionsToolbarContainer::GetDragOperationsForView(View* sender,
                                                          const gfx::Point& p) {
-  return ui::DragDropTypes::DRAG_MOVE;
+  return browser_->profile()->IsOffTheRecord() ? ui::DragDropTypes::DRAG_NONE
+                                               : ui::DragDropTypes::DRAG_MOVE;
 }
 
 bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
                                                      const gfx::Point& press_pt,
                                                      const gfx::Point& p) {
-  if (!CanShowIconInToolbar())
+  // We don't allow dragging if the container isn't in the toolbar, or if
+  // the profile is incognito (to avoid changing state from an incognito
+  // window).
+  if (!CanShowIconInToolbar() || browser_->profile()->IsOffTheRecord())
     return false;
 
   // Only pinned extensions should be draggable.

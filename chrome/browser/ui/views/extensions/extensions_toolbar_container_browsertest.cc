@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,13 +25,16 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/views/test/widget_test.h"
 
 namespace {
@@ -386,6 +390,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   bubble_widget->Close();
   destroyed_waiter.Wait();
+}
+
+// Verifies that dragging extension icons is disabled in incognito windows.
+// https://crbug.com/1203833.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       IncognitoDraggingIsDisabled) {
+  // Load an extension, pin it, and enable it in incognito.
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  ToolbarActionsModel* const toolbar_model =
+      ToolbarActionsModel::Get(profile());
+  toolbar_model->SetActionVisibility(extension->id(), true);
+
+  {
+    extensions::TestExtensionRegistryObserver observer(
+        extensions::ExtensionRegistry::Get(profile()), extension->id());
+    extensions::util::SetIsIncognitoEnabled(extension->id(), profile(), true);
+    ASSERT_TRUE(observer.WaitForExtensionLoaded());
+  }
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  // Verify the extension has a (visible) action for both the incognito and
+  // on-the-record browser.
+  std::vector<ToolbarActionView*> on_the_record_views = GetToolbarActionViews();
+  ASSERT_EQ(1u, on_the_record_views.size());
+  ToolbarActionView* on_the_record_view = on_the_record_views[0];
+  EXPECT_EQ(extension->id(), on_the_record_view->view_controller()->GetId());
+  EXPECT_TRUE(on_the_record_view->GetVisible());
+
+  std::vector<ToolbarActionView*> incognito_views =
+      GetToolbarActionViewsForBrowser(incognito_browser);
+  ASSERT_EQ(1u, incognito_views.size());
+  ToolbarActionView* incognito_view = incognito_views[0];
+  EXPECT_EQ(extension->id(), incognito_view->view_controller()->GetId());
+  EXPECT_TRUE(incognito_view->GetVisible());
+
+  // Dragging should be enabled for the on-the-record view, but not the
+  // incognito view.
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE,
+            on_the_record_view->GetDragOperationsForTest(gfx::Point()));
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE,
+            incognito_view->GetDragOperationsForTest(gfx::Point()));
+
+  // The two views should have the same notifiable event. This is important to
+  // test, since it can be dependent on draggability.
+  EXPECT_EQ(on_the_record_view->button_controller()->notify_action(),
+            incognito_view->button_controller()->notify_action());
 }
 
 namespace {
