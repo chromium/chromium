@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/command_buffer_id.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ipc/ipc_listener.h"
@@ -35,6 +36,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
 
   static std::unique_ptr<SharedImageStub> Create(GpuChannel* channel,
                                                  int32_t route_id);
+
+  // Executes a DeferredRequest routed to this stub by a GpuChannel.
+  void ExecuteDeferredRequest(mojom::DeferredSharedImageRequestPtr request);
 
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
@@ -81,10 +85,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
 
-  void OnCreateSharedImage(
-      const GpuChannelMsg_CreateSharedImage_Params& params);
+  void OnCreateSharedImage(mojom::CreateSharedImageParamsPtr params);
   void OnCreateSharedImageWithData(
-      const GpuChannelMsg_CreateSharedImageWithData_Params& params);
+      mojom::CreateSharedImageWithDataParamsPtr params);
   void OnCreateGMBSharedImage(GpuChannelMsg_CreateGMBSharedImage_Params params);
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,
@@ -98,7 +101,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
 #if defined(OS_WIN)
-  void OnCreateSwapChain(const GpuChannelMsg_CreateSwapChain_Params& params);
+  void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params);
   void OnPresentSwapChain(const Mailbox& mailbox, uint32_t release_id);
 #endif  // OS_WIN
 #if defined(OS_FUCHSIA)

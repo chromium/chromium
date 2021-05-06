@@ -4,8 +4,14 @@
 
 module gpu.mojom;
 
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "services/viz/public/mojom/compositing/resource_format.mojom";
+import "skia/public/mojom/image_info.mojom";
+import "skia/public/mojom/surface_origin.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/gpu_fence_handle.mojom";
 
 struct ScheduleImageDecodeParams {
   array<uint8> encoded_data;
@@ -51,4 +57,252 @@ interface GpuChannel {
   // which are processed by gpu::ImageDecodeAcceleratorStub on the service side.
   ScheduleImageDecode(ScheduleImageDecodeParams params,
                       uint64 decode_release_count);
+
+  // Sends a batch of DeferredRequests to be executed by the service.
+  FlushDeferredRequests(array<DeferredRequest> requests);
+};
+
+// DeferredRequests are batched locally by clients and sent to the service only
+// when flushing the channel via GpuChannelHost's EnsureFlush or VerifyFlush.
+struct DeferredRequest {
+  // Parameters for the specific type of request.
+  DeferredRequestParams params;
+
+  // A list of SyncTokens which must be released before the request can be
+  // processed.
+  array<SyncToken> sync_token_fences;
+};
+
+// Details of a batched request.
+union DeferredRequestParams {
+  // This request targets a specific command buffer instance.
+  DeferredCommandBufferRequest command_buffer_request;
+
+  // This request pertains to shared image management.
+  DeferredSharedImageRequest shared_image_request;
+
+  // Sent to indicate the client wants to destroy the StreamTexture identified
+  // by this ID.
+  [EnableIf=is_android]
+  int32 destroy_stream_texture;
+};
+
+// Details of a batched request targeting a specific command buffer.
+struct DeferredCommandBufferRequest {
+  // Identifies the command buffer targeted by this request.
+  int32 routing_id;
+
+  // The specific request parameters.
+  DeferredCommandBufferRequestParams params;
+};
+
+// Details of a batched request targeting a specific command buffer.
+union DeferredCommandBufferRequestParams {
+  // See AsyncFlushParams.
+  AsyncFlushParams async_flush;
+
+  // Destroys a transfer buffer identified by this ID.
+  int32 destroy_transfer_buffer;
+
+  // Takes the front buffer into a mailbox. Allows another context to draw the
+  // output of this context.
+  // NOTE: This exists only to support PNaCl.
+  Mailbox take_front_buffer;
+
+  // See ReturnFrontBufferParams.
+  ReturnFrontBufferParams return_front_buffer;
+};
+
+// Details of a batched request pertaining to shared image management.
+union DeferredSharedImageRequest {
+  // Sent by clients to record a point in the sequence of pending deferred
+  // messages. Actual value is ignored.
+  uint8 nop;
+
+  // See CreateSharedImageParams.
+  CreateSharedImageParams create_shared_image;
+
+  // See CreateSharedImageWithDataParams.
+  CreateSharedImageWithDataParams create_shared_image_with_data;
+
+  // See CreateSharedImageWithAHBParams.
+  [EnableIf=is_android]
+  CreateSharedImageWithAHBParams create_shared_image_with_ahb;
+
+  // See UpdateSharedImageParams.
+  UpdateSharedImageParams update_shared_image;
+
+  // Destroys the shared image identified by this Mailbox.
+  Mailbox destroy_shared_image;
+
+  // See CreateSwapChainParams.
+  [EnableIf=is_win]
+  CreateSwapChainParams create_swap_chain;
+
+  // See PresentSwapChainParams.
+  [EnableIf=is_win]
+  PresentSwapChainParams present_swap_chain;
+};
+
+// Asynchronously synchronize the put and get offsets of both processes.
+// Caller passes its current put offset. Current state (including get offset)
+// is returned in shared memory.
+// TODO(sunnyps): This is an internal implementation detail of the gpu service
+// and is not sent by the client. Remove this once the non-scheduler code path
+// is removed.
+struct AsyncFlushParams {
+  int32 put_offset;
+  uint32 flush_id;
+  array<SyncToken> sync_token_fences;
+};
+
+// Returns a front buffer taken via TakeFrontBufferParams in a previous
+// DeferredRequest. This allows it to be reused.
+// NOTE: This exists only to support PNaCl.
+struct ReturnFrontBufferParams {
+  // The mailbox which last took the front buffer in question.
+  Mailbox mailbox;
+
+  // Indicates that the resource was lost and should be destroyed.
+  bool is_lost;
+};
+
+// Creates a new shared image.
+struct CreateSharedImageParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // The pixel format of the image.
+  viz.mojom.ResourceFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+};
+
+// Creates a new shared image and populates it with pixel data from a shared
+// memory region previously configured by the client.
+struct CreateSharedImageWithDataParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // The pixel format of the image.
+  viz.mojom.ResourceFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
+
+  // Offset from which to copy data out of the current image upload shared
+  // memory region.
+  uint32 pixel_data_offset;
+
+  // Size of data to copy out of the current image upload shared memory region.
+  uint32 pixel_data_size;
+
+  // If `true`, this is the last usage of the current image upload shared memory
+  // region, so the region can be discarded after servicing this request.
+  bool done_with_shm;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+};
+
+// Creates a new shared image from an existing one backed by an AHardwareBuffer.
+[EnableIf=is_android]
+struct CreateSharedImageWithAHBParams {
+  // Mailbox to identify the new image.
+  Mailbox out_mailbox;
+
+  // Mailbox identifying the existing shared image whose AHardwareBuffer will
+  // back the new image.
+  Mailbox in_mailbox;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
+};
+
+// Updates the contents of a shared image from whatever is backing it, if
+// applicable.
+struct UpdateSharedImageParams {
+  // The mailbox identifying the shared image to update.
+  Mailbox mailbox;
+
+  // The fence to release once the image has been updated.
+  uint32 release_id;
+
+  // An optional GpuFenceHandle for the server to wait on before updating the
+  // image from whatever backs it.
+  gfx.mojom.GpuFenceHandle? in_fence_handle;
+};
+
+[EnableIf=is_win]
+struct CreateSwapChainParams {
+  // Mailbox identifying the front buffer of the swap chain.
+  Mailbox front_buffer_mailbox;
+
+  // Mailbox identifying the back buffer of the swap chain.
+  Mailbox back_buffer_mailbox;
+
+  // Pixel format of the front and back buffers.
+  viz.mojom.ResourceFormat format;
+
+  // Size of the buffers.
+  gfx.mojom.Size size;
+
+  // Color space of the buffers.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the swap chain is created.
+  uint32 release_id;
+
+  // Which corner is considered the origin of the swap chain's buffers.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+};
+
+[EnableIf=is_win]
+struct PresentSwapChainParams {
+  // Mailbox identifying the swap chain to present.
+  Mailbox mailbox;
+
+  // The fence to release once the swap chain is presented.
+  uint32 release_id;
 };

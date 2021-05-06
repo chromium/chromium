@@ -10,18 +10,12 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/resource_format_mojom_traits.h"
+#include "services/viz/public/mojom/compositing/resource_format.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
-
-template <>
-struct EnumTraits<viz::mojom::ResourceFormat, viz::ResourceFormat> {
-  static viz::mojom::ResourceFormat ToMojom(viz::ResourceFormat type);
-
-  static bool FromMojom(viz::mojom::ResourceFormat input,
-                        viz::ResourceFormat* out);
-};
 
 template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,

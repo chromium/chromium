@@ -83,31 +83,6 @@ IPC_STRUCT_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(GrSurfaceOrigin, kBottomLeft_GrSurfaceOrigin)
 
-IPC_STRUCT_BEGIN(GpuChannelMsg_CreateSharedImage_Params)
-  IPC_STRUCT_MEMBER(gpu::Mailbox, mailbox)
-  IPC_STRUCT_MEMBER(viz::ResourceFormat, format)
-  IPC_STRUCT_MEMBER(gfx::Size, size)
-  IPC_STRUCT_MEMBER(gfx::ColorSpace, color_space)
-  IPC_STRUCT_MEMBER(uint32_t, usage)
-  IPC_STRUCT_MEMBER(uint32_t, release_id)
-  IPC_STRUCT_MEMBER(GrSurfaceOrigin, surface_origin)
-  IPC_STRUCT_MEMBER(SkAlphaType, alpha_type)
-IPC_STRUCT_END()
-
-IPC_STRUCT_BEGIN(GpuChannelMsg_CreateSharedImageWithData_Params)
-  IPC_STRUCT_MEMBER(gpu::Mailbox, mailbox)
-  IPC_STRUCT_MEMBER(viz::ResourceFormat, format)
-  IPC_STRUCT_MEMBER(gfx::Size, size)
-  IPC_STRUCT_MEMBER(gfx::ColorSpace, color_space)
-  IPC_STRUCT_MEMBER(uint32_t, usage)
-  IPC_STRUCT_MEMBER(uint32_t, release_id)
-  IPC_STRUCT_MEMBER(uint32_t, pixel_data_offset)
-  IPC_STRUCT_MEMBER(uint32_t, pixel_data_size)
-  IPC_STRUCT_MEMBER(bool, done_with_shm)
-  IPC_STRUCT_MEMBER(GrSurfaceOrigin, surface_origin)
-  IPC_STRUCT_MEMBER(SkAlphaType, alpha_type)
-IPC_STRUCT_END()
-
 IPC_STRUCT_BEGIN(GpuChannelMsg_CreateGMBSharedImage_Params)
   IPC_STRUCT_MEMBER(gpu::Mailbox, mailbox)
   IPC_STRUCT_MEMBER(gfx::GpuMemoryBufferHandle, handle)
@@ -119,25 +94,6 @@ IPC_STRUCT_BEGIN(GpuChannelMsg_CreateGMBSharedImage_Params)
   IPC_STRUCT_MEMBER(uint32_t, release_id)
   IPC_STRUCT_MEMBER(GrSurfaceOrigin, surface_origin)
   IPC_STRUCT_MEMBER(SkAlphaType, alpha_type)
-IPC_STRUCT_END()
-
-#if defined(OS_WIN)
-IPC_STRUCT_BEGIN(GpuChannelMsg_CreateSwapChain_Params)
-  IPC_STRUCT_MEMBER(gpu::Mailbox, front_buffer_mailbox)
-  IPC_STRUCT_MEMBER(gpu::Mailbox, back_buffer_mailbox)
-  IPC_STRUCT_MEMBER(viz::ResourceFormat, format)
-  IPC_STRUCT_MEMBER(gfx::Size, size)
-  IPC_STRUCT_MEMBER(gfx::ColorSpace, color_space)
-  IPC_STRUCT_MEMBER(uint32_t, usage)
-  IPC_STRUCT_MEMBER(uint32_t, release_id)
-  IPC_STRUCT_MEMBER(GrSurfaceOrigin, surface_origin)
-  IPC_STRUCT_MEMBER(SkAlphaType, alpha_type)
-IPC_STRUCT_END()
-#endif  // OS_WIN
-
-IPC_STRUCT_BEGIN(GpuDeferredMessage)
-  IPC_STRUCT_MEMBER(IPC::Message, message)
-  IPC_STRUCT_MEMBER(std::vector<gpu::SyncToken>, sync_token_fences)
 IPC_STRUCT_END()
 
 //------------------------------------------------------------------------------
@@ -162,43 +118,9 @@ IPC_SYNC_MESSAGE_CONTROL3_2(GpuChannelMsg_CreateCommandBuffer,
 IPC_SYNC_MESSAGE_CONTROL1_0(GpuChannelMsg_DestroyCommandBuffer,
                             int32_t /* instance_id */)
 
-IPC_MESSAGE_CONTROL1(GpuChannelMsg_FlushDeferredMessages,
-                     std::vector<GpuDeferredMessage> /* deferred_messages */)
-
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateSharedImage,
-                    GpuChannelMsg_CreateSharedImage_Params /* params */)
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateSharedImageWithData,
-                    GpuChannelMsg_CreateSharedImageWithData_Params /* params */)
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateGMBSharedImage,
                     GpuChannelMsg_CreateGMBSharedImage_Params /* params */)
 
-// The following IPC message, that can be used by the browser or renderers,
-// updates the SharedImage referenced by |id| after its contents are modified
-// (e.g: its GpuMemoryBuffer is modified via the CPU or through external
-// devices).
-// The sync token in the shared image sequence at position |release_id| will be
-// released once this command has been executed service side.
-// |in_fence_handle|, if not null, represents a fence that will be waited on
-// before reading the contents represented by the shared image.
-IPC_MESSAGE_ROUTED3(GpuChannelMsg_UpdateSharedImage,
-                    gpu::Mailbox /* id */,
-                    uint32_t /* release_id */,
-                    gfx::GpuFenceHandle /* in_fence_handle */)
-#if defined(OS_ANDROID)
-IPC_MESSAGE_ROUTED4(GpuChannelMsg_CreateSharedImageWithAHB,
-                    gpu::Mailbox /* out id */,
-                    gpu::Mailbox /* in id */,
-                    uint32_t /* usage */,
-                    uint32_t /* release_id */)
-#endif
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_DestroySharedImage, gpu::Mailbox /* id */)
-#if defined(OS_WIN)
-IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateSwapChain,
-                    GpuChannelMsg_CreateSwapChain_Params /* params */)
-IPC_MESSAGE_ROUTED2(GpuChannelMsg_PresentSwapChain,
-                    gpu::Mailbox /* mailbox */,
-                    uint32_t /* release_id */)
-#endif  // OS_WIN
 #if defined(OS_FUCHSIA)
 IPC_MESSAGE_ROUTED5(GpuChannelMsg_RegisterSysmemBufferCollection,
                     gfx::SysmemBufferCollectionId /* id */,
@@ -211,10 +133,6 @@ IPC_MESSAGE_ROUTED1(GpuChannelMsg_ReleaseSysmemBufferCollection,
 #endif  // OS_FUCHSIA
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
                     base::ReadOnlySharedMemoryRegion /* shm */)
-
-// Simple NOP message which can be used as fence to ensure all previous sent
-// messages have been received.
-IPC_SYNC_MESSAGE_ROUTED0_0(GpuChannelMsg_Nop)
 
 // Creates a StreamTexture attached to the provided |stream_id|.
 IPC_SYNC_MESSAGE_CONTROL1_1(GpuChannelMsg_CreateStreamTexture,
@@ -246,9 +164,6 @@ IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_FrameAvailable)
 IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
                     gfx::Size /* rotated_visible_size */)
 
-// Destroys the StreamTexture attached to the provided |stream_id|.
-IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_Destroy)
-
 #endif
 
 //------------------------------------------------------------------------------
@@ -258,17 +173,6 @@ IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_Destroy)
 
 // Sets the shared memory buffer used for commands.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_SetGetBuffer, int32_t /* shm_id */)
-
-// Takes the front buffer into a mailbox. This allows another context to draw
-// the output of this context.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_TakeFrontBuffer,
-                    gpu::Mailbox /* mailbox */)
-
-// Returns a front buffer taken with GpuCommandBufferMsg_TakeFrontBuffer. This
-// allows it to be reused.
-IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_ReturnFrontBuffer,
-                    gpu::Mailbox /* mailbox */,
-                    bool /* is_lost */)
 
 // Wait until the token is in a specific range, inclusive.
 IPC_SYNC_MESSAGE_ROUTED2_1(GpuCommandBufferMsg_WaitForTokenInRange,
@@ -283,17 +187,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(GpuCommandBufferMsg_WaitForGetOffsetInRange,
                            int32_t /* end */,
                            gpu::CommandBuffer::State /* state */)
 
-// Asynchronously synchronize the put and get offsets of both processes.
-// Caller passes its current put offset. Current state (including get offset)
-// is returned in shared memory.
-// TODO(sunnyps): This is an internal implementation detail of the gpu service
-// and is not sent by the client. Remove this once the non-scheduler code path
-// is removed.
-IPC_MESSAGE_ROUTED3(GpuCommandBufferMsg_AsyncFlush,
-                    int32_t /* put_offset */,
-                    uint32_t /* flush_id */,
-                    std::vector<gpu::SyncToken> /* sync_token_fences */)
-
 // Sent by the GPU process to display messages in the console.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_ConsoleMsg,
                     GPUCommandBufferConsoleMessage /* msg */)
@@ -307,9 +200,6 @@ IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_GpuSwitched,
 IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_RegisterTransferBuffer,
                     int32_t /* id */,
                     base::UnsafeSharedMemoryRegion /* transfer_buffer */)
-
-// Destroy a previously created transfer buffer.
-IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_DestroyTransferBuffer, int32_t /* id */)
 
 // Tells the proxy that there was an error and the command buffer had to be
 // destroyed for some reason.

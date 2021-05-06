@@ -225,12 +225,19 @@ source_set("vulkan_types") {
 }
 
 mojom("gpu_channel_mojom") {
+  visibility = [ ":ipc_common_sources" ]
+
   sources = [ "gpu_channel.mojom" ]
 
   public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/viz/public/mojom:resource_format",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
+
+  mojom_source_deps = [ ":interfaces" ]
 
   # Unlike some definitions in ":interfaces_mojom", these bindings are never
   # used in Blink. We disable variants to simplify the dependency graph.

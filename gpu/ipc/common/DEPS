@@ -14,5 +14,8 @@ specific_include_rules = {
   ],
   "dxgi_helpers.cc": [
     "+third_party/libyuv/include/libyuv/planar_functions.h",
-  ]
+  ],
+  "surface_origin_mojom_traits.h": [
+    "+third_party/skia/include/gpu/GrTypes.h",
+  ],
 }
