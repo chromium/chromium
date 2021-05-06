@@ -33,7 +33,7 @@ size_t GetPageActionCount(content::WebContents* web_contents,
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   ToolbarActionsModel* toolbar_model = ToolbarActionsModel::Get(profile);
-  const std::vector<ToolbarActionsModel::ActionId>& toolbar_action_ids =
+  const base::flat_set<ToolbarActionsModel::ActionId>& toolbar_action_ids =
       toolbar_model->action_ids();
   ExtensionActionManager* action_manager =
       ExtensionActionManager::Get(web_contents->GetBrowserContext());

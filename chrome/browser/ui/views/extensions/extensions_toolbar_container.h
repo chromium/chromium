@@ -221,12 +221,10 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       const TabStripSelectionChange& selection) override;
 
   // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& action_id,
-                            int index) override;
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionMoved(const ToolbarActionsModel::ActionId& action_id,
-                            int index) override;
   void OnToolbarActionLoadFailed() override;
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;

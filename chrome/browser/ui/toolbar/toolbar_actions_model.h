@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -58,18 +59,13 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // delegate.
   class Observer {
    public:
-    // Signals that |id| has been added to the toolbar at |index|. This will
+    // Signals that |id| has been added to the toolbar. This will
     // *only* be called after the toolbar model has been initialized.
-    virtual void OnToolbarActionAdded(const ActionId& id, int index) = 0;
+    virtual void OnToolbarActionAdded(const ActionId& id) = 0;
 
     // Signals that the given action with |id| has been removed from the
     // toolbar.
     virtual void OnToolbarActionRemoved(const ActionId& id) = 0;
-
-    // Signals that the given action with |id| has been moved to |index|.
-    // |index| is the desired *final* index of the action (that is, in the
-    // adjusted order, action should be at |index|).
-    virtual void OnToolbarActionMoved(const ActionId& id, int index) = 0;
 
     // Signals that the extension, corresponding to the toolbar action, has
     // failed to load.
@@ -101,12 +97,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Moves the given action with |id|'s icon to the given |index|.
-  void MoveActionIcon(const ActionId& id, size_t index);
-
   bool actions_initialized() const { return actions_initialized_; }
 
-  const std::vector<ActionId>& action_ids() const { return action_ids_; }
+  const base::flat_set<ActionId>& action_ids() const { return action_ids_; }
 
   bool has_active_bubble() const { return has_active_bubble_; }
   void set_has_active_bubble(bool has_active_bubble) {
@@ -114,8 +107,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   }
 
   void SetActionVisibility(const ActionId& action_id, bool visible);
-
-  void OnActionToolbarPrefChange();
 
   // Gets the ExtensionMessageBubbleController that should be shown for this
   // profile, if any.
@@ -172,15 +163,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   void Populate();
   void IncognitoPopulate();
 
-  // Save the model to prefs.
-  void UpdatePrefs();
-
   // Removes any preference for |action_id| and saves the model to prefs.
   void RemovePref(const ActionId& action_id);
-
-  // Finds the last known visible position of the icon for |action|. The value
-  // returned is a zero-based index into the vector of visible actions.
-  size_t FindNewPositionFromLastKnownGood(const ActionId& action_id);
 
   // Returns true if the given |extension| should be added to the toolbar.
   bool ShouldAddExtension(const extensions::Extension* extension);
@@ -233,15 +217,12 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // True if we've handled the initial EXTENSIONS_READY notification.
   bool actions_initialized_;
 
-  // Ordered list of browser action IDs.
-  std::vector<ActionId> action_ids_;
+  // Collection of all action IDs (pinned and unpinned).
+  base::flat_set<ActionId> action_ids_;
 
-  // Set of pinned action IDs.
+  // Ordered list of pinned action IDs, indicating the order actions should
+  // appear on the toolbar.
   std::vector<ActionId> pinned_action_ids_;
-
-  // A list of action ids ordered to correspond with their last known
-  // positions.
-  std::vector<ActionId> last_known_positions_;
 
   // Whether or not there is an active ExtensionMessageBubbleController
   // associated with the profile. There should only be one at a time.
@@ -256,9 +237,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                           ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  // For observing change of toolbar order preference by external entity (sync).
+  // For observing pinned extensions changing.
   PrefChangeRegistrar pref_change_registrar_;
-  base::RepeatingClosure pref_change_callback_;
 
   base::ScopedObservation<extensions::LoadErrorReporter,
                           extensions::LoadErrorReporter::Observer>

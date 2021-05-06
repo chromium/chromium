@@ -413,8 +413,7 @@ void ExtensionsToolbarContainer::OnTabStripModelChanged(
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& action_id,
-    int index) {
+    const ToolbarActionsModel::ActionId& action_id) {
   CreateActionForId(action_id);
   ReorderViews();
 
@@ -447,10 +446,6 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
 
   UpdateContainerVisibilityAfterAnimation();
 }
-
-void ExtensionsToolbarContainer::OnToolbarActionMoved(
-    const ToolbarActionsModel::ActionId& action_id,
-    int index) {}
 
 void ExtensionsToolbarContainer::OnToolbarActionLoadFailed() {}
 

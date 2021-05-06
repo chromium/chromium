@@ -386,7 +386,7 @@ void ExtensionsMenuView::SanityCheck() {
   check_section(&wants_access_);
   check_section(&cant_access_);
 
-  const std::vector<std::string>& action_ids = toolbar_model_->action_ids();
+  const base::flat_set<std::string>& action_ids = toolbar_model_->action_ids();
   DCHECK_EQ(action_ids.size(), extensions_menu_items_.size());
 
   // Check that all items are owned by the view hierarchy, and that each
@@ -430,8 +430,7 @@ void ExtensionsMenuView::OnTabStripModelChanged(
 }
 
 void ExtensionsMenuView::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& item,
-    int index) {
+    const ToolbarActionsModel::ActionId& item) {
   CreateAndInsertNewItem(item);
   SortMenuItemsByName();
   UpdateSectionVisibility();
@@ -460,12 +459,6 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
   UpdateSectionVisibility();
 
   SanityCheck();
-}
-
-void ExtensionsMenuView::OnToolbarActionMoved(
-    const ToolbarActionsModel::ActionId& action_id,
-    int index) {
-  // Ignore. The ExtensionsMenuView uses its own sorting.
 }
 
 void ExtensionsMenuView::OnToolbarActionLoadFailed() {

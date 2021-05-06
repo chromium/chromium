@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -207,18 +208,23 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
   }
 
   void TriggerSingleExtensionButton() {
-    ASSERT_EQ(1u, GetExtensionsMenuItemViews().size());
-    TriggerExtensionButton(0u);
+    auto menu_items = GetExtensionsMenuItemViews();
+    ASSERT_EQ(1u, menu_items.size());
+    TriggerExtensionButton(menu_items[0]->view_controller()->GetId());
   }
 
-  void TriggerExtensionButton(size_t item_index) {
+  void TriggerExtensionButton(const std::string& id) {
     auto menu_items = GetExtensionsMenuItemViews();
-    ASSERT_LT(item_index, menu_items.size());
+    auto iter =
+        base::ranges::find_if(menu_items, [id](ExtensionsMenuItemView* view) {
+          return view->view_controller()->GetId() == id;
+        });
+    ASSERT_TRUE(iter != menu_items.end());
 
     ui::MouseEvent click_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
                                gfx::Point(), base::TimeTicks(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
-    menu_items[item_index]
+    (*iter)
         ->primary_action_button_for_testing()
         ->button_controller()
         ->OnMouseReleased(click_event);
@@ -499,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   auto& id2 = LoadTestExtension("extensions/uitest/window_open")->id();
   ShowUi("");
   VerifyUi();
-  TriggerExtensionButton(0u);
+  TriggerExtensionButton(id1);
 
   ExtensionsContainer* const extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())

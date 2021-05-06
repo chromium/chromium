@@ -195,6 +195,7 @@ class ExtensionPrefs : public KeyedService {
   bool IsExtensionDisabled(const std::string& id) const;
 
   // Get/Set the order that the browser actions appear in the toolbar.
+  // TODO(devlin): Remove this. The pref is no longer used.
   ExtensionIdList GetToolbarOrder() const;
   void SetToolbarOrder(const ExtensionIdList& extension_ids);
 

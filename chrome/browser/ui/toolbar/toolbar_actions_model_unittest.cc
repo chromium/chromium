@@ -64,7 +64,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
 
   size_t inserted_count() const { return inserted_count_; }
   size_t removed_count() const { return removed_count_; }
-  size_t moved_count() const { return moved_count_; }
   size_t initialized_count() const { return initialized_count_; }
 
   const std::vector<ToolbarActionsModel::ActionId>& last_pinned_action_ids()
@@ -74,8 +73,8 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
 
  private:
   // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& action_id,
-                            int index) override {
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override {
     ++inserted_count_;
   }
 
@@ -85,11 +84,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   }
 
   void OnToolbarActionLoadFailed() override {}
-
-  void OnToolbarActionMoved(const ToolbarActionsModel::ActionId& id,
-                            int index) override {
-    ++moved_count_;
-  }
 
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& id) override {}
@@ -106,7 +100,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
 
   size_t inserted_count_;
   size_t removed_count_;
-  size_t moved_count_;
   size_t initialized_count_;
 
   std::vector<ToolbarActionsModel::ActionId> last_pinned_action_ids_;
@@ -119,7 +112,6 @@ ToolbarActionsModelTestObserver::ToolbarActionsModelTestObserver(
     : model_(model),
       inserted_count_(0),
       removed_count_(0),
-      moved_count_(0),
       initialized_count_(0) {
   model_->AddObserver(this);
 }
@@ -158,14 +150,6 @@ class ToolbarActionsModelUnitTest
   // Adds three extensions, one each for browser action, page action, and no
   // action, and are added in that order.
   testing::AssertionResult AddActionExtensions() WARN_UNUSED_RESULT;
-
-  // Returns the action's id at the given index in the toolbar model, or empty
-  // if one does not exist.
-  // If |model| is specified, it is used. Otherwise, this defaults to
-  // |toolbar_model_|.
-  const std::string GetActionIdAtIndex(size_t index,
-                                       const ToolbarActionsModel* model) const;
-  const std::string GetActionIdAtIndex(size_t index) const;
 
   // Returns true if the |toobar_model_| has an action with the given |id|.
   bool ModelHasActionForId(const std::string& id) const;
@@ -318,18 +302,6 @@ ToolbarActionsModelUnitTest::AddBrowserActionExtensions() {
   return AddAndVerifyExtensions(extensions);
 }
 
-const std::string ToolbarActionsModelUnitTest::GetActionIdAtIndex(
-    size_t index,
-    const ToolbarActionsModel* model) const {
-  return index < model->action_ids().size() ? model->action_ids()[index]
-                                            : std::string();
-}
-
-const std::string ToolbarActionsModelUnitTest::GetActionIdAtIndex(
-    size_t index) const {
-  return GetActionIdAtIndex(index, toolbar_model_);
-}
-
 bool ToolbarActionsModelUnitTest::ModelHasActionForId(
     const std::string& id) const {
   for (const auto& toolbar_action_id : toolbar_model_->action_ids()) {
@@ -354,6 +326,11 @@ testing::AssertionResult ToolbarActionsModelUnitTest::AddAndVerifyExtensions(
 TEST_F(ToolbarActionsModelUnitTest, BasicToolbarActionsModelTest) {
   Init();
 
+  // Starts empty.
+  EXPECT_EQ(0u, observer()->inserted_count());
+  EXPECT_THAT(toolbar_model()->action_ids(), ::testing::IsEmpty());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+
   // Load an extension with a browser action.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser_action")
@@ -364,187 +341,16 @@ TEST_F(ToolbarActionsModelUnitTest, BasicToolbarActionsModelTest) {
 
   // We should now find our extension in the model.
   EXPECT_EQ(1u, observer()->inserted_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(extension->id(), GetActionIdAtIndex(0u));
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(extension->id()));
+  // It should be unpinned.
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
 
-  // Should be a no-op, but still fires the events.
-  toolbar_model()->MoveActionIcon(extension->id(), 0);
-  EXPECT_EQ(1u, observer()->moved_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(extension->id(), GetActionIdAtIndex(0u));
-
-  // Remove the extension and verify.
+  // Remove the extension and verify it is removed in the model.
   ASSERT_TRUE(RemoveExtension(extension));
   EXPECT_EQ(1u, observer()->removed_count());
-  EXPECT_EQ(0u, num_actions());
-  EXPECT_EQ(std::string(), GetActionIdAtIndex(0u));
-}
-
-// Test various different reorderings, removals, and reinsertions.
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarReorderAndReinsert) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-
-  // Verify the three actions are in the model in the proper order.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-
-  // Order is now A, B, C. Let's put C first.
-  toolbar_model()->MoveActionIcon(browser_action_c()->id(), 0);
-  EXPECT_EQ(1u, observer()->moved_count());
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(2u));
-
-  // Order is now C, A, B. Let's put A last.
-  toolbar_model()->MoveActionIcon(browser_action_a()->id(), 2);
-  EXPECT_EQ(2u, observer()->moved_count());
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(2u));
-
-  // Order is now C, B, A. Let's remove B.
-  ASSERT_TRUE(RemoveExtension(browser_action_b()));
-  EXPECT_EQ(1u, observer()->removed_count());
-  EXPECT_EQ(2u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(1u));
-
-  // Load extension B again.
-  ASSERT_TRUE(AddExtension(browser_action_b()));
-
-  // Extension B loaded again.
-  EXPECT_EQ(4u, observer()->inserted_count());
-  EXPECT_EQ(3u, num_actions());
-  // Make sure it gets its old spot in the list.
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-
-  // Unload B again.
-  ASSERT_TRUE(RemoveExtension(browser_action_b()));
-  EXPECT_EQ(2u, observer()->removed_count());
-  EXPECT_EQ(2u, num_actions());
-
-  // Order is now C, A. Flip it.
-  toolbar_model()->MoveActionIcon(browser_action_a()->id(), 0);
-  EXPECT_EQ(3u, observer()->moved_count());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-
-  // Move A to the location it already occupies.
-  toolbar_model()->MoveActionIcon(browser_action_a()->id(), 0);
-  EXPECT_EQ(4u, observer()->moved_count());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-
-  // Order is now A, C.
-  ASSERT_TRUE(RemoveExtension(browser_action_c()));
-  EXPECT_EQ(3u, observer()->removed_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-
-  // Load extension C again.
-  ASSERT_TRUE(AddExtension(browser_action_c()));
-
-  // Extension C loaded again.
-  EXPECT_EQ(5u, observer()->inserted_count());
-  EXPECT_EQ(2u, num_actions());
-  // Make sure it gets its old spot in the list (at the very end).
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-}
-
-// Test that order persists after unloading and disabling, but not across
-// uninstallation.
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarUnloadDisableAndUninstall) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-
-  // Verify the three actions are in the model in the proper order: A, B, C.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-
-  // Unload B, then C, then A, and then reload C, then A, then B.
-  ASSERT_TRUE(RemoveExtension(browser_action_b()));
-  ASSERT_TRUE(RemoveExtension(browser_action_c()));
-  ASSERT_TRUE(RemoveExtension(browser_action_a()));
-  EXPECT_EQ(0u, num_actions());  // Sanity check: all gone?
-  ASSERT_TRUE(AddExtension(browser_action_c()));
-  ASSERT_TRUE(AddExtension(browser_action_a()));
-  ASSERT_TRUE(AddExtension(browser_action_b()));
-  EXPECT_EQ(3u, num_actions());  // Sanity check: all back?
-  EXPECT_EQ(0u, observer()->moved_count());
-
-  // Even though we unloaded and reloaded in a different order, the original
-  // order (A, B, C) should be preserved.
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-
-  // Disabling extensions should also preserve order.
-  service()->DisableExtension(browser_action_b()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
-  service()->DisableExtension(browser_action_c()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
-  service()->DisableExtension(browser_action_a()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
-  service()->EnableExtension(browser_action_c()->id());
-  service()->EnableExtension(browser_action_a()->id());
-  service()->EnableExtension(browser_action_b()->id());
-
-  // Make sure we still get the original A, B, C order.
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-
-  // Move browser_action_b() to be first.
-  toolbar_model()->MoveActionIcon(browser_action_b()->id(), 0);
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0u));
-
-  // Uninstall Extension B.
-  service()->UninstallExtension(browser_action_b()->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                NULL);  // Ignore error.
-  // List contains only A and C now. Validate that.
-  EXPECT_EQ(2u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-
-  ASSERT_TRUE(AddExtension(browser_action_b()));
-
-  // Make sure Extension B is _not_ first (its old position should have been
-  // forgotten at uninstall time). Order should be A, C, B.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(2u));
-}
-
-TEST_F(ToolbarActionsModelUnitTest, ReorderOnPrefChange) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  EXPECT_EQ(3u, num_actions());
-
-  // Change the value of the toolbar preference.
-  std::vector<std::string> new_order;
-  new_order.push_back(browser_action_c()->id());
-  new_order.push_back(browser_action_b()->id());
-  extensions::ExtensionPrefs::Get(profile())->SetToolbarOrder(new_order);
-
-  // Verify order is changed.
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(2u));
+  EXPECT_THAT(toolbar_model()->action_ids(), ::testing::IsEmpty());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
 }
 
 // Test that new extension actions are always visible on installation and
@@ -597,20 +403,19 @@ TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreUnpinned) {
               ::testing::ElementsAre(extension_b->id()));
 }
 
-// Test that, with the extension-action-redesign switch, the model contains
-// all types of extensions, except those which should not be displayed on the
-// toolbar (like component extensions).
+// Test that the model contains all types of extensions, except those which
+// should not be displayed on the toolbar (like component extensions).
 TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
   Init();
 
   ASSERT_TRUE(AddActionExtensions());
 
-  // With the switch on, extensions with page actions and no action should also
-  // be displayed in the toolbar.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(page_action()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(no_action()->id(), GetActionIdAtIndex(2u));
+  // extensions with page actions and no action should also be displayed in the
+  // toolbar.
+  EXPECT_THAT(
+      toolbar_model()->action_ids(),
+      testing::UnorderedElementsAre(browser_action()->id(), page_action()->id(),
+                                    no_action()->id()));
 
   // Extensions that are installed by default shouldn't be given an icon.
   extensions::DictionaryBuilder default_installed_manifest;
@@ -826,7 +631,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   // Now, both extensions should be enabled in incognito mode. Extension A
   // should be pinned (since it's pinned in the main bar).
   EXPECT_THAT(incognito_model->action_ids(),
-              ::testing::ElementsAre(extension_a, extension_b));
+              ::testing::UnorderedElementsAre(extension_a, extension_b));
   EXPECT_THAT(incognito_model->pinned_action_ids(),
               ::testing::ElementsAre(extension_a));
 }
@@ -860,42 +665,6 @@ TEST_F(ToolbarActionsModelUnitTest, ModelWaitsForExtensionSystemReady) {
   EXPECT_EQ(1u, model_observer.initialized_count());
 }
 
-// Check that the toolbar model correctly clears and reorders when it detects
-// a preference change.
-TEST_F(ToolbarActionsModelUnitTest, LocationBarModelPrefChange) {
-  Init();
-
-  ASSERT_TRUE(AddBrowserActionExtensions());
-
-  // We should start in the basic A, B, C order.
-  ASSERT_TRUE(browser_action_a());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2));
-  // Record the difference between the inserted and removed counts. The actual
-  // value of the counts is not important, but we need to be sure that if we
-  // call to remove any, we also add them back.
-  size_t inserted_and_removed_difference =
-      observer()->inserted_count() - observer()->removed_count();
-
-  // Assign a new order, B, C, A, and write it in the prefs.
-  std::vector<std::string> new_order;
-  new_order.push_back(browser_action_b()->id());
-  new_order.push_back(browser_action_c()->id());
-  new_order.push_back(browser_action_a()->id());
-  extensions::ExtensionPrefs::Get(profile())->SetToolbarOrder(new_order);
-
-  // Ensure everything has time to run.
-  base::RunLoop().RunUntilIdle();
-
-  // The new order should be reflected in the model.
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1));
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(2));
-  EXPECT_EQ(inserted_and_removed_difference,
-            observer()->inserted_count() - observer()->removed_count());
-}
-
 // Test that user-script extensions show up on the toolbar.
 TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
   Init();
@@ -913,8 +682,8 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
 
   // Add the extension and verify it gets an icon.
   service()->AddExtension(extension.get());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(extension->id(), GetActionIdAtIndex(0u));
+  EXPECT_THAT(toolbar_model()->action_ids(),
+              ::testing::UnorderedElementsAre(extension->id()));
 }
 
 TEST_F(ToolbarActionsModelUnitTest, IsActionPinnedCorrespondsToPinningState) {

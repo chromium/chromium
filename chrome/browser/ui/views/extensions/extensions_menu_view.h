@@ -80,12 +80,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
       const TabStripSelectionChange& selection) override;
 
   // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& item,
-                            int index) override;
+  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& item) override;
   void OnToolbarActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionMoved(const ToolbarActionsModel::ActionId& action_id,
-                            int index) override;
   void OnToolbarActionLoadFailed() override;
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;
@@ -171,6 +168,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   ToolbarActionsModel* const toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
+
+  // A collection of all menu item views in the menu. Note that this is
+  // *unordered*, since the menu puts extensions into different sections.
   std::vector<ExtensionsMenuItemView*> extensions_menu_items_;
 
   views::LabelButton* manage_extensions_button_ = nullptr;
