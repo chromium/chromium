@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/hash_util.h"
@@ -485,6 +486,8 @@ BookmarkModelMerger::BookmarkModelMerger(
 BookmarkModelMerger::~BookmarkModelMerger() {}
 
 void BookmarkModelMerger::Merge() {
+  TRACE_EVENT0("sync", "BookmarkModelMerger::Merge");
+
   // Algorithm description:
   // Match up the roots and recursively do the following:
   // * For each remote node for the current remote (sync) parent node, either
@@ -525,6 +528,8 @@ void BookmarkModelMerger::Merge() {
 // static
 BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
     syncer::UpdateResponseDataList updates) {
+  TRACE_EVENT0("sync", "BookmarkModelMerger::BuildRemoteForest");
+
   // Filter out invalid remote updates and group the valid ones by the server ID
   // of their parent.
   GroupedUpdates grouped_updates = GroupValidUpdates(std::move(updates));
@@ -568,6 +573,8 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
     const RemoteForest& remote_forest,
     bookmarks::BookmarkModel* bookmark_model) {
   DCHECK(bookmark_model);
+
+  TRACE_EVENT0("sync", "BookmarkModelMerger::FindGuidMatchesOrReassignLocal");
 
   // Build a temporary lookup table for remote GUIDs.
   std::unordered_map<base::GUID, const RemoteTreeNode*, base::GUIDHash>
