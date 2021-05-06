@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -29,50 +30,43 @@ const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
 
 bool ParseFromValue(base::Value* value, WebPoint* point) {
-  base::DictionaryValue* dict_value;
-  if (!value->GetAsDictionary(&dict_value))
+  if (!value->is_dict())
     return false;
-  double x = 0;
-  double y = 0;
-  if (!dict_value->GetDouble("x", &x) ||
-      !dict_value->GetDouble("y", &y))
+  auto x = value->FindDoubleKey("x");
+  auto y = value->FindDoubleKey("y");
+  if (!x.has_value() || !y.has_value())
     return false;
-  point->x = static_cast<int>(x);
-  point->y = static_cast<int>(y);
+  point->x = static_cast<int>(x.value());
+  point->y = static_cast<int>(y.value());
   return true;
 }
 
 bool ParseFromValue(base::Value* value, WebSize* size) {
-  base::DictionaryValue* dict_value;
-  if (!value->GetAsDictionary(&dict_value))
+  if (!value->is_dict())
     return false;
-  double width = 0;
-  double height = 0;
-  if (!dict_value->GetDouble("width", &width) ||
-      !dict_value->GetDouble("height", &height))
+  auto width = value->FindDoubleKey("width");
+  auto height = value->FindDoubleKey("height");
+  if (!width.has_value() || !height.has_value())
     return false;
-  size->width = static_cast<int>(width);
-  size->height = static_cast<int>(height);
+  size->width = static_cast<int>(width.value());
+  size->height = static_cast<int>(height.value());
   return true;
 }
 
 bool ParseFromValue(base::Value* value, WebRect* rect) {
-  base::DictionaryValue* dict_value;
-  if (!value->GetAsDictionary(&dict_value))
+  if (!value->is_dict())
     return false;
-  double x = 0;
-  double y = 0;
-  double width = 0;
-  double height = 0;
-  if (!dict_value->GetDouble("left", &x) ||
-      !dict_value->GetDouble("top", &y) ||
-      !dict_value->GetDouble("width", &width) ||
-      !dict_value->GetDouble("height", &height))
+  auto x = value->FindDoubleKey("left");
+  auto y = value->FindDoubleKey("top");
+  auto width = value->FindDoubleKey("width");
+  auto height = value->FindDoubleKey("height");
+  if (!x.has_value() || !y.has_value() || !width.has_value() ||
+      !height.has_value())
     return false;
-  rect->origin.x = static_cast<int>(x);
-  rect->origin.y = static_cast<int>(y);
-  rect->size.width = static_cast<int>(width);
-  rect->size.height = static_cast<int>(height);
+  rect->origin.x = static_cast<int>(x.value());
+  rect->origin.y = static_cast<int>(y.value());
+  rect->size.width = static_cast<int>(width.value());
+  rect->size.height = static_cast<int>(height.value());
   return true;
 }
 
@@ -111,18 +105,21 @@ Status VerifyElementClickable(
       args, &result);
   if (status.IsError())
     return status;
-  base::DictionaryValue* dict;
-  bool is_clickable = false;
-  if (!result->GetAsDictionary(&dict) ||
-      !dict->GetBoolean("clickable", &is_clickable)) {
+  base::Optional<bool> is_clickable = base::nullopt;
+  if (result->is_dict())
+    is_clickable = result->FindBoolKey("clickable");
+  if (!is_clickable.has_value()) {
     return Status(kUnknownError,
                   "failed to parse value of IS_ELEMENT_CLICKABLE");
   }
 
-  if (!is_clickable) {
+  if (!is_clickable.value()) {
     std::string message;
-    if (!dict->GetString("message", &message))
+    const std::string* maybe_message = result->FindStringKey("message");
+    if (!maybe_message)
       message = "element click intercepted";
+    else
+      message = *maybe_message;
     return Status(kElementClickIntercepted, message);
   }
   return Status(kOk);
@@ -548,10 +545,12 @@ Status GetElementClickableLocation(
         session->GetCurrentFrameId(), kGetImageElementForArea, args, &result);
     if (status.IsError())
       return status;
-    const base::DictionaryValue* element_dict;
-    if (!result->GetAsDictionary(&element_dict) ||
-        !element_dict->GetString(GetElementKey(), &target_element_id))
+    std::string* maybe_target_element_id = nullptr;
+    if (result->is_dict())
+      maybe_target_element_id = result->FindStringKey(GetElementKey());
+    if (!maybe_target_element_id)
       return Status(kUnknownError, "no element reference returned by script");
+    target_element_id = *maybe_target_element_id;
   }
   bool is_displayed = false;
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -832,12 +831,13 @@ Status ScrollElementRegionIntoView(
         rit->parent_frame_id, kFindSubFrameScript, args, &result);
     if (status.IsError())
       return status;
-    const base::DictionaryValue* element_dict;
-    if (!result->GetAsDictionary(&element_dict))
+    if (!result->is_dict())
       return Status(kUnknownError, "no element reference returned by script");
-    std::string frame_element_id;
-    if (!element_dict->GetString(GetElementKey(), &frame_element_id))
+    std::string* maybe_frame_element_id =
+        result->FindStringKey(GetElementKey());
+    if (!maybe_frame_element_id)
       return Status(kUnknownError, "failed to locate a sub frame");
+    std::string frame_element_id = *maybe_frame_element_id;
 
     // Modify |region_offset| by the frame's border.
     int border_left = -1;
@@ -885,12 +885,13 @@ Status GetElementLocationInViewCenter(Session* session,
                                     args, &result);
     if (status.IsError())
       return status;
-    const base::DictionaryValue* element_dict;
-    if (!result->GetAsDictionary(&element_dict))
+    if (!result->is_dict())
       return Status(kUnknownError, "no element reference returned by script");
-    std::string frame_element_id;
-    if (!element_dict->GetString(GetElementKey(), &frame_element_id))
+    std::string* maybe_frame_element_id =
+        result->FindStringKey(GetElementKey());
+    if (!maybe_frame_element_id)
       return Status(kUnknownError, "failed to locate a sub frame");
+    std::string frame_element_id = *maybe_frame_element_id;
 
     // Modify |center_location| by the frame's border.
     int border_left = -1;
