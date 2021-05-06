@@ -5752,3 +5752,7 @@ crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html
 crbug.com/1197087 external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/css/css-transitions/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
 crbug.com/1197087 virtual/threaded/external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
+
+# Browser Infra 2021-05-04
+# Re-enable once all Linux CI/CQ builders migrated to Bionic
+crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Pass Failure ]
