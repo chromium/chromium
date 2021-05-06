@@ -9,13 +9,6 @@
 
 namespace blink {
 
-DisplayItemList::~DisplayItemList() {
-  for (auto& item : *this) {
-    (void)item;  // MSVC incorrectly reports this variable as unused.
-    item.~DisplayItem();
-  }
-}
-
 #if DCHECK_IS_ON()
 
 std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(

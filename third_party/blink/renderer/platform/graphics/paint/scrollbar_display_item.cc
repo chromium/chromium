@@ -26,6 +26,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     CompositorElementId element_id)
     : DisplayItem(client,
                   type,
+                  sizeof(*this),
                   visual_rect,
                   /*draws_content*/ true),
       data_(new Data{std::move(scrollbar), scroll_translation, element_id}) {
