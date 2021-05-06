@@ -11,7 +11,7 @@
 </style>
 
 # Creating WebUI Interfaces outside components/
-This guide is based on [Creating WebUI Interfaces in components](webui_in_components), and comments from reviewers when creating the ChromeOS emoji picker.
+This guide is based on [Creating WebUI Interfaces in components](webui_in_components.md), and comments from reviewers when creating the ChromeOS emoji picker.
 
 [TOC]
 
@@ -135,6 +135,24 @@ group("resources") {
 }
 ```
 
+Also add to `chrome/chrome_paks.gni`
+
+```
+template("chrome_extra_paks") {
+  ... (lots)
+  sources += [
+    ...
+    "$root_gen_dir/chrome/hello_world_resources.pak",
+    ...
+  ]
+  deps += [
+    ...
+    "//chrome/browser/resources/hello_world:resources",
+    ...
+  ]
+}
+```
+
 ## Adding URL constants for the new chrome URL
 
 `chrome/common/webui_url_constants.cc:`
@@ -158,7 +176,6 @@ dialogs will also need another class which will subclass `WebDialogDelegate`, th
 #ifndef CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
 #define CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 // The WebUI for chrome://hello-world
@@ -166,7 +183,6 @@ class HelloWorldUI : public content::WebUIController {
  public:
   explicit HelloWorldUI(content::WebUI* web_ui);
   ~HelloWorldUI() override;
- private:
 };
 
 #endif // CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
@@ -177,9 +193,11 @@ class HelloWorldUI : public content::WebUIController {
 #include "chrome/browser/ui/webui/hello_world_ui.h"
 
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "components/hello_world/constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "chrome/grit/hello_world_resources.h"
+#include "chrome/grit/hello_world_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -196,14 +214,14 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Add required resources.
-  webui::SetupWUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_HTML);
+  webui::SetupWebUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, html_source);
 }
 
-HelloWorldUI::~HelloWorldUI() {}
+HelloWorldUI::~HelloWorldUI() = default;
 ```
 
 To ensure that your code actually gets compiled, you need to add it to `chrome/browser/ui/BUILD.gn`:
@@ -212,8 +230,8 @@ To ensure that your code actually gets compiled, you need to add it to `chrome/b
 static_library("ui") {
   sources = [
     ... (lots)
-    "webui/hello_world/hello_world_ui.cc",
-    "webui/hello_world/hello_world_ui.h",
+    "webui/hello_world_ui.cc",
+    "webui/hello_world_ui.h",
 ```
 
 ## Adding your WebUI request handler to the Chrome WebUI factory
@@ -226,6 +244,21 @@ The Chrome WebUI factory is where you setup your new request handler.
 ...
 + if (url.host() == chrome::kChromeUIHelloWorldHost)
 +   return &NewWebUI<HelloWorldUI>;
+```
+
+## Add an entry to resource_ids.spec
+This file is for automatically generating resource ids. Ensure that the previous
+entry number plus the size equals the next entry number.
+
+`tools/gritsettings/resource_ids.spec`
+
+```
+  # START chrome/ WebUI resources section
+  ... (lots)
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/hello_world/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2085],
+  },
 ```
 
 ## Check everything works
@@ -248,6 +281,8 @@ do that, some small changes are needed to your code.  First, we need to add a ne
  public:
   static void Show();
   ~HelloWorldDialog() override;
+  HelloWorldDialog(const HelloWorldDialog&) = delete;
+  HelloWorldDialog& operator=(const HelloWorldDialog&) = delete;
 
  private:
   HelloWorldDialog();
@@ -266,8 +301,6 @@ do that, some small changes are needed to your code.  First, we need to add a ne
   bool ShouldShowDialogTitle() const override;
 
   content::WebUI* webui_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HelloWorldDialog);
 };
 ```
 
@@ -275,7 +308,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
 ```c++
  // Leave the old content, but add this new stuff
 
-HelloWorldDialog::HelloWorldDialog() {}
+HelloWorldDialog::HelloWorldDialog() = default;
 
 void HelloWorldDialog::Show() {
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
