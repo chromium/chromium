@@ -4,11 +4,9 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
-if (use_cups && is_chromeos_ash) {
+if (use_cups && is_chromeos) {
   import("//printing/backend/tools/code_generator.gni")
-}
 
-if (use_cups_ipp && is_chromeos_ash) {
   ipp_handler_map_path = "$target_gen_dir/backend/ipp_handler_map.cc"
 
   ipp_code_generate("ipp_handlers_generate") {
@@ -48,7 +46,7 @@ component("backend") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # PRINT_BACKEND_AVAILABLE disables the default dummy implementation
     # print backend and enables a custom implementation instead.
     defines += [ "PRINT_BACKEND_AVAILABLE" ]
@@ -110,7 +108,7 @@ component("backend") {
       ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ ":ipp_handlers_generate" ]
 
       sources += [
@@ -119,7 +117,8 @@ component("backend") {
         "ipp_handlers.h",
         ipp_handler_map_path,
       ]
-    } else {
+    }
+    if (!is_chromeos_ash) {
       # TODO(crbug.com/1062136): Remove the original CUPS backend for macOS
       # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
       sources += [

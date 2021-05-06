@@ -32,5 +32,5 @@ declare_args() {
 declare_args() {
   # Enable the CUPS IPP printing backend.
   # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
-  use_cups_ipp = use_cups && !(is_linux || is_chromeos_lacros)
+  use_cups_ipp = use_cups && !is_linux
 }

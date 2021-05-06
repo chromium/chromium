@@ -24,7 +24,7 @@ constexpr char kIppPinEncryption[] = "job-password-encryption";  // PWG 5100.11
 constexpr char kCollated[] = "separate-documents-collated-copies";
 constexpr char kUncollated[] = "separate-documents-uncollated-copies";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 
 constexpr char kIppDocumentAttributes[] =
     "document-creation-attributes";                              // PWG 5100.5
@@ -35,6 +35,6 @@ constexpr char kPinEncryptionNone[] = "none";
 constexpr char kOptionFalse[] = "false";
 constexpr char kOptionTrue[] = "true";
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace printing

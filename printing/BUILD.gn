@@ -40,7 +40,7 @@ component("printing_base") {
     "units.cc",
     "units.h",
   ]
-  if (use_cups_ipp || is_chromeos_ash) {
+  if (use_cups_ipp || is_chromeos) {
     sources += [
       "printer_query_result.h",
       "printer_status.cc",
@@ -146,7 +146,7 @@ component("printing") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "printed_document_chromeos.cc",
       "printing_context_no_system_dialog.cc",
@@ -154,7 +154,7 @@ component("printing") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "printed_document_linux.cc",
       "printing_context_linux.cc",
@@ -205,7 +205,7 @@ component("printing") {
   if (use_cups) {
     configs += [ ":cups" ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "printing_context_chromeos.cc",
         "printing_context_chromeos.h",
@@ -319,9 +319,11 @@ test("printing_unittests") {
       sources += [ "backend/cups_ipp_helper_unittest.cc" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [ "printing_context_chromeos_unittest.cc" ]
-    } else {
+    }
+
+    if (!is_chromeos_ash) {
       sources += [
         "backend/cups_helper_unittest.cc",
         "backend/print_backend_cups_unittest.cc",

@@ -146,7 +146,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
       job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();

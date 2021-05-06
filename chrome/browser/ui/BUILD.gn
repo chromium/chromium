@@ -4759,6 +4759,12 @@ static_library("ui") {
       "//services/device/public/mojom:usb",
     ]
 
+    if (is_chromeos_lacros) {
+      sources += [
+        "webui/print_preview/local_printer_handler_lacros.cc",
+        "webui/print_preview/local_printer_handler_lacros.h",
+      ]
+    }
     if (is_chromeos_ash) {
       sources += [
         "webui/print_preview/local_printer_handler_chromeos.cc",

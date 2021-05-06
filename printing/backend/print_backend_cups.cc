@@ -240,6 +240,7 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
   return !!GetNamedDest(printer_name);
 }
 
+#if !defined(OS_CHROMEOS)
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const base::DictionaryValue* print_backend_settings,
     const std::string& locale,
@@ -266,6 +267,7 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
       print_server_url, static_cast<http_encryption_t>(encryption),
       cups_blocking == kValueTrue, locale);
 }
+#endif  // !defined(OS_CHROMEOS)
 
 int PrintBackendCUPS::GetDests(cups_dest_t** dests) {
   // Default to the local print server (CUPS scheduler)
