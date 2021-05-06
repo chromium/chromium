@@ -15,10 +15,6 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
 
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsBeta;
-#endif
-
 // Returns the base::Feature in |kExternalAppInstallFeatures| that corresponds
 // to |feature_name|. Used by external app install configs to gate installation
 // on features listed in |kExternalAppInstallFeatures|.
