@@ -17,7 +17,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
-#include "device/gamepad/hid_dll_functions_win.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
@@ -33,9 +32,9 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   static const uint16_t kGenericDesktopGamePad = 0x05;
   static const uint16_t kGenericDesktopMultiAxisController = 0x08;
 
-  RawInputGamepadDeviceWin(HANDLE device_handle,
-                           int source_id,
-                           HidDllFunctionsWin* hid_functions);
+  RawInputGamepadDeviceWin(HANDLE device_handle, int source_id);
+  RawInputGamepadDeviceWin(const RawInputGamepadDeviceWin&) = delete;
+  RawInputGamepadDeviceWin& operator=(const RawInputGamepadDeviceWin&) = delete;
   ~RawInputGamepadDeviceWin() override;
 
   static bool IsGamepadUsageId(uint16_t usage);
@@ -113,9 +112,6 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
 
   // The last time the pad state was updated.
   int64_t last_update_timestamp_;
-
-  // Functions loaded from hid.dll. Not owned.
-  HidDllFunctionsWin* hid_functions_ = nullptr;
 
   uint16_t vendor_id_ = 0;
   uint16_t product_id_ = 0;

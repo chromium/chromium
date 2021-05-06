@@ -363,6 +363,47 @@ std::vector<mojom::HidReportDescriptionPtr> CreateReportDescriptions(
   return reports;
 }
 
+// Buffer size for calls to HidD_Get*String methods. 1023 characters plus NUL
+// terminator is more than enough for a USB string descriptor which is limited
+// to 126 characters.
+constexpr size_t kBufferSize = 1024;
+
+std::string GetHidProductString(HANDLE device_handle) {
+  // HidD_Get*String methods may return successfully even when they do not write
+  // to the output buffer. Ensure the buffer is zeroed before calling. See
+  // https://crbug.com/1205511.
+  std::wstring buffer;
+  if (!HidD_GetProductString(
+          device_handle, base::WriteInto(&buffer, kBufferSize), kBufferSize)) {
+    return std::string();
+  }
+
+  // HidD_GetProductString is guaranteed to write a NUL-terminated string into
+  // |buffer|. The characters following the string were value-initialized by
+  // base::WriteInto and are also NUL. Trim the trailing NUL characters.
+  buffer = std::wstring(base::TrimString(buffer, base::WStringPiece(L"\0", 1),
+                                         base::TRIM_TRAILING));
+  return base::SysWideToUTF8(buffer);
+}
+
+std::string GetHidSerialNumberString(HANDLE device_handle) {
+  // HidD_Get*String methods may return successfully even when they do not write
+  // to the output buffer. Ensure the buffer is zeroed before calling. See
+  // https://crbug.com/1205511.
+  std::wstring buffer;
+  if (!HidD_GetSerialNumberString(
+          device_handle, base::WriteInto(&buffer, kBufferSize), kBufferSize)) {
+    return std::string();
+  }
+
+  // HidD_GetSerialNumberString is guaranteed to write a NUL-terminated string
+  // into |buffer|. The characters following the string were value-initialized
+  // by base::WriteInto and are also NUL. Trim the trailing NUL characters.
+  buffer = std::wstring(base::TrimString(buffer, base::WStringPiece(L"\0", 1),
+                                         base::TRIM_TRAILING));
+  return base::SysWideToUTF8(buffer);
+}
+
 }  // namespace
 
 mojom::HidCollectionInfoPtr
@@ -551,20 +592,8 @@ void HidServiceWin::AddDeviceBlocking(
   uint16_t vendor_id = attrib.VendorID;
   uint16_t product_id = attrib.ProductID;
 
-  // 1023 characters plus NULL terminator is more than enough for a USB
-  // string descriptor which is limited to 126 characters.
-  char16_t buffer[1024];
-  std::string product_name;
-  if (HidD_GetProductString(device_handle.Get(), &buffer[0], sizeof(buffer))) {
-    // NULL termination guaranteed by the API.
-    product_name = base::UTF16ToUTF8(buffer);
-  }
-  std::string serial_number;
-  if (HidD_GetSerialNumberString(device_handle.Get(), &buffer[0],
-                                 sizeof(buffer))) {
-    // NULL termination guaranteed by the API.
-    serial_number = base::UTF16ToUTF8(buffer);
-  }
+  auto product_string = GetHidProductString(device_handle.Get());
+  auto serial_number = GetHidSerialNumberString(device_handle.Get());
 
   // Create a HidCollectionInfo for |device_path| and update the relevant
   // HidDeviceInfo properties.
@@ -580,7 +609,7 @@ void HidServiceWin::AddDeviceBlocking(
   // The descriptor is unavailable on Windows.
   auto device_info = base::MakeRefCounted<HidDeviceInfo>(
       device_path, physical_device_id, base::SysWideToUTF8(interface_id),
-      vendor_id, product_id, product_name, serial_number,
+      vendor_id, product_id, product_string, serial_number,
       // TODO(crbug.com/443335): Detect Bluetooth.
       mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
       max_input_report_size, max_output_report_size, max_feature_report_size);

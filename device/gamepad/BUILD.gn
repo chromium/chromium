@@ -73,8 +73,6 @@ component("gamepad") {
   if (is_win) {
     sources += [
       "gamepad_standard_mappings_win.cc",
-      "hid_dll_functions_win.cc",
-      "hid_dll_functions_win.h",
       "hid_writer_win.cc",
       "hid_writer_win.h",
       "raw_input_data_fetcher_win.cc",
@@ -88,6 +86,7 @@ component("gamepad") {
       "xinput_haptic_gamepad_win.cc",
       "xinput_haptic_gamepad_win.h",
     ]
+    libs = [ "hid.lib" ]
     cflags =
         [ "/wd4267" ]  # conversion from 'size_t' (64 bit) to 'type'(32 bit).
   }

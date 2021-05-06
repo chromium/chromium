@@ -41,11 +41,6 @@ GamepadSource RawInputDataFetcher::source() {
   return Factory::static_source();
 }
 
-void RawInputDataFetcher::OnAddedToProvider() {
-  hid_functions_ = std::make_unique<HidDllFunctionsWin>();
-  rawinput_available_ = hid_functions_->IsValid();
-}
-
 RAWINPUTDEVICE* RawInputDataFetcher::GetRawInputDevices(DWORD flags) {
   size_t usage_count = base::size(DeviceUsages);
   std::unique_ptr<RAWINPUTDEVICE[]> devices(new RAWINPUTDEVICE[usage_count]);
@@ -66,7 +61,7 @@ void RawInputDataFetcher::PauseHint(bool pause) {
 }
 
 void RawInputDataFetcher::StartMonitor() {
-  if (!rawinput_available_ || events_monitored_)
+  if (events_monitored_)
     return;
 
   if (!window_) {
@@ -93,7 +88,7 @@ void RawInputDataFetcher::StartMonitor() {
 }
 
 void RawInputDataFetcher::StopMonitor() {
-  if (!rawinput_available_ || !events_monitored_)
+  if (!events_monitored_)
     return;
 
   // Stop receiving raw input.
@@ -127,9 +122,6 @@ void RawInputDataFetcher::ClearControllers() {
 }
 
 void RawInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
-  if (!rawinput_available_)
-    return;
-
   if (devices_changed_hint)
     EnumerateDevices();
 
@@ -175,7 +167,7 @@ void RawInputDataFetcher::EnumerateDevices() {
       } else {
         int source_id = ++last_source_id_;
         auto new_device = std::make_unique<RawInputGamepadDeviceWin>(
-            device_handle, source_id, hid_functions_.get());
+            device_handle, source_id);
         if (!new_device->IsValid()) {
           new_device->Shutdown();
           continue;

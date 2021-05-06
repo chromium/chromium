@@ -4,7 +4,17 @@
 
 #include "raw_input_gamepad_device_win.h"
 
+// NOTE: <hidsdi.h> must be included before <hidpi.h>. clang-format will want to
+// reorder them.
+// clang-format off
+extern "C" {
+#include <hidsdi.h>
+#include <hidpi.h>
+}
+// clang-format on
+
 #include "base/stl_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_blocklist.h"
@@ -57,36 +67,32 @@ const size_t kSpecialUsagesLen = base::size(kSpecialUsages);
 
 }  // namespace
 
-RawInputGamepadDeviceWin::RawInputGamepadDeviceWin(
-    HANDLE device_handle,
-    int source_id,
-    HidDllFunctionsWin* hid_functions)
+RawInputGamepadDeviceWin::RawInputGamepadDeviceWin(HANDLE device_handle,
+                                                   int source_id)
     : handle_(device_handle),
       source_id_(source_id),
-      last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()),
-      hid_functions_(hid_functions) {
+      last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()) {
   ::ZeroMemory(buttons_, sizeof(buttons_));
   ::ZeroMemory(axes_, sizeof(axes_));
 
-  if (hid_functions_->IsValid())
-    is_valid_ = QueryDeviceInfo();
+  is_valid_ = QueryDeviceInfo();
+  if (!is_valid_)
+    return;
 
-  if (is_valid_) {
-    const std::string product_name = base::SysWideToUTF8(product_string_);
-    const GamepadId gamepad_id = GamepadIdList::Get().GetGamepadId(
-        product_name, vendor_id_, product_id_);
-    if (Dualshock4Controller::IsDualshock4(gamepad_id)) {
-      // Dualshock4 has different behavior over USB and Bluetooth, but the
-      // RawInput API does not indicate which transport is in use. Detect the
-      // transport type by inspecting the version number reported by the device.
-      GamepadBusType bus_type =
-          Dualshock4Controller::BusTypeFromVersionNumber(version_number_);
-      dualshock4_ = std::make_unique<Dualshock4Controller>(
-          gamepad_id, bus_type, std::make_unique<HidWriterWin>(handle_));
-    } else if (HidHapticGamepad::IsHidHaptic(vendor_id_, product_id_)) {
-      hid_haptics_ = HidHapticGamepad::Create(
-          vendor_id_, product_id_, std::make_unique<HidWriterWin>(handle_));
-    }
+  const std::string product_name = base::SysWideToUTF8(product_string_);
+  const GamepadId gamepad_id =
+      GamepadIdList::Get().GetGamepadId(product_name, vendor_id_, product_id_);
+  if (Dualshock4Controller::IsDualshock4(gamepad_id)) {
+    // Dualshock4 has different behavior over USB and Bluetooth, but the
+    // RawInput API does not indicate which transport is in use. Detect the
+    // transport type by inspecting the version number reported by the device.
+    GamepadBusType bus_type =
+        Dualshock4Controller::BusTypeFromVersionNumber(version_number_);
+    dualshock4_ = std::make_unique<Dualshock4Controller>(
+        gamepad_id, bus_type, std::make_unique<HidWriterWin>(handle_));
+  } else if (HidHapticGamepad::IsHidHaptic(vendor_id_, product_id_)) {
+    hid_haptics_ = HidHapticGamepad::Create(
+        vendor_id_, product_id_, std::make_unique<HidWriterWin>(handle_));
   }
 }
 
@@ -108,7 +114,6 @@ void RawInputGamepadDeviceWin::DoShutdown() {
 }
 
 void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
-  DCHECK(hid_functions_->IsValid());
   NTSTATUS status;
 
   if (dualshock4_) {
@@ -134,17 +139,16 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     ::ZeroMemory(buttons_, sizeof(buttons_));
     ULONG buttons_length = 0;
 
-    hid_functions_->HidPGetUsagesEx()(
-        HidP_Input, 0, nullptr, &buttons_length, preparsed_data_,
-        reinterpret_cast<PCHAR>(input->data.hid.bRawData),
-        input->data.hid.dwSizeHid);
+    HidP_GetUsagesEx(HidP_Input, 0, nullptr, &buttons_length, preparsed_data_,
+                     reinterpret_cast<PCHAR>(input->data.hid.bRawData),
+                     input->data.hid.dwSizeHid);
 
     std::unique_ptr<USAGE_AND_PAGE[]> usages(
         new USAGE_AND_PAGE[buttons_length]);
-    status = hid_functions_->HidPGetUsagesEx()(
-        HidP_Input, 0, usages.get(), &buttons_length, preparsed_data_,
-        reinterpret_cast<PCHAR>(input->data.hid.bRawData),
-        input->data.hid.dwSizeHid);
+    status = HidP_GetUsagesEx(HidP_Input, 0, usages.get(), &buttons_length,
+                              preparsed_data_,
+                              reinterpret_cast<PCHAR>(input->data.hid.bRawData),
+                              input->data.hid.dwSizeHid);
 
     if (status == HIDP_STATUS_SUCCESS) {
       // Set each reported button to true.
@@ -180,7 +184,7 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     // If the min is < 0 we have to query the scaled value, otherwise we need
     // the normal unscaled value.
     if (axis->caps.LogicalMin < 0) {
-      status = hid_functions_->HidPGetScaledUsageValue()(
+      status = HidP_GetScaledUsageValue(
           HidP_Input, axis->caps.UsagePage, 0, axis->caps.Range.UsageMin,
           &scaled_axis_value, preparsed_data_,
           reinterpret_cast<PCHAR>(input->data.hid.bRawData),
@@ -190,7 +194,7 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
                                     axis->caps.PhysicalMax);
       }
     } else {
-      status = hid_functions_->HidPGetUsageValue()(
+      status = HidP_GetUsageValue(
           HidP_Input, axis->caps.UsagePage, 0, axis->caps.Range.UsageMin,
           &axis_value, preparsed_data_,
           reinterpret_cast<PCHAR>(input->data.hid.bRawData),
@@ -352,9 +356,26 @@ bool RawInputGamepadDeviceWin::QueryDeviceName() {
 bool RawInputGamepadDeviceWin::QueryProductString(
     base::win::ScopedHandle& hid_handle) {
   DCHECK(hid_handle.IsValid());
-  product_string_.resize(Gamepad::kIdLengthCap);
-  return hid_functions_->HidDGetProductString()(
-      hid_handle.Get(), &product_string_.front(), Gamepad::kIdLengthCap);
+  // HidD_GetProductString may return successfully even if it didn't write to
+  // the buffer. Ensure the buffer is zeroed before calling
+  // HidD_GetProductString. See https://crbug.com/1205511.
+  std::wstring buffer;
+  if (!HidD_GetProductString(hid_handle.Get(),
+                             base::WriteInto(&buffer, Gamepad::kIdLengthCap),
+                             Gamepad::kIdLengthCap)) {
+    return false;
+  }
+
+  // Remove trailing NUL characters.
+  buffer = std::wstring(base::TrimString(buffer, base::WStringPiece(L"\0", 1),
+                                         base::TRIM_TRAILING));
+
+  // The product string cannot be empty.
+  if (buffer.empty())
+    return false;
+
+  product_string_ = std::move(buffer);
+  return true;
 }
 
 base::win::ScopedHandle RawInputGamepadDeviceWin::OpenHidHandle() {
@@ -365,8 +386,6 @@ base::win::ScopedHandle RawInputGamepadDeviceWin::OpenHidHandle() {
 }
 
 bool RawInputGamepadDeviceWin::QueryDeviceCapabilities() {
-  DCHECK(hid_functions_);
-  DCHECK(hid_functions_->IsValid());
   UINT size = 0;
 
   UINT result =
@@ -388,7 +407,7 @@ bool RawInputGamepadDeviceWin::QueryDeviceCapabilities() {
   DCHECK_EQ(size, result);
 
   HIDP_CAPS caps;
-  NTSTATUS status = hid_functions_->HidPGetCaps()(preparsed_data_, &caps);
+  NTSTATUS status = HidP_GetCaps(preparsed_data_, &caps);
   DCHECK_EQ(HIDP_STATUS_SUCCESS, status);
 
   QueryButtonCapabilities(caps.NumberInputButtonCaps);
@@ -398,13 +417,11 @@ bool RawInputGamepadDeviceWin::QueryDeviceCapabilities() {
 }
 
 void RawInputGamepadDeviceWin::QueryButtonCapabilities(uint16_t button_count) {
-  DCHECK(hid_functions_);
-  DCHECK(hid_functions_->IsValid());
   if (button_count > 0) {
     std::unique_ptr<HIDP_BUTTON_CAPS[]> button_caps(
         new HIDP_BUTTON_CAPS[button_count]);
-    NTSTATUS status = hid_functions_->HidPGetButtonCaps()(
-        HidP_Input, button_caps.get(), &button_count, preparsed_data_);
+    NTSTATUS status = HidP_GetButtonCaps(HidP_Input, button_caps.get(),
+                                         &button_count, preparsed_data_);
     DCHECK_EQ(HIDP_STATUS_SUCCESS, status);
 
     // Collect all inputs from the Button usage page.
@@ -494,11 +511,8 @@ void RawInputGamepadDeviceWin::QuerySpecialButtonCapabilities(
 }
 
 void RawInputGamepadDeviceWin::QueryAxisCapabilities(uint16_t axis_count) {
-  DCHECK(hid_functions_);
-  DCHECK(hid_functions_->IsValid());
   std::unique_ptr<HIDP_VALUE_CAPS[]> axes_caps(new HIDP_VALUE_CAPS[axis_count]);
-  hid_functions_->HidPGetValueCaps()(HidP_Input, axes_caps.get(), &axis_count,
-                                     preparsed_data_);
+  HidP_GetValueCaps(HidP_Input, axes_caps.get(), &axis_count, preparsed_data_);
 
   bool mapped_all_axes = true;
 
