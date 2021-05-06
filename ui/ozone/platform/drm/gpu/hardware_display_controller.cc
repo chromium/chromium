@@ -75,24 +75,26 @@ HardwareDisplayController::HardwareDisplayController(
 
 HardwareDisplayController::~HardwareDisplayController() = default;
 
-void HardwareDisplayController::GetModesetProps(CommitRequest* commit_request,
-                                                const DrmOverlayPlane& primary,
-                                                const drmModeModeInfo& mode) {
-  GetModesetPropsForCrtcs(commit_request, primary,
+void HardwareDisplayController::GetModesetProps(
+    CommitRequest* commit_request,
+    const DrmOverlayPlaneList& modeset_planes,
+    const drmModeModeInfo& mode) {
+  GetModesetPropsForCrtcs(commit_request, modeset_planes,
                           /*use_current_crtc_mode=*/false, mode);
 }
 
-void HardwareDisplayController::GetEnableProps(CommitRequest* commit_request,
-                                               const DrmOverlayPlane& primary) {
+void HardwareDisplayController::GetEnableProps(
+    CommitRequest* commit_request,
+    const DrmOverlayPlaneList& modeset_planes) {
   // TODO(markyacoub): Simplify and remove the use of empty_mode.
   drmModeModeInfo empty_mode = {};
-  GetModesetPropsForCrtcs(commit_request, primary,
+  GetModesetPropsForCrtcs(commit_request, modeset_planes,
                           /*use_current_crtc_mode=*/true, empty_mode);
 }
 
 void HardwareDisplayController::GetModesetPropsForCrtcs(
     CommitRequest* commit_request,
-    const DrmOverlayPlane& primary,
+    const DrmOverlayPlaneList& modeset_planes,
     bool use_current_crtc_mode,
     const drmModeModeInfo& mode) {
   DCHECK(commit_request);
@@ -103,8 +105,7 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     drmModeModeInfo modeset_mode =
         use_current_crtc_mode ? controller->mode() : mode;
 
-    DrmOverlayPlaneList overlays;
-    overlays.push_back(primary.Clone());
+    DrmOverlayPlaneList overlays = DrmOverlayPlane::Clone(modeset_planes);
 
     CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
         controller->crtc(), controller->connector(), modeset_mode, origin_,
@@ -425,6 +426,8 @@ void HardwareDisplayController::OnModesetComplete(
   page_flip_request_ = nullptr;
   owned_hardware_planes_.legacy_page_flips.clear();
   current_planes_.clear();
+  // TODO(markyacoub): Once we support modesetting with more than just the
+  // primary plane, save all planes instead of the primary only.
   current_planes_.push_back(primary.Clone());
   time_of_last_flip_ = base::TimeTicks::Now();
 }

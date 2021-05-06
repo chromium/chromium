@@ -98,11 +98,11 @@ class HardwareDisplayController {
   // Gets the props required to modeset a CRTC with a |mode| onto
   // |commit_request|.
   void GetModesetProps(CommitRequest* commit_request,
-                       const DrmOverlayPlane& primary,
+                       const DrmOverlayPlaneList& modeset_planes,
                        const drmModeModeInfo& mode);
   // Gets the props required to enable/disable a CRTC onto |commit_request|.
   void GetEnableProps(CommitRequest* commit_request,
-                      const DrmOverlayPlane& primary);
+                      const DrmOverlayPlaneList& modeset_planes);
   void GetDisableProps(CommitRequest* commit_request);
 
   // Updates state of the controller after modeset/enable/disable is performed.
@@ -179,7 +179,7 @@ class HardwareDisplayController {
   // Loops over |crtc_controllers_| and save their props into |commit_request|
   // to be enabled/modeset.
   void GetModesetPropsForCrtcs(CommitRequest* commit_request,
-                               const DrmOverlayPlane& primary,
+                               const DrmOverlayPlaneList& modeset_planes,
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode);
   void OnModesetComplete(const DrmOverlayPlane& primary);

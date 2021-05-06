@@ -131,7 +131,7 @@ class ScreenManager {
       uint32_t connector,
       const gfx::Point& origin,
       const drmModeModeInfo& mode,
-      const DrmOverlayPlane& primary);
+      const DrmOverlayPlaneList& modeset_planes);
 
   // Configures a display controller to be disabled. The display controller is
   // identified by |crtc|. Controller modeset props are added into
@@ -163,20 +163,20 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       const gfx::Rect& bounds);
 
-  DrmOverlayPlane GetModesetBuffer(HardwareDisplayController* controller,
-                                   const gfx::Rect& bounds,
-                                   const std::vector<uint64_t>& modifiers,
-                                   bool is_testing);
+  DrmOverlayPlaneList GetModesetPlanes(HardwareDisplayController* controller,
+                                       const gfx::Rect& bounds,
+                                       const std::vector<uint64_t>& modifiers,
+                                       bool is_testing);
 
   // Gets props for modesetting the |controller| using |origin| and |mode|.
   void GetModesetControllerProps(CommitRequest* commit_request,
                                  HardwareDisplayController* controller,
                                  const gfx::Point& origin,
                                  const drmModeModeInfo& mode,
-                                 const DrmOverlayPlane& primary);
+                                 const DrmOverlayPlaneList& modeset_planes);
   void GetEnableControllerProps(CommitRequest* commit_request,
                                 HardwareDisplayController* controller,
-                                const DrmOverlayPlane& primary);
+                                const DrmOverlayPlaneList& modeset_planes);
 
   DrmWindow* FindWindowAt(const gfx::Rect& bounds) const;
 
