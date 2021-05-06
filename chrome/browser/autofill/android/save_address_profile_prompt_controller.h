@@ -67,11 +67,12 @@ class SaveAddressProfilePromptController {
 
  private:
   void RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      const AutofillProfile& profile);
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  // If the user explicitly accepted/dismissed/edited the profile.
+  // If the user explicitly accepted/dismissed the profile.
   bool had_user_interaction_ = false;
+  // If the user at least once edited the profile.
+  bool was_profile_edited = false;
   // View that displays the prompt.
   std::unique_ptr<SaveAddressProfilePromptView> prompt_view_;
   // The profile which is being confirmed by the user.

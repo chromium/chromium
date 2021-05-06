@@ -44,8 +44,7 @@ public class SaveAddressProfilePrompt {
      */
     public SaveAddressProfilePrompt(SaveAddressProfilePromptController controller,
             ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, String title,
-            String positiveButtonText, boolean isUpdate) {
+            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
@@ -59,8 +58,6 @@ public class SaveAddressProfilePrompt {
                         .with(ModalDialogProperties.CONTROLLER,
                                 new SimpleModalDialogController(
                                         modalDialogManager, this::onDismiss))
-                        .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, activity.getResources(),
                                 R.string.no_thanks)
@@ -95,8 +92,6 @@ public class SaveAddressProfilePrompt {
      * @param controller the controller to handle the interaction.
      * @param browserProfile the Chrome profile being used.
      * @param autofillProfile the address data to be saved.
-     * @param title the title of the dialog.
-     * @param positiveButtonText the text on the positive button.
      * @param isUpdate true if there's an existing profile which will be updated, false otherwise.
      * @return instance of the SaveAddressProfilePrompt or null if the call failed.
      */
@@ -104,14 +99,25 @@ public class SaveAddressProfilePrompt {
     @Nullable
     private static SaveAddressProfilePrompt create(WindowAndroid windowAndroid,
             SaveAddressProfilePromptController controller, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, String title,
-            String positiveButtonText, boolean isUpdate) {
+            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
         return new SaveAddressProfilePrompt(controller, modalDialogManager, activity,
-                browserProfile, autofillProfile, title, positiveButtonText, isUpdate);
+                browserProfile, autofillProfile, isUpdate);
+    }
+
+    /**
+     * Displays the dialog-specific properties.
+     *
+     * @param title the title of the dialog.
+     * @param positiveButtonText the text on the positive button.
+     */
+    @CalledByNative
+    private void setDialogDetails(String title, String positiveButtonText) {
+        mDialogModel.set(ModalDialogProperties.TITLE, title);
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
     }
 
     /**
@@ -155,7 +161,6 @@ public class SaveAddressProfilePrompt {
 
     private void onEdited(AutofillAddress autofillAddress) {
         mController.onUserEdited(autofillAddress.getProfile());
-        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
@@ -166,7 +171,6 @@ public class SaveAddressProfilePrompt {
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 mController.onUserDeclined();
                 break;
-            case DialogDismissalCause.ACTION_ON_CONTENT:
             default:
                 // No explicit user decision.
                 break;

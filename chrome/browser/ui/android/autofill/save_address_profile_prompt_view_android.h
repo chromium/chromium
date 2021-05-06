@@ -31,14 +31,20 @@ class SaveAddressProfilePromptViewAndroid
       const SaveAddressProfilePromptViewAndroid&) = delete;
   ~SaveAddressProfilePromptViewAndroid() override;
 
+  // SaveAddressProfilePromptView:
   bool Show(SaveAddressProfilePromptController* controller,
             const AutofillProfile& profile,
             bool is_update) override;
+  void RefreshContent() override;
 
  private:
   // The corresponding Java SaveAddressProfilePrompt owned by this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
+  // If the view is shown, true means it is an update prompt, false means it is
+  // a save prompt.
+  bool is_update_ = false;
+  // The controller to supply the content for the view,
+  SaveAddressProfilePromptController* controller_ = nullptr;
   content::WebContents* web_contents_;
 };
 

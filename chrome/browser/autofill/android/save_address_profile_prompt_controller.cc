@@ -42,8 +42,7 @@ SaveAddressProfilePromptController::~SaveAddressProfilePromptController() {
   }
   if (!had_user_interaction_) {
     RunSaveAddressProfileCallback(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-        profile_);
+        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
   }
 }
 
@@ -125,7 +124,9 @@ void SaveAddressProfilePromptController::OnUserAccepted(
     const base::android::JavaParamRef<jobject>& obj) {
   had_user_interaction_ = true;
   RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile_);
+      was_profile_edited
+          ? AutofillClient::SaveAddressProfileOfferUserDecision::kEdited
+          : AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
 }
 
 void SaveAddressProfilePromptController::OnUserDeclined(
@@ -133,20 +134,19 @@ void SaveAddressProfilePromptController::OnUserDeclined(
     const base::android::JavaParamRef<jobject>& obj) {
   had_user_interaction_ = true;
   RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined, profile_);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
 
 void SaveAddressProfilePromptController::OnUserEdited(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jprofile) {
-  had_user_interaction_ = true;
+  was_profile_edited = true;
   AutofillProfile edited_profile;
   PersonalDataManagerAndroid::PopulateNativeProfileFromJava(jprofile, env,
                                                             &edited_profile);
-  RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
-      edited_profile);
+  profile_ = edited_profile;
+  prompt_view_->RefreshContent();
 }
 
 void SaveAddressProfilePromptController::OnPromptDismissed(
@@ -156,9 +156,8 @@ void SaveAddressProfilePromptController::OnPromptDismissed(
 }
 
 void SaveAddressProfilePromptController::RunSaveAddressProfileCallback(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
-    const AutofillProfile& profile) {
-  std::move(decision_callback_).Run(decision, profile);
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  std::move(decision_callback_).Run(decision, profile_);
 }
 
 }  // namespace autofill
