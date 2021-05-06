@@ -44,15 +44,17 @@ RESULTS_URL_BASE = '%s/data/layout_results' % TEST_RESULTS_SERVER
 RESULTS_SUMMARY_URL_BASE = 'https://storage.googleapis.com/chromium-layout-test-archives'
 
 
-class Build(collections.namedtuple('Build', ('builder_name', 'build_number'))):
+class Build(collections.namedtuple('Build', ('builder_name', 'build_number',
+                                             'build_id'))):
     """Represents a combination of builder and build number.
 
     If build number is None, this represents the latest build
     for a given builder.
     """
 
-    def __new__(cls, builder_name, build_number=None):
-        return super(Build, cls).__new__(cls, builder_name, build_number)
+    def __new__(cls, builder_name, build_number=None, build_id=None):
+        return super(Build, cls).__new__(cls, builder_name,
+                                         build_number, build_id)
 
 
 class TestResultsFetcher(object):

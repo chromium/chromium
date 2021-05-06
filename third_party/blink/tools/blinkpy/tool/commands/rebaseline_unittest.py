@@ -1086,8 +1086,8 @@ class TestBaselineSetTest(unittest.TestCase):
         test_baseline_set.add('a/x.html', Build('MOCK Win10'))
         self.assertEqual(str(test_baseline_set), (
             '<TestBaselineSet with:\n'
-            '  a/x.html: Build(builder_name=\'MOCK Mac10.12\', build_number=None), test-mac-mac10.12\n'
-            '  a/x.html: Build(builder_name=\'MOCK Win10\', build_number=None), test-win-win10>'
+            '  a/x.html: Build(builder_name=\'MOCK Mac10.12\', build_number=None, build_id=None), test-mac-mac10.12\n'
+            '  a/x.html: Build(builder_name=\'MOCK Win10\', build_number=None, build_id=None), test-win-win10>'
         ))
 
     def test_getters(self):

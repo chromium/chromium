@@ -26,6 +26,8 @@
 //third_party/blink/tools/blinkpy/common/html_diff.py
 //third_party/blink/tools/blinkpy/common/memoized.py
 //third_party/blink/tools/blinkpy/common/net/__init__.py
+//third_party/blink/tools/blinkpy/common/net/bb_agent.py
+//third_party/blink/tools/blinkpy/common/net/luci_auth.py
 //third_party/blink/tools/blinkpy/common/net/network_transaction.py
 //third_party/blink/tools/blinkpy/common/net/results_fetcher.py
 //third_party/blink/tools/blinkpy/common/net/web.py

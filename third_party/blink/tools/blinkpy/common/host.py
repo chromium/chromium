@@ -31,6 +31,7 @@ import logging
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net import web
+from blinkpy.common.net.bb_agent import BBAgent
 from blinkpy.common.net.results_fetcher import TestResultsFetcher
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.web_tests.builder_list import BuilderList
@@ -55,6 +56,7 @@ class Host(SystemHost):
         # FIXME: PortFactory doesn't belong on this Host object if Port is going to have a Host (circular dependency).
         self.port_factory = PortFactory(self)
 
+        self.bb_agent = BBAgent(self)
         self.builders = BuilderList.load_default_builder_list(self.filesystem)
 
     def git(self, path=None):
