@@ -21,7 +21,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders")
+load("./builders.star", "builders", "os")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -337,6 +337,7 @@ def chromium_angle_builder(*, name, **kwargs):
     )
 
 def chromium_chromiumos_builder(*, name, **kwargs):
+    kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return try_builder(
         name = name,
         builder_group = "tryserver.chromium.chromiumos",
