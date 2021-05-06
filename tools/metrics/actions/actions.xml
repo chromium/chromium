@@ -9625,6 +9625,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSOpenByViewIntent">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User opened Chrome through a view intent, basically anything that opens
+    Chrome that is not an icon tap or an app switch.
+  </description>
+</action>
+
 <action name="IOSPasswordsSettingsCloseWithSwipe">
   <owner>djean@chromium.org</owner>
   <owner>javierrobles@chromium.org</owner>
