@@ -228,7 +228,7 @@ ReputationWebContentsObserver::~ReputationWebContentsObserver() = default;
 
 void ReputationWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     MaybeCallReputationCheckCallback(false);
     return;
