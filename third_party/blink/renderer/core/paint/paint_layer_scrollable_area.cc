@@ -1729,7 +1729,7 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
     SetScrollbarNeedsPaintInvalidation(kVerticalScrollbar);
     scrollbar_manager_.SetHasVerticalScrollbar(false);
   }
-  SetScrollCornerNeedsPaintInvalidation();
+  UpdateScrollCornerStyle();
   UpdateScrollOrigin();
 
   // Force an update since we know the scrollbars have changed things.

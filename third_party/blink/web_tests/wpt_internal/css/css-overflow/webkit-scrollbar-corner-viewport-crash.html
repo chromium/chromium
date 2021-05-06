@@ -1,0 +1,22 @@
+<!doctype html>
+<title>CSS Test: Custom scrollbars for viewport - crash removing scrollbar corner</title>
+<style>
+  .scroll {
+    overflow: scroll;
+  }
+  .scroll::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+  .scroll::-webkit-scrollbar-corner {
+    background-color: orange;
+  }
+</style>
+<script>
+  document.documentElement.className = "scroll";
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.className = "";
+    });
+  });
+</script>
