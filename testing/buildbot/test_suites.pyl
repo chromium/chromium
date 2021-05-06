@@ -2985,6 +2985,58 @@
       },
     },
 
+    'gpu_mediapipe_passthrough_telemetry_tests': {
+      'mediapipe_passthrough': {
+        'name': 'mediapipe_passthrough_tests',
+        'telemetry_test_name': 'mediapipe',
+        'args': [
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+        # TODO(crbug.com/1201887): Make this non-experimental once tests are
+        # stable.
+        'experiment_percentage': 100,
+      },
+    },
+
+    'gpu_mediapipe_validating_telemetry_tests': {
+      'mediapipe_validating': {
+        'name': 'mediapipe_validating_tests',
+        'telemetry_test_name': 'mediapipe',
+        'args': [
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+        # TODO(crbug.com/1201887): Make this non-experimental once tests are
+        # stable.
+        'experiment_percentage': 100,
+      },
+    },
+
     'gpu_noop_sleep_telemetry_test': {
       # The former GPU-specific generator script contained logic to
       # detect whether the so-called "experimental" GPU bots, which test
@@ -6243,6 +6295,7 @@
     # have been enabled.
     'gpu_fyi_chromeos_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl_conformance_validating_telemetry_tests',
@@ -6360,6 +6413,7 @@
 
     'gpu_fyi_optional_linux_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
@@ -6367,6 +6421,8 @@
 
     'gpu_fyi_optional_mac_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_validating_telemetry_tests',
@@ -6380,6 +6436,8 @@
 
     'gpu_fyi_optional_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_validating_telemetry_tests',
     ],
@@ -6412,6 +6470,7 @@
 
     'gpu_fyi_win_amd_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
@@ -6446,6 +6505,7 @@
 
     'gpu_fyi_win_intel_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
@@ -6498,6 +6558,8 @@
 
     'gpu_nexus5x_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
@@ -6513,6 +6575,7 @@
 
     'gpu_optional_win_intel_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
@@ -6524,6 +6587,7 @@
 
     'gpu_optional_win_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
@@ -6535,6 +6599,8 @@
 
     'gpu_pixel4_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
