@@ -127,7 +127,8 @@ void FrameEvictionManager::CullUnlockedFrames(size_t saved_frame_limit) {
     size_t old_size = unlocked_frames_.size();
     // Should remove self from list.
     unlocked_frames_.back()->EvictCurrentFrame();
-    DCHECK_EQ(unlocked_frames_.size() + 1, old_size);
+    if (unlocked_frames_.size() == old_size)
+      break;
   }
 }
 
