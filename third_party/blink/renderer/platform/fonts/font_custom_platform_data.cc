@@ -43,6 +43,31 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
+namespace {
+
+constexpr SkFourByteTag opszTag = SkSetFourByteTag('o', 'p', 's', 'z');
+
+float retrieveOpszDefault(sk_sp<SkTypeface> base_typeface) {
+  constexpr float errorValue = -1.f;
+  int axes_count = base_typeface->getVariationDesignParameters(nullptr, 0);
+  if (axes_count <= 0)
+    return errorValue;
+  Vector<SkFontParameters::Variation::Axis> axes;
+  axes.resize(axes_count);
+  int axes_read =
+      base_typeface->getVariationDesignParameters(axes.data(), axes_count);
+  if (axes_read <= 0)
+    return errorValue;
+  for (auto& axis : axes) {
+    if (axis.tag == opszTag) {
+      return axis.def;
+    }
+  }
+  return errorValue;
+}
+
+}  // namespace
+
 namespace blink {
 
 FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
@@ -105,7 +130,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
       variation.ReserveCapacity(variation_settings->size() + variation.size());
       for (const auto& setting : *variation_settings) {
-        if (setting.Tag() == SkSetFourByteTag('o', 'p', 's', 'z'))
+        if (setting.Tag() == opszTag)
           explicit_opsz_configured = true;
         SkFontArguments::VariationPosition::Coordinate setting_coordinate =
             {setting.Tag(), SkFloatToScalar(setting.Value())};
@@ -113,10 +138,21 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       }
     }
 
-    if (optical_sizing == kAutoOpticalSizing && !explicit_opsz_configured) {
-      SkFontArguments::VariationPosition::Coordinate opsz_coordinate =
-          {SkSetFourByteTag('o', 'p', 's', 'z'), SkFloatToScalar(size)};
-      variation.push_back(opsz_coordinate);
+    if (!explicit_opsz_configured) {
+      if (optical_sizing == kAutoOpticalSizing) {
+        SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
+            opszTag, SkFloatToScalar(size)};
+        variation.push_back(opsz_coordinate);
+      } else if (optical_sizing == kNoneOpticalSizing) {
+        // Explicitly set default value to avoid automatic application of
+        // optical sizing as it seems to happen on SkTypeface on Mac.
+        float opszDefault = retrieveOpszDefault(return_typeface);
+        if (opszDefault >= 0.f) {
+          SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
+              opszTag, SkFloatToScalar(opszDefault)};
+          variation.push_back(opsz_coordinate);
+        }
+      }
     }
 
     SkFontArguments font_args;
