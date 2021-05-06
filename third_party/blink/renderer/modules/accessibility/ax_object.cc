@@ -472,6 +472,8 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
   return static_cast<int32_t>(result);
 }
 
+// static
+bool AXObject::is_loading_inline_boxes_ = false;
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
@@ -528,7 +530,9 @@ void AXObject::Init(AXObject* parent) {
       << "\n* Parent = " << parent_->ToString(true, true)
       << "\n* Child = " << ToString(true, true);
 
-  SetNeedsToUpdateChildren();  // Should be called after role_ is set.
+  // This is one after the role_ is computed, because the role is used to
+  // determine whether an AXObject can have children.
+  children_dirty_ = CanHaveChildren();
 
   // Ensure that the aria-owns relationship is set before attempting
   // to update cached attribute values.
@@ -562,6 +566,11 @@ void AXObject::Detach() {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
+
+  CHECK(!is_loading_inline_boxes_)
+      << "Should not be attempting to detach object while in the middle of "
+         "recursively loading inline text boxes: "
+      << ToString(true, true);
 
   // Clear any children and call DetachFromParent() on them so that
   // no children are left with dangling pointers to their parent.
@@ -3229,7 +3238,12 @@ AccessibilityOrientation AXObject::Orientation() const {
   return kAccessibilityOrientationUndefined;
 }
 
-void AXObject::LoadInlineTextBoxes() {}
+void AXObject::LoadInlineTextBoxes() {
+  base::AutoReset<bool> reentrancy_protector(&is_loading_inline_boxes_, true);
+  LoadInlineTextBoxesRecursive();
+}
+
+void AXObject::LoadInlineTextBoxesRecursive() {}
 
 AXObject* AXObject::NextOnLine() const {
   return nullptr;
@@ -4221,15 +4235,14 @@ void AXObject::ClearChildren() const {
 
   // Loop through AXObject children.
 #if defined(AX_FAIL_FAST_BUILD)
-  SANITIZER_CHECK(!is_adding_children_)
-      << "Should not be attempting to clear children while in the middle of "
-         "adding children on parent: "
-      << ToString(true, true);
-  SANITIZER_CHECK(!is_loading_inline_boxes_)
-      << "Should not be attempting to clear children while in the middle of "
-         "iterating children to load inline text boxes on the same object."
+  CHECK(!is_adding_children_)
+      << "Should not attempt to simultaneosly add and clear children on: "
       << ToString(true, true);
 #endif
+
+  CHECK(!is_loading_inline_boxes_) << "Should not attempt to clear children "
+                                      "while loading inline text boxes: "
+                                   << ToString(true, true);
 
   for (const auto& child : children_) {
     if (child->CachedParentObject() == this)

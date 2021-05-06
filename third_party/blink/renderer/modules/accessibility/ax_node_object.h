@@ -266,7 +266,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       HeapVector<Member<AXObject>>& owned_children) const;
 
   // Inline text boxes.
-  void LoadInlineTextBoxes() override;
+  void LoadInlineTextBoxesRecursive() override;
 
   //
   // Layout object specific methods.

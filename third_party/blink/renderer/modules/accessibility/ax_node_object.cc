@@ -3348,19 +3348,32 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 // Inline text boxes.
 //
 
-void AXNodeObject::LoadInlineTextBoxes() {
+void AXNodeObject::LoadInlineTextBoxesRecursive() {
   if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
-    ClearChildren();
-    AddInlineTextBoxChildren(/*force*/ true);
-    children_dirty_ = false;  // Avoid adding these children twice.
+    if (children_.IsEmpty()) {
+      // We only need to add inline textbox children if they aren't present.
+      // Although some platforms (e.g. Android), load inline text boxes
+      // on subtrees that may later be stale, once they are stale, the old
+      // inline text boxes are cleared because SetNeedsToUpdateChildren()
+      // calls ClearChildren().
+      AddInlineTextBoxChildren(/*force*/ true);
+      children_dirty_ = false;  // Avoid adding these children twice.
+    }
     return;
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
-  base::AutoReset<bool> reentrancy_protector(&is_loading_inline_boxes_, true);
-#endif
-  for (const auto& child : ChildrenIncludingIgnored())
-    child->LoadInlineTextBoxes();
+  for (const auto& child : ChildrenIncludingIgnored()) {
+    // TODO(https://crbug.com/1200244) Downgrade these to DCHECKs.
+    CHECK(child) << "Child has been destroyed before attempted use, parent is: "
+                 << ToString(true, true);
+    CHECK(!child->IsDetached())
+        << "Child has been detached before attempted use, parent is: "
+        << ToString(true, true);
+    CHECK(!IsDetached()) << "Parent was detached while attempting to load "
+                            "child text boxes, parent is: "
+                         << ToString(true, true);
+    child->LoadInlineTextBoxesRecursive();
+  }
 }
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
