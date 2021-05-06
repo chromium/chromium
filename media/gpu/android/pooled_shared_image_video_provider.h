@@ -46,7 +46,9 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
 
   // SharedImageVideoProvider
   void Initialize(GpuInitCB gpu_init_cb) override;
-  void RequestImage(ImageReadyCB cb, const ImageSpec& spec) override;
+  void RequestImage(ImageReadyCB cb,
+                    const ImageSpec& spec,
+                    scoped_refptr<gpu::TextureOwner> texture_owner) override;
 
  private:
   friend class PooledSharedImageVideoProviderTest;

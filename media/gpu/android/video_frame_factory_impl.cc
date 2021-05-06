@@ -202,7 +202,8 @@ void VideoFrameFactoryImpl::RequestImage(
     ImageWithInfoReadyCB image_ready_cb) {
   auto info_cb =
       base::BindOnce(&VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady,
-                     weak_factory_.GetWeakPtr(), std::move(image_ready_cb));
+                     weak_factory_.GetWeakPtr(), std::move(image_ready_cb),
+                     codec_buffer_wait_coordinator_);
 
   frame_info_helper_->GetFrameInfo(std::move(buffer_renderer),
                                    std::move(info_cb));
@@ -210,6 +211,7 @@ void VideoFrameFactoryImpl::RequestImage(
 
 void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
     ImageWithInfoReadyCB image_ready_cb,
+    scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
     std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
     FrameInfoHelper::FrameInfo frame_info) {
   // If we don't have output buffer here we can't rely on reply from
@@ -235,7 +237,11 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
 
   auto cb = base::BindOnce(std::move(image_ready_cb),
                            std::move(output_buffer_renderer), frame_info);
-  image_provider_->RequestImage(std::move(cb), image_spec_);
+
+  auto texture_owner = codec_buffer_wait_coordinator
+                           ? codec_buffer_wait_coordinator->texture_owner()
+                           : nullptr;
+  image_provider_->RequestImage(std::move(cb), image_spec_, texture_owner);
 }
 
 // static

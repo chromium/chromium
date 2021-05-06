@@ -8,8 +8,11 @@ namespace media {
 
 MockSharedImageVideoProvider::RequestImageArgs::RequestImageArgs(
     ImageReadyCB cb,
-    ImageSpec spec)
-    : cb_(std::move(cb)), spec_(std::move(spec)) {}
+    ImageSpec spec,
+    scoped_refptr<gpu::TextureOwner> texture_owner)
+    : cb_(std::move(cb)),
+      spec_(std::move(spec)),
+      texture_owner_(std::move(texture_owner)) {}
 
 MockSharedImageVideoProvider::RequestImageArgs::~RequestImageArgs() = default;
 

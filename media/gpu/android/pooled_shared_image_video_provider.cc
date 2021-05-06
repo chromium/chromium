@@ -52,8 +52,10 @@ void PooledSharedImageVideoProvider::Initialize(GpuInitCB gpu_init_cb) {
   provider_->Initialize(std::move(gpu_init_cb));
 }
 
-void PooledSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
-                                                  const ImageSpec& spec) {
+void PooledSharedImageVideoProvider::RequestImage(
+    ImageReadyCB cb,
+    const ImageSpec& spec,
+    scoped_refptr<gpu::TextureOwner> texture_owner) {
   // See if the pool matches the requested spec.
   if (pool_spec_ != spec) {
     // Nope -- mark any outstanding images for destruction and start a new pool.
@@ -104,7 +106,7 @@ void PooledSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
   auto ready_cb =
       base::BindOnce(&PooledSharedImageVideoProvider::OnImageCreated,
                      weak_factory_.GetWeakPtr(), spec);
-  provider_->RequestImage(std::move(ready_cb), spec);
+  provider_->RequestImage(std::move(ready_cb), spec, std::move(texture_owner));
 }
 
 void PooledSharedImageVideoProvider::OnImageCreated(ImageSpec spec,

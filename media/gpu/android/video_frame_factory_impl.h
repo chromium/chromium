@@ -102,6 +102,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
 
   void CreateVideoFrame_OnFrameInfoReady(
       ImageWithInfoReadyCB image_ready_cb,
+      scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info);
 
