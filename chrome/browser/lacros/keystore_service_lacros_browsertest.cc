@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
 // Tests that generate key works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
                        ExtensionGenerateKeyPKCS) {
-  crosapi::mojom::KeystoreBinaryResultPtr result;
+  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
 // simple way to prevent this at the moment.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
                        DISABLED_ExtensionGenerateKeyECDSA) {
-  crosapi::mojom::KeystoreBinaryResultPtr result;
+  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =

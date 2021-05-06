@@ -379,8 +379,9 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
     ExtensionGenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!extension_id) {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
-        kUnsupportedLacrosVersion));
+    std::move(callback).Run(
+        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+            kUnsupportedLacrosVersion));
     return;
   }
 
@@ -389,7 +390,8 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
   base::Optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
     std::move(callback).Run(
-        mojom::KeystoreBinaryResult::NewErrorMessage(kUnsupportedKeystoreType));
+        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+            kUnsupportedKeystoreType));
     return;
   }
 
@@ -411,9 +413,11 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
       break;
     }
     default: {
-      std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
-          chromeos::platform_keys::StatusToString(
-              chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
+      std::move(callback).Run(
+          mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+              chromeos::platform_keys::StatusToString(
+                  chromeos::platform_keys::Status::
+                      kErrorAlgorithmNotSupported)));
       break;
     }
   }
@@ -425,8 +429,8 @@ void KeystoreServiceAsh::DidExtensionGenerateKey(
     const std::string& public_key,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  crosapi::mojom::KeystoreBinaryResultPtr result_ptr =
-      mojom::KeystoreBinaryResult::New();
+  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result_ptr =
+      mojom::ExtensionKeystoreBinaryResult::New();
   if (status == chromeos::platform_keys::Status::kSuccess) {
     result_ptr->set_blob(
         std::vector<uint8_t>(public_key.begin(), public_key.end()));
@@ -449,7 +453,8 @@ void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
   base::Optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
     std::move(callback).Run(
-        mojom::KeystoreBinaryResult::NewErrorMessage(kUnsupportedKeystoreType));
+        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+            kUnsupportedKeystoreType));
     return;
   }
 
@@ -458,8 +463,9 @@ void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
   chromeos::platform_keys::KeyType key_type;
   switch (scheme) {
     case SigningScheme::kUnknown:
-      std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
-          kUnsupportedAlgorithmType));
+      std::move(callback).Run(
+          mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+              kUnsupportedAlgorithmType));
       return;
     case SigningScheme::kRsassaPkcs1V15None:
       service->SignRSAPKCS1Raw(
@@ -517,11 +523,12 @@ void KeystoreServiceAsh::DidExtensionSign(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewBlob(
+    std::move(callback).Run(mojom::ExtensionKeystoreBinaryResult::NewBlob(
         std::vector<uint8_t>(signature.begin(), signature.end())));
   } else {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
-        chromeos::platform_keys::StatusToString(status)));
+    std::move(callback).Run(
+        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+            chromeos::platform_keys::StatusToString(status)));
   }
 }
 

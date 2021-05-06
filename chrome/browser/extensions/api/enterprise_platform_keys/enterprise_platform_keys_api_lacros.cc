@@ -167,7 +167,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
 
 void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey(
     ResultPtr result) {
-  using Result = crosapi::mojom::KeystoreBinaryResult;
+  using Result = crosapi::mojom::ExtensionKeystoreBinaryResult;
   switch (result->which()) {
     case Result::Tag::ERROR_MESSAGE:
       Respond(Error(result->get_error_message()));

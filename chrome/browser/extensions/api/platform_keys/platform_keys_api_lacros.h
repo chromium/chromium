@@ -47,7 +47,7 @@ class PlatformKeysInternalSignFunction : public ExtensionFunction {
   ~PlatformKeysInternalSignFunction() override;
   ResponseAction Run() override;
 
-  using ResultPtr = crosapi::mojom::KeystoreBinaryResultPtr;
+  using ResultPtr = crosapi::mojom::ExtensionKeystoreBinaryResultPtr;
   void OnSign(ResultPtr result_ptr);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
