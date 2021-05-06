@@ -66,8 +66,8 @@ std::string GetId(const std::string& network_type,
 }  // namespace
 
 // static
-void InternetConfigDialog::ShowDialogForNetworkId(
-    const std::string& network_id) {
+void InternetConfigDialog::ShowDialogForNetworkId(const std::string& network_id,
+                                                  gfx::NativeWindow parent) {
   const NetworkState* network_state =
       NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
           network_id);
@@ -86,12 +86,13 @@ void InternetConfigDialog::ShowDialogForNetworkId(
 
   InternetConfigDialog* dialog =
       new InternetConfigDialog(id, network_type, network_id);
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
 }
 
 // static
 void InternetConfigDialog::ShowDialogForNetworkType(
-    const std::string& network_type) {
+    const std::string& network_type,
+    gfx::NativeWindow parent) {
   std::string id = GetId(network_type, "");
   auto* instance = SystemWebDialogDelegate::FindInstance(id);
   if (instance) {
@@ -100,7 +101,7 @@ void InternetConfigDialog::ShowDialogForNetworkType(
   }
 
   InternetConfigDialog* dialog = new InternetConfigDialog(id, network_type, "");
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
 }
 
 InternetConfigDialog::InternetConfigDialog(const std::string& dialog_id,

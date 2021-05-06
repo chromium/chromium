@@ -79,7 +79,8 @@ bool InternetDetailDialog::IsShown() {
 }
 
 // static
-void InternetDetailDialog::ShowDialog(const std::string& network_id) {
+void InternetDetailDialog::ShowDialog(const std::string& network_id,
+                                      gfx::NativeWindow parent) {
   auto* network_state_handler = NetworkHandler::Get()->network_state_handler();
   const NetworkState* network;
   if (!network_id.empty())
@@ -97,7 +98,7 @@ void InternetDetailDialog::ShowDialog(const std::string& network_id) {
   }
 
   InternetDetailDialog* dialog = new InternetDetailDialog(*network);
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
 }
 
 InternetDetailDialog::InternetDetailDialog(const NetworkState& network)
