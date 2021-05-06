@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/controls/scrollbar/base_scroll_bar_button.h"
+#include "ui/views/controls/scrollbar/scroll_bar_button.h"
 
 #include <memory>
 
@@ -34,15 +34,18 @@ class MockButtonCallback {
   MOCK_METHOD(void, ButtonPressed, ());
 };
 
-class BaseScrollBarButtonTest : public testing::Test {
+class ScrollBarButtonTest : public testing::Test {
  public:
-  BaseScrollBarButtonTest()
-      : button_(std::make_unique<BaseScrollBarButton>(
+  ScrollBarButtonTest()
+      : button_(std::make_unique<ScrollBarButton>(
             base::BindRepeating(&MockButtonCallback::ButtonPressed,
                                 base::Unretained(&callback_)),
+            ScrollBarButton::Type::kLeft,
             task_environment_.GetMockTickClock())) {}
 
-  ~BaseScrollBarButtonTest() override = default;
+  ScrollBarButtonTest(const ScrollBarButtonTest&) = delete;
+  ScrollBarButtonTest& operator=(const ScrollBarButtonTest&) = delete;
+  ~ScrollBarButtonTest() override = default;
 
  protected:
   testing::StrictMock<MockButtonCallback>& callback() { return callback_; }
@@ -64,15 +67,15 @@ class BaseScrollBarButtonTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(BaseScrollBarButtonTest, Metadata) {
+TEST_F(ScrollBarButtonTest, Metadata) {
   test::TestViewMetadata(button());
 }
 
-TEST_F(BaseScrollBarButtonTest, FocusBehavior) {
+TEST_F(ScrollBarButtonTest, FocusBehavior) {
   EXPECT_EQ(View::FocusBehavior::NEVER, button()->GetFocusBehavior());
 }
 
-TEST_F(BaseScrollBarButtonTest, CallbackFiresOnMouseDown) {
+TEST_F(ScrollBarButtonTest, CallbackFiresOnMouseDown) {
   EXPECT_CALL(callback(), ButtonPressed());
 
   // By default the button should notify its callback on mouse release.
@@ -81,7 +84,7 @@ TEST_F(BaseScrollBarButtonTest, CallbackFiresOnMouseDown) {
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 }
 
-TEST_F(BaseScrollBarButtonTest, CallbackFiresMultipleTimesMouseHeldDown) {
+TEST_F(ScrollBarButtonTest, CallbackFiresMultipleTimesMouseHeldDown) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.
@@ -92,7 +95,7 @@ TEST_F(BaseScrollBarButtonTest, CallbackFiresMultipleTimesMouseHeldDown) {
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 }
 
-TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
+TEST_F(ScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.
@@ -113,7 +116,7 @@ TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtMost(0));
 }
 
-TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseCaptureReleased) {
+TEST_F(ScrollBarButtonTest, CallbackStopsFiringAfterMouseCaptureReleased) {
   EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
   // By default the button should notify its callback on mouse release.

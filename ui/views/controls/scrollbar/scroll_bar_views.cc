@@ -15,41 +15,15 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focusable_border.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar_button.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/scrollbar/scroll_bar_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {
 
 namespace {
-
-// Wrapper for the scroll buttons.
-class ScrollBarButton : public BaseScrollBarButton {
- public:
-  enum class Type {
-    kUp,
-    kDown,
-    kLeft,
-    kRight,
-  };
-
-  ScrollBarButton(PressedCallback callback, Type type);
-  ~ScrollBarButton() override;
-
-  gfx::Size CalculatePreferredSize() const override;
-
- protected:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
-
- private:
-  ui::NativeTheme::ExtraParams GetNativeThemeParams() const;
-  ui::NativeTheme::Part GetNativeThemePart() const;
-  ui::NativeTheme::State GetNativeThemeState() const;
-
-  Type type_;
-};
 
 // Wrapper for the scroll thumb
 class ScrollBarThumb : public BaseScrollBarThumb {
@@ -69,75 +43,6 @@ class ScrollBarThumb : public BaseScrollBarThumb {
 
   ScrollBar* scroll_bar_;
 };
-
-ScrollBarButton::ScrollBarButton(PressedCallback callback, Type type)
-    : BaseScrollBarButton(std::move(callback)), type_(type) {
-  SetFlipCanvasOnPaintForRTLUI(true);
-  DCHECK_EQ(FocusBehavior::NEVER, GetFocusBehavior());
-}
-
-ScrollBarButton::~ScrollBarButton() = default;
-
-gfx::Size ScrollBarButton::CalculatePreferredSize() const {
-  return GetNativeTheme()->GetPartSize(
-      GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
-}
-
-void ScrollBarButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::Rect bounds(GetPreferredSize());
-  GetNativeTheme()->Paint(canvas->sk_canvas(), GetNativeThemePart(),
-                          GetNativeThemeState(), bounds,
-                          GetNativeThemeParams());
-}
-
-ui::NativeTheme::ExtraParams ScrollBarButton::GetNativeThemeParams() const {
-  ui::NativeTheme::ExtraParams params;
-
-  switch (GetState()) {
-    case Button::STATE_HOVERED:
-      params.scrollbar_arrow.is_hovering = true;
-      break;
-    default:
-      params.scrollbar_arrow.is_hovering = false;
-      break;
-  }
-
-  return params;
-}
-
-ui::NativeTheme::Part ScrollBarButton::GetNativeThemePart() const {
-  switch (type_) {
-    case Type::kUp:
-      return ui::NativeTheme::kScrollbarUpArrow;
-    case Type::kDown:
-      return ui::NativeTheme::kScrollbarDownArrow;
-    case Type::kLeft:
-      return ui::NativeTheme::kScrollbarLeftArrow;
-    case Type::kRight:
-      return ui::NativeTheme::kScrollbarRightArrow;
-  }
-
-  NOTREACHED();
-  return ui::NativeTheme::kScrollbarUpArrow;
-}
-
-ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
-  switch (GetState()) {
-    case Button::STATE_HOVERED:
-      return ui::NativeTheme::kHovered;
-    case Button::STATE_PRESSED:
-      return ui::NativeTheme::kPressed;
-    case Button::STATE_DISABLED:
-      return ui::NativeTheme::kDisabled;
-    case Button::STATE_NORMAL:
-      return ui::NativeTheme::kNormal;
-    case Button::STATE_COUNT:
-      break;
-  }
-
-  NOTREACHED();
-  return ui::NativeTheme::kNormal;
-}
 
 ScrollBarThumb::ScrollBarThumb(ScrollBar* scroll_bar)
     : BaseScrollBarThumb(scroll_bar), scroll_bar_(scroll_bar) {}
