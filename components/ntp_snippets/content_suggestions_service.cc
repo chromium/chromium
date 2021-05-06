@@ -675,7 +675,7 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
 
   const base::ListValue* list =
       pref_service_->GetList(prefs::kDismissedCategories);
-  for (const base::Value& entry : *list) {
+  for (const base::Value& entry : list->GetList()) {
     if (!entry.is_int()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;

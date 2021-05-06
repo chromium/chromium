@@ -353,7 +353,7 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
     return false;
   }
 
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     const base::DictionaryValue* dictionary;
     if (!value.GetAsDictionary(&dictionary)) {
       LOG(DFATAL) << "Failed to parse category data from prefs param "

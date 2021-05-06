@@ -16,7 +16,7 @@ std::set<std::string> ReadDismissedIDsFromPrefs(const PrefService& pref_service,
                                                 const std::string& pref_name) {
   std::set<std::string> dismissed_ids;
   const base::ListValue* list = pref_service.GetList(pref_name);
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     std::string dismissed_id;
     bool success = value.GetAsString(&dismissed_id);
     DCHECK(success) << "Failed to parse dismissed id from prefs param "

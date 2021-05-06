@@ -19,7 +19,7 @@ bool AddSuggestionsFromListValue(int remote_category_id,
                                  const base::ListValue& list,
                                  RemoteSuggestion::PtrVector* suggestions,
                                  const base::Time& fetch_time) {
-  for (const auto& value : list) {
+  for (const base::Value& value : list.GetList()) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict)) {
       return false;
@@ -91,7 +91,7 @@ bool JsonToCategories(const base::Value& parsed,
     return false;
   }
 
-  for (const auto& v : *categories_value) {
+  for (const base::Value& v : categories_value->GetList()) {
     std::string utf8_title;
     int remote_category_id = -1;
     const base::DictionaryValue* category_value = nullptr;
