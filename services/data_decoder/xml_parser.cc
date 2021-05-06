@@ -170,9 +170,7 @@ void XmlParser::Parse(const std::string& xml, ParseCallback callback) {
     ReportError(std::move(callback), "Invalid XML: unbalanced elements");
     return;
   }
-  base::DictionaryValue* dictionary = nullptr;
-  root_element.GetAsDictionary(&dictionary);
-  if (!dictionary || dictionary->empty()) {
+  if (!root_element.is_dict() || root_element.DictEmpty()) {
     ReportError(std::move(callback), "Invalid XML: bad content");
     return;
   }
