@@ -109,6 +109,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &features::kPrivacySandboxSettings,
+    &features::kPrivacySandboxSettings2,
     &features::kPrioritizeBootstrapTasks,
     &features::kQuietNotificationPrompts,
     &features::kRequestDesktopSiteForTablets,
