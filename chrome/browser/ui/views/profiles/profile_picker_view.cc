@@ -410,6 +410,10 @@ void ProfilePickerView::Clear() {
   DeleteDelegate();
 }
 
+bool ProfilePickerView::ShouldUseDarkColors() const {
+  return GetNativeTheme()->ShouldUseDarkColors();
+}
+
 bool ProfilePickerView::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
@@ -425,6 +429,25 @@ bool ProfilePickerView::HandleContextMenu(
   // Ignores context menu.
   return true;
 }
+
+gfx::NativeView ProfilePickerView::GetHostView() const {
+  return GetWidget()->GetNativeView();
+}
+
+gfx::Point ProfilePickerView::GetDialogPosition(const gfx::Size& size) {
+  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
+  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2), 0);
+}
+
+gfx::Size ProfilePickerView::GetMaximumDialogSize() {
+  return GetWidget()->GetWindowBoundsInScreen().size();
+}
+
+void ProfilePickerView::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {}
+
+void ProfilePickerView::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {}
 
 ProfilePickerView::ProfilePickerView(const GURL& on_select_profile_target_url)
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
@@ -719,25 +742,6 @@ void ProfilePickerView::OnThemeChanged() {
   UpdateToolbarColor();
 }
 
-gfx::NativeView ProfilePickerView::GetHostView() const {
-  return GetWidget()->GetNativeView();
-}
-
-gfx::Point ProfilePickerView::GetDialogPosition(const gfx::Size& size) {
-  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
-  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2), 0);
-}
-
-gfx::Size ProfilePickerView::GetMaximumDialogSize() {
-  return GetWidget()->GetWindowBoundsInScreen().size();
-}
-
-void ProfilePickerView::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
-
-void ProfilePickerView::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
-
 void ProfilePickerView::BuildLayout() {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -769,8 +773,13 @@ void ProfilePickerView::BuildLayout() {
 void ProfilePickerView::UpdateToolbarColor() {
   // The sign-in profile is needed to obtain the ThemeProvider.
   DCHECK(sign_in_->profile());
-  toolbar_->SetBackground(views::CreateSolidBackground(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+  SkColor background_color =
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  toolbar_->SetBackground(views::CreateSolidBackground(background_color));
+
+  // On Mac, the WebContents is initially transparent. Set the color for the
+  // main view as well.
+  SetBackground(views::CreateSolidBackground(background_color));
 }
 
 void ProfilePickerView::ShowScreenFinished(

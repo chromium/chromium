@@ -2958,6 +2958,7 @@ static_library("ui") {
       "views/profiles/profile_picker_turn_sync_on_delegate.h",
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
+      "views/profiles/profile_picker_web_contents_host.h",
       "webui/app_launcher_page_ui.cc",
       "webui/app_launcher_page_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",

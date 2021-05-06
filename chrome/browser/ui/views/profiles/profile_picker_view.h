@@ -12,11 +12,10 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -42,8 +41,7 @@ class ThemeProvider;
 
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
-                          public content::WebContentsDelegate,
-                          public web_modal::WebContentsModalDialogHost {
+                          public ProfilePickerWebContentsHost {
  public:
   METADATA_HEADER(ProfilePickerView);
 
@@ -57,29 +55,22 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // nothing.
   void DisplayErrorMessage();
 
-  // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
-  // `url` is empty, it only shows `contents` with its currently loaded url. If
-  // both `navigation_finished_closure` and `url` is non-empty, the closure is
-  // called when the navigation commits (if it never commits such as when the
-  // navigation is replaced by another navigation, the closure is never called).
-  void ShowScreen(
-      content::WebContents* contents,
-      const GURL& url,
-      bool show_toolbar,
-      bool enable_navigating_back = true,
-      base::OnceClosure navigation_finished_closure = base::OnceClosure());
-  // Like ShowScreen() but uses the system WebContents.
+  // ProfilePickerWebContentsHost:
+  void ShowScreen(content::WebContents* contents,
+                  const GURL& url,
+                  bool show_toolbar,
+                  bool enable_navigating_back = true,
+                  base::OnceClosure navigation_finished_closure =
+                      base::OnceClosure()) override;
   void ShowScreenInSystemContents(
       const GURL& url,
       bool show_toolbar,
       bool enable_navigating_back = true,
-      base::OnceClosure navigation_finished_closure = base::OnceClosure());
-
-  // Creates a simple back button and adds it to the toolbar.
-  void CreateToolbarBackButton();
-
-  // Hides the profile picker.
-  void Clear();
+      base::OnceClosure navigation_finished_closure =
+          base::OnceClosure()) override;
+  void CreateToolbarBackButton() override;
+  void Clear() override;
+  bool ShouldUseDarkColors() const override;
 
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(
@@ -87,6 +78,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
       const content::NativeWebKeyboardEvent& event) override;
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
+
+  // web_modal::WebContentsModalDialogHost
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  gfx::Size GetMaximumDialogSize() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  private:
   friend class ProfilePicker;
@@ -150,13 +148,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnThemeChanged() override;
-
-  // web_modal::WebContentsModalDialogHost
-  gfx::NativeView GetHostView() const override;
-  gfx::Point GetDialogPosition(const gfx::Size& size) override;
-  gfx::Size GetMaximumDialogSize() override;
-  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
-  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   // Builds the views hieararchy.
   void BuildLayout();

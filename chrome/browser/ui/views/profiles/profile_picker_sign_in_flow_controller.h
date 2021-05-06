@@ -41,7 +41,7 @@ class ProfilePickerSignInFlowController
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 
   ProfilePickerSignInFlowController(
-      ProfilePickerView* view,
+      ProfilePickerWebContentsHost* host,
       Profile* profile,
       SkColor profile_color,
       base::TimeDelta extended_account_info_timeout);
@@ -150,8 +150,8 @@ class ProfilePickerSignInFlowController
                        Profile* profile,
                        Profile::CreateStatus profile_create_status);
 
-  // The parent view element, must outlive this object.
-  ProfilePickerView* view_;
+  // The host object, must outlive this object.
+  ProfilePickerWebContentsHost* host_;
 
   // The web contents backed by `profile`. This is used for displaying the
   // sign-in flow.

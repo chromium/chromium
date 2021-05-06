@@ -121,11 +121,11 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
 }  // namespace
 
 ProfilePickerSignInFlowController::ProfilePickerSignInFlowController(
-    ProfilePickerView* view,
+    ProfilePickerWebContentsHost* host,
     Profile* profile,
     SkColor profile_color,
     base::TimeDelta extended_account_info_timeout)
-    : view_(view),
+    : host_(host),
       contents_(content::WebContents::Create(
           content::WebContents::CreateParams(profile))),
       profile_(profile),
@@ -191,21 +191,15 @@ void ProfilePickerSignInFlowController::Init() {
 
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
-  SkColor background_color =
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      contents(), background_color);
-  // On Mac, the WebContents is initially transparent. Set the color for the
-  // main view as well.
-  view_->SetBackground(views::CreateSolidBackground(background_color));
+      contents(), GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
 
   // The back button cannot be created from the constructor as ProfilePickerView
   // needs to access the ThemeProvider of `this` in the process.
-  view_->CreateToolbarBackButton();
+  host_->CreateToolbarBackButton();
 
-  view_->ShowScreen(
-      contents(), GetSigninURL(view_->GetNativeTheme()->ShouldUseDarkColors()),
-      /*show_toolbar=*/true);
+  host_->ShowScreen(contents(), GetSigninURL(host_->ShouldUseDarkColors()),
+                    /*show_toolbar=*/true);
 }
 
 void ProfilePickerSignInFlowController::Cancel() {
@@ -241,7 +235,7 @@ std::string ProfilePickerSignInFlowController::GetUserDomain() const {
 }
 
 void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
-  view_->ShowScreen(
+  host_->ShowScreen(
       contents(), GURL(chrome::kChromeUISyncConfirmationURL),
       /*show_toolbar=*/false,
       /*enable_navigating_back=*/false,
@@ -259,7 +253,7 @@ void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
   Cancel();
 
   switch_profile_path_ = profile_path;
-  view_->ShowScreenInSystemContents(
+  host_->ShowScreenInSystemContents(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
       /*show_toolbar=*/false,
       /*enable_navigating_back=*/false);
@@ -268,7 +262,7 @@ void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
 void ProfilePickerSignInFlowController::SwitchToEnterpriseProfileWelcome(
     EnterpriseProfileWelcomeUI::ScreenType type,
     base::OnceCallback<void(bool)> proceed_callback) {
-  view_->ShowScreen(contents(),
+  host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
                     /*show_toolbar=*/false,
                     /*enable_navigating_back=*/false,
@@ -307,7 +301,7 @@ void ProfilePickerSignInFlowController::AddNewContents(
 bool ProfilePickerSignInFlowController::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  return view_->HandleKeyboardEvent(source, event);
+  return host_->HandleKeyboardEvent(source, event);
 }
 
 void ProfilePickerSignInFlowController::NavigationStateChanged(
@@ -321,7 +315,7 @@ void ProfilePickerSignInFlowController::NavigationStateChanged(
 
 web_modal::WebContentsModalDialogHost*
 ProfilePickerSignInFlowController::GetWebContentsModalDialogHost() {
-  return view_;
+  return host_;
 }
 
 void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
@@ -339,7 +333,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
   // will be shown until DiceTurnSyncOnHelper (below) figures out whether it's a
   // managed account and whether sync is disabled by policies (which in some
   // cases involves fetching policies and can take a couple of seconds).
-  view_->ShowScreen(contents(), GetSyncConfirmationLoadingURL(),
+  host_->ShowScreen(contents(), GetSyncConfirmationLoadingURL(),
                     /*show_toolbar=*/false, /*enable_navigating_back=*/false);
 
   // Set up a timeout for extended account info (which cancels any existing
@@ -491,14 +485,14 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {
   // First, free up `contents()` to be moved to a new browser window.
-  view_->ShowScreenInSystemContents(
+  host_->ShowScreenInSystemContents(
       GURL(url::kAboutBlankURL),
       /*show_toolbar=*/false, /*enable_navigating_back=*/false,
       /*navigation_finished_closure=*/
       base::BindOnce(
           &ProfilePickerSignInFlowController::OnSignInContentsFreedUp,
           // Unretained is enough as the callback is called by a
-          // member of `view_` that outlives `this`.
+          // member of `host_` that outlives `this`.
           base::Unretained(this)));
 }
 
@@ -523,7 +517,7 @@ void ProfilePickerSignInFlowController::OnBrowserOpened(
 
   // Hide the flow window. This posts a task on the message loop to destroy the
   // window incl. this view.
-  view_->Clear();
+  host_->Clear();
 
   if (!finish_flow_callback)
     return;
