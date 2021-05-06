@@ -195,6 +195,7 @@
   'blink_web_tests': {
     'remove_from': [
       'Mac10.11 Tests',
+      'Mac11 Tests',
       'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
       'Win10 Tests x64 (dbg)',
     ],
