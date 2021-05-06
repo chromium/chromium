@@ -345,6 +345,7 @@ export function scanningAppTest() {
     progressText = null;
     progressBar = null;
     scannedImages = null;
+    testBrowserProxy.reset();
   });
 
   /**
@@ -937,20 +938,21 @@ export function scanningAppTest() {
   // Verify no changes are recorded when a scan job is initiated without any
   // settings changes.
   test('RecordNoSettingChanges', () => {
-    testBrowserProxy.setExpectedNumScanSettingChanges(0);
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
         })
         .then(() => {
           scanningApp.$$('#scanButton').click();
+          const numScanSettingChanges =
+              testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
+          assertEquals(0, numScanSettingChanges);
         });
   });
 
   // Verify the correct amount of settings changes are recorded when a scan job
   // is initiated.
   test('RecordSomeSettingChanges', () => {
-    testBrowserProxy.setExpectedNumScanSettingChanges(2);
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -967,13 +969,15 @@ export function scanningAppTest() {
         })
         .then(() => {
           scanningApp.$$('#scanButton').click();
+          const numScanSettingChanges =
+              testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
+          assertEquals(2, numScanSettingChanges);
         });
   });
 
   // Verify the correct amount of changes are recorded after the selected
   // scanner is changed then a scan job is initiated.
   test('RecordSettingsWithScannerChange', () => {
-    testBrowserProxy.setExpectedNumScanSettingChanges(3);
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -1000,6 +1004,9 @@ export function scanningAppTest() {
         })
         .then(() => {
           scanningApp.$$('#scanButton').click();
+          const numScanSettingChanges =
+              testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
+          assertEquals(3, numScanSettingChanges);
         });
   });
 
