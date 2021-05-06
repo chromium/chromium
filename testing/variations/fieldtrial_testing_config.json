@@ -2816,23 +2816,6 @@
             ]
         }
     ],
-    "DestroyProfileOnBrowserClose": [
-        {
-            "platforms": [
-                "windows",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "DestroyProfileOnBrowserClose",
-                    "enable_features": [
-                        "DestroyProfileOnBrowserClose"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesynchronizedScrolling": [
         {
             "platforms": [
