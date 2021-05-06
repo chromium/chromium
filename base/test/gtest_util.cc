@@ -82,7 +82,7 @@ bool ReadTestNamesFromFile(const FilePath& path,
     return false;
 
   std::vector<base::TestIdentifier> result;
-  for (const auto& i : *tests) {
+  for (const auto& i : tests->GetList()) {
     const base::DictionaryValue* test = nullptr;
     if (!i.GetAsDictionary(&test))
       return false;
