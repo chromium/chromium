@@ -84,13 +84,15 @@ const testing::TestInfo* GetTestInfo() {
 base::FilePath GetLogDestinationDir() {
   // Fetch path to ${ISOLATED_OUTDIR} env var.
   // ResultDB reads logs and test artifacts info from there.
-  return base::FilePath::FromUTF8Unsafe(std::getenv("ISOLATED_OUTDIR"));
+  const char* var = std::getenv("ISOLATED_OUTDIR");
+  return var ? base::FilePath::FromUTF8Unsafe(var) : base::FilePath();
 }
 
 void CopyLog(const base::FilePath& src_dir) {
   // TODO(crbug.com/1159189): copy other test artifacts.
   base::FilePath dest_dir = GetLogDestinationDir();
-  if (base::PathExists(dest_dir) && base::PathExists(src_dir)) {
+  if (!dest_dir.empty() && base::PathExists(dest_dir) &&
+      base::PathExists(src_dir)) {
     base::FilePath test_name_path = dest_dir.AppendASCII(base::StrCat(
         {GetTestInfo()->test_suite_name(), ".", GetTestInfo()->name()}));
     EXPECT_TRUE(base::CreateDirectory(test_name_path));
