@@ -87,9 +87,9 @@ class TestPrintViewManager : public PrintViewManagerBase {
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
     print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
     return true;
   }
 

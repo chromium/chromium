@@ -67,12 +67,47 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "printing/print_settings.h"
+#include "printing/printing_utils.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif
+
 namespace printing {
 
 namespace {
 
 using PrintSettingsCallback =
     base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+crosapi::mojom::PrintJobPtr PrintJobToMojom(
+    const JobEventDetails& event_details,
+    PrintJob::Source source,
+    const std::string& source_id) {
+  PrintedDocument* document = event_details.document();
+  std::u16string title = SimplifyDocumentTitle(document->name());
+  if (title.empty()) {
+    title = SimplifyDocumentTitle(
+        l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));
+  }
+  const PrintSettings& settings = document->settings();
+  int duplex = static_cast<int>(settings.duplex_mode());
+  DCHECK(duplex >= 0);
+  DCHECK(duplex < 3);
+  return crosapi::mojom::PrintJob::New(
+      base::UTF16ToUTF8(settings.device_name()), base::UTF16ToUTF8(title),
+      event_details.job_id(), document->page_count(), source, source_id,
+      settings.color(),
+      static_cast<crosapi::mojom::PrintJob::DuplexMode>(duplex),
+      settings.requested_media().size_microns,
+      settings.requested_media().vendor_id, settings.copies());
+}
+#endif
 
 void ShowWarningMessageBox(const std::u16string& message) {
   // Runs always on the UI thread.
@@ -764,7 +799,18 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
       break;
     }
     case JobEventDetails::DOC_DONE: {
-      // Don't care about the actual printing process, except on Android.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      chromeos::LacrosChromeServiceImpl* service =
+          chromeos::LacrosChromeServiceImpl::Get();
+      if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
+        LOG(ERROR) << "Could not report print job queued";
+      } else {
+        service->GetRemote<crosapi::mojom::LocalPrinter>()->CreatePrintJob(
+            PrintJobToMojom(event_details, print_job_->source(),
+                            print_job_->source_id()),
+            base::DoNothing());
+      }
+#endif
 #if defined(OS_ANDROID)
       DCHECK_LE(number_pages_, kMaxPageCount);
       PdfWritingDone(base::checked_cast<int>(number_pages_));
@@ -861,7 +907,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   DCHECK(!print_job_);
   print_job_ = base::MakeRefCounted<PrintJob>();
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
                             ? PrintJob::Source::PRINT_PREVIEW_INCOGNITO
                             : PrintJob::Source::PRINT_PREVIEW,

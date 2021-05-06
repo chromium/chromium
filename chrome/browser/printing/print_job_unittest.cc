@@ -100,9 +100,9 @@ TEST(PrintJobTest, SimplePrint) {
   volatile bool check = false;
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
   job->Initialize(std::make_unique<TestQuery>(), std::u16string(), 1);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   job->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
   job->Stop();
   while (job->document()) {
     base::RunLoop().RunUntilIdle();

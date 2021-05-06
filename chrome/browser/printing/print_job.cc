@@ -270,7 +270,7 @@ const PrintSettings& PrintJob::settings() const {
   return document()->settings();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void PrintJob::SetSource(PrintJob::Source source,
                          const std::string& source_id) {
   source_ = source;
@@ -284,7 +284,7 @@ PrintJob::Source PrintJob::source() const {
 const std::string& PrintJob::source_id() const {
   return source_id_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
 class PrintJob::PdfConversionState {
