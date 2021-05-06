@@ -192,7 +192,7 @@ std::vector<std::string> GetUlpLanguages(
     return langs;
 
   // It is assumed that languages appear in descending order of probability.
-  for (const auto& entry : *preference) {
+  for (const auto& entry : preference->GetList()) {
     const base::DictionaryValue* item = nullptr;
     std::string language;
     double probability = 0.0;

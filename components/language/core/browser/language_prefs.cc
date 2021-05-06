@@ -160,7 +160,7 @@ void LanguagePrefs::GetDeduplicatedUserLanguages(
 
   // Add policy languages.
   for (const auto& language :
-       *prefs_->GetList(language::prefs::kForcedLanguages)) {
+       prefs_->GetList(language::prefs::kForcedLanguages)->GetList()) {
     if (forced_languages_set_.find(language.GetString()) ==
         forced_languages_set_.end()) {
       deduplicated_languages.emplace_back(language.GetString());
