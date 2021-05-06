@@ -31,8 +31,6 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   tray_container()->AddChildView(std::move(image_view));
-
-  set_use_bounce_in_animation(true);
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;

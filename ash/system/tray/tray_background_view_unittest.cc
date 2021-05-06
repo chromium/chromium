@@ -4,10 +4,13 @@
 
 #include "ash/system/tray/tray_background_view.h"
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/task_environment.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 
@@ -92,6 +95,69 @@ TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
   // After the hide animation is finished, `test_view` is not visible.
   EXPECT_FALSE(test_view->GetVisible());
   EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
+}
+
+TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Not showing animation after logging in.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  // Gives it a small duration to let the session get changed. This duration is
+  // way smaller than the animation duration, so that the animation will not
+  // finish when this duration ends. The same for the other places below.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+
+  test_view->SetVisiblePreferred(false);
+  test_view->SetVisiblePreferred(true);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  // Enable the animation after session state get changed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  test_view->SetVisiblePreferred(false);
+  test_view->SetVisiblePreferred(true);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  // Not showing animation after unlocking screen.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+
+  test_view->SetVisiblePreferred(false);
+  test_view->SetVisiblePreferred(true);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  // Not showing animation when switching users.
+  GetSessionControllerClient()->AddUserSession("a");
+  test_view->SetVisiblePreferred(false);
+  test_view->SetVisiblePreferred(true);
+  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
+
+  // Simulates user switching by changing the order of session_ids.
+  Shell::Get()->session_controller()->SetUserSessionOrder({2u, 1u});
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view->GetVisible());
 }
 
 }  // namespace ash

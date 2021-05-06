@@ -168,6 +168,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(time_view_);
 
   set_separator_visibility(false);
+  set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
 }

@@ -93,6 +93,7 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new IconView()) {
   tray_container()->AddChildView(icon_);
+  set_use_bounce_in_animation(false);
 }
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}

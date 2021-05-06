@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -145,6 +146,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   virtual void SetVisiblePreferred(bool visible_preferred);
   bool visible_preferred() const { return visible_preferred_; }
 
+  // Disables bounce in and fade in animation. The animation will remain
+  // disabled until the returned scoped closure runner is run.
+  base::ScopedClosureRunner DisableShowAnimation();
+
  protected:
   // ActionableView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -152,6 +157,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   void HandlePerformActionResult(bool action_performed,
                                  const ui::Event& event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
+
+  virtual void OnShouldShowAnimationChanged(bool should_animate) {}
 
   void set_show_with_virtual_keyboard(bool show_with_virtual_keyboard) {
     show_with_virtual_keyboard_ = show_with_virtual_keyboard;
@@ -163,6 +170,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
  private:
   class TrayWidgetObserver;
+  class TrayBackgroundViewSessionChangeHandler;
 
   void StartVisibilityAnimation(bool visible);
 
@@ -206,6 +214,11 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // state.
   bool GetEffectiveVisibility();
 
+  // Checks if we should show bounce in or fade in animation.
+  bool IsShowAnimationEnabled() const {
+    return disable_show_animation_count_ == 0u;
+  }
+
   // The shelf containing the system tray for this view.
   Shelf* shelf_;
 
@@ -231,11 +244,17 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // If true, the view is visible when the status area is collapsed.
   bool show_when_collapsed_;
 
-  bool use_bounce_in_animation_ = false;
+  bool use_bounce_in_animation_ = true;
   bool is_starting_animation_ = false;
+
+  // Number of active requests to disable the bounce-in and fade-in animation.
+  size_t disable_show_animation_count_ = 0;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;
+  std::unique_ptr<TrayBackgroundViewSessionChangeHandler> handler_;
+
+  base::WeakPtrFactory<TrayBackgroundView> weak_factory_{this};
 };
 
 }  // namespace ash

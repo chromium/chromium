@@ -88,6 +88,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
+  void OnShouldShowAnimationChanged(bool should_animate) override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;
@@ -220,6 +221,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
       this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observer_{this};
+
+  // Animation will be disabled for the lifetime of this variable.
+  std::unique_ptr<base::ScopedClosureRunner> animation_disabler_;
 
   base::WeakPtrFactory<HoldingSpaceTray> weak_factory_{this};
 };

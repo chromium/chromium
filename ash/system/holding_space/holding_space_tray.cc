@@ -525,6 +525,10 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
+void HoldingSpaceTray::OnShouldShowAnimationChanged(bool should_animate) {
+  previews_tray_icon_->set_should_animate_updates(should_animate);
+}
+
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
   // When the `model` is attached the session is either being started/unlocked
   // or the active profile is being changed. It's also possible that the status
@@ -682,12 +686,6 @@ void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
 void HoldingSpaceTray::OnSessionStateChanged(
     session_manager::SessionState state) {
-  // If the session is blocked the holding space tray should *not* bounce or
-  // animate previews when the session becomes unblocked. Note that the holding
-  // space tray is not visible if the session is blocked.
-  if (Shell::Get()->session_controller()->IsUserSessionBlocked())
-    SetShouldAnimate(false);
-
   UpdateVisibility();
 }
 
@@ -802,8 +800,14 @@ void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
 }
 
 void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {
-  set_use_bounce_in_animation(should_animate);
-  previews_tray_icon_->set_should_animate_updates(should_animate);
+  if (!should_animate) {
+    if (!animation_disabler_) {
+      animation_disabler_ =
+          std::make_unique<base::ScopedClosureRunner>(DisableShowAnimation());
+    }
+  } else if (animation_disabler_) {
+    animation_disabler_.reset();
+  }
 }
 
 BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)

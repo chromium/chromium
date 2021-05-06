@@ -270,7 +270,8 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 class HoldingSpaceTrayTest : public AshTestBase {
  public:
-  HoldingSpaceTrayTest() = default;
+  HoldingSpaceTrayTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // AshTestBase:
   void SetUp() override {
@@ -659,9 +660,9 @@ TEST_F(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
-              test_api()->GetPreviewsTrayIcon()->size());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
 
   TabletModeControllerTestApi().EnterTabletMode();
 
@@ -2412,7 +2413,7 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 // Verifies that the holding space tray animates in and out as expected.
 TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Prior to session start, the tray should not be showing.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
@@ -2424,16 +2425,21 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   ScopedTransformRecordingLayerDelegate transform_recorder(tray->layer());
 
   // Start the session. Because a holding space item was added in a previous
-  // session (according to prefs state), the tray should animate in.
+  // session (according to prefs state), the tray should show up without
+  // animation.
   StartSession();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // The entry animation should be the default entry animation in which the
-  // tray translates in from the right without scaling.
-  EXPECT_FALSE(transform_recorder.DidScale());
-  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {0.f, 0.f}));
-  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 0.f}));
-  transform_recorder.Reset();
+  // Gives it a small duration to let the session get changed. This duration is
+  // way smaller than the animation duration, so that the animation will not
+  // finish when this duration ends. The same for the other places below.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+
+  // Gives 3s duration to let the (if there is any) animation finish. The same
+  // for the other places below.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
 
   // Pin a holding space item. Because the tray was already showing there
   // should be no change in tray visibility.
@@ -2449,6 +2455,7 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   // Remove all holding space items. Because a holding space item was
   // previously pinned, the tray should animate out.
   RemoveAllItems();
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // The exit animation should be the default exit animation in which the tray
@@ -2463,6 +2470,8 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+
   // The entry animation should be the bounce in animation in which the tray
   // translates in vertically with scaling (since it previously scaled out).
   EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
@@ -2475,6 +2484,7 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   auto* session_controller =
       ash_test_helper()->test_session_controller_client();
   session_controller->LockScreen();
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // The exit animation should be the default exit animation in which the tray
@@ -2485,19 +2495,17 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {11.f, 12.f}));
   transform_recorder.Reset();
 
-  // Unlock the screen. The tray should animate in.
+  // Unlock the screen. The tray should show up without animation.
   session_controller->UnlockScreen();
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // The entry animation should be the default entry animation in which the
-  // tray translates in from the right.
-  EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
-  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
-  EXPECT_TRUE(transform_recorder.TranslatedFrom({11.f, 12.f}, {0.f, 0.f}));
-  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 12.f}));
-  transform_recorder.Reset();
-
-  // Switch to another user with a populated model. The tray should animate in.
+  // Switch to another user with a populated model. The tray should show up
+  // without animation.
   constexpr char kSecondaryUserId[] = "user@secondary";
   HoldingSpaceModel secondary_holding_space_model;
   AddItemToModel(&secondary_holding_space_model,
@@ -2505,15 +2513,13 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
                  base::FilePath("/tmp/fake3"));
   SwitchToSecondaryUser(kSecondaryUserId, /*client=*/nullptr,
                         &secondary_holding_space_model);
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // The entry animation should be the default entry animation in which the
-  // tray translates in from the right.
-  EXPECT_TRUE(transform_recorder.ScaledFrom({1.f, 1.f}, {1.f, 1.f}));
-  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
-  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {0.f, 0.f}));
-  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 12.f}));
-  transform_recorder.Reset();
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
 
   // Clean up.
   UnregisterModelForUser(kSecondaryUserId);

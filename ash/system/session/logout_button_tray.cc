@@ -41,6 +41,7 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf) : TrayBackgroundView(shelf) {
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
   button_->SetProminent(true);
+  set_use_bounce_in_animation(false);
 }
 
 LogoutButtonTray::~LogoutButtonTray() {

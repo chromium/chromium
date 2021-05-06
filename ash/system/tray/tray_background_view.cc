@@ -10,8 +10,10 @@
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -160,6 +162,41 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   DISALLOW_COPY_AND_ASSIGN(TrayWidgetObserver);
 };
 
+// Handles `TrayBackgroundView`'s animation on session changed.
+class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
+    : public SessionObserver {
+ public:
+  explicit TrayBackgroundViewSessionChangeHandler(
+      TrayBackgroundView* tray_background_view)
+      : tray_(tray_background_view) {
+    DCHECK(tray_);
+  }
+  TrayBackgroundViewSessionChangeHandler(
+      const TrayBackgroundViewSessionChangeHandler&) = delete;
+  TrayBackgroundViewSessionChangeHandler& operator=(
+      const TrayBackgroundViewSessionChangeHandler&) = delete;
+  ~TrayBackgroundViewSessionChangeHandler() override = default;
+
+ private:  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override {
+    DisableShowAnimationInSequence();
+  }
+  void OnActiveUserSessionChanged(const AccountId& account_id) override {
+    DisableShowAnimationInSequence();
+  }
+
+  // Disables the `TrayBackgroundView`'s show animation until all queued tasks
+  // in the current task sequence are run.
+  void DisableShowAnimationInSequence() {
+    base::ScopedClosureRunner callback = tray_->DisableShowAnimation();
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     callback.Release());
+  }
+
+  TrayBackgroundView* const tray_;
+  ScopedSessionObserver session_observer_{this};
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // TrayBackgroundView
 
@@ -173,7 +210,8 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
       visible_preferred_(false),
       show_with_virtual_keyboard_(false),
       show_when_collapsed_(true),
-      widget_observer_(new TrayWidgetObserver(this)) {
+      widget_observer_(new TrayWidgetObserver(this)),
+      handler_(new TrayBackgroundViewSessionChangeHandler(this)) {
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
 
@@ -232,6 +270,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
 TrayBackgroundView::~TrayBackgroundView() {
   Shell::Get()->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
   widget_observer_.reset();
+  handler_.reset();
 }
 
 void TrayBackgroundView::Initialize() {
@@ -280,16 +319,41 @@ void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
     // layer->SetVisible(true) immediately interrupts the animation of this
     // property, and keeps the layer visible.
     layer()->SetVisible(true);
-  }
 
-  if (visible) {
-    if (use_bounce_in_animation_)
-      BounceInAnimation();
-    else
-      FadeInAnimation();
+    // We only show visible animation when `IsShowAnimationEnabled()`.
+    if (IsShowAnimationEnabled()) {
+      if (use_bounce_in_animation_)
+        BounceInAnimation();
+      else
+        FadeInAnimation();
+    } else {
+      // The opacity and scale of the `layer()` may have been manipulated, so
+      // reset it before it is shown.
+      layer()->SetOpacity(1.0f);
+      layer()->SetTransform(gfx::Transform());
+    }
   } else {
     HideAnimation();
   }
+}
+
+base::ScopedClosureRunner TrayBackgroundView::DisableShowAnimation() {
+  if (layer()->GetAnimator()->is_animating())
+    layer()->GetAnimator()->StopAnimating();
+
+  ++disable_show_animation_count_;
+  if (disable_show_animation_count_ == 1u)
+    OnShouldShowAnimationChanged(false);
+
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](const base::WeakPtr<TrayBackgroundView>& ptr) {
+        if (ptr) {
+          --ptr->disable_show_animation_count_;
+          if (ptr->IsShowAnimationEnabled())
+            ptr->OnShouldShowAnimationChanged(true);
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {

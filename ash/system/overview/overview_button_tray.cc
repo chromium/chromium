@@ -52,6 +52,8 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   // horizontal shelf, no separator is required.
   set_separator_visibility(false);
 
+  set_use_bounce_in_animation(false);
+
   Shell::Get()->overview_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->shelf_config()->AddObserver(this);
