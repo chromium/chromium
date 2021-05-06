@@ -99,7 +99,9 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
                                 const std::string& contact_upload_hash,
                                 bool success);
   bool SetAllowlist(const std::set<std::string>& new_allowlist);
-  void NotifyMojoObserverContactsDownloaded(
+
+  // Notify the base-class and mojo observers that contacts were downloaded.
+  void NotifyAllObserversContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
