@@ -7213,6 +7213,14 @@
       },
     },
 
+    'lacros_all_tast_tests_eve': {
+      'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_EVE',
+        ]
+      },
+    },
+
     # TODO(crbug.com/1195415): Add EVE variant once HW arrives and is deployed.
     'lacros_device_or_vm_tests': {
       'lacros_smoke_tast_tests': {
@@ -7253,14 +7261,6 @@
           'CROS_SNAPPY_TOT',
           'CROS_OCTOPUS_TOT-1',
           'CROS_OCTOPUS_TOT-2',
-        ]
-      },
-    },
-
-    'lacros_smoke_tast_tests_amd64_generic': {
-      'lacros_smoke_tast_tests': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
         ]
       },
     },

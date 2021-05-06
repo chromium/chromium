@@ -1202,14 +1202,14 @@
     "gtest_tests": [
       {
         "args": [
-          "--board=amd64-generic",
-          "--use-vm"
+          "--board=eve",
+          "--flash"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_smoke_tast_tests_amd64-generic",
+        "name": "lacros_all_tast_tests_eve",
         "resultdb": {
           "enable": true
         },
@@ -1217,17 +1217,19 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "x86",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
+              "device_type": "eve",
+              "os": "ChromeOS",
               "pool": "chrome.tests"
             }
           ],
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_smoke_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests/"
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        }
       }
     ],
     "skylab_tests": [

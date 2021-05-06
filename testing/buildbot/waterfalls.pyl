@@ -6555,7 +6555,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_smoke_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_all_tast_tests_eve',
           'skylab_tests': 'lacros_skylab_x86_64',
         },
         'swarming': {
