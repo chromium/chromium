@@ -13,6 +13,7 @@
 #include "components/sync/base/fake_encryptor.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/entity_data.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_state.h"

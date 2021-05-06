@@ -15,6 +15,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/data_type_encryption_handler.h"
 #include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 

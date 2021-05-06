@@ -4,8 +4,9 @@
 
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/nigori/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

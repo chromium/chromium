@@ -22,6 +22,7 @@
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server.h"

@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/cryptographer_impl.h"
 
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

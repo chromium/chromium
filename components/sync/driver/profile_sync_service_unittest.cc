@@ -41,6 +41,7 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_token_status.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/test/engine/fake_sync_engine.h"
 #include "components/version_info/version_info_values.h"

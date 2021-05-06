@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 
 #include <stdint.h>
 
@@ -20,7 +20,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
@@ -87,43 +89,6 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
 }
 
 }  // namespace
-
-KeyDerivationParams::KeyDerivationParams(KeyDerivationMethod method,
-                                         const std::string& scrypt_salt)
-    : method_(method), scrypt_salt_(scrypt_salt) {}
-
-KeyDerivationParams::KeyDerivationParams(const KeyDerivationParams& other) =
-    default;
-KeyDerivationParams::KeyDerivationParams(KeyDerivationParams&& other) = default;
-
-KeyDerivationParams& KeyDerivationParams::operator=(
-    const KeyDerivationParams& other) = default;
-
-bool KeyDerivationParams::operator==(const KeyDerivationParams& other) const {
-  return method_ == other.method_ && scrypt_salt_ == other.scrypt_salt_;
-}
-
-bool KeyDerivationParams::operator!=(const KeyDerivationParams& other) const {
-  return !(*this == other);
-}
-
-const std::string& KeyDerivationParams::scrypt_salt() const {
-  DCHECK_EQ(method_, KeyDerivationMethod::SCRYPT_8192_8_11);
-  return scrypt_salt_;
-}
-
-KeyDerivationParams KeyDerivationParams::CreateForPbkdf2() {
-  return {KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003, /*scrypt_salt_=*/""};
-}
-
-KeyDerivationParams KeyDerivationParams::CreateForScrypt(
-    const std::string& salt) {
-  return {KeyDerivationMethod::SCRYPT_8192_8_11, salt};
-}
-
-KeyDerivationParams KeyDerivationParams::CreateWithUnsupportedMethod() {
-  return {KeyDerivationMethod::UNSUPPORTED, /*scrypt_salt_=*/""};
-}
 
 Nigori::Keys::Keys() = default;
 Nigori::Keys::~Keys() = default;

@@ -29,6 +29,7 @@
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
 #include "components/sync/js/js_event_handler.h"
