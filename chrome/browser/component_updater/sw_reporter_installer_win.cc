@@ -179,7 +179,7 @@ bool ExtractInvocationSequenceFromManifest(
     return true;
   }
 
-  for (const auto& iter : *parameter_list) {
+  for (const auto& iter : parameter_list->GetList()) {
     const base::DictionaryValue* invocation_params = nullptr;
     if (!iter.GetAsDictionary(&invocation_params)) {
       ReportConfigurationError(kBadParams);
@@ -210,7 +210,7 @@ bool ExtractInvocationSequenceFromManifest(
     }
 
     std::vector<std::wstring> argv = {exe_path.value()};
-    for (const auto& value : *arguments) {
+    for (const auto& value : arguments->GetList()) {
       std::u16string argument;
       if (!value.GetAsString(&argument)) {
         ReportConfigurationError(kBadParams);
