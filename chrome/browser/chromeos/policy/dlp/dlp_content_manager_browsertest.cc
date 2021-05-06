@@ -14,7 +14,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -30,6 +35,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,9 +85,25 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+    mock_rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+  void SetupDlpRulesManager() {
+    DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(&DlpContentManagerBrowserTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+    ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
+  }
+
  protected:
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
+  MockDlpRulesManager* mock_rules_manager_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -353,29 +375,57 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
   ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  const std::string src_pattern = web_contents->GetLastCommittedURL().spec();
 
   DlpContentManager* manager = helper_.GetContentManager();
 
+  SetupDlpRulesManager();
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+      .Times(2)
+      .WillRepeatedly(testing::Return(src_pattern));
+
+  // Set up mock report queue.
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(helper_.GetReportingManager(), events);
+
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  // Set up printing restriction.
+  // No event should be emitted when there is no restriction.
   EXPECT_FALSE(manager->IsPrintingRestricted(web_contents));
-  helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
-  EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
+  EXPECT_TRUE(events.empty());
 
-  // Start printing and check for notification about printing restriction.
+  // Set up printing restriction.
+  helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
+
+  // Check that IsPrintingRestricted emitted an event.
+  EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
+  EXPECT_EQ(events.size(), 1);
+  EXPECT_THAT(events[0],
+              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
+
+  // Start printing, check for notification about printing restriction, and
+  // another event emitted.
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
                        /*print_preview_disabled=*/false,
                        /*print_only_selection=*/false);
   EXPECT_TRUE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_EQ(events.size(), 2);
+  EXPECT_THAT(events[1],
+              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNoRestriction) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  SetupDlpRulesManager();
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern).Times(0);
+
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(helper_.GetReportingManager(), events);
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
@@ -389,6 +439,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNoRestriction) {
                        /*print_only_selection=*/false);
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_TRUE(events.empty());
 }
 
 class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {

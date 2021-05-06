@@ -30,27 +30,12 @@ class DlpReportingManagerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     profile_ = std::make_unique<TestingProfile>();
-    SetReportQueueForReportingManager();
+    SetReportQueueForReportingManager(&manager_, events_);
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() const {
     return content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                              nullptr);
-  }
-
-  void SetReportQueueForReportingManager() {
-    auto report_queue = std::make_unique<reporting::MockReportQueue>();
-    EXPECT_CALL(*report_queue.get(), AddRecord)
-        .WillRepeatedly(
-            [this](base::StringPiece record, reporting::Priority priority,
-                   reporting::ReportQueue::EnqueueCallback callback) {
-              DlpPolicyEvent event;
-              event.ParseFromString(std::string(record));
-              // Don't use this code in a multithreaded env as it can course
-              // concurrency issues with the events in the vector.
-              events_.push_back(event);
-            });
-    manager_.GetReportQueueSetter().Run(std::move(report_queue));
   }
 
  protected:
@@ -67,6 +52,7 @@ TEST_F(DlpReportingManagerTest, IsPrintingRestricted) {
   auto src_pattern = web_contents->GetLastCommittedURL().spec();
   manager_.ReportPrintingEvent(src_pattern, DlpRulesManager::Level::kBlock);
 
+  EXPECT_EQ(events_.size(), 1);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
 }

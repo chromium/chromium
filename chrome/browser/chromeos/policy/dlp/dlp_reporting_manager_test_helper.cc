@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::Matcher;
@@ -47,4 +48,20 @@ DlpPolicyEvent CreatePrintingRestrictedDlpEvent(
   return *policy::CreateDlpPolicyEvent(
       src_pattern, policy::DlpRulesManager::Level::kBlock,
       policy::DlpRulesManager::Restriction::kPrinting);
+}
+
+void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
+                                       std::vector<DlpPolicyEvent>& events) {
+  auto report_queue = std::make_unique<reporting::MockReportQueue>();
+  EXPECT_CALL(*report_queue.get(), AddRecord)
+      .WillRepeatedly(
+          [&events](base::StringPiece record, reporting::Priority priority,
+                    reporting::ReportQueue::EnqueueCallback callback) {
+            DlpPolicyEvent event;
+            event.ParseFromString(std::string(record));
+            // Don't use this code in a multithreaded env as it can course
+            // concurrency issues with the events in the vector.
+            events.push_back(event);
+          });
+  manager->GetReportQueueSetter().Run(std::move(report_queue));
 }

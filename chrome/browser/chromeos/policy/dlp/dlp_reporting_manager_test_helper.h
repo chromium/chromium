@@ -9,8 +9,18 @@
 
 class DlpPolicyEvent;
 
+namespace policy {
+class DlpReportingManager;
+}  // namespace policy
+
 ::testing::Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(
     const DlpPolicyEvent& event);
 DlpPolicyEvent CreatePrintingRestrictedDlpEvent(const std::string& src_pattern);
+
+// Sets MockReportQueue for DlpReportingManager. Whenever AddRecord function of
+// MockReportQueue is called (a DLP restriction is triggered) a new
+// DlpPolicyEvent is pushed to |events|.
+void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
+                                       std::vector<DlpPolicyEvent>& events);
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_REPORTING_MANAGER_TEST_HELPER_H_
